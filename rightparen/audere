@@ -1,0 +1,300 @@
+#!/bin/bash
+set -o pipefail
+
+function audere-init() {
+  _au_self="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"/audere
+  _au_github="$HOME/github"
+  GITHUB_MEDIC="$_au_github/medic"
+  GITHUB_MEDIC_WEBAPP="$GITHUB_MEDIC/medic-webapp"
+  GITHUB_DIMAGI="$_au_github/dimagi"
+  GITHUB_COMMCARE_HQ="$GITHUB_DIMAGI/commcare-hq"
+
+  [[ -f "$HOME/.couch-env" ]] && \
+      . "$HOME/.couch-env"
+
+  function echo2() { echo 1>&2 "$@"; }
+  function audere() { source "$_au_self" "$@"; }
+
+  AUDERE_AWS_INSTANCE="med0"
+  AUDERE_AWS_USER="ubuntu"
+
+  # Partial list in https://github.com/dimagi/commcare-hq/blob/master/docker/README.md
+  INTERESTING_PORTS=(
+    2181 # ZooKeeper
+    5432 # PostgreSQL
+    5984 # CouchDB
+    5986 # CouchDB
+    5988 # MedicMobile
+    6397 # Redis
+    8000 # Commcare HQ
+    8010 # Formplayer
+    9092 # Kafka
+    9200 # Elastic Search
+    9300 # Elastic Search
+    9980 # Riak CS
+  )
+}
+
+_au_subcommand="$1" && shift
+case "$_au_subcommand" in
+  "" | init)
+    audere-init
+    ;;
+  *)
+    [[ -z "$_au_self" ]] && audere-init
+    ;;
+esac
+
+case "$_au_subcommand" in
+  cdm)     cd "$GITHUB_MEDIC${1:+/}$1";;
+  cdmw)    cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
+  cdmwa)   cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
+  cdcc)    cd "$GITHUB_COMMCARE_HQ${1:+/}$1";;
+
+  # --------------------------------------------------------------------------------
+  # Commcare HQ
+
+  ccinit)
+    audere cdcc
+    workon commcare-hq
+    ;;
+
+  ccrun)
+    audere ccstart
+    audere ccmanage runserver 0.0.0.0:8000
+    ;;
+
+  ccstart)
+    audere ccinit
+    audere ccdocker up -d
+    ;;
+
+  ccstop)
+    audere ccdocker stop
+    ;;
+
+  ccd | ccdocker) echorun "$GITHUB_COMMCARE_HQ/scripts/docker" "$@";;
+  ccm | ccmanage) echorun "$GITHUB_COMMCARE_HQ/manage.py" "$@";;
+
+  # --------------------------------------------------------------------------------
+  # Medic Mobile
+
+  halt0) ssh -t audere0 sudo halt;;
+
+  minit)
+    if [[ -z "$COUCH_USER" || -z "$COUCH_PWD" ]]; then
+      echo2 "COUCH_USER and COUCH_PWD are not set."
+      echo2 "Nothing changed."
+    else
+      export COUCH_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5984/medic
+      export API_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5988
+      export COUCH_NODE_NAME=couchdb@localhost
+    fi
+    ;;
+
+  mclean)
+    cd "$GITHUB_MEDIC_WEBAPP"
+    git clean -xdf
+    cat >"$GITHUB_MEDIC_WEBAPP/.env" <<-EOF
+			COUCH_URL=http://admin:pass@localhost:5984/medic
+			COUCH_NODE_NAME=couchdb@localhost
+		EOF
+    audere minit &&
+    npm update -g npm &&
+    npm install -g grunt-cli &&
+    cd "$GITHUB_MEDIC_WEBAPP" && yarn install &&
+    cd "$GITHUB_MEDIC_WEBAPP/webapp" && yarn install &&
+    cd "$GITHUB_MEDIC_WEBAPP/admin" && yarn install &&
+    cd "$GITHUB_MEDIC_WEBAPP/api" && yarn install &&
+    cd "$GITHUB_MEDIC_WEBAPP/sentinel" && yarn install &&
+    cd "$GITHUB_MEDIC_WEBAPP"
+    ;;
+
+  medic-test-init)
+    cd "$GITHUB_MEDIC_WEBAPP"
+    export COUCH_URL=http://admin:pass@localhost:5984/medic
+    export API_URL=http://admin:pass@localhost:5988
+    export COUCH_NODE_NAME=nonode@nohost
+    export CHROME_BIN="$(type -P chromium-browser || type -P chromium)"
+    ;;
+
+  mgrunt | medic-test) ( audere medic-test-init && grunt "$@" );;
+  mtest) audere medic-test test;;
+  munit) audere medic-test unit;;
+  me2e)  audere medic-test ci-integration-e2e;;
+  mci)   audere medic-test ci;;
+
+  # --------------------------------------------------------------------------------
+  # AWS
+
+  inst)
+    if [[ "$#" == 0 ]]; then
+      echo "AUDERE_AWS_INSTANCE=$AUDERE_AWS_INSTANCE"
+    else
+      _au_prev_inst="$AUDERE_AWS_INSTANCE"
+      AUDERE_AWS_INSTANCE="$1"
+      echo "Setting AUDERE_AWS_INSTANCE to '$AUDERE_AWS_INSTANCE' (was '$_au_prev_inst')"
+    fi
+    ;;
+
+  user)
+    if [[ "$#" == 0 ]]; then
+      echo "AUDERE_AWS_USER=$AUDERE_AWS_USER"
+    else
+      _au_prev_user="$AUDERE_AWS_USER"
+      AUDERE_AWS_USER="$1"
+      echo "Setting AUDERE_AWS_USER to '$AUDERE_AWS_USER' (was '$_au_prev_user')"
+    fi
+    ;;
+
+  env | aenv | aws-env)
+    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
+      echo "Syncing env/audere to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
+      ssh "-oStrictHostKeyChecking=accept-new" "$AUDERE_AWS_USER@${_au_ip}" uptime && \
+      rsync -a "$HOME/env/audere" "$AUDERE_AWS_USER@${_au_ip}:"
+    ;;
+
+  mjm-env)
+    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
+      echo "Syncing env to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
+      rsync -a "$HOME/env" "$AUDERE_AWS_USER@${_au_ip}:"
+    ;;
+
+  monwatch)
+    while true; do
+      _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
+        ssh "-oStrictHostKeyChecking=accept-new" "ubuntu@$_au_ip" watch '"uptime;free;df -h"'
+      echo -n Sleeping...
+      sleep 10
+      echo done
+    done
+    ;;
+
+  asshL | aws-sshL)
+    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
+      echo "Connecting to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
+      audere sshL "$AUDERE_AWS_USER@$_au_ip" "$@"
+    ;;
+
+  sshL)
+    echo "Forwarding ports ${INTERESTING_PORTS[@]}"
+    ssh -t $(for i in ${INTERESTING_PORTS[@]}; do printf " -L %d:localhost:%d" $i $i; done) "$@"
+    ;;
+
+  ssh | assh | aws-ssh)
+    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
+      echo "Connecting to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
+      ssh -t "$AUDERE_AWS_USER@$_au_ip" "$@"
+    ;;
+
+  # To update, see
+  #   aws ec2 describe-key-pairs
+  #   aws ec2 describe-security-groups
+  #   aws ec2 describe-subnets
+  launch | aws-launch)
+    if [[ "$(audere aws-running-list "$1" | jq length)" != 0 ]]; then
+      echo2 "Error: there is already a '$1' instance running"
+      false
+    else
+      aws ec2 run-instances \
+        --image-id ami-51537029 \
+        --count 1 \
+        --instance-type t2.medium \
+        --key-name 2018-mmarucheck \
+        --security-group-ids sg-0b6936cef93327650 \
+        --subnet-id subnet-9de0b1e4 \
+        --tag-specifications \
+          'ResourceType=instance,Tags=[{Key=Name,Value='"$1"'}]' \
+          'ResourceType=volume,Tags=[{Key=Name,Value='"$1"'}]'
+    fi
+    ;;
+
+  terminate | aws-terminate)
+    _au_instance_id="$(audere aws-vmid "$1")" \
+      && aws ec2 terminate-instances --instance-ids "$_au_instance_id"
+    ;;
+
+  associate)
+    aws ec2 associate-address \
+      --allocation-id "eipalloc-0b9dcf300b399ab8e" \
+      --instance-id "i-0883ee7cbdc905628" \
+      --allow-reassociation \
+      --private-ip-address "$(audere aws-itag ".PrivateIpAddress" "$1")" \
+      --region us-west-2
+    ;;
+
+  ssh-any)  audere aws-set-security-groups "$1" sg-07fc801b67e2e990a;;
+  ssh-home) audere aws-set-security-groups "$1" sg-0b6936cef93327650;;
+
+  aws-set-security-groups)
+    _au_tag="$1"
+    (( $# > 0 )) && shift
+    _au_instance_id="$(audere aws-vmid "$_au_tag")" \
+      && aws ec2 modify-instance-attribute \
+             --instance-id "$_au_instance_id" \
+             --groups "$@"
+    ;;
+
+  ils | ilist | aws-instance-list)
+    audere aws-running-list | \
+      jq '.[].Tags[] | [{key:.Key,value:.Value}] | from_entries | .Name'
+    ;;
+
+  ip    | aws-ip)    audere aws-itag ".PublicIpAddress";;
+  dns   | aws-dns)   audere aws-itag ".PublicIpAddress" "$1";;
+  vmid  | aws-vmid)  audere aws-itag ".InstanceId" "$1";;
+
+  itag | aws-itag) audere aws-running "$2" | jq --raw-output "$1";;
+
+  aws-running)
+    _au_desc="$(audere aws-running-list "$1")" && \
+    case "$(echo "$_au_desc" | jq length)" in
+      0) echo2 "Error, no instances found" && false;;
+      1) echo "$_au_desc" | jq '.[0]';;
+      *) echo2 "Error, multiple instances found" && false;;
+    esac
+    ;;
+
+  aws-running-list)
+    {
+      if [[ "$#" == 0 || "$1" == "" ]]; then
+        aws ec2 describe-instances \
+            --filters "Name=instance-state-name,Values=running"
+      elif [[ "$#" == 1 ]]; then
+        aws ec2 describe-instances \
+            --filters \
+            "Name=tag:Name,Values=$1" \
+            "Name=instance-state-name,Values=running"
+      else
+        echo2 "Error, expected 0 or 1 argument, got $#."
+        false
+      fi
+    } | jq '[.Reservations[].Instances[]]'
+    ;;
+
+  type)
+    if [[ -z "$1" ]]; then
+      echo "Expected sub-command to show."
+    else
+      awk -- 'BEGIN { printing=0; depth=0 }
+              /^ *case .* in *$/ { depth++ }
+              /^ *esac *$/ && depth { depth-- }
+              /^ *(([a-zA-Z0-9_"]*) *\| *)*'"$1"'( *\| *([a-zA-Z0-9_"]*))*\)/ && depth==1 { printing=1 }
+              printing { print }
+              /;; *$/ && depth==1 { printing=0 }' \
+        "${BASH_SOURCE[0]}"
+    fi
+    ;;
+
+  *)
+    echo2 "Unknown subcommand: '$_au_subcommand'"
+    ;;
+esac
+
+# For future reference: old jq magic to filter by tags:
+#   jq '[
+#     .Reservations[].Instances[] |
+#     select(.State.Name == "running") |
+#     select(.Tags[] | [{key:.Key,value:.Value}] | from_entries | .Name == "'"$1"'") |
+#     .PublicIpAddress
+#   ]'
