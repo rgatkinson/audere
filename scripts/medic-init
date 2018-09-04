@@ -1,0 +1,77 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function echo2() { echo 1>&2 "$*"; }
+function banner() { set +x; echo2 "========== $* =========="; set -x; }
+
+if [[ ! -r "$HOME/.couchdb-pw" ]]; then
+  echo2 "Error, could not read password file: ~/.couchdb-pw"
+  exit 1
+fi
+PASSWORD="$(cat "$HOME/.couchdb-pw")"
+
+# --------------------------------------------------------------------------------
+
+banner "Creating and loading ~/.medic-rc"
+> "$HOME/.medic-rc" cat "$SELF_DIR/manage-nvm"
+>>"$HOME/.medic-rc" cat <<-EOF
+
+	export COUCH_URL="http://admin:$PASSWORD@localhost:5984/medic"
+	export COUCH_NODE_NAME="couchdb@127.0.0.1"
+
+  function update-grunt-password() {
+    cd "$HOME/medic-webapp"
+    git checkout Gruntfile.js
+    sed --in-place -e "s/\(['\"]\)pass\(['\"]\)/\1${PASSWORD}\2/" Gruntfile.js
+  }
+EOF
+PROFILE="$( [[ -e "$HOME/.bash_profile" ]] && echo "$HOME/.bash_profile" || echo "$HOME/.profile" )"
+if ! grep "medic-rc" "$PROFILE" >/dev/null; then
+  echo >>"$PROFILE" ''
+  echo >>"$PROFILE" '. "$HOME/.medic-rc"'
+fi
+. "$HOME/.medic-rc"
+
+# --------------------------------------------------------------------------------
+
+banner "Installing nvm, node lts/carbon, and build tools"
+
+set +x
+nvm-upd
+nvm install lts/carbon
+set -x
+
+npm install -g npm
+npm install -g yarn@1.7.0
+npm install -g grunt
+
+# --------------------------------------------------------------------------------
+
+banner "Checking dependencies"
+node --version
+yarn --version
+
+# --------------------------------------------------------------------------------
+
+banner "Cloning medic-webapp"
+git clone https://github.com/medic/medic-webapp
+cd medic-webapp
+cat >".env" <<-EOF
+	COUCH_URL=$COUCH_URL
+	COUCH_NODE_NAME=$COUCH_NODE_NAME
+EOF
+update-grunt-password
+
+# --------------------------------------------------------------------------------
+
+banner "Building medic-webapp and sub-directories"
+for i in . webapp admin api sentinel; do
+  pushd "$i" && \
+    yarn install && \
+    popd
+done
+
+# --------------------------------------------------------------------------------

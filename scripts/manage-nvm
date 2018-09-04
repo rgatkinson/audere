@@ -1,0 +1,19 @@
+#!/bin/bash
+[[ "${BASH_SOURCE[0]}" == "${0}" ]] \
+  && echo 1>&2 "Do not execute this script directly.  Use 'source sriptname' instead." \
+  && exit 1
+
+export NVM_DIR="$HOME/.nvm"
+
+[[ -e "$NVM_DIR/nvm.sh" ]] \
+  && . "$NVM_DIR/nvm.sh"
+
+function nvm-upd() {
+  if [[ -d "${NVM_DIR}" ]]; then
+    (cd "$NVM_DIR" && git fetch origin)
+  else
+    git clone https://github.com/creationix/nvm.git "$NVM_DIR"
+  fi \
+    && (cd "$NVM_DIR" && git checkout $(git describe --abbrev=0 --tags --match "v[0-9]*" origin)) \
+    && . "$NVM_DIR/nvm.sh"
+}

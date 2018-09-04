@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+sudo apt update && sudo apt -y full-upgrade
+
+"$SELF_DIR/ubuntu-install-couchdb"
+
+sudo adduser --shell /bin/bash --gecos "Medic Mobile" --disabled-password medic
+sudo rsync --chown=medic:medic --chmod="go-rwx" -a ~/.ssh ~/.couchdb-pw ~medic
+
+( cd ~medic && sudo --login --user=medic bash "$SELF_DIR/medic-init" )
+
+sudo reboot

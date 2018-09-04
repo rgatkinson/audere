@@ -1,0 +1,24 @@
+--- localsettings.example.py	2018-08-27 15:59:42.097655729 +0000
++++ localsettings.py	2018-08-28 22:33:46.816030680 +0000
+@@ -1,5 +1,6 @@
+ from __future__ import absolute_import
+ from __future__ import unicode_literals
++from dev_settings import *
+ import os
+ 
+ INTERNAL_IPS = ['127.0.0.1']
+@@ -213,7 +214,7 @@
+ #    'testapps.test_elasticsearch',
+ #    'testapps.test_pillowtop',
+ #    'django_fsm', # Adds the ability to generate state diagrams for models using django-fsm
+-#    'kombu.transport.django', # required for celery
++    'kombu.transport.django', # required for celery
+ #    'package_monitor',
+ )
+ 
+@@ -316,3 +317,5 @@
+ # The passcodes will print out on the console
+ # TWO_FACTOR_CALL_GATEWAY = 'two_factor.gateways.fake.Fake'
+ # TWO_FACTOR_SMS_GATEWAY = 'two_factor.gateways.fake.Fake'
++
++FORMPLAYER_URL = 'http://localhost:8010'

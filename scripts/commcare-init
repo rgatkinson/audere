@@ -1,0 +1,102 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# --------------------------------------------------------------------------------
+
+function echo2() { echo 1>&2 "$*"; }
+function banner() { set +x; echo2 "========== $* =========="; set -x; }
+
+# --------------------------------------------------------------------------------
+
+banner "Creating and loading ~/.commcare-rc"
+> "$HOME/.commcare-rc" cat "$SELF_DIR/manage-nvm"
+>>"$HOME/.commcare-rc" cat <<-EOF
+
+  PATH="$HOME/.local/bin:$PATH"
+  . "$HOME/.local/bin/virtualenvwrapper.sh"
+  workon commcare-hq
+EOF
+PROFILE="$( [[ -e "$HOME/.bash_profile" ]] && echo "$HOME/.bash_profile" || echo "$HOME/.profile" )"
+if ! grep "commcare-rc" "$PROFILE" >/dev/null; then
+  echo >>"$PROFILE" ''
+  echo >>"$PROFILE" '. "$HOME/.commcare-rc"'
+fi
+
+# --------------------------------------------------------------------------------
+
+banner "Cloning commcare-hq"
+git clone https://github.com/dimagi/commcare-hq
+cd commcare-hq
+git submodule update --init --recursive
+
+# --------------------------------------------------------------------------------
+
+cp "localsettings.example.py" "localsettings.py"
+
+# If this fails, fix localsettings.py and regenerate patch with:
+#   diff --unified localsettings{.example,}.py >onenode-localsettings.py.patch
+# Then check in the .patch file wherever this script is checked in.
+patch --unified --input="$SELF_DIR/onenode-localsettings.py.patch" "localsettings.py"
+
+# --------------------------------------------------------------------------------
+
+banner "Setting up Python environment"
+
+pip install --upgrade pip
+hash -r
+pip install --user virtualenv virtualenvwrapper
+hash -r
+
+set +eu
+. "$HOME/.local/bin/virtualenvwrapper.sh"
+mkvirtualenv --no-site-packages commcare-hq -p python2.7 || exit 1
+. "$HOME/.commcare-rc"
+set -eu
+
+pip install docker-compose
+pip install -r requirements/requirements.txt
+pip install -r requirements/dev-requirements.txt
+pip install -r requirements/prod-requirements.txt
+
+# --------------------------------------------------------------------------------
+
+banner "Initializing services"
+
+set +x
+./scripts/docker up -d postgres couch redis elasticsearch kafka
+set -x
+
+while true; do
+  httpcode="$(curl --write-out "%{http_code}" --silent --output /dev/null http://127.0.0.1:5984/commcarehq__app)" \
+    && (( "$httpcode" < 500 )) \
+    && break
+  echo2 "Waiting for CouchDB to start..."
+  sleep 1
+done
+./manage.py sync_couch_views
+./manage.py create_kafka_topics
+env CCHQ_IS_FRESH_INSTALL=1 ./manage.py migrate --noinput
+./manage.py compilejsi18n
+./manage.py ptop_preindex
+./manage.py ptop_es_manage --flip_all_aliases
+
+# --------------------------------------------------------------------------------
+
+banner "Installing nvm, node lts/carbon, and build tools"
+
+set +x
+nvm-upd
+nvm install lts/carbon
+set -x
+
+npm install -g npm
+npm install -g bower
+bower install
+npm install "$(node -p "require('./package.json').dependencies['js-xpath']")"
+
+# --------------------------------------------------------------------------------
+
+# TODO formplayer

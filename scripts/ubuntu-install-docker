@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function echo2() { 1>&2 echo "$*"; }
+
+sudo apt update
+sudo apt -y dist-upgrade
+sudo apt -y install apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  | sudo apt-key add -
+if [[ -z "$(sudo apt-key fingerprint 0EBFCD88)" ]]; then
+  echo2 "Could not obtain correct docker signing key."
+  echo2 "See https://docs.docker.com/install/linux/docker-ce/ubuntu/"
+  exit 1
+fi
+
+sudo add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt -y install docker-ce
+
+sudo adduser $USER docker
