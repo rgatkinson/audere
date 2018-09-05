@@ -7,6 +7,7 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 sudo apt update && sudo apt -y full-upgrade
 
 "$SELF_DIR/ubuntu-install-couchdb"
+"$SELF_DIR/ubuntu-install-nginx-ssl" medic.auderenow.io 5988
 
 sudo adduser --shell /bin/bash --gecos "Medic Mobile" --disabled-password medic
 sudo rsync --chown=medic:medic --chmod="go-rwx" -a ~/.ssh ~/.couchdb-pw ~medic
