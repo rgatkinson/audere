@@ -1,2 +1,2 @@
 #!/bin/bash
-watch "uptime && free && df"
+watch "uptime && free -h && df -h"
