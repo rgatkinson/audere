@@ -1,0 +1,22 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+case "$#" in
+  0|1)
+    aws ec2 describe-instances \
+        --filters "Name=instance-state-name,Values=${1:-running}"
+    ;;
+  2)
+    aws ec2 describe-instances \
+        --filters \
+        "Name=instance-state-name,Values=$1" \
+        "Name=tag:Name,Values=$2"
+    ;;
+  *)
+    echo2 "Error, expected 2 or fewer arguments, got $#."
+    false
+    ;;
+esac \
+  | jq '[.Reservations[].Instances[]]'

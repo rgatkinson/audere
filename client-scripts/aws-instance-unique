@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+"$SELF_DIR/jq-unique" "instances found" "$("$SELF_DIR/aws-instance-list" "$@")"

@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+RUNNING="$(aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' | jq '[.Reservations[].Instances[]]')"
+RUNNING_count="$(echo "$RUNNING" | jq length)"
+{
+  cat <<-"EOF"
+		#!/bin/bash
+		set -euo pipefail
+		case "$1" in
+	EOF
+  for i in $(seq 0 $((RUNNING_count - 1))); do
+    NAME="$(echo "$RUNNING" | jq --raw-output ".[$i] | .Tags[] | [{key:.Key,value:.Value}] | from_entries | select(.Name != null) | .Name")"
+    PRIVATE_IP="$(echo "$RUNNING" | jq --raw-output ".[$i].PrivateIpAddress")"
+    echo "$NAME) echo \"$PRIVATE_IP\";;"
+  done
+  cat <<-"EOF"
+		*) echo 1>&2 "Error: unrecognized tag '$1'."; exit 1;;
+		esac
+EOF
+}

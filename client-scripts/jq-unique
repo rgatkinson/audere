@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+
+DESCRIPTION="$1"
+JSON="${2:-}"
+case "$(echo "$JSON" | jq length)" in
+  0) echo 1>&2 "Error: no $DESCRIPTION" && false;;
+  1) echo "$JSON" | jq '.[0]';;
+  *) echo 1>&2 "Error: multiple $DESCRIPTION" && echo "$JSON" | jq 1>&2 && false;;
+esac

@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+AUDERE_DIR="$( cd "$SELF_DIR/.." && pwd)"
+
+function get-ssh-user() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1%@*}"
+  else
+    echo "ubuntu"
+  fi
+}
+
+function get-ssh-itag() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1##*@}"
+  else
+    echo "$1"
+  fi
+}
+
+SSH_USER="$(get-ssh-user "$1")"
+SSH_ITAG="$(get-ssh-itag "$1")"
+SSH_INSTANCE="$($SELF_DIR/aws-instance-unique running "$SSH_ITAG")"
+SSH_IP="$(echo "$SSH_INSTANCE" | jq --raw-output '.PublicIpAddress')"
+
+rsync -a "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
+"$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/tag-dns && chmod +x audere/tag-dns"
