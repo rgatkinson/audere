@@ -6,7 +6,6 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 function echo2() { 1>&2 echo "$*"; }
 function banner() { set +x; echo2 ""; echo2 "===================================="; echo2 "  $*"; echo2 ""; set -x; }
-function die() { set +x; echo2 "$*"; exit 1; }
 
 banner "Adding CouchDB repo"
 echo "deb https://apache.bintray.com/couchdb-deb $(lsb_release -s -c) main" \
@@ -81,10 +80,6 @@ curl -X \
 banner "Increasing limits"
 curl -X \
   PUT "$CONFIG_URL/httpd/max_http_request_size" \
-  --header "Content-Type: application/json" \
-  --data '"4294967296"'
-curl -X \
-  PUT "$CONFIG_URL/httpd/max_document_size" \
   --header "Content-Type: application/json" \
   --data '"4294967296"'
 
