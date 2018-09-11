@@ -4,6 +4,10 @@ set -x
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
+JDK_REV=181
+JDK="jdk1.8.0_$JDK_REV"
+JDK_TGZ="jdk-8u$JDK_REV-linux-x64.tar.gz"
+
 # --------------------------------------------------------------------------------
 
 function echo2() { echo 1>&2 "$*"; }
@@ -15,7 +19,8 @@ banner "Creating and loading ~/.commcare-rc"
 > "$HOME/.commcare-rc" cat "$SELF_DIR/manage-nvm"
 >>"$HOME/.commcare-rc" cat <<-EOF
 
-  PATH="$HOME/.local/bin:$PATH"
+  JAVA_HOME="\$HOME/.local/$JDK"
+  PATH="\$HOME/.local/bin:\$JAVA_HOME/bin:\$PATH"
   . "$HOME/.local/bin/virtualenvwrapper.sh"
   workon commcare-hq
 EOF
@@ -24,6 +29,15 @@ if ! grep "commcare-rc" "$PROFILE" >/dev/null; then
   echo >>"$PROFILE" ''
   echo >>"$PROFILE" '. "$HOME/.commcare-rc"'
 fi
+
+# --------------------------------------------------------------------------------
+banner "Installing JDK"
+
+mkdir -p "$HOME/.local"
+pushd "$HOME/.local"
+curl http://"$("$SELF_DIR/tag-dns" fileshare)/$JDK_TGZ" -o "$JDK_TGZ"
+tar xzf "$JDK_TGZ"
+popd
 
 # --------------------------------------------------------------------------------
 
@@ -99,4 +113,9 @@ npm install "$(node -p "require('./package.json').dependencies['js-xpath']")"
 
 # --------------------------------------------------------------------------------
 
-# TODO formplayer
+banner "Installing latest formplayer jar"
+
+curl https://raw.githubusercontent.com/dimagi/formplayer/master/config/application.example.properties -o formplayer.properties
+curl https://s3.amazonaws.com/dimagi-formplayer-jars/latest-successful/formplayer.jar -o formplayer.jar
+
+# --------------------------------------------------------------------------------
