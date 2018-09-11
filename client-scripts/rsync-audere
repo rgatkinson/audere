@@ -25,5 +25,11 @@ SSH_ITAG="$(get-ssh-itag "$1")"
 SSH_INSTANCE="$($SELF_DIR/aws-instance-unique running "$SSH_ITAG")"
 SSH_IP="$(echo "$SSH_INSTANCE" | jq --raw-output '.PublicIpAddress')"
 
+echo "Waiting for sshd to be ready.."
+until ssh "-oStrictHostKeyChecking=accept-new" "$SSH_USER@${SSH_IP}" true; do
+  sleep 1
+done
+
+echo "Syncing audere to '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
 rsync -a "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
-"$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/tag-dns && chmod +x audere/tag-dns"
+"$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/scripts/tag-dns && chmod +x audere/scripts/tag-dns"
