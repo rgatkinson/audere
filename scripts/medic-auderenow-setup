@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+"$SELF_DIR/aws-medic-setup"
+"$SELF_DIR/ubuntu-install-nginx-ssl" medic.auderenow.io 5988

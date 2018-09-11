@@ -7,11 +7,18 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 sudo apt update && sudo apt -y full-upgrade
 
 "$SELF_DIR/ubuntu-install-couchdb"
-"$SELF_DIR/ubuntu-install-nginx-ssl" medic.auderenow.io 5988
 
 sudo adduser --shell /bin/bash --gecos "Medic Mobile" --disabled-password medic
 sudo rsync --chown=medic:medic --chmod="go-rwx" -a ~/.ssh ~/.couchdb-pw ~medic
 
-( cd ~medic && sudo --login --user=medic bash "$SELF_DIR/medic-init" )
+(
+  cd ~medic
+  sudo --login --user=medic bash "$SELF_DIR/medic-init"
+)
 
-sudo reboot
+(
+  umask 022
+  sudo rsync --chown=root:root "$SELF_DIR/medic-webapp.service" /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now medic-webapp
+)

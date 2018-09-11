@@ -75,3 +75,26 @@ for i in . webapp admin api sentinel; do
 done
 
 # --------------------------------------------------------------------------------
+
+banner "Deploying medic-webapp to CouchDB"
+grunt install-dependencies build-dev deploy
+
+# --------------------------------------------------------------------------------
+
+cat >"$HOME/medic-start" <<EOF
+#!/bin/bash
+set -euo pipefail
+echo \$\$ >\$HOME/medic-PID
+. ~ubuntu/audere/scripts/manage-nvm
+exec yarn start
+EOF
+chmod a+x "$HOME/medic-start"
+
+cat >"$HOME/medic-stop" <<EOF
+#!/bin/bash
+set -euo pipefail
+kill "\$(cat "\$HOME/medic-PID")"
+EOF
+chmod a+x "$HOME/medic-stop"
+
+# --------------------------------------------------------------------------------

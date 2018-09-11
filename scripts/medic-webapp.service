@@ -1,0 +1,17 @@
+# systemd service file for Medic Mobile webapp
+
+[Unit]
+Description=Medic Mobile Site
+After=network.target
+
+[Service]
+Type=simple
+User=medic
+WorkingDirectory=/home/medic/medic-webapp
+PIDFile=/home/medic/medic-PID
+ExecStart=/home/medic/medic-start
+ExecStop=/home/medic/medic-stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
