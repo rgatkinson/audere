@@ -55,6 +55,8 @@ cp "localsettings.example.py" "localsettings.py"
 # Then check in the .patch file wherever this script is checked in.
 patch --unified --input="$SELF_DIR/onenode-localsettings.py.patch" "localsettings.py"
 
+mkdir "$HOME/sharedfiles"
+
 # --------------------------------------------------------------------------------
 
 banner "Setting up Python environment"

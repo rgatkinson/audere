@@ -1,6 +1,6 @@
 --- localsettings.example.py	2018-09-11 14:23:19.000000000 -0700
-+++ localsettings.py	2018-09-13 09:27:10.000000000 -0700
-@@ -112,7 +112,10 @@
++++ localsettings.py	2018-09-13 12:30:40.000000000 -0700
+@@ -112,21 +112,24 @@
  
  ####### Log/debug setup ########
  
@@ -12,7 +12,12 @@
  
  # log directories must exist and be writeable!
  DJANGO_LOG_FILE = "/tmp/commcare-hq.django.log"
-@@ -124,9 +127,9 @@
+ LOG_FILE = "/tmp/commcare-hq.log"
+-SHARED_DRIVE_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sharedfiles")
++SHARED_DRIVE_ROOT = os.path.join(os.environ['HOME'], "sharedfiles")
+ 
+ CELERY_PERIODIC_QUEUE = 'celery' # change this to something else if you want a different queue for periodic tasks
+ CELERY_FLOWER_URL = 'http://127.0.0.1:5555'
  
  ####### Less/Django Compressor ########
  
