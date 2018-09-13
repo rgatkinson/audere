@@ -1,0 +1,17 @@
+# systemd service file for CommCare-HQ ElasticSearch indexing
+
+[Unit]
+Description=CommCare-HQ-ElasticSearch-Index
+After=network.target
+
+[Service]
+Type=simple
+User=commcare
+WorkingDirectory=/home/commcare/commcare-hq
+PIDFile=/home/commcare/commcare-ptop-PID
+ExecStart=/home/commcare/commcare-ptop-start
+ExecStop=/home/commcare/commcare-ptop-stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

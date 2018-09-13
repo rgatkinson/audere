@@ -1,0 +1,17 @@
+# systemd service file for CommCare-HQ
+
+[Unit]
+Description=CommCare-HQ
+After=network.target
+
+[Service]
+Type=simple
+User=commcare
+WorkingDirectory=/home/commcare/commcare-hq
+PIDFile=/home/commcare/commcare-PID
+ExecStart=/home/commcare/commcare-start
+ExecStop=/home/commcare/commcare-stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

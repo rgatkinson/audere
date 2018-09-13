@@ -8,6 +8,8 @@ sudo apt update && sudo apt -y full-upgrade
 
 "$SELF_DIR/ubuntu-install-docker"
 
+# TODO 'jython' for Cloudcare, but lots of dependencies
+#   https://commcare-hq.readthedocs.io/cloudcare.html
 sudo apt -y install \
   git python-pip python-dev libxml2-dev libxslt1-dev zlib1g-dev \
   libncurses5-dev
@@ -16,6 +18,18 @@ sudo adduser --shell /bin/bash --gecos "CommCare HQ" --disabled-password commcar
 sudo adduser commcare docker
 sudo rsync --chown=commcare:commcare --chmod="go-rwx" -a ~/.ssh ~commcare
 
-( cd ~commcare && sudo --login --user=commcare bash "$SELF_DIR/commcare-init" )
+(
+  cd ~commcare
+  sudo --login --user=commcare bash "$SELF_DIR/commcare-init"
+)
 
-sudo reboot
+(
+  umask 022
+  sudo rsync --chown=root:root "$SELF_DIR/commcare-hq.service" /etc/systemd/system/
+  sudo rsync --chown=root:root "$SELF_DIR/commcare-hq-ptop.service" /etc/systemd/system/
+  sudo rsync --chown=root:root "$SELF_DIR/commcare-hq-celery.service" /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now commcare-hq
+  #sudo systemctl enable --now commcare-hq-ptop
+  #sudo systemctl enable --now commcare-hq-celery
+)

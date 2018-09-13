@@ -113,9 +113,72 @@ npm install "$(node -p "require('./package.json').dependencies['js-xpath']")"
 
 # --------------------------------------------------------------------------------
 
+banner "Offline LESS compression"
+
+npm install -g less
+npm install -g uglify-js@2.6.1
+./manage.py collectstatic
+./manage.py compilejsi18n
+./manage.py fix_less_imports_collectstatic
+./manage.py compress
+
+# --------------------------------------------------------------------------------
+
 banner "Installing latest formplayer jar"
 
 curl https://raw.githubusercontent.com/dimagi/formplayer/master/config/application.example.properties -o formplayer.properties
 curl https://s3.amazonaws.com/dimagi-formplayer-jars/latest-successful/formplayer.jar -o formplayer.jar
+
+# --------------------------------------------------------------------------------
+
+cat >"$HOME/commcare-start" <<EOF
+#!/bin/bash
+set -o pipefail
+echo \$\$ >\$HOME/commcare-PID
+. "\$HOME/.commcare-rc"
+./scripts/docker up -d
+exec ./manage.py runserver 0.0.0.0:8000
+EOF
+chmod a+x "$HOME/commcare-start"
+
+cat >"$HOME/commcare-stop" <<EOF
+#!/bin/bash
+set -euo pipefail
+./scripts/docker stop
+kill "\$(cat "\$HOME/commcare-PID")"
+EOF
+chmod a+x "$HOME/commcare-stop"
+
+cat >"$HOME/commcare-ptop-start" <<EOF
+#!/bin/bash
+set -o pipefail
+echo \$\$ >\$HOME/commcare-ptop-PID
+. "\$HOME/.commcare-rc"
+exec ./manage.py runserver 0.0.0.0:8000
+EOF
+chmod a+x "$HOME/commcare-ptop-start"
+
+cat >"$HOME/commcare-ptop-stop" <<EOF
+#!/bin/bash
+set -euo pipefail
+kill "\$(cat "\$HOME/commcare-ptop-PID")"
+EOF
+chmod a+x "$HOME/commcare-ptop-stop"
+
+cat >"$HOME/commcare-celery-start" <<EOF
+#!/bin/bash
+set -o pipefail
+echo \$\$ >\$HOME/commcare-celery-PID
+. "\$HOME/.commcare-rc"
+exec ./manage.py runserver 0.0.0.0:8000
+EOF
+chmod a+x "$HOME/commcare-celery-start"
+
+cat >"$HOME/commcare-celery-stop" <<EOF
+#!/bin/bash
+set -euo pipefail
+kill "\$(cat "\$HOME/commcare-celery-PID")"
+EOF
+chmod a+x "$HOME/commcare-celery-stop"
 
 # --------------------------------------------------------------------------------

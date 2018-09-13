@@ -1,13 +1,31 @@
---- localsettings.example.py	2018-08-27 15:59:42.097655729 +0000
-+++ localsettings.py	2018-08-28 22:33:46.816030680 +0000
-@@ -1,5 +1,6 @@
- from __future__ import absolute_import
- from __future__ import unicode_literals
-+from dev_settings import *
- import os
+--- localsettings.example.py	2018-09-11 14:23:19.000000000 -0700
++++ localsettings.py	2018-09-13 09:27:10.000000000 -0700
+@@ -112,7 +112,10 @@
  
- INTERNAL_IPS = ['127.0.0.1']
-@@ -213,7 +214,7 @@
+ ####### Log/debug setup ########
+ 
+-DEBUG = True
++DEBUG = False
++ALLOWED_HOSTS = [
++    '.auderenow.io',
++]
+ 
+ # log directories must exist and be writeable!
+ DJANGO_LOG_FILE = "/tmp/commcare-hq.django.log"
+@@ -124,9 +127,9 @@
+ 
+ ####### Less/Django Compressor ########
+ 
+-LESS_DEBUG = True
+-COMPRESS_ENABLED = False
+-COMPRESS_OFFLINE = False
++LESS_DEBUG = False
++COMPRESS_ENABLED = True
++COMPRESS_OFFLINE = True
+ 
+ ####### Bitly ########
+ 
+@@ -213,7 +216,7 @@
  #    'testapps.test_elasticsearch',
  #    'testapps.test_pillowtop',
  #    'django_fsm', # Adds the ability to generate state diagrams for models using django-fsm
@@ -16,7 +34,7 @@
  #    'package_monitor',
  )
  
-@@ -316,3 +317,5 @@
+@@ -316,3 +319,5 @@
  # The passcodes will print out on the console
  # TWO_FACTOR_CALL_GATEWAY = 'two_factor.gateways.fake.Fake'
  # TWO_FACTOR_SMS_GATEWAY = 'two_factor.gateways.fake.Fake'

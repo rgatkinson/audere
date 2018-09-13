@@ -1,0 +1,17 @@
+# systemd service file for CommCare-HQ Asynchronous Task Scheduler (celery)
+
+[Unit]
+Description=CommCare-HQ-celery
+After=network.target
+
+[Service]
+Type=simple
+User=commcare
+WorkingDirectory=/home/commcare/commcare-hq
+PIDFile=/home/commcare/commcare-celery-PID
+ExecStart=/home/commcare/commcare-celery-start
+ExecStop=/home/commcare/commcare-celery-stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
