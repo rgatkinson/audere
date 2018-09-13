@@ -4,6 +4,9 @@ set -x
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
+# Ensure we are using the full drive if the volume was resized
+[[ -b /dev/xvda1 ]] && sudo growpart /dev/xvda 1
+
 sudo apt update && sudo apt -y full-upgrade
 
 "$SELF_DIR/ubuntu-install-docker"
