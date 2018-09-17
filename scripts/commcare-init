@@ -119,10 +119,14 @@ banner "Offline LESS compression"
 
 npm install -g less
 npm install -g uglify-js@2.6.1
-./manage.py collectstatic --noinput
-./manage.py compilejsi18n
-./manage.py fix_less_imports_collectstatic
-./manage.py compress
+(
+  # Generated static files need to be readable to webserver
+  umask 022
+  ./manage.py collectstatic --noinput
+  ./manage.py compilejsi18n
+  ./manage.py fix_less_imports_collectstatic
+  ./manage.py compress
+)
 
 # --------------------------------------------------------------------------------
 
