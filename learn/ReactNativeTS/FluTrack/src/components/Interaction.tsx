@@ -26,12 +26,14 @@ export class Interaction extends Component<Props, State> {
           This computer has just one button, and we push it before it leaves the
           factory.
         </Text>
-        <Button
-          onPress={this.onPress}
-          title="Click Here!"
-          color="grey"
-          disabled={this.state.busy}
-        />
+        <View style={{ padding: 12 }}>
+          <Button
+            onPress={this.onPress}
+            title="Click Here!"
+            color="grey"
+            disabled={this.state.busy}
+          />
+        </View>
         {this.state.busy && <ActivityIndicator size="large" />}
         {this.state.errorText && (
           <Text style={styles.error}>{this.state.errorText}</Text>
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
   normalText: {
     textAlign: "center",
     fontSize: 18,
-    margin: 32
+    padding: 12
   },
   error: {
     color: "red",
