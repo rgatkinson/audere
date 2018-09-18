@@ -2,22 +2,13 @@ import React from "react";
 import { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Interaction } from "./src/components/Interaction";
+import { logInteraction } from "./src/EventStore";
 
 export default class App extends Component {
   render() {
     let x = 1;
     function interact(): Promise<void> {
-      return new Promise((resolve, reject) => {
-        console.debug("Started interaction!");
-        setTimeout(() => {
-          console.debug("Completed interaction!");
-          if (++x % 3 == 0) {
-            reject(`Failed because x is ${x}`);
-          } else {
-            resolve();
-          }
-        }, 2000);
-      });
+      return logInteraction('generic', {x: x++});
     }
 
     return (
