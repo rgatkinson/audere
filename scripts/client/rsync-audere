@@ -2,7 +2,12 @@
 set -euo pipefail
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-AUDERE_DIR="$( cd "$SELF_DIR/.." && pwd)"
+AUDERE_DIR="$( cd "$SELF_DIR/../.." && pwd)"
+
+case "$#" in
+  1) ;;
+  *) echo 1>&2 "Error: expected one instance tag argument, got $# arguments"; exit 1;;
+esac
 
 function get-ssh-user() {
   if [[ "$1" == *@* ]]; then
@@ -31,5 +36,5 @@ until ssh "-oStrictHostKeyChecking=accept-new" "$SSH_USER@${SSH_IP}" true; do
 done
 
 echo "Syncing audere to '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
-rsync -a "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
+rsync -a --exclude "/learn/" --exclude "/.git/" "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
 "$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/scripts/tag-dns && chmod +x audere/scripts/tag-dns"
