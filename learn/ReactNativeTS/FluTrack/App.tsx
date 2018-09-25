@@ -4,13 +4,13 @@ import { StyleSheet, Text, View } from "react-native";
 import { Interaction } from "./src/components/Interaction";
 import { logInteraction } from "./src/EventStore";
 
+let x = 1;
+function interact(): Promise<void> {
+  return logInteraction(x++);
+}
+
 export default class App extends Component {
   render() {
-    let x = 1;
-    function interact(): Promise<void> {
-      return logInteraction(x++);
-    }
-
     return (
       <View style={styles.container}>
         <Interaction callback={interact} />
