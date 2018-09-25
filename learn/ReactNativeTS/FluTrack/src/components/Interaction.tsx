@@ -9,15 +9,22 @@ import {
   ActivityIndicator
 } from "react-native";
 
+export interface Props {
+  callback: AsyncCallback;
+}
+
+interface State {
+  busy: boolean;
+  errorText: string | null;
+}
+
+export type AsyncCallback = () => Promise<void>;
+
 export class Interaction extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      busy: false,
-      errorText: null
-    };
-    this.onPress = this.onPress.bind(this);
-  }
+  state = {
+    busy: false,
+    errorText: null
+  };
 
   render() {
     return (
@@ -42,32 +49,33 @@ export class Interaction extends Component<Props, State> {
     );
   }
 
-  onPress() {
-    if (!this.state.busy) {
-      console.debug("Interaction: busy=true");
-      this.setState({
-        busy: true,
-        errorText: null
-      });
-
-      this.props
-        .callback()
-        .then(() => {
-          console.debug("Interaction: busy=false");
-          this.setState({
-            busy: false,
-            errorText: null
-          });
-        })
-        .catch(e => {
-          console.debug("Interaction: busy=false, but got error.");
-          this.setState({
-            busy: false,
-            errorText: e.toString()
-          });
-        });
+  onPress = () => {
+    if (this.state.busy) {
+      return;
     }
-  }
+    console.debug("Interaction: busy=true");
+    this.setState({
+      busy: true,
+      errorText: null
+    });
+
+    this.props
+      .callback()
+      .then(() => {
+        console.debug("Interaction: busy=false");
+        this.setState({
+          busy: false,
+          errorText: null
+        });
+      })
+      .catch(e => {
+        console.debug("Interaction: busy=false, but got error.");
+        this.setState({
+          busy: false,
+          errorText: e.toString()
+        });
+      });
+  };
 }
 
 const styles = StyleSheet.create({
@@ -87,18 +95,5 @@ const styles = StyleSheet.create({
     margin: 32
   }
 });
-
-export interface Props {
-  callback: AsyncCallback;
-}
-
-interface State {
-  busy: boolean;
-  errorText: string | null;
-}
-
-export interface AsyncCallback {
-  (): Promise<void>;
-}
 
 AppRegistry.registerComponent("FluTrack", () => Interaction);
