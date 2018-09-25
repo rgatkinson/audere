@@ -49,7 +49,7 @@ export class Interaction extends Component<Props, State> {
     );
   }
 
-  onPress = () => {
+  onPress = async () => {
     if (this.state.busy) {
       return;
     }
@@ -59,22 +59,20 @@ export class Interaction extends Component<Props, State> {
       errorText: null
     });
 
-    this.props
-      .callback()
-      .then(() => {
-        console.debug("Interaction: busy=false");
-        this.setState({
-          busy: false,
-          errorText: null
-        });
-      })
-      .catch(e => {
-        console.debug("Interaction: busy=false, but got error.");
-        this.setState({
-          busy: false,
-          errorText: e.toString()
-        });
+    try {
+      await this.props.callback();
+      console.debug("Interaction: busy=false");
+      this.setState({
+        busy: false,
+        errorText: null
       });
+    } catch (e) {
+      console.debug("Interaction: busy=false, but got error.");
+      this.setState({
+        busy: false,
+        errorText: e.toString()
+      });
+    }
   };
 }
 
