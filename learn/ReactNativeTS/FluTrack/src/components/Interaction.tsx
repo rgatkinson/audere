@@ -9,7 +9,9 @@ import {
   ActivityIndicator
 } from "react-native";
 
-export interface Props {
+type AsyncCallback = () => Promise<void>;
+
+interface Props {
   callback: AsyncCallback;
 }
 
@@ -17,8 +19,6 @@ interface State {
   busy: boolean;
   errorText: string | null;
 }
-
-export type AsyncCallback = () => Promise<void>;
 
 export class Interaction extends Component<Props, State> {
   state = {
