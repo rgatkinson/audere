@@ -1,3 +1,6 @@
 /learn/terraform/.terraform/
 /learn/terraform/terraform.tfstate.backup
 /local/
+/scripts/*-letsencrypt.tar.bz2
+/**/.idea/
+/**/*.iml

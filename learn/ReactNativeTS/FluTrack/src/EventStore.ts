@@ -1,22 +1,58 @@
+import uuidv4 from "uuid/v4";
 import { AsyncStorage } from "react-native";
+import axios from "axios";
 
 const INTERACTION_QUEUE_KEY = 'interaction.queue';
+const DEVICE_ID = uuidv4();
+const api = axios.create({
+  baseURL: 'https://api.auderenow.io/api/',
+  xsrfCookieName: 'csrftoken',
+  xsrfHeaderName: 'X-CSRFToken',
+});
 
-export async function logInteraction(data: object) {
+// api.interceptors.request.use(request => {
+//   console.log('Starting Request', request);
+//   return request;
+// })
+
+// api.interceptors.response.use(response => {
+//   console.log('Response:', response);
+//   return response;
+// })
+
+
+export async function logInteraction(count: number) {
   let item = {
-    timestamp: new Date().toISOString(),
-    data,
+    DeviceId: DEVICE_ID,
+    Timestamp: new Date().toISOString(),
+    Count: count,
   };
 
-  let json = await AsyncStorage.getItem(INTERACTION_QUEUE_KEY);
+  console.log('hi!!!');
+  let csrf = null;
+  try {
+    let response = await api.get('');
+    csrf = response.data.CsrfToken;
+    await api.post('button/', item, {
+      'headers': {
+        'X-CSRFToken': csrf,
+      }
+    });
+  } catch (e) {
+    console.log('================================');
+    console.log(e);
+    return;
+  }
 
-  let list: [object] = typeof json === "string" ? JSON.parse(json) : [];
-  list.push(item);
+  // let json = await AsyncStorage.getItem(INTERACTION_QUEUE_KEY);
 
-  await AsyncStorage.setItem(INTERACTION_QUEUE_KEY, JSON.stringify(list));
+  // let list: [object] = typeof json === "string" ? JSON.parse(json) : [];
+  // list.push(item);
 
-  console.debug("Current documents:");
-  console.debug(JSON.stringify(list, null, 2));
+  // await AsyncStorage.setItem(INTERACTION_QUEUE_KEY, JSON.stringify(list));
+
+  // console.debug("Current documents:");
+  // console.debug(JSON.stringify(list, null, 2));
 }
 
 function safeStr(s: string): string {

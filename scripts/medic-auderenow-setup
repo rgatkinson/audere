@@ -5,4 +5,4 @@ umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 "$SELF_DIR/aws-medic-setup"
-"$SELF_DIR/ubuntu-install-nginx-ssl" medic.auderenow.io 5988
+"$SELF_DIR/ubuntu-install-nginx-ssl" "medic.auderenow.io" "http://127.0.0.1:5988" ~medic/medic-webapp/static

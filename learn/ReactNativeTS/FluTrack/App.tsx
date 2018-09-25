@@ -8,7 +8,7 @@ export default class App extends Component {
   render() {
     let x = 1;
     function interact(): Promise<void> {
-      return logInteraction('generic', {x: x++});
+      return logInteraction(x++);
     }
 
     return (

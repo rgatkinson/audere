@@ -6,63 +6,79 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 function echo2() { 1>&2 echo "$*"; }
 
-sudo add-apt-repository -y ppa:certbot/certbot
-sudo apt update
-sudo apt -y install nginx python-certbot-nginx
-
 DOMAIN="$1"
-PORT="$2"
+SERVICE_URL="$2"
+STATIC="$3"
 
-sudo certbot -n --agree-tos -m info@auderenow.org --nginx -d $DOMAIN
+CERT_ARCHIVE="$SELF_DIR/$DOMAIN-letsencrypt.tar.bz2"
+pushd /etc
+if [[ -r "$CERT_ARCHIVE" ]]; then
+  sudo tar xvjf "$CERT_ARCHIVE"
+else
+  sudo add-apt-repository -y ppa:certbot/certbot
+  sudo apt update
+  sudo apt -y install nginx python-certbot-nginx
+  sudo certbot -n --agree-tos -m info@auderenow.org --nginx -d $DOMAIN
+  sudo tar cvjf "$CERT_ARCHIVE" "./letsencrypt"
+  sudo chown "$USER:$USER" "$CERT_ARCHIVE"
+fi
+popd
 
 # certbot makes a bunch of changes to this file
 # but we don't care about the default configuration anyways
 sudo rm /etc/nginx/sites-enabled/default
 
 {
-cat <<-EOF
-server {
-  listen 80;
-  listen [::]:80;
-  server_name $DOMAIN;
+  cat <<-EOF
+		server {
+		  listen 80;
+		  listen [::]:80;
+		  server_name $DOMAIN;
 
-  location / {
-    rewrite ^ https://\$host\$request_uri? permanent;
-  }
+		  location / {
+		    rewrite ^ https://\$host\$request_uri? permanent;
+		  }
 
-  location ^~ /.well-known {
-    allow all;
-    root  /data/letsencrypt/;
-  }
+		  location ^~ /.well-known {
+		    allow all;
+		    root  /data/letsencrypt/;
+		  }
+		}
 
-}
+		server {
+		  server_name $DOMAIN;
 
-server {
-  server_name $DOMAIN;
+		  listen [::]:443 ssl ipv6only=on;
+		  listen 443 ssl;
+		  ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+		  ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+		  include /etc/letsencrypt/options-ssl-nginx.conf;
+		  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-  listen [::]:443 ssl ipv6only=on;
-  listen 443 ssl;
-  ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
-  include /etc/letsencrypt/options-ssl-nginx.conf;
-  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+		  location /favicon.ico {
+		    access_log off;
+		    log_not_found off;
+		  }
 
-  location / {
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-    proxy_set_header Host \$http_host;
-    proxy_set_header X-NginX-Proxy true;
+		  location /static/ {
+		    root "$STATIC";
+		  }
 
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade \$http_upgrade;
-    proxy_set_header Connection \"upgrade\";
+		  location / {
+		    proxy_set_header X-Real-IP \$remote_addr;
+		    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+		    proxy_set_header Host \$http_host;
+		    proxy_set_header X-NginX-Proxy true;
 
-    proxy_pass http://127.0.0.1:$PORT/;
-    proxy_redirect off;
-  }
-}
+		    proxy_http_version 1.1;
+		    proxy_set_header Upgrade \$http_upgrade;
+		    proxy_set_header Connection \"upgrade\";
 
-EOF
+		    proxy_pass $SERVICE_URL;
+		    proxy_redirect off;
+		  }
+		}
+	EOF
 } | sudo tee "/etc/nginx/sites-enabled/$DOMAIN"
 
 # Check the config before restarting

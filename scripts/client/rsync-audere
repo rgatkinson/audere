@@ -36,5 +36,5 @@ until ssh "-oStrictHostKeyChecking=accept-new" "$SSH_USER@${SSH_IP}" true; do
 done
 
 echo "Syncing audere to '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
-rsync -a --exclude "/learn/" --exclude "/.git/" "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
+rsync --delete -a --exclude "/learn/" --exclude "/.git/" "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
 "$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/scripts/tag-dns && chmod +x audere/scripts/tag-dns"

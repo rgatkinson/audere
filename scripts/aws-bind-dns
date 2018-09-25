@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+SUBDOMAIN="$1"
+VM_IP_ADDRESS="$(audere aws-dns "$SUBDOMAIN")"
+aws route53 change-resource-record-sets --hosted-zone-id Z2JVHTT9LKA76J --change-batch file://<(
+  cat <<-EOF
+		{
+		  "Changes": [{
+		    "Action": "UPSERT",
+		    "ResourceRecordSet": {
+		      "Name": "$SUBDOMAIN.auderenow.io",
+		      "Type": "A",
+		      "TTL": 300,
+		      "ResourceRecords": [{
+		        "Value": "$VM_IP_ADDRESS"
+		      }]
+		    }
+		  }]
+		}
+	EOF
+)
