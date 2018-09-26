@@ -16,4 +16,12 @@ app.get("/", (req, res) => {
   res.send("OK");
 });
 
+app.get("/api", (req, res) => {
+  res.json({
+    // TODO: Generate the token using `csrf` npm module
+    CsrfToken: null,
+    Status: "SUCCESS"
+  });
+});
+
 export default app;
