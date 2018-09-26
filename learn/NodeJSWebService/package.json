@@ -20,6 +20,7 @@
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.39.0",
+    "sequelize-log-syntax-colors": "^2.0.0",
     "winston": "^3.1.0"
   },
   "devDependencies": {

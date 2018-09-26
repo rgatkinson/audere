@@ -3688,6 +3688,10 @@ send@0.16.2:
     range-parser "~1.2.0"
     statuses "~1.4.0"
 
+sequelize-log-syntax-colors@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/sequelize-log-syntax-colors/-/sequelize-log-syntax-colors-2.0.0.tgz#cd81bde18c67bf6663c8bf89b178648f6344aaae"
+
 sequelize@^4.39.0:
   version "4.39.0"
   resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-4.39.0.tgz#0e070a4705367e4b0779183f812c72f478ff12b9"
