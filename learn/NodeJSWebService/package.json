@@ -4,18 +4,22 @@
   "description": "A starting point for Node.js express apps with TypeScript",
   "private": true,
   "scripts": {
-    "start": "concurrently -p [{name}] -n TypeScript,Node,Jest -c blue.bold,green.bold,cyan.bold 'tsc -w' nodemon npm:test-watch",
+    "start": "concurrently -p [{name}] -n TypeScript,Node,Jest -c blue.bold,green.bold,cyan.bold 'tsc -w' 'nodemon --watch src' npm:test-watch",
     "start-prod": "tsc && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
     "test-watch": "jest --verbose --no-watchman --watchAll"
   },
-  "main": "dist/server.js",
+  "main": "build/src/server.js",
   "dependencies": {
     "@types/errorhandler": "^0.0.32",
+    "@types/sequelize": "^4.27.26",
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "errorhandler": "^1.5.0",
     "express": "^4.16.3",
+    "pg": "^7.4.3",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.39.0",
     "winston": "^3.1.0"
   },
   "devDependencies": {
@@ -45,7 +49,7 @@
       "js"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/dist/"
+      "<rootDir>/build/"
     ],
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"

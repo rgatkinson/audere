@@ -1,9 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
 import errorHandler from "errorhandler";
-
-dotenv.config({ path: ".env.example" });
+import { ButtonPush } from "./models";
 
 const app = express();
 
@@ -24,7 +22,12 @@ app.get("/api", (req, res) => {
   });
 });
 
-app.post("/api/button", (req, res) => {
+app.post("/api/button", async (req, res) => {
+  await ButtonPush.create({
+    deviceId: req.body.DeviceId,
+    timestamp: req.body.Timestamp,
+    count: req.body.Count
+  });
   res.json({ Status: "SUCCESS" });
 });
 

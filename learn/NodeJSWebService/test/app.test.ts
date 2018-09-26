@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../src/app";
+import { ButtonPush } from "../src/models";
 
 describe("GET /", () => {
   it("returns 200 OK", async () => {
@@ -32,5 +33,12 @@ describe("POST /api/button", () => {
       .expect(200)
       .expect("content-type", /json/);
     expect(response.body.Status).toEqual("SUCCESS");
+    const buttonPush: any = await ButtonPush.findOne({
+      where: {
+        deviceId: "53c86569-2f33-4829-945c-18b4718e2388",
+        timestamp: "2018-09-26T03:40:25.693Z"
+      }
+    });
+    expect(buttonPush.count).toEqual(42);
   });
 });
