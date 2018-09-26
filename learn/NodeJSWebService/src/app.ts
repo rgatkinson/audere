@@ -10,7 +10,6 @@ const app = express();
 app.set("port", process.env.PORT || 3000);
 app.use(errorHandler());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("OK");
@@ -19,9 +18,14 @@ app.get("/", (req, res) => {
 app.get("/api", (req, res) => {
   res.json({
     // TODO: Generate the token using `csrf` npm module
+    // Do we need CSRF for JSON API?
     CsrfToken: null,
     Status: "SUCCESS"
   });
+});
+
+app.post("/api/button", (req, res) => {
+  res.json({ Status: "SUCCESS" });
 });
 
 export default app;

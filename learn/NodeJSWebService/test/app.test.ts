@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../src/app";
 
 describe("GET /", () => {
-  it("should return 200 OK", async () => {
+  it("returns 200 OK", async () => {
     await request(app)
       .get("/")
       .expect(200)
@@ -11,9 +11,24 @@ describe("GET /", () => {
 });
 
 describe("GET /api", () => {
-  it("should return CSRF token", async () => {
+  it("returns CSRF token", async () => {
     const response = await request(app)
       .get("/api")
+      .expect(200)
+      .expect("content-type", /json/);
+    expect(response.body.Status).toEqual("SUCCESS");
+  });
+});
+
+describe("POST /api/button", () => {
+  it("creates new record", async () => {
+    const response = await request(app)
+      .post("/api/button")
+      .send({
+        DeviceId: "53c86569-2f33-4829-945c-18b4718e2388",
+        Timestamp: "2018-09-26T03:40:25.693Z",
+        Count: 42
+      })
       .expect(200)
       .expect("content-type", /json/);
     expect(response.body.Status).toEqual("SUCCESS");
