@@ -1,0 +1,55 @@
+{
+  "name": "NodeJSWebService",
+  "version": "0.1.0",
+  "description": "A starting point for Node.js express apps with TypeScript",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -p [{name}] -n TypeScript,Node,Jest -c blue.bold,green.bold,cyan.bold 'tsc -w' nodemon npm:test-watch",
+    "start-prod": "tsc && NODE_ENV=production node .",
+    "test": "jest --verbose --no-watchman",
+    "test-watch": "jest --verbose --no-watchman --watchAll"
+  },
+  "main": "dist/server.js",
+  "dependencies": {
+    "@types/errorhandler": "^0.0.32",
+    "body-parser": "^1.18.3",
+    "dotenv": "^6.0.0",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.3",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/dotenv": "^4.0.3",
+    "@types/express": "^4.16.0",
+    "@types/jest": "^23.3.2",
+    "@types/node": "^10.11.0",
+    "@types/supertest": "^2.0.6",
+    "chai": "^4.1.2",
+    "concurrently": "^4.0.1",
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.4",
+    "supertest": "^3.3.0",
+    "ts-jest": "^23.10.1",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.0.3"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/test/**/*.test.(ts|js)"
+    ],
+    "testEnvironment": "node"
+  }
+}
