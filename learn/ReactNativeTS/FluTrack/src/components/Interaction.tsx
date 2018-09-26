@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Text,
   View,
-  AppRegistry,
   ActivityIndicator
 } from "react-native";
 
@@ -27,6 +26,7 @@ export class Interaction extends Component<Props, State> {
   };
 
   render() {
+    const { busy, errorText } = this.state;
     return (
       <View style={styles.centerNoJustify}>
         <Text style={styles.normalText}>
@@ -38,13 +38,11 @@ export class Interaction extends Component<Props, State> {
             onPress={this.onPress}
             title="Click Here!"
             color="grey"
-            disabled={this.state.busy}
+            disabled={busy}
           />
         </View>
-        {this.state.busy && <ActivityIndicator size="large" />}
-        {this.state.errorText && (
-          <Text style={styles.error}>{this.state.errorText}</Text>
-        )}
+        {busy && <ActivityIndicator size="large" />}
+        {errorText && <Text style={styles.error}>{errorText}</Text>}
       </View>
     );
   }
@@ -93,5 +91,3 @@ const styles = StyleSheet.create({
     margin: 32
   }
 });
-
-AppRegistry.registerComponent("FluTrack", () => Interaction);
