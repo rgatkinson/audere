@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import errorHandler from "errorhandler";
 import { ButtonPush } from "./models";
+import { ValidationError } from "sequelize";
 
 const app = express();
 
@@ -23,12 +24,18 @@ app.get("/api", (req, res) => {
 });
 
 app.post("/api/button", async (req, res) => {
-  await ButtonPush.create({
-    deviceId: req.body.DeviceId,
-    timestamp: req.body.Timestamp,
-    count: req.body.Count
-  });
-  res.json({ Status: "SUCCESS" });
+  try {
+    await ButtonPush.create({
+      deviceId: req.body.DeviceId,
+      timestamp: req.body.Timestamp,
+      count: req.body.Count
+    });
+    res.json({ Status: "SUCCESS" });
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      res.status(400).json({ Status: error.message });
+    }
+  }
 });
 
 export default app;

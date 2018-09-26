@@ -41,4 +41,13 @@ describe("POST /api/button", () => {
     });
     expect(buttonPush.count).toEqual(42);
   });
+
+  it("validates arguments", async () => {
+    const response = await request(app)
+      .post("/api/button")
+      .send({})
+      .expect(400)
+      .expect("content-type", /json/);
+    expect(response.body.Status).toMatch(/deviceId/);
+  });
 });
