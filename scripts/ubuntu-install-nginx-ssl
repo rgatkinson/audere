@@ -10,6 +10,8 @@ DOMAIN="$1"
 SERVICE_URL="$2"
 STATIC="$3"
 
+SUBDOMAIN="${DOMAIN%%.*}"
+
 CERT_ARCHIVE="$SELF_DIR/$DOMAIN-letsencrypt.tar.bz2"
 pushd /etc
 if [[ -r "$CERT_ARCHIVE" ]]; then
@@ -28,18 +30,25 @@ popd
 # but we don't care about the default configuration anyways
 sudo rm /etc/nginx/sites-enabled/default
 
+
 {
   cat <<-EOF
+		# Rate limiting
+		# On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
+		limit_req_zone $binary_remote_addr zone=$SUBDOMAIN:4m rate=5r/s;
+
 		server {
 		  listen 80;
 		  listen [::]:80;
 		  server_name $DOMAIN;
 
 		  location / {
+		    limit_req zone=$SUBDOMAIN burst=10 nodelay;
 		    rewrite ^ https://\$host\$request_uri? permanent;
 		  }
 
 		  location ^~ /.well-known {
+		    limit_req zone=$SUBDOMAIN burst=10 nodelay;
 		    allow all;
 		    root  /data/letsencrypt/;
 		  }
@@ -61,10 +70,13 @@ sudo rm /etc/nginx/sites-enabled/default
 		  }
 
 		  location /static/ {
+		    limit_req zone=$SUBDOMAIN burst=10 nodelay;
 		    root "$STATIC";
 		  }
 
 		  location / {
+		    limit_req zone=$SUBDOMAIN burst=10 nodelay;
+
 		    proxy_set_header X-Real-IP \$remote_addr;
 		    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
 		    proxy_set_header Host \$http_host;
