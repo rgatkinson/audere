@@ -4,7 +4,7 @@
   "description": "A starting point for Node.js express apps with TypeScript",
   "private": true,
   "scripts": {
-    "start": "concurrently -p [{name}] -n TypeScript,Node,Jest -c blue.bold,green.bold,cyan.bold 'tsc -w' 'nodemon --watch src' npm:test-watch",
+    "start": "concurrently -p [{name}] -n TypeScript,Node,Jest -c blue.bold,green.bold,cyan.bold 'tsc -w' 'nodemon --watch build' npm:test-watch",
     "start-prod": "tsc && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
     "test-watch": "jest --verbose --no-watchman --watchAll"
