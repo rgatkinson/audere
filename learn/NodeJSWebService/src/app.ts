@@ -34,6 +34,8 @@ app.post("/api/button", async (req, res) => {
   } catch (error) {
     if (error instanceof ValidationError) {
       res.status(400).json({ Status: error.message });
+    } else {
+      throw error;
     }
   }
 });
