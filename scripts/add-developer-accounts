@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+KEY_DIR="$(cd "$SELF_DIR/../dev/ssh-keys" && pwd)"
+
+function user_from_key_name() {
+  x="${1##*/}"
+  x="${x%.pub}"
+  user="${x/[0-9][0-9][0-9][0-9]-/}"
+  echo "$user"
+}
+
+for key in "$KEY_DIR"/*; do
+  user="$(user_from_key_name "$key")"
+  if ! -d "/home/$user"; then
+    sudo adduser --shell /bin/bash --gecos "$user" --disabled-password "$user"
+
+    sshdir="/home/$user/.ssh"
+    sudo mkdir -p "$sshdir"
+    sudo cp "$key" "$sshdir/authorized_keys"
+    sudo chown --recursive "$user:$user" "$sshdir"
+    sudo chmod --recursive go-rwx "$sshdir"
+    sudo adduser "$user" sudo
+    echo "$user ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/50-$user"
+  fi
+done
