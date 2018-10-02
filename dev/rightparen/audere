@@ -4,6 +4,9 @@ set -o pipefail
 function audere-init() {
   _au_self="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"/audere
   _au_github="$HOME/github"
+  AUDERE="$HOME/audere"
+  LEARN_RN_TS="$AUDERE/learn/ReactNativeTS"
+  FLU_TS="$LEARN_RN_TS/FluTrack"
   GITHUB_MEDIC="$_au_github/medic"
   GITHUB_MEDIC_WEBAPP="$GITHUB_MEDIC/medic-webapp"
   GITHUB_DIMAGI="$_au_github/dimagi"
@@ -14,9 +17,11 @@ function audere-init() {
 
   function echo2() { echo 1>&2 "$@"; }
   function audere() { source "$_au_self" "$@"; }
+  function jqraw() { jq --raw-output "$@"; }
+  function die() { echo2 "$@"; exit 1; }
 
-  AUDERE_AWS_INSTANCE="med0"
   AUDERE_AWS_USER="ubuntu"
+  AUDERE_AWS_INSTANCE_TYPE="t2.medium"
 
   # Partial list in https://github.com/dimagi/commcare-hq/blob/master/docker/README.md
   INTERESTING_PORTS=(
@@ -46,10 +51,38 @@ case "$_au_subcommand" in
 esac
 
 case "$_au_subcommand" in
+  init) true;;
+
+  cd)      cd "$AUDERE${1:+/}$1";;
   cdm)     cd "$GITHUB_MEDIC${1:+/}$1";;
   cdmw)    cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
   cdmwa)   cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
   cdcc)    cd "$GITHUB_COMMCARE_HQ${1:+/}$1";;
+  cdrn)    cd "$FLU_TS${1:+/}$1";;
+  cdfluts) cd "$FLU_TS${1:+/}$1";;
+  cdweb)   cd "$AUDERE/learn/DjangoWebService/AudereWeb${1:+/}$1";;
+
+  # --------------------------------------------------------------------------------
+  # Web
+
+  webenv)
+    audere cdweb
+    (
+      export PS1_EXTRA="audere"
+      pipenv shell
+    ) && exit
+    ;;
+
+  # --------------------------------------------------------------------------------
+  # React Native
+
+  rnr | tsrun | rnrun | react-native-run)
+    (set -euxo pipefail
+      sudo sysctl -w kern.maxfiles=5242880
+      sudo sysctl -w kern.maxfilesperproc=524288
+      cd "$FLU_TS" && yarn start
+    )
+    ;;
 
   # --------------------------------------------------------------------------------
   # Commcare HQ
@@ -71,6 +104,16 @@ case "$_au_subcommand" in
 
   ccstop)
     audere ccdocker stop
+    ;;
+
+  ccpatch)
+    (
+      cd "$GITHUB_COMMCARE_HQ" || die "Could not cd to '$GITHUB_COMMCARE_HQ'"
+
+      diff --unified localsettings{.example,}.py >~/audere/scripts/onenode-localsettings.py.patch
+      _au_status="$?"
+      [[ "$_au_status" == 1 ]] || die "Expected diff would return 1 but got '$_au_status'"
+    )
     ;;
 
   ccd | ccdocker) echorun "$GITHUB_COMMCARE_HQ/scripts/docker" "$@";;
@@ -127,14 +170,94 @@ case "$_au_subcommand" in
   # --------------------------------------------------------------------------------
   # AWS
 
-  inst)
-    if [[ "$#" == 0 ]]; then
-      echo "AUDERE_AWS_INSTANCE=$AUDERE_AWS_INSTANCE"
-    else
-      _au_prev_inst="$AUDERE_AWS_INSTANCE"
-      AUDERE_AWS_INSTANCE="$1"
-      echo "Setting AUDERE_AWS_INSTANCE to '$AUDERE_AWS_INSTANCE' (was '$_au_prev_inst')"
-    fi
+  env | aenv | aws-env)
+    "$AUDERE/scripts/client/rsync-audere" "$@"
+#     (set -euo pipefail
+#       _au_user="$(audere get-ssh-user "$1")"
+#       _au_itag="$(audere get-ssh-itag "$1")"
+#       shift
+#       _au_ip="$(audere aws-dns "$_au_itag")"
+#       echo "Syncing audere to '$_au_user@$_au_ip' ('$_au_itag')"
+#       ssh "-oStrictHostKeyChecking=accept-new" "$_au_user@${_au_ip}" uptime
+#       rsync -a "$@" "$HOME/audere" "$_au_user@${_au_ip}:"
+#     )
+    ;;
+
+  mjm-env)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Syncing env to '$_au_user@$_au_ip' ('$_au_itag')"
+      rsync --delete -a "$HOME/env" "$_au_user@${_au_ip}:"
+    )
+    ;;
+
+  api-setup)
+    (set -euo pipefail
+      audere env api
+      audere rsync-web api
+      audere ssh api ./audere/scripts/aws-api-setup
+    )
+    ;;
+
+  api-teardown)
+    (set -euo pipefail
+      audere env api
+      audere ssh api ./audere/scripts/aws-api-teardown
+    )
+    ;;
+
+  rsync-web)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Syncing DjangoWebService to api"
+      rsync -a "$HOME/audere/learn/DjangoWebService" "$_au_user@${_au_ip}:"
+    )
+    ;;
+
+  monwatch)
+    (set -euo pipefail
+      _au_itag="$1" && shift
+      while true; do
+        _au_ip="$(audere aws-dns "$_au_itag")"
+          ssh "-oStrictHostKeyChecking=accept-new" "ubuntu@$_au_ip" watch '"uptime;free;df -h"'
+        echo -n Sleeping...
+        sleep 10
+        echo done
+      done
+    )
+    ;;
+
+  asshL | aws-sshL)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Connecting to '$_au_user@$_au_ip' ('$_au_itag')"
+      audere sshL "$_au_user@$_au_ip" "$@"
+    )
+    ;;
+
+  sshL)
+    echo "Forwarding ports ${INTERESTING_PORTS[@]}"
+    ssh -t $(for i in ${INTERESTING_PORTS[@]}; do printf " -L %d:localhost:%d" $i $i; done) "$@"
+    ;;
+
+  ssh | assh | aws-ssh)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Connecting to '$_au_user@$_au_ip' ('$_au_itag')"
+      ssh -t "$_au_user@$_au_ip" "$@"
+    )
     ;;
 
   user)
@@ -147,44 +270,17 @@ case "$_au_subcommand" in
     fi
     ;;
 
-  env | aenv | aws-env)
-    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
-      echo "Syncing env/audere to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
-      ssh "-oStrictHostKeyChecking=accept-new" "$AUDERE_AWS_USER@${_au_ip}" uptime && \
-      rsync -a "$HOME/env/audere" "$AUDERE_AWS_USER@${_au_ip}:"
-    ;;
+  get-ssh-user) if [[ "$1" == *@* ]]; then echo "${1%@*}";  else echo "$AUDERE_AWS_USER"; fi;;
+  get-ssh-itag) if [[ "$1" == *@* ]]; then echo "${1##*@}"; else echo "$1";               fi;;
 
-  mjm-env)
-    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
-      echo "Syncing env to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
-      rsync -a "$HOME/env" "$AUDERE_AWS_USER@${_au_ip}:"
-    ;;
-
-  monwatch)
-    while true; do
-      _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
-        ssh "-oStrictHostKeyChecking=accept-new" "ubuntu@$_au_ip" watch '"uptime;free;df -h"'
-      echo -n Sleeping...
-      sleep 10
-      echo done
-    done
-    ;;
-
-  asshL | aws-sshL)
-    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
-      echo "Connecting to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
-      audere sshL "$AUDERE_AWS_USER@$_au_ip" "$@"
-    ;;
-
-  sshL)
-    echo "Forwarding ports ${INTERESTING_PORTS[@]}"
-    ssh -t $(for i in ${INTERESTING_PORTS[@]}; do printf " -L %d:localhost:%d" $i $i; done) "$@"
-    ;;
-
-  ssh | assh | aws-ssh)
-    _au_ip="$(audere aws-dns "$AUDERE_AWS_INSTANCE")" && \
-      echo "Connecting to '$AUDERE_AWS_USER@$_au_ip' ('$AUDERE_AWS_INSTANCE')" && \
-      ssh -t "$AUDERE_AWS_USER@$_au_ip" "$@"
+  itype | set-instance-type)
+    if [[ "$#" == 0 ]]; then
+      echo "AUDERE_AWS_INSTANCE_TYPE=$AUDERE_AWS_INSTANCE_TYPE"
+    else
+      _au_prev_type="$AUDERE_AWS_INSTANCE_TYPE"
+      AUDERE_AWS_INSTANCE_TYPE="$1"
+      echo "Setting AUDERE_AWS_INSTANCE_TYPE to '$AUDERE_AWS_INSTANCE_TYPE' (was '$_au_prev_type')"
+    fi
     ;;
 
   # To update, see
@@ -192,39 +288,111 @@ case "$_au_subcommand" in
   #   aws ec2 describe-security-groups
   #   aws ec2 describe-subnets
   launch | aws-launch)
-    if [[ "$(audere aws-running-list "$1" | jq length)" != 0 ]]; then
-      echo2 "Error: there is already a '$1' instance running"
-      false
-    else
-      aws ec2 run-instances \
-        --image-id ami-51537029 \
-        --count 1 \
-        --instance-type t2.medium \
-        --key-name 2018-mmarucheck \
-        --security-group-ids sg-0b6936cef93327650 \
-        --subnet-id subnet-9de0b1e4 \
-        --tag-specifications \
-          'ResourceType=instance,Tags=[{Key=Name,Value='"$1"'}]' \
-          'ResourceType=volume,Tags=[{Key=Name,Value='"$1"'}]'
-    fi
+    (set -euo pipefail
+
+      if [[ "$(audere aws-running-list "$1" | jq length)" != 0 ]]; then
+        echo2 "Error: there is already a '$1' instance running"
+        exit 1
+      fi
+
+      echo "Creating new '$AUDERE_AWS_INSTANCE_TYPE' instance for Name='$1'"
+      _au_key_pair="$(audere aws-key-pair "*$USER*" | jqraw '.KeyName')"
+
+      _au_ssh_group="$(audere aws-security-group "ssh" | jqraw '.GroupId')"
+      _au_http_group="$(audere aws-security-group "http" | jqraw '.GroupId')"
+      _au_dflt_group="$(audere aws-security-group "default" | jqraw '.GroupId')"
+
+      _au_instances="$( \
+        aws ec2 run-instances \
+          --image-id ami-51537029 \
+          --count 1 \
+          --instance-type "$AUDERE_AWS_INSTANCE_TYPE" \
+          --key-name "$_au_key_pair" \
+          --security-group-ids "$_au_ssh_group" "$_au_http_group" "$_au_dflt_group" \
+          --subnet-id subnet-9de0b1e4 \
+          --tag-specifications \
+            'ResourceType=instance,Tags=[{Key=Name,Value='"$1"'}]' \
+            'ResourceType=volume,Tags=[{Key=Name,Value='"$1"'}]' \
+          | tee ~/.aws-last-run-instances | jq '.Instances' \
+        )"
+      _au_instance="$(audere jq-unique "instances created" "$_au_instances")"
+      _au_instance_id="$(echo "$_au_instance" | jqraw '.InstanceId')"
+      _au_instance_private_ip="$(echo "$_au_instance" | jqraw '.PrivateIpAddress')"
+      echo "Instance ID: '$_au_instance_id', private ip='$_au_instance_private_ip'"
+
+      audere aws-wait-for-instance-state running "$_au_instance_id"
+
+      if _au_elastic_ip="$(audere aws-elastic-address "$1" 2>/dev/null)"; then
+        _au_allocation_id="$(echo "$_au_elastic_ip" | jqraw ".AllocationId")"
+        _au_public_ip="$(echo "$_au_elastic_ip" | jqraw ".PublicIp")"
+        echo "Binding to elastic ip '$_au_public_ip', id='$_au_allocation_id'"
+        aws ec2 associate-address \
+          --allocation-id "$_au_allocation_id" \
+          --instance-id "$_au_instance_id" \
+          --private-ip-address "$_au_instance_private_ip" \
+          --allow-reassociation \
+          --region us-west-2
+      fi
+
+      echo "Resizing root volume"
+      _au_instance="$(audere aws-instance-by-id "$_au_instance_id")"
+      _au_volume="$(echo "$_au_instance" | jqraw '.BlockDeviceMappings[].Ebs.VolumeId')"
+      echo "  Volume ID: '$_au_volume'"
+      aws ec2 modify-volume --volume-id "$_au_volume" --size 15
+    )
     ;;
 
   terminate | aws-terminate)
-    _au_instance_id="$(audere aws-vmid "$1")" \
-      && aws ec2 terminate-instances --instance-ids "$_au_instance_id"
+    (set -euo pipefail
+      _au_id="$(audere vmid "$1")"
+      _au_ip="$(audere dns "$1")"
+      aws ec2 terminate-instances --instance-ids "$_au_id"
+      ssh-keygen -R "$_au_ip"
+    )
     ;;
 
-  associate)
-    aws ec2 associate-address \
-      --allocation-id "eipalloc-0b9dcf300b399ab8e" \
-      --instance-id "i-0883ee7cbdc905628" \
-      --allow-reassociation \
-      --private-ip-address "$(audere aws-itag ".PrivateIpAddress" "$1")" \
-      --region us-west-2
+  bind-dns)
+    (set -euo pipefail
+      _au_tag="$1"
+      _au_ip="$(audere aws-dns "$_au_tag")"
+      aws route53 change-resource-record-sets --hosted-zone-id Z2JVHTT9LKA76J --change-batch file://<(
+        cat <<-EOF
+				{
+				  "Changes": [{
+				    "Action": "UPSERT",
+				    "ResourceRecordSet": {
+				      "Name": "$_au_tag.auderenow.io",
+				      "Type": "A",
+				      "TTL": 300,
+				      "ResourceRecords": [{
+				        "Value": "$_au_ip"
+				      }]
+				    }
+				  }]
+				}
+				EOF
+      )
+    )
     ;;
 
-  ssh-any)  audere aws-set-security-groups "$1" sg-07fc801b67e2e990a;;
-  ssh-home) audere aws-set-security-groups "$1" sg-0b6936cef93327650;;
+  open-http | aws-open-http)
+    (set -euo pipefail
+      audere set-security-groups "$1" \
+        "$(audere aws-security-group "http" | jqraw '.GroupId')"
+    )
+    ;;
+
+  aws-volumes)
+    aws ec2 describe-volumes --filters "Name=tag:Name,Values=$1" | jq '.Volumes'
+    ;;
+
+  aws-security-group)
+    audere jq-unique "security groups match '$1'" "$(audere aws-security-groups "$1")"
+    ;;
+
+  aws-security-groups)
+    aws ec2 describe-security-groups --filters "Name=group-name,Values=$1" | jq '.SecurityGroups'
+    ;;
 
   aws-set-security-groups)
     _au_tag="$1"
@@ -235,41 +403,121 @@ case "$_au_subcommand" in
              --groups "$@"
     ;;
 
-  ils | ilist | aws-instance-list)
-    audere aws-running-list | \
-      jq '.[].Tags[] | [{key:.Key,value:.Value}] | from_entries | .Name'
+  aws-dns-table)
+    (set -euo pipefail
+      _au_running="$(aws ec2 describe-instances --filters 'Name=instance-state-name,Values=running' | jq '[.Reservations[].Instances[]]')"
+      _au_running_count="$(echo "$_au_running" | jq length)"
+      for i in $(seq 0 $((_au_running_count - 1))); do
+        _au_itag="$(echo "$_au_running" | jqraw ".[$i] | .Tags[] | [{key:.Key,value:.Value}] | from_entries | select(.Name != null) | .Name")"
+        _au_private_ip="$(echo "$_au_running" | jqraw ".[$i].PrivateIpAddress")"
+        echo "$_au_itag=\"$_au_private_ip\""
+      done
+    )
     ;;
 
-  ip    | aws-ip)    audere aws-itag ".PublicIpAddress";;
-  dns   | aws-dns)   audere aws-itag ".PublicIpAddress" "$1";;
-  vmid  | aws-vmid)  audere aws-itag ".InstanceId" "$1";;
+  ils | ilist | aws-running-instance-list)
+    audere aws-running-list | \
+      jq '[.[].Tags[] | [{key:.Key,value:.Value}] | from_entries | select(.Name != null) | .Name]'
+    ;;
 
-  itag | aws-itag) audere aws-running "$2" | jq --raw-output "$1";;
+  ip   | aws-ip)         audere aws-running "$@" | jqraw ".PublicIpAddress";;
+  iip  | aws-private-ip) audere aws-running "$@" | jqraw ".PrivateIpAddress";;
+  dns  | aws-dns)        audere aws-running "$@" | jqraw ".PublicIpAddress";;
+  vmid | aws-vmid)       audere aws-running "$@" | jqraw ".InstanceId";;
+
+  eip  | aws-elastic-ip)            audere aws-elastic-address "$@" | jqraw ".PublicIp";;
+  eaid | aws-elastic-allocation-id) audere aws-elastic-address "$@" | jqraw ".AllocationId";;
+  eiid | aws-elastic-instance-id)   audere aws-elastic-address "$@" | jqraw ".InstanceId";;
+
+  aws-key-pair)
+    audere jq-unique "key-pairs found that match '$1'" "$(audere aws-key-pairs "$1")"
+    ;;
+
+  aws-key-pairs)
+    case "$#" in
+      0) aws ec2 describe-key-pairs;;
+      1) aws ec2 describe-key-pairs --filters "Name=key-name,Values=$1";;
+      *) echo2 "Expected 0 or 1 argument, got '$#'" && false;;
+    esac \
+      | jq '[.KeyPairs[]]'
+    ;;
 
   aws-running)
-    _au_desc="$(audere aws-running-list "$1")" && \
-    case "$(echo "$_au_desc" | jq length)" in
-      0) echo2 "Error, no instances found" && false;;
-      1) echo "$_au_desc" | jq '.[0]';;
-      *) echo2 "Error, multiple instances found" && false;;
-    esac
+    audere jq-unique "instances found" \
+      "$(audere aws-running-list "$@")"
     ;;
 
-  aws-running-list)
-    {
-      if [[ "$#" == 0 || "$1" == "" ]]; then
+  aws-wait-for-instance-state)
+    _au_instance_state="$(audere aws-instance-state "$2")"
+    if [[ "$_au_instance_state" != "$1" ]]; then
+      echo "Waiting for instance to be '$1' (currently '$_au_instance_state')"
+      while [[ "$_au_instance_state" != "$1" ]]; do
+        echo -n "  sleeping.."
+        sleep 5
+        echo -n " reading state.."
+        _au_instance_state="$(audere aws-instance-state "$2")"
+        echo " got '$_au_instance_state'"
+      done
+    fi
+    ;;
+
+  istate | aws-instance-state)
+    audere aws-instance-by-id "$1" | jqraw '.State.Name'
+    ;;
+
+  aws-instance-by-id)
+    audere jq-unique "instances by id '$1'" "$(aws ec2 describe-instances --instance-ids "$@" | jq '[.Reservations[].Instances[]]')"
+    ;;
+
+  aws-running-list) audere aws-instance-list running "$@";;
+  aws-instance-list)
+    case "$#" in
+      0|1)
         aws ec2 describe-instances \
-            --filters "Name=instance-state-name,Values=running"
-      elif [[ "$#" == 1 ]]; then
+            --filters "Name=instance-state-name,Values=${1:-running}"
+        ;;
+      2)
         aws ec2 describe-instances \
             --filters \
-            "Name=tag:Name,Values=$1" \
-            "Name=instance-state-name,Values=running"
+            "Name=instance-state-name,Values=$1" \
+            "Name=tag:Name,Values=$2"
+        ;;
+      *)
+        echo2 "Error, expected 2 or fewer arguments, got $#."
+        false
+        ;;
+    esac \
+      | jq '[.Reservations[].Instances[]]'
+    ;;
+
+  ela | aws-elastic-address)
+    audere jq-unique "elastic ips found" \
+      "$(audere aws-elastic-addresses "$1")"
+    ;;
+
+  aws-elastic-addresses)
+    {
+      if [[ "$#" == 0 || "$1" == "" ]]; then
+        aws ec2 describe-addresses
+      elif [[ "$#" == 1 ]]; then
+        aws ec2 describe-addresses \
+            --filters \
+            "Name=tag:Name,Values=$1"
       else
         echo2 "Error, expected 0 or 1 argument, got $#."
         false
       fi
-    } | jq '[.Reservations[].Instances[]]'
+    } | jq '[.Addresses[]]'
+    ;;
+
+  jq-unique)
+    _au_desc="$1"
+    _au_json="${2:-}"
+    case "$(echo "$_au_json" | jq length)" in
+      0) echo2 "Error: no $_au_desc" && false;;
+      1) echo "$_au_json" | jq '.[0]';;
+      *) echo2 "Error: multiple $_au_desc" && echo "$_au_json" | jq 1>&2 && false;;
+    esac
     ;;
 
   type)
