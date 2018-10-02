@@ -13,7 +13,7 @@ function user_from_key_name() {
 
 for key in "$KEY_DIR"/*; do
   user="$(user_from_key_name "$key")"
-  if ! -d "/home/$user"; then
+  if [[ ! -d "/home/$user" ]]; then
     sudo adduser --shell /bin/bash --gecos "$user" --disabled-password "$user"
 
     sshdir="/home/$user/.ssh"
