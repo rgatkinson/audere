@@ -20,6 +20,7 @@ class ApiButton(View):
             device_id=data['DeviceId'],
             timestamp=data['Timestamp'],
             count=data['Count'],
+            extra=data['Extra'],
         )
         item.save()
         return JsonResponse({
