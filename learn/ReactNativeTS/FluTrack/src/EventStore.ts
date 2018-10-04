@@ -21,11 +21,12 @@ const api = axios.create({
 // })
 
 
-export async function logInteraction(count: number) {
+export async function logInteraction(data: string, count: number) {
   let item = {
     DeviceId: DEVICE_ID,
     Timestamp: new Date().toISOString(),
     Count: count,
+    Extra: data
   };
 
   console.log('hi!!!');
