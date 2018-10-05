@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { Text } from 'react-native';
-var styles = require('../styles.ts');
+var styles = require('../Styles.ts');
 
-export default class FTText extends React.Component {
+export default class MyText extends React.Component {
   render() {
-    return(
+    return (
       <Text style={[styles.regularText, this.props.style]}>
         {this.props.children}
       </Text>

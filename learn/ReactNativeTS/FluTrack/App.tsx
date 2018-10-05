@@ -1,33 +1,29 @@
 import React from 'react';
 import { View, Text, Button, Alert, TextInput, Slider, Picker, Platform, Dimensions } from 'react-native';
 import { createStackNavigator, NavigationEvents } from 'react-navigation';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import CheckBox from 'react-native-check-box';
 import { logInteraction } from './src/EventStore';
-import FTButton from './src/components/FTButton';
-import FTFieldLabel from './src/components/FTFieldLabel';
-import FTScreenView from './src/components/FTScreenView';
-import FTText from './src/components/FTText';
+import StyledButton from './src/components/StyledButton';
+import FieldLabel from './src/components/FieldLabel';
+import ScreenView from './src/components/ScreenView';
+import MyText from './src/components/MyText';
 
 let x = 1;
 function interact(data: string): Promise<void> {
   return logInteraction(data, x++);
 }
 
-global.navTrail="";
-var styles = require('./src/styles.ts');
+var styles = require('./src/Styles.ts');
 var pjson = require('./package.json');
 
 class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.screenNum = '0';
-    global.navTrail = global.navTrail + this.screenNum;
-    var {height, width} = Dimensions.get('window');
+    var { height, width } = Dimensions.get('window');
     this.state = {
       id: "",
       password: "",
-      navTrail: global.navTrail,
       deviceOS: Platform.OS,
       deviceVersion: Platform.Version,
       screenHeight: height,
@@ -37,78 +33,70 @@ class LoginScreen extends React.Component {
 
   render() {
     return (
-      <FTScreenView>
+      <ScreenView>
         <Text style={styles.titleText}>{pjson.name}&trade;</Text>
-        <FTFieldLabel label="Login ID">
-          <TextInput style={styles.inputfield}
-                     autoFocus={true}
-                     onChangeText={(id) => this.setState({id})}></TextInput>
-        </FTFieldLabel>
-        <FTFieldLabel label="Password">
-          <TextInput style={styles.inputfield}
-                     secureTextEntry={true}
-                     onChangeText={(password) => this.setState({password})}></TextInput>
-        </FTFieldLabel>
+        <FieldLabel label="Login ID">
+          <TextInput style={styles.inputField}
+            autoFocus={true}
+            onChangeText={(id) => this.setState({ id })}></TextInput>
+        </FieldLabel>
+        <FieldLabel label="Password">
+          <TextInput style={styles.inputField}
+            secureTextEntry={true}
+            onChangeText={(password) => this.setState({ password })}></TextInput>
+        </FieldLabel>
 
-        <FTButton
+        <StyledButton
           title="LOGIN"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate('PatientInfo')} }
+            this.props.navigation.navigate('PatientInfo')
+          }}
         />
-      </FTScreenView>
+      </ScreenView>
     );
   }
 }
 
 class PatientInfoScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    const screenNum = '1';
-    global.navTrail = global.navTrail + screenNum;
-    this.state = {
-      navTrail: global.navTrail
-    };
-  }
   render() {
     const sex_options = [
-      {label: 'Male', value: 'M' },
-      {label: 'Female', value: 'F' }
+      { label: 'Male', value: 'M' },
+      { label: 'Female', value: 'F' }
     ];
     return (
-      <FTScreenView>
-        <FTText style={styles.headingText}>Patient Info Screen</FTText>
-        <FTText>Please tell us about the patient</FTText>
-        <FTFieldLabel label="Age">
-          <TextInput style={styles.inputfield}
-                     autoFocus={true}
-                     keyboardType="numeric"
-                     onChangeText={(age) => this.setState({age})}></TextInput>
-        </FTFieldLabel>
-        <FTFieldLabel label="Sex">
+      <ScreenView>
+        <MyText style={styles.headingText}>Patient Info Screen</MyText>
+        <MyText>Please tell us about the patient</MyText>
+        <FieldLabel label="Age">
+          <TextInput style={styles.inputField}
+            autoFocus={true}
+            keyboardType="numeric"
+            onChangeText={(age) => this.setState({ age })}></TextInput>
+        </FieldLabel>
+        <FieldLabel label="Sex">
           <RadioForm
             radio_props={sex_options}
             initial={0}
             buttonColor={'#36b3a8'}
             selectedButtonColor={'#36b3a8'}
-            labelColor={'white'}
-            selectedLabelColor={'white'}
-            onPress={(sex) => {this.setState({sex})}}
+            onPress={(sex) => { this.setState({ sex }) }}
           />
-        </FTFieldLabel>
-        <FTFieldLabel label="Medical History">
-          <TextInput style={styles.inputfield}
-                     multiline={true}
-                     numberOfLines={4}
-                     onChangeText={(history) => this.setState({history})}></TextInput>
-        </FTFieldLabel>
-        <FTButton
+        </FieldLabel>
+        <FieldLabel label="Medical History">
+          <TextInput style={styles.inputField}
+            multiline={true}
+            numberOfLines={4}
+            onChangeText={(history) => this.setState({ history })}></TextInput>
+        </FieldLabel>
+        <StyledButton
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate('Fever')} }
+            this.props.navigation.navigate('Fever')
+          }}
         />
-      </FTScreenView>
+      </ScreenView>
     );
   }
 }
@@ -116,80 +104,73 @@ class PatientInfoScreen extends React.Component {
 class FeverScreen extends React.Component {
   constructor(props) {
     super(props)
-    const screenNum = '2';
-    global.navTrail = global.navTrail + screenNum;
     this.state = {
       temp: 98,
-      navTrail: global.navTrail
     }
   }
   render() {
     return (
-      <FTScreenView>
-        <FTText style={styles.headingText}>Fever Screen</FTText>
-        <FTText>Tell us your temperature</FTText>
+      <ScreenView>
+        <MyText style={styles.headingText}>Fever Screen</MyText>
+        <MyText>Tell us your temperature</MyText>
         <Slider
           style={styles.slider}
           minimumValue={96}
           maximumValue={106}
           step={0.5}
           value={this.state.temp}
-          onValueChange={val => this.setState({temp: val})}
+          onValueChange={val => this.setState({ temp: val })}
         />
-        <FTText style={{fontSize: 24}}>
+        <MyText style={styles.largeText}>
           {this.state.temp} &deg;F
-        </FTText>
-        <FTButton
+        </MyText>
+        <StyledButton
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate('Cough')} }
+            this.props.navigation.navigate('Cough')
+          }}
         />
-      </FTScreenView>
+      </ScreenView>
     );
   }
 }
 class CoughScreen extends React.Component {
   constructor(props) {
     super(props)
-    const screenNum = '3';
-    global.navTrail = global.navTrail + screenNum;
     this.state = {
       coughSound: 0,
-      navTrail: global.navTrail
     }
   }
   render() {
     return (
-      <FTScreenView>
-        <FTText style={styles.headingText}>Cough Screen</FTText>
-        <FTText>What does your cough sound like?</FTText>
+      <ScreenView>
+        <MyText style={styles.headingText}>Cough Screen</MyText>
+        <MyText>What does your cough sound like?</MyText>
         <Picker
           selectedValue={this.state.coughSound}
           style={styles.picker}
           mode="dropdown"
-          itemStyle={{color:'white', backgroundColor:'#222222'}}
-          onValueChange={(itemValue, itemIndex) => this.setState({coughSound: itemValue})}>
-          <Picker.Item label="Normal dry cough" color="white" value="0" />
-          <Picker.Item label="Phlegmy" color="white" value="1" />
-          <Picker.Item label="Wheezy" color="white" value="2" />
-          <Picker.Item label="Lungs about to fall out" color="white" value="3" />
+          onValueChange={(itemValue, itemIndex) => this.setState({ coughSound: itemValue })}>
+          <Picker.Item label="Normal dry cough" value="0" />
+          <Picker.Item label="Phlegmy" value="1" />
+          <Picker.Item label="Wheezy" value="2" />
+          <Picker.Item label="Lungs about to fall out" value="3" />
         </Picker>
-        <FTButton
+        <StyledButton
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate('OtherSymptoms')} }
+            this.props.navigation.navigate('OtherSymptoms')
+          }}
         />
-      </FTScreenView>
+      </ScreenView>
     );
   }
 }
 class OtherSymptomsScreen extends React.Component {
   constructor(props) {
     super(props)
-    const screenNum = '4';
-    global.navTrail = global.navTrail + screenNum;
     this.state = {
       runnyNose: false,
       soreThroat: false,
@@ -197,134 +178,121 @@ class OtherSymptomsScreen extends React.Component {
       muscleAche: false,
       vomiting: false,
       diarrhea: false,
-      navTrail: global.navTrail
     }
   }
   render() {
     return (
-      <FTScreenView>
-        <FTText style={styles.headingText}>Other Symptoms Screen</FTText>
-        <FTText>Please check all that apply</FTText>
+      <ScreenView>
+        <MyText style={styles.headingText}>Other Symptoms Screen</MyText>
+        <MyText>Please check all that apply</MyText>
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                runnyNose:!this.state.runnyNose
+              runnyNose: !this.state.runnyNose
             })
           }}
           isChecked={this.state.runnyNose}
           rightText={"Runny Nose"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                soreThroat:!this.state.soreThroat
+              soreThroat: !this.state.soreThroat
             })
           }}
           isChecked={this.state.soreThroat}
           rightText={"Sore Throat"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                headache:!this.state.headache
+              headache: !this.state.headache
             })
           }}
           isChecked={this.state.headache}
           rightText={"Headache"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                muscleAche:!this.state.muscleAche
+              muscleAche: !this.state.muscleAche
             })
           }}
           isChecked={this.state.muscleAche}
           rightText={"Muscle Ache"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                vomiting:!this.state.vomiting
+              vomiting: !this.state.vomiting
             })
           }}
           isChecked={this.state.vomiting}
           rightText={"Vomiting"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
         <CheckBox
           style={styles.checkbox}
-          onClick={()=>{
+          onClick={() => {
             this.setState({
-                diarrhea:!this.state.diarrhea
+              diarrhea: !this.state.diarrhea
             })
           }}
           isChecked={this.state.diarrhea}
           rightText={"Diarrhea"}
-          rightTextStyle={{color: 'white'}}
-          checkBoxColor='white'
         />
-        <FTButton
+        <StyledButton
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate('Submit')} }
+            this.props.navigation.navigate('Submit')
+          }}
         />
-      </FTScreenView>
+      </ScreenView>
     );
   }
 }
 class SubmitScreen extends React.Component {
   constructor(props) {
     super(props)
-    const screenNum = '5';
-    global.navTrail = global.navTrail + screenNum;
     this.state = {
-      navTrail: global.navTrail,
       consent: "true"
     }
   }
-   render() {
-     return (
-       <FTScreenView>
-         <FTText>Do you consent to participating in the study and giving up all privacy?</FTText>
-         <FTButton
-           title="YES"
-           onPress={() => {
-             interact(JSON.stringify(this.state));
-             Alert.alert("Thank you for participating. Your info has been submitted."); }}
-         />
-         <FTButton
-           title="NO"
-           onPress={() => { Alert.alert("Wrong answer. Try again."); }}
-         />
-       </FTScreenView>
-     );
-   }
- }
+  render() {
+    return (
+      <ScreenView>
+        <MyText>Do you consent to participating in the study and giving up all privacy?</MyText>
+        <StyledButton
+          title="YES"
+          onPress={() => {
+            interact(JSON.stringify(this.state));
+            Alert.alert("Thank you for participating. Your info has been submitted.");
+          }}
+        />
+        <StyledButton
+          title="NO"
+          onPress={() => {
+            Alert.alert("Wrong answer. Try again.");
+          }}
+        />
+      </ScreenView>
+    );
+  }
+}
 
-const RootStack = createStackNavigator(
-  {
-    Login: LoginScreen,
-    PatientInfo: PatientInfoScreen,
-    Fever: FeverScreen,
-    Cough: CoughScreen,
-    OtherSymptoms: OtherSymptomsScreen,
-    Submit: SubmitScreen,
-  },
+const RootStack = createStackNavigator({
+  Login: LoginScreen,
+  PatientInfo: PatientInfoScreen,
+  Fever: FeverScreen,
+  Cough: CoughScreen,
+  OtherSymptoms: OtherSymptomsScreen,
+  Submit: SubmitScreen,
+},
   {
     initialRouteName: 'Login',
   }
