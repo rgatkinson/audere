@@ -20,7 +20,7 @@ app.get("/boom", (req, res) => {
 app.get(
   "/async-boom",
   wrap(async (req, res) => {
-    throw new Error("Boom!");
+    throw new Error("Async Boom!");
   })
 );
 
