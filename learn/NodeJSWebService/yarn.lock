@@ -18,6 +18,11 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@positron/stack-trace@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@positron/stack-trace/-/stack-trace-1.0.0.tgz#14fcc712a530038ef9be1ce6952315a839f466a8"
+  integrity sha1-FPzHEqUwA475vhzmlSMVqDn0Zqg=
+
 "@types/bluebird@*":
   version "3.5.24"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.24.tgz#11f76812531c14f793b8ecbf1de96f672905de8a"
@@ -1276,6 +1281,11 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
+ejs@^2.3.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
+  integrity sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==
+
 enabled@1.0.x:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/enabled/-/enabled-1.0.2.tgz#965f6513d2c2d1c5f4652b64a2e3396467fc2f93"
@@ -1328,7 +1338,7 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
 
-escape-html@~1.0.3:
+escape-html@^1.0.1, escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
   integrity sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=
@@ -3562,6 +3572,16 @@ osenv@^0.1.4:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
+
+ouch@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ouch/-/ouch-2.0.0.tgz#2feab67569fe8037e91db6f6225bea066fc7e716"
+  integrity sha512-kaAZtzpV3iSDdGHQKz7/dRVWd7nXNO1OUNHNtZIW9ryoBvb6y8QtYfpWdcBUFgBzMbMYVA/PGPeoeJU95VHK7Q==
+  dependencies:
+    "@positron/stack-trace" "1.0.0"
+    ejs "^2.3.1"
+    escape-html "^1.0.1"
+    lodash "^4.17.10"
 
 p-defer@^1.0.0:
   version "1.0.0"
