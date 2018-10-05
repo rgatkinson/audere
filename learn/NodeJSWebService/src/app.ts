@@ -1,7 +1,6 @@
 import express from "express";
 import Ouch from "ouch";
 import bodyParser from "body-parser";
-import errorHandler from "errorhandler";
 import { ButtonPush } from "./models";
 import { ValidationError } from "sequelize";
 
