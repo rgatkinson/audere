@@ -5,10 +5,17 @@ import axios from "axios";
 const INTERACTION_QUEUE_KEY = 'interaction.queue';
 const DEVICE_ID = uuidv4();
 const api = axios.create({
-  baseURL: 'https://api.auderenow.io/api/',
+  baseURL: getApiBaseUrl(),
   xsrfCookieName: 'csrftoken',
   xsrfHeaderName: 'X-CSRFToken',
 });
+
+function getApiBaseUrl() {
+  if (process.env.NODE_ENV === "development" && process.env.REACT_NATIVE_API_SERVER) {
+    return process.env.REACT_NATIVE_API_SERVER;
+  }
+  return 'https://api.auderenow.io/api';
+}
 
 // api.interceptors.request.use(request => {
 //   console.log('Starting Request', request);
@@ -40,6 +47,9 @@ export async function logInteraction(count: number) {
     });
   } catch (e) {
     console.log('================================');
+    if (e.response) {
+      console.log(e.response.data);
+    }
     console.log(e);
     return;
   }
