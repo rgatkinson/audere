@@ -1,13 +1,16 @@
-import React from 'react';
-import { ImageBackground, View } from 'react-native';
-var styles = require('../Styles.ts');
+import React from "react";
+import { ImageBackground, View, ScrollView } from "react-native";
+var styles = require("../Styles.ts");
 
 export default class ScreenView extends React.Component {
   render() {
     return (
-      <View style={styles.screenView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.screenView}
+      >
         {this.props.children}
-      </View>
+      </ScrollView>
     );
   }
 }

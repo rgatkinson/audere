@@ -1,22 +1,22 @@
 // Common styles go here
 
-'use strict';
+"use strict";
 
-var React = require('react-native');
+var React = require("react-native");
 
-var {
-  StyleSheet,
-} = React;
+var { StyleSheet } = React;
 
 module.exports = StyleSheet.create({
+  scrollView: {
+    flex: 1
+  },
   screenView: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center"
   },
   checkbox: {
     padding: 10,
-    width: 200
+    width: 300
   },
   picker: {
     height: 50,
@@ -27,11 +27,11 @@ module.exports = StyleSheet.create({
     width: 300
   },
   inputField: {
-    width: 80,
+    width: 100
   },
   titleText: {
     fontSize: 30,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 6,
     padding: 20
@@ -45,24 +45,29 @@ module.exports = StyleSheet.create({
   styledButton: {
     margin: 20,
     padding: 20,
-    backgroundColor: '#36b3a8', // Audere button color
+    backgroundColor: "#36b3a8", // Audere button color
     borderRadius: 20,
     borderWidth: 0,
     height: 45,
-    justifyContent: 'center'
+    justifyContent: "center"
   },
   headingText: {
     fontSize: 18,
     padding: 15
   },
   bold: {
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   white: {
-    color: 'white'
+    color: "white"
+  },
+  whiteBackground: {
+    backgroundColor: "white"
+  },
+  wideInput: {
+    width: 250
   },
   flexRow: {
-    flexDirection: 'row'
+    flexDirection: "row"
   }
-
 });
