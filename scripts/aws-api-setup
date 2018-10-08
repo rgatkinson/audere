@@ -4,12 +4,25 @@ set -x
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
+case "$#" in
+  1) ;;
+  *) echo 1>&2 "Error: expected one subdomain argument, got $# arguments"; exit 1;;
+esac
+SUBDOMAIN=$1
+
 # Inspired by:
 # https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
 
+# Add yarn's debian package repository
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+# Use the node setup script to add the nodesource repository
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+
 sudo apt update && sudo apt -y full-upgrade
 
-sudo apt -y install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+sudo apt -y install postgresql postgresql-contrib postgresql-client-common nginx yarn nodejs
 
 DB_PASSWORD="$(tr -dc A-Za-z0-9 < /dev/urandom | head -c "${1:-24}")" \
   || true # tr reports failure because its output is truncated
@@ -24,22 +37,18 @@ sudo -u postgres psql <<EOF
 EOF
 
 echo "$DB_PASSWORD" >"$HOME/.db-password"
+echo "DATABASE_URL=postgres://fluser:$DB_PASSWORD@localhost:5432/fludb" >\
+  $HOME/NodeJSWebService/.env
 
 sudo adduser --shell /bin/bash --gecos "Audere Api" --disabled-password api
-sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.db-password" "$HOME/DjangoWebService" ~api
+sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.db-password" "$HOME/NodeJSWebService" ~api
+
 
 (
   cd ~api
   sudo -H --login --user=api bash "$SELF_DIR/api-init"
 )
 
-(
-  umask 022
-  sudo rsync --chown=root:root --chmod="go-wx" "$SELF_DIR/api-gunicorn.service" "/etc/systemd/system/api-gunicorn.service"
-  sudo rsync --chown=root:root --chmod="go-wx" "$SELF_DIR/api-gunicorn.socket"  "/etc/systemd/system/api-gunicorn.socket"
-  sudo rsync --chown=root:root --chmod="go-wx" "$SELF_DIR/api-gunicorn.conf"    "/etc/tmpfiles.d/api-gunicorn.conf"
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now api-gunicorn.socket
-)
+sudo /home/api/.yarn/bin/pm2 startup -u api --hp /home/api --service-name flu-api-pm2
 
-"$SELF_DIR/ubuntu-install-nginx-ssl" "api.auderenow.io" "http://unix:/run/gunicorn/AudereWeb.socket" ~api/DjangoWebService/AudereWeb/static
+"$SELF_DIR/ubuntu-install-nginx-ssl" "$SUBDOMAIN.auderenow.io" "http://localhost:3000" ~api/NodeJSWebService

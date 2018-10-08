@@ -9,32 +9,20 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 > "$HOME/.api-rc" cat "$SELF_DIR/manage-nvm"
 >>"$HOME/.api-rc" cat <<-EOF
 
-	PATH="\$HOME/.local/bin:\$PATH"
+	PATH="\$HOME/.yarn/bin:\$HOME/.local/bin:\$PATH"
 EOF
 PROFILE="$( [[ -e "$HOME/.bash_profile" ]] && echo "$HOME/.bash_profile" || echo "$HOME/.profile" )"
 if ! grep "api-rc" "$PROFILE" >/dev/null; then
   echo >>"$PROFILE" ''
   echo >>"$PROFILE" '. "$HOME/.api-rc"'
 fi
+. $HOME/.api-rc
 
-pip3 install --user --upgrade pip
-hash -r
-pip install --user pipenv
-hash -r
-
-SETTINGS="$HOME/DjangoWebService/AudereWeb/AudereWeb/settings.py"
-EDITED="$HOME/AudereWeb-settings.py"
-sed -e 's/DEBUG = True/DEBUG = False/' "$SETTINGS" >"$EDITED"
-# diff returns success/0/true when the files are identical.  :-P
-if diff "$SETTINGS" "$EDITED"; then
-  echo 1>&2 "ERROR: settings.py was not updated successfully to disable DEBUG setting"
-  exit 1
-fi
-mv "$EDITED" "$SETTINGS"
-
+yarn global add pm2
 (
-  cd "$HOME/DjangoWebService"
-  pipenv install
-  pipenv run ./AudereWeb/manage.py migrate
-  pipenv run ./AudereWeb/manage.py collectstatic
+  cd "$HOME/NodeJSWebService"
+  yarn install --frozen-lockfile
+  yarn build
+  pm2 start build/src/server.js
+  pm2 save
 )

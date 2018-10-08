@@ -1,0 +1,54 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+AUDERE_DIR="$( cd "$SELF_DIR/../.." && pwd)"
+
+case "$#" in
+  1) ;;
+  *) echo 1>&2 "Error: expected one instance tag argument, got $# arguments"; exit 1;;
+esac
+
+function get-ssh-user() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1%@*}"
+  else
+    echo "ubuntu"
+  fi
+}
+
+function get-ssh-itag() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1##*@}"
+  else
+    echo "$1"
+  fi
+}
+
+SSH_USER="$(get-ssh-user "$1")"
+SSH_ITAG="$(get-ssh-itag "$1")"
+
+set +B
+aws ec2 run-instances \
+  --image-id ami-51537029 \
+  --count 1 \
+  --instance-type t2.medium \
+  --key-name 2018-$USER \
+  --security-group-ids sg-7d63d10e sg-0fd0993b035236d60 sg-0923a530eef088f16 \
+  --subnet-id subnet-9de0b1e4 \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$SSH_ITAG}]"
+
+until $SELF_DIR/aws-instance-unique running $SSH_ITAG 2> /dev/null; do
+  sleep 1
+done
+SSH_INSTANCE="$($SELF_DIR/aws-instance-unique running "$SSH_ITAG")"
+SSH_IP="$(echo "$SSH_INSTANCE" | jq --raw-output '.PublicIpAddress')"
+
+"$SELF_DIR/rsync-audere" $SSH_ITAG
+
+echo Creating/updating DNS record
+"$AUDERE_DIR/scripts/aws-bind-dns" $SSH_ITAG
+
+echo "Running aws-api-setup on '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
+ssh "$SSH_USER@$SSH_IP" -t "audere/scripts/aws-api-setup" $SSH_ITAG

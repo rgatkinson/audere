@@ -5,7 +5,11 @@ umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 SUBDOMAIN="$1"
-VM_IP_ADDRESS="$(audere aws-dns "$SUBDOMAIN")"
+PUBLIC_IP="$("$SELF_DIR/client/aws-instance-unique" running "$SUBDOMAIN" | jq --raw-output '.PublicIpAddress')"
+
+# Bash brace expansion can mess up JSON in the heredoc, disable it
+set +B
+
 aws route53 change-resource-record-sets --hosted-zone-id Z2JVHTT9LKA76J --change-batch file://<(
   cat <<-EOF
 		{
@@ -16,10 +20,11 @@ aws route53 change-resource-record-sets --hosted-zone-id Z2JVHTT9LKA76J --change
 		      "Type": "A",
 		      "TTL": 300,
 		      "ResourceRecords": [{
-		        "Value": "$VM_IP_ADDRESS"
+		        "Value": "$PUBLIC_IP"
 		      }]
 		    }
 		  }]
 		}
 	EOF
 )
+echo "DNS record updated for $SUBDOMAIN.auderenow.io"

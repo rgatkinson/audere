@@ -4,6 +4,7 @@
   "description": "A starting point for Node.js express apps with TypeScript",
   "private": true,
   "scripts": {
+    "build": "tsc",
     "start": "concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "tsc && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
@@ -12,10 +13,12 @@
   "main": "build/src/server.js",
   "dependencies": {
     "@types/errorhandler": "^0.0.32",
+    "@types/helmet": "^0.0.42",
     "@types/sequelize": "^4.27.26",
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "helmet": "^3.13.0",
     "ouch": "^2.0.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
