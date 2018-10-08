@@ -1,11 +1,7 @@
 import express from "express";
 import Ouch from "ouch";
 import bodyParser from "body-parser";
-<<<<<<< HEAD
-=======
-import errorHandler from "errorhandler";
 import helmet from 'helmet';
->>>>>>> Add helmet to our express app config
 import { ButtonPush } from "./models";
 import { ValidationError } from "sequelize";
 
