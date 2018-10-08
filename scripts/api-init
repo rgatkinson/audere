@@ -23,6 +23,6 @@ yarn global add pm2
   cd "$HOME/NodeJSWebService"
   yarn install --frozen-lockfile
   yarn build
-  pm2 start build/src/server.js
+  pm2 start process.json --env production
   pm2 save
 )
