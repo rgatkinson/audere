@@ -12,32 +12,32 @@ export default class DemographicsScreen extends React.Component {
     return (
       <ScreenView>
         <MyText style={styles.headingText}>Demographics</MyText>
-        <FieldLabel label="Age">
+        <FieldLabel label="Age:">
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
             onChangeText={age => this.setState({ age })}
           />
         </FieldLabel>
-        <FieldLabel label="Address of residence">
+        <FieldLabel label="Address of residence:">
           <TextInput
             style={styles.wideInput}
             onChangeText={residence => this.setState({ residence })}
           />
         </FieldLabel>
-        <FieldLabel label="Address of primary workplace">
+        <FieldLabel label="Address of primary workplace:">
           <TextInput
             style={styles.wideInput}
             onChangeText={workplace => this.setState({ workplace })}
           />
         </FieldLabel>
-        <FieldLabel label="Race">
+        <FieldLabel label="Race:">
           <TextInput
             style={styles.inputField}
             onChangeText={race => this.setState({ race })}
           />
         </FieldLabel>
-        <FieldLabel label="Ethnicity">
+        <FieldLabel label="Ethnicity:">
           <TextInput
             style={styles.inputField}
             onChangeText={ethnicity => this.setState({ ethnicity })}

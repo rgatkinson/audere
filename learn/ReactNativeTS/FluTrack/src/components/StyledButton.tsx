@@ -1,8 +1,8 @@
 // Custom button that looks like the button on auderenow.org
 
-import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-var styles = require('../Styles.ts');
+import React from "react";
+import { Text, TouchableOpacity } from "react-native";
+var styles = require("../Styles.ts");
 
 export default class StyledButton extends React.Component {
   render() {

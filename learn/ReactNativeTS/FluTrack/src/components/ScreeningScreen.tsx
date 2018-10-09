@@ -1,6 +1,7 @@
 import React from "react";
 import { TextInput, View, Alert } from "react-native";
 import RadioForm from "react-native-simple-radio-button";
+import CheckBox from "react-native-check-box";
 import DatePicker from "react-native-datepicker";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
@@ -12,9 +13,11 @@ var styles = require("../Styles.ts");
 export default class ScreeningScreen extends React.Component {
   constructor(props) {
     super(props);
+    var today = new Date();
     this.state = {
       participatedBefore: false,
-      datePrevEnrollment: "2018-10-08"
+      county: "King",
+      textOK: false
     };
   }
   render() {
@@ -36,19 +39,29 @@ export default class ScreeningScreen extends React.Component {
     return (
       <ScreenView>
         <MyText style={styles.headingText}>Screening for Participant</MyText>
-        <FieldLabel label="Email">
+        <FieldLabel label="Email:">
           <TextInput
             style={styles.inputField}
             autoFocus={true}
             onChangeText={email => this.setState({ email })}
           />
         </FieldLabel>
-        <FieldLabel label="Cell Phone">
+        <FieldLabel label="Cell Phone:">
           <TextInput
             style={styles.inputField}
             onChangeText={cellPhone => this.setState({ cellPhone })}
           />
         </FieldLabel>
+        <CheckBox
+          style={styles.checkbox}
+          onClick={() => {
+            this.setState({
+              textOK: !this.state.textOK
+            });
+          }}
+          isChecked={this.state.textOK}
+          rightText={"OK to text"}
+        />
         <MyText>Have you participated in this study previously?</MyText>
         <RadioForm
           radio_props={noYes_options}
@@ -63,13 +76,11 @@ export default class ScreeningScreen extends React.Component {
           <View>
             <MyText>Date of previous enrollment</MyText>
             <DatePicker
-              style={{ width: 200 }}
-              date={this.state.datePrevEnrollment}
+              style={styles.datePicker}
+              date={new Date()}
               mode="date"
               placeholder="select date"
               format="YYYY-MM-DD"
-              minDate="2018-10-01"
-              maxDate="2019-04-01"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               customStyles={{
@@ -89,14 +100,14 @@ export default class ScreeningScreen extends React.Component {
             />
           </View>
         )}
-        <FieldLabel label="Age">
+        <FieldLabel label="Age:">
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
             onChangeText={age => this.setState({ age })}
           />
         </FieldLabel>
-        <FieldLabel label="County">
+        <FieldLabel label="County:">
           <RadioForm
             radio_props={county_options}
             initial={0}

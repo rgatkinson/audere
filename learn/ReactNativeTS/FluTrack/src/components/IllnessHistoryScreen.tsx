@@ -41,7 +41,7 @@ export default class IllnessHistoryScreen extends React.Component {
           }}
         />
         {this.state.currentlyHospitalized && (
-          <FieldLabel label="Length of hospitalization (days)">
+          <FieldLabel label="Length of hospitalization (days):">
             <TextInput
               style={styles.inputField}
               keyboardType="numeric"

@@ -69,5 +69,8 @@ module.exports = StyleSheet.create({
   },
   flexRow: {
     flexDirection: "row"
+  },
+  datePicker: {
+    width: 200
   }
 });

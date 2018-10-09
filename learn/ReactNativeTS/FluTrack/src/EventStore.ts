@@ -1,13 +1,13 @@
-import uuidv4 from "uuid/v4";
-import { AsyncStorage } from "react-native";
-import axios from "axios";
+import uuidv4 from 'uuid/v4';
+import { AsyncStorage } from 'react-native';
+import axios from 'axios';
 
 const INTERACTION_QUEUE_KEY = 'interaction.queue';
 const DEVICE_ID = uuidv4();
 const api = axios.create({
   baseURL: 'https://api.auderenow.io/api/',
   xsrfCookieName: 'csrftoken',
-  xsrfHeaderName: 'X-CSRFToken',
+  xsrfHeaderName: 'X-CSRFToken'
 });
 
 // api.interceptors.request.use(request => {
@@ -20,7 +20,6 @@ const api = axios.create({
 //   return response;
 // })
 
-
 export async function logInteraction(data: string, count: number) {
   let item = {
     DeviceId: DEVICE_ID,
@@ -29,14 +28,14 @@ export async function logInteraction(data: string, count: number) {
     Extra: data
   };
 
-  console.log('hi!!!');
+  console.log('about to push ' + data + '\n');
   let csrf = null;
   try {
     let response = await api.get('');
     csrf = response.data.CsrfToken;
     await api.post('button/', item, {
-      'headers': {
-        'X-CSRFToken': csrf,
+      headers: {
+        'X-CSRFToken': csrf
       }
     });
   } catch (e) {
@@ -57,5 +56,5 @@ export async function logInteraction(data: string, count: number) {
 }
 
 function safeStr(s: string): string {
-  return s.replace(/\W+/g, ".");
+  return s.replace(/\W+/g, '.');
 }

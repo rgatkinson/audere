@@ -12,10 +12,18 @@ export default class HouseholdScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      residenceType: 0,
+      childCare: 2,
+      respiratoryLastYear: false,
       householdIllnessLast4Weeks: false,
       householdTravelLast4Weeks: false,
+      householdTravelOutsideWA: false,
+      householdTravelOutsideUS: false,
       householdHospitalizedLast4Weeks: false,
-      travelLast4weeks: false
+      travelLast4weeks: false,
+      travelOutsideUS: false,
+      travelOutsideWA: false,
+      smokerInHousehold: false
     };
   }
   render() {
@@ -24,15 +32,15 @@ export default class HouseholdScreen extends React.Component {
       { label: "No", value: false }
     ];
     const residence_options = [
-      { label: "House", value: "0" },
-      { label: "Apartment", value: "1" },
-      { label: "Shelter", value: "2" },
-      { label: "None", value: "3" }
+      { label: "House", value: 0 },
+      { label: "Apartment", value: 1 },
+      { label: "Shelter", value: 2 },
+      { label: "None", value: 3 }
     ];
     const childCare_options = [
-      { label: "Yes, the participant", value: "0" },
-      { label: "Yes, another child", value: "1" },
-      { label: "No or not applicable", value: "2" }
+      { label: "Yes, the participant", value: 0 },
+      { label: "Yes, another child", value: 1 },
+      { label: "No or not applicable", value: 2 }
     ];
     return (
       <ScreenView>
@@ -86,6 +94,18 @@ export default class HouseholdScreen extends React.Component {
             onChangeText={numRooms => this.setState({ numRooms })}
           />
         </FieldLabel>
+        <MyText>
+          Have you had pneumonia or other respiratory cold in the last year?
+        </MyText>
+        <RadioForm
+          radio_props={yesNo_options}
+          initial={1}
+          buttonColor={"#36b3a8"}
+          selectedButtonColor={"#36b3a8"}
+          onPress={respiratoryLastYear => {
+            this.setState({ respiratoryLastYear });
+          }}
+        />
         <MyText>
           Have any household contacts been ill in the last 4 weeks?
         </MyText>
