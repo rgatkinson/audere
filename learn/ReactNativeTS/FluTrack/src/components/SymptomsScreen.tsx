@@ -4,29 +4,24 @@ import CheckBox from "react-native-check-box";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class SymptomsScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      fever: false,
-      cough: false,
-      wheezing: false,
-      muscleAche: false,
-      shortnessOfBreath: false,
-      troubleBreathing: false,
-      mucous: false,
-      earPain: false
-    };
-  }
+  state = {
+    fever: false,
+    cough: false,
+    wheezing: false,
+    muscleAche: false,
+    shortnessOfBreath: false,
+    troubleBreathing: false,
+    mucous: false,
+    earPain: false
+  };
   render() {
     return (
       <ScreenView>
         <MyText style={styles.headingText}>Symptoms</MyText>
-        <MyText style={{ width: 300 }}>
-          Please check the symptoms you are experiencing today
-        </MyText>
+        <MyText>Please check the symptoms you are experiencing today</MyText>
         <CheckBox
           style={styles.checkbox}
           onClick={() => {
@@ -111,7 +106,7 @@ export default class SymptomsScreen extends React.Component {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate("Demographics");
+            this.props.navigation.navigate(this.props.onNext);
           }}
         />
       </ScreenView>

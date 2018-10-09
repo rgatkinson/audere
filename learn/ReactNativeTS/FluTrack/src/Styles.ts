@@ -1,14 +1,11 @@
 // Common styles go here
 
-"use strict";
+import { StyleSheet } from "react-native";
 
-var React = require("react-native");
-
-var { StyleSheet } = React;
-
-module.exports = StyleSheet.create({
+export default StyleSheet.create({
   scrollView: {
-    flex: 1
+    flex: 1,
+    marginTop: 60
   },
   screenView: {
     alignItems: "center",
@@ -27,6 +24,12 @@ module.exports = StyleSheet.create({
     width: 300
   },
   inputField: {
+    width: 100,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    paddingLeft: 10
+  },
+  fieldLabel: {
     width: 100
   },
   titleText: {
@@ -61,16 +64,24 @@ module.exports = StyleSheet.create({
   white: {
     color: "white"
   },
-  whiteBackground: {
+  consentViewer: {
+    marginTop: 20,
     backgroundColor: "white"
   },
   wideInput: {
-    width: 250
+    width: 250,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    paddingLeft: 10
   },
   flexRow: {
     flexDirection: "row"
   },
   datePicker: {
     width: 200
+  },
+  errorBorder: {
+    borderColor: "red",
+    borderWidth: 3
   }
 });

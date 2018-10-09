@@ -6,17 +6,14 @@ import RadioForm from "react-native-simple-radio-button";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class IllnessHistoryScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentlyHospitalized: false
-    };
-  }
+  state = {
+    currentlyHospitalized: false
+  };
   render() {
-    const yesNo_options = [
+    const yesNoOptions = [
       { label: "Yes", value: true },
       { label: "No", value: false }
     ];
@@ -27,12 +24,13 @@ export default class IllnessHistoryScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={daysSick => this.setState({ daysSick })}
           />
         </FieldLabel>
         <MyText>Currently hospitalized</MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -45,6 +43,7 @@ export default class IllnessHistoryScreen extends React.Component {
             <TextInput
               style={styles.inputField}
               keyboardType="numeric"
+              underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={daysHospitalized =>
                 this.setState({ daysHospitalized })
               }
@@ -55,7 +54,7 @@ export default class IllnessHistoryScreen extends React.Component {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate("Consent");
+            this.props.navigation.navigate(this.props.onNext);
           }}
         />
       </ScreenView>

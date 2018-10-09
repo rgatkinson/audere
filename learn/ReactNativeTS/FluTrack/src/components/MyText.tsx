@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Text } from "react-native";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class MyText extends React.Component {
   render() {

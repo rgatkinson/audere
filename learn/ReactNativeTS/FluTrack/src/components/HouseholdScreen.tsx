@@ -6,38 +6,35 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import RadioForm from "react-native-simple-radio-button";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class HouseholdScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      residenceType: 0,
-      childCare: 2,
-      respiratoryLastYear: false,
-      householdIllnessLast4Weeks: false,
-      householdTravelLast4Weeks: false,
-      householdTravelOutsideWA: false,
-      householdTravelOutsideUS: false,
-      householdHospitalizedLast4Weeks: false,
-      travelLast4weeks: false,
-      travelOutsideUS: false,
-      travelOutsideWA: false,
-      smokerInHousehold: false
-    };
-  }
+  state = {
+    residenceType: 0,
+    childCare: 2,
+    respiratoryLastYear: false,
+    householdIllnessLast4Weeks: false,
+    householdTravelLast4Weeks: false,
+    householdTravelOutsideWA: false,
+    householdTravelOutsideUS: false,
+    householdHospitalizedLast4Weeks: false,
+    travelLast4weeks: false,
+    travelOutsideUS: false,
+    travelOutsideWA: false,
+    smokerInHousehold: false
+  };
   render() {
-    const yesNo_options = [
+    const yesNoOptions = [
       { label: "Yes", value: true },
       { label: "No", value: false }
     ];
-    const residence_options = [
+    const residenceOptions = [
       { label: "House", value: 0 },
       { label: "Apartment", value: 1 },
       { label: "Shelter", value: 2 },
       { label: "None", value: 3 }
     ];
-    const childCare_options = [
+    const childCareOptions = [
       { label: "Yes, the participant", value: 0 },
       { label: "Yes, another child", value: 1 },
       { label: "No or not applicable", value: 2 }
@@ -49,7 +46,7 @@ export default class HouseholdScreen extends React.Component {
         </MyText>
         <MyText>Which best describes your residence?</MyText>
         <RadioForm
-          radio_props={residence_options}
+          radio_props={residenceOptions}
           initial={0}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -61,6 +58,7 @@ export default class HouseholdScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={householdSize => this.setState({ householdSize })}
           />
         </FieldLabel>
@@ -69,6 +67,7 @@ export default class HouseholdScreen extends React.Component {
             <FieldLabel label="What are their ages?">
               <TextInput
                 style={styles.inputField}
+                underlineColorAndroid="rgba(0,0,0,0)"
                 onChangeText={householdAges => this.setState({ householdAges })}
               />
             </FieldLabel>
@@ -77,7 +76,7 @@ export default class HouseholdScreen extends React.Component {
               least 3 other children for 3 or more hours/day?
             </MyText>
             <RadioForm
-              radio_props={childCare_options}
+              radio_props={childCareOptions}
               initial={2}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -91,6 +90,7 @@ export default class HouseholdScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={numRooms => this.setState({ numRooms })}
           />
         </FieldLabel>
@@ -98,7 +98,7 @@ export default class HouseholdScreen extends React.Component {
           Have you had pneumonia or other respiratory cold in the last year?
         </MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -110,7 +110,7 @@ export default class HouseholdScreen extends React.Component {
           Have any household contacts been ill in the last 4 weeks?
         </MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -122,7 +122,7 @@ export default class HouseholdScreen extends React.Component {
           <View>
             <MyText>Were they hospitalized?</MyText>
             <RadioForm
-              radio_props={yesNo_options}
+              radio_props={yesNoOptions}
               initial={1}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -136,7 +136,7 @@ export default class HouseholdScreen extends React.Component {
           Have any household contacts travelled in the last 4 weeks?
         </MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -148,7 +148,7 @@ export default class HouseholdScreen extends React.Component {
           <View>
             <MyText>Outside of WA State</MyText>
             <RadioForm
-              radio_props={yesNo_options}
+              radio_props={yesNoOptions}
               initial={1}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -158,7 +158,7 @@ export default class HouseholdScreen extends React.Component {
             />
             <MyText>Outside of the United States</MyText>
             <RadioForm
-              radio_props={yesNo_options}
+              radio_props={yesNoOptions}
               initial={1}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -170,7 +170,7 @@ export default class HouseholdScreen extends React.Component {
         )}
         <MyText>Have you travelled in the last 4 weeks?</MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -182,7 +182,7 @@ export default class HouseholdScreen extends React.Component {
           <View>
             <MyText>Outside of WA State</MyText>
             <RadioForm
-              radio_props={yesNo_options}
+              radio_props={yesNoOptions}
               initial={1}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -192,7 +192,7 @@ export default class HouseholdScreen extends React.Component {
             />
             <MyText>Outside of the United States</MyText>
             <RadioForm
-              radio_props={yesNo_options}
+              radio_props={yesNoOptions}
               initial={1}
               buttonColor={"#36b3a8"}
               selectedButtonColor={"#36b3a8"}
@@ -204,7 +204,7 @@ export default class HouseholdScreen extends React.Component {
         )}
         <MyText>Do you or any household contacts smoke?</MyText>
         <RadioForm
-          radio_props={yesNo_options}
+          radio_props={yesNoOptions}
           initial={1}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -216,7 +216,7 @@ export default class HouseholdScreen extends React.Component {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate("IllnessHistory");
+            this.props.navigation.navigate(this.props.onNext);
           }}
         />
       </ScreenView>

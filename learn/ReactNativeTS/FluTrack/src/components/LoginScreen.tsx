@@ -1,26 +1,39 @@
 import React from "react";
-import { Text, TextInput, Platform, Dimensions } from "react-native";
+import { Text, TextInput, Platform, Dimensions, Alert } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
-var pjson = require("../../package.json");
+import styles from "../Styles";
+let pjson = require("../../package.json");
 
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
-    var { height, width } = Dimensions.get("window");
+    const { height, width } = Dimensions.get("window");
     this.state = {
       id: "",
       password: "",
       deviceOS: Platform.OS,
       deviceVersion: Platform.Version,
       screenHeight: height,
-      screenWidth: width
+      screenWidth: width,
+      idError: false,
+      passwordError: false
     };
   }
 
+  validate(text: string, type: string) {
+    let idPattern = /^[a-zA-Z0-9_-]{3,16}$/;
+    if (type == "id") {
+      this.setState({ id: text });
+      if (idPattern.test(text)) {
+        this.setState({ idError: false });
+      } else {
+        this.setState({ idError: true });
+      }
+    }
+  }
   render() {
     return (
       <ScreenView>
@@ -30,15 +43,20 @@ export default class LoginScreen extends React.Component {
         </Text>
         <FieldLabel label="Login ID:">
           <TextInput
-            style={styles.inputField}
+            style={[
+              styles.inputField,
+              this.state.idError ? styles.errorBorder : null
+            ]}
             autoFocus={true}
-            onChangeText={id => this.setState({ id })}
+            underlineColorAndroid="rgba(0,0,0,0)"
+            onChangeText={id => this.validate(id, "id")}
           />
         </FieldLabel>
         <FieldLabel label="Password:">
           <TextInput
             style={styles.inputField}
             secureTextEntry={true}
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={password => this.setState({ password })}
           />
         </FieldLabel>
@@ -47,7 +65,7 @@ export default class LoginScreen extends React.Component {
           title="LOGIN"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate("Screening");
+            this.props.navigation.navigate(this.props.onNext);
           }}
         />
       </ScreenView>

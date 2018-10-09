@@ -4,27 +4,22 @@ import StyledButton from "./StyledButton";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
-import consentForm from "../resources/consentForm.json";
+import styles from "../Styles";
+import { CONSENT_FORM_TEXT } from "../resources/consentForm";
 
 export default class ConsentScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      consent: "true"
-    };
-  }
+  state = {
+    consent: true
+  };
   render() {
     return (
       <ScreenView>
         <MyText>
           Please read the following and click "I Agree" if you agree to the
           terms of the study.
-          {"\n"}
-          {"\n"}
         </MyText>
-        <View style={styles.whiteBackground}>
-          <Text>{consentForm.content}</Text>
+        <View style={styles.consentViewer}>
+          <Text>{CONSENT_FORM_TEXT}</Text>
         </View>
         <StyledButton
           title="I AGREE"

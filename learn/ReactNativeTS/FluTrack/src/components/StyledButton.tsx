@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class StyledButton extends React.Component {
   render() {

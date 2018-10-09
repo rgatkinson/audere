@@ -4,13 +4,13 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MyText from "./MyText";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class FieldLabel extends React.Component {
   render() {
     return (
       <View style={styles.flexRow}>
-        <MyText style={styles.inputField}>{this.props.label}</MyText>
+        <MyText style={styles.fieldLabel}>{this.props.label}</MyText>
         {this.props.children}
       </View>
     );

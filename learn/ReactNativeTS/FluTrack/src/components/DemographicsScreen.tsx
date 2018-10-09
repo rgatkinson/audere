@@ -5,7 +5,7 @@ import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class DemographicsScreen extends React.Component {
   render() {
@@ -16,30 +16,35 @@ export default class DemographicsScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={age => this.setState({ age })}
           />
         </FieldLabel>
-        <FieldLabel label="Address of residence:">
+        <FieldLabel label="Home address:">
           <TextInput
             style={styles.wideInput}
-            onChangeText={residence => this.setState({ residence })}
+            underlineColorAndroid="rgba(0,0,0,0)"
+            onChangeText={homeAddress => this.setState({ homeAddress })}
           />
         </FieldLabel>
-        <FieldLabel label="Address of primary workplace:">
+        <FieldLabel label="Work address:">
           <TextInput
             style={styles.wideInput}
-            onChangeText={workplace => this.setState({ workplace })}
+            underlineColorAndroid="rgba(0,0,0,0)"
+            onChangeText={workAddress => this.setState({ workAddress })}
           />
         </FieldLabel>
         <FieldLabel label="Race:">
           <TextInput
             style={styles.inputField}
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={race => this.setState({ race })}
           />
         </FieldLabel>
         <FieldLabel label="Ethnicity:">
           <TextInput
             style={styles.inputField}
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={ethnicity => this.setState({ ethnicity })}
           />
         </FieldLabel>

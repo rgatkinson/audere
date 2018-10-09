@@ -8,12 +8,12 @@ import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-var styles = require("../Styles.ts");
+import styles from "../Styles";
 
 export default class ScreeningScreen extends React.Component {
   constructor(props) {
     super(props);
-    var today = new Date();
+    let today = new Date();
     this.state = {
       participatedBefore: false,
       county: "King",
@@ -21,15 +21,11 @@ export default class ScreeningScreen extends React.Component {
     };
   }
   render() {
-    const yesNo_options = [
-      { label: "Yes", value: true },
-      { label: "No", value: false }
-    ];
-    const noYes_options = [
+    const noYesOptions = [
       { label: "No", value: false },
       { label: "Yes", value: true }
     ];
-    const county_options = [
+    const countyOptions = [
       { label: "King", value: "King" },
       { label: "Snohomish", value: "Snohomish" },
       { label: "Pierce", value: "Pierce" },
@@ -43,12 +39,14 @@ export default class ScreeningScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             autoFocus={true}
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={email => this.setState({ email })}
           />
         </FieldLabel>
         <FieldLabel label="Cell Phone:">
           <TextInput
             style={styles.inputField}
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={cellPhone => this.setState({ cellPhone })}
           />
         </FieldLabel>
@@ -64,7 +62,7 @@ export default class ScreeningScreen extends React.Component {
         />
         <MyText>Have you participated in this study previously?</MyText>
         <RadioForm
-          radio_props={noYes_options}
+          radio_props={noYesOptions}
           initial={0}
           buttonColor={"#36b3a8"}
           selectedButtonColor={"#36b3a8"}
@@ -104,12 +102,13 @@ export default class ScreeningScreen extends React.Component {
           <TextInput
             style={styles.inputField}
             keyboardType="numeric"
+            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={age => this.setState({ age })}
           />
         </FieldLabel>
         <FieldLabel label="County:">
           <RadioForm
-            radio_props={county_options}
+            radio_props={countyOptions}
             initial={0}
             buttonColor={"#36b3a8"}
             selectedButtonColor={"#36b3a8"}
@@ -124,7 +123,7 @@ export default class ScreeningScreen extends React.Component {
             title="YES"
             onPress={() => {
               interact(JSON.stringify(this.state));
-              this.props.navigation.navigate("Symptoms");
+              this.props.navigation.navigate(this.props.onNext);
             }}
           />
           <StyledButton
