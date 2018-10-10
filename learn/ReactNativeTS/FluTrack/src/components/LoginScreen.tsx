@@ -48,6 +48,8 @@ export default class LoginScreen extends React.Component {
               this.state.idError ? styles.errorBorder : null
             ]}
             autoFocus={true}
+            keyboardType="email-address"
+            autoCapitalize="none"
             underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={id => this.validate(id, "id")}
           />

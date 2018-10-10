@@ -1,8 +1,8 @@
 import React from "react";
-import { TextInput } from "react-native";
+import { TextInput, View } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
-import RadioForm from "react-native-simple-radio-button";
+import RadioButton from "./RadioButton";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
@@ -13,43 +13,44 @@ export default class IllnessHistoryScreen extends React.Component {
     currentlyHospitalized: false
   };
   render() {
-    const yesNoOptions = [
-      { label: "Yes", value: true },
-      { label: "No", value: false }
-    ];
     return (
       <ScreenView>
         <MyText style={styles.headingText}>Illness History</MyText>
-        <FieldLabel label="Including today, how many days have you been sick?">
-          <TextInput
-            style={styles.inputField}
-            keyboardType="numeric"
-            underlineColorAndroid="rgba(0,0,0,0)"
-            onChangeText={daysSick => this.setState({ daysSick })}
-          />
-        </FieldLabel>
-        <MyText>Currently hospitalized</MyText>
-        <RadioForm
-          radio_props={yesNoOptions}
-          initial={1}
-          buttonColor={"#36b3a8"}
-          selectedButtonColor={"#36b3a8"}
-          onPress={currentlyHospitalized => {
-            this.setState({ currentlyHospitalized });
-          }}
-        />
-        {this.state.currentlyHospitalized && (
-          <FieldLabel label="Length of hospitalization (days):">
+        <View style={styles.formLayout}>
+          <MyText>Including today, how many days have you been sick?</MyText>
+          <FieldLabel label="">
             <TextInput
               style={styles.inputField}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
-              onChangeText={daysHospitalized =>
-                this.setState({ daysHospitalized })
-              }
+              onChangeText={daysSick => this.setState({ daysSick })}
             />
           </FieldLabel>
-        )}
+          <MyText>Currently hospitalized</MyText>
+          <FieldLabel label="">
+            <RadioButton
+              initial={1}
+              onPress={currentlyHospitalized => {
+                this.setState({ currentlyHospitalized });
+              }}
+            />
+          </FieldLabel>
+          {this.state.currentlyHospitalized && (
+            <View>
+              <MyText>Length of hospitalization (days):</MyText>
+              <FieldLabel label="">
+                <TextInput
+                  style={styles.inputField}
+                  keyboardType="numeric"
+                  underlineColorAndroid="rgba(0,0,0,0)"
+                  onChangeText={daysHospitalized =>
+                    this.setState({ daysHospitalized })
+                  }
+                />
+              </FieldLabel>
+            </View>
+          )}
+        </View>
         <StyledButton
           title="NEXT"
           onPress={() => {

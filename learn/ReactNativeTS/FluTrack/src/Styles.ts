@@ -2,10 +2,16 @@
 
 import { StyleSheet } from "react-native";
 
+export const colors = {
+  accent: "#36b3a8" // Audere button color
+};
+
 export default StyleSheet.create({
   scrollView: {
     flex: 1,
-    marginTop: 60
+    marginTop: 60,
+    paddingLeft: 5,
+    paddingRight: 5
   },
   screenView: {
     alignItems: "center",
@@ -27,7 +33,7 @@ export default StyleSheet.create({
     width: 100,
     marginBottom: 10,
     backgroundColor: "#fff",
-    paddingLeft: 10
+    paddingLeft: 5
   },
   fieldLabel: {
     width: 100
@@ -46,9 +52,9 @@ export default StyleSheet.create({
     fontSize: 24
   },
   styledButton: {
-    margin: 20,
-    padding: 20,
-    backgroundColor: "#36b3a8", // Audere button color
+    margin: 8,
+    padding: 18,
+    backgroundColor: colors.accent,
     borderRadius: 20,
     borderWidth: 0,
     height: 45,
@@ -75,13 +81,20 @@ export default StyleSheet.create({
     paddingLeft: 10
   },
   flexRow: {
-    flexDirection: "row"
+    flexDirection: "row",
+    justifyContent: "flex-start"
   },
   datePicker: {
-    width: 200
+    width: 200,
+    marginBottom: 10
   },
   errorBorder: {
     borderColor: "red",
     borderWidth: 3
+  },
+  formLayout: {
+    flex: 1,
+    alignSelf: "stretch",
+    justifyContent: "flex-start"
   }
 });

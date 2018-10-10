@@ -21,7 +21,7 @@ export default class SymptomsScreen extends React.Component {
     return (
       <ScreenView>
         <MyText style={styles.headingText}>Symptoms</MyText>
-        <MyText>Please check the symptoms you are experiencing today</MyText>
+        <MyText>Please check the symptoms you are experiencing today:</MyText>
         <CheckBox
           style={styles.checkbox}
           onClick={() => {
@@ -30,7 +30,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.fever}
-          rightText={"Fever"}
+          rightText="Fever"
         />
         <CheckBox
           style={styles.checkbox}
@@ -40,7 +40,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.cough}
-          rightText={"New or worsening cough"}
+          rightText="New or worsening cough"
         />
         <CheckBox
           style={styles.checkbox}
@@ -50,7 +50,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.wheezing}
-          rightText={"Wheezing"}
+          rightText="Wheezing"
         />
         <CheckBox
           style={styles.checkbox}
@@ -60,7 +60,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.muscleAche}
-          rightText={"Muscle ache"}
+          rightText="Muscle ache"
         />
         <CheckBox
           style={styles.checkbox}
@@ -70,7 +70,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.shortnessOfBreath}
-          rightText={"Shortness of breath (increased or new)"}
+          rightText="Shortness of breath (increased or new)"
         />
         <CheckBox
           style={styles.checkbox}
@@ -80,7 +80,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.troubleBreathing}
-          rightText={"Trouble with or fast breathing"}
+          rightText="Trouble with or fast breathing"
         />
         <CheckBox
           style={styles.checkbox}
@@ -90,7 +90,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.mucous}
-          rightText={"New mucous or phlegm production"}
+          rightText="New mucous or phlegm production"
         />
         <CheckBox
           style={styles.checkbox}
@@ -100,7 +100,7 @@ export default class SymptomsScreen extends React.Component {
             });
           }}
           isChecked={this.state.earPain}
-          rightText={"Ear pain or ear discharge"}
+          rightText="Ear pain or ear discharge"
         />
         <StyledButton
           title="NEXT"
