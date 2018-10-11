@@ -29,6 +29,7 @@ sudo apt update
 sudo apt -y full-upgrade
 sudo apt -y install postgresql-client-common nginx yarn nodejs
 
+"$SELF_DIR/add-developer-accounts"
 sudo adduser --shell /bin/bash --gecos "Audere Api" --disabled-password api
 sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.pgpass" "$HOME/NodeJSWebService" ~api
 
