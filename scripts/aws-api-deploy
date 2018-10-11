@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+
+sudo -H --login --user=api bash <<- EOAPI
+	cd "\$HOME/NodeJSWebService"
+	pm2 stop api
+EOAPI
+sudo rsync --chown=api:api --chmod="go-rwx" -a --delete "$HOME/NodeJSWebService" ~api
+sudo -H --login --user=api bash <<- EOAPI
+	cd "\$HOME/NodeJSWebService"
+	yarn install --frozen-lockfile
+	yarn build
+	pm2 start process.json
+	pm2 save
+EOAPI

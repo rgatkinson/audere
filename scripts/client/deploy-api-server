@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+source $SELF_DIR/utils
+
+check-arg-count 1 "$@"
+SSH_USER="$(get-ssh-user "$1")"
+SSH_ITAG="$(get-ssh-itag "$1")"
+SSH_IP="$(get-instance-ip "$1")"
+
+"$SELF_DIR/rsync-audere" $SSH_ITAG
+
+echo "Running aws-api-deploy on '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
+ssh "$SSH_USER@$SSH_IP" -t "audere/scripts/aws-api-deploy"
