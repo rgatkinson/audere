@@ -3,7 +3,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('button_pushes', {
       deviceId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
         allowNull: false,
         validate: {
           isUUID: 4,
