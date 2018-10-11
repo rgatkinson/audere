@@ -25,3 +25,6 @@ for key in "$KEY_DIR"/*; do
     echo "$user ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/50-$user"
   fi
 done
+
+cp "$HOME/.ssh/authorized_keys" "$HOME/.ssh/authorized_keys.original"
+cat "$KEY_DIR"/* >"$HOME/.ssh/authorized_keys"
