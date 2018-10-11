@@ -5,14 +5,21 @@ import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
+import { connect } from "react-redux";
 import { interact } from "../../App";
 import styles from "../Styles";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   onNext: string;
+  age: number;
 }
-export default class DemographicsScreen extends React.Component<Props, any> {
+function mapStateToProps(state: any) {
+  return {
+    age: state.age
+  };
+}
+class DemographicsScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
@@ -21,8 +28,9 @@ export default class DemographicsScreen extends React.Component<Props, any> {
           <FieldLabel label="Age:">
             <TextInput
               style={styles.inputField}
+              value={this.props.age == 0 ? "" : this.props.age + ""}
+              autoFocus={this.props.age == 0}
               keyboardType="numeric"
-              autoFocus={true}
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={age => this.setState({ age })}
             />
@@ -31,6 +39,7 @@ export default class DemographicsScreen extends React.Component<Props, any> {
             <TextInput
               style={styles.wideInput}
               underlineColorAndroid="rgba(0,0,0,0)"
+              autoFocus={this.props.age !== 0}
               onChangeText={homeAddress => this.setState({ homeAddress })}
             />
           </FieldLabel>
@@ -67,3 +76,5 @@ export default class DemographicsScreen extends React.Component<Props, any> {
     );
   }
 }
+
+export default connect(mapStateToProps)(DemographicsScreen);

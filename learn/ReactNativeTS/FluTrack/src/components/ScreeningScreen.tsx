@@ -7,6 +7,8 @@ import RadioButton from "./RadioButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
+import { connect } from "react-redux";
+import { SET_AGE } from "../store/Constants";
 import { NavigationScreenProp } from "react-navigation";
 import { interact } from "../../App";
 import styles from "../Styles";
@@ -16,12 +18,15 @@ interface Props {
   onNext: string;
 }
 
-export default class ScreeningScreen extends React.Component<Props, any> {
+class ScreeningScreen extends React.Component<Props, any> {
   state = {
     participatedBefore: false,
     datePrevEnrollment: new Date(),
-    county: "King",
-    textOK: false
+    textOK: false,
+    age: ""
+  };
+  saveAge = (age: number) => {
+    this.props.dispatch({ type: SET_AGE, payload: age });
   };
   render() {
     const noYesOptions = [
@@ -133,6 +138,7 @@ export default class ScreeningScreen extends React.Component<Props, any> {
               <StyledButton
                 title="YES"
                 onPress={() => {
+                  this.saveAge(+this.state.age);
                   interact(JSON.stringify(this.state));
                   this.props.navigation.navigate(this.props.onNext);
                 }}
@@ -150,3 +156,5 @@ export default class ScreeningScreen extends React.Component<Props, any> {
     );
   }
 }
+
+export default connect()(ScreeningScreen);

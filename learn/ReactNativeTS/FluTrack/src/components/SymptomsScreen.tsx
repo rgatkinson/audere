@@ -5,13 +5,20 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
 import styles from "../Styles";
+import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   onNext: string;
+  age: number;
 }
-export default class SymptomsScreen extends React.Component<Props, any> {
+function mapStateToProps(state: any) {
+  return {
+    age: state.age
+  };
+}
+class SymptomsScreen extends React.Component<Props, any> {
   state = {
     fever: false,
     cough: false,
@@ -97,16 +104,19 @@ export default class SymptomsScreen extends React.Component<Props, any> {
           isChecked={this.state.mucous}
           rightText="New mucous or phlegm production"
         />
-        <CheckBox
-          style={styles.checkbox}
-          onClick={() => {
-            this.setState({
-              earPain: !this.state.earPain
-            });
-          }}
-          isChecked={this.state.earPain}
-          rightText="Ear pain or ear discharge"
-        />
+        {this.props.age < 10 && (
+          // This question only for children
+          <CheckBox
+            style={styles.checkbox}
+            onClick={() => {
+              this.setState({
+                earPain: !this.state.earPain
+              });
+            }}
+            isChecked={this.state.earPain}
+            rightText="Ear pain or ear discharge"
+          />
+        )}
         <StyledButton
           title="NEXT"
           onPress={() => {
@@ -118,3 +128,5 @@ export default class SymptomsScreen extends React.Component<Props, any> {
     );
   }
 }
+
+export default connect(mapStateToProps)(SymptomsScreen);

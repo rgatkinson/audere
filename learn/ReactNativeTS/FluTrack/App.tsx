@@ -9,6 +9,8 @@ import DemographicsScreen from "./src/components/DemographicsScreen";
 import HouseholdScreen from "./src/components/HouseholdScreen";
 import IllnessHistoryScreen from "./src/components/IllnessHistoryScreen";
 import ConsentScreen from "./src/components/ConsentScreen";
+import store from "./src/store/";
+import { Provider } from "react-redux";
 
 let x = 1;
 export function interact(data: string): Promise<void> {
@@ -55,6 +57,10 @@ const RootStack = createStackNavigator(
 
 export default class App extends React.Component {
   render() {
-    return <RootStack />;
+    return (
+      <Provider store={store}>
+        <RootStack />
+      </Provider>
+    );
   }
 }

@@ -6,13 +6,15 @@ import ScreenView from "./ScreenView";
 import { interact } from "../../App";
 import styles from "../Styles";
 import { NavigationScreenProp } from "react-navigation";
+// import { connect } from "react-redux";
+// import { SET_ID, SET_PASSWORD } from "../store/Constants";
 let pjson = require("../../package.json");
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   onNext: string;
 }
-export default class LoginScreen extends React.Component<Props, any> {
+class LoginScreen extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
     const { height, width } = Dimensions.get("window");
@@ -27,17 +29,23 @@ export default class LoginScreen extends React.Component<Props, any> {
       passwordError: false
     };
   }
+  // saveId = (text: string) => {
+  //   this.props.dispatch({ type: SET_ID, payload: text });
+  // };
+  // savePassword = (text: string) => {
+  //   this.props.dispatch({ type: SET_PASSWORD, text });
+  // };
+  isValid(text: string, inputType: string): boolean {
+    // Return true if valid, false if invalid
 
-  validate(text: string, type: string) {
     let idPattern = /^[a-zA-Z0-9_-]{3,16}$/;
-    if (type == "id") {
-      this.setState({ id: text });
-      if (idPattern.test(text)) {
-        this.setState({ idError: false });
-      } else {
-        this.setState({ idError: true });
-      }
+    let passwordPattern = /^.{6,}$/;
+    if (inputType == "id") {
+      return idPattern.test(text);
+    } else if (inputType == "password") {
+      return passwordPattern.test(text);
     }
+    return true;
   }
   render() {
     return (
@@ -56,21 +64,36 @@ export default class LoginScreen extends React.Component<Props, any> {
             keyboardType="email-address"
             autoCapitalize="none"
             underlineColorAndroid="rgba(0,0,0,0)"
-            onChangeText={id => this.validate(id, "id")}
+            onChangeText={id => this.setState({ id })}
+            onSubmitEditing={() => {
+              this.setState({
+                idError: !this.isValid(this.state.id, "id")
+              });
+            }}
           />
         </FieldLabel>
         <FieldLabel label="Password:">
           <TextInput
-            style={styles.inputField}
+            style={[
+              styles.inputField,
+              this.state.passwordError ? styles.errorBorder : null
+            ]}
             secureTextEntry={true}
             underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={password => this.setState({ password })}
+            onSubmitEditing={() => {
+              this.setState({
+                passwordError: !this.isValid(this.state.password, "password")
+              });
+            }}
           />
         </FieldLabel>
 
         <StyledButton
           title="LOGIN"
           onPress={() => {
+            // this.saveId(this.state.id);
+            // this.savePassword(this.state.password);
             interact(JSON.stringify(this.state));
             this.props.navigation.navigate(this.props.onNext);
           }}
@@ -79,3 +102,6 @@ export default class LoginScreen extends React.Component<Props, any> {
     );
   }
 }
+
+export default LoginScreen;
+// export default connect()(LoginScreen);
