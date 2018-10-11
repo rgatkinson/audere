@@ -7,20 +7,22 @@ import RadioButton from "./RadioButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
+import { NavigationScreenProp } from "react-navigation";
 import { interact } from "../../App";
 import styles from "../Styles";
 
-export default class ScreeningScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    let today = new Date();
-    this.state = {
-      participatedBefore: false,
-      datePrevEnrollment: new Date(),
-      county: "King",
-      textOK: false
-    };
-  }
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+
+export default class ScreeningScreen extends React.Component<Props, any> {
+  state = {
+    participatedBefore: false,
+    datePrevEnrollment: new Date(),
+    county: "King",
+    textOK: false
+  };
   render() {
     const noYesOptions = [
       { label: "No", value: false },
@@ -101,7 +103,7 @@ export default class ScreeningScreen extends React.Component {
                       marginLeft: 36
                     }
                   }}
-                  onDateChange={datePrevEnrollment =>
+                  onDateChange={(datePrevEnrollment: any) =>
                     this.setState({ datePrevEnrollment })
                   }
                 />

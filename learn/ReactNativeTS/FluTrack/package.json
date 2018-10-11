@@ -43,6 +43,7 @@
     "cacheDirectory": ".jest/cache"
   },
   "dependencies": {
+    "@types/react-navigation": "^2.0.24",
     "axios": "^0.18.0",
     "expo": "^27.0.1",
     "react": "16.3.1",

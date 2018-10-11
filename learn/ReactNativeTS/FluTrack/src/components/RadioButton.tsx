@@ -1,16 +1,15 @@
 // Radio button adding style to react-native-simple-radio-button
 
 import React from "react";
-import PropTypes from "prop-types";
 import RadioForm from "react-native-simple-radio-button";
 import styles, { colors } from "../Styles";
 
-export default class RadioButton extends React.Component {
-  static propTypes = {
-    options: PropTypes.array,
-    initial: PropTypes.number,
-    onPress: PropTypes.func.isRequired
-  };
+interface Props {
+  options?: any[];
+  initial?: number;
+  onPress(arg: any): void;
+}
+export default class RadioButton extends React.Component<Props, any> {
   render() {
     const defaultOptions = [
       { label: "Yes", value: true },

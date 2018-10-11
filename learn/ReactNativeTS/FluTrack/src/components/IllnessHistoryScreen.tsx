@@ -5,10 +5,15 @@ import FieldLabel from "./FieldLabel";
 import RadioButton from "./RadioButton";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
+import { NavigationScreenProp } from "react-navigation";
 import { interact } from "../../App";
 import styles from "../Styles";
 
-export default class IllnessHistoryScreen extends React.Component {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+export default class IllnessHistoryScreen extends React.Component<Props, any> {
   state = {
     currentlyHospitalized: false
   };

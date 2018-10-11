@@ -1,5 +1,6 @@
 import React from "react";
 import { TextInput, View } from "react-native";
+import { NavigationScreenProp } from "react-navigation";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
@@ -7,7 +8,11 @@ import MyText from "./MyText";
 import { interact } from "../../App";
 import styles from "../Styles";
 
-export default class DemographicsScreen extends React.Component {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+export default class DemographicsScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
@@ -55,7 +60,7 @@ export default class DemographicsScreen extends React.Component {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate("Household");
+            this.props.navigation.navigate(this.props.onNext);
           }}
         />
       </ScreenView>

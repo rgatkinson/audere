@@ -5,8 +5,13 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
 import styles from "../Styles";
+import { NavigationScreenProp } from "react-navigation";
 
-export default class SymptomsScreen extends React.Component {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+export default class SymptomsScreen extends React.Component<Props, any> {
   state = {
     fever: false,
     cough: false,

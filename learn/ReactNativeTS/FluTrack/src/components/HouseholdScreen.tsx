@@ -6,12 +6,18 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import RadioButton from "./RadioButton";
 import { interact } from "../../App";
+import { NavigationScreenProp } from "react-navigation";
 import styles from "../Styles";
 
-export default class HouseholdScreen extends React.Component {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+export default class HouseholdScreen extends React.Component<Props, any> {
   state = {
     residenceType: 0,
     childCare: 2,
+    householdSize: 1,
     respiratoryLastYear: false,
     householdIllnessLast4Weeks: false,
     householdTravelLast4Weeks: false,

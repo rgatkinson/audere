@@ -689,6 +689,14 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-native@*":
+  version "0.57.4"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.57.4.tgz#20824c0ccc2701d81b91af015f96afae095024e5"
+  integrity sha512-ZZArJ0va17Gz+MnCh3TR12T1yB0RD/+uALAtTEl2y67MATrcMXGH/HYgJ/VX/TAS0P3fsrYE6HePmaGMW+1sEw==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/react" "*"
+
 "@types/react-native@^0.56.21":
   version "0.56.21"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.56.21.tgz#15e7aeb48d5e56013c0778290038aa1d6df7e906"
@@ -696,6 +704,14 @@
   dependencies:
     "@types/prop-types" "*"
     "@types/react" "*"
+
+"@types/react-navigation@^2.0.24":
+  version "2.0.24"
+  resolved "https://registry.yarnpkg.com/@types/react-navigation/-/react-navigation-2.0.24.tgz#f7cb197efed1496129283c9fd33f134e8cc27803"
+  integrity sha512-jejv7LjBdlynBN1zyfXlbiO0keyHZGz/m5iTfXNK2R5yR8Gg2nRsIscnG+CRBaR2yQtrrS3OLMJbbH+Q54GLiQ==
+  dependencies:
+    "@types/react" "*"
+    "@types/react-native" "*"
 
 "@types/react-test-renderer@^16.0.2":
   version "16.0.2"

@@ -2,15 +2,14 @@
 // Usage: Pass the actual input field through as child element
 
 import React from "react";
-import PropTypes from "prop-types";
 import { StyleSheet, Text, View } from "react-native";
 import MyText from "./MyText";
 import styles from "../Styles";
 
-export default class FieldLabel extends React.Component {
-  static propTypes = {
-    label: PropTypes.string.isRequired
-  };
+interface Props {
+  label: string;
+}
+export default class FieldLabel extends React.Component<Props, any> {
   render() {
     return (
       <View style={styles.flexRow}>

@@ -1,14 +1,19 @@
 import React from "react";
-import { Text, TextInput, Platform, Dimensions, Alert } from "react-native";
+import { Text, TextInput, Platform, Dimensions } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import { interact } from "../../App";
 import styles from "../Styles";
+import { NavigationScreenProp } from "react-navigation";
 let pjson = require("../../package.json");
 
-export default class LoginScreen extends React.Component {
-  constructor(props) {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+  onNext: string;
+}
+export default class LoginScreen extends React.Component<Props, any> {
+  constructor(props: Props) {
     super(props);
     const { height, width } = Dimensions.get("window");
     this.state = {

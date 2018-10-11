@@ -18,22 +18,30 @@ export function interact(data: string): Promise<void> {
 const RootStack = createStackNavigator(
   {
     Login: {
-      screen: props => <LoginScreen {...props} onNext="Screening" />
+      screen: (props: any) => <LoginScreen {...props} onNext="Screening" />
     },
     Screening: {
-      screen: props => <ScreeningScreen {...props} onNext="Symptoms" />
+      screen: (props: any) => <ScreeningScreen {...props} onNext="Symptoms" />
     },
     Symptoms: {
-      screen: props => <SymptomsScreen {...props} onNext="Demographics" />
+      screen: (props: any) => (
+        <SymptomsScreen {...props} onNext="Demographics" />
+      )
     },
     Demographics: {
-      screen: props => <DemographicsScreen {...props} onNext="Household" />
+      screen: (props: any) => (
+        <DemographicsScreen {...props} onNext="Household" />
+      )
     },
     Household: {
-      screen: props => <HouseholdScreen {...props} onNext="IllnessHistory" />
+      screen: (props: any) => (
+        <HouseholdScreen {...props} onNext="IllnessHistory" />
+      )
     },
     IllnessHistory: {
-      screen: props => <IllnessHistoryScreen {...props} onNext="Consent" />
+      screen: (props: any) => (
+        <IllnessHistoryScreen {...props} onNext="Consent" />
+      )
     },
     Consent: ConsentScreen
   },
