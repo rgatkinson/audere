@@ -53,12 +53,18 @@ class ScreeningScreen extends React.Component<Props, any> {
               autoCapitalize="none"
               keyboardType="email-address"
               onChangeText={email => this.setState({ email })}
+              onSubmitEditing={() => {
+                this.cellInput.focus();
+              }}
             />
           </FieldLabel>
           <FieldLabel label="Cell Phone:">
             <View style={{ flexDirection: "column" }}>
               <TextInput
                 style={[styles.inputField, { width: 150, marginBottom: 3 }]}
+                ref={i => {
+                  this.cellInput = i;
+                }}
                 underlineColorAndroid="rgba(0,0,0,0)"
                 placeholder="206-555-1212"
                 keyboardType="numeric"
@@ -108,9 +114,11 @@ class ScreeningScreen extends React.Component<Props, any> {
                       marginLeft: 36
                     }
                   }}
-                  onDateChange={(datePrevEnrollment: any) =>
-                    this.setState({ datePrevEnrollment })
-                  }
+                  onDateChange={(datePrevEnrollment: any) => {
+                    this.setState({ datePrevEnrollment });
+                    this.ageInput.focus();
+                    //Alert.alert("foo");
+                  }}
                 />
               </FieldLabel>
             </View>
@@ -118,6 +126,9 @@ class ScreeningScreen extends React.Component<Props, any> {
           <FieldLabel label="Age:">
             <TextInput
               style={styles.inputField}
+              ref={i => {
+                this.ageInput = i;
+              }}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={age => this.setState({ age })}

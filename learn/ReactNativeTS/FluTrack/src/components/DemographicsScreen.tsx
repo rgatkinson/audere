@@ -28,38 +28,62 @@ class DemographicsScreen extends React.Component<Props, any> {
           <FieldLabel label="Age:">
             <TextInput
               style={styles.inputField}
-              value={this.props.age == 0 ? "" : this.props.age + ""}
+              defaultValue={this.props.age == 0 ? "" : this.props.age + ""}
               autoFocus={this.props.age == 0}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={age => this.setState({ age })}
+              onSubmitEditing={() => {
+                this.homeInput.focus();
+              }}
             />
           </FieldLabel>
           <FieldLabel label="Home address:">
             <TextInput
               style={styles.wideInput}
+              ref={i => {
+                this.homeInput = i;
+              }}
               underlineColorAndroid="rgba(0,0,0,0)"
               autoFocus={this.props.age !== 0}
               onChangeText={homeAddress => this.setState({ homeAddress })}
+              onSubmitEditing={() => {
+                this.workInput.focus();
+              }}
             />
           </FieldLabel>
           <FieldLabel label="Work address:">
             <TextInput
               style={styles.wideInput}
+              ref={i => {
+                this.workInput = i;
+              }}
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={workAddress => this.setState({ workAddress })}
+              onSubmitEditing={() => {
+                this.raceInput.focus();
+              }}
             />
           </FieldLabel>
           <FieldLabel label="Race:">
             <TextInput
               style={styles.inputField}
+              ref={i => {
+                this.raceInput = i;
+              }}
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={race => this.setState({ race })}
+              onSubmitEditing={() => {
+                this.ethnicityInput.focus();
+              }}
             />
           </FieldLabel>
           <FieldLabel label="Ethnicity:">
             <TextInput
               style={styles.inputField}
+              ref={i => {
+                this.ethnicityInput = i;
+              }}
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={ethnicity => this.setState({ ethnicity })}
             />

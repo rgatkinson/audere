@@ -78,7 +78,7 @@ export default StyleSheet.create({
     width: 250,
     marginBottom: 10,
     backgroundColor: "#fff",
-    paddingLeft: 10
+    paddingLeft: 5
   },
   flexRow: {
     flexDirection: "row",

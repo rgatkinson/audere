@@ -53,6 +53,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               options={residenceOptions}
               onPress={residenceType => {
                 this.setState({ residenceType });
+                this.householdSizeInput.focus();
               }}
             />
           </FieldLabel>
@@ -60,9 +61,17 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           <FieldLabel label="">
             <TextInput
               style={styles.inputField}
+              ref={i => {
+                this.householdSizeInput = i;
+              }}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={householdSize => this.setState({ householdSize })}
+              onSubmitEditing={() => {
+                if (this.state.householdSize == 1) {
+                  this.numRoomsInput.focus();
+                }
+              }}
             />
           </FieldLabel>
           {this.state.householdSize > 1 && (
@@ -70,8 +79,12 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               <FieldLabel label="Their ages?">
                 <TextInput
                   style={styles.inputField}
+                  ref={i => {
+                    this.agesInput = i;
+                  }}
                   underlineColorAndroid="rgba(0,0,0,0)"
                   placeholder="ex: 5,7,40"
+                  autoFocus={true}
                   onChangeText={householdAges =>
                     this.setState({ householdAges })
                   }
@@ -87,6 +100,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   initial={2}
                   onPress={childCare => {
                     this.setState({ childCare });
+                    this.numRoomsInput.focus();
                   }}
                 />
               </FieldLabel>
@@ -98,6 +112,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           <FieldLabel label="">
             <TextInput
               style={styles.inputField}
+              ref={i => {
+                this.numRoomsInput = i;
+              }}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={numRooms => this.setState({ numRooms })}

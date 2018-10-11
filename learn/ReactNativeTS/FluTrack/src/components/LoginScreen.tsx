@@ -37,9 +37,8 @@ class LoginScreen extends React.Component<Props, any> {
   // };
   isValid(text: string, inputType: string): boolean {
     // Return true if valid, false if invalid
-
-    let idPattern = /^[a-zA-Z0-9_-]{3,16}$/;
-    let passwordPattern = /^.{6,}$/;
+    let idPattern = /^[a-zA-Z0-9_-]{1,16}$/;
+    let passwordPattern = /^.{1,}$/;
     if (inputType == "id") {
       return idPattern.test(text);
     } else if (inputType == "password") {
@@ -69,6 +68,7 @@ class LoginScreen extends React.Component<Props, any> {
               this.setState({
                 idError: !this.isValid(this.state.id, "id")
               });
+              this.passwordInput.focus();
             }}
           />
         </FieldLabel>
@@ -78,6 +78,9 @@ class LoginScreen extends React.Component<Props, any> {
               styles.inputField,
               this.state.passwordError ? styles.errorBorder : null
             ]}
+            ref={i => {
+              this.passwordInput = i;
+            }}
             secureTextEntry={true}
             underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={password => this.setState({ password })}
@@ -88,7 +91,6 @@ class LoginScreen extends React.Component<Props, any> {
             }}
           />
         </FieldLabel>
-
         <StyledButton
           title="LOGIN"
           onPress={() => {

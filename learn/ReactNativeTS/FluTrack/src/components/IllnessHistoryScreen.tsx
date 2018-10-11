@@ -26,6 +26,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
           <FieldLabel label="">
             <TextInput
               style={styles.inputField}
+              autoFocus={true}
               keyboardType="numeric"
               underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={daysSick => this.setState({ daysSick })}
@@ -46,6 +47,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
               <FieldLabel label="">
                 <TextInput
                   style={styles.inputField}
+                  autoFocus={true}
                   keyboardType="numeric"
                   underlineColorAndroid="rgba(0,0,0,0)"
                   onChangeText={daysHospitalized =>
