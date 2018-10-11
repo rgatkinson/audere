@@ -1,6 +1,11 @@
 import request from "supertest";
 import app from "../src/app";
-import { ButtonPush } from "../src/models";
+import { ButtonPush } from "../src/models/buttonPush";
+import { sequelize } from "../src/models";
+
+afterAll(() => {
+  sequelize.close();
+});
 
 describe("GET /", () => {
   it("returns 200 OK", async () => {

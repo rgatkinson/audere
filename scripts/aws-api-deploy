@@ -12,6 +12,7 @@ sudo -H --login --user=api bash <<- EOAPI
 	cd "\$HOME/NodeJSWebService"
 	yarn install --frozen-lockfile
 	yarn build
+	yarn sequelize db:migrate
 	pm2 start process.json
 	pm2 save
 EOAPI
