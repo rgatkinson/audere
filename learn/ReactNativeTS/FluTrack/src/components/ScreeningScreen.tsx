@@ -12,6 +12,7 @@ import { SET_AGE } from "../store/Constants";
 import { NavigationScreenProp } from "react-navigation";
 import { interact } from "../../App";
 import styles from "../Styles";
+import ValidatedInput from "./ValidatedInput";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -28,6 +29,7 @@ class ScreeningScreen extends React.Component<Props, any> {
   saveAge = (age: number) => {
     this.props.dispatch({ type: SET_AGE, payload: age });
   };
+  handleChangeValue = e => this.setState({ value: e.target.value });
   render() {
     const noYesOptions = [
       { label: "No", value: false },
@@ -45,7 +47,16 @@ class ScreeningScreen extends React.Component<Props, any> {
         <MyText size="heading">Screening for Participant</MyText>
         <View style={styles.formLayout}>
           <FieldLabel label="Email:">
-            <TextInput
+            <ValidatedInput
+              inputType="email"
+              autoFocus={true}
+              placeholder="name@example.com"
+              onChangeText={email => this.setState({ email })}
+              onSubmit={() => {
+                this.cellInput.focus();
+              }}
+            />
+            {/* <TextInput
               style={[styles.inputField, { width: 150 }]}
               autoFocus={true}
               underlineColorAndroid="rgba(0,0,0,0)"
@@ -56,7 +67,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               onSubmitEditing={() => {
                 this.cellInput.focus();
               }}
-            />
+            /> */}
           </FieldLabel>
           <FieldLabel label="Cell Phone:">
             <View style={{ flexDirection: "column" }}>
