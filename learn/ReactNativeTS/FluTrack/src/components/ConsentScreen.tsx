@@ -1,10 +1,9 @@
 import React from "react";
-import { Text, View, Alert } from "react-native";
+import { Text, View, Alert, StyleSheet } from "react-native";
 import StyledButton from "./StyledButton";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
-import styles from "../Styles";
 import { CONSENT_FORM_TEXT } from "../resources/consentForm";
 
 export default class ConsentScreen extends React.Component {
@@ -34,3 +33,10 @@ export default class ConsentScreen extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  consentViewer: {
+    marginTop: 20,
+    backgroundColor: "white"
+  }
+});

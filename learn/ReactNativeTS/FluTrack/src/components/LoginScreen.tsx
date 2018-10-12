@@ -1,11 +1,12 @@
 import React from "react";
-import { Text, TextInput, Platform, Dimensions } from "react-native";
+import { TextInput, Platform, Dimensions } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import { interact } from "../../App";
 import styles from "../Styles";
 import { NavigationScreenProp } from "react-navigation";
+import MyText from "./MyText";
 // import { connect } from "react-redux";
 // import { SET_ID, SET_PASSWORD } from "../store/Constants";
 let pjson = require("../../package.json");
@@ -25,6 +26,7 @@ class LoginScreen extends React.Component<Props, any> {
       deviceVersion: Platform.Version,
       screenHeight: height,
       screenWidth: width,
+      appVersion: pjson.version,
       idError: false,
       passwordError: false
     };
@@ -49,10 +51,10 @@ class LoginScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
-        <Text style={styles.titleText}>
+        <MyText size="title">
           {pjson.name}
           &trade;
-        </Text>
+        </MyText>
         <FieldLabel label="Login ID:">
           <TextInput
             style={[

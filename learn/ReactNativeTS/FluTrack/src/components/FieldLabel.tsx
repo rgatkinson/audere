@@ -2,9 +2,8 @@
 // Usage: Pass the actual input field through as child element
 
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import MyText from "./MyText";
-import styles from "../Styles";
 
 interface Props {
   label: string;
@@ -19,3 +18,13 @@ export default class FieldLabel extends React.Component<Props, any> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  fieldLabel: {
+    width: 100
+  },
+  flexRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  }
+});

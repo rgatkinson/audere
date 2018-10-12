@@ -1,8 +1,8 @@
 // Custom button that looks like the button on auderenow.org
 
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
-import styles from "../Styles";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { colors } from "../Styles";
 
 interface Props {
   title: string;
@@ -16,8 +16,23 @@ export default class StyledButton extends React.Component<Props, any> {
         activeOpacity={0.5}
         onPress={this.props.onPress}
       >
-        <Text style={[styles.bold, styles.white]}>{this.props.title}</Text>
+        <Text style={styles.buttonText}>{this.props.title}</Text>
       </TouchableOpacity>
     );
   }
 }
+const styles = StyleSheet.create({
+  buttonText: {
+    color: "white",
+    fontWeight: "bold"
+  },
+  styledButton: {
+    margin: 8,
+    padding: 18,
+    backgroundColor: colors.accent,
+    borderRadius: 20,
+    borderWidth: 0,
+    height: 45,
+    justifyContent: "center"
+  }
+});

@@ -43,9 +43,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
     ];
     return (
       <ScreenView>
-        <MyText style={styles.headingText}>
-          Household Composition and Exposure
-        </MyText>
+        <MyText size="heading">Household Composition and Exposure</MyText>
         <View style={styles.formLayout}>
           <MyText>Which best describes your residence?</MyText>
           <FieldLabel label="">

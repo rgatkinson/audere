@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, View, Alert } from "react-native";
-import CheckBox from "react-native-check-box";
+import CheckBox from "./CheckBox";
 import DatePicker from "react-native-datepicker";
 import StyledButton from "./StyledButton";
 import RadioButton from "./RadioButton";
@@ -42,7 +42,7 @@ class ScreeningScreen extends React.Component<Props, any> {
     ];
     return (
       <ScreenView>
-        <MyText style={styles.headingText}>Screening for Participant</MyText>
+        <MyText size="heading">Screening for Participant</MyText>
         <View style={styles.formLayout}>
           <FieldLabel label="Email:">
             <TextInput
@@ -71,14 +71,14 @@ class ScreeningScreen extends React.Component<Props, any> {
                 onChangeText={cellPhone => this.setState({ cellPhone })}
               />
               <CheckBox
-                style={[styles.checkbox, { paddingTop: 0 }]}
+                style={{ paddingTop: 0 }}
                 onClick={() => {
                   this.setState({
                     textOK: !this.state.textOK
                   });
                 }}
                 isChecked={this.state.textOK}
-                rightText={"OK to text"}
+                text={"OK to text"}
               />
             </View>
           </FieldLabel>
@@ -117,7 +117,6 @@ class ScreeningScreen extends React.Component<Props, any> {
                   onDateChange={(datePrevEnrollment: any) => {
                     this.setState({ datePrevEnrollment });
                     this.ageInput.focus();
-                    //Alert.alert("foo");
                   }}
                 />
               </FieldLabel>
@@ -145,22 +144,20 @@ class ScreeningScreen extends React.Component<Props, any> {
           </FieldLabel>
           <MyText>Are you feeling sick or unwell today?</MyText>
           <FieldLabel label="">
-            <View style={styles.flexRow}>
-              <StyledButton
-                title="YES"
-                onPress={() => {
-                  this.saveAge(+this.state.age);
-                  interact(JSON.stringify(this.state));
-                  this.props.navigation.navigate(this.props.onNext);
-                }}
-              />
-              <StyledButton
-                title="NO"
-                onPress={() => {
-                  Alert.alert("Thank you for your time. Goodbye.");
-                }}
-              />
-            </View>
+            <StyledButton
+              title="YES"
+              onPress={() => {
+                this.saveAge(+this.state.age);
+                interact(JSON.stringify(this.state));
+                this.props.navigation.navigate(this.props.onNext);
+              }}
+            />
+            <StyledButton
+              title="NO"
+              onPress={() => {
+                Alert.alert("Thank you for your time. Goodbye.");
+              }}
+            />
           </FieldLabel>
         </View>
       </ScreenView>

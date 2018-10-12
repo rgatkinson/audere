@@ -23,7 +23,7 @@ class DemographicsScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
-        <MyText style={styles.headingText}>Demographics</MyText>
+        <MyText size="heading">Demographics</MyText>
         <View style={styles.formLayout}>
           <FieldLabel label="Age:">
             <TextInput

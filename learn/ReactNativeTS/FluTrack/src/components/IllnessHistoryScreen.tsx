@@ -20,7 +20,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
-        <MyText style={styles.headingText}>Illness History</MyText>
+        <MyText size="heading">Illness History</MyText>
         <View style={styles.formLayout}>
           <MyText>Including today, how many days have you been sick?</MyText>
           <FieldLabel label="">
