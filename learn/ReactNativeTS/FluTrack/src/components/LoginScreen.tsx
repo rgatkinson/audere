@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, Dimensions } from "react-native";
+import { Platform, Dimensions, AsyncStorage } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
@@ -7,8 +7,6 @@ import { interact } from "../../App";
 import { NavigationScreenProp } from "react-navigation";
 import MyText from "./MyText";
 import ValidatedInput from "./ValidatedInput";
-// import { connect } from "react-redux";
-// import { SET_ID, SET_PASSWORD } from "../store/Constants";
 let pjson = require("../../package.json");
 
 interface Props {
@@ -16,6 +14,18 @@ interface Props {
   onNext: string;
 }
 class LoginScreen extends React.Component<Props, any> {
+  loadId(): boolean {
+    AsyncStorage.getItem("id", (err, result) => {
+      if (result !== undefined) {
+        this.setState({
+          id: JSON.parse(result)
+        });
+        console.log("loaded id");
+        return true;
+      }
+    });
+    return false;
+  }
   constructor(props: Props) {
     super(props);
     const { height, width } = Dimensions.get("window");
@@ -27,16 +37,9 @@ class LoginScreen extends React.Component<Props, any> {
       screenHeight: height,
       screenWidth: width,
       appVersion: pjson.version,
-      idError: false,
-      passwordError: false
+      idLoaded: this.loadId()
     };
   }
-  // saveId = (text: string) => {
-  //   this.props.dispatch({ type: SET_ID, payload: text });
-  // };
-  // savePassword = (text: string) => {
-  //   this.props.dispatch({ type: SET_PASSWORD, text });
-  // };
   render() {
     return (
       <ScreenView>
@@ -47,7 +50,8 @@ class LoginScreen extends React.Component<Props, any> {
         <FieldLabel label="Login ID:">
           <ValidatedInput
             inputType="id"
-            autoFocus={true}
+            defaultValue={this.state.id}
+            autoFocus={!this.state.idLoaded}
             onChangeText={id => this.setState({ id })}
             onSubmitEditing={() => {
               this.passwordInput.focus();
@@ -57,6 +61,7 @@ class LoginScreen extends React.Component<Props, any> {
         <FieldLabel label="Password:">
           <ValidatedInput
             inputType="password"
+            autoFocus={this.state.idLoaded}
             myRef={i => {
               this.passwordInput = i;
             }}
@@ -66,8 +71,7 @@ class LoginScreen extends React.Component<Props, any> {
         <StyledButton
           title="LOGIN"
           onPress={() => {
-            // this.saveId(this.state.id);
-            // this.savePassword(this.state.password);
+            AsyncStorage.setItem("id", JSON.stringify(this.state.id));
             interact(JSON.stringify(this.state));
             this.props.navigation.navigate(this.props.onNext);
           }}
@@ -78,4 +82,3 @@ class LoginScreen extends React.Component<Props, any> {
 }
 
 export default LoginScreen;
-// export default connect()(LoginScreen);

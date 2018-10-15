@@ -13,7 +13,7 @@ export default class DatePicker extends React.Component<Props, any> {
   render() {
     return (
       <TheirDatePicker
-        style={[styles.datepicker, this.props.style]}
+        style={[styles.datePicker, this.props.style]}
         date={this.props.date}
         mode="date"
         placeholder="select date"
