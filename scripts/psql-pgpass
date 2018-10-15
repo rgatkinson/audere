@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# Runs a 'psql' command based on the .pgpass file
+DBID="$1"
+
+PGPASS="$(grep "^$DBID\." "$HOME/.pgpass")"
+function pgpass() { echo "$PGPASS" | cut -d ":" -f "$1"; }
+
+DB_HOSTNAME="$(pgpass 1)"
+DB_PORT="$(pgpass 2)"
+DB_DATABASE="$(pgpass 3)"
+DB_USERNAME="$(pgpass 4)"
+DB_PASSWORD="$(pgpass 5)"
+
+psql --host="$DB_HOSTNAME" --port="$DB_PORT" --USERNAME="$DB_USERNAME" $DB_DATABASE "$@"
