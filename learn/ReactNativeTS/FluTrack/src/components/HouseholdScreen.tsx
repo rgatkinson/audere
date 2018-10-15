@@ -219,15 +219,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               initial={1}
               onPress={smokerInHousehold => {
                 this.setState({ smokerInHousehold });
-                this.lastRef.focus();
               }}
             />
           </FieldLabel>
-          <ValidatedInput
-            inputType="address"
-            myRef={i => (this.lastRef = i)}
-            onChangeText={foo => this.setState({ foo })}
-          />
         </View>
         <StyledButton
           title="NEXT"
