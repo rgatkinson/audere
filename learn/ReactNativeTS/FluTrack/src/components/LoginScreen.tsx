@@ -1,12 +1,12 @@
 import React from "react";
-import { TextInput, Platform, Dimensions } from "react-native";
+import { Platform, Dimensions } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import { interact } from "../../App";
-import styles from "../Styles";
 import { NavigationScreenProp } from "react-navigation";
 import MyText from "./MyText";
+import ValidatedInput from "./ValidatedInput";
 // import { connect } from "react-redux";
 // import { SET_ID, SET_PASSWORD } from "../store/Constants";
 let pjson = require("../../package.json");
@@ -37,17 +37,6 @@ class LoginScreen extends React.Component<Props, any> {
   // savePassword = (text: string) => {
   //   this.props.dispatch({ type: SET_PASSWORD, text });
   // };
-  isValid(text: string, inputType: string): boolean {
-    // Return true if valid, false if invalid
-    let idPattern = /^[a-zA-Z0-9_-]{1,16}$/;
-    let passwordPattern = /^.{1,}$/;
-    if (inputType == "id") {
-      return idPattern.test(text);
-    } else if (inputType == "password") {
-      return passwordPattern.test(text);
-    }
-    return true;
-  }
   render() {
     return (
       <ScreenView>
@@ -56,41 +45,22 @@ class LoginScreen extends React.Component<Props, any> {
           &trade;
         </MyText>
         <FieldLabel label="Login ID:">
-          <TextInput
-            style={[
-              styles.inputField,
-              this.state.idError ? styles.errorBorder : null
-            ]}
+          <ValidatedInput
+            inputType="id"
             autoFocus={true}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={id => this.setState({ id })}
             onSubmitEditing={() => {
-              this.setState({
-                idError: !this.isValid(this.state.id, "id")
-              });
               this.passwordInput.focus();
             }}
           />
         </FieldLabel>
         <FieldLabel label="Password:">
-          <TextInput
-            style={[
-              styles.inputField,
-              this.state.passwordError ? styles.errorBorder : null
-            ]}
-            ref={i => {
+          <ValidatedInput
+            inputType="password"
+            myRef={i => {
               this.passwordInput = i;
             }}
-            secureTextEntry={true}
-            underlineColorAndroid="rgba(0,0,0,0)"
             onChangeText={password => this.setState({ password })}
-            onSubmitEditing={() => {
-              this.setState({
-                passwordError: !this.isValid(this.state.password, "password")
-              });
-            }}
           />
         </FieldLabel>
         <StyledButton

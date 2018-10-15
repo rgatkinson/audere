@@ -7,25 +7,9 @@ export const colors = {
 };
 
 export default StyleSheet.create({
-  inputField: {
-    width: 100,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    paddingLeft: 5
-  },
-  wideInput: {
-    width: 250,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    paddingLeft: 5
-  },
   datePicker: {
     width: 200,
     marginBottom: 10
-  },
-  errorBorder: {
-    borderColor: "red",
-    borderWidth: 3
   },
   formLayout: {
     flex: 1,

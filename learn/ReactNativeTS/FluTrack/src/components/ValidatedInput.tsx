@@ -12,7 +12,7 @@ import {
 export type InputType =
   | "id"
   | "password"
-  | "number"
+  | "nonNegativeInteger"
   | "phone"
   | "email"
   | "text-short"
@@ -20,7 +20,7 @@ export type InputType =
 let validationPatterns: { [index: string]: RegExp } = {
   id: /^[a-zA-Z0-9_-]{1,16}$/,
   password: /^.{1,}$/,
-  number: /^[0-9]+$/,
+  nonNegativeInteger: /^[0-9]+$/,
   phone: /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/,
   email: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
   "text-short": /^.{1,}$/,
@@ -31,8 +31,10 @@ interface Props {
   inputType: InputType;
   autoFocus?: boolean;
   optional?: boolean; // default is false
-  min?: number; // for number type, denotes min value; for other types, min length
-  max?: number; // for number type, denotes max value, for other types, max length
+  myRef?(arg: any): void; // cannot use "ref" for some reason
+  defaultValue?: string;
+  min?: number; // for nonNegativeInteger type, denotes min value; for other types, min length
+  max?: number; // for nonNegativeInteger type, denotes max value, for other types, max length
   placeholder?: string;
   onChangeText(arg: any): void;
   onSubmitEditing?(): void;
@@ -62,29 +64,29 @@ export default class ValidatedInput extends React.Component<Props, any> {
         this.keyboardType = "email-address";
         break;
       case "phone":
-        this.style = styles.inputField & styles.mediumWidth;
+        this.style = [styles.inputField, styles.mediumWidth];
         this.keyboardType = "phone-pad";
         break;
       case "address":
-        this.style = styles.inputField & styles.wideWidth;
+        this.style = [styles.inputField, styles.wideWidth];
         this.autoCapitalize = "words";
         break;
-      case "number":
-        this.style = styles.inputField & styles.smallWidth;
+      case "nonNegativeInteger":
+        this.style = [styles.inputField, styles.smallWidth];
         this.keyboardType = "numeric";
         break;
       case "id":
-        this.style = styles.inputField & styles.smallWidth;
+        this.style = [styles.inputField, styles.smallWidth];
         this.autoCapitalize = "none";
         this.keyboardType = "email-address";
         break;
       case "password":
-        this.style = styles.inputField & styles.smallWidth;
+        this.style = [styles.inputField, styles.smallWidth];
         this.secureTextEntry = true;
         break;
       case "text-short":
       default:
-        this.style = styles.inputField & styles.smallWidth;
+        this.style = [styles.inputField, styles.smallWidth];
     }
   }
   checkErrors(): void {
@@ -101,10 +103,8 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isPatternError: false,
       errMessage: null
     });
-    console.log("value=" + value + " inputType=" + inputType);
-    console.log("optional=" + this.props.optional);
+    console.log("checkErrors: value=" + value + " inputType=" + inputType);
     if (this.props.optional && (value == undefined || value.length == 0)) {
-      console.log("optional field with no value, okay");
       return;
     }
     if (value == undefined || value.length == 0) {
@@ -122,28 +122,28 @@ export default class ValidatedInput extends React.Component<Props, any> {
       return;
     }
     if (this.props.min !== undefined) {
-      if (inputType == "number") {
+      if (inputType == "nonNegativeInteger") {
         if (+value < this.props.min) {
           minError = true;
-          errString = "Value must be at least " + this.props.min;
+          errString = "Minimum is " + this.props.min;
         }
       } else {
         if (value.length < this.props.min) {
           minError = true;
-          errString = "Length must be at least " + this.props.min + " chars";
+          errString = "Minimum " + this.props.min + " characters";
         }
       }
     }
     if (this.props.max !== undefined) {
-      if (inputType == "number") {
+      if (inputType == "nonNegativeInteger") {
         if (+value > this.props.max) {
           maxError = true;
-          errString = "Value must be at most " + this.props.max;
+          errString = "Maximum is " + this.props.max;
         }
       } else {
         if (value.length > this.props.max) {
           maxError = true;
-          errString = "Length must be at most " + this.props.max + " chars";
+          errString = "Maximum " + this.props.max + " characters";
         }
       }
     }
@@ -163,11 +163,14 @@ export default class ValidatedInput extends React.Component<Props, any> {
             this.state.isMinMaxError ||
             this.state.isPatternError
               ? styles.errorBorder
-              : null
+              : null,
+            this.props.style
           ]}
+          ref={this.props.myRef}
           autoFocus={this.props.autoFocus}
           keyboardType={this.keyboardType}
           autoCapitalize={this.autoCapitalize}
+          defaultValue={this.props.defaultValue}
           underlineColorAndroid="rgba(0,0,0,0)"
           secureTextEntry={this.secureTextEntry}
           placeholder={this.props.placeholder}
@@ -177,25 +180,16 @@ export default class ValidatedInput extends React.Component<Props, any> {
           }}
           onSubmitEditing={() => {
             this.checkErrors();
-            console.log("isMissing=" + this.state.isMissing);
-            console.log("isMinMaxError=" + this.state.isMinMaxError);
-            console.log("isPatternError=" + this.state.isPatternError);
-            console.log("errMessage=" + this.state.errMessage);
+            // console.log("isMissing=" + this.state.isMissing);
+            // console.log("isMinMaxError=" + this.state.isMinMaxError);
+            // console.log("isPatternError=" + this.state.isPatternError);
+            // console.log("errMessage=" + this.state.errMessage);
             if (this.props.onSubmitEditing !== undefined) {
               this.props.onSubmitEditing();
             }
           }}
         />
-        <Text
-          style={{
-            marginTop: 0,
-            paddingTop: 0,
-            marginBottom: 8,
-            color: "red"
-          }}
-        >
-          {this.state.errMessage}
-        </Text>
+        <Text style={styles.errorMessage}>{this.state.errMessage}</Text>
       </View>
     );
   }
@@ -219,5 +213,11 @@ const styles = StyleSheet.create({
   errorBorder: {
     borderColor: "red",
     borderWidth: 3
+  },
+  errorMessage: {
+    marginTop: 0,
+    paddingTop: 0,
+    marginBottom: 5,
+    color: "red"
   }
 });

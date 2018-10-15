@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, View, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import CheckBox from "./CheckBox";
 import DatePicker from "react-native-datepicker";
 import StyledButton from "./StyledButton";
@@ -29,7 +29,6 @@ class ScreeningScreen extends React.Component<Props, any> {
   saveAge = (age: number) => {
     this.props.dispatch({ type: SET_AGE, payload: age });
   };
-  handleChangeValue = e => this.setState({ value: e.target.value });
   render() {
     const noYesOptions = [
       { label: "No", value: false },
@@ -59,14 +58,13 @@ class ScreeningScreen extends React.Component<Props, any> {
           </FieldLabel>
           <FieldLabel label="Cell Phone:">
             <View style={{ flexDirection: "column" }}>
-              <TextInput
-                style={[styles.inputField, { width: 150, marginBottom: 3 }]}
-                ref={i => {
+              <ValidatedInput
+                style={{ marginBottom: 0 }}
+                inputType="phone"
+                myRef={i => {
                   this.cellInput = i;
                 }}
-                underlineColorAndroid="rgba(0,0,0,0)"
                 placeholder="206-555-1212"
-                keyboardType="numeric"
                 onChangeText={cellPhone => this.setState({ cellPhone })}
               />
               <CheckBox
@@ -122,13 +120,12 @@ class ScreeningScreen extends React.Component<Props, any> {
             </View>
           )}
           <FieldLabel label="Age:">
-            <TextInput
-              style={styles.inputField}
-              ref={i => {
+            <ValidatedInput
+              inputType="nonNegativeInteger"
+              max={150}
+              myRef={i => {
                 this.ageInput = i;
               }}
-              keyboardType="numeric"
-              underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={age => this.setState({ age })}
             />
           </FieldLabel>

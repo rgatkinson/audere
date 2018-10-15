@@ -1,10 +1,11 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import RadioButton from "./RadioButton";
+import ValidatedInput from "./ValidatedInput";
 import { interact } from "../../App";
 import { NavigationScreenProp } from "react-navigation";
 import styles from "../Styles";
@@ -57,13 +58,11 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           <MyText>How many individuals share your residence?</MyText>
           <FieldLabel label="">
-            <TextInput
-              style={styles.inputField}
-              ref={i => {
+            <ValidatedInput
+              inputType="nonNegativeInteger"
+              myRef={i => {
                 this.householdSizeInput = i;
               }}
-              keyboardType="numeric"
-              underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={householdSize => this.setState({ householdSize })}
               onSubmitEditing={() => {
                 if (this.state.householdSize == 1) {
@@ -75,12 +74,11 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           {this.state.householdSize > 1 && (
             <View>
               <FieldLabel label="Their ages?">
-                <TextInput
-                  style={styles.inputField}
-                  ref={i => {
+                <ValidatedInput
+                  inputType="text-short"
+                  myRef={i => {
                     this.agesInput = i;
                   }}
-                  underlineColorAndroid="rgba(0,0,0,0)"
                   placeholder="ex: 5,7,40"
                   autoFocus={true}
                   onChangeText={householdAges =>
@@ -108,13 +106,11 @@ export default class HouseholdScreen extends React.Component<Props, any> {
             How many rooms (excluding bathrooms) make up your residence?
           </MyText>
           <FieldLabel label="">
-            <TextInput
-              style={styles.inputField}
-              ref={i => {
+            <ValidatedInput
+              inputType="nonNegativeInteger"
+              myRef={i => {
                 this.numRoomsInput = i;
               }}
-              keyboardType="numeric"
-              underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={numRooms => this.setState({ numRooms })}
             />
           </FieldLabel>
@@ -166,7 +162,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.householdTravelLast4Weeks && (
             <View>
-              <MyText>Outside of WA State</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp;Outside of WA State</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -175,7 +171,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>Outside of the United States</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp;Outside of the United States</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -197,7 +193,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.travelLast4weeks && (
             <View>
-              <MyText>Outside of WA State</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp;Outside of WA State</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -206,7 +202,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>Outside of the United States</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp;Outside of the United States</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}

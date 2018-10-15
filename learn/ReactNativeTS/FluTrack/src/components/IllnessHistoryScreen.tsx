@@ -1,9 +1,10 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import StyledButton from "./StyledButton";
 import FieldLabel from "./FieldLabel";
 import RadioButton from "./RadioButton";
 import ScreenView from "./ScreenView";
+import ValidatedInput from "./ValidatedInput";
 import MyText from "./MyText";
 import { NavigationScreenProp } from "react-navigation";
 import { interact } from "../../App";
@@ -24,11 +25,9 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
         <View style={styles.formLayout}>
           <MyText>Including today, how many days have you been sick?</MyText>
           <FieldLabel label="">
-            <TextInput
-              style={styles.inputField}
+            <ValidatedInput
+              inputType="nonNegativeInteger"
               autoFocus={true}
-              keyboardType="numeric"
-              underlineColorAndroid="rgba(0,0,0,0)"
               onChangeText={daysSick => this.setState({ daysSick })}
             />
           </FieldLabel>
@@ -45,11 +44,9 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
             <View>
               <MyText>Length of hospitalization (days):</MyText>
               <FieldLabel label="">
-                <TextInput
-                  style={styles.inputField}
+                <ValidatedInput
+                  inputType="nonNegativeInteger"
                   autoFocus={true}
-                  keyboardType="numeric"
-                  underlineColorAndroid="rgba(0,0,0,0)"
                   onChangeText={daysHospitalized =>
                     this.setState({ daysHospitalized })
                   }
