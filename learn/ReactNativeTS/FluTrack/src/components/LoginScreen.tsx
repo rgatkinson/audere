@@ -14,6 +14,7 @@ interface Props {
   onNext: string;
 }
 class LoginScreen extends React.Component<Props, any> {
+  private idLoaded: boolean = false;
   constructor(props: Props) {
     super(props);
     const { height, width } = Dimensions.get("window");
@@ -25,7 +26,6 @@ class LoginScreen extends React.Component<Props, any> {
       screenHeight: height,
       screenWidth: width,
       appVersion: pjson.version,
-      idLoaded: false,
       isLoading: true
     };
   }
@@ -33,9 +33,9 @@ class LoginScreen extends React.Component<Props, any> {
     AsyncStorage.getItem("id").then(value => {
       if (value !== null) {
         this.setState({
-          id: JSON.parse(value),
-          idLoaded: JSON.parse(value).length !== 0
+          id: JSON.parse(value)
         });
+        this.idLoaded = JSON.parse(value).length != 0;
       }
       this.setState({ isLoading: false });
     });
@@ -55,7 +55,7 @@ class LoginScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="id"
               defaultValue={this.state.id}
-              autoFocus={!this.state.idLoaded}
+              autoFocus={!this.idLoaded}
               onChangeText={id => this.setState({ id })}
               onSubmitEditing={() => {
                 this.passwordInput.focus();
@@ -65,7 +65,7 @@ class LoginScreen extends React.Component<Props, any> {
           <FieldLabel label="Password:">
             <ValidatedInput
               inputType="password"
-              autoFocus={this.state.idLoaded}
+              autoFocus={this.idLoaded}
               myRef={i => {
                 this.passwordInput = i;
               }}
