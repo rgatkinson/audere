@@ -56,7 +56,8 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isMissing: false,
       isPatternError: false,
       isMinMaxError: false, // min or max validation failed
-      errMessage: null
+      errMessage: null,
+      value: this.props.defaultValue
     };
     switch (this.props.inputType) {
       case "email":

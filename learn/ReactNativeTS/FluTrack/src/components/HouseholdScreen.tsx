@@ -162,7 +162,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.householdTravelLast4Weeks && (
             <View>
-              <MyText>&nbsp;&nbsp;&nbsp;Outside of WA State</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp; Outside of WA State</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -171,7 +171,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>&nbsp;&nbsp;&nbsp;Outside of the United States</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp; Outside of the United States</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -193,7 +193,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.travelLast4weeks && (
             <View>
-              <MyText>&nbsp;&nbsp;&nbsp;Outside of WA State</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp; Outside of WA State</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -202,7 +202,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>&nbsp;&nbsp;&nbsp;Outside of the United States</MyText>
+              <MyText>&nbsp;&nbsp;&nbsp; Outside of the United States</MyText>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -219,9 +219,15 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               initial={1}
               onPress={smokerInHousehold => {
                 this.setState({ smokerInHousehold });
+                this.lastRef.focus();
               }}
             />
           </FieldLabel>
+          <ValidatedInput
+            inputType="address"
+            myRef={i => (this.lastRef = i)}
+            onChangeText={foo => this.setState({ foo })}
+          />
         </View>
         <StyledButton
           title="NEXT"
