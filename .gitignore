@@ -4,3 +4,4 @@
 /scripts/*-letsencrypt.tar.bz2
 /**/.idea/
 /**/*.iml
+/**/node_modules/

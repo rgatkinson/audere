@@ -1,40 +1,26 @@
 #!/bin/bash
 set -euo pipefail
 umask 077
+
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 AUDERE_DIR="$( cd "$SELF_DIR/../.." && pwd)"
+source $SELF_DIR/utils
 
-case "$#" in
-  1) ;;
-  *) echo 1>&2 "Error: expected one instance tag argument, got $# arguments"; exit 1;;
-esac
-
-function get-ssh-user() {
-  if [[ "$1" == *@* ]]; then
-    echo "${1%@*}"
-  else
-    echo "ubuntu"
-  fi
-}
-
-function get-ssh-itag() {
-  if [[ "$1" == *@* ]]; then
-    echo "${1##*@}"
-  else
-    echo "$1"
-  fi
-}
-
+check-arg-count 1 "$@"
 SSH_USER="$(get-ssh-user "$1")"
 SSH_ITAG="$(get-ssh-itag "$1")"
-SSH_INSTANCE="$($SELF_DIR/aws-instance-unique running "$SSH_ITAG")"
-SSH_IP="$(echo "$SSH_INSTANCE" | jq --raw-output '.PublicIpAddress')"
+SSH_IP="$(get-instance-ip "$1")"
 
-echo "Waiting for sshd to be ready.."
+echo "Waiting for sshd to be ready at $SSH_IP.."
 until ssh "-oStrictHostKeyChecking=accept-new" "$SSH_USER@${SSH_IP}" true; do
   sleep 1
 done
 
 echo "Syncing audere to '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
 rsync --delete -a --exclude "/learn/" --exclude "/.git/" "$AUDERE_DIR/" "$SSH_USER@$SSH_IP:audere/"
+rsync --delete -a \
+  --exclude "/node_modules/" \
+  --exclude "/build" \
+  --exclude "/.env" \
+  "$AUDERE_DIR/learn/NodeJSWebService/" "$SSH_USER@$SSH_IP:NodeJSWebService/"
 "$SELF_DIR/build-tag-dns" | ssh "$SSH_USER@$SSH_IP" "cat >audere/scripts/tag-dns && chmod +x audere/scripts/tag-dns"

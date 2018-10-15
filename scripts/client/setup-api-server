@@ -1,0 +1,34 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+AUDERE_DIR="$( cd "$SELF_DIR/../.." && pwd)"
+source $SELF_DIR/utils
+
+check-arg-count 1 "$@"
+SSH_USER="$(get-ssh-user "$1")"
+SSH_ITAG="$(get-ssh-itag "$1")"
+
+set +B
+aws ec2 run-instances \
+  --image-id ami-51537029 \
+  --count 1 \
+  --instance-type t2.medium \
+  --key-name 2018-$USER \
+  --security-group-ids sg-7d63d10e sg-0fd0993b035236d60 sg-0923a530eef088f16 \
+  --subnet-id subnet-9de0b1e4 \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$SSH_ITAG}]"
+
+until $SELF_DIR/aws-instance-unique running $SSH_ITAG 2> /dev/null; do
+  sleep 1
+done
+SSH_IP="$(get-instance-ip "$1")"
+
+"$SELF_DIR/rsync-audere" $SSH_ITAG
+
+echo Creating/updating DNS record
+"$AUDERE_DIR/scripts/aws-bind-dns" $SSH_ITAG
+
+echo "Running aws-api-setup on '$SSH_USER@$SSH_IP' ('$SSH_ITAG')"
+ssh "$SSH_USER@$SSH_IP" -t "audere/scripts/aws-api-setup" $SSH_ITAG

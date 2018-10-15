@@ -35,7 +35,7 @@ sudo rm /etc/nginx/sites-enabled/default
   cat <<-EOF
 		# Rate limiting
 		# On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
-		limit_req_zone $binary_remote_addr zone=$SUBDOMAIN:4m rate=5r/s;
+		limit_req_zone \$binary_remote_addr zone=$SUBDOMAIN:4m rate=5r/s;
 
 		server {
 		  listen 80;

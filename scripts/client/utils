@@ -1,0 +1,32 @@
+#!/bin/bash
+
+function get-ssh-user() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1%@*}"
+  else
+    echo "ubuntu"
+  fi
+}
+
+function get-ssh-itag() {
+  if [[ "$1" == *@* ]]; then
+    echo "${1##*@}"
+  else
+    echo "$1"
+  fi
+}
+
+function get-instance-ip() {
+  local SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+  local ITAG=$(get-ssh-itag "$1")
+  $SELF_DIR/aws-instance-unique running "$ITAG" | jq --raw-output '.PublicIpAddress'
+}
+
+function check-arg-count() {
+  local EXPECTED="$1"
+  shift
+  case "$#" in
+    $EXPECTED) ;;
+    *) echo 1>&2 "Error: expected $EXPECTED instance tag argument(s), got $# arguments"; exit 1;;
+  esac
+}
