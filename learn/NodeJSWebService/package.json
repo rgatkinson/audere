@@ -9,7 +9,9 @@
     "start-prod": "tsc && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
     "test-watch": "jest --verbose --no-watchman --watchAll",
-    "sequelize": "sequelize"
+    "sequelize": "sequelize",
+    "lint": "prettier --list-different '{src,tests}/**/*.ts' 'db/**/*.js'",
+    "lint-fix": "prettier --write '{src,tests}/**/*.ts' 'db/**/*.js'"
   },
   "main": "build/src/server.js",
   "dependencies": {
@@ -39,6 +41,7 @@
     "concurrently": "^4.0.1",
     "jest": "^23.6.0",
     "nodemon": "^1.18.4",
+    "prettier": "^1.14.3",
     "sequelize-cli": "^4.1.1",
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.1",
