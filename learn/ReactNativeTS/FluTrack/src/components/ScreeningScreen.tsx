@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Alert } from "react-native";
 import CheckBox from "./CheckBox";
-import DatePicker from "react-native-datepicker";
+import DatePicker from "./DatePicker";
 import StyledButton from "./StyledButton";
 import RadioButton from "./RadioButton";
 import FieldLabel from "./FieldLabel";
@@ -93,24 +93,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               <MyText>Date of previous enrollment:</MyText>
               <FieldLabel label="">
                 <DatePicker
-                  style={styles.datePicker}
                   date={this.state.datePrevEnrollment}
-                  mode="date"
-                  placeholder="select date"
-                  format="YYYY-MM-DD"
-                  confirmBtnText="Confirm"
-                  cancelBtnText="Cancel"
-                  customStyles={{
-                    dateIcon: {
-                      position: "absolute",
-                      left: 0,
-                      top: 4,
-                      marginLeft: 0
-                    },
-                    dateInput: {
-                      marginLeft: 36
-                    }
-                  }}
                   onDateChange={(datePrevEnrollment: any) => {
                     this.setState({ datePrevEnrollment });
                     this.ageInput.focus();

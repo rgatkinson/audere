@@ -7,10 +7,6 @@ export const colors = {
 };
 
 export default StyleSheet.create({
-  datePicker: {
-    width: 200,
-    marginBottom: 10
-  },
   formLayout: {
     flex: 1,
     alignSelf: "stretch",
