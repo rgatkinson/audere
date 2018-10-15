@@ -52,22 +52,10 @@ class ScreeningScreen extends React.Component<Props, any> {
               autoFocus={true}
               placeholder="name@example.com"
               onChangeText={email => this.setState({ email })}
-              onSubmit={() => {
-                this.cellInput.focus();
-              }}
-            />
-            {/* <TextInput
-              style={[styles.inputField, { width: 150 }]}
-              autoFocus={true}
-              underlineColorAndroid="rgba(0,0,0,0)"
-              placeholder="name@example.com"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={email => this.setState({ email })}
               onSubmitEditing={() => {
                 this.cellInput.focus();
               }}
-            /> */}
+            />
           </FieldLabel>
           <FieldLabel label="Cell Phone:">
             <View style={{ flexDirection: "column" }}>
