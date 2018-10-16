@@ -2,7 +2,7 @@ import React from "react";
 import { View, Alert } from "react-native";
 import CheckBox from "./CheckBox";
 import DatePicker from "./DatePicker";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import RadioButton from "./RadioButton";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
@@ -123,7 +123,7 @@ class ScreeningScreen extends React.Component<Props, any> {
           </FieldLabel>
           <MyText>Are you feeling sick or unwell today?</MyText>
           <FieldLabel label="">
-            <StyledButton
+            <Button
               title="YES"
               onPress={() => {
                 this.saveAge(+this.state.age);
@@ -131,7 +131,7 @@ class ScreeningScreen extends React.Component<Props, any> {
                 this.props.navigation.navigate(this.props.onNext);
               }}
             />
-            <StyledButton
+            <Button
               title="NO"
               onPress={() => {
                 Alert.alert("Thank you for your time. Goodbye.");

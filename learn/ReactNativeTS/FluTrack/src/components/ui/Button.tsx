@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { colors } from "../Styles";
+import { colors } from "../../Styles";
 
 interface Props {
   title: string;
@@ -8,15 +8,15 @@ interface Props {
 }
 
 // Custom button that looks like the button on auderenow.org
-export default class StyledButton extends React.Component<Props> {
+export default class Button extends React.Component<Props> {
   render() {
     return (
       <TouchableOpacity
-        style={styles.styledButton}
+        style={styles.button}
         activeOpacity={0.5}
         onPress={this.props.onPress}
       >
-        <Text style={styles.buttonText}>{this.props.title}</Text>
+        <Text style={styles.text}>{this.props.title}</Text>
       </TouchableOpacity>
     );
   }
@@ -25,11 +25,11 @@ export default class StyledButton extends React.Component<Props> {
 const HEIGHT = 44;
 
 const styles = StyleSheet.create({
-  buttonText: {
+  text: {
     color: "white",
     fontWeight: "bold",
   },
-  styledButton: {
+  button: {
     alignItems: "center",
     justifyContent: "center",
     margin: 8,

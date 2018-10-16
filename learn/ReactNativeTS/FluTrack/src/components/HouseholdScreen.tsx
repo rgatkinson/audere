@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
@@ -223,7 +223,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
             />
           </FieldLabel>
         </View>
-        <StyledButton
+        <Button
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));

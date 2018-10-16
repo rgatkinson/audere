@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, Alert, StyleSheet } from "react-native";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
@@ -20,7 +20,7 @@ export default class ConsentScreen extends React.Component {
         <View style={styles.consentViewer}>
           <Text>{CONSENT_FORM_TEXT}</Text>
         </View>
-        <StyledButton
+        <Button
           title="I AGREE"
           onPress={() => {
             interact(JSON.stringify(this.state));

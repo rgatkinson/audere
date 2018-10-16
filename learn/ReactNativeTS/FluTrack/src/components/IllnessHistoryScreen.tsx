@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import RadioButton from "./RadioButton";
 import ScreenView from "./ScreenView";
@@ -55,7 +55,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
             </View>
           )}
         </View>
-        <StyledButton
+        <Button
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));

@@ -1,6 +1,6 @@
 import React from "react";
 import { Platform, Dimensions, AsyncStorage } from "react-native";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
 import { interact } from "../../App";
@@ -72,7 +72,7 @@ class LoginScreen extends React.Component<Props, any> {
               onChangeText={password => this.setState({ password })}
             />
           </FieldLabel>
-          <StyledButton
+          <Button
             title="LOGIN"
             onPress={() => {
               AsyncStorage.setItem("id", JSON.stringify(this.state.id));

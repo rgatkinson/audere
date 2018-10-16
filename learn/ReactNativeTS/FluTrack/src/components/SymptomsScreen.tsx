@@ -1,5 +1,5 @@
 import React from "react";
-import StyledButton from "./StyledButton";
+import Button from "./ui/Button";
 import CheckBox from "./CheckBox";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
@@ -108,7 +108,7 @@ class SymptomsScreen extends React.Component<Props, any> {
             text="Ear pain or ear discharge"
           />
         )}
-        <StyledButton
+        <Button
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
