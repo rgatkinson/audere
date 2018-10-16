@@ -6,15 +6,18 @@ const INTERACTION_QUEUE_KEY = "interaction.queue";
 const DEVICE_ID = uuidv4();
 const api = axios.create({
   baseURL: getApiBaseUrl(),
-  xsrfCookieName: 'csrftoken',
-  xsrfHeaderName: 'X-CSRFToken',
+  xsrfCookieName: "csrftoken",
+  xsrfHeaderName: "X-CSRFToken"
 });
 
 function getApiBaseUrl() {
-  if (process.env.NODE_ENV === "development" && process.env.REACT_NATIVE_API_SERVER) {
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.REACT_NATIVE_API_SERVER
+  ) {
     return process.env.REACT_NATIVE_API_SERVER;
   }
-  return 'https://api.auderenow.io/api';
+  return "https://api.auderenow.io/api";
 }
 
 // api.interceptors.request.use(request => {
@@ -35,7 +38,6 @@ export async function logInteraction(data: string, count: number) {
     Extra: data
   };
 
-  console.log("about to push " + data);
   let csrf = null;
   try {
     let response = await api.get("");
@@ -46,7 +48,7 @@ export async function logInteraction(data: string, count: number) {
       }
     });
   } catch (e) {
-    console.log('================================');
+    console.log("================================");
     if (e.response) {
       console.log(e.response.data);
     }

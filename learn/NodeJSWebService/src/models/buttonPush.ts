@@ -1,5 +1,5 @@
-import Sequelize from 'sequelize';
-import { sequelize } from './';
+import Sequelize from "sequelize";
+import { sequelize } from "./";
 
 export const ButtonPush = sequelize.define(
   "button_push",
@@ -22,7 +22,7 @@ export const ButtonPush = sequelize.define(
     extra: {
       type: Sequelize.TEXT,
       allowNull: true
-    },
+    }
   },
   {
     timestamps: false

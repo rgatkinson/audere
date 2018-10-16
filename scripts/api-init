@@ -4,8 +4,6 @@ set -x
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-# From https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
-
 > "$HOME/.api-rc" cat "$SELF_DIR/manage-nvm"
 >>"$HOME/.api-rc" cat <<-EOF
 
@@ -17,6 +15,23 @@ if ! grep "api-rc" "$PROFILE" >/dev/null; then
   echo >>"$PROFILE" '. "$HOME/.api-rc"'
 fi
 . $HOME/.api-rc
+
+# DB configuration is based on .pgpass, which is assumed to be provided out of band
+DBID="db0"
+
+PGPASS="$(grep "^$DBID\." "$HOME/.pgpass")"
+function pgpass() { echo "$PGPASS" | cut -d ":" -f "$1"; }
+
+DB_HOSTNAME="$(pgpass 1)"
+DB_PORT="$(pgpass 2)"
+DB_DATABASE="$(pgpass 3)"
+DB_USERNAME="$(pgpass 4)"
+DB_PASSWORD="$(pgpass 5)"
+
+echo "DATABASE_URL=postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOSTNAME:$DB_PORT/$DB_DATABASE" >\
+  $HOME/NodeJSWebService/.env
+
+# Install service
 
 yarn global add pm2
 (

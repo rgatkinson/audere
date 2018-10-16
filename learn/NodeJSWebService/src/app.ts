@@ -1,7 +1,7 @@
 import express from "express";
 import Ouch from "ouch";
 import bodyParser from "body-parser";
-import helmet from 'helmet';
+import helmet from "helmet";
 import { ButtonPush } from "./models/buttonPush";
 import { ValidationError } from "sequelize";
 import { sequelize } from "./models";
@@ -45,7 +45,7 @@ app.post(
         deviceId: req.body.DeviceId,
         timestamp: req.body.Timestamp,
         count: req.body.Count,
-        extra: req.body.Extra,
+        extra: req.body.Extra
       });
       res.json({ Status: "SUCCESS" });
     } catch (error) {

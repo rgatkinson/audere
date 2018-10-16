@@ -6,12 +6,17 @@ SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 case "$#" in
   1) ;;
-  *) echo 1>&2 "Error: expected one subdomain argument, got $# arguments"; exit 1;;
+  *) set +x; echo 1>&2 "Error: expected one subdomain argument, got $# arguments"; exit 1;;
 esac
 SUBDOMAIN=$1
 
-# Inspired by:
-# https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
+if [[ ! -r "$HOME/.pgpass" ]]; then
+  set +x
+  echo 1>&2 "Error: cannot access '$HOME/.pgpass' to get database information"
+  echo 1>&2 "  Check the AWS console to find the 'fileshare' instance, log in"
+  echo 1>&2 "  there via ssh, and copy the contents of '/data/creds/pgpass'."
+  exit 1
+fi
 
 # Add yarn's debian package repository
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -20,29 +25,13 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 # Use the node setup script to add the nodesource repository
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 
-sudo apt update && sudo apt -y full-upgrade
+sudo apt update
+sudo apt -y full-upgrade
+sudo apt -y install postgresql-client-common nginx yarn nodejs
 
-sudo apt -y install postgresql postgresql-contrib postgresql-client-common nginx yarn nodejs
-
-DB_PASSWORD="$(tr -dc A-Za-z0-9 < /dev/urandom | head -c "${1:-24}")" \
-  || true # tr reports failure because its output is truncated
-
-sudo -u postgres psql <<EOF
-	CREATE DATABASE fludb;
-	CREATE USER fluser WITH PASSWORD '$DB_PASSWORD';
-	ALTER ROLE fluser SET client_encoding TO 'utf8';
-	ALTER ROLE fluser SET default_transaction_isolation TO 'read committed';
-	ALTER ROLE fluser SET timezone TO 'UTC';
-	GRANT ALL PRIVILEGES ON DATABASE fludb TO fluser;
-EOF
-
-echo "$DB_PASSWORD" >"$HOME/.db-password"
-echo "DATABASE_URL=postgres://fluser:$DB_PASSWORD@localhost:5432/fludb" >\
-  $HOME/NodeJSWebService/.env
-
+"$SELF_DIR/add-developer-accounts"
 sudo adduser --shell /bin/bash --gecos "Audere Api" --disabled-password api
-sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.db-password" "$HOME/NodeJSWebService" ~api
-
+sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.pgpass" "$HOME/NodeJSWebService" ~api
 
 (
   cd ~api
