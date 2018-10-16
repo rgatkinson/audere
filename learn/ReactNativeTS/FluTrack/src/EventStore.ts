@@ -30,14 +30,14 @@ function getApiBaseUrl() {
 //   return response;
 // })
 
-export async function logInteraction(count: number) {
+export async function logInteraction(data: string, count: number) {
   let item = {
     DeviceId: DEVICE_ID,
     Timestamp: new Date().toISOString(),
-    Count: count
+    Count: count,
+    Extra: data
   };
 
-  console.log("hi!!!");
   let csrf = null;
   try {
     let response = await api.get("");
