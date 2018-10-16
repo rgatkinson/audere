@@ -16,7 +16,7 @@ interface Props {
 }
 export default class IllnessHistoryScreen extends React.Component<Props, any> {
   state = {
-    currentlyHospitalized: false
+    currentlyHospitalized: false,
   };
   render() {
     return (

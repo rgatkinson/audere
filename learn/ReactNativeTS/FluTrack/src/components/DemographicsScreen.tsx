@@ -17,7 +17,7 @@ interface Props {
 }
 function mapStateToProps(state: any) {
   return {
-    age: state.age
+    age: state.age,
   };
 }
 class DemographicsScreen extends React.Component<Props, any> {

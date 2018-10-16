@@ -14,7 +14,7 @@ interface Props {
 }
 function mapStateToProps(state: any) {
   return {
-    age: state.age
+    age: state.age,
   };
 }
 class SymptomsScreen extends React.Component<Props, any> {
@@ -26,7 +26,7 @@ class SymptomsScreen extends React.Component<Props, any> {
     shortnessOfBreath: false,
     troubleBreathing: false,
     mucous: false,
-    earPain: false
+    earPain: false,
   };
   render() {
     return (
@@ -36,7 +36,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              fever: !this.state.fever
+              fever: !this.state.fever,
             });
           }}
           isChecked={this.state.fever}
@@ -45,7 +45,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              cough: !this.state.cough
+              cough: !this.state.cough,
             });
           }}
           isChecked={this.state.cough}
@@ -54,7 +54,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              wheezing: !this.state.wheezing
+              wheezing: !this.state.wheezing,
             });
           }}
           isChecked={this.state.wheezing}
@@ -63,7 +63,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              muscleAche: !this.state.muscleAche
+              muscleAche: !this.state.muscleAche,
             });
           }}
           isChecked={this.state.muscleAche}
@@ -72,7 +72,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              shortnessOfBreath: !this.state.shortnessOfBreath
+              shortnessOfBreath: !this.state.shortnessOfBreath,
             });
           }}
           isChecked={this.state.shortnessOfBreath}
@@ -81,7 +81,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              troubleBreathing: !this.state.troubleBreathing
+              troubleBreathing: !this.state.troubleBreathing,
             });
           }}
           isChecked={this.state.troubleBreathing}
@@ -90,7 +90,7 @@ class SymptomsScreen extends React.Component<Props, any> {
         <CheckBox
           onClick={() => {
             this.setState({
-              mucous: !this.state.mucous
+              mucous: !this.state.mucous,
             });
           }}
           isChecked={this.state.mucous}
@@ -101,7 +101,7 @@ class SymptomsScreen extends React.Component<Props, any> {
           <CheckBox
             onClick={() => {
               this.setState({
-                earPain: !this.state.earPain
+                earPain: !this.state.earPain,
               });
             }}
             isChecked={this.state.earPain}

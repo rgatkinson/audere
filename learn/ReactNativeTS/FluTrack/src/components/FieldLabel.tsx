@@ -21,10 +21,10 @@ export default class FieldLabel extends React.Component<Props, any> {
 
 const styles = StyleSheet.create({
   fieldLabel: {
-    width: 100
+    width: 100,
   },
   flexRow: {
     flexDirection: "row",
-    justifyContent: "flex-start"
-  }
+    justifyContent: "flex-start",
+  },
 });

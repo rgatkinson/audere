@@ -8,7 +8,7 @@ import { CONSENT_FORM_TEXT } from "../resources/consentForm";
 
 export default class ConsentScreen extends React.Component {
   state = {
-    consent: true
+    consent: true,
   };
   render() {
     return (
@@ -37,6 +37,6 @@ export default class ConsentScreen extends React.Component {
 const styles = StyleSheet.create({
   consentViewer: {
     marginTop: 20,
-    backgroundColor: "white"
-  }
+    backgroundColor: "white",
+  },
 });

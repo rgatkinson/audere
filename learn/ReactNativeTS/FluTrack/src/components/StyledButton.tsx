@@ -27,7 +27,7 @@ const HEIGHT = 44;
 const styles = StyleSheet.create({
   buttonText: {
     color: "white",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   styledButton: {
     alignItems: "center",
@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     height: HEIGHT,
     borderRadius: HEIGHT / 2,
-    backgroundColor: colors.accent
-  }
+    backgroundColor: colors.accent,
+  },
 });

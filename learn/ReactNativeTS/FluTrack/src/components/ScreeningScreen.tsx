@@ -24,7 +24,7 @@ class ScreeningScreen extends React.Component<Props, any> {
     participatedBefore: false,
     datePrevEnrollment: new Date(),
     textOK: false,
-    age: ""
+    age: "",
   };
   saveAge = (age: number) => {
     this.props.dispatch({ type: SET_AGE, payload: age });
@@ -32,14 +32,14 @@ class ScreeningScreen extends React.Component<Props, any> {
   render() {
     const noYesOptions = [
       { label: "No", value: false },
-      { label: "Yes", value: true }
+      { label: "Yes", value: true },
     ];
     const countyOptions = [
       { label: "King", value: "King" },
       { label: "Snohomish", value: "Snohomish" },
       { label: "Pierce", value: "Pierce" },
       { label: "Island", value: "Island" },
-      { label: "Skagit", value: "Skagit" }
+      { label: "Skagit", value: "Skagit" },
     ];
     return (
       <ScreenView>
@@ -71,7 +71,7 @@ class ScreeningScreen extends React.Component<Props, any> {
                 style={{ paddingTop: 0 }}
                 onClick={() => {
                   this.setState({
-                    textOK: !this.state.textOK
+                    textOK: !this.state.textOK,
                   });
                 }}
                 isChecked={this.state.textOK}

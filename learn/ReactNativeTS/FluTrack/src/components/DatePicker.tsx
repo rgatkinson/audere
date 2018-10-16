@@ -25,11 +25,11 @@ export default class DatePicker extends React.Component<Props, any> {
             position: "absolute",
             left: 0,
             top: 4,
-            marginLeft: 0
+            marginLeft: 0,
           },
           dateInput: {
-            marginLeft: 36
-          }
+            marginLeft: 36,
+          },
         }}
         onDateChange={this.props.onDateChange}
       />
@@ -40,6 +40,6 @@ export default class DatePicker extends React.Component<Props, any> {
 const styles = StyleSheet.create({
   datePicker: {
     width: 200,
-    marginBottom: 10
-  }
+    marginBottom: 10,
+  },
 });

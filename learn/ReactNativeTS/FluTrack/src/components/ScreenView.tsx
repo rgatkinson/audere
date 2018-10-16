@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 60,
     paddingLeft: 5,
-    paddingRight: 5
+    paddingRight: 5,
   },
   screenView: {
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });

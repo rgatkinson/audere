@@ -6,7 +6,7 @@ import {
   View,
   StyleSheet,
   TextInput,
-  KeyboardTypeOptions
+  KeyboardTypeOptions,
 } from "react-native";
 
 export type InputType =
@@ -25,7 +25,7 @@ let validationPatterns: { [index: string]: RegExp } = {
   // 7 or 10 digit US phone
   email: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
   "text-short": /^.{1,}$/,
-  address: /^.{1,}$/
+  address: /^.{1,}$/,
 };
 interface Props {
   style?: any;
@@ -57,7 +57,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isPatternError: false,
       isMinMaxError: false, // min or max validation failed
       errMessage: null,
-      value: this.props.defaultValue
+      value: this.props.defaultValue,
     };
     switch (this.props.inputType) {
       case "email":
@@ -103,7 +103,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isMissing: false,
       isMinMaxError: false,
       isPatternError: false,
-      errMessage: null
+      errMessage: null,
     });
     console.log("checkErrors: value=" + value + " inputType=" + inputType);
     if (this.props.optional && (value == undefined || value.length == 0)) {
@@ -112,14 +112,14 @@ export default class ValidatedInput extends React.Component<Props, any> {
     if (value == undefined || value.length == 0) {
       this.setState({
         isMissing: true,
-        errMessage: "Required"
+        errMessage: "Required",
       });
       return;
     }
     if (!validationPatterns[inputType].test(value)) {
       this.setState({
         isPatternError: true,
-        errMessage: "Invalid format for " + inputType
+        errMessage: "Invalid format for " + inputType,
       });
       return;
     }
@@ -151,7 +151,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
     }
     this.setState({
       isMinMaxError: minError || maxError,
-      errMessage: errString.length > 0 ? errString : null
+      errMessage: errString.length > 0 ? errString : null,
     });
   }
 
@@ -166,7 +166,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
             this.state.isPatternError
               ? styles.errorBorder
               : null,
-            this.props.style
+            this.props.style,
           ]}
           ref={this.props.myRef}
           autoFocus={this.props.autoFocus}
@@ -201,25 +201,25 @@ const styles = StyleSheet.create({
   inputField: {
     marginBottom: 1,
     backgroundColor: "#fff",
-    paddingLeft: 5
+    paddingLeft: 5,
   },
   smallWidth: {
-    width: 100
+    width: 100,
   },
   mediumWidth: {
-    width: 150
+    width: 150,
   },
   wideWidth: {
-    width: 250
+    width: 250,
   },
   errorBorder: {
     borderColor: "red",
-    borderWidth: 3
+    borderWidth: 3,
   },
   errorMessage: {
     marginTop: 0,
     paddingTop: 0,
     marginBottom: 5,
-    color: "red"
-  }
+    color: "red",
+  },
 });

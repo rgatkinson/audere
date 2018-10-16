@@ -28,19 +28,19 @@ export default class HouseholdScreen extends React.Component<Props, any> {
     travelLast4weeks: false,
     travelOutsideUS: false,
     travelOutsideWA: false,
-    smokerInHousehold: false
+    smokerInHousehold: false,
   };
   render() {
     const residenceOptions = [
       { label: "House", value: 0 },
       { label: "Apartment", value: 1 },
       { label: "Shelter", value: 2 },
-      { label: "None", value: 3 }
+      { label: "None", value: 3 },
     ];
     const childCareOptions = [
       { label: "Yes, the participant", value: 0 },
       { label: "Yes, another child", value: 1 },
-      { label: "No or not applicable", value: 2 }
+      { label: "No or not applicable", value: 2 },
     ];
     return (
       <ScreenView>

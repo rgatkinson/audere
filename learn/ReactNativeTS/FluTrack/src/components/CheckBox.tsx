@@ -26,6 +26,6 @@ export default class CheckBox extends React.Component<Props, any> {
 const styles = StyleSheet.create({
   checkbox: {
     padding: 10,
-    width: 300
-  }
+    width: 300,
+  },
 });

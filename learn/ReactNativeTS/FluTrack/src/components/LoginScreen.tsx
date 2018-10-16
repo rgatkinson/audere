@@ -26,7 +26,7 @@ class LoginScreen extends React.Component<Props, any> {
       screenWidth: width,
       appVersion: pjson.version,
       isLoading: true,
-      idLoaded: false
+      idLoaded: false,
     };
   }
   componentWillMount() {
@@ -34,7 +34,7 @@ class LoginScreen extends React.Component<Props, any> {
       if (value !== null) {
         this.setState({
           id: JSON.parse(value),
-          idLoaded: JSON.parse(value).length != 0
+          idLoaded: JSON.parse(value).length != 0,
         });
       }
       this.setState({ isLoading: false });

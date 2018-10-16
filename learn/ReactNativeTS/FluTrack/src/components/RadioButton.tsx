@@ -13,7 +13,7 @@ export default class RadioButton extends React.Component<Props, any> {
   render() {
     const defaultOptions = [
       { label: "Yes", value: true },
-      { label: "No", value: false }
+      { label: "No", value: false },
     ];
     return (
       <RadioForm
