@@ -1,5 +1,3 @@
-// Custom button that looks like the button on auderenow.org
-
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { colors } from "../Styles";
@@ -8,7 +6,9 @@ interface Props {
   title: string;
   onPress(arg: any): void;
 }
-export default class StyledButton extends React.Component<Props, any> {
+
+// Custom button that looks like the button on auderenow.org
+export default class StyledButton extends React.Component<Props> {
   render() {
     return (
       <TouchableOpacity
@@ -21,18 +21,21 @@ export default class StyledButton extends React.Component<Props, any> {
     );
   }
 }
+
+const HEIGHT = 44;
+
 const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold"
   },
   styledButton: {
+    alignItems: "center",
+    justifyContent: "center",
     margin: 8,
-    padding: 18,
-    backgroundColor: colors.accent,
-    borderRadius: 20,
-    borderWidth: 0,
-    height: 45,
-    justifyContent: "center"
+    paddingHorizontal: 30,
+    height: HEIGHT,
+    borderRadius: HEIGHT / 2,
+    backgroundColor: colors.accent
   }
 });
