@@ -1,7 +1,7 @@
 import React from "react";
-// import { Alert } from "react-native";
 import { createStackNavigator, NavigationScreenProp } from "react-navigation";
 import { logInteraction } from "./src/EventStore";
+import AccountScreen from "./src/components/AccountScreen";
 import LoginScreen from "./src/components/LoginScreen";
 import ScreeningScreen from "./src/components/ScreeningScreen";
 import SymptomsScreen from "./src/components/SymptomsScreen";
@@ -18,6 +18,7 @@ export function interact(data: string): Promise<void> {
 }
 
 const routes = {
+  Account: AccountScreen,
   Screening: ScreeningScreen,
   Symptoms: SymptomsScreen,
   Demographics: DemographicsScreen,

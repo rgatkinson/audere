@@ -9,7 +9,7 @@ export * from "./user";
 
 type Action = UserAction;
 
-interface StoreState {
+export interface StoreState {
   user: UserState;
 }
 
