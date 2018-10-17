@@ -9,17 +9,19 @@ import {
 } from "./user";
 export * from "./user";
 
-export type Action = UserAction;
+import {
+  default as form,
+  State as FormState,
+  Action as FormAction,
+} from "./form";
+export * from "./form";
+
+export type Action = UserAction | FormAction;
 
 export interface StoreState {
   user: UserState;
+  form: FormState;
 }
-
-const initialState = {
-  id: "",
-  password: "",
-  age: 0,
-};
 
 const config = {
   key: "store",
@@ -28,6 +30,7 @@ const config = {
 
 const reducer = combineReducers({
   user,
+  form,
 });
 
 export const store = createStore(persistReducer(config, reducer));

@@ -3,7 +3,7 @@ import { TextInput, Dimensions, Platform } from "react-native";
 import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
-import { logIn } from "../store";
+import { logIn, Action } from "../store";
 import MyText from "./MyText";
 import ValidatedInput from "./ValidatedInput";
 import { connect } from "react-redux";
@@ -12,7 +12,7 @@ import { interact } from "../../App";
 const packageInfo = require("../../package.json");
 
 interface Props {
-  dispatch(action: any): void;
+  dispatch(action: Action): void;
 }
 
 @connect()

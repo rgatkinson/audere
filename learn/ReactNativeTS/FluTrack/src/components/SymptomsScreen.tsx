@@ -6,17 +6,15 @@ import MyText from "./MyText";
 import { interact, goToNextScreen } from "../../App";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
+import { StoreState } from "../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   age: number;
 }
-function mapStateToProps(state: any) {
-  return {
-    age: state.age,
-  };
-}
-class SymptomsScreen extends React.Component<Props, any> {
+
+@connect((state: StoreState) => ({ age: state.form.age }))
+export default class SymptomsScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Symptoms",
   };
@@ -121,5 +119,3 @@ class SymptomsScreen extends React.Component<Props, any> {
     );
   }
 }
-
-export default connect(mapStateToProps)(SymptomsScreen);

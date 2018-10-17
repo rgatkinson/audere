@@ -8,17 +8,15 @@ import ValidatedInput from "./ValidatedInput";
 import { connect } from "react-redux";
 import { interact, goToNextScreen } from "../../App";
 import styles from "../Styles";
+import { StoreState } from "../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   age: number;
 }
-function mapStateToProps(state: any) {
-  return {
-    age: state.age,
-  };
-}
-class DemographicsScreen extends React.Component<Props, any> {
+
+@connect((state: StoreState) => ({ age: state.form.age }))
+export default class DemographicsScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Demographics",
   };
@@ -101,5 +99,3 @@ class DemographicsScreen extends React.Component<Props, any> {
     );
   }
 }
-
-export default connect(mapStateToProps)(DemographicsScreen);

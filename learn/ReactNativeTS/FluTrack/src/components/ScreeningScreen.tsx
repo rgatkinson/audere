@@ -13,9 +13,11 @@ import { NavigationScreenProp } from "react-navigation";
 import { interact, goToNextScreen } from "../../App";
 import styles from "../Styles";
 import ValidatedInput from "./ValidatedInput";
+import { setAge, Action } from "../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
+  dispatch(action: Action): void;
 }
 
 class ScreeningScreen extends React.Component<Props, any> {
@@ -29,9 +31,11 @@ class ScreeningScreen extends React.Component<Props, any> {
     textOK: false,
     age: "",
   };
+
   saveAge = (age: number) => {
-    this.props.dispatch({ type: SET_AGE, payload: age });
+    this.props.dispatch(setAge(age));
   };
+
   render() {
     const noYesOptions = [
       { label: "No", value: false },
