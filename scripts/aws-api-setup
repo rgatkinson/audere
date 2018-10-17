@@ -18,6 +18,25 @@ if [[ ! -r "$HOME/.pgpass" ]]; then
   exit 1
 fi
 
+if [[ ! -b "/dev/xvdf1" ]]; then
+  set +x
+  echo 1>&2 "Error: you need to attach encrypted volume api-data to this instance"
+  echo 1>&2 "  before running this script."
+  exit 1
+fi
+if ! grep xvdf1 /etc/fstab; then
+  printf "/dev/xvdf1\t/data\text4\tdefaults,nofail\t0\t2\n" | sudo tee -a "/etc/fstab"
+  sudo mount -a
+fi
+if [[ ! -d "/data/lost+found" ]]; then
+  set +x
+  echo 1>&2 "Error binding api-data volume to /data."
+  echo 1>&2 "  Check to make sure that volume is attached as device sdf/xvdf,"
+  echo 1>&2 "  and that /etc/fstab looks reasonable:"
+  cat 1>&2 /etc/fstab
+  exit 1
+fi
+
 # Add yarn's debian package repository
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
