@@ -1,16 +1,15 @@
 import React from "react";
-import { Platform, Dimensions, AsyncStorage } from "react-native";
+import { TextInput, Dimensions, Platform } from "react-native";
 import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
-import { interact } from "../../App";
 import { logIn } from "../store";
 import MyText from "./MyText";
 import ValidatedInput from "./ValidatedInput";
 import { connect } from "react-redux";
-let pjson = require("../../package.json");
+import { interact } from "../../App";
 
-const { height, width } = Dimensions.get("window");
+const packageInfo = require("../../package.json");
 
 interface Props {
   dispatch(action: any): void;
@@ -25,18 +24,27 @@ class LoginScreen extends React.Component<Props> {
   state = {
     id: "",
     password: "",
-    deviceOS: Platform.OS,
-    deviceVersion: Platform.Version,
-    screenHeight: height,
-    screenWidth: width,
-    appVersion: pjson.version,
   };
+
+  passwordInput = React.createRef<TextInput>();
+
+  componentDidMount() {
+    const { height, width } = Dimensions.get("window");
+    const data = {
+      deviceOS: Platform.OS,
+      deviceVersion: Platform.Version,
+      screenHeight: height,
+      screenWidth: width,
+      appVersion: packageInfo.version,
+    };
+    interact(JSON.stringify(data));
+  }
 
   render() {
     return (
       <ScreenView>
         <MyText size="title">
-          {pjson.name}
+          {packageInfo.name}
           &trade;
         </MyText>
         <FieldLabel label="Login ID:">
@@ -46,29 +54,26 @@ class LoginScreen extends React.Component<Props> {
             autoFocus={true}
             onChangeText={id => this.setState({ id })}
             onSubmitEditing={() => {
-              this.passwordInput.focus();
+              const { current } = this.passwordInput;
+              current && current.focus();
             }}
           />
         </FieldLabel>
         <FieldLabel label="Password:">
           <ValidatedInput
             inputType="password"
-            myRef={i => {
-              this.passwordInput = i;
-            }}
+            myRef={this.passwordInput}
             onChangeText={password => this.setState({ password })}
           />
         </FieldLabel>
-        <Button
-          title="LOGIN"
-          onPress={() => {
-            this.props.dispatch(logIn(this.state.id, this.state.password));
-            interact(JSON.stringify(this.state));
-          }}
-        />
+        <Button title="LOGIN" onPress={this.logIn} />
       </ScreenView>
     );
   }
+
+  logIn = () => {
+    this.props.dispatch(logIn(this.state.id, this.state.password));
+  };
 }
 
 export default LoginScreen;

@@ -32,7 +32,7 @@ interface Props {
   inputType: InputType;
   autoFocus?: boolean;
   optional?: boolean; // default is false
-  myRef?(arg: any): void; // cannot use "ref" for some reason
+  myRef?: ((arg: any) => void) | React.RefObject<TextInput>; // cannot use "ref" for some reason
   defaultValue?: string;
   min?: number; // for nonNegativeInteger type, denotes min value; for other types, min length
   max?: number; // for nonNegativeInteger type, denotes max value, for other types, max length
