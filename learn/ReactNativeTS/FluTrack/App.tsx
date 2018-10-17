@@ -1,6 +1,6 @@
 import React from "react";
 // import { Alert } from "react-native";
-import { createStackNavigator } from "react-navigation";
+import { createStackNavigator, NavigationScreenProp } from "react-navigation";
 import { logInteraction } from "./src/EventStore";
 import LoginScreen from "./src/components/LoginScreen";
 import ScreeningScreen from "./src/components/ScreeningScreen";
@@ -17,43 +17,27 @@ export function interact(data: string): Promise<void> {
   return logInteraction(data, x++);
 }
 
-const RootStack = createStackNavigator(
-  {
-    Login: {
-      screen: (props: any) => <LoginScreen {...props} onNext="Screening" />
-    },
-    Screening: {
-      screen: (props: any) => <ScreeningScreen {...props} onNext="Symptoms" />
-    },
-    Symptoms: {
-      screen: (props: any) => (
-        <SymptomsScreen {...props} onNext="Demographics" />
-      )
-    },
-    Demographics: {
-      screen: (props: any) => (
-        <DemographicsScreen {...props} onNext="Household" />
-      )
-    },
-    Household: {
-      screen: (props: any) => (
-        <HouseholdScreen {...props} onNext="IllnessHistory" />
-      )
-    },
-    IllnessHistory: {
-      screen: (props: any) => (
-        <IllnessHistoryScreen {...props} onNext="Consent" />
-      )
-    },
-    Consent: ConsentScreen
-  },
-  {
-    initialRouteName: "Login",
-    navigationOptions: () => ({
-      headerTransparent: true
-    })
+const routes = {
+  Login: LoginScreen,
+  Screening: ScreeningScreen,
+  Symptoms: SymptomsScreen,
+  Demographics: DemographicsScreen,
+  Household: HouseholdScreen,
+  IllnessHistory: IllnessHistoryScreen,
+  Consent: ConsentScreen,
+};
+
+export function goToNextScreen(navigation: NavigationScreenProp<any, any>) {
+  const currentRoute = navigation.state.routeName;
+  const routeNames = Object.keys(routes);
+  const currentRouteIndex = routeNames.indexOf(currentRoute);
+  if (currentRouteIndex > -1 && currentRouteIndex < routeNames.length - 1) {
+    const nextRoute = routeNames[currentRouteIndex + 1];
+    navigation.navigate(nextRoute);
   }
-);
+}
+
+const RootStack = createStackNavigator(routes);
 
 export default class App extends React.Component {
   render() {

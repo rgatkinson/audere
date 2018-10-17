@@ -7,9 +7,14 @@ import { interact } from "../../App";
 import { CONSENT_FORM_TEXT } from "../resources/consentForm";
 
 export default class ConsentScreen extends React.Component {
+  static navigationOptions = {
+    title: "Consent Form",
+  };
+
   state = {
     consent: true,
   };
+
   render() {
     return (
       <ScreenView>

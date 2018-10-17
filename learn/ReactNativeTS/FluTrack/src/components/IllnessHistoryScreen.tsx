@@ -7,21 +7,24 @@ import ScreenView from "./ScreenView";
 import ValidatedInput from "./ValidatedInput";
 import MyText from "./MyText";
 import { NavigationScreenProp } from "react-navigation";
-import { interact } from "../../App";
+import { interact, goToNextScreen } from "../../App";
 import styles from "../Styles";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  onNext: string;
 }
 export default class IllnessHistoryScreen extends React.Component<Props, any> {
+  static navigationOptions = {
+    title: "Illness History",
+  };
+
   state = {
     currentlyHospitalized: false,
   };
+
   render() {
     return (
       <ScreenView>
-        <MyText size="heading">Illness History</MyText>
         <View style={styles.formLayout}>
           <MyText>Including today, how many days have you been sick?</MyText>
           <FieldLabel label="">
@@ -59,7 +62,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate(this.props.onNext);
+            goToNextScreen(this.props.navigation);
           }}
         />
       </ScreenView>

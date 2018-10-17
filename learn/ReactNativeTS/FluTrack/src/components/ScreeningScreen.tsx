@@ -10,16 +10,19 @@ import MyText from "./MyText";
 import { connect } from "react-redux";
 import { SET_AGE } from "../store/Constants";
 import { NavigationScreenProp } from "react-navigation";
-import { interact } from "../../App";
+import { interact, goToNextScreen } from "../../App";
 import styles from "../Styles";
 import ValidatedInput from "./ValidatedInput";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  onNext: string;
 }
 
 class ScreeningScreen extends React.Component<Props, any> {
+  static navigationOptions = {
+    title: "Screening for Participant",
+  };
+
   state = {
     participatedBefore: false,
     datePrevEnrollment: new Date(),
@@ -43,7 +46,6 @@ class ScreeningScreen extends React.Component<Props, any> {
     ];
     return (
       <ScreenView>
-        <MyText size="heading">Screening for Participant</MyText>
         <View style={styles.formLayout}>
           <FieldLabel label="Email:">
             <ValidatedInput
@@ -128,7 +130,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               onPress={() => {
                 this.saveAge(+this.state.age);
                 interact(JSON.stringify(this.state));
-                this.props.navigation.navigate(this.props.onNext);
+                goToNextScreen(this.props.navigation);
               }}
             />
             <Button

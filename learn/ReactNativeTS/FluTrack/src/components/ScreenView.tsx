@@ -18,9 +18,8 @@ export default class ScreenView extends React.Component {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    marginTop: 60,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingTop: 20,
+    paddingHorizontal: 5,
   },
   screenView: {
     alignItems: "center",

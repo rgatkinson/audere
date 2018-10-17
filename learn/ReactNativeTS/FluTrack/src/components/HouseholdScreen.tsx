@@ -6,15 +6,19 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import RadioButton from "./RadioButton";
 import ValidatedInput from "./ValidatedInput";
-import { interact } from "../../App";
+import { interact, goToNextScreen } from "../../App";
 import { NavigationScreenProp } from "react-navigation";
 import styles from "../Styles";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  onNext: string;
 }
+
 export default class HouseholdScreen extends React.Component<Props, any> {
+  static navigationOptions = {
+    title: "Household Composition and Exposure",
+  };
+
   state = {
     residenceType: 0,
     childCare: 2,
@@ -44,7 +48,6 @@ export default class HouseholdScreen extends React.Component<Props, any> {
     ];
     return (
       <ScreenView>
-        <MyText size="heading">Household Composition and Exposure</MyText>
         <View style={styles.formLayout}>
           <MyText>Which best describes your residence?</MyText>
           <FieldLabel label="">
@@ -227,7 +230,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate(this.props.onNext);
+            goToNextScreen(this.props.navigation);
           }}
         />
       </ScreenView>

@@ -3,7 +3,7 @@ import { Platform, Dimensions, AsyncStorage } from "react-native";
 import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
-import { interact } from "../../App";
+import { interact, goToNextScreen } from "../../App";
 import { NavigationScreenProp } from "react-navigation";
 import MyText from "./MyText";
 import ValidatedInput from "./ValidatedInput";
@@ -11,9 +11,12 @@ let pjson = require("../../package.json");
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  onNext: string;
 }
 class LoginScreen extends React.Component<Props, any> {
+  static navigationOptions = {
+    title: "Login",
+  };
+
   constructor(props: Props) {
     super(props);
     const { height, width } = Dimensions.get("window");
@@ -77,7 +80,7 @@ class LoginScreen extends React.Component<Props, any> {
             onPress={() => {
               AsyncStorage.setItem("id", JSON.stringify(this.state.id));
               interact(JSON.stringify(this.state));
-              this.props.navigation.navigate(this.props.onNext);
+              goToNextScreen(this.props.navigation);
             }}
           />
         </ScreenView>

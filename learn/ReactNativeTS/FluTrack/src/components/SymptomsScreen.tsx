@@ -3,13 +3,12 @@ import Button from "./ui/Button";
 import CheckBox from "./CheckBox";
 import ScreenView from "./ScreenView";
 import MyText from "./MyText";
-import { interact } from "../../App";
+import { interact, goToNextScreen } from "../../App";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  onNext: string;
   age: number;
 }
 function mapStateToProps(state: any) {
@@ -18,6 +17,10 @@ function mapStateToProps(state: any) {
   };
 }
 class SymptomsScreen extends React.Component<Props, any> {
+  static navigationOptions = {
+    title: "Symptoms",
+  };
+
   state = {
     fever: false,
     cough: false,
@@ -31,7 +34,6 @@ class SymptomsScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
-        <MyText size="heading">Symptoms</MyText>
         <MyText>Please check the symptoms you are experiencing today:</MyText>
         <CheckBox
           onClick={() => {
@@ -112,7 +114,7 @@ class SymptomsScreen extends React.Component<Props, any> {
           title="NEXT"
           onPress={() => {
             interact(JSON.stringify(this.state));
-            this.props.navigation.navigate(this.props.onNext);
+            goToNextScreen(this.props.navigation);
           }}
         />
       </ScreenView>
