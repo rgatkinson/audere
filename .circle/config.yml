@@ -7,15 +7,36 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
+      - image: circleci/node:8.0
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
 
+    branches:
+      only: 
+        - master
+        - circle
+
     working_directory: ~/repo
 
     steps:
       - checkout
       - run: echo "Checkout worked!"
+      - run: 
+          name: Update yarn
+          command: 'sudo npm install -g yarn@latest'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+      - run: 
+          name: App Install
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn --version
+            yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          paths:
+            - node_modules
+
