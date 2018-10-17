@@ -15,9 +15,7 @@ jobs:
       # - image: circleci/mongo:3.4.4
 
     branches:
-      only: 
-        - master
-        - circle
+      ignore: 
 
     working_directory: ~/repo
 
