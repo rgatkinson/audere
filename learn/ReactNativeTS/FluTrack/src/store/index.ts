@@ -1,5 +1,7 @@
 import { createStore, combineReducers } from "redux";
-import { SET_ID, SET_PASSWORD, SET_AGE } from "./Constants";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+
 import {
   default as user,
   State as UserState,
@@ -7,7 +9,7 @@ import {
 } from "./user";
 export * from "./user";
 
-type Action = UserAction;
+export type Action = UserAction;
 
 export interface StoreState {
   user: UserState;
@@ -19,21 +21,14 @@ const initialState = {
   age: 0,
 };
 
-const reducer = (state = initialState, action: any) => {
-  switch (action.type) {
-    case SET_ID:
-      return { ...state, id: action.payload };
-    case SET_PASSWORD:
-      return { ...state, password: action.payload };
-    case SET_AGE:
-      return { ...state, age: action.payload };
-    default:
-      return state;
-  }
+const config = {
+  key: "store",
+  storage,
 };
 
-export const store = createStore(
-  combineReducers({
-    user,
-  })
-);
+const reducer = combineReducers({
+  user,
+});
+
+export const store = createStore(persistReducer(config, reducer));
+export const persistor = persistStore(store);
