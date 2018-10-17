@@ -1,5 +1,17 @@
-import { createStore } from "redux";
+import { createStore, combineReducers } from "redux";
 import { SET_ID, SET_PASSWORD, SET_AGE } from "./Constants";
+import {
+  default as user,
+  State as UserState,
+  Action as UserAction,
+} from "./user";
+export * from "./user";
+
+type Action = UserAction;
+
+interface StoreState {
+  user: UserState;
+}
 
 const initialState = {
   id: "",
@@ -20,6 +32,8 @@ const reducer = (state = initialState, action: any) => {
   }
 };
 
-const store = createStore(reducer);
-
-export default store;
+export const store = createStore(
+  combineReducers({
+    user,
+  })
+);

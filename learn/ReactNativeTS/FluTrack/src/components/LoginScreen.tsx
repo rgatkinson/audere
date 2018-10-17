@@ -3,35 +3,37 @@ import { Platform, Dimensions, AsyncStorage } from "react-native";
 import Button from "./ui/Button";
 import FieldLabel from "./FieldLabel";
 import ScreenView from "./ScreenView";
-import { interact, goToNextScreen } from "../../App";
-import { NavigationScreenProp } from "react-navigation";
+import { interact } from "../../App";
+import { logIn } from "../store";
 import MyText from "./MyText";
 import ValidatedInput from "./ValidatedInput";
+import { connect } from "react-redux";
 let pjson = require("../../package.json");
 
+const { height, width } = Dimensions.get("window");
+
 interface Props {
-  navigation: NavigationScreenProp<any, any>;
+  dispatch(action: any): void;
 }
-class LoginScreen extends React.Component<Props, any> {
+
+@connect()
+class LoginScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Login",
   };
 
-  constructor(props: Props) {
-    super(props);
-    const { height, width } = Dimensions.get("window");
-    this.state = {
-      id: "",
-      password: "",
-      deviceOS: Platform.OS,
-      deviceVersion: Platform.Version,
-      screenHeight: height,
-      screenWidth: width,
-      appVersion: pjson.version,
-      isLoading: true,
-      idLoaded: false,
-    };
-  }
+  state = {
+    id: "",
+    password: "",
+    deviceOS: Platform.OS,
+    deviceVersion: Platform.Version,
+    screenHeight: height,
+    screenWidth: width,
+    appVersion: pjson.version,
+    isLoading: true,
+    idLoaded: false,
+  };
+
   componentWillMount() {
     AsyncStorage.getItem("id").then(value => {
       if (value !== null) {
@@ -78,9 +80,9 @@ class LoginScreen extends React.Component<Props, any> {
           <Button
             title="LOGIN"
             onPress={() => {
+              this.props.dispatch(logIn(this.state.id, this.state.password));
               AsyncStorage.setItem("id", JSON.stringify(this.state.id));
               interact(JSON.stringify(this.state));
-              goToNextScreen(this.props.navigation);
             }}
           />
         </ScreenView>

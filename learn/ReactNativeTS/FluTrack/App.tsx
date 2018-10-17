@@ -9,8 +9,8 @@ import DemographicsScreen from "./src/components/DemographicsScreen";
 import HouseholdScreen from "./src/components/HouseholdScreen";
 import IllnessHistoryScreen from "./src/components/IllnessHistoryScreen";
 import ConsentScreen from "./src/components/ConsentScreen";
-import store from "./src/store/";
-import { Provider } from "react-redux";
+import { store } from "./src/store/";
+import { Provider, connect } from "react-redux";
 
 let x = 1;
 export function interact(data: string): Promise<void> {
@@ -18,7 +18,6 @@ export function interact(data: string): Promise<void> {
 }
 
 const routes = {
-  Login: LoginScreen,
   Screening: ScreeningScreen,
   Symptoms: SymptomsScreen,
   Demographics: DemographicsScreen,
@@ -37,13 +36,18 @@ export function goToNextScreen(navigation: NavigationScreenProp<any, any>) {
   }
 }
 
-const RootStack = createStackNavigator(routes);
+const MainStack = createStackNavigator(routes);
+const LoginStack = createStackNavigator({ Login: LoginScreen });
+
+const Root = connect(state => ({
+  isLoggedIn: state.user !== null,
+}))(props => (props.isLoggedIn ? <MainStack /> : <LoginStack />));
 
 export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <RootStack />
+        <Root />
       </Provider>
     );
   }
