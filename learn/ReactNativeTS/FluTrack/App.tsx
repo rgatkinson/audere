@@ -9,7 +9,7 @@ import DemographicsScreen from "./src/components/DemographicsScreen";
 import HouseholdScreen from "./src/components/HouseholdScreen";
 import IllnessHistoryScreen from "./src/components/IllnessHistoryScreen";
 import ConsentScreen from "./src/components/ConsentScreen";
-import { store, persistor } from "./src/store/";
+import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
@@ -41,9 +41,12 @@ export function goToNextScreen(navigation: NavigationScreenProp<any, any>) {
 const MainStack = createStackNavigator(routes);
 const LoginStack = createStackNavigator({ Login: LoginScreen });
 
-const Root = connect(state => ({
+const Root = connect((state: StoreState) => ({
   isLoggedIn: state.user !== null,
-}))(props => (props.isLoggedIn ? <MainStack /> : <LoginStack />));
+}))(
+  (props: { isLoggedIn: boolean }) =>
+    props.isLoggedIn ? <MainStack /> : <LoginStack />
+);
 
 export default class App extends React.Component {
   render() {
