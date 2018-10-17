@@ -29,14 +29,24 @@ jobs:
           command: 'sudo npm install -g yarn@latest'
       - restore_cache:
           key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
       - run: 
           name: App Install
           command: |
-            cd learn/ReactNativeTS/FluTrack
-            yarn --version
+            cd ~/repo/learn/ReactNativeTS/FluTrack
+            yarn install
+      - run:
+          name: Server Install
+          command: |
+            cd ~/repo/learn/NodeJSWebService
             yarn install
       - save_cache:
           key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          paths:
+            - node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
           paths:
             - node_modules
       - run: 
