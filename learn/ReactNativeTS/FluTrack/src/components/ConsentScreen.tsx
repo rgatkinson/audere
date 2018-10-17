@@ -5,8 +5,13 @@ import ScreenView from "./ScreenView";
 import MyText from "./MyText";
 import { interact } from "../../App";
 import { CONSENT_FORM_TEXT } from "../resources/consentForm";
+import { NavigationScreenProp } from "react-navigation";
 
-export default class ConsentScreen extends React.Component {
+interface Props {
+  navigation: NavigationScreenProp<void>;
+}
+
+export default class ConsentScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Consent Form",
   };
@@ -32,6 +37,7 @@ export default class ConsentScreen extends React.Component {
             Alert.alert(
               "Thank you for participating. Your info has been submitted."
             );
+            this.props.navigation.popToTop();
           }}
         />
       </ScreenView>
