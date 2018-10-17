@@ -39,4 +39,9 @@ jobs:
           key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:
             - node_modules
+      - run: 
+          name: Generate Build Info
+          command: |
+            cd ~/repo
+            .circle/generateBuildInfo.sh
 
