@@ -1,9 +1,13 @@
 {
   "expo": {
+    "name": "FluTrack",
+    "version": "0.1.0",
+    "description": "App for Seattle Flu Study project",
+    "icon": "./src/img/app-icon.png",
+    "slug": "FluTrack",
     "sdkVersion": "27.0.0",
-    "splash": {
-      "image": "./src/img/virus-splash.png",
-      "backgroundColor": "#000000"
+    "android": {
+      "package": "org.auderenow.flutrack"
     }
   }
 }
