@@ -2,6 +2,11 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable("button_pushes", {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
       deviceId: {
         type: Sequelize.UUID,
         allowNull: false,

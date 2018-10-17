@@ -4,6 +4,11 @@ import { sequelize } from "./";
 export const ButtonPush = sequelize.define(
   "button_push",
   {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     deviceId: {
       type: Sequelize.UUID,
       allowNull: false,
