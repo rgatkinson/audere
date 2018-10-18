@@ -16,34 +16,33 @@ jobs:
 
     steps:
       - checkout
-      - run: echo "Checkout worked!"
       - run: 
           name: Update yarn
           command: 'sudo npm install -g yarn@latest'
       - restore_cache:
-          key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
-          key: dependency-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
+          key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
       - run: 
-          name: App Install
+          name: App Yarn Install
           command: |
-            cd $CIRCLE_WORKING_DIRECTORY/learn/ReactNativeTS/FluTrack
+            cd learn/ReactNativeTS/FluTrack
             yarn install
       - run:
-          name: Server Install
+          name: Server Yarn Install
           command: |
-            cd $CIRCLE_WORKING_DIRECTORY/learn/NodeJSWebService
+            cd learn/NodeJSWebService
             yarn install
       - save_cache:
-          key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
-          key: dependency-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
+          key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
           paths:
             - learn/NodeJSWebService/node_modules
       - run: 
           name: Generate Build Info
           command: |
-            $CIRCLE_WORKING_DIRECTORY/.circleci/generateBuildInfo.sh
+            scripts/generateBuildInfo
 

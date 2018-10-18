@@ -4,9 +4,9 @@ APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
 SERVER_DIR="$REPO_ROOT_DIR/learn/NodeJSWebService"
 FILENAME="buildInfo.json"
 TODAY="$(date +%Y%m%d)"
-GITHASH="$(git log --pretty=format:'%h' -n 1)"
+GITHASH="$(git rev-list -n 1 HEAD)"
 
-cat>$APP_DIR/$FILENAME <<EOT
+cat >"$APP_DIR/$FILENAME" <<EOT
 {
   "buildInfo": {
     "date": "$TODAY",
@@ -15,7 +15,7 @@ cat>$APP_DIR/$FILENAME <<EOT
 }
 EOT
 			  
-cat>$SERVER_DIR/$FILENAME <<EOT
+cat >"$SERVER_DIR/$FILENAME" <<EOT
 {
   "buildInfo": {
     "date": "$TODAY",
