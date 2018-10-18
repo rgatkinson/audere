@@ -33,6 +33,12 @@ jobs:
           command: |
             cd learn/NodeJSWebService
             yarn install
+      - run:
+          name: Server Tests
+          command: |
+            cd learn/NodeJSWebService
+            yarn setup
+            yarn test
       - save_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:
