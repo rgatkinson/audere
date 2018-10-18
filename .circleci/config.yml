@@ -9,11 +9,6 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:8.0
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
     branches:
       ignore: 
 
@@ -32,23 +27,23 @@ jobs:
       - run: 
           name: App Install
           command: |
-            cd ~/repo/learn/ReactNativeTS/FluTrack
+            cd $CIRCLE_WORKING_DIRECTORY/learn/ReactNativeTS/FluTrack
             yarn install
       - run:
           name: Server Install
           command: |
-            cd ~/repo/learn/NodeJSWebService
+            cd $CIRCLE_WORKING_DIRECTORY/learn/NodeJSWebService
             yarn install
       - save_cache:
           key: dependency-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:
-            - node_modules
+            - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
           key: dependency-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
           paths:
-            - node_modules
+            - learn/NodeJSWebService/node_modules
       - run: 
           name: Generate Build Info
           command: |
-            ~/repo/.circleci/generateBuildInfo.sh
+            $CIRCLE_WORKING_DIRECTORY/.circleci/generateBuildInfo.sh
 
