@@ -1,3 +1,4 @@
+import "./src/hacks";
 import React from "react";
 import { createStackNavigator, NavigationScreenProp } from "react-navigation";
 import { logInteraction } from "./src/EventStore";
