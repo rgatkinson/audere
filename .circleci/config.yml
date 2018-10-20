@@ -29,6 +29,11 @@ jobs:
             cd learn/ReactNativeTS/FluTrack
             yarn install
       - run:
+          name: App Tests
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn test
+      - run:
           name: Server Yarn Install
           command: |
             cd learn/NodeJSWebService
