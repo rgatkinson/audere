@@ -3,7 +3,7 @@
 
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import MyText from "./MyText";
+import Text from "./Text";
 
 interface Props {
   label: string;
@@ -12,7 +12,7 @@ export default class FieldLabel extends React.Component<Props, any> {
   render() {
     return (
       <View style={styles.flexRow}>
-        <MyText style={styles.fieldLabel}>{this.props.label}</MyText>
+        <Text style={styles.fieldLabel}>{this.props.label}</Text>
         {this.props.children}
       </View>
     );

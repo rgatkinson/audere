@@ -1,11 +1,11 @@
 import React from "react";
-import Button from "./ui/Button";
-import ScreenView from "./ScreenView";
-import { goToNextScreen } from "../../App";
-import { logOut, StoreState } from "../store";
+import Button from "../components/Button";
+import ScreenView from "../components/ScreenView";
+import { goToNextScreen } from "../../../App";
+import { logOut, StoreState } from "../../store";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
-import MyText from "./MyText";
+import Text from "../components/Text";
 
 interface Props {
   id: string;
@@ -22,7 +22,7 @@ export default class AccountScreen extends React.Component<Props> {
   render() {
     return (
       <ScreenView>
-        <MyText>Hello, {this.props.id}</MyText>
+        <Text>Hello, {this.props.id}</Text>
         <Button title="START FORM" onPress={this.startForm} />
         <Button title="LOGOUT" onPress={this.logOut} />
       </ScreenView>

@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, View, Alert, StyleSheet } from "react-native";
-import Button from "./ui/Button";
-import ScreenView from "./ScreenView";
-import MyText from "./MyText";
-import { interact } from "../../App";
-import { CONSENT_FORM_TEXT } from "../resources/consentForm";
+import { View, Alert, StyleSheet } from "react-native";
+import Button from "../components/Button";
+import ScreenView from "../components/ScreenView";
+import Text from "../components/Text";
+import { interact } from "../../../App";
+import { CONSENT_FORM_TEXT } from "../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 
 interface Props {
@@ -23,10 +23,10 @@ export default class ConsentScreen extends React.Component<Props> {
   render() {
     return (
       <ScreenView>
-        <MyText>
+        <Text>
           Please read the following and click "I Agree" if you agree to the
           terms of the study.
-        </MyText>
+        </Text>
         <View style={styles.consentViewer}>
           <Text>{CONSENT_FORM_TEXT}</Text>
         </View>

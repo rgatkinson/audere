@@ -1,15 +1,15 @@
 import React from "react";
 import { TextInput, Dimensions, Platform } from "react-native";
-import Button from "./ui/Button";
-import FieldLabel from "./FieldLabel";
-import ScreenView from "./ScreenView";
-import { logIn, Action } from "../store";
-import MyText from "./MyText";
-import ValidatedInput from "./ValidatedInput";
+import Button from "../components/Button";
+import FieldLabel from "../components/FieldLabel";
+import ScreenView from "../components/ScreenView";
+import { logIn, Action } from "../../store";
+import Text from "../components/Text";
+import ValidatedInput from "../components/ValidatedInput";
 import { connect } from "react-redux";
-import { interact } from "../../App";
+import { interact } from "../../../App";
 
-const packageInfo = require("../../package.json");
+const packageInfo = require("../../../package.json");
 
 interface Props {
   dispatch(action: Action): void;
@@ -43,10 +43,10 @@ class LoginScreen extends React.Component<Props> {
   render() {
     return (
       <ScreenView>
-        <MyText size="title">
+        <Text size="title">
           {packageInfo.name}
           &trade;
-        </MyText>
+        </Text>
         <FieldLabel label="Login ID:">
           <ValidatedInput
             inputType="id"

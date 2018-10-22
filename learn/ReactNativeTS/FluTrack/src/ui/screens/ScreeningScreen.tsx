@@ -1,19 +1,19 @@
 import React from "react";
 import { View, Alert } from "react-native";
-import CheckBox from "./CheckBox";
-import DatePicker from "./DatePicker";
-import Button from "./ui/Button";
-import RadioButton from "./RadioButton";
-import FieldLabel from "./FieldLabel";
-import ScreenView from "./ScreenView";
-import MyText from "./MyText";
+import CheckBox from "../components/CheckBox";
+import DatePicker from "../components/DatePicker";
+import Button from "../components/Button";
+import RadioButton from "../components/RadioButton";
+import FieldLabel from "../components/FieldLabel";
+import ScreenView from "../components/ScreenView";
+import Text from "../components/Text";
 import { connect } from "react-redux";
-import { SET_AGE } from "../store/Constants";
+import { SET_AGE } from "../../store/Constants";
 import { NavigationScreenProp } from "react-navigation";
-import { interact, goToNextScreen } from "../../App";
+import { interact, goToNextScreen } from "../../../App";
 import styles from "../Styles";
-import ValidatedInput from "./ValidatedInput";
-import { setAge, Action } from "../store";
+import ValidatedInput from "../components/ValidatedInput";
+import { setAge, Action } from "../../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -85,7 +85,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               />
             </View>
           </FieldLabel>
-          <MyText>Have you participated in this study previously?</MyText>
+          <Text>Have you participated in this study previously?</Text>
           <FieldLabel label="">
             <RadioButton
               options={noYesOptions}
@@ -96,7 +96,7 @@ class ScreeningScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.participatedBefore && (
             <View>
-              <MyText>Date of previous enrollment:</MyText>
+              <Text>Date of previous enrollment:</Text>
               <FieldLabel label="">
                 <DatePicker
                   date={this.state.datePrevEnrollment}
@@ -127,7 +127,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               }}
             />
           </FieldLabel>
-          <MyText>Are you feeling sick or unwell today?</MyText>
+          <Text>Are you feeling sick or unwell today?</Text>
           <FieldLabel label="">
             <Button
               title="YES"
