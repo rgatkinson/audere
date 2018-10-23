@@ -1,13 +1,13 @@
 import React from "react";
 import { View } from "react-native";
-import Button from "./ui/Button";
-import FieldLabel from "./FieldLabel";
-import RadioButton from "./RadioButton";
-import ScreenView from "./ScreenView";
-import ValidatedInput from "./ValidatedInput";
-import MyText from "./MyText";
+import Button from "../components/Button";
+import FieldLabel from "../components/FieldLabel";
+import RadioButton from "../components/RadioButton";
+import ScreenView from "../components/ScreenView";
+import ValidatedInput from "../components/ValidatedInput";
+import Text from "../components/Text";
 import { NavigationScreenProp } from "react-navigation";
-import { interact, goToNextScreen } from "../../App";
+import { interact, goToNextScreen } from "../../../App";
 import styles from "../Styles";
 
 interface Props {
@@ -26,7 +26,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
     return (
       <ScreenView>
         <View style={styles.formLayout}>
-          <MyText>Including today, how many days have you been sick?</MyText>
+          <Text>Including today, how many days have you been sick?</Text>
           <FieldLabel label="">
             <ValidatedInput
               inputType="nonNegativeInteger"
@@ -34,7 +34,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
               onChangeText={daysSick => this.setState({ daysSick })}
             />
           </FieldLabel>
-          <MyText>Currently hospitalized</MyText>
+          <Text>Currently hospitalized</Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}
@@ -45,7 +45,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.currentlyHospitalized && (
             <View>
-              <MyText>Length of hospitalization (days):</MyText>
+              <Text>Length of hospitalization (days):</Text>
               <FieldLabel label="">
                 <ValidatedInput
                   inputType="nonNegativeInteger"

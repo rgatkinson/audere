@@ -1,15 +1,16 @@
 import "./src/hacks";
 import React from "react";
-import { createStackNavigator, NavigationScreenProp } from "react-navigation";
+import { createDrawerNavigator, createStackNavigator, NavigationScreenProp } from "react-navigation";
 import { logInteraction } from "./src/EventStore";
-import AccountScreen from "./src/components/AccountScreen";
-import LoginScreen from "./src/components/LoginScreen";
-import ScreeningScreen from "./src/components/ScreeningScreen";
-import SymptomsScreen from "./src/components/SymptomsScreen";
-import DemographicsScreen from "./src/components/DemographicsScreen";
-import HouseholdScreen from "./src/components/HouseholdScreen";
-import IllnessHistoryScreen from "./src/components/IllnessHistoryScreen";
-import ConsentScreen from "./src/components/ConsentScreen";
+import AccountScreen from "./src/ui/screens/AccountScreen";
+import ComponentLibraryScreen from "./src/ui/screens/ComponentLibraryScreen";
+import LoginScreen from "./src/ui/screens/LoginScreen";
+import ScreeningScreen from "./src/ui/screens/ScreeningScreen";
+import SymptomsScreen from "./src/ui/screens/SymptomsScreen";
+import DemographicsScreen from "./src/ui/screens/DemographicsScreen";
+import HouseholdScreen from "./src/ui/screens/HouseholdScreen";
+import IllnessHistoryScreen from "./src/ui/screens/IllnessHistoryScreen";
+import ConsentScreen from "./src/ui/screens/ConsentScreen";
 import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -41,12 +42,16 @@ export function goToNextScreen(navigation: NavigationScreenProp<any, any>) {
 
 const MainStack = createStackNavigator(routes);
 const LoginStack = createStackNavigator({ Login: LoginScreen });
+const Drawer = createDrawerNavigator({
+  Main: { screen: MainStack },
+  ComponentLibrary: { screen: ComponentLibraryScreen },
+});
 
 const Root = connect((state: StoreState) => ({
   isLoggedIn: state.user !== null,
 }))(
   (props: { isLoggedIn: boolean }) =>
-    props.isLoggedIn ? <MainStack /> : <LoginStack />
+    props.isLoggedIn ? <Drawer /> : <LoginStack />
 );
 
 export default class App extends React.Component {

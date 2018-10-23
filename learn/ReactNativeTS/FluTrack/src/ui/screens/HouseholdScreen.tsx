@@ -1,12 +1,12 @@
 import React from "react";
 import { View } from "react-native";
-import Button from "./ui/Button";
-import FieldLabel from "./FieldLabel";
-import ScreenView from "./ScreenView";
-import MyText from "./MyText";
-import RadioButton from "./RadioButton";
-import ValidatedInput from "./ValidatedInput";
-import { interact, goToNextScreen } from "../../App";
+import Button from "../components/Button";
+import FieldLabel from "../components/FieldLabel";
+import ScreenView from "../components/ScreenView";
+import Text from "../components/Text";
+import RadioButton from "../components/RadioButton";
+import ValidatedInput from "../components/ValidatedInput";
+import { interact, goToNextScreen } from "../../../App";
 import { NavigationScreenProp } from "react-navigation";
 import styles from "../Styles";
 
@@ -49,7 +49,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
     return (
       <ScreenView>
         <View style={styles.formLayout}>
-          <MyText>Which best describes your residence?</MyText>
+          <Text>Which best describes your residence?</Text>
           <FieldLabel label="">
             <RadioButton
               options={residenceOptions}
@@ -59,7 +59,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               }}
             />
           </FieldLabel>
-          <MyText>How many individuals share your residence?</MyText>
+          <Text>How many individuals share your residence?</Text>
           <FieldLabel label="">
             <ValidatedInput
               inputType="nonNegativeInteger"
@@ -89,10 +89,10 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }
                 />
               </FieldLabel>
-              <MyText>
+              <Text>
                 Do any children attend a childcare setting or play group with at
                 least 3 other children for 3 or more hours/day?
-              </MyText>
+              </Text>
               <FieldLabel label="">
                 <RadioButton
                   options={childCareOptions}
@@ -105,9 +105,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               </FieldLabel>
             </View>
           )}
-          <MyText>
+          <Text>
             How many rooms (excluding bathrooms) make up your residence?
-          </MyText>
+          </Text>
           <FieldLabel label="">
             <ValidatedInput
               inputType="nonNegativeInteger"
@@ -117,9 +117,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               onChangeText={numRooms => this.setState({ numRooms })}
             />
           </FieldLabel>
-          <MyText>
+          <Text>
             Have you had pneumonia or other respiratory cold in the last year?
-          </MyText>
+          </Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}
@@ -128,9 +128,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               }}
             />
           </FieldLabel>
-          <MyText>
+          <Text>
             Have any household contacts been ill in the last 4 weeks?
-          </MyText>
+          </Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}
@@ -141,7 +141,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.householdIllnessLast4Weeks && (
             <View>
-              <MyText>Were they hospitalized?</MyText>
+              <Text>Were they hospitalized?</Text>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -152,9 +152,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               </FieldLabel>
             </View>
           )}
-          <MyText>
+          <Text>
             Have any household contacts travelled in the last 4 weeks?
-          </MyText>
+          </Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}
@@ -165,7 +165,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.householdTravelLast4Weeks && (
             <View>
-              <MyText>&nbsp;&nbsp;&nbsp; Outside of WA State</MyText>
+              <Text>&nbsp;&nbsp;&nbsp; Outside of WA State</Text>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -174,7 +174,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>&nbsp;&nbsp;&nbsp; Outside of the United States</MyText>
+              <Text>&nbsp;&nbsp;&nbsp; Outside of the United States</Text>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -185,7 +185,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               </FieldLabel>
             </View>
           )}
-          <MyText>Have you travelled in the last 4 weeks?</MyText>
+          <Text>Have you travelled in the last 4 weeks?</Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}
@@ -196,7 +196,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           </FieldLabel>
           {this.state.travelLast4weeks && (
             <View>
-              <MyText>&nbsp;&nbsp;&nbsp; Outside of WA State</MyText>
+              <Text>&nbsp;&nbsp;&nbsp; Outside of WA State</Text>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -205,7 +205,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
                   }}
                 />
               </FieldLabel>
-              <MyText>&nbsp;&nbsp;&nbsp; Outside of the United States</MyText>
+              <Text>&nbsp;&nbsp;&nbsp; Outside of the United States</Text>
               <FieldLabel label="">
                 <RadioButton
                   initial={1}
@@ -216,7 +216,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               </FieldLabel>
             </View>
           )}
-          <MyText>Do you or any household contacts smoke?</MyText>
+          <Text>Do you or any household contacts smoke?</Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}

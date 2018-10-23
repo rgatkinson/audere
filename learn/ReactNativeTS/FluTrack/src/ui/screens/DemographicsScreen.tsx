@@ -1,12 +1,12 @@
 import React from "react";
 import { View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import Button from "./ui/Button";
-import FieldLabel from "./FieldLabel";
-import ScreenView from "./ScreenView";
-import ValidatedInput from "./ValidatedInput";
+import Button from "../components/Button";
+import FieldLabel from "../components/FieldLabel";
+import ScreenView from "../components/ScreenView";
+import ValidatedInput from "../components/ValidatedInput";
 import { connect } from "react-redux";
-import { interact, goToNextScreen } from "../../App";
+import { interact, goToNextScreen } from "../../../App";
 import styles from "../Styles";
 import { StoreState } from "../store";
 

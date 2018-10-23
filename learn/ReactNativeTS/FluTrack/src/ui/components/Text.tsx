@@ -19,7 +19,7 @@ function getStyle(size: SizeType) {
       return styles.normalText;
   }
 }
-export default class MyText extends React.Component<Props, any> {
+export default class Text extends React.Component<Props, any> {
   render() {
     return (
       <Text style={[getStyle(this.props.size), this.props.style]}>

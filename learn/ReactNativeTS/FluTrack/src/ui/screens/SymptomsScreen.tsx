@@ -1,12 +1,12 @@
 import React from "react";
-import Button from "./ui/Button";
-import CheckBox from "./CheckBox";
-import ScreenView from "./ScreenView";
-import MyText from "./MyText";
-import { interact, goToNextScreen } from "../../App";
+import Button from "../components/Button";
+import CheckBox from "../components/CheckBox";
+import ScreenView from "../components/ScreenView";
+import Text from "../components/Text";
+import { interact, goToNextScreen } from "../../../App";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
-import { StoreState } from "../store";
+import { StoreState } from "../../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -32,7 +32,7 @@ export default class SymptomsScreen extends React.Component<Props, any> {
   render() {
     return (
       <ScreenView>
-        <MyText>Please check the symptoms you are experiencing today:</MyText>
+        <Text>Please check the symptoms you are experiencing today:</Text>
         <CheckBox
           onClick={() => {
             this.setState({
