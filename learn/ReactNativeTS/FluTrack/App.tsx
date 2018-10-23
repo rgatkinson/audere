@@ -15,7 +15,7 @@ import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
-import i18n from "./src/I18n";
+import i18n from "./src/i18n";
 
 let x = 1;
 export function interact(data: string): Promise<void> {

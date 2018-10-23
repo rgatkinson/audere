@@ -108,7 +108,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isPatternError: false,
       errMessage: null,
     });
-    console.log("checkErrors: value=" + value + " inputType=" + inputType);
+    // console.log("checkErrors: value=" + value + " inputType=" + inputType);
     if (this.props.optional && (value == undefined || value.length == 0)) {
       return;
     }
