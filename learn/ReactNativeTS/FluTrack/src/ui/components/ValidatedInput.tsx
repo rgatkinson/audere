@@ -8,6 +8,7 @@ import {
   TextInput,
   KeyboardTypeOptions,
 } from "react-native";
+import { withI18n } from "react-i18next";
 
 export type InputType =
   | "id"
@@ -41,6 +42,7 @@ interface Props {
   onSubmitEditing?(): void;
 }
 
+@withI18n()
 export default class ValidatedInput extends React.Component<Props, any> {
   private style: any;
   private keyboardType: KeyboardTypeOptions = "default";
@@ -99,6 +101,7 @@ export default class ValidatedInput extends React.Component<Props, any> {
     let minError: boolean = false;
     let maxError: boolean = false;
     let errString: string = "";
+    const { t } = this.props;
     this.setState({
       isMissing: false,
       isMinMaxError: false,
@@ -112,14 +115,16 @@ export default class ValidatedInput extends React.Component<Props, any> {
     if (value == undefined || value.length == 0) {
       this.setState({
         isMissing: true,
-        errMessage: "Required",
+        errMessage: t("common:validatedInput:requiredError"),
       });
       return;
     }
     if (!validationPatterns[inputType].test(value)) {
       this.setState({
         isPatternError: true,
-        errMessage: "Invalid format for " + inputType,
+        errMessage: t("common:validatedInput:invalidFormatError", {
+          inputType: t("common:validatedInput:" + inputType),
+        }),
       });
       return;
     }
@@ -127,12 +132,16 @@ export default class ValidatedInput extends React.Component<Props, any> {
       if (inputType == "nonNegativeInteger") {
         if (+value < this.props.min) {
           minError = true;
-          errString = "Minimum is " + this.props.min;
+          errString = t("common:validatedInput:minValueError", {
+            min: this.props.min,
+          });
         }
       } else {
         if (value.length < this.props.min) {
           minError = true;
-          errString = "Minimum " + this.props.min + " characters";
+          errString = t("common:validatedInput:minLengthError", {
+            min: this.props.min,
+          });
         }
       }
     }
@@ -140,12 +149,16 @@ export default class ValidatedInput extends React.Component<Props, any> {
       if (inputType == "nonNegativeInteger") {
         if (+value > this.props.max) {
           maxError = true;
-          errString = "Maximum is " + this.props.max;
+          errString = t("common:validatedInput:maxValueError", {
+            max: this.props.max,
+          });
         }
       } else {
         if (value.length > this.props.max) {
           maxError = true;
-          errString = "Maximum " + this.props.max + " characters";
+          errString = t("common:validatedInput:maxLengthError", {
+            max: this.props.max,
+          });
         }
       }
     }

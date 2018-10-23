@@ -14,6 +14,8 @@ import ConsentScreen from "./src/ui/screens/ConsentScreen";
 import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./src/I18n";
 
 let x = 1;
 export function interact(data: string): Promise<void> {
@@ -51,17 +53,23 @@ const Root = connect((state: StoreState) => ({
   isLoggedIn: state.user !== null,
 }))(
   (props: { isLoggedIn: boolean }) =>
-    props.isLoggedIn ? <Drawer /> : <LoginStack />
+    props.isLoggedIn ? (
+      <Drawer screenProps={{ t: i18n.getFixedT() }} />
+    ) : (
+      <LoginStack screenProps={{ t: i18n.getFixedT() }} />
+    )
 );
 
 export default class App extends React.Component {
   render() {
     return (
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <Root />
-        </PersistGate>
-      </Provider>
+      <I18nextProvider i18n={i18n}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <Root />
+          </PersistGate>
+        </Provider>
+      </I18nextProvider>
     );
   }
 }
