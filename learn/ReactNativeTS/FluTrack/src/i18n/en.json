@@ -1,7 +1,5 @@
 {
   "common": {
-    "no": "No",
-    "yes": "Yes",
     "validatedInput": {
       "id": "id",
       "password": "password",
@@ -18,28 +16,10 @@
       "maxLengthError": "Maximum is {{max}} characters"
     }
   },
-  "login": {
-    "heading": "Login",
-    "loginId": "Login ID:",
-    "password": "Password:",
-    "loginButton": "LOGIN"
-  },
   "account": {
-    "heading": "My Account",
+    "title": "My Account",
     "introduction": "Hello, {{name}}",
     "startFormButton": "START FORM",
     "logoutButton": "LOGOUT"
-  },
-  "screening": {
-    "heading": "Screening for Participant",
-    "email": "Email:",
-    "cellPhone": "Cell Phone:",
-    "okToText": "OK to text",
-    "haveYouParticipated": "Have you participated in this study previously?",
-    "dateOfPrevious": "Date of previous enrollment:",
-    "age": "Age:",
-    "county": "County:",
-    "areYouSick": "Are you feeling sick or unwell today?",
-    "thanksBye": "Thank you for your time. Goodbye."
   }
 }

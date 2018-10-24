@@ -3,11 +3,9 @@ import Expo from "expo";
 import enStrings from "./en.json";
 import zhStrings from "./zh.json";
 
-// creating a language detection plugin using expo
-// http://i18next.com/docs/ownplugin/#languagedetector
 const languageDetector = {
   type: "languageDetector",
-  async: true, // async detection
+  async: true,
   detect: callback => {
     return /*'en'; */ Expo.DangerZone.Localization.getCurrentLocaleAsync().then(
       (lng: string) => {
@@ -27,7 +25,7 @@ i18n.use(languageDetector).init({
   ns: ["common"],
   defaultNS: "common",
   interpolation: {
-    escapeValue: false, // not needed for react
+    escapeValue: false,
   },
 });
 export default i18n;

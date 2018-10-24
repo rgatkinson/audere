@@ -1,7 +1,5 @@
 {
   "common": {
-    "no": "否",
-    "yes": "是",
     "validatedInput": {
       "id": "用户名",
       "password": "密码",
@@ -18,28 +16,10 @@
       "maxLengthError": "最多{{max}}个字"
     }
   },
-  "login": {
-    "heading": "登录",
-    "loginId": "用户名：",
-    "password": "密码：",
-    "loginButton": "登录"
-  },
   "account": {
-    "heading": "我的账户",
+    "title": "我的账户",
     "introduction": "{{name}}， 你好！",
     "startFormButton": "开始调查",
     "logoutButton": "退出"
-  },
-  "screening": {
-    "heading": "参与者筛选",
-    "email": "邮箱：",
-    "cellPhone": "手机号：",
-    "okToText": "可以收短信",
-    "haveYouParticipated": "您以前参与过本研究吗？",
-    "dateOfPrevious": "上次参与的日期：",
-    "age": "年龄：",
-    "county": "县：",
-    "areYouSick": "您今天感觉不舒服吗？",
-    "thanksBye": "谢谢您的宝贵时间。再见。"
   }
 }

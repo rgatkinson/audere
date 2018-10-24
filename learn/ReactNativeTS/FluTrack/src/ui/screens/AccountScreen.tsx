@@ -6,7 +6,7 @@ import { logOut, StoreState } from "../../store";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import Text from "../components/Text";
-import { withI18n } from "react-i18next";
+import { withNamespaces } from "react-i18next";
 
 interface Props {
   id: string;
@@ -16,10 +16,6 @@ interface Props {
 
 @connect((state: StoreState) => ({ id: state.user!.id }))
 class AccountScreenBase extends React.Component<Props> {
-  // static navigationOptions = {
-  //   title: "My Account",
-  // };
-
   render() {
     const { t, i18n } = this.props;
     return (
@@ -42,9 +38,10 @@ class AccountScreenBase extends React.Component<Props> {
   };
 }
 
-const AccountScreen = withI18n()(AccountScreenBase);
+// https://reactjs.org/docs/higher-order-components.html
+const AccountScreen = withNamespaces()(AccountScreenBase);
 AccountScreen.navigationOptions = ({ navigation, screenProps }) => ({
-  title: screenProps.t("account:heading"),
+  title: screenProps.t("account:title"),
 });
 
 export default AccountScreen;

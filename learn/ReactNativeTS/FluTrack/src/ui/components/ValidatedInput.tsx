@@ -108,7 +108,6 @@ export default class ValidatedInput extends React.Component<Props, any> {
       isPatternError: false,
       errMessage: null,
     });
-    // console.log("checkErrors: value=" + value + " inputType=" + inputType);
     if (this.props.optional && (value == undefined || value.length == 0)) {
       return;
     }
@@ -195,10 +194,6 @@ export default class ValidatedInput extends React.Component<Props, any> {
           }}
           onSubmitEditing={() => {
             this.checkErrors();
-            // console.log("isMissing=" + this.state.isMissing);
-            // console.log("isMinMaxError=" + this.state.isMinMaxError);
-            // console.log("isPatternError=" + this.state.isPatternError);
-            // console.log("errMessage=" + this.state.errMessage);
             if (this.props.onSubmitEditing !== undefined) {
               this.props.onSubmitEditing();
             }
