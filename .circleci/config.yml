@@ -83,8 +83,9 @@ jobs:
             cd learn/ReactNativeTS/FluTrack
             expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
             expo publish --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
-            export EXPO_URL=`expo url`
-            curl -X POST --data-urlencode "payload={\"username\": \"webhookbot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" https://hooks.slack.com/services/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
+            export EXPO_APPNAME=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['name'])"`
+            export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
+            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" https://hooks.slack.com/services/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
 
   publish_to_expo_dev:
     environment:
