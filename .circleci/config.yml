@@ -2,28 +2,37 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
+aliases:
+  - &filter_tag_dev
+    tags:
+      only: /.*dev_alpha.*/
+    branches:
+      ignore: /.*/
+  - &filter_tag_prod
+    tags:
+      only: /.*prod_alpha.*/
+    branches:
+      ignore: /.*/
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:10.12
+  working_directory: ~/repo
+
 version: 2
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8.0
-
-    branches:
-      ignore: 
-
-    working_directory: ~/repo
-
+    <<: *defaults
     steps:
       - checkout
-      - run: 
+      - run:
           name: Update yarn
-          command: 'sudo npm install -g yarn@latest'
+          command: "sudo npm install -g yarn@latest"
       - restore_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
-      - run: 
+      - run:
           name: App Yarn Install
           command: |
             cd learn/ReactNativeTS/FluTrack
@@ -52,8 +61,52 @@ jobs:
           key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
           paths:
             - learn/NodeJSWebService/node_modules
-      - run: 
+      - run:
           name: Generate Build Info
           command: |
             scripts/generateBuildInfo
 
+  publish: &publish
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: App Yarn Install
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn install
+      - run:
+          name: Publish to Expo
+          command: |
+            yarn global add expo-cli
+            export PATH="$PATH:$(yarn global bin)"
+            cd learn/ReactNativeTS/FluTrack
+            expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+            expo publish --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
+
+  publish_to_expo_dev:
+    environment:
+      EXPO_RELEASE_CHANNEL: dev_alpha
+    <<: *publish
+
+  publish_to_expo_prod:
+    environment:
+      EXPO_RELEASE_CHANNEL: prod_alpha
+    <<: *publish
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - publish_to_expo_dev:
+          requires:
+            - build
+          filters: *filter_tag_dev
+      - publish_to_expo_prod:
+          requires:
+            - build
+          filters: *filter_tag_prod
