@@ -3,14 +3,14 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 aliases:
-  - &filter_tag_dev
+  - &filter_tag_staging
     tags:
-      only: /.*dev_alpha.*/
+      only: /v0\.[0-9]+\.[0-9]+_[a-zA-Z0-9]+$/
     branches:
       ignore: /.*/
   - &filter_tag_prod
     tags:
-      only: /.*prod_alpha.*/
+      only: /v0\.[0-9]+\.[0-9]+$/
     branches:
       ignore: /.*/
 
@@ -87,14 +87,14 @@ jobs:
             export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
             curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" https://hooks.slack.com/services/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
 
-  publish_to_expo_dev:
+  publish_to_expo_staging:
     environment:
-      EXPO_RELEASE_CHANNEL: dev_alpha
+      EXPO_RELEASE_CHANNEL: v0_staging
     <<: *publish
 
   publish_to_expo_prod:
     environment:
-      EXPO_RELEASE_CHANNEL: prod_alpha
+      EXPO_RELEASE_CHANNEL: v0_prod
     <<: *publish
 
 workflows:
@@ -105,10 +105,10 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - publish_to_expo_dev:
+      - publish_to_expo_staging:
           requires:
             - build
-          filters: *filter_tag_dev
+          filters: *filter_tag_staging
       - publish_to_expo_prod:
           requires:
             - build
