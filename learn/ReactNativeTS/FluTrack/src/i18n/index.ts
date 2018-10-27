@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import Expo from "expo";
 import enStrings from "./en.json";
-import zhStrings from "./zh.json";
+import esStrings from "./es.json";
 
 const languageDetector = {
   type: "languageDetector",
@@ -20,7 +20,7 @@ i18n.use(languageDetector).init({
   fallbackLng: "en",
   resources: {
     en: enStrings,
-    zh: zhStrings,
+    es: esStrings,
   },
   ns: ["common"],
   defaultNS: "common",

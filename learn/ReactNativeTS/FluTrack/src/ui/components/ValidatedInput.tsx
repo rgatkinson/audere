@@ -8,7 +8,7 @@ import {
   TextInput,
   KeyboardTypeOptions,
 } from "react-native";
-import { withI18n } from "react-i18next";
+import { withNamespaces } from "react-i18next";
 
 export type InputType =
   | "id"
@@ -42,7 +42,7 @@ interface Props {
   onSubmitEditing?(): void;
 }
 
-@withI18n()
+@withNamespaces()
 export default class ValidatedInput extends React.Component<Props, any> {
   private style: any;
   private keyboardType: KeyboardTypeOptions = "default";

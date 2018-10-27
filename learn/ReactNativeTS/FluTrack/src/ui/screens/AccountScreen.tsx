@@ -20,11 +20,21 @@ class AccountScreenBase extends React.Component<Props> {
     const { t, i18n } = this.props;
     return (
       <ScreenView>
-        <Text>{t("account:introduction", { name: this.props.id })}</Text>
-        <Button title={t("account:startFormButton")} onPress={this.startForm} />
-        <Button title={t("account:logoutButton")} onPress={this.logOut} />
-        <Button title="English" onPress={i18n.changeLanguage("en")} />
-        <Button title="Chinese" onPress={i18n.changeLanguage("zh")} />
+        <Text>{t("introduction", { name: this.props.id })}</Text>
+        <Button title={t("startFormButton")} onPress={this.startForm} />
+        <Button title={t("logoutButton")} onPress={this.logOut} />
+        <Button
+          title="English"
+          onPress={() => {
+            i18n.changeLanguage("en");
+          }}
+        />
+        <Button
+          title="Español"
+          onPress={() => {
+            i18n.changeLanguage("es");
+          }}
+        />
       </ScreenView>
     );
   }
@@ -39,7 +49,7 @@ class AccountScreenBase extends React.Component<Props> {
 }
 
 // https://reactjs.org/docs/higher-order-components.html
-const AccountScreen = withNamespaces()(AccountScreenBase);
+const AccountScreen = withNamespaces("account")(AccountScreenBase);
 AccountScreen.navigationOptions = ({ navigation, screenProps }) => ({
   title: screenProps.t("account:title"),
 });

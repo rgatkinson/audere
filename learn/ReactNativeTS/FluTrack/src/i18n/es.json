@@ -1,0 +1,25 @@
+{
+  "common": {
+    "validatedInput": {
+      "id": "id",
+      "password": "contraseña",
+      "nonNegativeInteger": "número entero",
+      "phone": "teléfono",
+      "email": "email",
+      "text-short": "texto",
+      "address": "dirección",
+      "requiredError": "Necesario",
+      "invalidFormatError": "Formato inválido para {{inputType}}",
+      "minValueError": "El mínimo es {{min}}",
+      "minLengthError": "El mínimo es de {{min}} caracteres",
+      "maxValueError": "El máximo es {{max}}",
+      "maxLengthError": "El máximo es de {{max}} caracteres"
+    }
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "introduction": "Hola, {{name}}",
+    "startFormButton": "INICIAR FORMULARIO",
+    "logoutButton": "CERRAR SESIÓN"
+  }
+}
