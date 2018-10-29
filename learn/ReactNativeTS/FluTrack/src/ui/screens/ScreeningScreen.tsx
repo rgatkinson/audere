@@ -25,6 +25,9 @@ class ScreeningScreen extends React.Component<Props, any> {
     title: "Screening for Participant",
   };
 
+  cellInput: any;
+  ageInput: any;
+
   state = {
     participatedBefore: false,
     datePrevEnrollment: new Date(),

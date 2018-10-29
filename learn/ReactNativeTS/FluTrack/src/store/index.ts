@@ -4,15 +4,15 @@ import storage from "redux-persist/lib/storage";
 
 import {
   default as user,
-  State as UserState,
-  Action as UserAction,
+  UserState,
+  UserAction,
 } from "./user";
 export * from "./user";
 
 import {
   default as form,
-  State as FormState,
-  Action as FormAction,
+  FormState,
+  FormAction,
 } from "./form";
 export * from "./form";
 

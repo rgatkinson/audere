@@ -4,6 +4,7 @@ import { colors } from "../Styles";
 
 interface Props {
   title: string;
+  style?: any;
   onPress(arg: any): void;
 }
 
@@ -12,7 +13,7 @@ export default class Button extends React.Component<Props> {
   render() {
     return (
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, this.props.style]}
         activeOpacity={0.5}
         onPress={this.props.onPress}
       >
