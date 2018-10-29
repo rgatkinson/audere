@@ -19,6 +19,10 @@ export default class HouseholdScreen extends React.Component<Props, any> {
     title: "Household Composition and Exposure",
   };
 
+  agesInput: any;
+  numRoomsInput: any;
+  householdSizeInput: any;
+
   state = {
     residenceType: 0,
     childCare: 2,

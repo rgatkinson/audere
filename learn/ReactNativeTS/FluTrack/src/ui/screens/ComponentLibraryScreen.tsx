@@ -8,6 +8,11 @@ import RadioButton from "../components/RadioButton";
 import ScreenView from "../components/ScreenView";
 import Text from "../components/Text";
 import ValidatedInput from "../components/ValidatedInput";
+import { NavigationScreenProp } from "react-navigation";
+
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+}
 
 export default class ComponentLibraryScreen extends React.Component<Props> {
   static navigationOptions = {
@@ -24,7 +29,7 @@ export default class ComponentLibraryScreen extends React.Component<Props> {
   render() {
     return (
       <ScreenView>
-        <Button title="Button" style={styles.component} />
+        <Button title="Button" style={styles.component} onPress={() => {}} />
         <CheckBox
           style={styles.component}
           text="CheckBox"

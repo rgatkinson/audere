@@ -7,11 +7,12 @@ import Text from "./Text";
 
 interface Props {
   label: string;
+  style?: any;
 }
 export default class FieldLabel extends React.Component<Props, any> {
   render() {
     return (
-      <View style={styles.flexRow}>
+      <View style={[styles.flexRow, this.props.style]}>
         <Text style={styles.fieldLabel}>{this.props.label}</Text>
         {this.props.children}
       </View>

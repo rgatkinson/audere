@@ -8,7 +8,7 @@ import ValidatedInput from "../components/ValidatedInput";
 import { connect } from "react-redux";
 import { interact, goToNextScreen } from "../../../App";
 import styles from "../Styles";
-import { StoreState } from "../store";
+import { StoreState } from "../../store/index";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -20,6 +20,11 @@ export default class DemographicsScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Demographics",
   };
+
+  homeInput: any;
+  workInput: any;
+  raceInput: any;
+  ethnicityInput: any;
 
   render() {
     return (

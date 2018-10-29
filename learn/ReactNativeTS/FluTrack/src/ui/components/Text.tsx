@@ -1,7 +1,7 @@
 // Custom text component that just adds some default styles to Text -- SO ANNOYING
 
 import React from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text as RNText, StyleSheet } from "react-native";
 
 export type SizeType = "normal" | "heading" | "title" | undefined;
 interface Props {
@@ -22,9 +22,9 @@ function getStyle(size: SizeType) {
 export default class Text extends React.Component<Props, any> {
   render() {
     return (
-      <Text style={[getStyle(this.props.size), this.props.style]}>
+      <RNText style={[getStyle(this.props.size), this.props.style]}>
         {this.props.children}
-      </Text>
+      </RNText>
     );
   }
 }
