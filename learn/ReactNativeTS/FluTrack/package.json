@@ -25,6 +25,7 @@
     "ios": "react-native-scripts ios",
     "test": "jest",
     "lint": "prettier --list-different *.{j,t} src/**/*.ts{,x}",
+    "typecheck": "tsc --noEmit",
     "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}"
   },
   "prettier": {
