@@ -4,7 +4,12 @@ APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
 SERVER_DIR="$REPO_ROOT_DIR/learn/NodeJSWebService"
 FILENAME="buildInfo.json"
 TODAY="$(date +%Y%m%d)"
-GITHASH="$(git rev-list -n 1 HEAD)"
+if [ "$CIRCLECI" = true ] && [ -n "$CIRCLE_SHA1" ]; then
+  # Ask Circle for the hash; this will be accurate for tagged builds 
+  GITHASH="$CIRCLE_SHA1"
+else 
+  GITHASH="$(git rev-list -n 1 HEAD)"
+fi
 
 cat >"$APP_DIR/$FILENAME" <<EOT
 {
