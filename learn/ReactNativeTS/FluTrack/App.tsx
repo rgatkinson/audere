@@ -1,6 +1,10 @@
 import "./src/hacks";
 import React from "react";
-import { createDrawerNavigator, createStackNavigator, NavigationScreenProp } from "react-navigation";
+import {
+  createDrawerNavigator,
+  createStackNavigator,
+  NavigationScreenProp,
+} from "react-navigation";
 import { logInteraction } from "./src/EventStore";
 import AccountScreen from "./src/ui/screens/AccountScreen";
 import ComponentLibraryScreen from "./src/ui/screens/ComponentLibraryScreen";
@@ -11,6 +15,7 @@ import DemographicsScreen from "./src/ui/screens/DemographicsScreen";
 import HouseholdScreen from "./src/ui/screens/HouseholdScreen";
 import IllnessHistoryScreen from "./src/ui/screens/IllnessHistoryScreen";
 import ConsentScreen from "./src/ui/screens/ConsentScreen";
+import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -47,6 +52,7 @@ const LoginStack = createStackNavigator({ Login: LoginScreen });
 const Drawer = createDrawerNavigator({
   Main: { screen: MainStack },
   ComponentLibrary: { screen: ComponentLibraryScreen },
+  About: { screen: AboutScreen },
 });
 
 const Root = connect((state: StoreState) => ({
