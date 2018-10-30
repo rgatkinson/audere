@@ -6,7 +6,6 @@ import { logOut, StoreState } from "../../store";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import Text from "../components/Text";
-import { Alert } from "react-native";
 
 interface Props {
   id: string;
@@ -26,12 +25,6 @@ export default class AccountScreen extends React.Component<Props> {
         <Text>Hello, {this.props.id}</Text>
         <Button title="START FORM" onPress={this.startForm} />
         <Button title="LOGOUT" onPress={this.logOut} />
-        <Button
-          title="ABOUT"
-          onPress={() => {
-            Alert.alert("About me!");
-          }}
-        />
       </ScreenView>
     );
   }
