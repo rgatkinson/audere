@@ -8,18 +8,14 @@ GITHASH="$(git rev-list -n 1 HEAD)"
 
 cat >"$APP_DIR/$FILENAME" <<EOT
 {
-  "buildInfo": {
-    "date": "$TODAY",
-    "hash": "$GITHASH"
-  }
+  "buildDate": "$TODAY",
+  "hash": "$GITHASH"
 }
 EOT
 			  
 cat >"$SERVER_DIR/$FILENAME" <<EOT
 {
-  "buildInfo": {
-    "date": "$TODAY",
-    "hash": "$GITHASH"
-  }
+  "buildDate": "$TODAY",
+  "hash": "$GITHASH"
 }
 EOT
