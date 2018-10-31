@@ -17,40 +17,37 @@ export default class AboutScreen extends React.Component<Props> {
     title: "About",
   };
 
-  copyToClipboard = async () => {
-    await Clipboard.setString(
-      "Version: " +
-        appInfo.expo.version +
-        "\nCommit: " +
-        buildInfo.hash +
-        "\nDate: " +
-        buildInfo.buildDate +
-        "\nExpo SDK: " +
-        appInfo.expo.sdkVersion +
-        "\nDevice: " +
-        Platform.OS +
-        " " +
-        Platform.Version
-    );
+  copyToClipboard = async (text: string) => {
+    await Clipboard.setString(text);
   };
 
   render() {
+    const aboutContent: string =
+      "Version: " +
+      appInfo.expo.version +
+      "\nCommit: " +
+      buildInfo.hash +
+      "\nDate: " +
+      buildInfo.buildDate +
+      "\nExpo SDK: " +
+      appInfo.expo.sdkVersion +
+      "\nDevice: " +
+      Platform.OS +
+      " " +
+      Platform.Version;
+
     return (
       <ScreenView>
         <Text size="heading">About {appInfo.expo.name}</Text>
         <View>
-          <Text>Version: {appInfo.expo.version}</Text>
-          <Text>Commit: {buildInfo.hash}</Text>
-          <Text>Date: {buildInfo.buildDate}</Text>
-          <Text>Expo SDK: {appInfo.expo.sdkVersion}</Text>
-          <Text>
-            Device: {Platform.OS} {Platform.Version}
-          </Text>
+          <Text>{aboutContent}</Text>
         </View>
         <Button
           title="Copy"
           style={styles.component}
-          onPress={this.copyToClipboard}
+          onPress={() => {
+            this.copyToClipboard(aboutContent);
+          }}
         />
       </ScreenView>
     );
