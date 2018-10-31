@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, Clipboard } from "react-native";
+import { StyleSheet, Clipboard, Platform, View } from "react-native";
 import Button from "../components/Button";
 import ScreenView from "../components/ScreenView";
 import Text from "../components/Text";
 import { NavigationScreenProp } from "react-navigation";
 
-const packageInfo = require("../../../package.json");
+const appInfo = require("../../../app.json");
 const buildInfo = require("../../../buildInfo.json");
 
 interface Props {
@@ -20,24 +20,35 @@ export default class AboutScreen extends React.Component<Props> {
   copyToClipboard = async () => {
     await Clipboard.setString(
       "Version: " +
-        packageInfo.version +
-        "\nBuild: " +
+        appInfo.expo.version +
+        "\nCommit: " +
+        buildInfo.hash +
+        "\nDate: " +
         buildInfo.buildDate +
-        "_" +
-        buildInfo.hash
+        "\nExpo SDK: " +
+        appInfo.expo.sdkVersion +
+        "\nDevice: " +
+        Platform.OS +
+        " " +
+        Platform.Version
     );
   };
 
   render() {
     return (
       <ScreenView>
-        <Text size="heading">About {packageInfo.name}</Text>
-        <Text>Version: {packageInfo.version}</Text>
-        <Text>
-          Build: {buildInfo.buildDate}_{buildInfo.hash}
-        </Text>
+        <Text size="heading">About {appInfo.expo.name}</Text>
+        <View>
+          <Text>Version: {appInfo.expo.version}</Text>
+          <Text>Commit: {buildInfo.hash}</Text>
+          <Text>Date: {buildInfo.buildDate}</Text>
+          <Text>Expo SDK: {appInfo.expo.sdkVersion}</Text>
+          <Text>
+            Device: {Platform.OS} {Platform.Version}
+          </Text>
+        </View>
         <Button
-          title="Copy to clipboard"
+          title="Copy"
           style={styles.component}
           onPress={this.copyToClipboard}
         />
@@ -49,5 +60,6 @@ export default class AboutScreen extends React.Component<Props> {
 const styles = StyleSheet.create({
   component: {
     padding: 20,
+    marginTop: 30,
   },
 });
