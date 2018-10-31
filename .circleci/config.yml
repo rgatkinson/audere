@@ -38,6 +38,10 @@ jobs:
             cd learn/ReactNativeTS/FluTrack
             yarn install
       - run:
+          name: Generate Build Info
+          command: |
+            scripts/generate-build-info
+      - run:
           name: App Tests
           command: |
             cd learn/ReactNativeTS/FluTrack
@@ -61,10 +65,6 @@ jobs:
           key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
           paths:
             - learn/NodeJSWebService/node_modules
-      - run:
-          name: Generate Build Info
-          command: |
-            scripts/generate-build-info
 
   publish: &publish
     <<: *defaults
