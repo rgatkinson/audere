@@ -8,7 +8,7 @@ import {
   TextInput,
   KeyboardTypeOptions,
 } from "react-native";
-import { withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 export type InputType =
   | "id"
@@ -28,6 +28,7 @@ let validationPatterns: { [index: string]: RegExp } = {
   "text-short": /^.{1,}$/,
   address: /^.{1,}$/,
 };
+
 interface Props {
   style?: any;
   inputType: InputType;
@@ -42,57 +43,15 @@ interface Props {
   onSubmitEditing?(): void;
 }
 
-@withNamespaces()
-export default class ValidatedInput extends React.Component<Props, any> {
-  private style: any;
-  private keyboardType: KeyboardTypeOptions = "default";
-  private autoCapitalize:
-    | "none"
-    | "sentences"
-    | "words"
-    | undefined = undefined;
-  private secureTextEntry: boolean = false;
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isMissing: false,
-      isPatternError: false,
-      isMinMaxError: false, // min or max validation failed
-      errMessage: null,
-      value: this.props.defaultValue,
-    };
-    switch (this.props.inputType) {
-      case "email":
-        this.style = [styles.inputField, styles.mediumWidth];
-        this.autoCapitalize = "none";
-        this.keyboardType = "email-address";
-        break;
-      case "phone":
-        this.style = [styles.inputField, styles.mediumWidth];
-        this.keyboardType = "phone-pad";
-        break;
-      case "address":
-        this.style = [styles.inputField, styles.wideWidth];
-        this.autoCapitalize = "words";
-        break;
-      case "nonNegativeInteger":
-        this.style = [styles.inputField, styles.smallWidth];
-        this.keyboardType = "numeric";
-        break;
-      case "id":
-        this.style = [styles.inputField, styles.smallWidth];
-        this.autoCapitalize = "none";
-        this.keyboardType = "email-address";
-        break;
-      case "password":
-        this.style = [styles.inputField, styles.smallWidth];
-        this.secureTextEntry = true;
-        break;
-      case "text-short":
-      default:
-        this.style = [styles.inputField, styles.smallWidth];
-    }
-  }
+class ValidatedInput extends React.Component<Props & WithNamespaces, any> {
+  state = {
+    isMissing: false,
+    isPatternError: false,
+    isMinMaxError: false, // min or max validation failed
+    errMessage: null,
+    value: this.props.defaultValue,
+  };
+
   checkErrors(): void {
     // Checks for presence, then pattern, then min/max
     // Sets the following state variables: isMissing, isPatternError, isMinMaxError, errMessage
@@ -168,25 +127,60 @@ export default class ValidatedInput extends React.Component<Props, any> {
   }
 
   render() {
+    let style: any[] = [];
+    let autoCapitalize: any = "none";
+    let keyboardType: KeyboardTypeOptions = "default";
+    let secureTextEntry: boolean = false;
+
+    switch (this.props.inputType) {
+      case "email":
+        style = [styles.inputField, styles.mediumWidth];
+        autoCapitalize = "none";
+        keyboardType = "email-address";
+        break;
+      case "phone":
+        style = [styles.inputField, styles.mediumWidth];
+        keyboardType = "phone-pad";
+        break;
+      case "address":
+        style = [styles.inputField, styles.wideWidth];
+        autoCapitalize = "words";
+        break;
+      case "nonNegativeInteger":
+        style = [styles.inputField, styles.smallWidth];
+        keyboardType = "numeric";
+        break;
+      case "id":
+        style = [styles.inputField, styles.smallWidth];
+        autoCapitalize = "none";
+        keyboardType = "email-address";
+        break;
+      case "password":
+        style = [styles.inputField, styles.smallWidth];
+        secureTextEntry = true;
+        break;
+      case "text-short":
+      default:
+        style = [styles.inputField, styles.smallWidth];
+    }
+
+    const errorStyle = this.state.isMissing
+      || this.state.isMinMaxError
+      || this.state.isPatternError
+      ? styles.errorBorder
+      : null;
+
     return (
       <View>
         <TextInput
-          style={[
-            this.style,
-            this.state.isMissing ||
-            this.state.isMinMaxError ||
-            this.state.isPatternError
-              ? styles.errorBorder
-              : null,
-            this.props.style,
-          ]}
+          style={[style, this.props.style, errorStyle]}
           ref={this.props.myRef}
           autoFocus={this.props.autoFocus}
-          keyboardType={this.keyboardType}
-          autoCapitalize={this.autoCapitalize}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
           defaultValue={this.props.defaultValue}
           underlineColorAndroid="rgba(0,0,0,0)"
-          secureTextEntry={this.secureTextEntry}
+          secureTextEntry={secureTextEntry}
           placeholder={this.props.placeholder}
           onChangeText={value => {
             this.setState({ value });
@@ -231,3 +225,5 @@ const styles = StyleSheet.create({
     color: "red",
   },
 });
+
+export default withNamespaces()<Props>(ValidatedInput);

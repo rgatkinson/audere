@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import CheckBox from "../components/CheckBox";
 import ScreenView from "../components/ScreenView";
 import Text from "../components/Text";
-import { interact, goToNextScreen } from "../../../App";
+import { goToNextScreen } from "../../../App";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import { StoreState } from "../../store";
@@ -13,7 +13,7 @@ interface Props {
   age: number;
 }
 
-@connect((state: StoreState) => ({ age: state.form.age }))
+@connect((state: StoreState) => ({ age: state.form!.age }))
 export default class SymptomsScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Symptoms",
@@ -111,7 +111,6 @@ export default class SymptomsScreen extends React.Component<Props, any> {
         <Button
           title="NEXT"
           onPress={() => {
-            interact(JSON.stringify(this.state));
             goToNextScreen(this.props.navigation);
           }}
         />

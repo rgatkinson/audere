@@ -6,7 +6,7 @@ import FieldLabel from "../components/FieldLabel";
 import ScreenView from "../components/ScreenView";
 import ValidatedInput from "../components/ValidatedInput";
 import { connect } from "react-redux";
-import { interact, goToNextScreen } from "../../../App";
+import { goToNextScreen } from "../../../App";
 import styles from "../Styles";
 import { StoreState } from "../../store/index";
 
@@ -15,7 +15,7 @@ interface Props {
   age: number;
 }
 
-@connect((state: StoreState) => ({ age: state.form.age }))
+@connect((state: StoreState) => ({ age: state.form!.age }))
 export default class DemographicsScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Demographics",
@@ -36,7 +36,7 @@ export default class DemographicsScreen extends React.Component<Props, any> {
               defaultValue={this.props.age == 0 ? "" : this.props.age + ""}
               autoFocus={this.props.age == 0}
               max={150}
-              onChangeText={age => this.setState({ age })}
+              onChangeText={(age: any) => this.setState({ age })}
               onSubmitEditing={() => {
                 this.homeInput.focus();
               }}
@@ -47,10 +47,10 @@ export default class DemographicsScreen extends React.Component<Props, any> {
               inputType="address"
               optional={true}
               autoFocus={this.props.age != 0}
-              myRef={i => {
+              myRef={(i: any) => {
                 this.homeInput = i;
               }}
-              onChangeText={homeAddress => this.setState({ homeAddress })}
+              onChangeText={(homeAddress: string) => this.setState({ homeAddress })}
               onSubmitEditing={() => {
                 this.workInput.focus();
               }}
@@ -60,10 +60,10 @@ export default class DemographicsScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="address"
               optional={true}
-              myRef={i => {
+              myRef={(i: any) => {
                 this.workInput = i;
               }}
-              onChangeText={workAddress => this.setState({ workAddress })}
+              onChangeText={(workAddress: string) => this.setState({ workAddress })}
               onSubmitEditing={() => {
                 this.raceInput.focus();
               }}
@@ -73,10 +73,10 @@ export default class DemographicsScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="text-short"
               optional={true}
-              myRef={i => {
+              myRef={(i: any) => {
                 this.raceInput = i;
               }}
-              onChangeText={race => this.setState({ race })}
+              onChangeText={(race: string) => this.setState({ race })}
               onSubmitEditing={() => {
                 this.ethnicityInput.focus();
               }}
@@ -86,17 +86,16 @@ export default class DemographicsScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="text-short"
               optional={true}
-              myRef={i => {
+              myRef={(i: any) => {
                 this.ethnicityInput = i;
               }}
-              onChangeText={ethnicity => this.setState({ ethnicity })}
+              onChangeText={(ethnicity: any) => this.setState({ ethnicity })}
             />
           </FieldLabel>
         </View>
         <Button
           title="NEXT"
           onPress={() => {
-            interact(JSON.stringify(this.state));
             goToNextScreen(this.props.navigation);
           }}
         />

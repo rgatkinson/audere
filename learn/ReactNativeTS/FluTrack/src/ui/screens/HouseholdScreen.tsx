@@ -6,7 +6,7 @@ import ScreenView from "../components/ScreenView";
 import Text from "../components/Text";
 import RadioButton from "../components/RadioButton";
 import ValidatedInput from "../components/ValidatedInput";
-import { interact, goToNextScreen } from "../../../App";
+import { goToNextScreen } from "../../../App";
 import { NavigationScreenProp } from "react-navigation";
 import styles from "../Styles";
 
@@ -67,10 +67,10 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           <FieldLabel label="">
             <ValidatedInput
               inputType="nonNegativeInteger"
-              myRef={i => {
+              myRef={(i: any) => {
                 this.householdSizeInput = i;
               }}
-              onChangeText={householdSize => this.setState({ householdSize })}
+              onChangeText={(householdSize: any) => this.setState({ householdSize })}
               onSubmitEditing={() => {
                 if (this.state.householdSize == 1) {
                   this.numRoomsInput.focus();
@@ -83,12 +83,12 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               <FieldLabel label="Their ages?">
                 <ValidatedInput
                   inputType="text-short"
-                  myRef={i => {
+                  myRef={(i: any) => {
                     this.agesInput = i;
                   }}
                   placeholder="ex: 5,7,40"
                   autoFocus={true}
-                  onChangeText={householdAges =>
+                  onChangeText={(householdAges: any) =>
                     this.setState({ householdAges })
                   }
                 />
@@ -115,10 +115,10 @@ export default class HouseholdScreen extends React.Component<Props, any> {
           <FieldLabel label="">
             <ValidatedInput
               inputType="nonNegativeInteger"
-              myRef={i => {
+              myRef={(i: any) => {
                 this.numRoomsInput = i;
               }}
-              onChangeText={numRooms => this.setState({ numRooms })}
+              onChangeText={(numRooms: any) => this.setState({ numRooms })}
             />
           </FieldLabel>
           <Text>
@@ -233,7 +233,6 @@ export default class HouseholdScreen extends React.Component<Props, any> {
         <Button
           title="NEXT"
           onPress={() => {
-            interact(JSON.stringify(this.state));
             goToNextScreen(this.props.navigation);
           }}
         />

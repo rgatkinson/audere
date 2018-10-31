@@ -50,7 +50,7 @@ class LoginScreen extends React.Component<Props> {
             inputType="id"
             defaultValue={this.state.id}
             autoFocus={true}
-            onChangeText={id => this.setState({ id })}
+            onChangeText={(id: string) => this.setState({ id })}
             onSubmitEditing={() => {
               const { current } = this.passwordInput;
               current && current.focus();
@@ -61,7 +61,7 @@ class LoginScreen extends React.Component<Props> {
           <ValidatedInput
             inputType="password"
             myRef={this.passwordInput}
-            onChangeText={password => this.setState({ password })}
+            onChangeText={(password: string) => this.setState({ password })}
           />
         </FieldLabel>
         <Button title="LOGIN" onPress={this.logIn} />

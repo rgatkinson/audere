@@ -7,12 +7,13 @@ import ScreenView from "../components/ScreenView";
 import ValidatedInput from "../components/ValidatedInput";
 import Text from "../components/Text";
 import { NavigationScreenProp } from "react-navigation";
-import { interact, goToNextScreen } from "../../../App";
+import { goToNextScreen } from "../../../App";
 import styles from "../Styles";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
+
 export default class IllnessHistoryScreen extends React.Component<Props, any> {
   static navigationOptions = {
     title: "Illness History",
@@ -31,7 +32,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="nonNegativeInteger"
               autoFocus={true}
-              onChangeText={daysSick => this.setState({ daysSick })}
+              onChangeText={(daysSick: any) => this.setState({ daysSick })}
             />
           </FieldLabel>
           <Text>Currently hospitalized</Text>
@@ -50,7 +51,7 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
                 <ValidatedInput
                   inputType="nonNegativeInteger"
                   autoFocus={true}
-                  onChangeText={daysHospitalized =>
+                  onChangeText={(daysHospitalized: any) =>
                     this.setState({ daysHospitalized })
                   }
                 />
@@ -61,7 +62,6 @@ export default class IllnessHistoryScreen extends React.Component<Props, any> {
         <Button
           title="NEXT"
           onPress={() => {
-            interact(JSON.stringify(this.state));
             goToNextScreen(this.props.navigation);
           }}
         />

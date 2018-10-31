@@ -3,7 +3,6 @@ import { View, Alert, StyleSheet } from "react-native";
 import Button from "../components/Button";
 import ScreenView from "../components/ScreenView";
 import Text from "../components/Text";
-import { interact } from "../../../App";
 import { CONSENT_FORM_TEXT } from "../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 
@@ -33,7 +32,6 @@ export default class ConsentScreen extends React.Component<Props> {
         <Button
           title="I AGREE"
           onPress={() => {
-            interact(JSON.stringify(this.state));
             Alert.alert(
               "Thank you for participating. Your info has been submitted."
             );

@@ -10,7 +10,7 @@ import Text from "../components/Text";
 import { connect } from "react-redux";
 import { SET_AGE } from "../../store/Constants";
 import { NavigationScreenProp } from "react-navigation";
-import { interact, goToNextScreen } from "../../../App";
+import { goToNextScreen } from "../../../App";
 import styles from "../Styles";
 import ValidatedInput from "../components/ValidatedInput";
 import { setAge, Action } from "../../store";
@@ -59,7 +59,7 @@ class ScreeningScreen extends React.Component<Props, any> {
               inputType="email"
               autoFocus={true}
               placeholder="name@example.com"
-              onChangeText={email => this.setState({ email })}
+              onChangeText={(email: string) => this.setState({ email })}
               onSubmitEditing={() => {
                 this.cellInput.focus();
               }}
@@ -70,11 +70,11 @@ class ScreeningScreen extends React.Component<Props, any> {
               <ValidatedInput
                 style={{ marginBottom: 0 }}
                 inputType="phone"
-                myRef={i => {
+                myRef={(i: any) => {
                   this.cellInput = i;
                 }}
                 placeholder="206-555-1212"
-                onChangeText={cellPhone => this.setState({ cellPhone })}
+                onChangeText={(cellPhone: string) => this.setState({ cellPhone })}
               />
               <CheckBox
                 style={{ paddingTop: 0 }}
@@ -115,10 +115,10 @@ class ScreeningScreen extends React.Component<Props, any> {
             <ValidatedInput
               inputType="nonNegativeInteger"
               max={150}
-              myRef={i => {
+              myRef={(i: any) => {
                 this.ageInput = i;
               }}
-              onChangeText={age => this.setState({ age })}
+              onChangeText={(age: string) => this.setState({ age })}
             />
           </FieldLabel>
           <FieldLabel label="County:">
@@ -136,7 +136,6 @@ class ScreeningScreen extends React.Component<Props, any> {
               title="YES"
               onPress={() => {
                 this.saveAge(+this.state.age);
-                interact(JSON.stringify(this.state));
                 goToNextScreen(this.props.navigation);
               }}
             />

@@ -76,6 +76,7 @@ case "$_au_subcommand" in
 
   rs | rws | run-web-service)
     (set -euo pipefail
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       export DEBUG="express:*"
       cd "$AUDERE/FluApi"
       nvm use v10
@@ -86,6 +87,7 @@ case "$_au_subcommand" in
 
   rc | rnr | tsrun | rnrun | react-native-run)
     (set -euo pipefail
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       export NODE_ENV="development"
       export REACT_NATIVE_API_SERVER="http://$(lanip):3000/api"
       cd "$FLU_TS"

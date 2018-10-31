@@ -6,8 +6,8 @@ import esStrings from "./es.json";
 const languageDetector = {
   type: "languageDetector",
   async: true,
-  detect: callback => {
-    return /*'en'; */ Expo.DangerZone.Localization.getCurrentLocaleAsync().then(
+  detect: (callback: any) => {
+    return Expo.DangerZone.Localization.getCurrentLocaleAsync().then(
       (lng: string) => {
         callback(lng.replace("_", "-"));
       }
@@ -26,6 +26,10 @@ i18n.use(languageDetector).init({
   defaultNS: "common",
   interpolation: {
     escapeValue: false,
+  },
+  react: {
+    bindI18n: "languageChanged",
+    bindStore: false,
   },
 });
 export default i18n;

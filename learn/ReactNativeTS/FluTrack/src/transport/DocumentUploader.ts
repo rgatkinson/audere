@@ -48,6 +48,10 @@ export class DocumentUploader {
     process.nextTick(() => this.uploadNext());
   }
 
+  public destroy(): void {
+    this.db.destroy();
+  }
+
   public save(localUid: string, visit: any): void {
     this.fireEvent({ type: "Save", localUid, visit });
   }

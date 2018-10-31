@@ -51,7 +51,7 @@ export default class ComponentLibraryScreen extends React.Component<Props> {
         <Text style={styles.component}>Text</Text>
         <View style={styles.component}>
           <Text>Validated Input</Text>
-          <ValidatedInput inputType="email" onChangeText={text => {}} />
+          <ValidatedInput inputType="email" onChangeText={(text: string) => {}} />
         </View>
       </ScreenView>
     );

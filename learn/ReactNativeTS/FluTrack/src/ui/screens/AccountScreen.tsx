@@ -7,19 +7,23 @@ import { logOut, StoreState } from "../../store";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import Text from "../components/Text";
-import { withNamespaces } from "react-i18next";
-
-// TODO: pass this through from App as a property.
-const uploader = createUploader();
+import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Action } from "../../store";
 
 interface Props {
   id: string;
-  dispatch(action: any): void;
+  dispatch(action: Action): void;
   navigation: NavigationScreenProp<void>;
+  screenProps: any;
 }
 
 @connect((state: StoreState) => ({ id: state.user!.id }))
-class AccountScreenBase extends React.Component<Props> {
+class AccountScreen extends React.Component<Props & WithNamespaces> {
+  static navigationOptions = ({ navigation, screenProps } :
+    { navigation: NavigationScreenProp<void>, screenProps: any}) => ({
+      title: screenProps.t("account:title"),
+    });
+
   render() {
     const { t, i18n } = this.props;
     return (
@@ -49,16 +53,10 @@ class AccountScreenBase extends React.Component<Props> {
 
   startForm = () => {
     // TODO: generate JSON document to upload.
-    uploader.save("imagine-a-uuid-here", { name: "data" });
+    this.props.screenProps.uploader.save("imagine-a-uuid-here", { "name": "data" });
 
     goToNextScreen(this.props.navigation);
   };
 }
 
-// https://reactjs.org/docs/higher-order-components.html
-const AccountScreen = withNamespaces("account")(AccountScreenBase);
-AccountScreen.navigationOptions = ({ navigation, screenProps }) => ({
-  title: screenProps.t("account:title"),
-});
-
-export default AccountScreen;
+export default withNamespaces("account")<Props & WithNamespaces>(AccountScreen);
