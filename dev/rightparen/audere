@@ -11,6 +11,7 @@ function audere-init() {
   GITHUB_MEDIC_WEBAPP="$GITHUB_MEDIC/medic-webapp"
   GITHUB_DIMAGI="$_au_github/dimagi"
   GITHUB_COMMCARE_HQ="$GITHUB_DIMAGI/commcare-hq"
+  export AWS_PROFILE="audere"
 
   [[ -f "$HOME/.couch-env" ]] && \
       . "$HOME/.couch-env"
@@ -21,7 +22,7 @@ function audere-init() {
   function die() { echo2 "$@"; exit 1; }
 
   AUDERE_AWS_USER="ubuntu"
-  AUDERE_AWS_INSTANCE_TYPE="t2.medium"
+  AUDERE_AWS_INSTANCE_TYPE="t3.small"
 
   # Partial list in https://github.com/dimagi/commcare-hq/blob/master/docker/README.md
   INTERESTING_PORTS=(
@@ -60,10 +61,10 @@ case "$_au_subcommand" in
   cdcc)    cd "$GITHUB_COMMCARE_HQ${1:+/}$1";;
   cdrn)    cd "$FLU_TS${1:+/}$1";;
   cdfluts) cd "$FLU_TS${1:+/}$1";;
-  cdweb)   cd "$AUDERE/learn/DjangoWebService/AudereWeb${1:+/}$1";;
+  cdweb)   cd "$AUDERE/learn/NodeJSWebService${1:+/}$1";;
 
   # --------------------------------------------------------------------------------
-  # Web
+  # learn
 
   webenv)
     audere cdweb
@@ -73,16 +74,33 @@ case "$_au_subcommand" in
     ) && exit
     ;;
 
-  # --------------------------------------------------------------------------------
-  # React Native
-
-  rnr | tsrun | rnrun | react-native-run)
-    (set -euxo pipefail
-      sudo sysctl -w kern.maxfiles=5242880
-      sudo sysctl -w kern.maxfilesperproc=524288
-      cd "$FLU_TS" && yarn start
+  rs | rws | run-web-service)
+    (set -euo pipefail
+      export DEBUG="express:*"
+      cd "$AUDERE/learn/NodeJSWebService"
+      nvm use v10
+      yarn install
+      yarn start
     )
     ;;
+
+  rc | rnr | tsrun | rnrun | react-native-run)
+    (set -euo pipefail
+      export NODE_ENV="development"
+      export REACT_NATIVE_API_SERVER="http://$(lanip):3000/api"
+      cd "$FLU_TS"
+      sudo sysctl -w kern.maxfiles=5242880
+      sudo sysctl -w kern.maxfilesperproc=524288
+      nvm use v10
+      yarn install
+      yarn start
+    )
+    ;;
+
+  nmb)          ./node_modules/.bin/"$@";;
+  sqlize)       ./node_modules/.bin/sequelize "$@";;
+  tsr | tsrepl) ./node_modules/.bin/ts-node "$@";;
+  tsc)          ./node_modules/.bin/tsc "$@";;
 
   # --------------------------------------------------------------------------------
   # Commcare HQ
@@ -170,17 +188,27 @@ case "$_au_subcommand" in
   # --------------------------------------------------------------------------------
   # AWS
 
+  ssh-retry-true)
+    (set -euo pipefail
+      _au_addr="${1:-$_au_user@$_au_ip}"
+      echo "Waiting for (accept-new) ssh to '$_au_addr'.."
+      until ssh "-oStrictHostKeyChecking=accept-new" "$_au_addr" true; do
+        sleep 1
+        echo "  retrying.."
+      done
+    )
+    ;;
+
   env | aenv | aws-env)
-    "$AUDERE/scripts/client/rsync-audere" "$@"
-#     (set -euo pipefail
-#       _au_user="$(audere get-ssh-user "$1")"
-#       _au_itag="$(audere get-ssh-itag "$1")"
-#       shift
-#       _au_ip="$(audere aws-dns "$_au_itag")"
-#       echo "Syncing audere to '$_au_user@$_au_ip' ('$_au_itag')"
-#       ssh "-oStrictHostKeyChecking=accept-new" "$_au_user@${_au_ip}" uptime
-#       rsync -a "$@" "$HOME/audere" "$_au_user@${_au_ip}:"
-#     )
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Syncing audere to '$_au_user@$_au_ip' ('$_au_itag')"
+      audere ssh-retry-true "$_au_user@${_au_ip}"
+      rsync -a "$@" "$HOME/audere" "$_au_user@${_au_ip}:"
+    )
     ;;
 
   mjm-env)
@@ -245,7 +273,8 @@ case "$_au_subcommand" in
     ;;
 
   sshL)
-    echo "Forwarding ports ${INTERESTING_PORTS[@]}"
+    echo "Forwarding ports to '$*'"
+    echo "  Ports: ${INTERESTING_PORTS[@]}"
     ssh -t $(for i in ${INTERESTING_PORTS[@]}; do printf " -L %d:localhost:%d" $i $i; done) "$@"
     ;;
 
@@ -304,7 +333,7 @@ case "$_au_subcommand" in
 
       _au_instances="$( \
         aws ec2 run-instances \
-          --image-id ami-51537029 \
+          --image-id ami-0bbe6b35405ecebdb \
           --count 1 \
           --instance-type "$AUDERE_AWS_INSTANCE_TYPE" \
           --key-name "$_au_key_pair" \
@@ -339,6 +368,72 @@ case "$_au_subcommand" in
       _au_volume="$(echo "$_au_instance" | jqraw '.BlockDeviceMappings[].Ebs.VolumeId')"
       echo "  Volume ID: '$_au_volume'"
       aws ec2 modify-volume --volume-id "$_au_volume" --size 15
+    )
+    ;;
+
+  dev | modev | moshdev | devL)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "${1:-$USER@rightparen}")"
+      _au_itag="$(audere get-ssh-itag "${1:-$USER@rightparen}")"
+      _au_id="$(audere vmid "$_au_itag")"
+      _au_status="$(audere aws-instance-state "$_au_id")"
+
+      if [[ "$_au_status" =~ (stopping|pending) ]]; then
+        echo "Waiting for instance to stabilize (currently '$_au_status')"
+        while [[ "$_au_status" =~ (stopping|pending) ]]; do
+          sleep 1
+          _au_status="$(audere aws-instance-state "$_au_id")"
+          echo "  instance is '$_au_status'"
+        done
+      fi
+
+      [[ "$_au_status" == stopped ]] && audere start "$_au_itag"
+
+      if [[ "$_au_status" =~ (stopped|stopping|pending|running) ]]; then
+        _au_addr="$_au_user@$(audere dns "$_au_itag")"
+        if [[ "$_au_subcommand" == devL ]]; then
+          audere sshL "$_au_addr"
+        elif [[ "$_au_subcommand" =~ (dev|modev|moshdev) ]]; then
+          echo "Moshing to '$_au_addr'.."
+          mosh "$_au_addr"
+        else
+          echo 1>&2 "Sub-command processing for '$_au_subcommand' is out of sync"
+          false
+        fi
+      else
+        echo 1>&2 "Invalid status ('$_au_status') for instance (tag='$_au_itag' id='$_au_id')"
+        false
+      fi
+    )
+    ;;
+
+  stopdev | undev)
+    (set -euo pipefail
+      _au_itag="$(audere get-ssh-itag "${1:-$USER@rightparen}")"
+      audere stop "$_au_itag"
+    )
+    ;;
+
+  start)
+    (set -euo pipefail
+      _au_id="$(audere vmid "$1")"
+      echo "Starting tag '$1' (vmid='$_au_id').."
+      aws ec2 start-instances --instance-ids "$_au_id"
+      audere aws-wait-for-instance-state running "$_au_id"
+      echo "Waiting for IP assignment.."
+      until _au_ip="$(audere dns "$1" 2>/dev/null)"; do
+        sleep 1
+      done
+      audere ssh-retry-true "$USER@$_au_ip"
+    )
+    ;;
+
+  stop)
+    (set -euo pipefail
+      _au_id="$(audere vmid "$1")"
+      _au_ip="$(audere dns "$1")"
+      aws ec2 stop-instances --instance-ids "$_au_id"
+      ssh-keygen -R "$_au_ip"
     )
     ;;
 
@@ -423,7 +518,7 @@ case "$_au_subcommand" in
   ip   | aws-ip)         audere aws-running "$@" | jqraw ".PublicIpAddress";;
   iip  | aws-private-ip) audere aws-running "$@" | jqraw ".PrivateIpAddress";;
   dns  | aws-dns)        audere aws-running "$@" | jqraw ".PublicIpAddress";;
-  vmid | aws-vmid)       audere aws-running "$@" | jqraw ".InstanceId";;
+  vmid | aws-vmid)       audere aws-iknown "$@" | jqraw ".InstanceId";;
 
   eip  | aws-elastic-ip)            audere aws-elastic-address "$@" | jqraw ".PublicIp";;
   eaid | aws-elastic-allocation-id) audere aws-elastic-address "$@" | jqraw ".AllocationId";;
@@ -447,16 +542,19 @@ case "$_au_subcommand" in
       "$(audere aws-running-list "$@")"
     ;;
 
+  aws-iknown)
+    audere jq-unique "instances found" \
+      "$(audere aws-instance-list "running,stopped,stopping,pending" "$@")"
+    ;;
+
   aws-wait-for-instance-state)
     _au_instance_state="$(audere aws-instance-state "$2")"
     if [[ "$_au_instance_state" != "$1" ]]; then
       echo "Waiting for instance to be '$1' (currently '$_au_instance_state')"
       while [[ "$_au_instance_state" != "$1" ]]; do
-        echo -n "  sleeping.."
-        sleep 5
-        echo -n " reading state.."
+        sleep 1
         _au_instance_state="$(audere aws-instance-state "$2")"
-        echo " got '$_au_instance_state'"
+        echo " instance is '$_au_instance_state'"
       done
     fi
     ;;

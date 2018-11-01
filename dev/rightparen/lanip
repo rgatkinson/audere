@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+
+for i in en1 en0; do
+  if lanip="$(ipconfig getifaddr "$i")"; then
+    echo "$lanip"
+    exit 0
+  fi
+done
+
+echo 1>&2 "Could not get LAN ip for en1 or en0"
