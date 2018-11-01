@@ -8,6 +8,7 @@ import { sequelize } from "./models";
 
 sequelize.authenticate();
 const app = express();
+const buildInfo = require("../static/buildInfo.json");
 
 app.set("port", process.env.PORT || 3000);
 app.use(helmet());
@@ -58,6 +59,10 @@ app.post(
     }
   })
 );
+
+app.get("/about", (req, res) => {
+  res.status(200).send(buildInfo);
+});
 
 function wrap(f: any) {
   return function(req, res, next) {

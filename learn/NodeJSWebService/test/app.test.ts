@@ -56,3 +56,13 @@ describe("POST /api/button", () => {
     expect(response.body.Status).toMatch(/deviceId/);
   });
 });
+
+describe("GET /about", () => {
+  it("shows build date", async () => {
+    const response = await request(app)
+      .get("/about")
+      .expect(200)
+      .expect("content-type", /json/);
+    expect(response.body.buildDate).toMatch(/[0-9]{8}/);
+  });
+});
