@@ -18,6 +18,7 @@
   "dependencies": {
     "@types/errorhandler": "^0.0.32",
     "@types/helmet": "^0.0.42",
+    "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",

@@ -1,4 +1,5 @@
 import request from "supertest";
+import { promises as fs } from "fs";
 import app from "../src/app";
 import { ButtonPush } from "../src/models/buttonPush";
 import { sequelize } from "../src/models";
@@ -54,6 +55,26 @@ describe("POST /api/button", () => {
       .expect(400)
       .expect("content-type", /json/);
     expect(response.body.Status).toMatch(/deviceId/);
+  });
+});
+
+describe("PUT /api/documents/...", () => {
+  const DOCUMENT_ID = "ABC123-_".repeat(8);
+
+  it("writes out the document", async () => {
+    const filePath = `/tmp/${DOCUMENT_ID}`;
+    const contents = { contents: "Here's some data :O" };
+    try {
+      await fs.unlink(filePath);
+    } catch {}
+    const response = await request(app)
+      .put(`/api/documents/${DOCUMENT_ID}`)
+      .send(contents)
+      .expect(200);
+    await fs.stat(filePath);
+    expect(await fs.readFile(filePath, { encoding: "utf8" })).toEqual(
+      JSON.stringify(contents)
+    );
   });
 });
 

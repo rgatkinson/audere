@@ -1,12 +1,16 @@
 import React from "react";
 import Button from "../components/Button";
 import ScreenView from "../components/ScreenView";
+import { createUploader } from "../../transport";
 import { goToNextScreen } from "../../../App";
 import { logOut, StoreState } from "../../store";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import Text from "../components/Text";
 import { withNamespaces } from "react-i18next";
+
+// TODO: pass this through from App as a property.
+const uploader = createUploader();
 
 interface Props {
   id: string;
@@ -44,6 +48,9 @@ class AccountScreenBase extends React.Component<Props> {
   };
 
   startForm = () => {
+    // TODO: generate JSON document to upload.
+    uploader.save("imagine-a-uuid-here", { name: "data" });
+
     goToNextScreen(this.props.navigation);
   };
 }

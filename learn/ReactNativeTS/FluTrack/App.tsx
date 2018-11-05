@@ -5,7 +5,11 @@ import {
   createStackNavigator,
   NavigationScreenProp,
 } from "react-navigation";
-import { logInteraction } from "./src/EventStore";
+import {
+  createDrawerNavigator,
+  createStackNavigator,
+  NavigationScreenProp,
+} from "react-navigation";
 import AccountScreen from "./src/ui/screens/AccountScreen";
 import ComponentLibraryScreen from "./src/ui/screens/ComponentLibraryScreen";
 import LoginScreen from "./src/ui/screens/LoginScreen";
@@ -20,11 +24,13 @@ import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
+import { createUploader } from "./src/transport";
 import i18n from "./src/i18n";
 
-let x = 1;
-export function interact(data: string): Promise<void> {
-  return logInteraction(data, x++);
+const uploader = createUploader();
+export function interact(data: string): void {
+  console.warn("Use uploader.save() instead of App.interact()");
+  uploader.save("remove-me", { data });
 }
 
 const routes = {

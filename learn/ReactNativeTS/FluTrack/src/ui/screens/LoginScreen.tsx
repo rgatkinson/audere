@@ -7,7 +7,6 @@ import { logIn, Action } from "../../store";
 import Text from "../components/Text";
 import ValidatedInput from "../components/ValidatedInput";
 import { connect } from "react-redux";
-import { interact } from "../../../App";
 
 const packageInfo = require("../../../package.json");
 
@@ -37,7 +36,6 @@ class LoginScreen extends React.Component<Props> {
       screenWidth: width,
       appVersion: packageInfo.version,
     };
-    interact(JSON.stringify(data));
   }
 
   render() {

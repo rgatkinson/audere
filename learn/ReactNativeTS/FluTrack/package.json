@@ -4,10 +4,14 @@
   "private": true,
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/expo": "^30.0.0",
     "@types/jest": "^23.3.2",
+    "@types/pouchdb": "^6.3.2",
     "@types/react": "^16.4.14",
     "@types/react-native": "^0.56.21",
+    "@types/react-navigation": "^2.0.24",
     "@types/react-test-renderer": "^16.0.2",
+    "@types/url-parse": "^1.4.1",
     "@types/uuid": "^3.4.4",
     "jest-expo": "~27.0.0",
     "prettier": "^1.14.3",
@@ -20,6 +24,7 @@
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {
     "start": "../../../scripts/generate-build-info; react-native-scripts start",
+    "stop": "react-native-scripts stop",
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
@@ -49,13 +54,14 @@
       "<rootDir>/node_modules/"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|expo|react-navigation))"
+      "node_modules/(?!((jest-|pouchdb-)?react-native|expo|react-navigation|pouchdb-adapter-asyncstorage))"
     ]
   },
   "dependencies": {
-    "@types/react-navigation": "^2.0.24",
     "axios": "^0.18.0",
+    "events": "^3.0.0",
     "expo": "^27.0.1",
+    "pouchdb-react-native": "^6.4.1",
     "i18next": "^11.10.0",
     "react": "16.3.1",
     "react-i18next": "^8.1.0",
@@ -67,6 +73,7 @@
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",
+    "url-parse": "^1.4.3",
     "uuid": "^3.3.2"
   }
 }
