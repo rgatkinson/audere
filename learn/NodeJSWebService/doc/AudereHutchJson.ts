@@ -22,8 +22,12 @@
 // This defines types for the JSON body uploaded to the Hutch endpoint to
 // to transmit data about a single participant encounter during the study.
 
+// Represents an encounter with a study participant.
+//
+// A repeat swab is represented as a separate encounter that has a shorter
+// list of responses, but otherwise the same set of metadata.
 interface Encounter {
-  // encounterId is a unique id (<1k) that persistently identifies this Encounter
+  // id is a unique id (<1k) that persistently identifies this Encounter
   // record.
   //
   // revision is an opaque string used to distinguish different revisions of
@@ -33,9 +37,9 @@ interface Encounter {
   // is processed and forwarded to Hutch, and then subsequently modified
   // later in the encounter and processed and sent again with updated data.
   // Audere will guarantee that a record that represents an updated version
-  // of the same encounter will have the same encounterId value and an
+  // of the same encounter will have the same id value and an
   // alphabetically later revision value.
-  encounterId: string;
+  id: string;
   revision: string;
 
   // Currently English (en) or Spanish (es), this will be the standard language
@@ -46,23 +50,39 @@ interface Encounter {
   // e.g. "2018-11-06T18:22Z".
   startTimestamp: string;
 
-  // Name of the location where the encounter occurred.  In the app, this is
+  // Name of the site where the encounter occurred.  In the app, this is
   // in admin settings.  This is optional because it will not be available
   // when the encounter is completed via a user's personal device.
-  location?: string;
+  site?: string;
 
-  // Location obtained from the device's location service.  This is optional
-  // because it may not be implemented in initial versions of the app, and
-  // because the user may deny the app access to location.
+  // De-identified location obtained from the device's location service.
+  // This is optional because it may not be implemented in initial versions
+  // of the app, and because the user may deny the app access to location.
   gps?: GpsLocation;
+
+  // De-identified household location information.  It is optional because the
+  // user may decline to provide a home address.
+  household?: Household;
 
   sampleCodes: SampleCode[];
   responses: Response[];
 }
 
+// Device location information that has been de-identified by introducing jitter.
 interface GpsLocation {
   latitude: number;
   longitude: number;
+}
+
+interface Household {
+  // Opaque string that corresponds to a particular address, but that cannot be
+  // mapped back to that address.
+  id: string;
+
+  // Region containing to the home address, if given.  Two encounters with home
+  // addresses in the same region will have the same string value here.
+  // This is expected to be census tract, but exact format is TBD.
+  region: string;
 }
 
 // The value of a barcode/QR-code from a sample collection container.
