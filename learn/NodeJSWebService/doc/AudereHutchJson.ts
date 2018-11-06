@@ -29,17 +29,16 @@
 interface Encounter {
   // id is a unique id (<1k) that persistently identifies this Encounter
   // record.
-  //
-  // revision is an opaque string used to distinguish different revisions of
-  // data for a particular encounter.
-  //
-  // It is possible that a record is uploaded to Audere during an encounter,
-  // is processed and forwarded to Hutch, and then subsequently modified
-  // later in the encounter and processed and sent again with updated data.
-  // Audere will guarantee that a record that represents an updated version
-  // of the same encounter will have the same id value and an
-  // alphabetically later revision value.
   id: string;
+
+  // This is a unique identifier (<1k) that persistently identifies the
+  // participant involved in this encounter.
+  //
+  // Implementation note: This will likely be a sha256 of {name,DOB,secret},
+  // where secret is a cryptographically secure random string held privately
+  // in the Audere database.
+  participant: string;
+
   revision: string;
 
   // Currently English (en) or Spanish (es), this will be the standard language
@@ -55,23 +54,12 @@ interface Encounter {
   // when the encounter is completed via a user's personal device.
   site?: string;
 
-  // De-identified location obtained from the device's location service.
-  // This is optional because it may not be implemented in initial versions
-  // of the app, and because the user may deny the app access to location.
-  gps?: GpsLocation;
-
   // De-identified household location information.  It is optional because the
   // user may decline to provide a home address.
   household?: Household;
 
   sampleCodes: SampleCode[];
   responses: Response[];
-}
-
-// Device location information that has been de-identified by introducing jitter.
-interface GpsLocation {
-  latitude: number;
-  longitude: number;
 }
 
 interface Household {
@@ -90,7 +78,7 @@ interface SampleCode {
   // This is a non-localized identifier that can be used programmatically to
   // tag the sample type.  These identifiers are semantically meaningful and
   // will never change, though new identifiers could be added over time.
-  type: "SelfSwab" | "ClinicSwab" | "Blood";
+  type: "SelfSwab" | "ClinicSwab" | "Blood" | "Serum" | "PBMC";
 
   // The text of the code scanned from the label on the container.
   // Currently this is a short hexadecimal number.
