@@ -27,11 +27,14 @@
 // A repeat swab is represented as a separate encounter that has a shorter
 // list of responses, but otherwise the same set of metadata.
 interface Encounter {
-  // id is a unique id (<1k) that persistently identifies this Encounter
+  // Opaque unique id (<1k) that persistently identifies this Encounter
   // record.
+  //
+  // Implementation note: This will likely be a base64 encoded sequence of
+  // at least 64 bytes from /dev/urandom, uniquely generated for each encounter.
   id: string;
 
-  // This is a unique identifier (<1k) that persistently identifies the
+  // Opaque unique identifier (<1k) that persistently identifies the
   // participant involved in this encounter.
   //
   // Implementation note: This will likely be a sha256 of {name,DOB,secret},
@@ -65,6 +68,10 @@ interface Encounter {
 interface Household {
   // Opaque string that corresponds to a particular address, but that cannot be
   // mapped back to that address.
+  //
+  // Implementation note: This will likely be a sha256 of the canonicalized
+  // address along with a cryptographically secure random string held privately
+  // in the Audere database.
   id: string;
 
   // Region containing to the home address, if given.  Two encounters with home
