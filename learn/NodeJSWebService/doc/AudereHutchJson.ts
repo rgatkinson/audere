@@ -1,0 +1,133 @@
+// Copyright (c) 2018 Audere
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// --------------------------------------------------------------------------
+// This defines types for the JSON body uploaded to the Hutch endpoint to
+// to transmit data about a single participant encounter during the study.
+
+interface Encounter {
+  // encounterId is a unique id (<1k) that persistently identifies this Encounter
+  // record.
+  //
+  // revision is an opaque string used to distinguish different revisions of
+  // data for a particular encounter.
+  //
+  // It is possible that a record is uploaded to Audere during an encounter,
+  // is processed and forwarded to Hutch, and then subsequently modified
+  // later in the encounter and processed and sent again with updated data.
+  // Audere will guarantee that a record that represents an updated version
+  // of the same encounter will have the same encounterId value and an
+  // alphabetically later revision value.
+  encounterId: string;
+  revision: string;
+
+  // Currently English (en) or Spanish (es), this will be the standard language
+  // code of the localized language used in the encounter.
+  localeLanguageCode: "en" | "es";
+
+  // ISO-8601 UTC date/time at the beginning of the encounter,
+  // e.g. "2018-11-06T18:22Z".
+  startTimestamp: string;
+
+  // Name of the location where the encounter occurred.  In the app, this is
+  // in admin settings.  This is optional because it will not be available
+  // when the encounter is completed via a user's personal device.
+  location?: string;
+
+  // Location obtained from the device's location service.  This is optional
+  // because it may not be implemented in initial versions of the app, and
+  // because the user may deny the app access to location.
+  gps?: GpsLocation;
+
+  sampleCodes: SampleCode[];
+  responses: Response[];
+}
+
+interface GpsLocation {
+  latitude: number;
+  longitude: number;
+}
+
+// The value of a barcode/QR-code from a sample collection container.
+interface SampleCode {
+  // This is a non-localized identifier that can be used programmatically to
+  // tag the sample type.  These identifiers are semantically meaningful and
+  // will never change, though new identifiers could be added over time.
+  type: "SelfSwab" | "ClinicSwab" | "Blood";
+
+  // The text of the code scanned from the label on the container.
+  // Currently this is a short hexadecimal number.
+  code: string;
+}
+
+// A question asked on the survey, and the participant's response.
+interface Response {
+  question: LocalText;
+
+  // If multiple-choice, localized text of the options presented.
+  // Only present when multiple-choice.  Selected options are specified
+  // by index(es) into this array.
+  options?: LocalText[];
+
+  answer: Answer;
+}
+
+type Answer =
+  | StringAnswer
+  | NumberAnswer
+  | OptionAnswer
+  | DeclinedToAnswer;
+
+interface StringAnswer {
+  type: "String";
+  value: string;
+}
+
+interface NumberAnswer {
+  type: "Number";
+  value: number;
+}
+
+interface OptionAnswer {
+  type: "Option";
+
+  // Index(es) into options array that were chosen by the participant.
+  // In this case, Response.options is guaranteed to be non-empty.
+  chosenOptions: number[];
+}
+
+interface DeclinedToAnswer {
+  type: "Declined";
+
+  // Provides the localized text of the "Prefer not to say" button.
+  value: LocalText;
+}
+
+interface LocalText {
+  // A short, human-readable token used by Audere for localization, used
+  // by Hutch as a hint as the survey evolves over time that text on
+  // one survey might be semantically equivalent or similar to text
+  // with the same token on a different version of the survey.
+  token: string;
+
+  // Exact localized text that the participant sees on the screen, including
+  // any punctuation, but without a trailing newline.
+  text: string;
+}
