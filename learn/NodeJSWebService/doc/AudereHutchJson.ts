@@ -30,8 +30,7 @@ interface Encounter {
   // Opaque unique id (<1k) that persistently identifies this Encounter
   // record.
   //
-  // Implementation note: This will likely be a base64 encoded sequence of
-  // at least 64 bytes from /dev/urandom, uniquely generated for each encounter.
+  // Implementation note: This will likely be a standard uuid.
   id: string;
 
   // Opaque unique identifier (<1k) that persistently identifies the
