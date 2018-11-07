@@ -2,8 +2,8 @@
 /learn/terraform/terraform.tfstate.backup
 /local/
 /scripts/*-letsencrypt.tar.bz2
+/**/*.code-workspace
 /**/.idea/
 /**/*.iml
 /**/node_modules/
 /**/buildInfo.json
-
