@@ -24,6 +24,7 @@
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {
     "start": "../../../scripts/generate-build-info; react-native-scripts start",
+    "start-localapi": "REACT_NATIVE_LOCAL_API_SERVER=1 yarn run start",
     "stop": "react-native-scripts stop",
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
@@ -61,8 +62,8 @@
     "axios": "^0.18.0",
     "events": "^3.0.0",
     "expo": "^27.0.1",
-    "pouchdb-react-native": "^6.4.1",
     "i18next": "^11.10.0",
+    "pouchdb-react-native": "^6.4.1",
     "react": "16.3.1",
     "react-i18next": "^8.1.0",
     "react-native": "~0.55.2",
@@ -73,7 +74,7 @@
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",
-    "url-parse": "^1.4.3",
+    "url-parse": "^1.4.4",
     "uuid": "^3.3.2"
   }
 }

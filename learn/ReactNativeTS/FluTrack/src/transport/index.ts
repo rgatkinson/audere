@@ -5,6 +5,8 @@
 
 import PouchDB from "pouchdb-react-native";
 import axios from "axios";
+import URL from "url-parse";
+import { Constants } from "expo";
 import { getLogger } from "./LogUtil";
 import { DocumentUploader } from "./DocumentUploader";
 
@@ -48,13 +50,20 @@ function createAxios() {
   return api;
 }
 
-function getApiBaseUrl() {
+function getApiBaseUrl(): string {
+  const apiUrl = new URL("https://api.auderenow.io/api");
   if (IS_NODE_ENV_DEVELOPMENT) {
     const url = process.env.REACT_NATIVE_API_SERVER;
     if (url) {
       logger.info(`Using dev server url: "${url}"`);
       return url;
     }
+    if (process.env.REACT_NATIVE_LOCAL_API_SERVER) {
+      const expoUrl = new URL(Constants.linkingUri);
+      apiUrl.set("port", "3000");
+      apiUrl.set("protocol", "http");
+      apiUrl.set("hostname", expoUrl.hostname);
+    }
   }
-  return "https://api.auderenow.io/api";
+  return apiUrl.toString();
 }
