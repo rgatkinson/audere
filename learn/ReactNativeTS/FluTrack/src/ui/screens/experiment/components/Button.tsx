@@ -25,7 +25,7 @@ export default class Button extends React.Component<Props> {
             styles.button,
             this.props.primary ? styles.primaryButton : null,
           ]}
-          onPress={this.props.onPress}>
+          onPress={this.props.enabled ? this.props.onPress : null}>
           <Text style={[
             styles.text,
             this.props.primary ? styles.primaryButtonText : styles.secondaryButtonText
