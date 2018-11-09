@@ -21,10 +21,38 @@ function getTodaysDate(): string {
   return new Date().toLocaleDateString();
 }
 
-@connect((state: StoreState) => ({
-  location: state.admin == null ? null : state.admin.location,
-  bloodCollection: state.admin == null ? null : state.admin.bloodCollection,
-}))
+const COLLECTION_LOCATIONS = {
+  // Should read this out of a DB so we don't have to change code when we add one
+  clinic: {
+    category: "Clinics",
+    locations: ["University of Washington", "Northwest Hospital, Harborview"], //etc
+  },
+  communityClinic: {
+    category: "Community Clinics",
+    locations: ["Seamar So. King County", "UW Healthcare Equity"],
+  },
+  childcare: {
+    category: "Childcare Facilities",
+    locations: ["Hutch Kids", "UW Daycare"],
+  },
+  homeless: {
+    category: "Homeless Shelters",
+    locations: ["Health Care for the Homeless", "King County Public Health"],
+  },
+  pharmacy: {
+    category: "Pharmacies",
+    locations: ["Bartell", "Walgreens"],
+  },
+  port: {
+    category: "International Ports",
+    locations: ["Domestic Arrivals (SeaTac)", "Alaska Cruises"], //etc
+  },
+  workplace: {
+    category: "Workplaces",
+    locations: ["Boeing", "Microsoft"],
+  },
+};
+
 export default class PriorScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Prior to Collection",
