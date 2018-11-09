@@ -4,12 +4,17 @@ import Button from "./Button";
 import Description from "./Description";
 import Title from "./Title";
 
+interface ButtonConfig {
+  label: string;
+  primary: boolean;
+}
+
 interface Props {
   active: boolean;
-  buttons: any;
+  buttons: ButtonConfig[];
   description: string;
   title: string;
-  onNext: any;
+  onNext(): void;
 }
 
 export default class SurveyQuestion extends Component<Props> {
@@ -21,7 +26,7 @@ export default class SurveyQuestion extends Component<Props> {
           <Description content={this.props.description} />
         )}
         <View style={styles.buttonContainer}>
-          {this.props.buttons.map((button: any) => (
+          {this.props.buttons.map(button => (
             <Button
               enabled={true}
               key={button.label}
