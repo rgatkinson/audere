@@ -70,7 +70,9 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               myRef={(i: any) => {
                 this.householdSizeInput = i;
               }}
-              onChangeText={(householdSize: any) => this.setState({ householdSize })}
+              onChangeText={(householdSize: any) =>
+                this.setState({ householdSize })
+              }
               onSubmitEditing={() => {
                 if (this.state.householdSize == 1) {
                   this.numRoomsInput.focus();
@@ -132,9 +134,7 @@ export default class HouseholdScreen extends React.Component<Props, any> {
               }}
             />
           </FieldLabel>
-          <Text>
-            Have any household contacts been ill in the last 4 weeks?
-          </Text>
+          <Text>Have any household contacts been ill in the last 4 weeks?</Text>
           <FieldLabel label="">
             <RadioButton
               initial={1}

@@ -11,29 +11,36 @@ interface Props {
 
 export default class Button extends React.Component<Props> {
   render() {
-    const subtext = this.props.subtext
-      ? <Text style={styles.subtext}>{this.props.subtext}</Text>
-      : null;
+    const subtext = this.props.subtext ? (
+      <Text style={styles.subtext}>{this.props.subtext}</Text>
+    ) : null;
 
     return (
-      <View style={[
-        styles.buttonContainer, 
-        { opacity: this.props.enabled ? 1.0 : 0.5 },
-      ]}>
+      <View
+        style={[
+          styles.buttonContainer,
+          { opacity: this.props.enabled ? 1.0 : 0.5 },
+        ]}
+      >
         <TouchableOpacity
           style={[
             styles.button,
             this.props.primary ? styles.primaryButton : null,
           ]}
-          onPress={this.props.enabled ? this.props.onPress : null}>
-          <Text style={[
-            styles.text,
-            this.props.primary ? styles.primaryButtonText : styles.secondaryButtonText
-          ]}>
-            {this.props.label} 
+          onPress={this.props.enabled ? this.props.onPress : null}
+        >
+          <Text
+            style={[
+              styles.text,
+              this.props.primary
+                ? styles.primaryButtonText
+                : styles.secondaryButtonText,
+            ]}
+          >
+            {this.props.label}
           </Text>
         </TouchableOpacity>
-        {subtext} 
+        {subtext}
       </View>
     );
   }
@@ -41,10 +48,10 @@ export default class Button extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   button: {
-    borderColor: '#6200EE',
+    borderColor: "#6200EE",
     borderRadius: 10,
     borderWidth: 2,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 10,
   },
   buttonContainer: {
@@ -53,16 +60,16 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: '#6200EE',
+    backgroundColor: "#6200EE",
   },
   primaryButtonText: {
-    color: 'white',
+    color: "white",
   },
   secondaryButtonText: {
-    color: '#6200EE',
+    color: "#6200EE",
   },
   subtext: {
     fontSize: 20,

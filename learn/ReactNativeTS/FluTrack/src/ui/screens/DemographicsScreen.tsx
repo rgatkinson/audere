@@ -50,7 +50,9 @@ export default class DemographicsScreen extends React.Component<Props, any> {
               myRef={(i: any) => {
                 this.homeInput = i;
               }}
-              onChangeText={(homeAddress: string) => this.setState({ homeAddress })}
+              onChangeText={(homeAddress: string) =>
+                this.setState({ homeAddress })
+              }
               onSubmitEditing={() => {
                 this.workInput.focus();
               }}
@@ -63,7 +65,9 @@ export default class DemographicsScreen extends React.Component<Props, any> {
               myRef={(i: any) => {
                 this.workInput = i;
               }}
-              onChangeText={(workAddress: string) => this.setState({ workAddress })}
+              onChangeText={(workAddress: string) =>
+                this.setState({ workAddress })
+              }
               onSubmitEditing={() => {
                 this.raceInput.focus();
               }}

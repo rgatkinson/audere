@@ -1,7 +1,7 @@
 import uuidv4 from "uuid/v4";
 
 export type FormAction =
-  | { type: "START_FORM"; }
+  | { type: "START_FORM" }
   | { type: "SET_AGE"; age: number }
   | { type: "SET_MONTHS"; months: number }
   | { type: "SET_EMAIL"; email: string };

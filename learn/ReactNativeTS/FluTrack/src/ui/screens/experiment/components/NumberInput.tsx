@@ -1,5 +1,11 @@
 import React from "react";
-import { ReturnKeyTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  ReturnKeyTypeOptions,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 interface Props {
   autoFocus?: boolean;
@@ -11,7 +17,6 @@ interface Props {
 }
 
 export default class NumberInput extends React.Component<Props> {
-
   textInput = React.createRef<TextInput>();
 
   // TODO: accept a min max and validate that input value is valid
@@ -20,7 +25,7 @@ export default class NumberInput extends React.Component<Props> {
     return (
       <TextInput
         autoFocus={this.props.autoFocus}
-        keyboardType='numbers-and-punctuation'
+        keyboardType="numbers-and-punctuation"
         placeholder={this.props.placeholder}
         style={styles.textInput}
         ref={this.textInput}
@@ -39,8 +44,8 @@ export default class NumberInput extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   textInput: {
-    alignSelf: 'stretch',
-    borderBottomColor: '#bbb',
+    alignSelf: "stretch",
+    borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
     fontSize: 20,
     height: 30,

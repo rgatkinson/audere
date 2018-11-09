@@ -2,12 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import Button from './components/Button';
+import Button from "./components/Button";
 import ContentContainer from "./components/ContentContainer";
-import Description from './components/Description';
-import ScreenContainer from './components/ScreenContainer';
-import StatusBar from './components/StatusBar';
-import Title from './components/Title';
+import Description from "./components/Description";
+import ScreenContainer from "./components/ScreenContainer";
+import StatusBar from "./components/StatusBar";
+import Title from "./components/Title";
 
 interface Props {
   dispatch(action: Action): void;
@@ -16,12 +16,11 @@ interface Props {
 
 @connect()
 export default class BloodScreen extends React.Component<Props> {
-
   _onDone = () => {
     // TODO: store answer
     // TODO: does answer affect later logic?
-    this.props.navigation.push('Consent');
-  }
+    this.props.navigation.push("Consent");
+  };
 
   render() {
     return (
@@ -35,9 +34,7 @@ export default class BloodScreen extends React.Component<Props> {
         />
         <ContentContainer>
           <Title label="5. Would you be willing to participate in the optional blood collection?" />
-          <Description
-            content="As part of this study, there is an optional blood sample collection. These samples will give us more information about your body's ability to fight infections."
-           />
+          <Description content="As part of this study, there is an optional blood sample collection. These samples will give us more information about your body's ability to fight infections." />
           <Button
             primary={true}
             enabled={true}

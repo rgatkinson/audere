@@ -164,11 +164,12 @@ class ValidatedInput extends React.Component<Props & WithNamespaces, any> {
         style = [styles.inputField, styles.smallWidth];
     }
 
-    const errorStyle = this.state.isMissing
-      || this.state.isMinMaxError
-      || this.state.isPatternError
-      ? styles.errorBorder
-      : null;
+    const errorStyle =
+      this.state.isMissing ||
+      this.state.isMinMaxError ||
+      this.state.isPatternError
+        ? styles.errorBorder
+        : null;
 
     return (
       <View>

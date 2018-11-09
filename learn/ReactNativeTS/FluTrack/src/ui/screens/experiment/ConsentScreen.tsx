@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { Action } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
-import Button from './components/Button';
-import Description from './components/Description';
-import StatusBar from './components/StatusBar';
-import Title from './components/Title';
+import Button from "./components/Button";
+import Description from "./components/Description";
+import StatusBar from "./components/StatusBar";
+import Title from "./components/Title";
 
 interface Props {
   dispatch(action: Action): void;
@@ -16,16 +16,14 @@ interface Props {
 
 @connect()
 export default class ConsentScreen extends React.Component<Props> {
+  _onClear = () => {};
 
-  _onClear= () => {
-  }
-
-  _onSubmit= () => {
+  _onSubmit = () => {
     // TODO: store answer
     // TODO: does answer affect later logic?
-    // TODO: navigate to study 
-    this.props.navigation.push('Enrolled');
-  }
+    // TODO: navigate to study
+    this.props.navigation.push("Enrolled");
+  };
 
   render() {
     return (
@@ -33,15 +31,13 @@ export default class ConsentScreen extends React.Component<Props> {
         <StatusBar
           canProceed={false}
           progressPercent={80}
-          title='5. Would you be willing to participate...'
+          title="5. Would you be willing to participate..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onSubmit}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label="Consent" />
-          <Description
-            content="Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below."
-          />
+          <Description content="Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below." />
           <Text>{CONSENT_FORM_TEXT}</Text>
           <View style={styles.buttonRow}>
             <Button
@@ -71,8 +67,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   buttonRow: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

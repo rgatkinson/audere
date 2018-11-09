@@ -19,10 +19,15 @@ interface Props {
 
 @connect((state: StoreState) => ({ id: state.user!.id }))
 class AccountScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = ({ navigation, screenProps } :
-    { navigation: NavigationScreenProp<void>, screenProps: any}) => ({
-      title: screenProps.t("account:title"),
-    });
+  static navigationOptions = ({
+    navigation,
+    screenProps,
+  }: {
+    navigation: NavigationScreenProp<void>;
+    screenProps: any;
+  }) => ({
+    title: screenProps.t("account:title"),
+  });
 
   render() {
     const { t, i18n } = this.props;
@@ -53,7 +58,9 @@ class AccountScreen extends React.Component<Props & WithNamespaces> {
 
   startForm = () => {
     // TODO: generate JSON document to upload.
-    this.props.screenProps.uploader.save("imagine-a-uuid-here", { "name": "data" });
+    this.props.screenProps.uploader.save("imagine-a-uuid-here", {
+      name: "data",
+    });
 
     goToNextScreen(this.props.navigation);
   };

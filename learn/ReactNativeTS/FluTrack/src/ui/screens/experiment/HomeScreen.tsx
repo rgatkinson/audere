@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import { Action, startForm } from "../../../store";
@@ -13,49 +13,41 @@ interface Props {
 
 @connect()
 export default class HomeScreen extends React.Component<Props> {
-  _onStart= () => {
+  _onStart = () => {
     this.props.dispatch(startForm());
-    this.props.navigation.push('Welcome');
-  }
+    this.props.navigation.push("Welcome");
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.subTitle}>
-          University of Washington
-        </Text>
-        <Text style={styles.title}>
-          Seattle Flu Study
-        </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={this._onStart}>
-          <Text style={styles.buttonHeader}>
-            Welcome
-          </Text>
+        <Text style={styles.subTitle}>University of Washington</Text>
+        <Text style={styles.title}>Seattle Flu Study</Text>
+        <TouchableOpacity style={styles.button} onPress={this._onStart}>
+          <Text style={styles.buttonHeader}>Welcome</Text>
           <View style={styles.textContainer}>
             <Text style={styles.buttonText}>
               Learn more about this research and how to participate.
             </Text>
-            <Icon name='chevron-right' color='blue' size={32} type='feather' />
+            <Icon name="chevron-right" color="blue" size={32} type="feather" />
           </View>
         </TouchableOpacity>
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#f9fafa',
+    backgroundColor: "#f9fafa",
     borderRadius: 10,
     padding: 30,
-    opacity: .75,
-    justifyContent: 'space-between',
+    opacity: 0.75,
+    justifyContent: "space-between",
   },
   buttonHeader: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingBottom: 30,
   },
   buttonText: {
@@ -64,30 +56,30 @@ const styles = StyleSheet.create({
     paddingRight: 30,
   },
   container: {
-    alignItems: 'center',
-    backgroundColor: '#6200EE',
-    flex: 1, 
-    justifyContent: 'center',
+    alignItems: "center",
+    backgroundColor: "#6200EE",
+    flex: 1,
+    justifyContent: "center",
     padding: 100,
   },
   subTitle: {
-    color: 'white',
-    fontFamily: 'Georgia',
+    color: "white",
+    fontFamily: "Georgia",
     fontSize: 32,
     paddingBottom: 15,
   },
   textContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingBottom: 30,
   },
   title: {
-    color: 'white',
-    fontFamily: 'Georgia',
+    color: "white",
+    fontFamily: "Georgia",
     fontSize: 48,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
+    fontStyle: "italic",
+    fontWeight: "bold",
     paddingBottom: 70,
   },
 });

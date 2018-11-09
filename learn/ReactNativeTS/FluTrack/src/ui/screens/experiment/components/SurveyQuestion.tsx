@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import Button from './Button';
-import Description from './Description';
-import Title from './Title';
+import React, { Component } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import Button from "./Button";
+import Description from "./Description";
+import Title from "./Title";
 
 interface Props {
   active: boolean;
@@ -17,9 +17,11 @@ export default class SurveyQuestion extends Component<Props> {
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         <Title label={this.props.title} />
-        {this.props.description && <Description content={this.props.description} />}
+        {this.props.description && (
+          <Description content={this.props.description} />
+        )}
         <View style={styles.buttonContainer}>
-          {this.props.buttons.map((button: any) =>
+          {this.props.buttons.map((button: any) => (
             <Button
               enabled={true}
               key={button.label}
@@ -27,7 +29,7 @@ export default class SurveyQuestion extends Component<Props> {
               onPress={this.props.onNext}
               primary={button.primary}
             />
-          )}
+          ))}
         </View>
       </View>
     );
@@ -36,17 +38,17 @@ export default class SurveyQuestion extends Component<Props> {
 
 const styles = StyleSheet.create({
   card: {
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
     padding: 20,
   },
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
-    color: 'white',
+    color: "white",
   },
   inactive: {
     opacity: 0.25,
-  }, 
+  },
 });

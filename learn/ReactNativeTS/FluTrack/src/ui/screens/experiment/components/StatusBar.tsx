@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Icon } from 'react-native-elements';
+import { Icon } from "react-native-elements";
 
 interface Props {
   canProceed: boolean;
@@ -13,38 +13,40 @@ interface Props {
 export default class StatusBar extends React.Component<Props> {
   _back = () => {
     this.props.onBack();
-  }
+  };
 
   _forward = () => {
     this.props.onForward();
-  }
+  };
 
   render() {
     return (
       <View style={styles.statusBar}>
         <Text style={styles.progress}>
-          {this.props.progressPercent && this.props.progressPercent + '%\nEnrollment'}
+          {this.props.progressPercent &&
+            this.props.progressPercent + "%\nEnrollment"}
         </Text>
-        <Text style={styles.statusBarTitle}>
-          {this.props.title}
-        </Text>
+        <Text style={styles.statusBarTitle}>{this.props.title}</Text>
         <View style={styles.nav}>
           <TouchableOpacity onPress={this._back}>
             <Icon
-              color='blue'
+              color="blue"
               containerStyle={[styles.icon, styles.iconLeft]}
-              name='chevron-up'
+              name="chevron-up"
               size={40}
-              type='feather'
+              type="feather"
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={this._forward} disabled={!this.props.canProceed}>
+          <TouchableOpacity
+            onPress={this._forward}
+            disabled={!this.props.canProceed}
+          >
             <Icon
-              color={(this.props.canProceed) ? 'blue' : 'gray'}
+              color={this.props.canProceed ? "blue" : "gray"}
               containerStyle={styles.icon}
-              name='chevron-down'
+              name="chevron-down"
               size={40}
-              type='feather'
+              type="feather"
             />
           </TouchableOpacity>
         </View>
@@ -58,37 +60,37 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   iconLeft: {
-    borderColor: 'blue',
+    borderColor: "blue",
     borderRightWidth: StyleSheet.hairlineWidth,
   },
   nav: {
-    alignItems: 'center',
-    borderColor: 'blue',
+    alignItems: "center",
+    borderColor: "blue",
     borderRadius: 5,
     borderWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
   progress: {
     fontSize: 20,
   },
   statusBar: {
-    alignItems: 'center',
-    backgroundColor: '#ededed',
-    flexDirection: 'row',
+    alignItems: "center",
+    backgroundColor: "#ededed",
+    flexDirection: "row",
     height: 100,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 20,
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowRadius: 2,
-    shadowOpacity: 0.5, 
+    shadowOpacity: 0.5,
   },
   statusBarTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 22,
   },
 });

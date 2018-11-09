@@ -25,7 +25,7 @@ export default class ComponentLibraryScreen extends React.Component<Props> {
   };
 
   // TODO: ValidatedInput example not fully-functional
-  
+
   render() {
     return (
       <ScreenView>
@@ -40,18 +40,23 @@ export default class ComponentLibraryScreen extends React.Component<Props> {
           <Text>DatePicker</Text>
           <DatePicker
             date={this.state.date}
-            onDateChange={date => { this.setState({ date }) }}
+            onDateChange={date => {
+              this.setState({ date });
+            }}
           />
         </View>
-        <FieldLabel label="Field Label"  style={styles.component} />
+        <FieldLabel label="Field Label" style={styles.component} />
         <View style={styles.component}>
           <Text>Radio Button</Text>
-          <RadioButton onPress={(arg) => {}} />
+          <RadioButton onPress={arg => {}} />
         </View>
         <Text style={styles.component}>Text</Text>
         <View style={styles.component}>
           <Text>Validated Input</Text>
-          <ValidatedInput inputType="email" onChangeText={(text: string) => {}} />
+          <ValidatedInput
+            inputType="email"
+            onChangeText={(text: string) => {}}
+          />
         </View>
       </ScreenView>
     );

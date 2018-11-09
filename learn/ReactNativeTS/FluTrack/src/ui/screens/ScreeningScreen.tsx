@@ -74,7 +74,9 @@ class ScreeningScreen extends React.Component<Props, any> {
                   this.cellInput = i;
                 }}
                 placeholder="206-555-1212"
-                onChangeText={(cellPhone: string) => this.setState({ cellPhone })}
+                onChangeText={(cellPhone: string) =>
+                  this.setState({ cellPhone })
+                }
               />
               <CheckBox
                 style={{ paddingTop: 0 }}

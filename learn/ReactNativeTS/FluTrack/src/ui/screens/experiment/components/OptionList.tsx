@@ -1,6 +1,14 @@
 import React from "react";
-import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import { Icon } from 'react-native-elements';
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
+import { Icon } from "react-native-elements";
 
 interface Props {
   data: string[];
@@ -22,22 +30,20 @@ export default class OptionList extends React.Component<Props> {
 
   render() {
     const itemWidth =
-      (Dimensions.get('window').width - 100 - (this.props.numColumns * 20))
-      / this.props.numColumns;
-    const totalHeight = Math.ceil(this.props.data.length / this.props.numColumns) * 42;
+      (Dimensions.get("window").width - 100 - this.props.numColumns * 20) /
+      this.props.numColumns;
+    const totalHeight =
+      Math.ceil(this.props.data.length / this.props.numColumns) * 42;
 
     return (
-      <View style={[
-          { height: totalHeight },
-          styles.container,
-        ]}>
+      <View style={[{ height: totalHeight }, styles.container]}>
         <FlatList
           data={this.props.data}
           extraData={this.state}
           numColumns={this.props.numColumns}
           scrollEnabled={false}
-          keyExtractor={(item) => item}
-          renderItem ={({item}) => (
+          keyExtractor={item => item}
+          renderItem={({ item }) => (
             <ListItem
               id={item}
               selected={!!this.state.selected.get(item)}
@@ -55,7 +61,7 @@ interface ItemProps {
   id: string;
   selected: boolean;
   width: number;
-  onPressItem(id: string): void,
+  onPressItem(id: string): void;
 }
 
 class ListItem extends React.PureComponent<ItemProps> {
@@ -66,16 +72,13 @@ class ListItem extends React.PureComponent<ItemProps> {
   render() {
     return (
       <TouchableOpacity
-        style={[
-          styles.item,
-          {width: this.props.width},
-        ]}
-        onPress={this._onPress}>
+        style={[styles.item, { width: this.props.width }]}
+        onPress={this._onPress}
+      >
         <Text style={styles.itemText}>{this.props.id}</Text>
-        {this.props.selected
-          ? <Icon name='check' color='blue' size={20} type='feather' />
-          : null
-        }
+        {this.props.selected ? (
+          <Icon name="check" color="blue" size={20} type="feather" />
+        ) : null}
       </TouchableOpacity>
     );
   }
@@ -86,11 +89,11 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   item: {
-    alignSelf: 'stretch',
-    borderBottomColor: '#bbb',
+    alignSelf: "stretch",
+    borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginHorizontal: 10,
     padding: 10,
   },

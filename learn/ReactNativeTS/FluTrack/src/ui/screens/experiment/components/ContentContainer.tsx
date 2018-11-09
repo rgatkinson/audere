@@ -3,17 +3,13 @@ import { StyleSheet, View } from "react-native";
 
 export default class ContentContainer extends React.Component {
   render() {
-    return (
-      <View style={styles.contentContainer}>
-        {this.props.children}
-      </View>
-    );
+    return <View style={styles.contentContainer}>{this.props.children}</View>;
   }
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 40,
   },
 });
