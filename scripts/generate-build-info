@@ -1,7 +1,7 @@
 #!/bin/bash
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
-SERVER_DIR="$REPO_ROOT_DIR/learn/NodeJSWebService/static"
+SERVER_DIR="$REPO_ROOT_DIR/FluApi/static"
 FILENAME="buildInfo.json"
 TODAY="$(date +%Y%m%d)"
 if [ "$CIRCLECI" = true ] && [ -n "$CIRCLE_SHA1" ]; then

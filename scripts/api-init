@@ -29,13 +29,13 @@ DB_USERNAME="$(pgpass 4)"
 DB_PASSWORD="$(pgpass 5)"
 
 echo "DATABASE_URL=postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOSTNAME:$DB_PORT/$DB_DATABASE" >\
-  $HOME/NodeJSWebService/.env
+  $HOME/FluApi/.env
 
 # Install service
 
 yarn global add pm2
 (
-  cd "$HOME/NodeJSWebService"
+  cd "$HOME/FluApi"
   yarn install --frozen-lockfile
   yarn build
   pm2 start process.json --env production

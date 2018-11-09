@@ -4,12 +4,12 @@ set -x
 umask 077
 
 sudo -H --login --user=api bash <<- EOAPI
-	cd "\$HOME/NodeJSWebService"
+	cd "\$HOME/FluApi"
 	pm2 stop api
 EOAPI
-sudo rsync --chown=api:api --chmod="go-rwx" -a --delete "$HOME/NodeJSWebService" ~api
+sudo rsync --chown=api:api --chmod="go-rwx" -a --delete "$HOME/FluApi" ~api
 sudo -H --login --user=api bash <<- EOAPI
-	cd "\$HOME/NodeJSWebService"
+	cd "\$HOME/FluApi"
 	yarn install --frozen-lockfile
 	yarn build
 	yarn sequelize db:migrate

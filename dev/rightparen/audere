@@ -61,7 +61,7 @@ case "$_au_subcommand" in
   cdcc)    cd "$GITHUB_COMMCARE_HQ${1:+/}$1";;
   cdrn)    cd "$FLU_TS${1:+/}$1";;
   cdfluts) cd "$FLU_TS${1:+/}$1";;
-  cdweb)   cd "$AUDERE/learn/NodeJSWebService${1:+/}$1";;
+  cdweb)   cd "$AUDERE/FluApi${1:+/}$1";;
 
   # --------------------------------------------------------------------------------
   # learn
@@ -77,7 +77,7 @@ case "$_au_subcommand" in
   rs | rws | run-web-service)
     (set -euo pipefail
       export DEBUG="express:*"
-      cd "$AUDERE/learn/NodeJSWebService"
+      cd "$AUDERE/FluApi"
       nvm use v10
       yarn install
       yarn start

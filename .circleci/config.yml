@@ -31,7 +31,7 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
-          key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
+          key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
           name: App Yarn Install
           command: |
@@ -49,12 +49,12 @@ jobs:
       - run:
           name: Server Yarn Install
           command: |
-            cd learn/NodeJSWebService
+            cd FluApi
             yarn install
       - run:
           name: Server Tests
           command: |
-            cd learn/NodeJSWebService
+            cd FluApi
             yarn setup
             yarn test
       - save_cache:
@@ -62,9 +62,9 @@ jobs:
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
-          key: server-node-cache-{{ checksum "learn/NodeJSWebService/package.json" }}
+          key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
-            - learn/NodeJSWebService/node_modules
+            - FluApi/node_modules
 
   publish: &publish
     <<: *defaults

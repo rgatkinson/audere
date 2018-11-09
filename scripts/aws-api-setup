@@ -50,7 +50,7 @@ sudo apt -y install postgresql-client-common nginx yarn nodejs
 
 "$SELF_DIR/add-developer-accounts"
 sudo adduser --shell /bin/bash --gecos "Audere Api" --disabled-password api
-sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.pgpass" "$HOME/NodeJSWebService" ~api
+sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.pgpass" "$HOME/FluApi" ~api
 
 (
   cd ~api
@@ -59,4 +59,4 @@ sudo rsync --chown=api:api --chmod="go-rwx" -a "$HOME/.ssh" "$HOME/.pgpass" "$HO
 
 sudo /home/api/.yarn/bin/pm2 startup -u api --hp /home/api --service-name flu-api-pm2
 
-"$SELF_DIR/ubuntu-install-nginx-ssl" "$SUBDOMAIN.auderenow.io" "http://localhost:3000" ~api/NodeJSWebService
+"$SELF_DIR/ubuntu-install-nginx-ssl" "$SUBDOMAIN.auderenow.io" "http://localhost:3000" ~api/FluApi
