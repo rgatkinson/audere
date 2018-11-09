@@ -3,6 +3,7 @@ import Ouch from "ouch";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import { promises as fs } from "fs";
+import * as VisitsController from "./controllers/visitsController";
 import { ButtonPush } from "./models/buttonPush";
 import { ValidationError } from "sequelize";
 import { sequelize } from "./models";
@@ -64,13 +65,7 @@ app.post(
 
 app.put(
   "/api/documents/:documentId([A-Za-z0-9-_]*)",
-  wrap(async (req, res) => {
-    await fs.writeFile(
-      `/tmp/${req.params.documentId}`,
-      JSON.stringify(req.body)
-    );
-    res.json({ Status: "SUCCESS" });
-  })
+  wrap(VisitsController.putDocument)
 );
 
 app.get(
