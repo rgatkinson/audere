@@ -21,7 +21,7 @@ interface Props {
 @connect((state: StoreState) => ({ age: state.form!.age, months: state.form!.months }))
 export default class AgeScreen extends React.Component<Props> {
 
-  monthInput: any;
+  monthInput = React.createRef<NumberInput>();
 
   _onDone = () => {
     // TODO: verify that a valid age has been entered
@@ -46,12 +46,12 @@ export default class AgeScreen extends React.Component<Props> {
             returnKeyType='next'
             value={this.props.age ? this.props.age + '' : undefined}
             onChange={(text) => this.props.dispatch(setAge(parseInt(text)))}
-            onSubmit={() => this.monthInput.focus()}
+            onSubmit={() => this.monthInput.current!.focus()}
           />
           <Description content="If the participant is an infant less than one year of age, how many months old are they?" />
           <NumberInput
             placeholder='Number of months'
-            ref={(input) => this.monthInput = input }
+            ref={this.monthInput}
             returnKeyType='done'
             value={this.props.months ? this.props.months + '' : undefined}
             onChange={(text) => this.props.dispatch(setMonths(parseInt(text)))}

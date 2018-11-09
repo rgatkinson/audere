@@ -12,7 +12,7 @@ interface Props {
 
 export default class NumberInput extends React.Component<Props> {
 
-  textInput: TextInput | null = null;
+  textInput = React.createRef<TextInput>();
 
   // TODO: accept a min max and validate that input value is valid
   // TODO: accept a required prop and show error if required and not entered
@@ -23,17 +23,17 @@ export default class NumberInput extends React.Component<Props> {
         keyboardType='numbers-and-punctuation'
         placeholder={this.props.placeholder}
         style={styles.textInput}
-        ref={(input) =>  this.textInput = input }
+        ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         value={this.props.value}
-        onChangeText={(text) => this.props.onChange(text)}
+        onChangeText={this.props.onChange}
         onSubmitEditing={this.props.onSubmit}
       />
     );
   }
 
   focus() {
-    this.textInput!.focus();
+    this.textInput.current!.focus();
   }
 }
 

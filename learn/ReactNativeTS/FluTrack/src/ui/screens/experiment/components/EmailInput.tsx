@@ -11,7 +11,7 @@ interface Props {
 
 export default class EmailInput extends React.Component<Props> {
 
-  textInput: TextInput | null = null;
+  textInput = React.createRef<TextInput>();
 
   // TODO: validate on submit
   // TODO: accept a required prop and show error if required and not entered
@@ -25,11 +25,11 @@ export default class EmailInput extends React.Component<Props> {
           autoFocus={this.props.autoFocus}
           keyboardType='email-address'
           placeholder='Email address'
-          ref={(input) =>  this.textInput = input }
+          ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
           style={styles.textInput}
           value={this.props.value}
-          onChangeText={(text) => this.props.onChange(text)}
+          onChangeText={this.props.onChange}
           onSubmitEditing={this.props.onSubmit}
         />
         <Text style={styles.disclaimer}>
@@ -40,7 +40,7 @@ export default class EmailInput extends React.Component<Props> {
   }
 
   focus() {
-    this.textInput!.focus();
+    this.textInput.current!.focus();
   }
 }
 
