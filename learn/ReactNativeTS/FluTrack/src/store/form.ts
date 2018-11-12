@@ -4,6 +4,11 @@ export type FormAction =
   | { type: "START_FORM" }
   | { type: "SET_AGE"; age: number }
   | { type: "SET_MONTHS"; months: number }
+  | {
+      type: "SET_ADVERSE_EVENT_TYPES";
+      adverseEventTypes: Map<string, boolean>;
+    }
+  | { type: "SET_ADVERSE_EVENTS"; adverseEvents: string[] }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_SYMPTOMS"; symptoms: Map<string, boolean> }
   | { type: "SET_EMAIL"; email: string }
