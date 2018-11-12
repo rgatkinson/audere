@@ -55,7 +55,7 @@ export type FormState = null | {
   emailOptions?: Map<string, boolean>;
   surveyResponses?: Map<string, SurveyResponse>;
   adverseEventTypes?: Map<string, boolean>;
-  adverseEvents: string[];
+  adverseEvents?: string[];
 };
 
 const initialState: FormState = null;
