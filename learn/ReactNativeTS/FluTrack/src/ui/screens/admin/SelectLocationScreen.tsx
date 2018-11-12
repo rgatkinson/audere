@@ -70,7 +70,7 @@ function getLocations() {
 }
 
 @connect((state: StoreState) => ({
-  location: state.admin!.location,
+  location: state.admin === null ? null : state.admin.location,
 }))
 export default class SelectLocationScreen extends React.Component<Props> {
   static navigationOptions = {
