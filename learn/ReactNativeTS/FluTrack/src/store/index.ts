@@ -8,11 +8,15 @@ export * from "./user";
 import { default as form, FormState, FormAction } from "./form";
 export * from "./form";
 
-export type Action = UserAction | FormAction;
+import { default as admin, AdminState, AdminAction } from "./admin";
+export * from "./admin";
+
+export type Action = UserAction | FormAction | AdminAction;
 
 export interface StoreState {
   user: UserState;
   form: FormState;
+  admin: AdminState;
 }
 
 const config = {
@@ -23,6 +27,7 @@ const config = {
 const reducer = combineReducers({
   user,
   form,
+  admin,
 });
 
 export const store = createStore(persistReducer(config, reducer));

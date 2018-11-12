@@ -1,5 +1,4 @@
-//Please help with a better name for this component.
-//It mimics the links/buttons in the iPad Settings panel that drill into sub-settings pages
+// Best used for short list of options, and each option text ~25 chars or less
 import React from "react";
 import { Icon } from "react-native-elements";
 import {

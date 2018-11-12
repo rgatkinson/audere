@@ -1,82 +1,45 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
+import { StoreState } from "../../../store/index";
+import { Action, setBloodCollection } from "../../../store";
 import DropdownPicker from "./components/DropdownPicker";
-import { View, Text, StyleSheet, Picker, Button } from "react-native";
+import OpenMoreButton from "./components/OpenMoreButton";
+import KeyValueLine from "./components/KeyValueLine";
+import { Text, StyleSheet } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
 
 interface Props {
+  location: string;
+  bloodCollection: boolean;
+  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   screenProps: any;
 }
 
-const COLLECTION_LOCATIONS = {
-  // Should read this out of a DB so we don't have to change code when we add one
-  clinic: {
-    category: "Clinics",
-    locations: ["University of Washington", "Northwest Hospital, Harborview"], //etc
-  },
-  communityClinic: {
-    category: "Community Clinics",
-    locations: ["Seamar So. King County", "UW Healthcare Equity"],
-  },
-  childcare: {
-    category: "Childcare Facilities",
-    locations: ["Hutch Kids", "UW Daycare"],
-  },
-  homeless: {
-    category: "Homeless Shelters",
-    locations: ["Health Care for the Homeless", "King County Public Health"],
-  },
-  pharmacy: {
-    category: "Pharmacies",
-    locations: ["Bartell", "Walgreens"],
-  },
-  port: {
-    category: "International Ports",
-    locations: ["Domestic Arrivals (SeaTac)", "Alaska Cruises"], //etc
-  },
-  workplace: {
-    category: "Workplaces",
-    locations: ["Boeing", "Microsoft"],
-  },
-};
+function getTodaysDate(): string {
+  return new Date().toLocaleDateString();
+}
 
+@connect((state: StoreState) => ({
+  location: state.admin === null ? null : state.admin.location,
+  bloodCollection: state.admin === null ? false : state.admin.bloodCollection,
+}))
 export default class PriorScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Prior to Collection",
   };
-  state = {
-    location: "Clinics",
-    bloodCollection: false,
+  _onSelectLocation = () => {
+    this.props.navigation.push("SelectLocation");
   };
-
   render() {
     return (
       <ScreenContainer>
+        <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
-        {/* <Picker
-          itemStyle={{ backgroundColor: "white" }}
-          selectedValue={this.state.location}
-          onValueChange={location => this.setState({ location })}
-        >
-          {Object.keys(COLLECTION_LOCATIONS).map(cat => (
-            <Picker.Item
-              key={cat}
-              value={cat}
-              label={COLLECTION_LOCATIONS[cat].category}
-            />
-          ))}
-        </Picker> */}
-        <DropdownPicker
-          label={
-            this.state.location === null || this.state.location === undefined
-              ? "Select one"
-              : this.state.location
-          }
-          options={Object.keys(COLLECTION_LOCATIONS)}
-          onPress={(buttonIndex: number) => {
-            console.log(buttonIndex);
-          }}
+        <OpenMoreButton
+          label={this.props.location ? this.props.location : "Select one"}
+          onPress={this._onSelectLocation}
         />
         <Text style={styles.descriptionText}>
           The site where this device is being used to facilitate sample
@@ -84,13 +47,13 @@ export default class PriorScreen extends React.Component<Props> {
         </Text>
         <Text style={styles.sectionHeaderText}>Blood Collection</Text>
         <DropdownPicker
-          label={this.state.bloodCollection ? "Available" : "Not Available"}
+          label={this.props.bloodCollection ? "Available" : "Not Available"}
           options={["Not Available", "Available"]}
           onPress={(buttonIndex: number) => {
             if (buttonIndex === 0) {
-              this.setState({ bloodCollection: false });
+              this.props.dispatch(setBloodCollection(false));
             } else {
-              this.setState({ bloodCollection: true });
+              this.props.dispatch(setBloodCollection(true));
             }
           }}
         />
@@ -105,8 +68,8 @@ export default class PriorScreen extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   sectionHeaderText: {
-    marginTop: 30,
-    marginBottom: 6,
+    marginTop: 35,
+    marginBottom: 7,
     marginLeft: 15,
     fontSize: 24,
   },
