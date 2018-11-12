@@ -1,3 +1,5 @@
+// Built for the admin screens as of November 8, but the November 10 update no
+// longer uses this. Keeping in case useful somewhere else.
 // Best used for short list of options, and each option text ~25 chars or less
 import React from "react";
 import { Icon } from "react-native-elements";

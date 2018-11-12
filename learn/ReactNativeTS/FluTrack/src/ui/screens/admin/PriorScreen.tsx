@@ -3,8 +3,8 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
 import { Action, setBloodCollection } from "../../../store";
-import DropdownPicker from "./components/DropdownPicker";
-import OpenMoreButton from "./components/OpenMoreButton";
+import OptionTable from "./components/OptionTable";
+import EditSettingButton from "./components/EditSettingButton";
 import KeyValueLine from "./components/KeyValueLine";
 import { Text, StyleSheet } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
@@ -37,7 +37,7 @@ export default class PriorScreen extends React.Component<Props> {
       <ScreenContainer>
         <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
-        <OpenMoreButton
+        <EditSettingButton
           label={this.props.location ? this.props.location : "Select one"}
           onPress={this._onSelectLocation}
         />
@@ -46,16 +46,13 @@ export default class PriorScreen extends React.Component<Props> {
           collection
         </Text>
         <Text style={styles.sectionHeaderText}>Blood Collection</Text>
-        <DropdownPicker
-          label={this.props.bloodCollection ? "Available" : "Not Available"}
-          options={["Not Available", "Available"]}
-          onPress={(buttonIndex: number) => {
-            if (buttonIndex === 0) {
-              this.props.dispatch(setBloodCollection(false));
-            } else {
-              this.props.dispatch(setBloodCollection(true));
-            }
-          }}
+        <OptionTable
+          data={["Not Available", "Available"]}
+          numColumns={1}
+          selected={this.props.bloodCollection ? "Available" : "Not Available"}
+          onChange={(answer: string) =>
+            this.props.dispatch(setBloodCollection(answer === "Available"))
+          }
         />
         <Text style={styles.descriptionText}>
           If blood sample collection is available at this site, then the option

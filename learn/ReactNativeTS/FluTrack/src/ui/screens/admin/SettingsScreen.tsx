@@ -1,8 +1,8 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
-import OpenMoreButton from "./components/OpenMoreButton";
+import EditSettingButton from "./components/EditSettingButton";
 import Description from "../experiment/components/Description";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
 
 interface Props {
@@ -17,8 +17,11 @@ export default class SettingsScreen extends React.Component<Props> {
   _onPrior = () => {
     this.props.navigation.push("Prior");
   };
-  _onPost = () => {
-    this.props.navigation.push("Post");
+  _onAdverseEvents = () => {
+    this.props.navigation.push("Adverse");
+  };
+  _onSpecimenScans = () => {
+    Alert.alert("Placeholder for unknown screen");
   };
   render() {
     return (
@@ -26,8 +29,19 @@ export default class SettingsScreen extends React.Component<Props> {
         <View style={styles.descriptionContainer}>
           <Description content="These settings should be set by study administrators and staff only." />
         </View>
-        <OpenMoreButton label="Prior to Collection" onPress={this._onPrior} />
-        <OpenMoreButton label="Post Collection" onPress={this._onPost} />
+        <EditSettingButton
+          label="Prior to Collection"
+          onPress={this._onPrior}
+        />
+        <Text style={styles.sectionHeaderText}>Post Collection</Text>
+        <EditSettingButton
+          label="Adverse Events"
+          onPress={this._onAdverseEvents}
+        />
+        <EditSettingButton
+          label="Specimen Scans"
+          onPress={this._onSpecimenScans}
+        />
       </ScreenContainer>
     );
   }
@@ -38,5 +52,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 25,
     marginBottom: 40,
+  },
+  sectionHeaderText: {
+    marginTop: 35,
+    marginBottom: 7,
+    marginLeft: 15,
+    fontSize: 24,
   },
 });

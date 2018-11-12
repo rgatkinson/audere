@@ -11,7 +11,12 @@ export type FormAction =
   | {
       type: "SET_SURVEY_RESPONSES";
       surveyResponses: Map<string, SurveyResponse>;
-    };
+    }
+  | {
+      type: "SET_ADVERSE_EVENT_TYPES";
+      adverseEventTypes: Map<string, boolean>;
+    }
+  | { type: "SET_ADVERSE_EVENTS"; adverseEvents: string[] };
 
 export interface Address {
   location?: string;
@@ -49,6 +54,8 @@ export type FormState = null | {
   signatureBase64?: string;
   emailOptions?: Map<string, boolean>;
   surveyResponses?: Map<string, SurveyResponse>;
+  adverseEventTypes?: Map<string, boolean>;
+  adverseEvents: string[];
 };
 
 const initialState: FormState = null;
@@ -78,6 +85,12 @@ export default function reducer(state = initialState, action: FormAction) {
   }
   if (action.type === "SET_SURVEY_RESPONSES") {
     return { ...state, surveyResponses: action.surveyResponses };
+  }
+  if (action.type === "SET_ADVERSE_EVENT_TYPES") {
+    return { ...state, adverseEventTypes: action.adverseEventTypes };
+  }
+  if (action.type === "SET_ADVERSE_EVENTS") {
+    return { ...state, adverseEvents: action.adverseEvents };
   }
   return state;
 }
@@ -138,5 +151,22 @@ export function setSurveyResponses(
   return {
     type: "SET_SURVEY_RESPONSES",
     surveyResponses,
+  };
+}
+
+export function setAdverseEventTypes(
+  adverseEventTypes: Map<string, boolean>
+): FormAction {
+  return {
+    type: "SET_ADVERSE_EVENT_TYPES",
+    adverseEventTypes,
+  };
+}
+
+export function setAdverseEvents(adverseEvents: string[]): FormAction {
+  console.log("Saving adverse events=" + adverseEvents);
+  return {
+    type: "SET_ADVERSE_EVENTS",
+    adverseEvents,
   };
 }

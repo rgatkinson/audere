@@ -31,6 +31,8 @@ import PassBackScreen from "./src/ui/screens/experiment/PassBackScreen";
 import SettingsScreen from "./src/ui/screens/admin/SettingsScreen";
 import PriorScreen from "./src/ui/screens/admin/PriorScreen";
 import SelectLocationScreen from "./src/ui/screens/admin/SelectLocationScreen";
+import AdverseScreen from "./src/ui/screens/admin/AdverseScreen";
+import AdverseDetailsScreen from "./src/ui/screens/admin/AdverseDetailsScreen";
 
 const uploader = createUploader();
 export function interact(data: string): void {
@@ -81,6 +83,8 @@ const AdminStack = createStackNavigator(
     Settings: SettingsScreen,
     Prior: PriorScreen,
     SelectLocation: SelectLocationScreen,
+    Adverse: AdverseScreen,
+    AdverseDetails: AdverseDetailsScreen,
   },
   {
     mode: "modal",

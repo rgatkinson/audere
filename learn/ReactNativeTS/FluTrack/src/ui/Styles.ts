@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 
 export const colors = {
   accent: "#36b3a8", // Audere button color
+  disabledText: "#aaa",
 };
 
 export default StyleSheet.create({
