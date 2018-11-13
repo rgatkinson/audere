@@ -100,6 +100,7 @@ export default class ScrollScreen extends React.Component<Props> {
         />
         <SectionList
           inverted
+          initialNumToRender={questionnaire.length}
           contentContainerStyle={styles.list}
           keyExtractor={item => item.title}
           sections={this.state.questions}
