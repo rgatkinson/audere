@@ -3,7 +3,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, setAdverseEventTypes } from "../../../store";
 import OptionTable from "./components/OptionTable";
-import OptionTableMulti from "./components/OptionTableMulti";
+import OptionList from "../experiment/components/OptionList";
 import Button from "../experiment/components/Button";
 import { Text, StyleSheet, View, Alert } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
@@ -68,9 +68,11 @@ export default class AdverseScreen extends React.Component<Props> {
             <Text style={styles.sectionHeaderText}>
               Which procedures had adverse events?
             </Text>
-            <OptionTableMulti
+            <OptionList
               data={["Blood draw", "Nasal swab"]}
               numColumns={1}
+              fullWidth={true}
+              backgroundColor="#fff"
               onChange={events => this.setState({ events })}
             />
           </View>

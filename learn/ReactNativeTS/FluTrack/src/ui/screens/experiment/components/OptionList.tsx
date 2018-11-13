@@ -21,6 +21,8 @@ interface Props {
   otherOption?: string | null;
   onChange(data: Map<string, boolean>): void;
   onOtherChange?(value: string): void;
+  fullWidth?: boolean;
+  backgroundColor?: string;
 }
 
 export default class OptionList extends React.Component<Props> {
@@ -41,8 +43,11 @@ export default class OptionList extends React.Component<Props> {
   };
 
   render() {
+    const marginHorizontal = this.props.fullWidth ? 0 : 50;
     const itemWidth =
-      (Dimensions.get("window").width - 100 - this.props.numColumns * 20) /
+      (Dimensions.get("window").width -
+        2 * marginHorizontal -
+        this.props.numColumns * 20) /
       this.props.numColumns;
     const totalHeight =
       Math.ceil(this.props.data.size / this.props.numColumns) * 44;
@@ -60,6 +65,8 @@ export default class OptionList extends React.Component<Props> {
                 id={item[0]}
                 selected={item[1]}
                 width={itemWidth}
+                fullWidth={this.props.fullWidth}
+                backgroundColor={this.props.backgroundColor}
                 onPressItem={this._onPressItem}
               />
             )}
@@ -91,6 +98,8 @@ interface ItemProps {
   id: string;
   selected: boolean;
   width: number;
+  fullWidth?: boolean;
+  backgroundColor?: string;
   onPressItem(id: string): void;
 }
 
@@ -103,10 +112,20 @@ class ListItem extends React.PureComponent<ItemProps> {
   render() {
     return (
       <TouchableOpacity
-        style={[styles.item, { width: this.props.width }]}
+        style={[
+          styles.item,
+          { width: this.props.width },
+          { backgroundColor: this.props.backgroundColor },
+        ]}
         onPress={this._onPress}
       >
-        <Text style={styles.itemText}>{this.props.id}</Text>
+        <Text
+          style={
+            this.props.fullWidth ? styles.itemText : styles.itemTextFullWidth
+          }
+        >
+          {this.props.id}
+        </Text>
         {this.props.selected && (
           <Icon name="check" color="blue" size={20} type="feather" />
         )}
@@ -133,5 +152,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     letterSpacing: -0.41,
     lineHeight: 22,
+  },
+  itemTextFullWidth: {
+    fontSize: 17,
   },
 });

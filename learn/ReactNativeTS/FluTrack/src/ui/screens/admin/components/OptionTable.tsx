@@ -1,7 +1,6 @@
 /* Differences from OptionList: 
-   - white background 
-   - full width
    - single-select model where "selected" just returns string value of item
+   TODO: Refactor OptionList and OptionTable into one component?
 */
 import React from "react";
 import {

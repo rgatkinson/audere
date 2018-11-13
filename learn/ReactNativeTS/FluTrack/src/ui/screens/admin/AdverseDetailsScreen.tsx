@@ -3,7 +3,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
 import { Action, setAdverseEvents } from "../../../store";
-import OptionTableMulti from "./components/OptionTableMulti";
+import OptionList from "../experiment/components/OptionList";
 import Button from "../experiment/components/Button";
 import { Text, StyleSheet, View, Alert, TextInput } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
@@ -29,19 +29,43 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
     bloodDrawOther: "",
     nasalSwabOther: "",
   };
+  bloodDrawOtherInput = React.createRef<TextInput>();
+  nasalSwabOtherInput = React.createRef<TextInput>();
   _onSubmit = () => {
     if (
       this.state.bloodDrawEvents.get("Other") &&
       this.state.bloodDrawOther.length === 0
     ) {
-      Alert.alert("Please specify the other adverse event for the blood draw.");
+      Alert.alert(
+        "Please specify the other adverse event for the blood draw.",
+        "",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              this.bloodDrawOtherInput.current!.focus();
+            },
+          },
+        ]
+      );
       return;
     }
     if (
       this.state.nasalSwabEvents.get("Other") &&
       this.state.nasalSwabOther.length === 0
     ) {
-      Alert.alert("Please specify the other adverse event for the nasal swab.");
+      Alert.alert(
+        "Please specify the other adverse event for the nasal swab.",
+        "",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              this.nasalSwabOtherInput.current!.focus();
+            },
+          },
+        ]
+      );
       return;
     }
     // Flatten the two Maps into one string[] to store in redux
@@ -69,10 +93,9 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
     }
     Alert.alert(
       "Submit?",
-      adverseEvents.length +
-        " adverse event(s) will be recorded for this collection for " +
-        participantName +
-        ".",
+      `${adverseEvents.length} adverse event${
+        adverseEvents.length == 1 ? "" : "s"
+      } will be recorded for this collection for ${participantName}.`,
       [
         {
           text: "Cancel",
@@ -97,9 +120,11 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
             <Text style={styles.sectionHeaderText}>
               For blood draw, what were the adverse events?
             </Text>
-            <OptionTableMulti
+            <OptionList
               data={["Bruising at site", "Infection at site", "Other"]}
               numColumns={1}
+              fullWidth={true}
+              backgroundColor="#fff"
               onChange={bloodDrawEvents => this.setState({ bloodDrawEvents })}
             />
             {this.state.bloodDrawEvents.get("Other") && (
@@ -107,6 +132,7 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
                 <Text style={styles.specifyPrompt}>Please specify:</Text>
                 <TextInput
                   style={styles.otherInput}
+                  ref={this.bloodDrawOtherInput}
                   autoFocus={true}
                   multiline={true}
                   onChangeText={bloodDrawOther =>
@@ -123,9 +149,11 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
             <Text style={styles.sectionHeaderText}>
               For nasal swab, what were the adverse events?
             </Text>
-            <OptionTableMulti
+            <OptionList
               data={["Nosebleed", "Other"]}
               numColumns={1}
+              fullWidth={true}
+              backgroundColor="#fff"
               onChange={nasalSwabEvents => this.setState({ nasalSwabEvents })}
             />
             {this.state.nasalSwabEvents.get("Other") && (
@@ -133,6 +161,7 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
                 <Text style={styles.specifyPrompt}>Please specify:</Text>
                 <TextInput
                   style={styles.otherInput}
+                  ref={this.nasalSwabOtherInput}
                   autoFocus={true}
                   multiline={true}
                   onChangeText={nasalSwabOther =>
