@@ -11,10 +11,7 @@ import {
 import { connect } from "react-redux";
 import { Action, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
-import {
-  NavigationScreenProp,
-  createNavigationContainer,
-} from "react-navigation";
+import { NavigationScreenProp } from "react-navigation";
 import * as ExpoPixi from "expo-pixi";
 import Button from "./components/Button";
 import Description from "./components/Description";
@@ -75,7 +72,7 @@ export default class ConsentScreen extends React.Component<Props> {
       imageURI => {
         ImageStore.getBase64ForTag(
           imageURI,
-          base64Data => {
+          (base64Data: string) => {
             console.log(base64Data);
             this.props.dispatch(setSignaturePng(base64Data));
           },
@@ -118,7 +115,7 @@ export default class ConsentScreen extends React.Component<Props> {
             onPress={this._onClear}
           />
           <Button
-            enabled={true}
+            enabled={!!this.state.image}
             label="Submit"
             primary={true}
             onPress={this._onSubmit}
@@ -153,6 +150,7 @@ const styles = StyleSheet.create({
     borderColor: "#555",
     minHeight: 130,
     marginHorizontal: 30,
+    marginTop: 10,
   },
   textHint: {
     color: "#aaa",
