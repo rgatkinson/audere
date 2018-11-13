@@ -14,6 +14,7 @@ interface Props {
   screenProps: any;
 }
 
+const participantName = "John Doe"; //TODO: read the name out of redux
 @connect()
 export default class AdverseScreen extends React.Component<Props> {
   static navigationOptions = {
@@ -51,7 +52,8 @@ export default class AdverseScreen extends React.Component<Props> {
     return (
       <ScreenContainer>
         <Text style={styles.sectionHeaderText}>
-          Were there any adverse events experienced from the last collection?
+          Were there any adverse events experienced from the last collection for{" "}
+          {participantName}?
         </Text>
         <OptionTable
           data={["Yes", "No"]}

@@ -15,6 +15,7 @@ interface Props {
   screenProps: any;
 }
 
+const participantName = "John Doe"; //TODO: read the name out of redux
 @connect((state: StoreState) => ({
   adverseEventTypes: state.form!.adverseEventTypes,
 }))
@@ -49,7 +50,7 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
       .map(
         event =>
           event === "Other"
-            ? "Blood draw: " + this.state.bloodDrawOther
+            ? "Blood draw: Other - " + this.state.bloodDrawOther
             : "Blood draw: " + event
       );
     adverseEvents = adverseEvents.concat(
@@ -58,7 +59,7 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
         .map(
           event =>
             event === "Other"
-              ? "Nasal swab: " + this.state.nasalSwabOther
+              ? "Nasal swab: Other - " + this.state.nasalSwabOther
               : "Nasal swab: " + event
         )
     );
@@ -69,7 +70,9 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
     Alert.alert(
       "Submit?",
       adverseEvents.length +
-        " adverse event(s) will be recorded for this collection.",
+        " adverse event(s) will be recorded for this collection for " +
+        participantName +
+        ".",
       [
         {
           text: "Cancel",
