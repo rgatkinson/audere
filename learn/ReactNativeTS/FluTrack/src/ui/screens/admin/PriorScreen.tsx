@@ -47,7 +47,7 @@ export default class PriorScreen extends React.Component<Props> {
         </Text>
         <Text style={styles.sectionHeaderText}>Blood Collection</Text>
         <OptionTable
-          data={["Not Available", "Available"]}
+          data={["Available", "Not Available"]}
           numColumns={1}
           selected={this.props.bloodCollection ? "Available" : "Not Available"}
           onChange={(answer: string) =>
