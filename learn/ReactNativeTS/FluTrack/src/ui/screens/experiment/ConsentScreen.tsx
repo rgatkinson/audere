@@ -1,9 +1,21 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ImageEditor,
+  ImageStore,
+  Alert,
+} from "react-native";
 import { connect } from "react-redux";
-import { Action } from "../../../store";
+import { Action, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
-import { NavigationScreenProp } from "react-navigation";
+import {
+  NavigationScreenProp,
+  createNavigationContainer,
+} from "react-navigation";
+import * as ExpoPixi from "expo-pixi";
 import Button from "./components/Button";
 import Description from "./components/Description";
 import StatusBar from "./components/StatusBar";
@@ -13,16 +25,66 @@ interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
+interface SnapshotImage {
+  height: number;
+  width: number;
+  uri: string;
+}
 
 @connect()
 export default class ConsentScreen extends React.Component<Props> {
-  _onClear = () => {};
+  _onClear = () => {
+    this.sketch.clear();
+    this.setState({ image: null });
+  };
 
   _onSubmit = () => {
-    // TODO: store answer
-    // TODO: does answer affect later logic?
-    // TODO: navigate to study
+    if (this.state.image === null || this.state.image === undefined) {
+      Alert.alert(
+        "Please sign in the signature box using your fingertip or Apple Pencil."
+      );
+      return;
+    }
+    this.saveBase64Async(this.state.image); // why TS error? cannot be null here
     this.props.navigation.push("Enrolled");
+  };
+  state = {
+    image: null,
+  };
+  sketch: any;
+  _onChangeAsync = async () => {
+    const image: SnapshotImage = await this.sketch.takeSnapshotAsync({
+      format: "png",
+    });
+    this.setState({ image });
+  };
+  saveBase64Async = async (image: SnapshotImage) => {
+    console.log(image);
+    const cropData = {
+      offset: { x: 0, y: 0 },
+      size: {
+        width: image.width,
+        height: image.height,
+      },
+      displaySize: { width: 600, height: 130 }, // shrink the PNG to this max width and height
+      resizeMode: "contain" as "contain", // preserve aspect ratio
+    };
+    ImageEditor.cropImage(
+      image.uri,
+      cropData,
+      imageURI => {
+        ImageStore.getBase64ForTag(
+          imageURI,
+          base64Data => {
+            console.log(base64Data);
+            this.props.dispatch(setSignaturePng(base64Data));
+          },
+          reason => console.error(reason)
+        );
+      },
+      reason => console.error(reason)
+    );
+    return true;
   };
 
   render() {
@@ -39,21 +101,29 @@ export default class ConsentScreen extends React.Component<Props> {
           <Title label="Consent" />
           <Description content="Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below." />
           <Text>{CONSENT_FORM_TEXT}</Text>
-          <View style={styles.buttonRow}>
-            <Button
-              enabled={true}
-              label="Clear Signature"
-              primary={false}
-              onPress={this._onClear}
-            />
-            <Button
-              enabled={true}
-              label="Submit"
-              primary={true}
-              onPress={this._onSubmit}
-            />
-          </View>
         </ScrollView>
+        <View style={styles.sketchContainer}>
+          <ExpoPixi.Signature
+            ref={(ref: any) => (this.sketch = ref)}
+            style={styles.sketch}
+            onChange={this._onChangeAsync}
+          />
+          <Text style={styles.textHint}>Signature of subject</Text>
+        </View>
+        <View style={styles.buttonRow}>
+          <Button
+            enabled={true}
+            label="Clear Signature"
+            primary={false}
+            onPress={this._onClear}
+          />
+          <Button
+            enabled={true}
+            label="Submit"
+            primary={true}
+            onPress={this._onSubmit}
+          />
+        </View>
       </View>
     );
   }
@@ -70,5 +140,25 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: 30,
+  },
+  sketch: {
+    flex: 1,
+    zIndex: 10,
+  },
+  sketchContainer: {
+    height: "14%",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#555",
+    minHeight: 130,
+    marginHorizontal: 30,
+  },
+  textHint: {
+    color: "#aaa",
+    left: 20,
+    bottom: 8,
+    zIndex: 20,
+    position: "absolute",
   },
 });

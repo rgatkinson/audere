@@ -6,3 +6,4 @@ declare module "react-native-datepicker";
 declare module "react-redux";
 declare module "expo";
 declare module "i18next";
+declare module "expo-pixi";

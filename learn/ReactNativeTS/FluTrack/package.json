@@ -13,7 +13,7 @@
     "@types/react-test-renderer": "^16.0.2",
     "@types/url-parse": "^1.4.1",
     "@types/uuid": "^3.4.4",
-    "jest-expo": "~27.0.0",
+    "jest-expo": "~30.0.0",
     "prettier": "^1.14.3",
     "react-native-scripts": "1.14.0",
     "react-native-typescript-transformer": "^1.2.10",
@@ -55,14 +55,15 @@
       "<rootDir>/node_modules/"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-|pouchdb-)?react-native|expo|react-navigation|pouchdb-adapter-asyncstorage))"
+      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|react-navigation|pouchdb-adapter-asyncstorage))"
     ]
   },
   "dependencies": {
     "@types/i18next": "^11.9.3",
     "axios": "^0.18.0",
     "events": "^3.0.0",
-    "expo": "^27.0.1",
+    "expo": "^30.0.0",
+    "expo-pixi": "^0.3.1",
     "i18next": "^11.10.0",
     "pouchdb-react-native": "^6.4.1",
     "react": "16.3.1",

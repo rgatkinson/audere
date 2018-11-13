@@ -4,13 +4,15 @@ export type FormAction =
   | { type: "START_FORM" }
   | { type: "SET_AGE"; age: number }
   | { type: "SET_MONTHS"; months: number }
-  | { type: "SET_EMAIL"; email: string };
+  | { type: "SET_EMAIL"; email: string }
+  | { type: "SET_SIGNATURE_PNG"; signatureBase64: string };
 
 export type FormState = null | {
   formId?: string;
   age?: number;
   months?: number;
   email?: string;
+  signatureBase64?: string;
 };
 
 const initialState: FormState = null;
@@ -28,6 +30,9 @@ export default function reducer(state = initialState, action: FormAction) {
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email };
+  }
+  if (action.type === "SET_SIGNATURE_PNG") {
+    return { ...state, signatureBase64: action.signatureBase64 };
   }
   return state;
 }
@@ -56,5 +61,12 @@ export function setEmail(email: string): FormAction {
   return {
     type: "SET_EMAIL",
     email,
+  };
+}
+
+export function setSignaturePng(signatureBase64: string): FormAction {
+  return {
+    type: "SET_SIGNATURE_PNG",
+    signatureBase64,
   };
 }
