@@ -8,6 +8,7 @@ import { ButtonPush } from "./models/buttonPush";
 import { ValidationError } from "sequelize";
 import { sequelize } from "./models";
 import { generateRandomKey } from "./util/crypto";
+import logger from "./util/logger";
 
 sequelize.authenticate();
 const app = express();
@@ -86,10 +87,11 @@ function wrap(f: any) {
 }
 
 app.use((err, req, res, next) => {
-  if (app.get("env") !== "development") {
+  if (app.get("env") === "production") {
     next();
     return;
   }
+  logger.error(err);
   const ouch = new Ouch();
   ouch.pushHandler(new Ouch.handlers.PrettyPageHandler("orange", null));
   ouch.handleException(err, req, res);

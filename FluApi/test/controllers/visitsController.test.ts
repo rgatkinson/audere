@@ -5,6 +5,22 @@ import { Visit } from "../../src/models/visit";
 describe("PUT /api/documents/...", () => {
   const DOCUMENT_ID = "ABC123-_".repeat(8);
 
+  it("rejects malformed json", async () => {
+    const response = await request(app)
+      .put(`/api/documents/${DOCUMENT_ID}`)
+      .send("{ bad json")
+      .set("Content-Type", "application/json")
+      .expect(400);
+  });
+
+  it.skip("rejects invalid UTF8 characters in json", async () => {
+    const response = await request(app)
+      .put(`/api/documents/${DOCUMENT_ID}`)
+      .send('{ "bad character": "\uD800"}')
+      .set("Content-Type", "application/json")
+      .expect(400);
+  });
+
   it("adds the document to the visits table", async () => {
     await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
     const contents = {
