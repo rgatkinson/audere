@@ -128,19 +128,16 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
               onChange={bloodDrawEvents => this.setState({ bloodDrawEvents })}
             />
             {this.state.bloodDrawEvents.get("Other") && (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.specifyPrompt}>Please specify:</Text>
-                <TextInput
-                  style={styles.otherInput}
-                  ref={this.bloodDrawOtherInput}
-                  autoFocus={true}
-                  multiline={true}
-                  onChangeText={bloodDrawOther =>
-                    this.setState({ bloodDrawOther })
-                  }
-                  value={this.state.bloodDrawOther}
-                />
-              </View>
+              <TextInput
+                style={styles.textInput}
+                ref={this.bloodDrawOtherInput}
+                autoFocus={true}
+                placeholder="Please specify other event"
+                onChangeText={bloodDrawOther =>
+                  this.setState({ bloodDrawOther })
+                }
+                value={this.state.bloodDrawOther}
+              />
             )}
           </View>
         )}
@@ -157,19 +154,16 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
               onChange={nasalSwabEvents => this.setState({ nasalSwabEvents })}
             />
             {this.state.nasalSwabEvents.get("Other") && (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.specifyPrompt}>Please specify:</Text>
-                <TextInput
-                  style={styles.otherInput}
-                  ref={this.nasalSwabOtherInput}
-                  autoFocus={true}
-                  multiline={true}
-                  onChangeText={nasalSwabOther =>
-                    this.setState({ nasalSwabOther })
-                  }
-                  value={this.state.nasalSwabOther}
-                />
-              </View>
+              <TextInput
+                style={styles.textInput}
+                ref={this.nasalSwabOtherInput}
+                autoFocus={true}
+                placeholder="Please specify other event"
+                onChangeText={nasalSwabOther =>
+                  this.setState({ nasalSwabOther })
+                }
+                value={this.state.nasalSwabOther}
+              />
             )}
           </View>
         )}
@@ -193,23 +187,15 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: 24,
   },
-  descriptionText: {
-    marginLeft: 15,
-    fontSize: 17,
-  },
   buttonView: {
     justifyContent: "center",
     alignItems: "center",
   },
-  specifyPrompt: {
-    marginLeft: 15,
+  textInput: {
+    borderBottomColor: "#aaa",
+    borderBottomWidth: StyleSheet.hairlineWidth,
     fontSize: 15,
-  },
-  otherInput: {
-    fontSize: 15,
-    marginHorizontal: 10,
-    padding: 10,
-    backgroundColor: "#fff",
-    width: "80%",
+    marginHorizontal: 20,
+    marginBottom: 25,
   },
 });
