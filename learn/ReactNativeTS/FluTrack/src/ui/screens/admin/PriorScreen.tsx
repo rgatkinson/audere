@@ -22,8 +22,8 @@ function getTodaysDate(): string {
 }
 
 @connect((state: StoreState) => ({
-  location: state.admin === null ? null : state.admin.location,
-  bloodCollection: state.admin === null ? false : state.admin.bloodCollection,
+  location: state.admin!.location,
+  bloodCollection: state.admin!.bloodCollection,
 }))
 export default class PriorScreen extends React.Component<Props> {
   static navigationOptions = {
