@@ -1,9 +1,16 @@
 #!/bin/bash
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
-SERVER_DIR="$REPO_ROOT_DIR/FluApi/static"
+SERVER_DIR="$REPO_ROOT_DIR/FluApi"
+SERVER_SUBDIR="static"
 FILENAME="buildInfo.json"
 TODAY="$(date +%Y%m%d)"
+
+APP_NAME="$(node --eval 'console.log(require("'$APP_DIR'/package.json").name)')"
+APP_VERSION="$(node --eval 'console.log(require("'$APP_DIR'/package.json").version)')"
+SERVER_NAME="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").name)')"
+SERVER_VERSION="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").version)')"
+
 if [ "$CIRCLECI" = true ] && [ -n "$CIRCLE_SHA1" ]; then
   # Ask Circle for the hash; this will be accurate for tagged builds 
   GITHASH="$CIRCLE_SHA1"
@@ -13,14 +20,18 @@ fi
 
 cat >"$APP_DIR/$FILENAME" <<EOT
 {
+  "name": "$APP_NAME",
+  "version": "$APP_VERSION",  
   "buildDate": "$TODAY",
   "hash": "$GITHASH"
 }
 EOT
 			  
-mkdir -p "$SERVER_DIR"
-cat >"$SERVER_DIR/$FILENAME" <<EOT
+mkdir -p "$SERVER_DIR/$SERVER_SUBDIR"
+cat >"$SERVER_DIR/$SERVER_SUBDIR/$FILENAME" <<EOT
 {
+  "name": "$SERVER_NAME",
+  "version": "$SERVER_VERSION",  
   "buildDate": "$TODAY",
   "hash": "$GITHASH"
 }
