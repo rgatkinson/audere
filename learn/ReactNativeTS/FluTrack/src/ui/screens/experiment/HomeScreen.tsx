@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
@@ -21,15 +21,23 @@ export default class HomeScreen extends React.Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.subTitle}>University of Washington</Text>
-        <Text style={styles.title}>Seattle Flu Study</Text>
+        <Image
+          style={{ height: 30, width: 380 }}
+          source={require("./UWLogo.png")}
+        />
+        <Text style={styles.title}>SEATTLE FLU STUDY</Text>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>
           <Text style={styles.buttonHeader}>Welcome</Text>
           <View style={styles.textContainer}>
             <Text style={styles.buttonText}>
               Learn more about this research and how to participate.
             </Text>
-            <Icon name="chevron-right" color="blue" size={32} type="feather" />
+            <Icon
+              name="chevron-right"
+              color="#007AFF"
+              size={32}
+              type="feather"
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -39,47 +47,43 @@ export default class HomeScreen extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#f9fafa",
-    borderRadius: 10,
+    backgroundColor: "#EEEEEE",
+    borderRadius: 13,
+    height: 250,
     padding: 30,
-    opacity: 0.75,
-    justifyContent: "space-between",
+    width: 534,
   },
   buttonHeader: {
-    fontSize: 24,
-    fontWeight: "bold",
-    paddingBottom: 30,
+    fontSize: 33,
+    fontFamily: "OpenSans-Bold",
+    letterSpacing: -0.8,
+    lineHeight: 40,
   },
   buttonText: {
-    fontSize: 20,
-    width: 400,
-    paddingRight: 30,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 21,
+    letterSpacing: -0.51,
+    lineHeight: 26,
   },
   container: {
     alignItems: "center",
-    backgroundColor: "#6200EE",
+    backgroundColor: "#4B2E83",
     flex: 1,
     justifyContent: "center",
-    padding: 100,
-  },
-  subTitle: {
-    color: "white",
-    fontFamily: "Georgia",
-    fontSize: 32,
-    paddingBottom: 15,
   },
   textContainer: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
+    paddingTop: 40,
     justifyContent: "space-between",
-    paddingBottom: 30,
   },
   title: {
-    color: "white",
-    fontFamily: "Georgia",
-    fontSize: 48,
-    fontStyle: "italic",
-    fontWeight: "bold",
-    paddingBottom: 70,
+    color: "#FFFFFF",
+    fontFamily: "UniSansRegular",
+    fontSize: 53,
+    letterSpacing: 0.63,
+    lineHeight: 62,
+    paddingBottom: 61,
+    paddingTop: 43,
   },
 });

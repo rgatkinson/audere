@@ -53,13 +53,20 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   disclaimer: {
-    fontSize: 20,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 26,
     marginTop: 20,
   },
   textInput: {
     borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    fontSize: 20,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
     height: 30,
+    letterSpacing: -0.41,
+    lineHeight: 22,
+    paddingHorizontal: 16,
   },
 });

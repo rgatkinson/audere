@@ -5,6 +5,7 @@ import {
   createStackNavigator,
   NavigationScreenProp,
 } from "react-navigation";
+import { AppLoading, Font } from 'expo';
 import AccountScreen from "./src/ui/screens/AccountScreen";
 import ComponentLibraryScreen from "./src/ui/screens/ComponentLibraryScreen";
 import LoginScreen from "./src/ui/screens/LoginScreen";
@@ -34,6 +35,7 @@ import InelligibleScreen from './src/ui/screens/experiment/InelligibleScreen';
 import HeaderBar from './src/ui/screens/experiment/components/HeaderBar';
 import SurveyStartScreen from './src/ui/screens/experiment/SurveyStartScreen';
 import SurveyScreen from './src/ui/screens/experiment/SurveyScreen';
+import PassBackScreen from './src/ui/screens/experiment/PassBackScreen';
 
 const uploader = createUploader();
 export function interact(data: string): void {
@@ -78,6 +80,12 @@ const ExperimentStack = createStackNavigator({
   Enrolled: EnrolledScreen,
   SurveyStart: SurveyStartScreen,
   Survey: SurveyScreen,
+  PassBack: {
+    screen: PassBackScreen,
+    navigationOptions: ({ navigation }: { navigation: NavigationScreenProp<any, any> }) => ({
+      header: <HeaderBar navigation={ navigation } completedSurvey={true} />,
+    }),
+  },
 }, {
   mode: 'modal',
   headerMode: 'float',
@@ -109,8 +117,31 @@ const Root = connect((state: StoreState) => ({
 const ReloadAppOnLanguageChange = withNamespaces("common")(Root);
 
 export default class App extends React.Component {
+  state = {
+    appReady: false,
+  };
+
+  componentWillMount() {
+    this._loadAssets();
+  }
+
+  async _loadAssets() {
+    try {
+      await Font.loadAsync({
+        'UniSansRegular': require('./assets/fonts/UniSansRegular.otf'),
+        'OpenSans-Regular': require('./assets/fonts/OpenSans-Regular.ttf'),
+        'OpenSans-Bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+        'OpenSans-SemiBold': require('./assets/fonts/OpenSans-SemiBold.ttf'),
+      });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      this.setState({ appReady: true });
+    }
+  }
+
   render() {
-    return (
+    return this.state.appReady ? (
       <I18nextProvider i18n={i18n}>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
@@ -118,6 +149,6 @@ export default class App extends React.Component {
           </PersistGate>
         </Provider>
       </I18nextProvider>
-    );
+    ) : <AppLoading />;
   }
 }

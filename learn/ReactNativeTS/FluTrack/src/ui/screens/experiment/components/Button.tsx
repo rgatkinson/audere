@@ -1,7 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Icon } from "react-native-elements";
 
 interface Props {
+  checked?: boolean;
   enabled: boolean;
   primary: boolean;
   label: string;
@@ -17,18 +19,22 @@ export default class Button extends React.Component<Props> {
 
     return (
       <View
-        style={[
-          styles.buttonContainer,
-          { opacity: this.props.enabled ? 1.0 : 0.5 },
-        ]}
+        style={[styles.container, { opacity: this.props.enabled ? 0.95 : 0.5 }]}
       >
         <TouchableOpacity
-          style={[
-            styles.button,
-            this.props.primary ? styles.primaryButton : null,
-          ]}
+          disabled={!this.props.enabled}
+          style={[styles.button, this.props.primary && styles.primaryButton]}
           onPress={this.props.enabled ? this.props.onPress : null}
         >
+          {this.props.checked && (
+            <Icon
+              name="check"
+              color={this.props.primary ? "#FFFFFF" : "#4B2E83"}
+              size={20}
+              iconStyle={styles.check}
+              type="feather"
+            />
+          )}
           <Text
             style={[
               styles.text,
@@ -48,31 +54,42 @@ export default class Button extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   button: {
-    borderColor: "#6200EE",
-    borderRadius: 10,
+    alignItems: "center",
+    borderColor: "#4B2E83",
+    borderRadius: 8,
     borderWidth: 2,
+    flexDirection: "row",
+    height: 50,
     justifyContent: "center",
-    padding: 10,
   },
-  buttonContainer: {
-    width: 325,
+  check: {
+    paddingRight: 8,
+  },
+  container: {
     marginVertical: 20,
+    width: 343,
   },
   text: {
-    fontSize: 20,
+    fontFamily: "OpenSans-SemiBold",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 22,
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: "#6200EE",
+    backgroundColor: "#4B2E83",
   },
   primaryButtonText: {
-    color: "white",
+    color: "#FFFFFF",
   },
   secondaryButtonText: {
-    color: "#6200EE",
+    color: "#4B2E83",
   },
   subtext: {
-    fontSize: 20,
-    margin: 10,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 26,
+    marginTop: 10,
   },
 });

@@ -10,6 +10,7 @@ export default class ContentContainer extends React.Component {
 const styles = StyleSheet.create({
   contentContainer: {
     alignItems: "center",
-    marginHorizontal: 40,
+    marginHorizontal: 50,
+    marginVertical: 20,
   },
 });

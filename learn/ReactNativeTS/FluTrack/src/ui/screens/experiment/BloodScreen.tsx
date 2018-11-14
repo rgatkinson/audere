@@ -27,7 +27,8 @@ export default class BloodScreen extends React.Component<Props> {
       <ScreenContainer>
         <StatusBar
           canProceed={false}
-          progressPercent={70}
+          progressNumber="70%"
+          progressLabel="Enrollment"
           title="4. Would you be willing to collect a nasal...?"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}

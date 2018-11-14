@@ -28,12 +28,6 @@ export default class InelligibleScreen extends React.PureComponent<Props> {
   render() {
     return (
       <ScreenContainer>
-        <StatusBar
-          canProceed={true}
-          title="3. What symptoms have you experienced..."
-          onBack={() => this.props.navigation.pop()}
-          onForward={this._onDone}
-        />
         <ContentContainer>
           <Title label="Thank you for participating." />
           <Description content="You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future." />

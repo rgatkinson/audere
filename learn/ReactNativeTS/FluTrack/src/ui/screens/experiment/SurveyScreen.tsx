@@ -6,17 +6,20 @@ import {
   Text,
   View,
 } from "react-native";
+import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import { questionnaire } from "./QuestionnaireConfig";
+import { questionnaire, sectionDescriptions } from "./QuestionnaireConfig";
 import Button from "./components/Button";
+import Description from "./components/Description";
 import SurveyQuestion from "./components/SurveyQuestion";
 import StatusBar from "./components/StatusBar";
 
 interface Props {
+  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
-export default class ScrollScreen extends React.Component<Props> {
+export default class SurveyScreen extends React.Component<Props> {
   state = {
     completeness: 5,
     questions: [
@@ -25,30 +28,58 @@ export default class ScrollScreen extends React.Component<Props> {
         data: [questionnaire[0].data],
       },
     ],
-    currentItemIndex: 0,
   };
 
-  _addData = () => {
-    if (this.state.currentItemIndex === questionnaire.length - 1) {
-      // Done already
-      alert("nothing to add");
+  _activateQuestion = (sectionTitle: string, questionIndex: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const sectionIndex = this.state.questions.findIndex(
+      section => section.title === sectionTitle
+    );
+    if (this.state.questions[sectionIndex].data.length > questionIndex + 1) {
+      this.setState({
+        questions: [
+          ...this.state.questions.slice(0, sectionIndex),
+          {
+            ...this.state.questions[sectionIndex],
+            data: this.state.questions[sectionIndex].data.slice(
+              0,
+              questionIndex + 1
+            ),
+          },
+        ],
+      });
+    } else {
+      this.setState({
+        questions: this.state.questions.slice(0, sectionIndex + 1),
+      });
+    }
+  };
+
+  _addData = (nextQuestion: string) => {
+    if (!nextQuestion) {
+      this.props.navigation.push("PassBack");
       return;
     }
 
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-    const item = questionnaire[this.state.currentItemIndex + 1];
+    const item = questionnaire.find(
+      question => question.data.id === nextQuestion
+    );
+    if (!item) {
+      this.props.navigation.push("PassBack");
+      return;
+    }
     let questions = [...this.state.questions];
     const sectionIndex = questions.findIndex(obj => obj.title === item.section);
     const sectionExists = sectionIndex > -1;
     const sectionData = sectionExists ? questions[sectionIndex].data : [];
     questions[sectionExists ? sectionIndex : questions.length] = {
-      title: item.section,
-      data: [...sectionData, item.data],
+      title: item!.section,
+      data: [...sectionData, item!.data],
     };
     this.setState({
       questions,
-      currentItemIndex: this.state.currentItemIndex + 1,
     });
   };
 
@@ -60,7 +91,6 @@ export default class ScrollScreen extends React.Component<Props> {
       // Remove entire section
       this.setState({
         questions: this.state.questions.slice(0, currentSectionIndex),
-        currentItemIndex: this.state.currentItemIndex - 1,
       });
     } else {
       // Remove last question
@@ -75,7 +105,6 @@ export default class ScrollScreen extends React.Component<Props> {
             ),
           },
         ],
-        currentItemIndex: this.state.currentItemIndex - 1,
       });
     }
   };
@@ -93,22 +122,30 @@ export default class ScrollScreen extends React.Component<Props> {
       <View style={styles.container}>
         <StatusBar
           canProceed={false}
-          progressPercent={this.state.completeness}
+          progressNumber={this.state.completeness + "%"}
+          progressLabel="Complete"
           title="Study Questionnaire"
           onBack={this._back}
           onForward={this._next}
         />
         <SectionList
           inverted
-          initialNumToRender={questionnaire.length}
+          initialNumToRender={questionnaire.length + 10}
           contentContainerStyle={styles.list}
           keyExtractor={item => item.title}
           sections={this.state.questions}
           renderSectionHeader={({ section: { title } }) => (
-            <View style={styles.sectionHeaderOuter}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View>
+              <View style={styles.sectionHeaderOuter}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionHeaderText}>{title}</Text>
+                </View>
               </View>
+              {sectionDescriptions.has(title) && (
+                <View style={styles.descContainer}>
+                  <Description content={sectionDescriptions.get(title)!} />
+                </View>
+              )}
             </View>
           )}
           renderItem={({ item, index, section }) => {
@@ -118,11 +155,20 @@ export default class ScrollScreen extends React.Component<Props> {
             const lastItem = section.data.length - 1 === index;
             return (
               <SurveyQuestion
+                id={item.id}
                 active={activeSection && lastItem}
+                addressInput={item.addressInput}
                 buttons={item.buttons}
+                conditionalNext={item.conditionalNext}
+                dispatch={this.props.dispatch}
                 description={item.description}
                 title={item.title}
-                onNext={this._addData}
+                nextQuestion={item.nextQuestion}
+                numberInput={item.numberInput}
+                optionList={item.optionList}
+                textInput={item.textInput}
+                onActivate={() => this._activateQuestion(section.title, index)}
+                onNext={nextQuestion => this._addData(nextQuestion)}
               />
             );
           }}
@@ -138,6 +184,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  descContainer: {
+    marginBottom: -20,
+    marginHorizontal: 50,
+    marginTop: 20,
+  },
   list: {
     flexDirection: "column-reverse",
     justifyContent: "flex-end",
@@ -147,16 +198,15 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: "#d3d0af",
     borderColor: "white",
-    borderWidth: 4,
+    borderWidth: 3,
     height: 100,
     justifyContent: "center",
-    margin: 10,
   },
   sectionHeaderOuter: {
     alignItems: "center",
     backgroundColor: "#d3d0af",
     justifyContent: "center",
-    padding: 10,
+    padding: 20,
   },
   sectionHeaderText: {
     fontSize: 24,

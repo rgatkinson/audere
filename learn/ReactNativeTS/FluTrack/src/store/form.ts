@@ -4,15 +4,48 @@ export type FormAction =
   | { type: "START_FORM" }
   | { type: "SET_AGE"; age: number }
   | { type: "SET_MONTHS"; months: number }
+  | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
+  | { type: "SET_SYMPTOMS"; symptoms: Map<string, boolean> }
   | { type: "SET_EMAIL"; email: string }
-  | { type: "SET_SIGNATURE_PNG"; signatureBase64: string };
+  | { type: "SET_EMAIL_OPTIONS"; emailOptions: Map<string, boolean> }
+  | {
+      type: "SET_SURVEY_RESPONSES";
+      surveyResponses: Map<string, SurveyResponse>;
+    };
+
+export interface Address {
+  location?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
+  country?: string;
+}
+
+export interface SurveyAnswer {
+  addressInput?: Address;
+  options?: Map<string, boolean>;
+  numberInput?: number;
+  selectedButtonLabel?: string;
+  textInput?: string;
+  //  TODO decide date format
+}
+
+export interface SurveyResponse {
+  questionId?: string;
+  questionText?: string;
+  answer?: SurveyAnswer;
+}
 
 export type FormState = null | {
   formId?: string;
   age?: number;
   months?: number;
+  symptoms?: Map<string, boolean>;
   email?: string;
   signatureBase64?: string;
+  emailOptions?: Map<string, boolean>;
+  surveyResponses?: Map<string, SurveyResponse>;
 };
 
 const initialState: FormState = null;
@@ -28,11 +61,20 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "SET_MONTHS") {
     return { ...state, months: action.months };
   }
+  if (action.type === "SET_SYMPTOMS") {
+    return { ...state, symptoms: action.symptoms };
+  }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email };
   }
   if (action.type === "SET_SIGNATURE_PNG") {
     return { ...state, signatureBase64: action.signatureBase64 };
+  }
+  if (action.type === "SET_EMAIL_OPTIONS") {
+    return { ...state, emailOptions: action.emailOptions };
+  }
+  if (action.type === "SET_SURVEY_RESPONSES") {
+    return { ...state, surveyResponses: action.surveyResponses };
   }
   return state;
 }
@@ -57,6 +99,13 @@ export function setMonths(months: number): FormAction {
   };
 }
 
+export function setSymptoms(symptoms: Map<string, boolean>): FormAction {
+  return {
+    type: "SET_SYMPTOMS",
+    symptoms,
+  };
+}
+
 export function setEmail(email: string): FormAction {
   return {
     type: "SET_EMAIL",
@@ -68,5 +117,23 @@ export function setSignaturePng(signatureBase64: string): FormAction {
   return {
     type: "SET_SIGNATURE_PNG",
     signatureBase64,
+  };
+}
+
+export function setEmailOptions(
+  emailOptions: Map<string, boolean>
+): FormAction {
+  return {
+    type: "SET_EMAIL_OPTIONS",
+    emailOptions,
+  };
+}
+
+export function setSurveyResponses(
+  surveyResponses: Map<string, SurveyResponse>
+): FormAction {
+  return {
+    type: "SET_SURVEY_RESPONSES",
+    surveyResponses,
   };
 }

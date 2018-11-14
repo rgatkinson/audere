@@ -3,13 +3,19 @@ import { StyleSheet, Text, View } from "react-native";
 
 interface Props {
   label: string;
-  bold?: boolean;
+  size?: "large" | "small";
 }
 
 export default class Title extends React.Component<Props> {
   render() {
     return (
-      <Text style={[styles.title, this.props.bold && styles.bold]}>
+      <Text
+        style={[
+          styles.title,
+          this.props.size && this.props.size == "large" && styles.large,
+          this.props.size && this.props.size == "small" && styles.small,
+        ]}
+      >
         {this.props.label}
       </Text>
     );
@@ -17,14 +23,24 @@ export default class Title extends React.Component<Props> {
 }
 
 const styles = StyleSheet.create({
-  bold: {
-    fontWeight: "bold",
+  small: {
+    fontSize: 33,
+    letterSpacing: 0.16,
+    lineHeight: 40,
+  },
+  large: {
+    fontSize: 63,
+    letterSpacing: 0.74,
+    lineHeight: 83,
   },
   title: {
     alignSelf: "stretch",
-    color: "#6200EE",
-    fontSize: 48,
-    margin: 20,
+    color: "#4B2E83",
+    fontFamily: "OpenSans-Bold",
+    fontSize: 49,
+    letterSpacing: 0.24,
+    lineHeight: 58,
+    marginVertical: 20,
     textAlign: "center",
   },
 });

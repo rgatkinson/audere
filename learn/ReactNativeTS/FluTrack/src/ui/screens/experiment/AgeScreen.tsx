@@ -26,7 +26,6 @@ export default class AgeScreen extends React.Component<Props> {
   monthInput = React.createRef<NumberInput>();
 
   _onDone = () => {
-    // TODO: verify that a valid age has been entered
     this.props.navigation.push("Symptoms");
   };
 
@@ -35,7 +34,8 @@ export default class AgeScreen extends React.Component<Props> {
       <ScreenContainer>
         <StatusBar
           canProceed={!!this.props.age || !!this.props.months}
-          progressPercent={20}
+          progressNumber="20%"
+          progressLabel="Enrollment"
           title="1. Welcome to the Seattle Flu Study"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}

@@ -27,7 +27,8 @@ export default class SwabScreen extends React.Component<Props> {
       <ScreenContainer>
         <StatusBar
           canProceed={false}
-          progressPercent={60}
+          progressNumber="60%"
+          progressLabel="Enrollment"
           title="3. What symptoms have you experienced in..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}

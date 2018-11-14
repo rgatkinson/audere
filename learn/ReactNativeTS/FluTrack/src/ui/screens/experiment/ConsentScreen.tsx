@@ -28,35 +28,42 @@ interface SnapshotImage {
   uri: string;
 }
 
+// @ts-ignore
+const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
+
 @connect()
 export default class ConsentScreen extends React.Component<Props> {
+  state = {
+    image: null,
+  };
+
+  sketch: any;
+
   _onClear = () => {
     this.sketch.clear();
     this.setState({ image: null });
   };
 
   _onSubmit = () => {
-    if (this.state.image === null || this.state.image === undefined) {
+    if (!this.state.image && !remoteDebugging) {
       Alert.alert(
         "Please sign in the signature box using your fingertip or Apple Pencil."
       );
       return;
+    } else if (!!this.state.image) {
+      this.saveBase64Async(this.state.image!);
     }
-    this.saveBase64Async(this.state.image); // why TS error? cannot be null here
     this.props.navigation.push("Enrolled");
   };
-  state = {
-    image: null,
-  };
-  sketch: any;
+
   _onChangeAsync = async () => {
     const image: SnapshotImage = await this.sketch.takeSnapshotAsync({
       format: "png",
     });
     this.setState({ image });
   };
+
   saveBase64Async = async (image: SnapshotImage) => {
-    console.log(image);
     const cropData = {
       offset: { x: 0, y: 0 },
       size: {
@@ -66,6 +73,7 @@ export default class ConsentScreen extends React.Component<Props> {
       displaySize: { width: 600, height: 130 }, // shrink the PNG to this max width and height
       resizeMode: "contain" as "contain", // preserve aspect ratio
     };
+
     ImageEditor.cropImage(
       image.uri,
       cropData,
@@ -81,6 +89,7 @@ export default class ConsentScreen extends React.Component<Props> {
       },
       reason => console.error(reason)
     );
+
     return true;
   };
 
@@ -89,7 +98,8 @@ export default class ConsentScreen extends React.Component<Props> {
       <View style={styles.container}>
         <StatusBar
           canProceed={false}
-          progressPercent={80}
+          progressNumber="80%"
+          progressLabel="Enrollment"
           title="5. Would you be willing to participate..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onSubmit}
@@ -115,7 +125,7 @@ export default class ConsentScreen extends React.Component<Props> {
             onPress={this._onClear}
           />
           <Button
-            enabled={!!this.state.image}
+            enabled={!!this.state.image || remoteDebugging}
             label="Submit"
             primary={true}
             onPress={this._onSubmit}

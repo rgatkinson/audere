@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
-import { setEmail, Action } from "../../../store";
+import { Action, setEmail, setEmailOptions } from "../../../store";
 import Button from "./components/Button";
 import ContentContainer from "./components/ContentContainer";
 import Description from "./components/Description";
@@ -15,21 +15,20 @@ import Title from "./components/Title";
 interface Props {
   dispatch(action: Action): void;
   email: string;
+  options: Map<string, boolean>;
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect((state: StoreState) => ({ email: state.form!.email }))
+@connect((state: StoreState) => ({
+  email: state.form!.email,
+  options: state.form!.emailOptions,
+}))
 export default class EnrolledScreen extends React.PureComponent<Props> {
-  state = {
-    selected: new Map<string, boolean>(),
-  };
-
   options = [
-    "To receive a copy of my consent",
-    "To complete a short questionaire about how my illness has progressed",
+    "Send me a copy of my consent",
+    "To ask me questions about my illness/cold",
     "To learn more about this study and related topics",
     "All of the above",
-    "None of the above (I do not want to be contacted at all.)",
   ];
 
   _onDone = () => {
@@ -44,12 +43,17 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
           <Text style={styles.statusBarTitle}>Enrollment complete!</Text>
         </View>
         <ContentContainer>
-          <Title label="We would like to follow up with you via email." />
-          <Description content="Please confirm the situations in which you are willing to be contacted, and provide your email address (optional)." />
+          <Title label="We would like to email you." />
+          <Description content="Please select when we may email you, and provide your email address (optional)." />
           <OptionList
-            data={this.options}
+            data={
+              this.props.options
+                ? this.props.options
+                : OptionList.emptyMap(this.options)
+            }
+            multiSelect={true}
             numColumns={1}
-            onChange={selected => this.setState({ selected })}
+            onChange={options => this.props.dispatch(setEmailOptions(options))}
           />
           <EmailInput
             returnKeyType="done"
@@ -63,6 +67,17 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
             label="Done"
             onPress={this._onDone}
           />
+          <Button
+            primary={false}
+            enabled={true}
+            label="Please do not email me"
+            onPress={() => {
+              this.props.dispatch(
+                setEmailOptions(OptionList.emptyMap(this.options))
+              );
+              this._onDone();
+            }}
+          />
         </ContentContainer>
       </ScreenContainer>
     );
@@ -71,8 +86,8 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
 
 const styles = StyleSheet.create({
   statusBar: {
-    backgroundColor: "#d3d0af",
-    height: 100,
+    backgroundColor: "#E8E3D3",
+    height: 90,
     justifyContent: "center",
     padding: 20,
     shadowColor: "#000000",
@@ -84,6 +99,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
   },
   statusBarTitle: {
-    fontSize: 22,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 20,
+    letterSpacing: -0.41,
+    lineHeight: 22,
   },
 });

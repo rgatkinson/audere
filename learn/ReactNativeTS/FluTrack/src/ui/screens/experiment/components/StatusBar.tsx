@@ -4,7 +4,8 @@ import { Icon } from "react-native-elements";
 
 interface Props {
   canProceed: boolean;
-  progressPercent?: number;
+  progressNumber?: string;
+  progressLabel?: string;
   title: string;
   onBack: any;
   onForward: any;
@@ -22,10 +23,12 @@ export default class StatusBar extends React.Component<Props> {
   render() {
     return (
       <View style={styles.statusBar}>
-        <Text style={styles.progress}>
-          {this.props.progressPercent &&
-            this.props.progressPercent + "%\nEnrollment"}
-        </Text>
+        <View>
+          <Text style={[styles.progressText, styles.progressNumber]}>
+            {this.props.progressNumber}
+          </Text>
+          <Text style={styles.progressText}>{this.props.progressLabel}</Text>
+        </View>
         <Text style={styles.statusBarTitle}>{this.props.title}</Text>
         <View style={styles.nav}>
           <TouchableOpacity onPress={this._back}>
@@ -71,14 +74,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  progress: {
-    fontSize: 20,
+  progressText: {
+    color: "#444444",
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.35,
+    lineHeight: 22,
+  },
+  progressNumber: {
+    fontFamily: "OpenSans-SemiBold",
   },
   statusBar: {
     alignItems: "center",
-    backgroundColor: "#ededed",
+    backgroundColor: "#F6F6F6",
     flexDirection: "row",
-    height: 100,
+    height: 90,
     justifyContent: "space-between",
     padding: 20,
     shadowColor: "#000000",
@@ -90,7 +100,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
   },
   statusBarTitle: {
+    color: "#444444",
+    fontFamily: "OpenSans-Regular",
+    fontSize: 20,
+    letterSpacing: -0.41,
+    lineHeight: 22,
     textAlign: "center",
-    fontSize: 22,
   },
 });

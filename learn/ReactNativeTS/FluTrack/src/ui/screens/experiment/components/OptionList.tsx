@@ -11,21 +11,28 @@ import {
 import { Icon } from "react-native-elements";
 
 interface Props {
-  data: string[];
+  data: Map<string, boolean>;
+  multiSelect: boolean;
   numColumns: number;
-  onChange(selected: Map<string, boolean>): void;
+  onChange(data: Map<string, boolean>): void;
 }
 
 export default class OptionList extends React.Component<Props> {
-  state = {
-    selected: new Map<string, boolean>(),
+  static emptyMap = (data: string[]) => {
+    return new Map<string, boolean>(
+      data.map((entry: string): [string, boolean] => [entry, false])
+    );
   };
 
   _onPressItem = (id: string) => {
-    const selected = new Map<string, boolean>(this.state.selected);
-    selected.set(id, !selected.get(id));
-    this.setState({ selected });
-    this.props.onChange(selected);
+    // TODO support all of the above?
+    const toggled = !this.props.data.get(id);
+    const data = this.props.multiSelect
+      ? new Map<string, boolean>(this.props.data)
+      : OptionList.emptyMap(Array.from(this.props.data.keys()));
+
+    data.set(id, toggled);
+    this.props.onChange(data);
   };
 
   render() {
@@ -33,20 +40,19 @@ export default class OptionList extends React.Component<Props> {
       (Dimensions.get("window").width - 100 - this.props.numColumns * 20) /
       this.props.numColumns;
     const totalHeight =
-      Math.ceil(this.props.data.length / this.props.numColumns) * 42;
+      Math.ceil(this.props.data.size / this.props.numColumns) * 44;
 
     return (
       <View style={[{ height: totalHeight }, styles.container]}>
         <FlatList
-          data={this.props.data}
-          extraData={this.state}
+          data={Array.from(this.props.data.entries())}
           numColumns={this.props.numColumns}
           scrollEnabled={false}
-          keyExtractor={item => item}
+          keyExtractor={item => item[0]}
           renderItem={({ item }) => (
             <ListItem
-              id={item}
-              selected={!!this.state.selected.get(item)}
+              id={item[0]}
+              selected={item[1]}
               width={itemWidth}
               onPressItem={this._onPressItem}
             />
@@ -76,9 +82,9 @@ class ListItem extends React.PureComponent<ItemProps> {
         onPress={this._onPress}
       >
         <Text style={styles.itemText}>{this.props.id}</Text>
-        {this.props.selected ? (
+        {this.props.selected && (
           <Icon name="check" color="blue" size={20} type="feather" />
-        ) : null}
+        )}
       </TouchableOpacity>
     );
   }
@@ -98,6 +104,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemText: {
-    fontSize: 16,
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 22,
   },
 });
