@@ -19,6 +19,7 @@
     "react-native-typescript-transformer": "^1.2.10",
     "react-test-renderer": "16.3.1",
     "ts-jest": "^23.1.4",
+    "ts-mockito": "^2.3.1",
     "typescript": "^3.0.3"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
