@@ -89,7 +89,7 @@ jobs:
             expo publish --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
             export EXPO_APPNAME=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['name'])"`
             export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
-            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" $SLACK_WEBHOOK
+            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build, triggered by tag $CIRCLE_TAG, has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" $SLACK_WEBHOOK
 
   publish_to_expo_staging:
     environment:
