@@ -65,19 +65,19 @@ jobs:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
             - FluApi/node_modules
+      - persist_to_workspace:
+          root: .
+          paths: learn/ReactNativeTS/FluTrack
 
   publish: &publish
     <<: *defaults
     steps:
-      - checkout
-      - run:
-          name: App Yarn Install
-          command: |
-            cd learn/ReactNativeTS/FluTrack
-            yarn install
+      - attach_workspace:
+          at: ~/repo
       - run:
           name: Set .env for target environment
           command: |
+            cd learn/ReactNativeTS/FluTrack
             echo "API_URL=$API_URL" > .env
       - run:
           name: Publish to Expo
