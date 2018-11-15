@@ -51,7 +51,9 @@ function createAxios() {
 }
 
 function getApiBaseUrl(): string {
-  const apiUrl = new URL("https://api.auderenow.io/api");
+  const apiUrl = new URL(
+    process.env.API_URL ? process.env.API_URL : "https://api.auderenow.io/api"
+  );
   if (IS_NODE_ENV_DEVELOPMENT) {
     const url = process.env.REACT_NATIVE_API_SERVER;
     if (url) {

@@ -63,6 +63,7 @@
     "@types/i18next": "^11.9.3",
     "axios": "^0.18.0",
     "date-fns": "^1.29.0",
+    "babel-plugin-inline-dotenv": "^1.2.0",
     "events": "^3.0.0",
     "expo": "^30.0.0",
     "expo-pixi": "^0.3.1",

@@ -76,6 +76,10 @@ jobs:
             cd learn/ReactNativeTS/FluTrack
             yarn install
       - run:
+          name: Set .env for target environment
+          command: |
+            echo "API_URL=$API_URL" > .env
+      - run:
           name: Publish to Expo
           command: |
             yarn global add expo-cli
@@ -89,12 +93,14 @@ jobs:
 
   publish_to_expo_staging:
     environment:
-      EXPO_RELEASE_CHANNEL: v0_staging
+      API_URL: "https://api.staging.auderenow.io/api"
+      EXPO_RELEASE_CHANNEL: v0-staging
     <<: *publish
 
   publish_to_expo_prod:
     environment:
-      EXPO_RELEASE_CHANNEL: v0_prod
+      API_URL: "https://api.auderenow.io/api"
+      EXPO_RELEASE_CHANNEL: v0-prod
     <<: *publish
 
 workflows:
