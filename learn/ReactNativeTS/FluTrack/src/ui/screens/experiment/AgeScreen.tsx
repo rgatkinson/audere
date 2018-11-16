@@ -45,10 +45,16 @@ export default class AgeScreen extends React.Component<Props> {
           <NumberInput
             autoFocus={true}
             placeholder="Number of years"
-            returnKeyType="next"
+            returnKeyType="done"
             value={this.props.age ? this.props.age + "" : undefined}
             onChange={text => this.props.dispatch(setAge(parseInt(text)))}
-            onSubmit={() => this.monthInput.current!.focus()}
+            onSubmit={() => {
+              if (this.props.age < 1) {
+                this.monthInput.current!.focus()
+              } else if (this.props.age) {
+                this._onDone();
+              }
+            }}
           />
           <Description content="If the participant is an infant less than one year of age, how many months old are they?" />
           <NumberInput

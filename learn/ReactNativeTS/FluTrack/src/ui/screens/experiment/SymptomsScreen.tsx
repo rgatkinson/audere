@@ -14,10 +14,11 @@ import Title from "./components/Title";
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
+  age: number;
   symptoms?: Map<string, boolean>;
 }
 
-@connect((state: StoreState) => ({ symptoms: state.form!.symptoms }))
+@connect((state: StoreState) => ({ age: state.form!.age, symptoms: state.form!.symptoms }))
 export default class SymptomsScreen extends React.PureComponent<Props> {
   symptoms = [
     "Feeling feverish",
@@ -36,7 +37,11 @@ export default class SymptomsScreen extends React.PureComponent<Props> {
 
   _onDone = () => {
     if (this._numSymptoms() > 1) {
-      this.props.navigation.push("Swab");
+      if (!isNaN(this.props.age) && this.props.age < 18) {
+        this.props.navigation.push("Consent");
+      } else {
+        this.props.navigation.push("Swab");
+      }
     } else {
       this.props.navigation.push("Inelligible");
     }
