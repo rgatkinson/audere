@@ -400,7 +400,7 @@ export const questionnaire = [
       nextQuestion: "Antibiotics",
       title: "What day did you start to feel sick?",
       dateInput: {
-        autoFocus: true,
+        autoFocus: false,
         placeholder: "Date",
       },
       buttons: [{ label: "Done", primary: true, enabled: "withDate" }],
@@ -525,9 +525,8 @@ export const questionnaire = [
           "Other",
         ],
         multiSelect: true,
+        withOther: true,
       },
-      // TODO conditional text input on other
-      // textInput: { placeholder: "Please specify" }
       buttons: [
         { label: "Done", primary: true, enabled: "withOption" },
         { label: "Prefer Not to Say", primary: false, enabled: true },
@@ -556,9 +555,8 @@ export const questionnaire = [
       optionList: {
         options: ["None", "Medicaid", "Private insurance", "Medicare", "Other"],
         multiSelect: true,
+        withOther: true,
       },
-      // TODO conditional text input on other
-      // textInput: { placeholder: "Please specify" }
       buttons: [
         { label: "Done", primary: true, enabled: "withOption" },
         { label: "Do Not Know", primary: false, enabled: true },

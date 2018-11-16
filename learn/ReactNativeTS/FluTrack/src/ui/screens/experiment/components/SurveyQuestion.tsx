@@ -42,6 +42,7 @@ interface OptionListConfig {
   options: string[];
   multiSelect: boolean;
   numColumns?: number;
+  withOther: boolean;
 }
 
 interface TextInputConfig {
@@ -132,6 +133,16 @@ export default class SurveyQuestion extends Component<Props> {
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!.numberInput) ||
+      null
+    );
+  };
+
+  _getOtherOption = (): string | null => {
+    return (
+      (!!this.props.surveyResponses &&
+        this.props.surveyResponses!.has(this.props.id) &&
+        this.props.surveyResponses.get(this.props.id)!.answer &&
+        this.props.surveyResponses.get(this.props.id)!.answer!.otherOption) ||
       null
     );
   };
@@ -252,7 +263,7 @@ export default class SurveyQuestion extends Component<Props> {
               ] = this._getAndInitializeResponse();
               responses.set(this.props.id, {
                 ...responses.get(this.props.id),
-                answer: { ...existingAnswer, dateInput: date},
+                answer: { ...existingAnswer, dateInput: date },
               });
               this.props.dispatch(setSurveyResponses(responses));
             }}
@@ -308,6 +319,19 @@ export default class SurveyQuestion extends Component<Props> {
             data={this._getSelectedOptionMap()}
             multiSelect={this.props.optionList.multiSelect}
             numColumns={this.props.optionList.numColumns || 1}
+            withOther={this.props.optionList.withOther}
+            otherOption={this._getOtherOption()}
+            onOtherChange={value => {
+              const [
+                responses,
+                existingAnswer,
+              ] = this._getAndInitializeResponse();
+              responses.set(this.props.id, {
+                ...responses.get(this.props.id),
+                answer: { ...existingAnswer, otherOption: value },
+              });
+              this.props.dispatch(setSurveyResponses(responses));
+            }}
             onChange={data => {
               const [
                 responses,

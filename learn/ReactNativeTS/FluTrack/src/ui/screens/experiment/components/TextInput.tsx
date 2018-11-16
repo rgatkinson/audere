@@ -12,7 +12,7 @@ interface Props {
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
   value?: string | null;
-  onChange(text: string): void;
+  onChange?(text: string): void;
   onSubmit?(): void;
 }
 

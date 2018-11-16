@@ -2,19 +2,25 @@ import React from "react";
 import {
   Dimensions,
   FlatList,
+  LayoutAnimation,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
 import { Icon } from "react-native-elements";
+import Description from "./Description";
 
 interface Props {
   data: Map<string, boolean>;
   multiSelect: boolean;
   numColumns: number;
+  withOther?: boolean;
+  otherOption?: string | null;
   onChange(data: Map<string, boolean>): void;
+  onOtherChange?(value: string): void;
 }
 
 export default class OptionList extends React.Component<Props> {
@@ -25,7 +31,6 @@ export default class OptionList extends React.Component<Props> {
   };
 
   _onPressItem = (id: string) => {
-    // TODO support all of the above?
     const toggled = !this.props.data.get(id);
     const data = this.props.multiSelect
       ? new Map<string, boolean>(this.props.data)
@@ -43,21 +48,40 @@ export default class OptionList extends React.Component<Props> {
       Math.ceil(this.props.data.size / this.props.numColumns) * 44;
 
     return (
-      <View style={[{ height: totalHeight }, styles.container]}>
-        <FlatList
-          data={Array.from(this.props.data.entries())}
-          numColumns={this.props.numColumns}
-          scrollEnabled={false}
-          keyExtractor={item => item[0]}
-          renderItem={({ item }) => (
-            <ListItem
-              id={item[0]}
-              selected={item[1]}
-              width={itemWidth}
-              onPressItem={this._onPressItem}
-            />
+      <View style={styles.container}>
+        <View style={{ height: totalHeight }}>
+          <FlatList
+            data={Array.from(this.props.data.entries())}
+            numColumns={this.props.numColumns}
+            scrollEnabled={false}
+            keyExtractor={item => item[0]}
+            renderItem={({ item }) => (
+              <ListItem
+                id={item[0]}
+                selected={item[1]}
+                width={itemWidth}
+                onPressItem={this._onPressItem}
+              />
+            )}
+          />
+        </View>
+        {this.props.withOther &&
+          this.props.data.get("Other") && (
+            <View>
+              <Description content="Please specify:" />
+              <View style={[{ width: itemWidth }, styles.item]}>
+                <TextInput
+                  autoFocus={false}
+                  style={[{ width: itemWidth }, styles.itemText]}
+                  returnKeyType="done"
+                  value={
+                    this.props.otherOption ? this.props.otherOption : undefined
+                  }
+                  onChangeText={this.props.onOtherChange}
+                />
+              </View>
+            </View>
           )}
-        />
       </View>
     );
   }
@@ -72,6 +96,7 @@ interface ItemProps {
 
 class ListItem extends React.PureComponent<ItemProps> {
   _onPress = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.props.onPressItem(this.props.id);
   };
 

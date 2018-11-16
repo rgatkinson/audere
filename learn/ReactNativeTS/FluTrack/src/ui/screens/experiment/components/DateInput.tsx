@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
 interface Props {
   autoFocus: boolean;
@@ -33,30 +33,29 @@ export default class DateInput extends React.Component<Props> {
           style={styles.textContainer}
           onPress={() => this.setState({ open: true })}
         >
-          {this.props.date ?
+          {this.props.date ? (
             <Text style={styles.text}>
               {format(this.props.date, "MMMM D, YYYY")}
-            </Text> :
+            </Text>
+          ) : (
             <Text style={[styles.text, styles.placeholder]}>
               {this.props.placeholder}
             </Text>
-          }
+          )}
         </TouchableOpacity>
-        {this.state.open
-          ? <Picker
-              date={this.props.date ? this.props.date : new Date()}
-              offset={this.state.offset}
-              closePicker={(date) => {
-                LayoutAnimation.configureNext(
-                  LayoutAnimation.Presets.easeInEaseOut,
-                );
-                this.props.onDateChange(date);
-                this.setState({ open: false });
-              }}
-              onDateChange={(date) => this.props.onDateChange(date)}
-            />
-          : null
-        }
+        {this.state.open ? (
+          <Picker
+            date={this.props.date ? this.props.date : new Date()}
+            closePicker={date => {
+              LayoutAnimation.configureNext(
+                LayoutAnimation.Presets.easeInEaseOut
+              );
+              this.props.onDateChange(date);
+              this.setState({ open: false });
+            }}
+            onDateChange={date => this.props.onDateChange(date)}
+          />
+        ) : null}
       </View>
     );
   }
@@ -85,10 +84,9 @@ class Picker extends React.Component<PickerProps> {
         />
         <TouchableOpacity
           style={styles.actionContainer}
-          onPress={() => this.props.closePicker(this.props.date)}>
-          <Text style={styles.actionText}>
-            Select
-          </Text>
+          onPress={() => this.props.closePicker(this.props.date)}
+        >
+          <Text style={styles.actionText}>Select</Text>
         </TouchableOpacity>
       </View>
     );
@@ -97,8 +95,8 @@ class Picker extends React.Component<PickerProps> {
 
 const styles = StyleSheet.create({
   actionContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 50,
   },
   actionText: {
@@ -117,7 +115,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
   },
   pickerContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   textContainer: {
     alignSelf: "stretch",
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   placeholder: {
-    color: '#8E8E93',
+    color: "#8E8E93",
   },
   text: {
     fontFamily: "OpenSans-Regular",

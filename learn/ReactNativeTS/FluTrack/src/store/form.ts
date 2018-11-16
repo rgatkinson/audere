@@ -26,6 +26,7 @@ export interface SurveyAnswer {
   addressInput?: Address;
   dateInput?: Date;
   options?: Map<string, boolean>;
+  otherOption?: string;
   numberInput?: number;
   selectedButtonLabel?: string;
   textInput?: string;
