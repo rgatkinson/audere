@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function urandom() {
+  tr -dc "A-Za-z0-9" </dev/urandom 2>/dev/null | head -c "$1" || true
+}
+
+readonly LOCAL="$SELF_DIR/../../local/flu"
+mkdir -p "$LOCAL"
+
+urandom 16 >"$LOCAL/db_setup_password"
+
+urandom 4096 >"$LOCAL/random_seed"
+
+readonly VPC_CERT="$LOCAL/vpc-cert"
+mkdir -p "$VPC_CERT"
+openssl req \
+  -new \
+  -newkey rsa:4096 \
+  -days $((3 * 365)) \
+  -nodes \
+  -x509 \
+  -subj "/C=US/ST=Washington/L=Seattle/O=Audere/CN=api.auderenow.io" \
+  -keyout "$VPC_CERT/audere-vpc.key" \
+  -out    "$VPC_CERT/audere-vpc.crt"
+
+cd "$LOCAL"
+[[ "./vpc-cert" ]]
+tar cjf "vpc-cert.tar.bz2" "./vpc-cert"
