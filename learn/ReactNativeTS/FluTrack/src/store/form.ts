@@ -24,11 +24,11 @@ export interface Address {
 
 export interface SurveyAnswer {
   addressInput?: Address;
+  dateInput?: Date;
   options?: Map<string, boolean>;
   numberInput?: number;
   selectedButtonLabel?: string;
   textInput?: string;
-  //  TODO decide date format
 }
 
 export interface SurveyResponse {

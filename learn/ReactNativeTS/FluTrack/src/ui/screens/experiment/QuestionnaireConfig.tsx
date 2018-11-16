@@ -382,7 +382,10 @@ export const questionnaire = [
       id: "VaccineDate",
       nextQuestion: "FirstSick",
       title: "What was the date of vaccination?",
-      // TODO date picker, month/year
+      dateInput: {
+        autoFocus: false,
+        placeholder: "Date",
+      },
       buttons: [
         { label: "Done", primary: true, enabled: "withDate" },
         { label: "Do Not Know", primary: false, enabled: true },
@@ -396,7 +399,10 @@ export const questionnaire = [
       id: "FirstSick",
       nextQuestion: "Antibiotics",
       title: "What day did you start to feel sick?",
-      // todo date picker, month/day/year
+      dateInput: {
+        autoFocus: true,
+        placeholder: "Date",
+      },
       buttons: [{ label: "Done", primary: true, enabled: "withDate" }],
     },
   },

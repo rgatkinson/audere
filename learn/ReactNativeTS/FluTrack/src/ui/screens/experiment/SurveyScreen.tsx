@@ -159,6 +159,7 @@ export default class SurveyScreen extends React.Component<Props> {
                 active={activeSection && lastItem}
                 addressInput={item.addressInput}
                 buttons={item.buttons}
+                dateInput={item.dateInput}
                 conditionalNext={item.conditionalNext}
                 dispatch={this.props.dispatch}
                 description={item.description}

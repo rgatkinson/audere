@@ -4,13 +4,14 @@ import { connect } from "react-redux";
 import { StoreState } from "../../../../store/index";
 import {
   Action,
+  Address,
   SurveyAnswer,
   SurveyResponse,
-  Address,
   setSurveyResponses,
 } from "../../../../store";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
+import DateInput from "./DateInput";
 import Description from "./Description";
 import NumberInput from "./NumberInput";
 import OptionList from "./OptionList";
@@ -55,7 +56,10 @@ interface AddressInputConfig {
   showLocationField: boolean;
 }
 
-// TODO date input config
+interface DateInputConfig {
+  autoFocus: boolean;
+  placeholder: string;
+}
 
 interface Props {
   id: string;
@@ -63,6 +67,7 @@ interface Props {
   addressInput: AddressInputConfig;
   buttons: ButtonConfig[];
   conditionalNext: ConditionalNextConfig;
+  dateInput: DateInputConfig;
   description: string;
   nextQuestion: string;
   numberInput: NumberInputConfig;
@@ -81,7 +86,6 @@ interface Props {
 export default class SurveyQuestion extends Component<Props> {
   _getNextQuestion = (selectedButtonLabel: string): string => {
     let nextQuestion = this.props.nextQuestion;
-    console.log("next question: " + nextQuestion);
     if (this.props.conditionalNext) {
       this.props.conditionalNext!.options &&
         this._getSelectedOptionMap().forEach((value, key) => {
@@ -114,7 +118,7 @@ export default class SurveyQuestion extends Component<Props> {
   // TODO refactor this mess
   _getEnteredTextInput = (): string | null => {
     return (
-      (this.props.surveyResponses &&
+      (!!this.props.surveyResponses &&
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!.textInput) ||
@@ -124,7 +128,7 @@ export default class SurveyQuestion extends Component<Props> {
 
   _getEnteredNumberInput = (): number | null => {
     return (
-      (this.props.surveyResponses &&
+      (!!this.props.surveyResponses &&
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!.numberInput) ||
@@ -134,7 +138,7 @@ export default class SurveyQuestion extends Component<Props> {
 
   _getEnteredAddress = (): Address | null => {
     return (
-      (this.props.surveyResponses &&
+      (!!this.props.surveyResponses &&
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!.addressInput) ||
@@ -142,9 +146,19 @@ export default class SurveyQuestion extends Component<Props> {
     );
   };
 
+  _getEnteredDate = (): Date | null => {
+    return (
+      (!!this.props.surveyResponses &&
+        this.props.surveyResponses!.has(this.props.id) &&
+        this.props.surveyResponses.get(this.props.id)!.answer &&
+        this.props.surveyResponses.get(this.props.id)!.answer!.dateInput) ||
+      null
+    );
+  };
+
   _getSelectedButtonLabel = (): string | null => {
     return (
-      (this.props.surveyResponses &&
+      (!!this.props.surveyResponses &&
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!
@@ -185,19 +199,14 @@ export default class SurveyQuestion extends Component<Props> {
     } else if (enabledStatus === "withNumber") {
       return !!this._getEnteredNumberInput();
     } else if (enabledStatus === "withAddress") {
-      // TODO check if address provided
-      return true;
+      return !!this._getEnteredAddress();
     } else if (enabledStatus === "withDate") {
-      // TODO: check if date provided
-      return true;
+      return !!this._getEnteredDate();
     }
     return !!enabledStatus;
   };
 
   render() {
-    // TODO date input
-    // TODO address input
-
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         {!this.props.active && (
@@ -226,6 +235,24 @@ export default class SurveyQuestion extends Component<Props> {
               responses.set(this.props.id, {
                 ...responses.get(this.props.id),
                 answer: { ...existingAnswer, textInput: text },
+              });
+              this.props.dispatch(setSurveyResponses(responses));
+            }}
+          />
+        )}
+        {this.props.dateInput && (
+          <DateInput
+            autoFocus={this.props.dateInput.autoFocus}
+            date={this._getEnteredDate()}
+            placeholder={this.props.dateInput.placeholder}
+            onDateChange={(date: Date) => {
+              const [
+                responses,
+                existingAnswer,
+              ] = this._getAndInitializeResponse();
+              responses.set(this.props.id, {
+                ...responses.get(this.props.id),
+                answer: { ...existingAnswer, dateInput: date},
               });
               this.props.dispatch(setSurveyResponses(responses));
             }}
