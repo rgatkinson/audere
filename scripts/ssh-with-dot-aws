@@ -1,0 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+
+readonly remote="$1"
+shift
+
+echo "Enabling local sshd (requires sudo)"
+sudo systemsetup -setremotelogin on
+
+echo "Connecting to '$remote' and forwarding ~/.aws via sshfs"
+ssh \
+  -A \
+  -R 22222:localhost:22 \
+  -t "$remote" \
+  "
+    umask 077 &&\
+    mkdir -p .aws &&\
+    sshfs -p 22222 -o idmap=user,nonempty $USER@localhost:$HOME/.aws .aws &&\
+    bash "$@"
+    fusermount -u .aws
+  "
+
+echo "Disabling local sshd (requires sudo)"
+sudo systemsetup -f -setremotelogin off
