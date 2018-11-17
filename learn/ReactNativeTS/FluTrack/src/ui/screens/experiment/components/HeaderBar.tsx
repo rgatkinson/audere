@@ -2,6 +2,7 @@ import React from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { NavigationScreenProp } from "react-navigation";
+import FeedbackModal from "./FeedbackModal";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -9,6 +10,10 @@ interface Props {
 }
 
 export default class HeaderBar extends React.Component<Props> {
+  state = {
+    feedbackVisible: false,
+  };
+
   _toHome = () => {
     // TODO: Mark survey as completed
     this.props.navigation.popToTop();
@@ -32,26 +37,37 @@ export default class HeaderBar extends React.Component<Props> {
     );
   };
 
-  _provideFeedback = () => {
-    alert("TODO: feedback");
-  };
-
   render() {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={this.props.completedSurvey ? this._toHome : this._toHomeWarn}
-          style={styles.actionContainer}
-        >
-          <Icon name="chevron-left" color="#007AFF" size={30} type="feather" />
-          <Text style={styles.actionText}>
-            {this.props.completedSurvey ? "Return to Home" : "Exit Study"}
-          </Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Welcome</Text>
-        <TouchableOpacity onPress={this._provideFeedback}>
-          <Text style={styles.actionText}>Provide Feedback</Text>
-        </TouchableOpacity>
+      <View>
+        <FeedbackModal
+          visible={this.state.feedbackVisible}
+          onDismiss={() => this.setState({ feedbackVisible: false })}
+        />
+        <View style={styles.container}>
+          <TouchableOpacity
+            onPress={
+              this.props.completedSurvey ? this._toHome : this._toHomeWarn
+            }
+            style={styles.actionContainer}
+          >
+            <Icon
+              name="chevron-left"
+              color="#007AFF"
+              size={30}
+              type="feather"
+            />
+            <Text style={styles.actionText}>
+              {this.props.completedSurvey ? "Return to Home" : "Exit Study"}
+            </Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Welcome</Text>
+          <TouchableOpacity
+            onPress={() => this.setState({ feedbackVisible: true })}
+          >
+            <Text style={styles.actionText}>Provide Feedback</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

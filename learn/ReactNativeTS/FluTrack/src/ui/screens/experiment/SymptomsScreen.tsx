@@ -18,7 +18,10 @@ interface Props {
   symptoms?: Map<string, boolean>;
 }
 
-@connect((state: StoreState) => ({ age: state.form!.age, symptoms: state.form!.symptoms }))
+@connect((state: StoreState) => ({
+  age: state.form!.age,
+  symptoms: state.form!.symptoms,
+}))
 export default class SymptomsScreen extends React.PureComponent<Props> {
   symptoms = [
     "Feeling feverish",

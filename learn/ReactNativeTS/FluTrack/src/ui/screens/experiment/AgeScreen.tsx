@@ -50,7 +50,7 @@ export default class AgeScreen extends React.Component<Props> {
             onChange={text => this.props.dispatch(setAge(parseInt(text)))}
             onSubmit={() => {
               if (this.props.age < 1) {
-                this.monthInput.current!.focus()
+                this.monthInput.current!.focus();
               } else if (this.props.age) {
                 this._onDone();
               }
