@@ -126,18 +126,13 @@ export default class App extends React.Component {
   }
 
   async _loadAssets() {
-    try {
-      await Font.loadAsync({
-        'UniSansRegular': require('./assets/fonts/UniSansRegular.otf'),
-        'OpenSans-Regular': require('./assets/fonts/OpenSans-Regular.ttf'),
-        'OpenSans-Bold': require('./assets/fonts/OpenSans-Bold.ttf'),
-        'OpenSans-SemiBold': require('./assets/fonts/OpenSans-SemiBold.ttf'),
-      });
-    } catch (e) {
-      console.log(e);
-    } finally {
-      this.setState({ appReady: true });
-    }
+    await Font.loadAsync({
+      'UniSansRegular': require('./assets/fonts/UniSansRegular.otf'),
+      'OpenSans-Regular': require('./assets/fonts/OpenSans-Regular.ttf'),
+      'OpenSans-Bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+      'OpenSans-SemiBold': require('./assets/fonts/OpenSans-SemiBold.ttf'),
+    });
+    this.setState({ appReady: true });
   }
 
   render() {
