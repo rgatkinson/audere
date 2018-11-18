@@ -1,32 +1,61 @@
 #!/bin/bash
 set -euo pipefail
-set -x
 umask 077
-SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+readonly SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-function urandom() {
-  tr -dc "A-Za-z0-9" </dev/urandom 2>/dev/null | head -c "$1" || true
+function echorun() {
+  BRIGHT='\033[1m'
+  NORMAL='\033[0m'
+  echo -e "$ ${BRIGHT}${*}${NORMAL}" 1>&2
+  "$@"
 }
 
-readonly LOCAL="$SELF_DIR/../../local/flu"
-mkdir -p "$LOCAL"
+function write_random() {
+  set +e
+  tr -dc "A-Za-z0-9" </dev/urandom 2>/dev/null | head -c "$1" >"$2"
+  set -e
+}
 
-urandom 16 >"$LOCAL/db_setup_password"
+function tar_bz2_base64() {
+  (
+    readonly src="$1"
+    readonly dst="$2"
+    cd "$(dirname "$src")"
+    tar cj "$(basename "$src")" | base64 >"$dst.tar.bz2.base64"
+  )
+}
 
-urandom 4096 >"$LOCAL/random_seed"
+readonly FLU_="$SELF_DIR/../../local/flu"
+rm -rf "$FLU_"
+mkdir -p "$FLU_"
+readonly FLU="$(cd "$FLU_" && pwd)"
+readonly CREDS="$FLU/creds"
+mkdir -p "$FLU/creds"
 
-readonly VPC_CERT="$LOCAL/vpc-cert"
-mkdir -p "$VPC_CERT"
-openssl req \
-  -new \
-  -newkey rsa:4096 \
-  -days $((3 * 365)) \
-  -nodes \
-  -x509 \
-  -subj "/C=US/ST=Washington/L=Seattle/O=Audere/CN=api.auderenow.io" \
-  -keyout "$VPC_CERT/audere-vpc.key" \
-  -out    "$VPC_CERT/audere-vpc.crt"
+echorun write_random 16 "$CREDS/db_setup_password"
+echorun write_random 1024 "$CREDS/random_seed"
 
-cd "$LOCAL"
-[[ "./vpc-cert" ]]
-tar cjf "vpc-cert.tar.bz2" "./vpc-cert"
+readonly GITHUB="$FLU/github"
+mkdir -p "$GITHUB"
+echorun ssh-keygen -t rsa -b 4096 -C "test@auderenow.org" -f "$GITHUB/id_rsa" -N ""
+echorun tar_bz2_base64 "$GITHUB" "$CREDS/github"
+echo "================================================================================"
+echo ""
+echo "  ACTION REQUIRED:"
+echo ""
+echo "    Add the public key at '$GITHUB/id_rsa.pub'"
+echo "    to the list at 'https://github.com/AudereNow/learn/settings/keys'"
+echo ""
+if [[ "$MACHTYPE" =~ apple-darwin ]]; then
+  echo "    Opening id_rsa.pub in TextEdit and the GitHub page for you..."
+  echo ""
+  open -e "$GITHUB/id_rsa.pub"
+  open "https://github.com/AudereNow/learn/settings/keys"
+fi
+echo "================================================================================"
+
+(
+  cd $FLU
+  pwd
+  echorun ls -AFlR
+)

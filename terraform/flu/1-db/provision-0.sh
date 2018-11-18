@@ -11,6 +11,7 @@ function main() {
   generate_passwords
   write_credentials
   setup_db
+  shutdown_gracefully
 }
 
 function install_updates() {
@@ -92,13 +93,15 @@ function write_credentials() {
   format_xvd "f" "api-prod"
   write_pgpass "/mnt/api-prod/pgpass" "flu_prod" "api_prod" "$api_prod_password"
   write_env    "/mnt/api-prod/env"    "flu_prod" "api_prod" "$api_prod_password"
-  write_vpc_cert "/mnt/api-prod"
+  write_github_key "/mnt/api-prod"
+  write_vpc_cert "api" "/mnt/api-prod"
   umount "/mnt/api-prod"
 
   format_xvd "g" "api-staging"
   write_pgpass "/mnt/api-staging/pgpass" "flu_staging" "api_staging" "$api_staging_password"
   write_env    "/mnt/api-staging/env"    "flu_staging" "api_staging" "$api_staging_password"
-  write_vpc_cert "/mnt/api-staging"
+  write_github_key "/mnt/api-staging"
+  write_vpc_cert "api.staging" "/mnt/api-staging"
   umount "/mnt/api-staging"
 
   # Nobody other than ram should attach this volume.
@@ -171,12 +174,34 @@ function retry() {
 }
 
 function write_vpc_cert() {
+  (
+    readonly subdomain="$1"
+    readonly dir="$2/vpc-cert"
+    mkdir -p "$dir"
+    openssl req \
+      -new \
+      -newkey rsa:4096 \
+      -days $((20 * 365)) \
+      -nodes \
+      -x509 \
+      -subj "/C=US/ST=Washington/L=Seattle/O=Audere/CN=$subdomain.auderenow.io" \
+      -keyout "$dir/vpc.key" \
+      -out    "$dir/vpc.crt"
+    openssl dhparam -out "$dir/vpc.dhparam" 4096
+  )
+}
+
+function shutdown_gracefully() {
+  echo "Provision script done, shutting down in 10 seconds."
+  sleep 10
+  systemctl poweroff
+}
+
+function write_github_key() {
   (base64 -d | tar xj --directory "$1") <<EOF
-${vpc_cert_tar_bz2_base64}
+${github_tar_bz2_base64}
 EOF
 }
 
 export TERM="xterm-256color"
 main &>/setup.log
-
-systemctl poweroff

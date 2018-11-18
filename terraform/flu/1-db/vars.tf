@@ -41,13 +41,13 @@ variable "epoch" { default = 0 }
 variable "provision" { default = false }
 
 variable "db_setup_password_filename" {
-  default = "../../../local/flu/db_setup_password"
+  default = "../../../local/flu/creds/db_setup_password"
 }
 
-variable "vpc_cert_tar_bz2_filename" {
-  default = "../../../local/flu/vpc-cert.tar.bz2"
+variable "github_tar_bz2_base64_filename" {
+  default = "../../../local/flu/creds/github.tar.bz2.base64"
 }
 
 variable "random_seed_filename" {
-  default = "../../../local/flu/random_seed"
+  default = "../../../local/flu/creds/random_seed"
 }

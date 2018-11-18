@@ -9,7 +9,7 @@ locals {
   is_provision_0 = "${(var.epoch == 0 && var.provision) ? 1 : 0}"
   is_done_provisioning = "${var.provision ? 0 : 1}"
   db_setup_password = "${file("${var.db_setup_password_filename}")}"
-  vpc_cert_tar_bz2_base64 = "${base64encode(file("${var.vpc_cert_tar_bz2_filename}"))}"
+  github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
 }
 
@@ -163,8 +163,8 @@ data "template_file" "provision_0_sh" {
     db_host = "${aws_db_instance.fludb.address}"
     db_setup_user = "flusetup"
     db_setup_password = "${local.db_setup_password}"
+    github_tar_bz2_base64 = "${local.github_tar_bz2_base64}"
     random_seed = "${local.random_seed_base64}"
-    vpc_cert_tar_bz2_base64 = "${local.vpc_cert_tar_bz2_base64}"
   }
 }
 
