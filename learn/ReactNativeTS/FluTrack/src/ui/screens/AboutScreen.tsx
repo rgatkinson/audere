@@ -33,8 +33,6 @@ export default class AboutScreen extends React.Component<Props> {
       Platform.OS +
       " " +
       Platform.Version +
-      "\nApi Server: " +
-      process.env.REACT_NATIVE_API_SERVER +
       "\nInstallation: " +
       Constants.installationId;
 

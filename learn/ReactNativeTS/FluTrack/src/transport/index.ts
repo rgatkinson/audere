@@ -62,5 +62,6 @@ function getApiBaseUrl(): string {
     apiUrl.set("protocol", "http");
     apiUrl.set("hostname", expoUrl.hostname);
   }
+  console.log("Server=" + apiUrl.toString());
   return apiUrl.toString();
 }
