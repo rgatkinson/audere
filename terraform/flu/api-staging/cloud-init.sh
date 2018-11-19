@@ -1,17 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 set -x # TODO remove
-# TODO umask 077
+umask 077
 
 function main() {
-  umask 077
-  install_updates
   add_developer_accounts
-  apt-get -y install git nginx postgresql-client-common
-  init_nginx
+
+  install_updates
   mount_creds
   adduser --gecos "Audere Api" --disabled-password api
-  chown -R "api:api" /creds
+  chown -R "api:api" /creds/{github,env,pgpass} # TODO: move env,pgpass into /creds/db
+
+  apt-get -y install git nginx postgresql-client-common
+  init_nginx
   setup_api
 }
 
@@ -72,13 +73,17 @@ EOF
     chown -R "api:api" "$API"
     sudo -H --login --user=api bash "$API/init/api-init"
     export HOME=/home/api
+    set +x
     . "$HOME/.api-rc"
+    set -x
     $API/.yarn/bin/pm2 startup -u api --hp $API --service-name flu-api-pm2
   )
 }
 
 function init_nginx() {
-  readonly VPC_CERT="/creds/vpc_cert"
+  readonly VPC_CERT="/creds/vpc-cert"
+  rm /etc/nginx/sites-enabled/default
+
   sudo tee "/etc/nginx/sites-enabled/${domain}" <<EOF
 # Rate limiting
 # On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
@@ -90,9 +95,9 @@ server {
   listen [::]:443 ssl ipv6only=on;
   listen 443 ssl;
 
-  ssl_certificate $VPC_CERT/audere-vpc.crt;
-  ssl_certificate_key $VPC_CERT/audere-vpc.key;
-  ssl_dhparam $VPC_CERT/audere-vpc.dhparam;
+  ssl_certificate $VPC_CERT/vpc.crt;
+  ssl_certificate_key $VPC_CERT/vpc.key;
+  ssl_dhparam $VPC_CERT/vpc.dhparam;
 
   # Based on the .conf file Certbot generates for nginx
   # and the cipher list from "https://cipherli.st"
@@ -119,8 +124,13 @@ server {
   }
 }
 EOF
+
+  # Check the config before restarting
+  nginx -t
+  sudo service nginx restart
 }
 
-umask 022
-set -x
+umask 022 # TODO remove
+set -x # TODO remove
+export TERM="xterm-256color"
 main &>/setup.log

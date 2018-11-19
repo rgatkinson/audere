@@ -164,53 +164,53 @@ resource "aws_instance" "flu_api_instance" {
 #   }
 # }
 
-resource "aws_security_group" "flu_api_elb" {
-  name = "flu-api-elb"
+# resource "aws_security_group" "flu_api_elb" {
+#   name = "flu-api-elb"
 
-  ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port = 80
+#     to_port = 80
+#     protocol = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port = 443
+#     to_port = 443
+#     protocol = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  # TODO: allow egress to api instances
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+#   # TODO: allow egress to api instances
+#   egress {
+#     from_port = 0
+#     to_port = 0
+#     protocol = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
-resource "aws_security_group" "flu_api_instance" {
-  name = "flu-api-instance"
+# resource "aws_security_group" "flu_api_instance" {
+#   name = "flu-api-instance"
 
-  ingress {
-    from_port = "${var.flu_api_instance_port}"
-    to_port = "${var.flu_api_instance_port}"
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port = "${var.flu_api_instance_port}"
+#     to_port = "${var.flu_api_instance_port}"
+#     protocol = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["209.63.143.172/32"]
-  }
+#   ingress {
+#     from_port = 22
+#     to_port = 22
+#     protocol = "tcp"
+#     cidr_blocks = ["209.63.143.172/32"]
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 data "template_file" "cloud_init_sh" {
   template = "${file("./cloud-init.sh")}"
