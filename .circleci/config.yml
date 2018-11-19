@@ -78,7 +78,7 @@ jobs:
           name: Set .env for target environment
           command: |
             cd learn/ReactNativeTS/FluTrack
-            echo "API_URL=$API_URL" > .env
+            echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
       - run:
           name: Publish to Expo
           command: |
@@ -93,13 +93,13 @@ jobs:
 
   publish_to_expo_staging:
     environment:
-      API_URL: "https://api.staging.auderenow.io/api"
+      REACT_NATIVE_API_SERVER: "https://api.staging.auderenow.io/api"
       EXPO_RELEASE_CHANNEL: v0-staging
     <<: *publish
 
   publish_to_expo_prod:
     environment:
-      API_URL: "https://api.auderenow.io/api"
+      REACT_NATIVE_API_SERVER: "https://api.auderenow.io/api"
       EXPO_RELEASE_CHANNEL: v0-prod
     <<: *publish
 

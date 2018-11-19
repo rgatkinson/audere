@@ -52,20 +52,15 @@ function createAxios() {
 
 function getApiBaseUrl(): string {
   const apiUrl = new URL(
-    process.env.API_URL ? process.env.API_URL : "https://api.auderenow.io/api"
+    process.env.REACT_NATIVE_API_SERVER
+      ? process.env.REACT_NATIVE_API_SERVER
+      : "https://api.auderenow.io/api"
   );
-  if (IS_NODE_ENV_DEVELOPMENT) {
-    const url = process.env.REACT_NATIVE_API_SERVER;
-    if (url) {
-      logger.info(`Using dev server url: "${url}"`);
-      return url;
-    }
-    if (process.env.REACT_NATIVE_LOCAL_API_SERVER) {
-      const expoUrl = new URL(Constants.linkingUri);
-      apiUrl.set("port", "3000");
-      apiUrl.set("protocol", "http");
-      apiUrl.set("hostname", expoUrl.hostname);
-    }
+  if (IS_NODE_ENV_DEVELOPMENT && process.env.REACT_NATIVE_LOCAL_API_SERVER) {
+    const expoUrl = new URL(Constants.linkingUri);
+    apiUrl.set("port", "3000");
+    apiUrl.set("protocol", "http");
+    apiUrl.set("hostname", expoUrl.hostname);
   }
   return apiUrl.toString();
 }
