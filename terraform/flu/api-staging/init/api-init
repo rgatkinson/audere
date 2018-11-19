@@ -1,0 +1,44 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+mkdir "$HOME/.ssh"
+ln -s /creds/github/id_rsa "$HOME/.ssh/id_rsa"
+ln -s /creds/github/id_rsa.pub "$HOME/.ssh/id_rsa.pub"
+git config --global user.name "Audere Service Account"
+git config --global user.email "test@auderenow.org"
+ssh-keyscan -t rsa github.com >> "$HOME/.ssh/known_hosts"
+ssh -T -oStrictHostKeyChecking=accept-new git@github.com || true
+git clone git@github.com:AudereNow/learn.git audere
+cd audere
+#git checkout "${repo_tag}"
+
+
+> "$HOME/.api-rc" cat "$SELF_DIR/manage-nvm"
+>>"$HOME/.api-rc" cat <<-EOF
+
+	PATH="\$HOME/.yarn/bin:\$HOME/.local/bin:\$PATH"
+EOF
+PROFILE="$( [[ -e "$HOME/.bash_profile" ]] && echo "$HOME/.bash_profile" || echo "$HOME/.profile" )"
+if ! grep "api-rc" "$PROFILE" >/dev/null; then
+  echo >>"$PROFILE" ''
+  echo >>"$PROFILE" '. "$HOME/.api-rc"'
+fi
+. $HOME/.api-rc
+
+set +x
+nvm-upd
+nvm install v10
+set -x
+npm install --global yarn
+yarn global add pm2
+(
+  cd ~/audere/FluApi
+  ln -s /creds/env .env
+  yarn install --frozen-lockfile
+  yarn build
+  pm2 start process.json --env production
+  pm2 save
+)
