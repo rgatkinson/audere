@@ -1,6 +1,8 @@
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+
+import { uploaderMiddleware } from "./uploader";
 
 import { default as user, UserState, UserAction } from "./user";
 export * from "./user";
@@ -13,11 +15,7 @@ export * from "./admin";
 
 export type Action = UserAction | FormAction | AdminAction;
 
-export interface StoreState {
-  user: UserState;
-  form: FormState;
-  admin: AdminState;
-}
+export { StoreState } from "./StoreState";
 
 const config = {
   key: "store",
@@ -30,5 +28,8 @@ const reducer = combineReducers({
   admin,
 });
 
-export const store = createStore(persistReducer(config, reducer));
+export const store = createStore(
+  persistReducer(config, reducer),
+  applyMiddleware(uploaderMiddleware)
+);
 export const persistor = persistStore(store);
