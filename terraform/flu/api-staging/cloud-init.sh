@@ -61,6 +61,24 @@ function mount_creds() {
     echo "Waiting for /dev/xvdf1"
     sleep 1
   done
+
+  uuid=""
+  for u in /dev/disk/by-uuid/*; do
+    if [[ "$(readlink "$u")" =~ xvdf1 ]]; then
+      uuid="$${u#/dev/disk/by-uuid/}"
+      break
+    fi
+  done
+  if [[ -n "$uuid" ]]; then
+    printf "UUID=%s\t/creds\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
+  else
+    echo 1>&2 "Could not find UUID for xvdf1"
+    echo 1>&2 "  === lsblk ==="
+    lsblk 1>&2
+    echo 1>&2 "  === /dev/disk/by-uuid ==="
+    ls 1>&2 -alF /dev/disk/by-uuid
+    exit 1
+  fi
 }
 
 function setup_api() {
@@ -134,3 +152,4 @@ umask 022 # TODO remove
 set -x # TODO remove
 export TERM="xterm-256color"
 main &>/setup.log
+sudo reboot
