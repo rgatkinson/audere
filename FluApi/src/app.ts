@@ -12,7 +12,7 @@ import logger from "./util/logger";
 
 sequelize.authenticate();
 const app = express();
-const buildInfo = require("../../static/buildInfo.json");
+const buildInfo = require("../static/buildInfo.json");
 
 app.set("port", process.env.PORT || 3000);
 app.use(helmet());
