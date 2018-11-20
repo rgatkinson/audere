@@ -153,6 +153,10 @@ export function setEmailOptions(
 export function setSurveyResponses(
   surveyResponses: Map<string, SurveyResponse>
 ): FormAction {
+  console.log("SURVEY RESPONSES=");
+  surveyResponses.forEach((value: SurveyResponse, key: string) => {
+    console.log(key, value);
+  });
   return {
     type: "SET_SURVEY_RESPONSES",
     surveyResponses,
