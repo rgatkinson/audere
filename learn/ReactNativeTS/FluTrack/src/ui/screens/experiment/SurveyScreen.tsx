@@ -22,7 +22,6 @@ interface Props {
 
 export default class SurveyScreen extends React.Component<Props> {
   state = {
-    completeness: 5,
     questions: [
       {
         title: questionnaire[0].section,
@@ -111,11 +110,25 @@ export default class SurveyScreen extends React.Component<Props> {
   };
 
   _back = () => {
-    this._removeData();
+    if (this._getQuestionnaireIndex() === 0) {
+      this.props.navigation.pop();
+    } else {
+      this._removeData();
+    }
   };
 
   _next = () => {
     // TODO: implement next
+  };
+
+  _getQuestionnaireIndex = () => {
+    const currentSection = this.state.questions[
+      this.state.questions.length - 1
+    ];
+    const currentQuestion = currentSection.data[currentSection.data.length - 1];
+    return questionnaire.findIndex(
+      question => question.data.id === currentQuestion.id
+    );
   };
 
   render() {
@@ -123,7 +136,11 @@ export default class SurveyScreen extends React.Component<Props> {
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
           canProceed={false}
-          progressNumber={this.state.completeness + "%"}
+          progressNumber={
+            Math.round(
+              (100.0 * this._getQuestionnaireIndex()) / questionnaire.length
+            ) + "%"
+          }
           progressLabel="Complete"
           title="Study Questionnaire"
           onBack={this._back}
