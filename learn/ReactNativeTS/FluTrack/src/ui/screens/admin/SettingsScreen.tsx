@@ -21,7 +21,7 @@ export default class SettingsScreen extends React.Component<Props> {
     this.props.navigation.push("Adverse");
   };
   _onSpecimenScans = () => {
-    Alert.alert("Placeholder for unknown screen");
+    Alert.alert("This feature is not part of IRB 1");
   };
   render() {
     return (
