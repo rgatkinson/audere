@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "setup": "cp -n .env.example .env && yarn run build && sequelize db:migrate",
-    "build": "../scripts/generate-build-info && tsc",
+    "build": "../scripts/generate-build-info && tsc && cp -R static build/",
     "start": "concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
-    "start-prod": "tsc && NODE_ENV=production node .",
+    "start-prod": "yarn run build && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
     "test-watch": "jest --verbose --no-watchman --watchAll",
     "sequelize": "sequelize",
