@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  KeyboardAvoidingView,
   LayoutAnimation,
   SectionList,
   StyleSheet,
@@ -119,7 +120,7 @@ export default class SurveyScreen extends React.Component<Props> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
           canProceed={false}
           progressNumber={this.state.completeness + "%"}
@@ -176,7 +177,7 @@ export default class SurveyScreen extends React.Component<Props> {
           extraData={this.state.questions}
           stickySectionHeadersEnabled={false}
         />
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
