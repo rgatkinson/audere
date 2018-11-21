@@ -6,15 +6,6 @@ import {
   NavigationScreenProp,
 } from "react-navigation";
 import { AppLoading, Font } from 'expo';
-import AccountScreen from "./src/ui/screens/AccountScreen";
-import ComponentLibraryScreen from "./src/ui/screens/ComponentLibraryScreen";
-import LoginScreen from "./src/ui/screens/LoginScreen";
-import ScreeningScreen from "./src/ui/screens/ScreeningScreen";
-import SymptomsScreen from "./src/ui/screens/SymptomsScreen";
-import DemographicsScreen from "./src/ui/screens/DemographicsScreen";
-import HouseholdScreen from "./src/ui/screens/HouseholdScreen";
-import IllnessHistoryScreen from "./src/ui/screens/IllnessHistoryScreen";
-import ConsentScreen from "./src/ui/screens/ConsentScreen";
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
@@ -26,10 +17,10 @@ import i18n from "./src/i18n";
 import HomeScreen from './src/ui/screens/experiment/HomeScreen';
 import WelcomeScreen from './src/ui/screens/experiment/WelcomeScreen';
 import AgeScreen from './src/ui/screens/experiment/AgeScreen';
-import SymptomsScreen2 from './src/ui/screens/experiment/SymptomsScreen';
+import SymptomsScreen from './src/ui/screens/experiment/SymptomsScreen';
 import SwabScreen from './src/ui/screens/experiment/SwabScreen';
 import BloodScreen from './src/ui/screens/experiment/BloodScreen';
-import ConsentScreen2 from './src/ui/screens/experiment/ConsentScreen';
+import ConsentScreen from './src/ui/screens/experiment/ConsentScreen';
 import EnrolledScreen from './src/ui/screens/experiment/EnrolledScreen';
 import InelligibleScreen from './src/ui/screens/experiment/InelligibleScreen';
 import HeaderBar from './src/ui/screens/experiment/components/HeaderBar';
@@ -43,27 +34,7 @@ export function interact(data: string): void {
   uploader.save("remove-me", { data });
 }
 
-const routes = {
-  Account: AccountScreen,
-  Screening: ScreeningScreen,
-  Symptoms: SymptomsScreen,
-  Demographics: DemographicsScreen,
-  Household: HouseholdScreen,
-  IllnessHistory: IllnessHistoryScreen,
-  Consent: ConsentScreen,
-};
-
-export function goToNextScreen(navigation: NavigationScreenProp<any, any>) {
-  const currentRoute = navigation.state.routeName;
-  const routeNames = Object.keys(routes);
-  const currentRouteIndex = routeNames.indexOf(currentRoute);
-  if (currentRouteIndex > -1 && currentRouteIndex < routeNames.length - 1) {
-    const nextRoute = routeNames[currentRouteIndex + 1];
-    navigation.navigate(nextRoute);
-  }
-}
-
-const ExperimentStack = createStackNavigator({
+const MainStack = createStackNavigator({
   Home: {
     screen: HomeScreen,
     navigationOptions: {
@@ -72,10 +43,10 @@ const ExperimentStack = createStackNavigator({
   },
   Welcome: WelcomeScreen,
   Age: AgeScreen,
-  Symptoms: SymptomsScreen2,
+  Symptoms: SymptomsScreen,
   Swab: SwabScreen,
   Blood: BloodScreen,
-  Consent: ConsentScreen2,
+  Consent: ConsentScreen,
   Inelligible: InelligibleScreen,
   Enrolled: EnrolledScreen,
   SurveyStart: SurveyStartScreen,
@@ -94,23 +65,15 @@ const ExperimentStack = createStackNavigator({
   }),
 });
 
-const MainStack = createStackNavigator(routes);
-const LoginStack = createStackNavigator({ Login: LoginScreen });
 const Drawer = createDrawerNavigator({
-  Main: { screen: MainStack },
-  ComponentLibrary: { screen: ComponentLibraryScreen },
+  MainStack,
   About: { screen: AboutScreen },
-  ExperimentStack,
 });
 
 const Root = connect((state: StoreState) => ({
-  isLoggedIn: state.user !== null,
 }))(
-  (props: { isLoggedIn: boolean }) =>
-    props.isLoggedIn ? (
+  () => (
       <Drawer screenProps={{ t: i18n.getFixedT(), uploader: createUploader() }} />
-    ) : (
-      <LoginStack screenProps={{ t: i18n.getFixedT() }} />
     )
 );
 
