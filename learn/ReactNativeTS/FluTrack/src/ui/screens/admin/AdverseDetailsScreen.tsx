@@ -4,8 +4,15 @@ import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
 import { Action, setAdverseEvents } from "../../../store";
 import OptionList from "../experiment/components/OptionList";
-import Button from "../experiment/components/Button";
-import { Text, StyleSheet, View, Alert, TextInput } from "react-native";
+import { Icon } from "react-native-elements";
+import {
+  Text,
+  StyleSheet,
+  View,
+  Alert,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
 
 interface Props {
@@ -20,8 +27,39 @@ const participantName = "John Doe"; //TODO: read the name out of redux
   adverseEventTypes: state.form!.adverseEventTypes,
 }))
 export default class AdverseDetailsScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: "Adverse Events Details",
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
+    const params = navigation.state.params;
+    return params == null
+      ? {}
+      : {
+          title: "Adverse Events",
+          headerLeft: (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.actionContainerWithIcon}
+            >
+              <Icon
+                name="chevron-left"
+                color="#007AFF"
+                size={30}
+                type="feather"
+              />
+              <Text style={styles.actionText}>Back</Text>
+            </TouchableOpacity>
+          ),
+          headerRight: (
+            <TouchableOpacity
+              onPress={params._onSave}
+              style={styles.actionContainer}
+            >
+              <Text style={styles.actionText}>Save</Text>
+            </TouchableOpacity>
+          ),
+        };
   };
   state = {
     bloodDrawEvents: OptionList.emptyMap([
@@ -35,7 +73,12 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
   };
   bloodDrawOtherInput = React.createRef<TextInput>();
   nasalSwabOtherInput = React.createRef<TextInput>();
-  _onSubmit = () => {
+  componentWillMount() {
+    this.props.navigation.setParams({
+      _onSave: this._onSave,
+    });
+  }
+  _onSave = () => {
     if (
       this.state.bloodDrawEvents.get("Other") &&
       this.state.bloodDrawOther.length === 0
@@ -173,14 +216,6 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
             )}
           </View>
         )}
-        <View style={styles.buttonView}>
-          <Button
-            primary={true}
-            enabled={true}
-            label="Submit"
-            onPress={this._onSubmit}
-          />
-        </View>
       </ScreenContainer>
     );
   }
@@ -203,5 +238,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginHorizontal: 20,
     marginBottom: 25,
+  },
+  actionContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingHorizontal: 15,
+  },
+  actionContainerWithIcon: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  actionText: {
+    fontFamily: "System",
+    fontSize: 17,
+    color: "#007AFF",
+    lineHeight: 22,
+    letterSpacing: -0.41,
   },
 });

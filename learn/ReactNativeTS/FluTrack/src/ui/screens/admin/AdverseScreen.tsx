@@ -5,8 +5,7 @@ import { StoreState } from "../../../store/index";
 import { Action, setAdverseEventTypes } from "../../../store";
 import OptionTable from "./components/OptionTable";
 import OptionList from "../experiment/components/OptionList";
-import Button from "../experiment/components/Button";
-import { Text, StyleSheet, View, Alert } from "react-native";
+import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
 
 interface Props {
@@ -21,15 +20,56 @@ const participantName = "John Doe"; //TODO: read the name out of redux
   adverseEventTypes: state.form!.adverseEventTypes,
 }))
 export default class AdverseScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: "Adverse Events",
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
+    const params = navigation.state.params;
+    return params == null
+      ? {}
+      : {
+          title: "Adverse Events",
+          headerLeft: (
+            <TouchableOpacity
+              onPress={() => navigation.popToTop()}
+              style={styles.actionContainer}
+            >
+              <Text style={styles.actionText}>Cancel</Text>
+            </TouchableOpacity>
+          ),
+          headerRight: (
+            <TouchableOpacity
+              onPress={params._onNext}
+              style={styles.actionContainer}
+            >
+              <Text style={styles.actionText}>Next</Text>
+            </TouchableOpacity>
+          ),
+        };
   };
   state = {
     adverseEvents: false,
   };
+  componentWillMount() {
+    this.props.navigation.setParams({
+      _onNext: this._onNext,
+    });
+  }
   _onNext = () => {
     if (this.state.adverseEvents) {
-      this.props.navigation.push("AdverseDetails");
+      if (
+        this.props.adverseEventTypes instanceof Map
+          ? Array.from(this.props.adverseEventTypes.values()).reduce(
+              (result, value) => result || value,
+              false
+            )
+          : false
+      ) {
+        this.props.navigation.push("AdverseDetails");
+      } else {
+        Alert.alert("Please specify which procedures had adverse events.");
+      }
     } else {
       Alert.alert(
         "Submit?",
@@ -86,22 +126,6 @@ export default class AdverseScreen extends React.Component<Props> {
             />
           </View>
         )}
-        <View style={styles.buttonView}>
-          <Button
-            primary={true}
-            enabled={
-              !this.state.adverseEvents ||
-              (this.props.adverseEventTypes instanceof Map
-                ? Array.from(this.props.adverseEventTypes.values()).reduce(
-                    (result, value) => result || value,
-                    false
-                  )
-                : false)
-            }
-            label={this.state.adverseEvents ? "Next" : "Submit"}
-            onPress={this._onNext}
-          />
-        </View>
       </ScreenContainer>
     );
   }
@@ -121,5 +145,18 @@ const styles = StyleSheet.create({
   buttonView: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  actionContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingHorizontal: 15,
+  },
+  actionText: {
+    fontFamily: "System",
+    fontSize: 17,
+    color: "#007AFF",
+    lineHeight: 22,
+    letterSpacing: -0.41,
   },
 });
