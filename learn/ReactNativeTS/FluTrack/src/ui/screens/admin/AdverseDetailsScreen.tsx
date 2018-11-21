@@ -24,8 +24,12 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
     title: "Adverse Events Details",
   };
   state = {
-    bloodDrawEvents: new Map<string, boolean>(),
-    nasalSwabEvents: new Map<string, boolean>(),
+    bloodDrawEvents: OptionList.emptyMap([
+      "Bruising at site",
+      "Infection at site",
+      "Other",
+    ]),
+    nasalSwabEvents: OptionList.emptyMap(["Nosebleed", "Other"]),
     bloodDrawOther: "",
     nasalSwabOther: "",
   };
@@ -121,8 +125,9 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
               For blood draw, what were the adverse events?
             </Text>
             <OptionList
-              data={["Bruising at site", "Infection at site", "Other"]}
+              data={this.state.bloodDrawEvents}
               numColumns={1}
+              multiSelect={true}
               fullWidth={true}
               backgroundColor="#fff"
               onChange={bloodDrawEvents => this.setState({ bloodDrawEvents })}
@@ -147,8 +152,9 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
               For nasal swab, what were the adverse events?
             </Text>
             <OptionList
-              data={["Nosebleed", "Other"]}
+              data={this.state.nasalSwabEvents}
               numColumns={1}
+              multiSelect={true}
               fullWidth={true}
               backgroundColor="#fff"
               onChange={nasalSwabEvents => this.setState({ nasalSwabEvents })}

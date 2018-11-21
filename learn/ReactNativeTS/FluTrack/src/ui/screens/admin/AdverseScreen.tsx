@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
+import { StoreState } from "../../../store/index";
 import { Action, setAdverseEventTypes } from "../../../store";
 import OptionTable from "./components/OptionTable";
 import OptionList from "../experiment/components/OptionList";
@@ -12,21 +13,22 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   dispatch(action: Action): void;
   screenProps: any;
+  adverseEventTypes?: Map<string, boolean>;
 }
 
 const participantName = "John Doe"; //TODO: read the name out of redux
-@connect()
+@connect((state: StoreState) => ({
+  adverseEventTypes: state.form!.adverseEventTypes,
+}))
 export default class AdverseScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Adverse Events",
   };
   state = {
     adverseEvents: false,
-    events: new Map<string, boolean>(),
   };
   _onNext = () => {
     if (this.state.adverseEvents) {
-      this.props.dispatch(setAdverseEventTypes(this.state.events));
       this.props.navigation.push("AdverseDetails");
     } else {
       Alert.alert(
@@ -69,11 +71,18 @@ export default class AdverseScreen extends React.Component<Props> {
               Which procedures had adverse events?
             </Text>
             <OptionList
-              data={["Blood draw", "Nasal swab"]}
+              data={
+                this.props.adverseEventTypes instanceof Map
+                  ? this.props.adverseEventTypes
+                  : OptionList.emptyMap(["Blood draw", "Nasal swab"])
+              }
               numColumns={1}
+              multiSelect={true}
               fullWidth={true}
               backgroundColor="#fff"
-              onChange={events => this.setState({ events })}
+              onChange={adverseEventTypes =>
+                this.props.dispatch(setAdverseEventTypes(adverseEventTypes))
+              }
             />
           </View>
         )}
@@ -82,10 +91,12 @@ export default class AdverseScreen extends React.Component<Props> {
             primary={true}
             enabled={
               !this.state.adverseEvents ||
-              Array.from(this.state.events.values()).reduce(
-                (result, value) => result || value,
-                false
-              )
+              (this.props.adverseEventTypes instanceof Map
+                ? Array.from(this.props.adverseEventTypes.values()).reduce(
+                    (result, value) => result || value,
+                    false
+                  )
+                : false)
             }
             label={this.state.adverseEvents ? "Next" : "Submit"}
             onPress={this._onNext}
