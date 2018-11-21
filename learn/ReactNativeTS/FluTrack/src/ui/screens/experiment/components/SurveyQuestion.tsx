@@ -187,17 +187,19 @@ export default class SurveyQuestion extends Component<Props> {
       : new Map<string, SurveyResponse>();
 
     const existingAnswer = responses.has(this.props.id)
-      ? responses.get(this.props.id)!.answer
+      ? responses.get(this.props.id)!.answer!
       : {};
 
-    if (!this.props.surveyResponses || !existingAnswer) {
+    if (!responses.has(this.props.id)) {
       responses.set(this.props.id, {
         questionId: this.props.id,
         questionText: this.props.title || this.props.description,
+        answer: existingAnswer,
       });
       this.props.dispatch(setSurveyResponses(responses));
     }
-    return [responses, existingAnswer ? existingAnswer : {}];
+
+    return [responses, existingAnswer];
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
@@ -218,6 +220,7 @@ export default class SurveyQuestion extends Component<Props> {
   };
 
   render() {
+    console.log(this.props.surveyResponses);
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         {!this.props.active && (
