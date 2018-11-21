@@ -28,6 +28,7 @@ type EnabledOption =
   | "withDate";
 
 interface ButtonConfig {
+  key: string;
   label: string;
   primary: boolean;
   enabled: EnabledOption;
@@ -35,7 +36,7 @@ interface ButtonConfig {
 
 interface ConditionalNextConfig {
   options?: Map<string, string>;
-  buttonLabels?: Map<string, string>;
+  buttonKeys?: Map<string, string>;
 }
 
 interface OptionListConfig {
@@ -85,7 +86,7 @@ interface Props {
   surveyResponses: state.form!.surveyResponses,
 }))
 export default class SurveyQuestion extends Component<Props> {
-  _getNextQuestion = (selectedButtonLabel: string): string => {
+  _getNextQuestion = (selectedButtonKey: string): string => {
     let nextQuestion = this.props.nextQuestion;
     if (this.props.conditionalNext) {
       this.props.conditionalNext!.options &&
@@ -94,9 +95,9 @@ export default class SurveyQuestion extends Component<Props> {
             nextQuestion = this.props.conditionalNext!.options!.get(key)!;
           }
         });
-      !!this.props.conditionalNext!.buttonLabels &&
-        this.props.conditionalNext!.buttonLabels!.forEach((question, label) => {
-          if (label === selectedButtonLabel) {
+      !!this.props.conditionalNext!.buttonKeys &&
+        this.props.conditionalNext!.buttonKeys!.forEach((question, label) => {
+          if (label === selectedButtonKey) {
             nextQuestion = question;
           }
         });
@@ -167,13 +168,13 @@ export default class SurveyQuestion extends Component<Props> {
     );
   };
 
-  _getSelectedButtonLabel = (): string | null => {
+  _getSelectedButtonKey = (): string | null => {
     return (
       (!!this.props.surveyResponses &&
         this.props.surveyResponses!.has(this.props.id) &&
         this.props.surveyResponses.get(this.props.id)!.answer &&
         this.props.surveyResponses.get(this.props.id)!.answer!
-          .selectedButtonLabel) ||
+          .selectedButtonKey) ||
       null
     );
   };
@@ -186,20 +187,20 @@ export default class SurveyQuestion extends Component<Props> {
       ? new Map<string, SurveyResponse>(this.props.surveyResponses)
       : new Map<string, SurveyResponse>();
 
-    const existingAnswer = responses.has(this.props.id)
-      ? responses.get(this.props.id)!.answer!
-      : {};
-
     if (!responses.has(this.props.id)) {
+      const buttonOptions = new Map<string, string>(
+        this.props.buttons.map(button => [button.key, button.label])
+      );
       responses.set(this.props.id, {
+        answer: {},
+        buttonOptions: buttonOptions,
         questionId: this.props.id,
         questionText: this.props.title || this.props.description,
-        answer: existingAnswer,
       });
       this.props.dispatch(setSurveyResponses(responses));
     }
 
-    return [responses, existingAnswer];
+    return [responses, responses.has(this.props.id) ? responses.get(this.props.id)!.answer! : {}];
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
@@ -351,7 +352,7 @@ export default class SurveyQuestion extends Component<Props> {
         <View style={styles.buttonContainer}>
           {this.props.buttons.map(button => (
             <Button
-              checked={this._getSelectedButtonLabel() === button.label}
+              checked={this._getSelectedButtonKey() === button.label}
               enabled={
                 this.props.active && this._getButtonEnabled(button.enabled)
               }
@@ -366,7 +367,7 @@ export default class SurveyQuestion extends Component<Props> {
                   ...responses.get(this.props.id),
                   answer: {
                     ...existingAnswer,
-                    selectedButtonLabel: button.label,
+                    selectedButtonKey: button.key,
                   },
                 });
                 this.props.dispatch(setSurveyResponses(responses));

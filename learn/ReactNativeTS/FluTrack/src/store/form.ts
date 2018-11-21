@@ -28,14 +28,15 @@ export interface SurveyAnswer {
   options?: Map<string, boolean>;
   otherOption?: string;
   numberInput?: number;
-  selectedButtonLabel?: string;
+  selectedButtonKey?: string;
   textInput?: string;
 }
 
 export interface SurveyResponse {
+  answer?: SurveyAnswer;
+  buttonOptions?: Map<string, string>;
   questionId?: string;
   questionText?: string;
-  answer?: SurveyAnswer;
 }
 
 export type FormState = null | {
