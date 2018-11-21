@@ -1,9 +1,14 @@
 #!/bin/bash
-set -euo pipefail
-set -x
+# Copyright (c) 2018 by Audere
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euxo pipefail
 umask 077
-SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+readonly SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+readonly mode="$1"
+readonly commit="${2:-master}"
 
+echo "=== api-init begins, mode=$mode commit=$commit"
 mkdir "$HOME/.ssh"
 ln -s /creds/github/id_rsa "$HOME/.ssh/id_rsa"
 ln -s /creds/github/id_rsa.pub "$HOME/.ssh/id_rsa.pub"
@@ -12,33 +17,36 @@ git config --global user.email "test@auderenow.org"
 ssh-keyscan -t rsa github.com >> "$HOME/.ssh/known_hosts"
 ssh -T -oStrictHostKeyChecking=accept-new git@github.com || true
 git clone git@github.com:AudereNow/learn.git audere
-cd audere
-#git checkout "${repo_tag}"
 
-
-> "$HOME/.api-rc" cat "$SELF_DIR/manage-nvm"
->>"$HOME/.api-rc" cat <<-EOF
-
-	PATH="\$HOME/.yarn/bin:\$HOME/.local/bin:\$PATH"
-EOF
-PROFILE="$( [[ -e "$HOME/.bash_profile" ]] && echo "$HOME/.bash_profile" || echo "$HOME/.profile" )"
-if ! grep "api-rc" "$PROFILE" >/dev/null; then
-  echo >>"$PROFILE" ''
-  echo >>"$PROFILE" '. "$HOME/.api-rc"'
-fi
-. $HOME/.api-rc
+cp "$SELF_DIR/bash_profile" ~/.bash_profile
+. ~/.bash_profile
 
 set +x
 nvm-upd
 nvm install v10
 set -x
 npm install --global yarn
-yarn global add pm2
-(
-  cd ~/audere/FluApi
-  ln -s /creds/env .env
-  yarn install --frozen-lockfile
-  yarn build
-  pm2 start process.json --env production
-  pm2 save
-)
+
+cd ~/audere/FluApi
+ln -s /creds/db/env .env
+
+git checkout "$commit"
+yarn install --frozen-lockfile
+yarn build
+
+case "$mode" in
+  migrate)
+    echo "Running sequelize because '$mode'==migrate"
+    yarn sequelize "db:migrate"
+    ;;
+  service)
+    echo "Running pm2 because '$mode'==service"
+    yarn global add pm2
+    pm2 start process.json --env production
+    pm2 save
+    ;;
+  *)
+    echo 1>&2 "Unknown mode '$mode'"
+    exit 1
+    ;;
+esac

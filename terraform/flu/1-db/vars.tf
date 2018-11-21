@@ -38,7 +38,10 @@ variable "availability_zone" {
 // switches out of "provision=true" mode and disables any provisioning
 // server(s).
 variable "epoch" { default = 0 }
-variable "provision" { default = false }
+variable "provision" {
+  description = "One of 'run', 'cleanup', or 'done'"
+  default = "done"
+}
 
 variable "db_setup_password_filename" {
   default = "../../../local/flu/creds/db_setup_password"
@@ -50,4 +53,8 @@ variable "github_tar_bz2_base64_filename" {
 
 variable "random_seed_filename" {
   default = "../../../local/flu/creds/random_seed"
+}
+
+variable "vpc_dhparam_filename" {
+  default = "../../../local/flu/creds/vpc.dhparam"
 }

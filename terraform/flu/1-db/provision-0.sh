@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (c) 2018 by Audere
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
 set -euo pipefail
 # TODO remove
 set -x
@@ -11,7 +14,7 @@ function main() {
   generate_passwords
   write_credentials
   setup_db
-  shutdown_gracefully
+  shutdown1
 }
 
 function install_updates() {
@@ -91,32 +94,32 @@ EOF
 
 function write_credentials() {
   format_xvd "f" "api-prod"
-  write_pgpass "/mnt/api-prod/pgpass" "flu_prod" "api_prod" "$api_prod_password"
-  write_env    "/mnt/api-prod/env"    "flu_prod" "api_prod" "$api_prod_password"
+  write_pgpass "/mnt/api-prod/db" "flu_prod" "api_prod" "$api_prod_password"
+  write_env    "/mnt/api-prod/db" "flu_prod" "api_prod" "$api_prod_password"
   write_github_key "/mnt/api-prod"
   write_vpc_cert "api" "/mnt/api-prod"
   umount "/mnt/api-prod"
 
   format_xvd "g" "api-staging"
-  write_pgpass "/mnt/api-staging/pgpass" "flu_staging" "api_staging" "$api_staging_password"
-  write_env    "/mnt/api-staging/env"    "flu_staging" "api_staging" "$api_staging_password"
+  write_pgpass "/mnt/api-staging/db" "flu_staging" "api_staging" "$api_staging_password"
+  write_env    "/mnt/api-staging/db" "flu_staging" "api_staging" "$api_staging_password"
   write_github_key "/mnt/api-staging"
   write_vpc_cert "api.staging" "/mnt/api-staging"
   umount "/mnt/api-staging"
 
   # Nobody other than ram should attach this volume.
   format_xvd "n" "ram-creds"
-  write_pgpass "/mnt/ram-creds/pgpass" "postgres" "ram" "$ram_password"
+  write_pgpass "/mnt/ram-creds/db" "postgres" "ram" "$ram_password"
   umount "/mnt/ram-creds"
 
   # Nobody other than mmarucheck should attach this volume.
   format_xvd "o" "mmarucheck-creds"
-  write_pgpass "/mnt/mmarucheck-creds/pgpass" "postgres" "mmarucheck" "$mmarucheck_password"
+  write_pgpass "/mnt/mmarucheck-creds/db" "postgres" "mmarucheck" "$mmarucheck_password"
   umount "/mnt/mmarucheck-creds"
 
   # Nobody should ever attach this volume.  We save it only in case of emergency.
   format_xvd "p" "db-setup-creds"
-  write_pgpass "/mnt/db-setup-creds/pgpass" "postgres" "${db_setup_user}" "$new_db_setup_password"
+  write_pgpass "/mnt/db-setup-creds/db" "postgres" "${db_setup_user}" "$new_db_setup_password"
   umount "/mnt/db-setup-creds"
 }
 
@@ -124,7 +127,7 @@ function format_xvd() {
   local device="/dev/xvd$1"
   local partition="$device"'1'
   local name="$2"
-  local directory="/mnt/$name"
+  local dir="/mnt/$name"
 
   wait_for_device "$device"
   lsblk
@@ -135,8 +138,8 @@ function format_xvd() {
   lsblk
   retry mkfs.ext4 -L "$name" "$partition"
 
-  mkdir -p "$directory"
-  mount "$partition" "$directory"
+  mkdir -p "$dir"
+  mount "$partition" "$dir"
 }
 
 function wait_for_device() {
@@ -144,33 +147,27 @@ function wait_for_device() {
 }
 
 function write_pgpass() {
-  local file="$1"
+  local dir="$1"
   local db_name="$2"
   local db_user="$3"
   local db_password="$4"
-  echo "${db_host}:$db_port:$db_name:$db_user:$db_password" >"$file"
+  mkdir -p "$dir"
+  echo "${db_host}:$db_port:$db_name:$db_user:$db_password" >"$dir/pgpass"
 }
 
 function write_env() {
-  local file="$1"
+  local dir="$1"
   local db_name="$2"
   local db_user="$3"
   local db_password="$4"
-  echo "DATABASE_URL=postgres://$db_user:$db_password@${db_host}:$db_port/$db_name" >"$file"
+  mkdir -p "$dir"
+  echo "DATABASE_URL=postgres://$db_user:$db_password@${db_host}:$db_port/$db_name" >"$dir/env"
 }
 
-function retry() {
-  local first=true
-  until "$@"; do
-    if $first; then
-      echo "Command failed: '$*'"
-      echo "Retrying.."
-      first=false
-    fi
-    sleep 1
-    printf "."
-  done
-  $first || echo "done"
+function shutdown1() {
+  echo "Provision script done, shutting down in 10 seconds."
+  sleep 1
+  systemctl poweroff
 }
 
 function write_vpc_cert() {
@@ -187,14 +184,11 @@ function write_vpc_cert() {
       -subj "/C=US/ST=Washington/L=Seattle/O=Audere/CN=$subdomain.auderenow.io" \
       -keyout "$dir/vpc.key" \
       -out    "$dir/vpc.crt"
-    openssl dhparam -out "$dir/vpc.dhparam" 4096
-  )
-}
 
-function shutdown_gracefully() {
-  echo "Provision script done, shutting down in 10 seconds."
-  sleep 10
-  systemctl poweroff
+    base64 -d >"$dir/vpc.dhparam" <<EOF
+${vpc_dhparam_base64}
+EOF
+  )
 }
 
 function write_github_key() {
@@ -203,5 +197,9 @@ ${github_tar_bz2_base64}
 EOF
 }
 
+function retry() { until "$@"; do sleep 1; echo "Retrying '%*'"; done; }
+
+umask 022 # TODO remove
+set -x # TODO remove
 export TERM="xterm-256color"
-main &>/setup.log
+main &>/setup.log # TODO remove

@@ -3,14 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-// Audere database infrastructure description
-
 locals {
-  is_provision_0 = "${(var.epoch == 0 && var.provision) ? 1 : 0}"
-  is_done_provisioning = "${var.provision ? 0 : 1}"
+  is_provision_0 = "${(var.epoch == 0 && (var.provision == "run")) ? 1 : 0}"
+  is_done_provisioning = "${(var.provision == "done") ? 1 : 0}"
   db_setup_password = "${file("${var.db_setup_password_filename}")}"
   github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
+  vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
 }
 
 provider "aws" {
@@ -21,19 +20,6 @@ module "ami" { source = "../../modules/ami" }
 data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_security_group" "default" { name = "default" }
-
-# data "aws_ami" "ubuntu" {
-#   most_recent = true
-#   owners = ["099720109477"] # Canonical
-#   filter {
-#     name = "name"
-#     values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
-#   }
-#   filter {
-#     name = "virtualization-type"
-#     values = ["hvm"]
-#   }
-# }
 
 resource "aws_db_instance" "fludb" {
   identifier = "flu-db"
@@ -101,47 +87,43 @@ resource "aws_db_parameter_group" "fludb_parameters" {
   }
 }
 
-/*
-// TODO
-resource "aws_instance" "ram_dev" {
-  count = "${local.is_done_provisioning}"
-  #ami ="${data.aws_ami.ubuntu.id}"
-  ami = "${module.ami.ubuntu}"
-  instance_type = "t2.micro"
-  availability_zone = "${var.availability_zone}"
-  vpc_security_group_ids = [
-    "${data.aws_security_group.ssh.id}",
-    "${data.aws_security_group.default.id}",
-  ]
-  key_name = "2018-ram"
-  tags { Name = "ram-dev" }
-}
-resource "aws_volume_attachment" "ram_dev_creds" {
-  count = "${local.is_done_provisioning}"
-  device_name = "/dev/sdf"
-  volume_id = "${aws_ebs_volume.ram_creds.id}"
-  instance_id = "${aws_instance.ram_dev.id}"
-}
-*/
+# resource "aws_instance" "ram_dev" {
+#   count = "${local.is_done_provisioning}"
+#   ami = "${module.ami.ubuntu}"
+#   instance_type = "t2.micro"
+#   availability_zone = "${var.availability_zone}"
+#   vpc_security_group_ids = [
+#     "${data.aws_security_group.ssh.id}",
+#     "${data.aws_security_group.default.id}",
+#   ]
+#   key_name = "2018-ram"
+#   tags { Name = "ram-dev" }
+# }
+# resource "aws_volume_attachment" "ram_dev_creds" {
+#   count = "${local.is_done_provisioning}"
+#   device_name = "/dev/sdf"
+#   volume_id = "${aws_ebs_volume.ram_creds.id}"
+#   instance_id = "${aws_instance.ram_dev.id}"
+# }
 
-resource "aws_instance" "mmarucheck_dev" {
-  count = "${local.is_done_provisioning}"
-  ami = "${module.ami.ubuntu}"
-  instance_type = "t2.micro"
-  availability_zone = "${var.availability_zone}"
-  vpc_security_group_ids = [
-    "${data.aws_security_group.ssh.id}",
-    "${data.aws_security_group.default.id}",
-  ]
-  key_name = "2018-mmarucheck"
-  tags { Name = "mmarucheck-dev" }
-}
-resource "aws_volume_attachment" "mmarucheck_dev_creds" {
-  count = "${local.is_done_provisioning}"
-  device_name = "/dev/sdf"
-  volume_id = "${aws_ebs_volume.mmarucheck_creds.id}"
-  instance_id = "${aws_instance.mmarucheck_dev.id}"
-}
+# resource "aws_instance" "mmarucheck_dev" {
+#   count = "${local.is_done_provisioning}"
+#   ami = "${module.ami.ubuntu}"
+#   instance_type = "t2.micro"
+#   availability_zone = "${var.availability_zone}"
+#   vpc_security_group_ids = [
+#     "${data.aws_security_group.ssh.id}",
+#     "${data.aws_security_group.default.id}",
+#   ]
+#   key_name = "2018-mmarucheck"
+#   tags { Name = "mmarucheck-dev" }
+# }
+# resource "aws_volume_attachment" "mmarucheck_dev_creds" {
+#   count = "${local.is_done_provisioning}"
+#   device_name = "/dev/sdf"
+#   volume_id = "${aws_ebs_volume.mmarucheck_creds.id}"
+#   instance_id = "${aws_instance.mmarucheck_dev.id}"
+# }
 
 resource "aws_instance" "flu_provision_0" {
   count = "${local.is_provision_0}"
@@ -154,10 +136,9 @@ resource "aws_instance" "flu_provision_0" {
   ]
   user_data = "${data.template_file.provision_0_sh.rendered}"
   key_name = "2018-mmarucheck" // TODO remove
-  tags { Name = "flu-provision-0" }
+  tags { Name = "provision0" }
 }
 data "template_file" "provision_0_sh" {
-  count = "${local.is_provision_0}"
   template = "${file("./provision-0.sh")}"
   vars {
     db_host = "${aws_db_instance.fludb.address}"
@@ -165,6 +146,7 @@ data "template_file" "provision_0_sh" {
     db_setup_password = "${local.db_setup_password}"
     github_tar_bz2_base64 = "${local.github_tar_bz2_base64}"
     random_seed = "${local.random_seed_base64}"
+    vpc_dhparam_base64 = "${local.vpc_dhparam_base64}"
   }
 }
 

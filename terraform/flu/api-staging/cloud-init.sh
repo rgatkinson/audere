@@ -1,6 +1,9 @@
 #!/bin/bash
+# Copyright (c) 2018 by Audere
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
 set -euo pipefail
-set -x # TODO remove
+set -x
 umask 077
 
 function main() {
@@ -9,11 +12,12 @@ function main() {
   install_updates
   mount_creds
   adduser --gecos "Audere Api" --disabled-password api
-  chown -R "api:api" /creds/{github,env,pgpass} # TODO: move env,pgpass into /creds/db
+  chown -R "api:api" /creds/{github,db}
 
-  apt-get -y install git nginx postgresql-client-common
-  init_nginx
-  setup_api
+  apt-get -y install git postgresql-client-common
+  [[ "${mode}" != service ]] || init_nginx
+  start_api
+  [[ "${mode}" != migrate ]] || shutdown1
 }
 
 function install_updates() {
@@ -81,25 +85,30 @@ function mount_creds() {
   fi
 }
 
-function setup_api() {
+function start_api() {
   (
     readonly API=/home/api
-
     (base64 -d | tar xj --directory "$API") <<EOF
 ${init_tar_bz2_base64}
 EOF
     chown -R "api:api" "$API"
-    sudo -H --login --user=api bash "$API/init/api-init"
+    sudo -H --login --user=api bash "$API/init/api-init" "${mode}"
+    [[ "${mode}" != service ]] || pm2_startup
+  )
+}
+
+function pm2_startup() {
+  (
     export HOME=/home/api
-    set +x
-    . "$HOME/.api-rc"
-    set -x
-    $API/.yarn/bin/pm2 startup -u api --hp $API --service-name flu-api-pm2
+    set +x; . "$HOME/.nvm/nvm.sh"; set -x
+    $HOME/.yarn/bin/pm2 startup -u api --hp $API --service-name flu-api-pm2
   )
 }
 
 function init_nginx() {
   readonly VPC_CERT="/creds/vpc-cert"
+
+  apt-get -y install nginx
   rm /etc/nginx/sites-enabled/default
 
   sudo tee "/etc/nginx/sites-enabled/${domain}" <<EOF
@@ -146,6 +155,12 @@ EOF
   # Check the config before restarting
   nginx -t
   sudo service nginx restart
+}
+
+function shutdown1() {
+  echo "Migration script done, shutting down in 10 seconds."
+  sleep 1
+  systemctl poweroff
 }
 
 umask 022 # TODO remove
