@@ -51,17 +51,17 @@ function createAxios() {
 }
 
 function getApiBaseUrl(): string {
-  const apiUrl = new URL(
-    process.env.REACT_NATIVE_API_SERVER
-      ? process.env.REACT_NATIVE_API_SERVER
-      : "https://api.auderenow.io/api"
-  );
-  if (IS_NODE_ENV_DEVELOPMENT && process.env.REACT_NATIVE_LOCAL_API_SERVER) {
-    const expoUrl = new URL(Constants.linkingUri);
-    apiUrl.set("port", "3000");
-    apiUrl.set("protocol", "http");
-    apiUrl.set("hostname", expoUrl.hostname);
+  let api: string;
+  if (process.env.REACT_NATIVE_API_SERVER) {
+    api = process.env.REACT_NATIVE_API_SERVER;
+  } else if (
+    IS_NODE_ENV_DEVELOPMENT &&
+    process.env.REACT_NATIVE_USE_LOCAL_SERVER
+  ) {
+    api = `http://${new URL(Constants.linkingUri).hostname}:3000/api`;
+  } else {
+    api = "https://api.staging.auderenow.io";
   }
-  console.log("Server=" + apiUrl.toString());
-  return apiUrl.toString();
+  console.log(`API server: '${api}'`);
+  return api;
 }
