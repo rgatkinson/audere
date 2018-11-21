@@ -5,6 +5,10 @@
 
 locals {
   init_tar_bz2_base64 = "${file("${var.init_tar_bz2_base64_filename}")}"
+  ram_ssh_public_key_filename = "${format("%s/2018-ram.pub", "${var.ssh_public_key_directory}")}"
+  ram_ssh_public_key = "${file("${local.ram_ssh_public_key_filename}")}"
+  mmarucheck_ssh_public_key_filename = "${format("%s/2018-mmarucheck.pub", "${var.ssh_public_key_directory}")}"
+  mmarucheck_ssh_public_key = "${file("${local.mmarucheck_ssh_public_key_filename}")}"
 }
 
 provider "aws" {
@@ -42,6 +46,8 @@ data "template_file" "sequelize_migrate_sh" {
     commit = "master"
     mode = "migrate"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
+    ram_ssh_public_key = "${local.ram_ssh_public_key}"
+    mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
   }
 }
 
@@ -55,6 +61,8 @@ data "template_file" "service_init_sh" {
     commit = "master"
     mode = "service"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
+    ram_ssh_public_key = "${local.ram_ssh_public_key}"
+    mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
   }
 }
 

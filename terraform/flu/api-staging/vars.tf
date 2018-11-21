@@ -28,6 +28,10 @@ variable "init_tar_bz2_base64_filename" {
   default = "../../../local/flu-api-staging-init.tar.bz2.base64"
 }
 
+variable "ssh_public_key_directory" {
+  default = "../../../dev/ssh-keys"
+}
+
 variable "flu_api_instance_port" {
   description = "Port for HTTP requests inside VPC"
   default = 3000
