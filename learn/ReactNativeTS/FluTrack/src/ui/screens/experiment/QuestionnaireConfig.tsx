@@ -4,7 +4,7 @@ const hist = "ILLNESS HISTORY";
 const demo = "DEMOGRAPHIC INFORMATION";
 
 export const sectionDescriptions = new Map<string, string>([
-  [hist, "Next, we are going to ask you some quesitons about your health."],
+  [hist, "Next, we are going to ask you some questions about your health."],
   [demo, "Next, we are going to ask you some questions about yourself."],
 ]);
 
