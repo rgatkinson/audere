@@ -225,7 +225,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
 }
 
 resource "aws_security_group" "flu_api_elb" {
-  name = "flu-api-elb"
+  name = "${local.module_name}-elb"
 
   ingress {
     from_port = 80
@@ -253,7 +253,7 @@ resource "aws_security_group" "flu_api_elb" {
 }
 
 resource "aws_security_group" "flu_api_instance_from_elb" {
-  name = "flu-api-instance"
+  name = "${local.module_name}-instance"
 
   # TODO: allow ingress only from elb
   ingress {
