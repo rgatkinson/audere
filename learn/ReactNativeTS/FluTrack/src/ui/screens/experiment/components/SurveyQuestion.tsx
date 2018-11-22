@@ -195,12 +195,15 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
         ])
       );
 
-      const optionKeysToLabel = this.props.optionList && this.props.optionList.options ? new Map<string, string> (
-        this.props.optionList.options.map<[string, string]>(key => [
-          key,
-          this.props.t("surveyOption:" + key),
-        ])
-      ) : undefined;
+      const optionKeysToLabel =
+        this.props.optionList && this.props.optionList.options
+          ? new Map<string, string>(
+              this.props.optionList.options.map<[string, string]>(key => [
+                key,
+                this.props.t("surveyOption:" + key),
+              ])
+            )
+          : undefined;
 
       responses.set(this.props.id, {
         answer: {},

@@ -5,8 +5,10 @@
 
 import { default as user, UserState, UserAction } from "./user";
 import { default as form, FormState, FormAction } from "./form";
+import { default as admin, AdminState, AdminAction } from "./admin";
 
 export interface StoreState {
   user: UserState;
   form: FormState;
+  admin: AdminState;
 }

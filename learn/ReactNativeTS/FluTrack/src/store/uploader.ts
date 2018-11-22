@@ -74,15 +74,15 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         });
       }
       if (responses.has("AssignedSex")) {
-        switch (responses.get("AssignedSex")!.answer!.selectedButtonLabel) {
-          // What happens when we localize??
-          case "Male":
-            pouch.patient.gender = "male";
-            break;
-          case "Female":
-            pouch.patient.gender = "female";
+        let buttonKey = responses.get("AssignedSex")!.answer!.selectedButtonKey;
+        switch (buttonKey) {
+          case "male":
+          case "female":
+          case "other":
+            pouch.patient.gender = buttonKey;
             break;
           default:
+            // Prefer not to say
             pouch.patient.gender = "unknown";
         }
       }
