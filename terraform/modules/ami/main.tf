@@ -3,10 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-provider "aws" {
-  region = "us-west-2"
-}
-
 data "aws_ami" "ubuntu" {
   most_recent = true
 

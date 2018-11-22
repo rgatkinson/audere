@@ -165,8 +165,8 @@ function write_env() {
 }
 
 function shutdown1() {
-  echo "Provision script done, shutting down in 10 seconds."
-  sleep 1
+  echo "Provision script done, shutting down in 2 seconds."
+  sleep 2
   systemctl poweroff
 }
 

@@ -7,22 +7,9 @@ output "database_address" {
   value = "${aws_db_instance.fludb.address}"
 }
 
-output "api_prod_snapshot_id" {
-  value = "${element(
-    concat(
-      aws_ebs_snapshot.api_prod.*.id,
-      list("StillProvisioningNoSnapshotYet")
-    ),
-    0
-  )}"
-}
-
-output "api_staging_snapshot_id" {
-  value = "${element(
-    concat(
-      aws_ebs_snapshot.api_staging.*.id,
-      list("StillProvisioningNoSnapshotYet")
-    ),
-    0
-  )}"
+output "api_creds_snapshot_id" {
+  value = {
+    prod    = "${element(concat(aws_ebs_snapshot.api_prod.*.id,    list("StillProvisioningNoSnapshotYet")), 0)}"
+    staging = "${element(concat(aws_ebs_snapshot.api_staging.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
+  }
 }
