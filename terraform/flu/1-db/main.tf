@@ -17,6 +17,7 @@ provider "aws" {
 }
 
 module "ami" { source = "../../modules/ami" }
+
 data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_security_group" "default" { name = "default" }

@@ -167,4 +167,4 @@ umask 022 # TODO remove
 set -x # TODO remove
 export TERM="xterm-256color"
 main &>/setup.log
-sudo reboot
+reboot
