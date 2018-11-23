@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+terraform destroy "$@" -var key_path="$HOME/.ssh/id_rsa.pub" -var userid="$USER"
