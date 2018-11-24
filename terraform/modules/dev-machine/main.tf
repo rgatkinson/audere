@@ -49,6 +49,14 @@ resource "aws_volume_attachment" "dev_machine_home" {
   volume_id = "${aws_ebs_volume.dev_machine_home.id}"
 }
 
+resource "aws_route53_record" "api_record" {
+  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
+  name = "${var.userid}-dev.${data.aws_route53_zone.auderenow_io.name}"
+  type = "A"
+  ttl = "300"
+  records = ["${aws_instance.dev_machine.public_ip}"]
+}
+
 data "template_file" "provision_sh" {
   template = "${file("${path.module}/provision.sh")}"
   vars {
@@ -58,6 +66,14 @@ data "template_file" "provision_sh" {
   }
 }
 
-data "aws_security_group" "ssh" { name = "ssh" }
+data "aws_security_group" "ssh" {
+  name = "ssh"
+}
 
-data "aws_security_group" "default" { name = "default" }
+data "aws_security_group" "default" {
+  name = "default"
+}
+
+data "aws_route53_zone" "auderenow_io" {
+  name = "auderenow.io."
+}
