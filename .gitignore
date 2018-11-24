@@ -1,3 +1,4 @@
+/local
 /local/
 /scripts/*-letsencrypt.tar.bz2
 /**/*.code-workspace
