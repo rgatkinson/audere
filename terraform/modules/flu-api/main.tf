@@ -211,10 +211,10 @@ resource "aws_launch_configuration" "flu_api_instance" {
     "${aws_security_group.flu_api_instance_from_elb.id}",
   ]
 
-  # TODO: manually create a snapshot so we can tag it
   ebs_block_device {
     device_name = "/dev/sdf"
     snapshot_id = "${local.creds_snapshot_id}"
+    type = "gp2"
   }
 
   lifecycle {
