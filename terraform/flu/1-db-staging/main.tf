@@ -8,6 +8,7 @@ module "flu_db" {
 
   epoch = "${var.epoch}"
   provision = "${var.provision}"
+  environment = "staging"
   ami_id = "${module.ami.ubuntu}"
 }
 

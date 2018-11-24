@@ -20,6 +20,10 @@ variable "commit" {
   default = "master"
 }
 
+variable "creds_snapshot_id" {
+  description = "snapshot id of volume containing api credentials"
+}
+
 variable "ami_id" {
   description = "ami id to use"
 }

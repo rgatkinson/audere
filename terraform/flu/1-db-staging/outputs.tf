@@ -4,9 +4,9 @@
 // can be found in the LICENSE file distributed with this file.
 
 output "database_address" {
-  value = "${aws_db_instance.fludb.address}"
+  value = "${module.flu_db.database_address}"
 }
 
 output "api_creds_snapshot_id" {
-  value = "${element(concat(aws_ebs_snapshot.api.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
+  value = "${module.flu_db.api_creds_snapshot_id}"
 }

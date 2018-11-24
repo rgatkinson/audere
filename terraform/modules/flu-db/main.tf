@@ -97,6 +97,7 @@ resource "aws_instance" "flu_provision_0" {
 data "template_file" "provision_0_sh" {
   template = "${file("${path.module}/provision-0.sh")}"
   vars {
+    environment = "${var.environment}"
     db_host = "${aws_db_instance.fludb.address}"
     db_setup_user = "flusetup"
     db_setup_password = "${local.db_setup_password}"
@@ -106,30 +107,27 @@ data "template_file" "provision_0_sh" {
   }
 }
 
-resource "aws_volume_attachment" "provision_api_prod" {
+resource "aws_volume_attachment" "provision_api" {
   count = "${local.is_provision_0}"
   device_name = "/dev/sdf"
-  volume_id = "${aws_ebs_volume.api_prod.id}"
+  volume_id = "${aws_ebs_volume.api.id}"
   instance_id = "${aws_instance.flu_provision_0.id}"
 }
-resource "aws_volume_attachment" "provision_api_staging" {
-  count = "${local.is_provision_0}"
-  device_name = "/dev/sdg"
-  volume_id = "${aws_ebs_volume.api_staging.id}"
-  instance_id = "${aws_instance.flu_provision_0.id}"
-}
+
 resource "aws_volume_attachment" "provision_ram_creds" {
   count = "${local.is_provision_0}"
   device_name = "/dev/sdn"
   volume_id = "${aws_ebs_volume.ram_creds.id}"
   instance_id = "${aws_instance.flu_provision_0.id}"
 }
+
 resource "aws_volume_attachment" "provision_mmarucheck_creds" {
   count = "${local.is_provision_0}"
   device_name = "/dev/sdo"
   volume_id = "${aws_ebs_volume.mmarucheck_creds.id}"
   instance_id = "${aws_instance.flu_provision_0.id}"
 }
+
 resource "aws_volume_attachment" "provision_db_setup_creds" {
   count = "${local.is_provision_0}"
   device_name = "/dev/sdp"
@@ -137,30 +135,22 @@ resource "aws_volume_attachment" "provision_db_setup_creds" {
   instance_id = "${aws_instance.flu_provision_0.id}"
 }
 
-resource "aws_ebs_volume" "api_prod" {
+resource "aws_ebs_volume" "api" {
   availability_zone = "${var.availability_zone}"
   type = "gp2"
   encrypted = true
   size = 1
-  tags { Name = "flu-api-prod" }
-}
-resource "aws_ebs_snapshot" "api_prod" {
-  count = "${local.is_done_provisioning}"
-  volume_id = "${aws_ebs_volume.api_prod.id}"
-  tags { Name = "flu-api-prod" }
+  tags {
+    Name = "flu-api-${var.environment}"
+  }
 }
 
-resource "aws_ebs_volume" "api_staging" {
-  availability_zone = "${var.availability_zone}"
-  type = "gp2"
-  encrypted = true
-  size = 1
-  tags { Name = "flu-api-staging" }
-}
-resource "aws_ebs_snapshot" "api_staging" {
+resource "aws_ebs_snapshot" "api" {
   count = "${local.is_done_provisioning}"
-  volume_id = "${aws_ebs_volume.api_staging.id}"
-  tags { Name = "flu-api-staging" }
+  volume_id = "${aws_ebs_volume.api.id}"
+  tags {
+    Name = "flu-api-${var.environment}"
+  }
 }
 
 resource "aws_ebs_volume" "ram_creds" {
@@ -168,7 +158,9 @@ resource "aws_ebs_volume" "ram_creds" {
   type = "gp2"
   encrypted = true
   size = 1
-  tags { Name = "flu-ram-creds" }
+  tags {
+    Name = "flu-${var.environment}-ram-creds"
+  }
 }
 
 resource "aws_ebs_volume" "mmarucheck_creds" {
@@ -176,7 +168,9 @@ resource "aws_ebs_volume" "mmarucheck_creds" {
   type = "gp2"
   encrypted = true
   size = 1
-  tags { Name = "flu-mmarucheck-creds" }
+  tags {
+    Name = "flu-${var.environment}-mmarucheck-creds"
+  }
 }
 
 resource "aws_ebs_volume" "db_setup_creds" {
@@ -184,5 +178,7 @@ resource "aws_ebs_volume" "db_setup_creds" {
   type = "gp2"
   encrypted = true
   size = 1
-  tags { Name = "flu-db-setup-credentials" }
+  tags {
+    Name = "flu-${var.environment}-db-setup-creds"
+  }
 }

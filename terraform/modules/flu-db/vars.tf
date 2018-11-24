@@ -43,6 +43,10 @@ variable "provision" {
   default = "done"
 }
 
+variable "environment" {
+  description = "One of 'staging' or 'prod'"
+}
+
 variable "ami_id" {
 }
 

@@ -10,7 +10,6 @@ locals {
   }
   subdomain = "${local.subdomains["${var.environment}"]}"
   module_name = "flu-api-${var.environment}"
-  creds_snapshot_id = "${data.terraform_remote_state.db.api_creds_snapshot_id["${var.environment}"]}"
 
   availability_zones = ["us-west-2a"]
   flu_api_instance_port = 3000
@@ -21,13 +20,6 @@ locals {
   ssh_public_key_directory = "${path.module}/../../../dev/ssh-keys"
   ram_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-ram.pub")}"
   mmarucheck_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-mmarucheck.pub")}"
-}
-
-data "terraform_remote_state" "db" {
-  backend = "local"
-  config {
-    path = "../../1-db-${var.environment}/terraform.tfstate"
-  }
 }
 
 data "aws_security_group" "default" { name = "default" }
@@ -88,7 +80,7 @@ resource "aws_instance" "migrate_instance" {
 
   ebs_block_device {
     device_name = "/dev/sdf"
-    snapshot_id = "${local.creds_snapshot_id}"
+    snapshot_id = "${var.creds_snapshot_id}"
   }
 
   tags {
@@ -115,7 +107,7 @@ resource "aws_instance" "flu_api_instance" {
 
   ebs_block_device {
     device_name = "/dev/sdf"
-    snapshot_id = "${local.creds_snapshot_id}"
+    snapshot_id = "${var.creds_snapshot_id}"
   }
 
   tags {

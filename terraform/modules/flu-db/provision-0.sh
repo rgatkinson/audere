@@ -31,8 +31,7 @@ function install_updates() {
 
 function generate_passwords() {
   add_randomness
-  readonly api_prod_password="$(generate_password)"
-  readonly api_staging_password="$(generate_password)"
+  readonly api_password="$(generate_password)"
   readonly ram_password="$(generate_password)"
   readonly mmarucheck_password="$(generate_password)"
   readonly new_db_setup_password="$(generate_password)"
@@ -70,42 +69,30 @@ EOF
 create role rds_pgaudit;
 create extension pgaudit;
 
-create user api_prod encrypted password '$api_prod_password';
-create user api_staging encrypted password '$api_staging_password';
+create user api encrypted password '$api_password';
 
 create user ram encrypted password '$ram_password';
 grant rds_superuser to ram;
-grant api_staging to ram;
-grant api_prod to ram;
+grant api to ram;
 
 create user mmarucheck encrypted password '$mmarucheck_password';
 grant rds_superuser to mmarucheck;
-grant api_staging to mmarucheck;
-grant api_prod to mmarucheck;
+grant api to mmarucheck;
 
-grant api_prod to ${db_setup_user};
-create database flu_prod owner api_prod;
-grant api_staging to ${db_setup_user};
-create database flu_staging owner api_staging;
+grant api to ${db_setup_user};
+create database flu owner api;
 
 alter role ${db_setup_user} with encrypted password '$new_db_setup_password';
 EOF
 }
 
 function write_credentials() {
-  format_xvd "f" "api-prod"
-  write_pgpass "/mnt/api-prod/db" "flu_prod" "api_prod" "$api_prod_password"
-  write_env    "/mnt/api-prod/db" "flu_prod" "api_prod" "$api_prod_password"
-  write_github_key "/mnt/api-prod"
-  write_vpc_cert "api" "/mnt/api-prod"
-  umount "/mnt/api-prod"
-
-  format_xvd "g" "api-staging"
-  write_pgpass "/mnt/api-staging/db" "flu_staging" "api_staging" "$api_staging_password"
-  write_env    "/mnt/api-staging/db" "flu_staging" "api_staging" "$api_staging_password"
-  write_github_key "/mnt/api-staging"
-  write_vpc_cert "api.staging" "/mnt/api-staging"
-  umount "/mnt/api-staging"
+  format_xvd "f" "api"
+  write_pgpass "/mnt/api/db" "flu" "api" "$api_password"
+  write_env    "/mnt/api/db" "flu" "api" "$api_password"
+  write_github_key "/mnt/api"
+  write_vpc_cert "api.${environment}" "/mnt/api"
+  umount "/mnt/api"
 
   # Nobody other than ram should attach this volume.
   format_xvd "n" "ram-creds"
