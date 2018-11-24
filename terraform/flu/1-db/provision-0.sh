@@ -167,7 +167,7 @@ function write_env() {
 function shutdown1() {
   echo "Provision script done, shutting down in 2 seconds."
   sleep 2
-  systemctl poweroff
+  halt
 }
 
 function write_vpc_cert() {

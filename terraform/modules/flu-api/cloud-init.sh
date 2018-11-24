@@ -160,7 +160,7 @@ EOF
 function shutdown1() {
   echo "Migration script done, shutting down in 2 seconds."
   sleep 2
-  systemctl poweroff
+  halt
 }
 
 umask 022 # TODO remove
