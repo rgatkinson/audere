@@ -214,7 +214,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
   ebs_block_device {
     device_name = "/dev/sdf"
     snapshot_id = "${local.creds_snapshot_id}"
-    type = "gp2"
+    volume_type = "gp2"
   }
 
   lifecycle {
