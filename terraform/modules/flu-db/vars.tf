@@ -3,10 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-variable "availability_zone" {
-  default = "us-west-2a"
-}
-
 // Migration Epochs
 //
 // One goal of this infrastructure is to enable auditing.
@@ -37,10 +33,17 @@ variable "availability_zone" {
 // This runs all the migration scripts in order, and the final apply
 // switches out of "provision=true" mode and disables any provisioning
 // server(s).
-variable "epoch" { default = 0 }
+
+variable "epoch" {
+  default = 0
+}
+
 variable "provision" {
   description = "One of 'run', 'cleanup', or 'done'"
   default = "done"
+}
+
+variable "ami_id" {
 }
 
 variable "db_setup_password_filename" {
@@ -57,4 +60,8 @@ variable "random_seed_filename" {
 
 variable "vpc_dhparam_filename" {
   default = "../../../local/flu/creds/vpc.dhparam"
+}
+
+variable "availability_zone" {
+  default = "us-west-2a"
 }

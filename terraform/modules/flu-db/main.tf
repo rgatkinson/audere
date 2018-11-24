@@ -12,12 +12,6 @@ locals {
   vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
 }
 
-provider "aws" {
-  region = "us-west-2"
-}
-
-module "ami" { source = "../../modules/ami" }
-
 data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_security_group" "default" { name = "default" }
@@ -88,51 +82,12 @@ resource "aws_db_parameter_group" "fludb_parameters" {
   }
 }
 
-# resource "aws_instance" "ram_dev" {
-#   count = "${local.is_done_provisioning}"
-#   ami = "${module.ami.ubuntu}"
-#   instance_type = "t2.micro"
-#   availability_zone = "${var.availability_zone}"
-#   vpc_security_group_ids = [
-#     "${data.aws_security_group.ssh.id}",
-#     "${data.aws_security_group.default.id}",
-#   ]
-#   key_name = "2018-ram"
-#   tags { Name = "ram-dev" }
-# }
-# resource "aws_volume_attachment" "ram_dev_creds" {
-#   count = "${local.is_done_provisioning}"
-#   device_name = "/dev/sdf"
-#   volume_id = "${aws_ebs_volume.ram_creds.id}"
-#   instance_id = "${aws_instance.ram_dev.id}"
-# }
-
-# resource "aws_instance" "mmarucheck_dev" {
-#   count = "${local.is_done_provisioning}"
-#   ami = "${module.ami.ubuntu}"
-#   instance_type = "t2.micro"
-#   availability_zone = "${var.availability_zone}"
-#   vpc_security_group_ids = [
-#     "${data.aws_security_group.ssh.id}",
-#     "${data.aws_security_group.default.id}",
-#   ]
-#   key_name = "2018-mmarucheck"
-#   tags { Name = "mmarucheck-dev" }
-# }
-# resource "aws_volume_attachment" "mmarucheck_dev_creds" {
-#   count = "${local.is_done_provisioning}"
-#   device_name = "/dev/sdf"
-#   volume_id = "${aws_ebs_volume.mmarucheck_creds.id}"
-#   instance_id = "${aws_instance.mmarucheck_dev.id}"
-# }
-
 resource "aws_instance" "flu_provision_0" {
   count = "${local.is_provision_0}"
-  ami = "${module.ami.ubuntu}"
+  ami = "${var.ami_id}"
   instance_type = "t2.micro"
   availability_zone = "${var.availability_zone}"
   vpc_security_group_ids = [
-    "${data.aws_security_group.ssh.id}", // TODO remove
     "${data.aws_security_group.default.id}",
   ]
   user_data = "${data.template_file.provision_0_sh.rendered}"
@@ -140,7 +95,7 @@ resource "aws_instance" "flu_provision_0" {
   tags { Name = "provision0" }
 }
 data "template_file" "provision_0_sh" {
-  template = "${file("./provision-0.sh")}"
+  template = "${file("${path.module}/provision-0.sh")}"
   vars {
     db_host = "${aws_db_instance.fludb.address}"
     db_setup_user = "flusetup"

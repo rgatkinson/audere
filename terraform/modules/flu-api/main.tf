@@ -26,7 +26,7 @@ locals {
 data "terraform_remote_state" "db" {
   backend = "local"
   config {
-    path = "../1-db/terraform.tfstate"
+    path = "../../1-db-${var.environment}/terraform.tfstate"
   }
 }
 
