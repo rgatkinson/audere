@@ -10,7 +10,15 @@ module "flu_api" {
   service = "${var.service}"
   migrate = "${var.migrate}"
   commit = "${var.commit}"
+  creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   ami_id = "${module.ami.ubuntu}"
+}
+
+data "terraform_remote_state" "flu_db" {
+  backend = "local"
+  config {
+    path = "../1-db-prod/terraform.tfstate"
+  }
 }
 
 module "ami" {

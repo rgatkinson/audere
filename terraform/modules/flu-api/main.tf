@@ -12,7 +12,7 @@ locals {
   module_name = "flu-api-${var.environment}"
 
   availability_zones = ["us-west-2a"]
-  flu_api_instance_port = 3000
+  instance_port = 3000
 
   init_tar_bz2_base64_filename = "${path.module}/../../../local/flu-api-staging-init.tar.bz2.base64"
   init_tar_bz2_base64 = "${file("${local.init_tar_bz2_base64_filename}")}"
@@ -37,8 +37,8 @@ data "aws_acm_certificate" "auderenow_io" {
 data "template_file" "sequelize_migrate_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    api_port = "${local.flu_api_instance_port}"
-    subdomain = "api.${var.environment}"
+    api_port = "${local.instance_port}"
+    subdomain = "${local.subdomain}"
     domain = "${local.subdomain}.auderenow.io"
     service_url = "http://localhost:3000"
     commit = "master"
@@ -52,7 +52,7 @@ data "template_file" "sequelize_migrate_sh" {
 data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    api_port = "${local.flu_api_instance_port}"
+    api_port = "${local.instance_port}"
     subdomain = "${local.subdomain}"
     domain = "${local.subdomain}.auderenow.io"
     service_url = "http://localhost:3000"
@@ -84,7 +84,7 @@ resource "aws_instance" "migrate_instance" {
   }
 
   tags {
-    Name = "migrate"
+    Name = "${local.module_name}-migrate"
   }
 
   count = "${var.migrate == "true" ? 1 : 0}"
@@ -111,7 +111,7 @@ resource "aws_instance" "flu_api_instance" {
   }
 
   tags {
-    Name = "flu-api-${var.environment}"
+    Name = "${local.module_name}-single"
   }
 
   count = "${var.service == "single" ? 1 : 0}"
@@ -179,7 +179,7 @@ resource "aws_elb" "flu_api_elb" {
     unhealthy_threshold = 2
     timeout = 10
     interval = 120
-    target = "HTTP:${local.flu_api_instance_port}/"
+    target = "HTTP:${local.instance_port}/"
   }
 
   tags {
@@ -249,8 +249,8 @@ resource "aws_security_group" "flu_api_instance_from_elb" {
 
   # TODO: allow ingress only from elb
   ingress {
-    from_port = "${local.flu_api_instance_port}"
-    to_port = "${local.flu_api_instance_port}"
+    from_port = "${local.instance_port}"
+    to_port = "${local.instance_port}"
     protocol = "tcp"
     security_groups = [
       "${aws_security_group.flu_api_elb.id}"

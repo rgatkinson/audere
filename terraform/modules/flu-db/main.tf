@@ -8,6 +8,7 @@ locals {
   is_done_provisioning = "${(var.provision == "done") ? 1 : 0}"
   db_setup_password = "${file("${var.db_setup_password_filename}")}"
   github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
+  module_name = "flu-db-${var.environment}"
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
   vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
 }
@@ -17,7 +18,7 @@ data "aws_security_group" "ssh" { name = "ssh" }
 data "aws_security_group" "default" { name = "default" }
 
 resource "aws_db_instance" "fludb" {
-  identifier = "flu-db"
+  identifier = "${local.module_name}"
   engine = "postgres"
   engine_version = "10.5"
   availability_zone = "${var.availability_zone}"
@@ -34,7 +35,7 @@ resource "aws_db_instance" "fludb" {
   copy_tags_to_snapshot = true
   parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
   tags {
-    Name = "flu-db"
+    Name = "${local.module_name}"
   }
 
   skip_final_snapshot = true // TODO
@@ -54,7 +55,7 @@ resource "aws_db_instance" "fludb" {
 }
 
 resource "aws_db_parameter_group" "fludb_parameters" {
-  name = "fludb-parameters"
+  name = "${local.module_name}-parameters"
   family = "postgres10"
 
   parameter {
@@ -92,7 +93,9 @@ resource "aws_instance" "flu_provision_0" {
   ]
   user_data = "${data.template_file.provision_0_sh.rendered}"
   key_name = "2018-mmarucheck" // TODO remove
-  tags { Name = "provision0" }
+  tags {
+    Name = "${local.module_name}-provision0"
+  }
 }
 data "template_file" "provision_0_sh" {
   template = "${file("${path.module}/provision-0.sh")}"
