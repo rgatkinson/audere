@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 resource "aws_instance" "dev_machine" {
-  key_name = "2018-mmarucheck" # TODO remove
   availability_zone = "${var.availability_zone}"
 
   ami = "${var.ami_id}"

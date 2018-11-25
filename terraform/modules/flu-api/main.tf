@@ -193,7 +193,6 @@ resource "aws_elb" "flu_api_elb" {
 resource "aws_launch_configuration" "flu_api_instance" {
   image_id = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "2018-mmarucheck" # TODO remove
   user_data = "${data.template_file.service_init_sh.rendered}"
 
   # TODO: allow https from LB, from dev machines, postgres to db

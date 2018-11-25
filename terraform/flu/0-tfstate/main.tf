@@ -15,10 +15,9 @@ resource "aws_s3_bucket" "db_state" {
   versioning {
     enabled = true
   }
-  # TODO
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 output "api_staging_arn" {
@@ -29,8 +28,7 @@ resource "aws_s3_bucket" "api_staging_state" {
   versioning {
     enabled = true
   }
-  # TODO
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }

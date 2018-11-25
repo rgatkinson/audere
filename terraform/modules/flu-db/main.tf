@@ -40,18 +40,6 @@ resource "aws_db_instance" "fludb" {
 
   skip_final_snapshot = true // TODO
   deletion_protection = false // TODO
-
-  # TODO
-  # enabled_cloudwatch_logs_exports = [
-  #   "alert",
-  #   "audit",
-  #   "error",
-  #   "general",
-  #   "listener",
-  #   "slowquery",
-  # ]
-  # monitoring_role_arn = "${aws_iam_role.flu_rds_monitoring.arn}"
-  # monitoring_interval = "30"
 }
 
 resource "aws_db_parameter_group" "fludb_parameters" {
@@ -92,7 +80,6 @@ resource "aws_instance" "flu_provision_0" {
     "${data.aws_security_group.default.id}",
   ]
   user_data = "${data.template_file.provision_0_sh.rendered}"
-  key_name = "2018-mmarucheck" // TODO remove
   tags {
     Name = "${local.module_name}-provision0"
   }
