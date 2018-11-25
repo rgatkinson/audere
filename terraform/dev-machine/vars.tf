@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 variable "userid" {
-
 }
 
 variable "key_path" {
