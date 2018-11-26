@@ -24,18 +24,18 @@ interface Props {
 }))
 export default class SymptomsScreen extends React.PureComponent<Props> {
   symptoms = [
-    "Feeling feverish",
-    "Headaches",
-    "Cough",
-    "Diarrhea",
-    "Sore Throat",
-    "Nausea or vomiting",
-    "Runny or stuffy nose",
-    "Rash",
-    "Fatigue (tiredness)",
-    "Muscle or body aches",
-    "Increased trouble with breathing",
-    "Ear pain or ear discharge",
+    "feelingFeverish",
+    "headaches",
+    "cough",
+    "diarrhea",
+    "soreThroat",
+    "nauseaOrVomiting",
+    "runnyOrStuffyNose",
+    "rash",
+    "fatigue",
+    "muscleOrBodyAches",
+    "increasedTroubleBreathing",
+    "earPainOrDischarge",
   ];
 
   _onDone = () => {

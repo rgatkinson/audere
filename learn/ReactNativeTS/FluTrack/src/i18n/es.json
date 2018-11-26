@@ -21,5 +21,17 @@
     "introduction": "Hola, {{name}}",
     "startFormButton": "INICIAR FORMULARIO",
     "logoutButton": "CERRAR SESIÓN"
+  },
+  "surveyButton": {
+    "done": "Terminado",
+    "preferNotToSay": "Prefiero No Decirlo",
+    "yes": "Sí",
+    "no": "No",
+    "doNotKnow": "No lo sé",
+    "female": "Hembra",
+    "male": "Masculino",
+    "understand": "Entiendo",
+    "yesLot": "Sí mucho",
+    "yesLittle": "Sí un poco"
   }
 }

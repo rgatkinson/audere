@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../../store/index";
 import {
   Action,
@@ -29,7 +30,6 @@ type EnabledOption =
 
 interface ButtonConfig {
   key: string;
-  label: string;
   primary: boolean;
   enabled: EnabledOption;
 }
@@ -85,7 +85,7 @@ interface Props {
 @connect((state: StoreState) => ({
   surveyResponses: state.form!.surveyResponses,
 }))
-export default class SurveyQuestion extends Component<Props> {
+class SurveyQuestion extends Component<Props & WithNamespaces> {
   _getNextQuestion = (selectedButtonKey: string): string => {
     let nextQuestion = this.props.nextQuestion;
     if (this.props.conditionalNext) {
@@ -96,8 +96,8 @@ export default class SurveyQuestion extends Component<Props> {
           }
         });
       !!this.props.conditionalNext!.buttonKeys &&
-        this.props.conditionalNext!.buttonKeys!.forEach((question, label) => {
-          if (label === selectedButtonKey) {
+        this.props.conditionalNext!.buttonKeys!.forEach((question, key) => {
+          if (key === selectedButtonKey) {
             nextQuestion = question;
           }
         });
@@ -189,7 +189,10 @@ export default class SurveyQuestion extends Component<Props> {
 
     if (!responses.has(this.props.id)) {
       const buttonOptions = new Map<string, string>(
-        this.props.buttons.map(button => [button.key, button.label])
+        this.props.buttons.map<[string, string]>(button => [
+          button.key,
+          this.props.t("surveyButton:" + button.key),
+        ])
       );
       responses.set(this.props.id, {
         answer: {},
@@ -200,7 +203,10 @@ export default class SurveyQuestion extends Component<Props> {
       this.props.dispatch(setSurveyResponses(responses));
     }
 
-    return [responses, responses.has(this.props.id) ? responses.get(this.props.id)!.answer! : {}];
+    return [
+      responses,
+      responses.has(this.props.id) ? responses.get(this.props.id)!.answer! : {},
+    ];
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
@@ -343,7 +349,16 @@ export default class SurveyQuestion extends Component<Props> {
               ] = this._getAndInitializeResponse();
               responses.set(this.props.id, {
                 ...responses.get(this.props.id),
-                answer: { ...existingAnswer, options: data },
+                answer: {
+                  ...existingAnswer,
+                  options: data,
+                  optionKeysToLabel: new Map<string, string>(
+                    Array.from(data.keys()).map<[string, string]>(key => [
+                      key,
+                      this.props.t("surveyOption:" + key),
+                    ])
+                  ),
+                },
               });
               this.props.dispatch(setSurveyResponses(responses));
             }}
@@ -352,12 +367,12 @@ export default class SurveyQuestion extends Component<Props> {
         <View style={styles.buttonContainer}>
           {this.props.buttons.map(button => (
             <Button
-              checked={this._getSelectedButtonKey() === button.label}
+              checked={this._getSelectedButtonKey() === button.key}
               enabled={
                 this.props.active && this._getButtonEnabled(button.enabled)
               }
-              key={button.label}
-              label={button.label}
+              key={button.key}
+              label={this.props.t("surveyButton:" + button.key)}
               onPress={() => {
                 const [
                   responses,
@@ -371,7 +386,7 @@ export default class SurveyQuestion extends Component<Props> {
                   },
                 });
                 this.props.dispatch(setSurveyResponses(responses));
-                this.props.onNext(this._getNextQuestion(button.label));
+                this.props.onNext(this._getNextQuestion(button.key));
               }}
               primary={button.primary}
             />
@@ -405,3 +420,5 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
 });
+
+export default withNamespaces()<Props>(SurveyQuestion);

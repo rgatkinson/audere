@@ -11,6 +11,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { Icon } from "react-native-elements";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Description from "./Description";
 
 interface Props {
@@ -61,7 +62,7 @@ export default class OptionList extends React.Component<Props> {
             scrollEnabled={false}
             keyExtractor={item => item[0]}
             renderItem={({ item }) => (
-              <ListItem
+              <TranslatedListItem
                 id={item[0]}
                 selected={item[1]}
                 width={itemWidth}
@@ -103,7 +104,7 @@ interface ItemProps {
   onPressItem(id: string): void;
 }
 
-class ListItem extends React.PureComponent<ItemProps> {
+class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   _onPress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.props.onPressItem(this.props.id);
@@ -124,7 +125,7 @@ class ListItem extends React.PureComponent<ItemProps> {
             this.props.fullWidth ? styles.itemText : styles.itemTextFullWidth
           }
         >
-          {this.props.id}
+          {this.props.t("surveyOption:" + this.props.id)}
         </Text>
         {this.props.selected && (
           <Icon name="check" color="blue" size={20} type="feather" />
@@ -157,3 +158,5 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 });
+
+const TranslatedListItem = withNamespaces()<ItemProps>(ListItem);

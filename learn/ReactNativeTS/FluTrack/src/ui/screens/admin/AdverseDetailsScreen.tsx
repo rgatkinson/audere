@@ -63,11 +63,11 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
   };
   state = {
     bloodDrawEvents: OptionList.emptyMap([
-      "Bruising at site",
-      "Infection at site",
-      "Other",
+      "bruisingAtSite",
+      "infectionAtSite",
+      "other",
     ]),
-    nasalSwabEvents: OptionList.emptyMap(["Nosebleed", "Other"]),
+    nasalSwabEvents: OptionList.emptyMap(["nosebleed", "other"]),
     bloodDrawOther: "",
     nasalSwabOther: "",
   };

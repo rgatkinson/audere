@@ -25,10 +25,10 @@ interface Props {
 }))
 export default class EnrolledScreen extends React.PureComponent<Props> {
   options = [
-    "Send me a copy of my consent",
-    "To ask me questions about my illness/cold",
-    "To learn more about this study and related topics",
-    "All of the above",
+    "sendCopyOfMyConsent",
+    "askAboutMyIllness",
+    "learnAboutStudy",
+    "allOfTheAbove",
   ];
 
   _onDone = () => {

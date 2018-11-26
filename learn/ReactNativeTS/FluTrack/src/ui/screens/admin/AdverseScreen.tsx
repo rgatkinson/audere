@@ -114,7 +114,7 @@ export default class AdverseScreen extends React.Component<Props> {
               data={
                 this.props.adverseEventTypes instanceof Map
                   ? this.props.adverseEventTypes
-                  : OptionList.emptyMap(["Blood draw", "Nasal swab"])
+                  : OptionList.emptyMap(["bloodDraw", "nasalSwab"])
               }
               numColumns={1}
               multiSelect={true}
