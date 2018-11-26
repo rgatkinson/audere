@@ -4,12 +4,19 @@ import EditSettingButton from "./components/EditSettingButton";
 import Description from "../experiment/components/Description";
 import { View, StyleSheet, Text, Alert } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
+import { connect } from "react-redux";
+import { StoreState } from "../../../store/index";
+import { SurveyResponse } from "../../../store";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   screenProps: any;
+  surveyResponses: Map<string, SurveyResponse>;
 }
 
+@connect((state: StoreState) => ({
+  surveyResponses: state.form!.surveyResponses,
+}))
 export default class SettingsScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Admin Settings",
@@ -18,7 +25,16 @@ export default class SettingsScreen extends React.Component<Props> {
     this.props.navigation.push("Prior");
   };
   _onAdverseEvents = () => {
-    this.props.navigation.push("Adverse");
+    if (
+      !!this.props.surveyResponses &&
+      this.props.surveyResponses instanceof Map
+    ) {
+      this.props.navigation.push("Adverse");
+    } else {
+      Alert.alert(
+        "No participant responses recorded. Please complete survey first."
+      );
+    }
   };
   _onSpecimenScans = () => {
     Alert.alert("This feature is not part of IRB 1");

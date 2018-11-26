@@ -2,24 +2,27 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
-import { Action, setAdverseEventTypes } from "../../../store";
-import OptionTable from "./components/OptionTable";
+import { Action, SurveyResponse, setSurveyResponses } from "../../../store";
+import { PostCollectionQuestions } from "./QuestionConfig";
 import OptionList from "../experiment/components/OptionList";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
+import PostCollectionScreen from "./PostCollectionScreen";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   dispatch(action: Action): void;
   screenProps: any;
-  adverseEventTypes?: Map<string, boolean>;
+  surveyResponses?: Map<string, SurveyResponse>;
 }
 
 const participantName = "John Doe"; //TODO: read the name out of redux
+const WereThereAdverse = PostCollectionQuestions.WereThereAdverse;
+const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
-  adverseEventTypes: state.form!.adverseEventTypes,
+  surveyResponses: state.form!.surveyResponses,
 }))
-export default class AdverseScreen extends React.Component<Props> {
+export default class AdverseScreen extends PostCollectionScreen<Props> {
   static navigationOptions = ({
     navigation,
   }: {
@@ -48,19 +51,31 @@ export default class AdverseScreen extends React.Component<Props> {
           ),
         };
   };
-  state = {
-    adverseEvents: false,
-  };
   componentWillMount() {
     this.props.navigation.setParams({
       _onNext: this._onNext,
     });
   }
+  _adverseEventsOccurred = (): boolean => {
+    return (
+      !!this.props.surveyResponses &&
+      !!this.props.surveyResponses.get(WereThereAdverse.id) &&
+      !!this.props.surveyResponses.get(WereThereAdverse.id)!.answer!.options &&
+      !!this.props.surveyResponses
+        .get(WereThereAdverse.id)!
+        .answer!.options!.get("Yes")
+    );
+  };
   _onNext = () => {
-    if (this.state.adverseEvents) {
+    if (this._adverseEventsOccurred()) {
+      let options =
+        this.props.surveyResponses!.has(WhichProcedures.id) &&
+        !!this.props.surveyResponses!.get(WhichProcedures.id)!.answer
+          ? this.props.surveyResponses!.get(WhichProcedures.id)!.answer!.options
+          : null;
       if (
-        this.props.adverseEventTypes instanceof Map
-          ? Array.from(this.props.adverseEventTypes.values()).reduce(
+        !!options
+          ? Array.from(options.values()).reduce(
               (result, value) => result || value,
               false
             )
@@ -73,7 +88,7 @@ export default class AdverseScreen extends React.Component<Props> {
     } else {
       Alert.alert(
         "Submit?",
-        "No adverse events will be recorded for this collection.",
+        `No adverse events will be recorded for this collection for ${participantName}.`,
         [
           {
             text: "Cancel",
@@ -93,36 +108,60 @@ export default class AdverseScreen extends React.Component<Props> {
   render() {
     return (
       <ScreenContainer>
-        <Text style={styles.sectionHeaderText}>
-          Were there any adverse events experienced from the last collection for{" "}
-          {participantName}?
-        </Text>
-        <OptionTable
-          data={["Yes", "No"]}
+        <Text style={styles.sectionHeaderText}>{WereThereAdverse.title}</Text>
+        <OptionList
+          data={this._getSelectedOptionMap(
+            WereThereAdverse.id,
+            WereThereAdverse.optionList,
+            this.props.surveyResponses
+          )}
+          multiSelect={WereThereAdverse.optionList.multiSelect}
           numColumns={1}
-          selected={this.state.adverseEvents ? "Yes" : "No"}
-          onChange={(answer: string) =>
-            this.setState({ adverseEvents: answer === "Yes" })
-          }
+          fullWidth={true}
+          backgroundColor="#fff"
+          onChange={data => {
+            const [responses, existingAnswer] = this._getAndInitializeResponse(
+              WereThereAdverse.id,
+              WereThereAdverse.title,
+              this.props.surveyResponses
+            );
+            responses.set(WereThereAdverse.id, {
+              ...responses.get(WereThereAdverse.id),
+              answer: { ...existingAnswer, options: data },
+            });
+            this.props.dispatch(setSurveyResponses(responses));
+          }}
         />
-        {this.state.adverseEvents && (
+        {this._adverseEventsOccurred() && (
           <View>
             <Text style={styles.sectionHeaderText}>
-              Which procedures had adverse events?
+              {WhichProcedures.title}
             </Text>
             <OptionList
-              data={
-                this.props.adverseEventTypes instanceof Map
-                  ? this.props.adverseEventTypes
-                  : OptionList.emptyMap(["bloodDraw", "nasalSwab"])
-              }
+              data={this._getSelectedOptionMap(
+                WhichProcedures.id,
+                WhichProcedures.optionList,
+                this.props.surveyResponses
+              )}
+              multiSelect={WhichProcedures.optionList.multiSelect}
               numColumns={1}
-              multiSelect={true}
               fullWidth={true}
               backgroundColor="#fff"
-              onChange={adverseEventTypes =>
-                this.props.dispatch(setAdverseEventTypes(adverseEventTypes))
-              }
+              onChange={data => {
+                const [
+                  responses,
+                  existingAnswer,
+                ] = this._getAndInitializeResponse(
+                  WhichProcedures.id,
+                  WhichProcedures.title,
+                  this.props.surveyResponses
+                );
+                responses.set(WhichProcedures.id, {
+                  ...responses.get(WhichProcedures.id),
+                  answer: { ...existingAnswer, options: data },
+                });
+                this.props.dispatch(setSurveyResponses(responses));
+              }}
             />
           </View>
         )}
@@ -137,14 +176,6 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     marginLeft: 15,
     fontSize: 24,
-  },
-  descriptionText: {
-    marginLeft: 15,
-    fontSize: 17,
-  },
-  buttonView: {
-    justifyContent: "center",
-    alignItems: "center",
   },
   actionContainer: {
     alignItems: "center",

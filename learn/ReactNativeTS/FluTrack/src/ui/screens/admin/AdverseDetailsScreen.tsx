@@ -2,31 +2,27 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
-import { Action, setAdverseEvents } from "../../../store";
+import { Action, setSurveyResponses, SurveyResponse } from "../../../store";
 import OptionList from "../experiment/components/OptionList";
 import { Icon } from "react-native-elements";
-import {
-  Text,
-  StyleSheet,
-  View,
-  Alert,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
+import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
 import ScreenContainer from "../experiment/components/ScreenContainer";
+import PostCollectionScreen from "./PostCollectionScreen";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  adverseEventTypes: Map<string, boolean>;
+  surveyResponses?: Map<string, SurveyResponse>;
   dispatch(action: Action): void;
   screenProps: any;
 }
 
 const participantName = "John Doe"; //TODO: read the name out of redux
+const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
-  adverseEventTypes: state.form!.adverseEventTypes,
+  surveyResponses: state.form!.surveyResponses,
 }))
-export default class AdverseDetailsScreen extends React.Component<Props> {
+export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
   static navigationOptions = ({
     navigation,
   }: {
@@ -61,161 +57,118 @@ export default class AdverseDetailsScreen extends React.Component<Props> {
           ),
         };
   };
-  state = {
-    bloodDrawEvents: OptionList.emptyMap([
-      "bruisingAtSite",
-      "infectionAtSite",
-      "other",
-    ]),
-    nasalSwabEvents: OptionList.emptyMap(["nosebleed", "other"]),
-    bloodDrawOther: "",
-    nasalSwabOther: "",
-  };
-  bloodDrawOtherInput = React.createRef<TextInput>();
-  nasalSwabOtherInput = React.createRef<TextInput>();
   componentWillMount() {
     this.props.navigation.setParams({
       _onSave: this._onSave,
     });
   }
+  _eventsOccurred = (eventTypeKey: string): boolean => {
+    return (
+      !!this.props.surveyResponses &&
+      !!this.props.surveyResponses.get(WhichProcedures.id) &&
+      !!this.props.surveyResponses.get(WhichProcedures.id)!.answer!.options &&
+      !!this.props.surveyResponses
+        .get(WhichProcedures.id)!
+        .answer!.options!.get(eventTypeKey)
+    );
+  };
   _onSave = () => {
-    if (
-      this.state.bloodDrawEvents.get("Other") &&
-      this.state.bloodDrawOther.length === 0
-    ) {
+    let responseValid = true;
+    Object.keys(OptionKeyToQuestion).map(key => {
+      if (this._eventsOccurred(key) && responseValid) {
+        let options =
+          this.props.surveyResponses!.has(OptionKeyToQuestion[key].id) &&
+          !!this.props.surveyResponses!.get(OptionKeyToQuestion[key].id)!.answer
+            ? this.props.surveyResponses!.get(OptionKeyToQuestion[key].id)!
+                .answer!.options
+            : null;
+        responseValid = !!options
+          ? Array.from(options.values()).reduce(
+              (result, value) => result || value,
+              false
+            )
+          : false;
+        if (!responseValid) {
+          Alert.alert(`Please specify at least 1 adverse event for ${key}.`);
+          return;
+        }
+      }
+    });
+    if (responseValid) {
       Alert.alert(
-        "Please specify the other adverse event for the blood draw.",
-        "",
+        "Submit?",
+        `Adverse events will be recorded for ${participantName}.`,
         [
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
           {
             text: "OK",
             onPress: () => {
-              this.bloodDrawOtherInput.current!.focus();
+              this.props.navigation.popToTop();
             },
           },
         ]
       );
-      return;
     }
-    if (
-      this.state.nasalSwabEvents.get("Other") &&
-      this.state.nasalSwabOther.length === 0
-    ) {
-      Alert.alert(
-        "Please specify the other adverse event for the nasal swab.",
-        "",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              this.nasalSwabOtherInput.current!.focus();
-            },
-          },
-        ]
-      );
-      return;
-    }
-    // Flatten the two Maps into one string[] to store in redux
-    let adverseEvents = Array.from(this.state.bloodDrawEvents.keys())
-      .filter(event => this.state.bloodDrawEvents.get(event))
-      .map(
-        event =>
-          event === "Other"
-            ? "Blood draw: Other - " + this.state.bloodDrawOther
-            : "Blood draw: " + event
-      );
-    adverseEvents = adverseEvents.concat(
-      Array.from(this.state.nasalSwabEvents.keys())
-        .filter(event => this.state.nasalSwabEvents.get(event))
-        .map(
-          event =>
-            event === "Other"
-              ? "Nasal swab: Other - " + this.state.nasalSwabOther
-              : "Nasal swab: " + event
-        )
-    );
-    if (adverseEvents.length === 0) {
-      Alert.alert("Please select at least 1 adverse event.");
-      return;
-    }
-    Alert.alert(
-      "Submit?",
-      `${adverseEvents.length} adverse event${
-        adverseEvents.length == 1 ? "" : "s"
-      } will be recorded for this collection for ${participantName}.`,
-      [
-        {
-          text: "Cancel",
-          onPress: () => {},
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            this.props.dispatch(setAdverseEvents(adverseEvents));
-            this.props.navigation.popToTop();
-          },
-        },
-      ]
-    );
   };
 
   render() {
     return (
       <ScreenContainer>
-        {this.props.adverseEventTypes.get("Blood draw") && (
-          <View>
-            <Text style={styles.sectionHeaderText}>
-              For blood draw, what were the adverse events?
-            </Text>
-            <OptionList
-              data={this.state.bloodDrawEvents}
-              numColumns={1}
-              multiSelect={true}
-              fullWidth={true}
-              backgroundColor="#fff"
-              onChange={bloodDrawEvents => this.setState({ bloodDrawEvents })}
-            />
-            {this.state.bloodDrawEvents.get("Other") && (
-              <TextInput
-                style={styles.textInput}
-                ref={this.bloodDrawOtherInput}
-                autoFocus={true}
-                placeholder="Please specify other event"
-                onChangeText={bloodDrawOther =>
-                  this.setState({ bloodDrawOther })
-                }
-                value={this.state.bloodDrawOther}
+        {Object.keys(OptionKeyToQuestion)
+          .filter(key => this._eventsOccurred(key))
+          .map(key => (
+            <View key={key}>
+              <Text style={styles.sectionHeaderText}>
+                {OptionKeyToQuestion[key].title}
+              </Text>
+              <OptionList
+                data={this._getSelectedOptionMap(
+                  OptionKeyToQuestion[key].id,
+                  OptionKeyToQuestion[key].optionList,
+                  this.props.surveyResponses
+                )}
+                multiSelect={OptionKeyToQuestion[key].optionList.multiSelect}
+                withOther={OptionKeyToQuestion[key].optionList.withOther}
+                numColumns={1}
+                fullWidth={true}
+                backgroundColor="#fff"
+                onOtherChange={value => {
+                  const [
+                    responses,
+                    existingAnswer,
+                  ] = this._getAndInitializeResponse(
+                    OptionKeyToQuestion[key].id,
+                    OptionKeyToQuestion[key].title,
+                    this.props.surveyResponses
+                  );
+                  responses.set(OptionKeyToQuestion[key].id, {
+                    ...responses.get(OptionKeyToQuestion[key].id),
+                    answer: { ...existingAnswer, otherOption: value },
+                  });
+                  this.props.dispatch(setSurveyResponses(responses));
+                }}
+                onChange={data => {
+                  const [
+                    responses,
+                    existingAnswer,
+                  ] = this._getAndInitializeResponse(
+                    OptionKeyToQuestion[key].id,
+                    OptionKeyToQuestion[key].title,
+                    this.props.surveyResponses
+                  );
+                  responses.set(OptionKeyToQuestion[key].id, {
+                    ...responses.get(OptionKeyToQuestion[key].id),
+                    answer: { ...existingAnswer, options: data },
+                  });
+                  this.props.dispatch(setSurveyResponses(responses));
+                }}
               />
-            )}
-          </View>
-        )}
-        {this.props.adverseEventTypes.get("Nasal swab") && (
-          <View>
-            <Text style={styles.sectionHeaderText}>
-              For nasal swab, what were the adverse events?
-            </Text>
-            <OptionList
-              data={this.state.nasalSwabEvents}
-              numColumns={1}
-              multiSelect={true}
-              fullWidth={true}
-              backgroundColor="#fff"
-              onChange={nasalSwabEvents => this.setState({ nasalSwabEvents })}
-            />
-            {this.state.nasalSwabEvents.get("Other") && (
-              <TextInput
-                style={styles.textInput}
-                ref={this.nasalSwabOtherInput}
-                autoFocus={true}
-                placeholder="Please specify other event"
-                onChangeText={nasalSwabOther =>
-                  this.setState({ nasalSwabOther })
-                }
-                value={this.state.nasalSwabOther}
-              />
-            )}
-          </View>
-        )}
+            </View>
+          ))}
+        }
       </ScreenContainer>
     );
   }
@@ -227,17 +180,6 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     marginLeft: 15,
     fontSize: 24,
-  },
-  buttonView: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textInput: {
-    borderBottomColor: "#aaa",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    fontSize: 15,
-    marginHorizontal: 20,
-    marginBottom: 25,
   },
   actionContainer: {
     alignItems: "center",

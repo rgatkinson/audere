@@ -39,7 +39,7 @@ interface ConditionalNextConfig {
   buttonKeys?: Map<string, string>;
 }
 
-interface OptionListConfig {
+export interface OptionListConfig {
   options: string[];
   multiSelect: boolean;
   numColumns?: number;
@@ -238,7 +238,7 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
   };
 
   render() {
-    console.log(this.props.surveyResponses);
+    //console.log(this.props.surveyResponses);
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         {!this.props.active && (

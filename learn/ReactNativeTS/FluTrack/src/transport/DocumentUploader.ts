@@ -206,7 +206,7 @@ export class DocumentUploader {
       return null;
     }
 
-    logger.debug(`firstDocument returning:\n${JSON.stringify(item, null, 2)}`);
+    //logger.debug(`firstDocument returning:\n${JSON.stringify(item, null, 2)}`);
     return item;
   }
 

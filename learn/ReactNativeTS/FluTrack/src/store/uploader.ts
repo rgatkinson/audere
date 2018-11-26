@@ -144,7 +144,11 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
           item.answer.push({ valueDeclined: true });
         } else {
           if (item.answerOptions) {
-            if (!!options && surveyAnswer.selectedButtonKey === "done") {
+            if (
+              !!options &&
+              (surveyAnswer.selectedButtonKey === "done" ||
+                surveyAnswer.selectedButtonKey == null)
+            ) {
               // Actual multiple choice; find indices of all true values
               const optionArray: string[] = Array.from(options.keys());
               for (let i = 0; i < optionArray.length; i++) {
