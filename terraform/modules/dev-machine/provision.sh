@@ -15,6 +15,7 @@ function main() {
   write_sshkey ubuntu
   format_mount_home
   add_developer
+  allow_fuse_other
   install_updates
 }
 
