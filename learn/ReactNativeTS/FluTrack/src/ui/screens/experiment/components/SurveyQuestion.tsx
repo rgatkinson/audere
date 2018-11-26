@@ -200,7 +200,6 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
         questionId: this.props.id,
         questionText: this.props.title || this.props.description,
       });
-      this.props.dispatch(setSurveyResponses(responses));
     }
 
     return [
