@@ -36,10 +36,10 @@ function addressInputToPouchAddress(addressInput?: Address): AddressType {
     return {};
   }
   let pouchAddress: AddressType = {
-    city: addressInput!.city,
-    state: addressInput!.state,
-    postalCode: addressInput!.zipcode,
-    country: addressInput!.country,
+    city: addressInput.city,
+    state: addressInput.state,
+    postalCode: addressInput.zipcode,
+    country: addressInput.country,
   };
   pouchAddress.line = [];
   if (!!addressInput.location) {
