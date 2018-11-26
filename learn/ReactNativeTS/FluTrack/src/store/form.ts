@@ -36,7 +36,6 @@ export interface SurveyAnswer {
   addressInput?: Address;
   dateInput?: Date;
   options?: Map<string, boolean>;
-  optionKeysToLabel?: Map<string, string>;
   otherOption?: string;
   numberInput?: number;
   selectedButtonKey?: string;
@@ -46,6 +45,7 @@ export interface SurveyAnswer {
 export interface SurveyResponse {
   answer?: SurveyAnswer;
   buttonOptions?: Map<string, string>;
+  optionKeysToLabel?: Map<string, string>;
   questionId?: string;
   questionText?: string;
 }

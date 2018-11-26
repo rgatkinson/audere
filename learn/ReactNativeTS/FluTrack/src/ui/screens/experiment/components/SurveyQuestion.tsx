@@ -194,9 +194,18 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
           this.props.t("surveyButton:" + button.key),
         ])
       );
+
+      const optionKeysToLabel = this.props.optionList && this.props.optionList.options ? new Map<string, string> (
+        this.props.optionList.options.map<[string, string]>(key => [
+          key,
+          this.props.t("surveyOption:" + key),
+        ])
+      ) : undefined;
+
       responses.set(this.props.id, {
         answer: {},
         buttonOptions: buttonOptions,
+        optionKeysToLabel: optionKeysToLabel,
         questionId: this.props.id,
         questionText: this.props.title || this.props.description,
       });
@@ -322,7 +331,6 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
             onSubmit={() => {}}
           />
         )}
-
         {this.props.optionList && (
           <OptionList
             data={this._getSelectedOptionMap()}
@@ -351,12 +359,6 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
                 answer: {
                   ...existingAnswer,
                   options: data,
-                  optionKeysToLabel: new Map<string, string>(
-                    Array.from(data.keys()).map<[string, string]>(key => [
-                      key,
-                      this.props.t("surveyOption:" + key),
-                    ])
-                  ),
                 },
               });
               this.props.dispatch(setSurveyResponses(responses));
