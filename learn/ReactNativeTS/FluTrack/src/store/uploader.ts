@@ -5,7 +5,13 @@
 
 import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { default as user, UserState, UserAction } from "./user";
-import { default as form, FormState, FormAction, SurveyResponse } from "./form";
+import {
+  default as form,
+  FormState,
+  FormAction,
+  SurveyResponse,
+  Address,
+} from "./form";
 import { StoreState } from "./StoreState";
 import { DocumentUploader, createUploader } from "../transport";
 
@@ -23,6 +29,26 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     }
     return result;
   };
+}
+
+function addressInputToPouchAddress(addressInput?: Address): AddressType {
+  if (!addressInput) {
+    return {};
+  }
+  let pouchAddress: AddressType = {
+    city: addressInput!.city,
+    state: addressInput!.state,
+    postalCode: addressInput!.zipcode,
+    country: addressInput!.country,
+  };
+  pouchAddress.line = [];
+  if (!!addressInput.location) {
+    pouchAddress.line.push(addressInput.location);
+  }
+  if (!!addressInput.address) {
+    pouchAddress.line.push(addressInput.address);
+  }
+  return pouchAddress;
 }
 
 // Exported so we can write unit tests for this
@@ -52,25 +78,17 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
       if (responses.has("Address")) {
         pouch.patient.address.push({
           use: "home",
-          line: [responses.get("Address")!.answer!.addressInput!.address],
-          city: responses.get("Address")!.answer!.addressInput!.city,
-          state: responses.get("Address")!.answer!.addressInput!.state,
-          postalCode: responses.get("Address")!.answer!.addressInput!.zipcode,
-          country: responses.get("Address")!.answer!.addressInput!.country,
+          ...addressInputToPouchAddress(
+            responses.get("Address")!.answer!.addressInput
+          ),
         });
       }
       if (responses.has("WorkAddress")) {
         pouch.patient.address.push({
           use: "work",
-          line: [
-            responses.get("WorkAddress")!.answer!.addressInput!.location,
-            responses.get("WorkAddress")!.answer!.addressInput!.address,
-          ],
-          city: responses.get("WorkAddress")!.answer!.addressInput!.city,
-          state: responses.get("WorkAddress")!.answer!.addressInput!.state,
-          postalCode: responses.get("WorkAddress")!.answer!.addressInput!
-            .zipcode,
-          country: responses.get("WorkAddress")!.answer!.addressInput!.country,
+          ...addressInputToPouchAddress(
+            responses.get("WorkAddress")!.answer!.addressInput
+          ),
         });
       }
       if (responses.has("AssignedSex")) {
@@ -86,29 +104,149 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
             pouch.patient.gender = "unknown";
         }
       }
-      //TODO: Set pouch.patient.responses[] with surveyResponses after
-      //      surveyResponses is modified to more closely match responses[]
+      //Set all surveyResponses into pouch.patient.responses
+      let items: ItemType[] = [];
+      for (const [key, value] of responses.entries()) {
+        let item: ItemType = {
+          id: key,
+          text: value!.questionText,
+          answer: [],
+        };
+        const surveyAnswer = value.answer;
+        if (!surveyAnswer) {
+          continue;
+        }
+        let answerOptions: { id: string; text?: string }[] = [];
+        const options = surveyAnswer.options;
+        if (!!options) {
+          // TODO Change this to optionKeyToLabel after Jenny is done
+          for (const option of options.keys()) {
+            answerOptions.push({ id: option, text: option });
+          }
+        }
+        const buttonOptions = value.buttonOptions;
+        // Consider all buttons besides "done" and "preferNotToSay" to be
+        // multiple choice options
+        if (!!buttonOptions) {
+          for (const button of buttonOptions.keys()) {
+            if (button !== "preferNotToSay" && button !== "done") {
+              answerOptions.push({
+                id: button,
+                text: buttonOptions.get(button),
+              });
+            }
+          }
+        }
+        if (answerOptions.length > 0) {
+          item.answerOptions = answerOptions;
+        }
+        if (surveyAnswer.selectedButtonKey === "preferNotToSay") {
+          item.answer.push({ valueDeclined: true });
+        } else {
+          if (item.answerOptions) {
+            if (!!options && surveyAnswer.selectedButtonKey === "done") {
+              // Actual multiple choice; find indices of all true values
+              const optionArray: string[] = Array.from(options.keys());
+              for (let i = 0; i < optionArray.length; i++) {
+                if (options.get(optionArray[i])) {
+                  item.answer.push({ valueInteger: i });
+                  // ASSUME the "Other" choice is always keyed "other"
+                  if (
+                    !!surveyAnswer.otherOption &&
+                    optionArray[i].toLowerCase() === "other"
+                  ) {
+                    item.answer.push({
+                      valueOther: {
+                        selectedIndex: i,
+                        valueString: surveyAnswer.otherOption,
+                      },
+                    });
+                  }
+                }
+              }
+            } else {
+              // Check if user pressed other button ("yes" "no" "do not know")
+              const choiceArray = item.answerOptions;
+              for (let i = 0; i < choiceArray.length; i++) {
+                if (choiceArray[i].id === surveyAnswer.selectedButtonKey) {
+                  item.answer.push({ valueInteger: i });
+                }
+              }
+            }
+          }
+          if (surveyAnswer.addressInput) {
+            item.answer.push({
+              valueAddress: addressInputToPouchAddress(
+                surveyAnswer.addressInput
+              ),
+            });
+          }
+          if (surveyAnswer.dateInput) {
+            item.answer.push({
+              valueDateTime: surveyAnswer.dateInput.toISOString(),
+            });
+          }
+          if (surveyAnswer.numberInput) {
+            if (Number.isInteger(surveyAnswer.numberInput)) {
+              item.answer.push({ valueInteger: surveyAnswer.numberInput });
+            } else {
+              item.answer.push({ valueDecimal: surveyAnswer.numberInput });
+            }
+          }
+          if (surveyAnswer.textInput) {
+            item.answer.push({ valueString: surveyAnswer.textInput });
+          }
+        }
+        items.push(item);
+      }
+      console.log(items);
+      pouch.patient.responses.push({ id: "Questionnaire", item: items });
     }
   }
   return pouch;
 }
+
+type AddressType = {
+  line?: string[];
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+};
+
+type ItemType = {
+  // human-readable, locale-independent id of the question
+  id: string;
+  // localized text of question
+  text?: string;
+  // For multiple-choice questions, the exact text of each option, in order
+  answerOptions?: {
+    id: string;
+    text?: string;
+  }[];
+  answer: {
+    valueBoolean?: boolean;
+    valueDateTime?: string; // FHIR:dateTime
+    valueDecimal?: number;
+    valueInteger?: number;
+    valueString?: string;
+    valueAddress?: AddressType;
+    valueOther?: {
+      // Index in answerOptions of the selected choice
+      selectedIndex: Number;
+      valueString: String;
+    };
+    valueDeclined?: boolean;
+  }[];
+};
 
 type PouchDoc = {
   patient: {
     name?: string;
     birthDate?: string; // FHIR:date
     gender?: "male" | "female" | "other" | "unknown";
-    telecom: [{ system: string; value?: string }?];
-    address: [
-      {
-        use: "home" | "work";
-        line?: (string | undefined)[];
-        city?: string;
-        state?: string;
-        postalCode?: string;
-        country?: string;
-      }?
-    ];
+    telecom: { system: "phone" | "sms" | "email"; value?: string }[];
+    address: ({ use: "home" | "work" } & AddressType)[];
     consent?: {
       terms: string;
       name: string;
@@ -116,39 +254,10 @@ type PouchDoc = {
       // Base64-encoded PNG of their signature
       signature: string;
     };
-    responses?: [
-      {
-        // This is loosely based on the FHIR 'QuestionnaireResponse' resource
-        // https://www.hl7.org/fhir/questionnaireresponse.html
-
-        id: string;
-        item: [
-          {
-            // human-readable, locale-independent id of the question
-            id: string;
-            // localized text of question
-            text: string;
-            // For multiple-choice questions, the exact text of each option, in order
-            answerOptions?: [
-              {
-                id: string;
-                text: string;
-              }
-            ];
-            // 0 or 1 of these should be included
-            answer: [
-              {
-                valueBoolean?: boolean;
-                valueDateTime?: string; // FHIR:dateTime
-                valueDecimal?: number;
-                valueInteger?: number;
-                valueString?: string;
-              }
-            ];
-          }
-        ];
-      }?
-    ];
+    responses: {
+      id: string;
+      item: ItemType[];
+    }[];
     // TODO: add events: []
   };
 };
