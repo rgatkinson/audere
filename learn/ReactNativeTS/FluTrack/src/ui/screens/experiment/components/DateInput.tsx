@@ -25,6 +25,14 @@ export default class DateInput extends React.Component<Props> {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({ open: this.props.autoFocus });
   }
+  //https://github.com/date-fns/date-fns/issues/489
+  formatDate(date: Date): string {
+    const [year, month, day] = date
+      .toISOString()
+      .substr(0, 10)
+      .split("-");
+    return format(new Date(+year, +month - 1, +day), "MMMM D, YYYY");
+  }
 
   render() {
     return (
@@ -34,9 +42,7 @@ export default class DateInput extends React.Component<Props> {
           onPress={() => this.setState({ open: true })}
         >
           {this.props.date ? (
-            <Text style={styles.text}>
-              {format(this.props.date, "MMMM D, YYYY")}
-            </Text>
+            <Text style={styles.text}>{this.formatDate(this.props.date)}</Text>
           ) : (
             <Text style={[styles.text, styles.placeholder]}>
               {this.props.placeholder}
