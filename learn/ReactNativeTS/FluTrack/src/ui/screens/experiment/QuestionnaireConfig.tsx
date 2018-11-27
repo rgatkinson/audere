@@ -465,7 +465,7 @@ export const questionnaire = [
     section: hist,
     data: {
       id: "DoctorThisYear",
-      nextQuestion: "AssignedSex",
+      nextQuestion: "BirthDate",
       title:
         "In the last year, how many times have you been to a doctor for a cough or a cold?",
       optionList: {
@@ -476,6 +476,21 @@ export const questionnaire = [
         { key: "done", primary: true, enabled: "withOption" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "BirthDate",
+      nextQuestion: "AssignedSex",
+      title: "What is your date of birth?",
+      dateInput: {
+        autoFocus: false,
+        placeholder: "Date",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withDate" },
       ],
     },
   },
