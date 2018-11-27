@@ -121,7 +121,10 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         if (!!options) {
           // TODO Change this to optionKeyToLabel after Jenny is done
           for (const option of options.keys()) {
-            answerOptions.push({ id: option, text: option });
+            answerOptions.push({
+              id: option,
+              text: value.optionKeysToLabel!.get(option),
+            });
           }
         }
         const buttonOptions = value.buttonOptions;

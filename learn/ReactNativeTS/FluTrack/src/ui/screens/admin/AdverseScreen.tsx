@@ -2,12 +2,18 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
-import { Action, SurveyResponse, setSurveyResponses } from "../../../store";
+import {
+  Action,
+  SurveyResponse,
+  setSurveyResponses,
+  SurveyAnswer,
+} from "../../../store";
 import { PostCollectionQuestions } from "./QuestionConfig";
 import OptionList from "../experiment/components/OptionList";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import ScreenContainer from "../experiment/components/ScreenContainer";
-import PostCollectionScreen from "./PostCollectionScreen";
+import { withNamespaces, WithNamespaces } from "react-i18next";
+import { OptionListConfig } from "../experiment/components/SurveyQuestion";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -22,7 +28,7 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   surveyResponses: state.form!.surveyResponses,
 }))
-export default class AdverseScreen extends PostCollectionScreen<Props> {
+class AdverseScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({
     navigation,
   }: {
@@ -56,6 +62,48 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
       _onNext: this._onNext,
     });
   }
+  _getSelectedOptionMap = (
+    id: string,
+    optionList: OptionListConfig
+  ): Map<string, boolean> => {
+    return !!this.props.surveyResponses &&
+      this.props.surveyResponses!.has(id) &&
+      !!this.props.surveyResponses!.get(id)!.answer &&
+      !!this.props.surveyResponses!.get(id)!.answer!.options
+      ? new Map<string, boolean>(
+          this.props.surveyResponses.get(id)!.answer!.options!
+        )
+      : OptionList.emptyMap(optionList.options);
+  };
+  _getAndInitializeResponse = (
+    id: string,
+    title: string,
+    optionList: OptionListConfig
+  ): [Map<string, SurveyResponse>, SurveyAnswer] => {
+    const responses = this.props.surveyResponses
+      ? new Map<string, SurveyResponse>(this.props.surveyResponses)
+      : new Map<string, SurveyResponse>();
+
+    if (!responses.has(id)) {
+      const optionKeysToLabel =
+        optionList && optionList.options
+          ? new Map<string, string>(
+              optionList.options.map<[string, string]>(key => [
+                key,
+                this.props.t("surveyOption:" + key),
+              ])
+            )
+          : undefined;
+      responses.set(id, {
+        answer: {},
+        optionKeysToLabel: optionKeysToLabel,
+        questionId: id,
+        questionText: title,
+      });
+    }
+
+    return [responses, responses.has(id) ? responses.get(id)!.answer! : {}];
+  };
   _adverseEventsOccurred = (): boolean => {
     return (
       !!this.props.surveyResponses &&
@@ -63,7 +111,7 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
       !!this.props.surveyResponses.get(WereThereAdverse.id)!.answer!.options &&
       !!this.props.surveyResponses
         .get(WereThereAdverse.id)!
-        .answer!.options!.get("Yes")
+        .answer!.options!.get("yes")
     );
   };
   _onNext = () => {
@@ -112,8 +160,7 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
         <OptionList
           data={this._getSelectedOptionMap(
             WereThereAdverse.id,
-            WereThereAdverse.optionList,
-            this.props.surveyResponses
+            WereThereAdverse.optionList
           )}
           multiSelect={WereThereAdverse.optionList.multiSelect}
           numColumns={1}
@@ -123,7 +170,7 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
             const [responses, existingAnswer] = this._getAndInitializeResponse(
               WereThereAdverse.id,
               WereThereAdverse.title,
-              this.props.surveyResponses
+              WereThereAdverse.optionList
             );
             responses.set(WereThereAdverse.id, {
               ...responses.get(WereThereAdverse.id),
@@ -140,8 +187,7 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
             <OptionList
               data={this._getSelectedOptionMap(
                 WhichProcedures.id,
-                WhichProcedures.optionList,
-                this.props.surveyResponses
+                WhichProcedures.optionList
               )}
               multiSelect={WhichProcedures.optionList.multiSelect}
               numColumns={1}
@@ -154,7 +200,7 @@ export default class AdverseScreen extends PostCollectionScreen<Props> {
                 ] = this._getAndInitializeResponse(
                   WhichProcedures.id,
                   WhichProcedures.title,
-                  this.props.surveyResponses
+                  WhichProcedures.optionList
                 );
                 responses.set(WhichProcedures.id, {
                   ...responses.get(WhichProcedures.id),
@@ -191,3 +237,5 @@ const styles = StyleSheet.create({
     letterSpacing: -0.41,
   },
 });
+
+export default withNamespaces()<Props>(AdverseScreen);

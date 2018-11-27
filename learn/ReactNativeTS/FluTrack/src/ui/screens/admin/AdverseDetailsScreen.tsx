@@ -2,13 +2,19 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
-import { Action, setSurveyResponses, SurveyResponse } from "../../../store";
+import {
+  Action,
+  setSurveyResponses,
+  SurveyResponse,
+  SurveyAnswer,
+} from "../../../store";
 import OptionList from "../experiment/components/OptionList";
 import { Icon } from "react-native-elements";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
 import ScreenContainer from "../experiment/components/ScreenContainer";
-import PostCollectionScreen from "./PostCollectionScreen";
+import { withNamespaces, WithNamespaces } from "react-i18next";
+import { OptionListConfig } from "../experiment/components/SurveyQuestion";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -22,7 +28,7 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   surveyResponses: state.form!.surveyResponses,
 }))
-export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
+class AdverseDetailsScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({
     navigation,
   }: {
@@ -62,6 +68,48 @@ export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
       _onSave: this._onSave,
     });
   }
+  _getSelectedOptionMap = (
+    id: string,
+    optionList: OptionListConfig
+  ): Map<string, boolean> => {
+    return !!this.props.surveyResponses &&
+      this.props.surveyResponses!.has(id) &&
+      !!this.props.surveyResponses!.get(id)!.answer &&
+      !!this.props.surveyResponses!.get(id)!.answer!.options
+      ? new Map<string, boolean>(
+          this.props.surveyResponses.get(id)!.answer!.options!
+        )
+      : OptionList.emptyMap(optionList.options);
+  };
+  _getAndInitializeResponse = (
+    id: string,
+    title: string,
+    optionList: OptionListConfig
+  ): [Map<string, SurveyResponse>, SurveyAnswer] => {
+    const responses = this.props.surveyResponses
+      ? new Map<string, SurveyResponse>(this.props.surveyResponses)
+      : new Map<string, SurveyResponse>();
+
+    if (!responses.has(id)) {
+      const optionKeysToLabel =
+        optionList && optionList.options
+          ? new Map<string, string>(
+              optionList.options.map<[string, string]>(key => [
+                key,
+                this.props.t("surveyOption:" + key),
+              ])
+            )
+          : undefined;
+      responses.set(id, {
+        answer: {},
+        optionKeysToLabel: optionKeysToLabel,
+        questionId: id,
+        questionText: title,
+      });
+    }
+
+    return [responses, responses.has(id) ? responses.get(id)!.answer! : {}];
+  };
   _eventsOccurred = (eventTypeKey: string): boolean => {
     return (
       !!this.props.surveyResponses &&
@@ -89,7 +137,11 @@ export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
             )
           : false;
         if (!responseValid) {
-          Alert.alert(`Please specify at least 1 adverse event for ${key}.`);
+          Alert.alert(
+            `Please specify at least 1 adverse event for ${this.props.t(
+              "surveyOption:" + key
+            )}.`
+          );
           return;
         }
       }
@@ -127,8 +179,7 @@ export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
               <OptionList
                 data={this._getSelectedOptionMap(
                   OptionKeyToQuestion[key].id,
-                  OptionKeyToQuestion[key].optionList,
-                  this.props.surveyResponses
+                  OptionKeyToQuestion[key].optionList
                 )}
                 multiSelect={OptionKeyToQuestion[key].optionList.multiSelect}
                 withOther={OptionKeyToQuestion[key].optionList.withOther}
@@ -142,7 +193,7 @@ export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
                   ] = this._getAndInitializeResponse(
                     OptionKeyToQuestion[key].id,
                     OptionKeyToQuestion[key].title,
-                    this.props.surveyResponses
+                    OptionKeyToQuestion[key].optionList
                   );
                   responses.set(OptionKeyToQuestion[key].id, {
                     ...responses.get(OptionKeyToQuestion[key].id),
@@ -157,7 +208,7 @@ export default class AdverseDetailsScreen extends PostCollectionScreen<Props> {
                   ] = this._getAndInitializeResponse(
                     OptionKeyToQuestion[key].id,
                     OptionKeyToQuestion[key].title,
-                    this.props.surveyResponses
+                    OptionKeyToQuestion[key].optionList
                   );
                   responses.set(OptionKeyToQuestion[key].id, {
                     ...responses.get(OptionKeyToQuestion[key].id),
@@ -200,3 +251,5 @@ const styles = StyleSheet.create({
     letterSpacing: -0.41,
   },
 });
+
+export default withNamespaces()<Props>(AdverseDetailsScreen);
