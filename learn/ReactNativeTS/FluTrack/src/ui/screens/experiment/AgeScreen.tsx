@@ -47,7 +47,9 @@ export default class AgeScreen extends React.Component<Props> {
             placeholder="Number of years"
             returnKeyType="done"
             value={this.props.age ? this.props.age + "" : undefined}
-            onChange={text => this.props.dispatch(setAge(parseInt(text)))}
+            onChange={text => {
+              this.props.dispatch(setAge(parseInt(text)));
+            }}
             onSubmit={() => {
               if (this.props.age < 1) {
                 this.monthInput.current!.focus();

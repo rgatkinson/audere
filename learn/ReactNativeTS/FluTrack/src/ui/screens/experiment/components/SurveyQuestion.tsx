@@ -1,15 +1,6 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { StoreState } from "../../../../store/index";
-import {
-  Action,
-  Address,
-  SurveyAnswer,
-  SurveyResponse,
-  setSurveyResponses,
-} from "../../../../store";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -18,6 +9,7 @@ import NumberInput from "./NumberInput";
 import OptionList from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
+import reduxWriter, { ReduxWriterProps } from "../ReduxWriter";
 
 type EnabledOption =
   | true
@@ -76,16 +68,13 @@ interface Props {
   title: string;
   textInput: TextInputConfig;
   optionList: OptionListConfig;
-  surveyResponses?: Map<string, SurveyResponse>;
-  dispatch(action: Action): void;
   onActivate(): void;
   onNext(nextQuestion: string): void;
 }
 
-@connect((state: StoreState) => ({
-  surveyResponses: state.form!.surveyResponses,
-}))
-class SurveyQuestion extends Component<Props & WithNamespaces> {
+class SurveyQuestion extends Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
   _getNextQuestion = (selectedButtonKey: string): string => {
     let nextQuestion = this.props.nextQuestion;
     if (this.props.conditionalNext) {
@@ -107,117 +96,10 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
   };
 
   _getSelectedOptionMap = (): Map<string, boolean> => {
-    return !!this.props.surveyResponses &&
-      this.props.surveyResponses!.has(this.props.id) &&
-      !!this.props.surveyResponses!.get(this.props.id)!.answer &&
-      !!this.props.surveyResponses!.get(this.props.id)!.answer!.options
-      ? new Map<string, boolean>(
-          this.props.surveyResponses.get(this.props.id)!.answer!.options!
-        )
+    const options = this.props.getAnswer("options");
+    return options
+      ? new Map<string, boolean>(options)
       : OptionList.emptyMap(this.props.optionList.options);
-  };
-
-  // TODO refactor this mess
-  _getEnteredTextInput = (): string | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!.textInput) ||
-      null
-    );
-  };
-
-  _getEnteredNumberInput = (): number | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!.numberInput) ||
-      null
-    );
-  };
-
-  _getOtherOption = (): string | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!.otherOption) ||
-      null
-    );
-  };
-
-  _getEnteredAddress = (): Address | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!.addressInput) ||
-      null
-    );
-  };
-
-  _getEnteredDate = (): Date | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!.dateInput) ||
-      null
-    );
-  };
-
-  _getSelectedButtonKey = (): string | null => {
-    return (
-      (!!this.props.surveyResponses &&
-        this.props.surveyResponses!.has(this.props.id) &&
-        this.props.surveyResponses.get(this.props.id)!.answer &&
-        this.props.surveyResponses.get(this.props.id)!.answer!
-          .selectedButtonKey) ||
-      null
-    );
-  };
-
-  _getAndInitializeResponse = (): [
-    Map<string, SurveyResponse>,
-    SurveyAnswer
-  ] => {
-    const responses = this.props.surveyResponses
-      ? new Map<string, SurveyResponse>(this.props.surveyResponses)
-      : new Map<string, SurveyResponse>();
-
-    if (!responses.has(this.props.id)) {
-      const buttonOptions = new Map<string, string>(
-        this.props.buttons.map<[string, string]>(button => [
-          button.key,
-          this.props.t("surveyButton:" + button.key),
-        ])
-      );
-
-      const optionKeysToLabel =
-        this.props.optionList && this.props.optionList.options
-          ? new Map<string, string>(
-              this.props.optionList.options.map<[string, string]>(key => [
-                key,
-                this.props.t("surveyOption:" + key),
-              ])
-            )
-          : undefined;
-
-      responses.set(this.props.id, {
-        answer: {},
-        buttonOptions: buttonOptions,
-        optionKeysToLabel: optionKeysToLabel,
-        questionId: this.props.id,
-        questionText: this.props.title || this.props.description,
-      });
-    }
-
-    return [
-      responses,
-      responses.has(this.props.id) ? responses.get(this.props.id)!.answer! : {},
-    ];
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
@@ -226,19 +108,18 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
         (val, entry) => val || entry
       );
     } else if (enabledStatus === "withText") {
-      return !!this._getEnteredTextInput();
+      return !!this.props.getAnswer("textInput");
     } else if (enabledStatus === "withNumber") {
-      return !!this._getEnteredNumberInput();
+      return !!this.props.getAnswer("numberInput");
     } else if (enabledStatus === "withAddress") {
-      return !!this._getEnteredAddress();
+      return !!this.props.getAnswer("addressInput");
     } else if (enabledStatus === "withDate") {
-      return !!this._getEnteredDate();
+      return !!this.props.getAnswer("dateInput");
     }
     return !!enabledStatus;
   };
 
   render() {
-    //console.log(this.props.surveyResponses);
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         {!this.props.active && (
@@ -258,35 +139,19 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
             autoFocus={true}
             placeholder={this.props.textInput!.placeholder}
             returnKeyType="done"
-            value={this._getEnteredTextInput()}
+            value={this.props.getAnswer("textInput")}
             onChange={text => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: { ...existingAnswer, textInput: text },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+              this.props.updateAnswer({ textInput: text });
             }}
           />
         )}
         {this.props.dateInput && (
           <DateInput
             autoFocus={this.props.dateInput.autoFocus}
-            date={this._getEnteredDate()}
+            date={this.props.getAnswer("dateInput")}
             placeholder={this.props.dateInput.placeholder}
             onDateChange={(date: Date) => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: { ...existingAnswer, dateInput: date },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+              this.props.updateAnswer({ dateInput: date });
             }}
           />
         )}
@@ -294,19 +159,9 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
           <AddressInput
             autoFocus={true}
             showLocationField={this.props.addressInput!.showLocationField}
-            value={
-              this._getEnteredAddress() ? this._getEnteredAddress() : undefined
-            }
+            value={this.props.getAnswer("addressInput")}
             onChange={address => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: { ...existingAnswer, addressInput: address },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+              this.props.updateAnswer({ addressInput: address });
             }}
           />
         )}
@@ -316,20 +171,12 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
             placeholder={this.props.numberInput!.placeholder}
             returnKeyType="done"
             value={
-              this._getEnteredNumberInput()
-                ? "" + this._getEnteredNumberInput()
+              this.props.getAnswer("numberInput")
+                ? "" + this.props.getAnswer("numberInput")
                 : undefined
             }
-            onChange={(text: string) => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: { ...existingAnswer, numberInput: parseInt(text) },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+            onChange={text => {
+              this.props.updateAnswer({ numberInput: parseInt(text) });
             }}
             onSubmit={() => {}}
           />
@@ -340,56 +187,26 @@ class SurveyQuestion extends Component<Props & WithNamespaces> {
             multiSelect={this.props.optionList.multiSelect}
             numColumns={this.props.optionList.numColumns || 1}
             withOther={this.props.optionList.withOther}
-            otherOption={this._getOtherOption()}
+            otherOption={this.props.getAnswer("otherOption")}
             onOtherChange={value => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: { ...existingAnswer, otherOption: value },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+              this.props.updateAnswer({ otherOption: value });
             }}
             onChange={data => {
-              const [
-                responses,
-                existingAnswer,
-              ] = this._getAndInitializeResponse();
-              responses.set(this.props.id, {
-                ...responses.get(this.props.id),
-                answer: {
-                  ...existingAnswer,
-                  options: data,
-                },
-              });
-              this.props.dispatch(setSurveyResponses(responses));
+              this.props.updateAnswer({ options: data });
             }}
           />
         )}
         <View style={styles.buttonContainer}>
           {this.props.buttons.map(button => (
             <Button
-              checked={this._getSelectedButtonKey() === button.key}
+              checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={
                 this.props.active && this._getButtonEnabled(button.enabled)
               }
               key={button.key}
               label={this.props.t("surveyButton:" + button.key)}
               onPress={() => {
-                const [
-                  responses,
-                  existingAnswer,
-                ] = this._getAndInitializeResponse();
-                responses.set(this.props.id, {
-                  ...responses.get(this.props.id),
-                  answer: {
-                    ...existingAnswer,
-                    selectedButtonKey: button.key,
-                  },
-                });
-                this.props.dispatch(setSurveyResponses(responses));
+                this.props.updateAnswer({ selectedButtonKey: button.key });
                 this.props.onNext(this._getNextQuestion(button.key));
               }}
               primary={button.primary}
@@ -425,4 +242,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces()<Props>(SurveyQuestion);
+export default reduxWriter(withNamespaces()(SurveyQuestion));

@@ -74,7 +74,7 @@ export default class OptionList extends React.Component<Props> {
           />
         </View>
         {this.props.withOther &&
-          this.props.data.get("Other") && (
+          this.props.data.get("other") && (
             <View>
               <Description content="Please specify:" />
               <View style={[{ width: itemWidth }, styles.item]}>

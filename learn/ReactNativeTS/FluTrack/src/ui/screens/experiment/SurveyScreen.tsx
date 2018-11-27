@@ -187,7 +187,7 @@ export default class SurveyScreen extends React.Component<Props> {
                 optionList={item.optionList}
                 textInput={item.textInput}
                 onActivate={() => this._activateQuestion(section.title, index)}
-                onNext={nextQuestion => this._addData(nextQuestion)}
+                onNext={(nextQuestion: string) => this._addData(nextQuestion)}
               />
             );
           }}

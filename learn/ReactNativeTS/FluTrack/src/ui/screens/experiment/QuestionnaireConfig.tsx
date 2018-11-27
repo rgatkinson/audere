@@ -282,7 +282,7 @@ export const questionnaire = [
         showLocationField: true,
       },
       buttons: [
-        { key: "done", primary: true, enableD: "withAddress" },
+        { key: "done", primary: true, enabled: "withAddress" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },

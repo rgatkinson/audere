@@ -30,6 +30,13 @@ export interface SurveyAnswer {
   numberInput?: number;
   selectedButtonKey?: string;
   textInput?: string;
+  [key: string]:
+    | Address
+    | Date
+    | Map<string, boolean>
+    | string
+    | number
+    | undefined;
 }
 
 export interface SurveyResponse {
