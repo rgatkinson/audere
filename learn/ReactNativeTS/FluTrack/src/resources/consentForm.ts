@@ -32,19 +32,5 @@ SPECIMEN BANKING Storing samples so researchers can use it in the future is call
 
 RESEARCH-RELATED INJURY If you think you have been harmed from being in this research, contact [INSERT NAMES AND CONTACT INFORMATION]. The UW does not normally provide compensation for harm except through its discretionary program for medical injury. However, the law may allow you to seek other compensation if the harm is the fault of the researchers. You do not waive any right to seek payment by signing this consent form.”
 
-Printed name of study staff obtaining consent*	Signature*	Date* [*Required for studies involving more than minimal risk]
-
 Subject’s statement This study has been explained to me. I volunteer to take part in this research. I have had a chance to ask questions. If I have questions later about the research, or if I have been harmed by participating in this study, I can contact one of the researchers listed on the first page of this consent form. If I have questions about my rights as a research subject, I can call the Human Subjects Division at (206) 543-0098 or call collect at (206) 221-5940. I give permission to the researchers to use my medical records as described in this consent form. I will receive a copy of this consent form.
-
-Printed name of subject	Signature of subject	Date
-
-When subject is a minor:
-
-Printed name of parent	Signature of parent	Date
-
-When subject is not able to provide informed consent:
-
-Printed name of representative	Signature of representative	Date
-
-Relationship of representative to subject Copies to:	Researcher Subject
 `;

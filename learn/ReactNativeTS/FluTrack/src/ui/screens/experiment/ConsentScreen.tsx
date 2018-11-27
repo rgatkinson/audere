@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { Action, setName, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
+import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
 import Button from "./components/Button";
 import Description from "./components/Description";
@@ -114,6 +115,14 @@ export default class ConsentScreen extends React.Component<Props> {
           <Text>{CONSENT_FORM_TEXT}</Text>
         </ScrollView>
         <View style={styles.input}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.text}>
+              Today's Date
+            </Text>
+            <Text style={[styles.text, styles.dateText]}>
+              {format(new Date(), "MM/D/YYYY")}
+            </Text>
+          </View>
           <TextInput
             autoFocus={false}
             placeholder="Full name of subject"
@@ -140,7 +149,7 @@ export default class ConsentScreen extends React.Component<Props> {
             onPress={this._onClear}
           />
           <Button
-            enabled={!!this.state.image || remoteDebugging}
+            enabled={(!!this.state.image || remoteDebugging) && this.props.name}
             label="Submit"
             primary={true}
             onPress={this._onSubmit}
@@ -186,5 +195,21 @@ const styles = StyleSheet.create({
     bottom: 8,
     zIndex: 20,
     position: "absolute",
+  },
+  dateContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    borderBottomColor: "#bbb",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    height: 30,
+    marginTop: 20,
+    paddingHorizontal: 16,
+  },
+  dateText: {
+    color: "#8E8E93",
+  },
+  text: {
+    alignSelf: "stretch",
+    fontSize: 20,
   },
 });
