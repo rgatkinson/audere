@@ -6,6 +6,7 @@ export type FormAction =
   | { type: "SET_MONTHS"; months: number }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_SYMPTOMS"; symptoms: Map<string, boolean> }
+  | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_EMAIL_OPTIONS"; emailOptions: Map<string, boolean> }
   | {
@@ -52,6 +53,7 @@ export type FormState = null | {
   age?: number;
   months?: number;
   symptoms?: Map<string, boolean>;
+  name?: string;
   email?: string;
   signatureBase64?: string;
   emailOptions?: Map<string, boolean>;
@@ -73,6 +75,9 @@ export default function reducer(state = initialState, action: FormAction) {
   }
   if (action.type === "SET_SYMPTOMS") {
     return { ...state, symptoms: action.symptoms };
+  }
+  if (action.type === "SET_NAME") {
+    return { ...state, name: action.name};
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email };
@@ -113,6 +118,13 @@ export function setSymptoms(symptoms: Map<string, boolean>): FormAction {
   return {
     type: "SET_SYMPTOMS",
     symptoms,
+  };
+}
+
+export function setName(name: string): FormAction {
+  return {
+    type: "SET_NAME",
+    name,
   };
 }
 

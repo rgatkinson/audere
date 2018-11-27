@@ -1,21 +1,23 @@
 import React from "react";
 import {
+  Alert,
+  ImageEditor,
+  ImageStore,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  ImageEditor,
-  ImageStore,
-  Alert,
 } from "react-native";
 import { connect } from "react-redux";
-import { Action, setSignaturePng } from "../../../store";
+import { Action, setName, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 import * as ExpoPixi from "expo-pixi";
 import Button from "./components/Button";
 import Description from "./components/Description";
 import StatusBar from "./components/StatusBar";
+import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 
 interface Props {
@@ -31,7 +33,9 @@ interface SnapshotImage {
 // @ts-ignore
 const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 
-@connect()
+@connect((state: StoreState) => ({
+  name: state.form!.name,
+}))
 export default class ConsentScreen extends React.Component<Props> {
   state = {
     image: null,
@@ -95,7 +99,7 @@ export default class ConsentScreen extends React.Component<Props> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
           canProceed={false}
           progressNumber="80%"
@@ -109,6 +113,17 @@ export default class ConsentScreen extends React.Component<Props> {
           <Description content="Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below." />
           <Text>{CONSENT_FORM_TEXT}</Text>
         </ScrollView>
+        <View style={styles.input}>
+          <TextInput
+            autoFocus={false}
+            placeholder="Full name of subject"
+            returnKeyType="done"
+            value={this.props.name}
+            onChange={text => {
+              this.props.dispatch(setName(text));
+            }}
+          />
+        </View>
         <View style={styles.sketchContainer}>
           <ExpoPixi.Signature
             ref={(ref: any) => (this.sketch = ref)}
@@ -131,7 +146,7 @@ export default class ConsentScreen extends React.Component<Props> {
             onPress={this._onSubmit}
           />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -147,6 +162,9 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: 30,
+  },
+  input: {
     marginHorizontal: 30,
   },
   sketch: {
