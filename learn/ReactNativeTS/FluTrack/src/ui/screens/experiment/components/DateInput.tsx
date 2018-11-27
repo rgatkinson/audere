@@ -81,6 +81,7 @@ class Picker extends React.Component<PickerProps> {
           mode="date"
           style={styles.picker}
           onDateChange={this.props.onDateChange}
+          timeZoneOffsetInMinutes={0} // force to UTC
         />
         <TouchableOpacity
           style={styles.actionContainer}
