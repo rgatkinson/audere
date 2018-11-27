@@ -118,11 +118,12 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         }
         let answerOptions: { id: string; text?: string }[] = [];
         const options = surveyAnswer.options;
-        if (!!options) {
-          for (const option of options.keys()) {
+        const optionKeysToLabel = value.optionKeysToLabel;
+        if (!!optionKeysToLabel) {
+          for (const [key, value] of optionKeysToLabel.entries()) {
             answerOptions.push({
-              id: option,
-              text: value.optionKeysToLabel!.get(option),
+              id: key,
+              text: value,
             });
           }
         }
