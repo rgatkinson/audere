@@ -119,7 +119,6 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         let answerOptions: { id: string; text?: string }[] = [];
         const options = surveyAnswer.options;
         if (!!options) {
-          // TODO Change this to optionKeyToLabel after Jenny is done
           for (const option of options.keys()) {
             answerOptions.push({
               id: option,
@@ -206,7 +205,6 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         }
         items.push(item);
       }
-      console.log(items);
       pouch.patient.responses.push({ id: "Questionnaire", item: items });
     }
   }
