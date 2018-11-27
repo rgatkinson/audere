@@ -29,25 +29,25 @@ export default class BloodScreen extends React.Component<Props> {
           canProceed={false}
           progressNumber="70%"
           progressLabel="Enrollment"
-          title="4. Would you be willing to collect a nasal...?"
+          title="4. Would you like to take part in an extra part of the..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label="5. Would you be willing to participate in the optional blood collection?" />
-          <Description content="As part of this study, there is an optional blood sample collection. These samples will give us more information about your body's ability to fight infections." />
+          <Title label="5. Would you like to take part in a blood collection?" />
+          <Description content="You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein." />
           <Button
             primary={true}
             enabled={true}
             label="Yes"
-            subtext="I am willing to participate in the optional blood collection."
+            subtext="I would like to join the extra part of the study. I understand I will have my blood collected."
             onPress={this._onDone}
           />
           <Button
             primary={true}
             enabled={true}
             label="No"
-            subtext="I do not want to participate in the optional blood collection. I only want to participate in the nasal swab collection."
+            subtext="I do not want any blood collected from me."
             onPress={this._onDone}
           />
         </ContentContainer>

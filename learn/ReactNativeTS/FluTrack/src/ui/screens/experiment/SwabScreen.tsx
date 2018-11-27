@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "react-native";
 import { connect } from "react-redux";
 import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
@@ -22,6 +23,23 @@ export default class SwabScreen extends React.Component<Props> {
     this.props.navigation.push("Blood");
   };
 
+  _onNone = () => {
+    Alert.alert(
+      "Exit Survey?",
+      "At least 1 nasal swab is required to participate in the study.",
+      [
+        {
+          text: "Exit",
+          onPress: () => {
+            this.props.navigation.push("Inelligible");
+          },
+          style: "destructive",
+        },
+        { text: "Continue", onPress: () => {} },
+      ]
+    );
+  };
+
   render() {
     return (
       <ScreenContainer>
@@ -34,27 +52,27 @@ export default class SwabScreen extends React.Component<Props> {
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label="4. Would you be willing to collect a nasal swab yourself?" />
-          <Description content="As part of this study, we would like to compare results between swabs that participants administer themselves versus swabs administered by clinical staff. Would you be willing to have two swabs performed, one which you would perform on yourself, and one that a member of our clinical staff will collect?" />
+          <Title label="4. Would you like to take part in an extra part of the study?" />
+          <Description content="There is an extra part of the study. You have the choice to join this extra part. If you join this extra part, 2 nasal swabs would be collected from you. One collected by research staff. One collected by you." />
           <Button
             primary={true}
             enabled={true}
             label="Yes"
-            subtext="I am willing to have two swabs taken."
+            subtext="I understand I will have 2 nasal swabs collected. One by me and the other by research staff."
             onPress={this._onDone}
           />
           <Button
             primary={true}
             enabled={true}
             label="No"
-            subtext="I want to have one swab, administered by clinical staff."
+            subtext="I only want 1 nasal swab."
             onPress={this._onDone}
           />
           <Button
             primary={false}
             enabled={true}
-            label="I do not want to be swabbed at all"
-            onPress={this._onDone}
+            label="I do not want any nasal swabs collected."
+            onPress={this._onNone}
           />
         </ContentContainer>
       </ScreenContainer>

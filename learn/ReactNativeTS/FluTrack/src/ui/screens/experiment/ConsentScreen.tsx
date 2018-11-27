@@ -100,7 +100,7 @@ export default class ConsentScreen extends React.Component<Props> {
           canProceed={false}
           progressNumber="80%"
           progressLabel="Enrollment"
-          title="5. Would you be willing to participate..."
+          title="5. Would you like to take part in a blood collection?"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onSubmit}
         />
