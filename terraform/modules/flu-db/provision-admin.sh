@@ -5,38 +5,35 @@
 
 ${common_sh}
 
-readonly db_port="5432"
-
 function main() {
   common_install_updates
-  generate_passwords
-  write_credentials
-  setup_db
-  shutdown1
+
+  load_pgpass
+
+  echo "${random_seed}" | common_add_randomness
+  readonly local new_password="$(common_new_password)"
+  update_db "${userid}" "$new_password"
+  write_credentials "${userid}" "$new_password"
+  halt
 }
 
-function generate_passwords() {
-  add_randomness
-  readonly api_password="$(generate_password)"
-  readonly ram_password="$(generate_password)"
-  readonly mmarucheck_password="$(generate_password)"
-  readonly new_db_setup_password="$(generate_password)"
+function load_pgpass() {
+  mkdir /mnt/mem
+  mount -t ramfs -o size=1m ext4 /mnt/mem
+
+  local readonly device="$(common_device_by_letter "${existing_creds_letter}")"
+  local readonly partition="$(common_wait_for_device "$device"1 "$device"p1)"
+  mkdir "/mnt/existing"
+  mount "$partition" "/mnt/existing"
+  cp "/mnt/existing/db/pgpass" "/mnt/mem/pgpass"
+  umount "$partition"
 }
 
-function add_randomness() {
-  # Add bytes from local dev machine to VM's randomness
-  echo "${random_seed}" >"/dev/random"
-}
-
-function generate_password() {
-  tr -dc "A-Za-z0-9" </dev/urandom 2>/dev/null | head -c 32 || true
-}
-
-function setup_db() {
+function update_db() {
   apt-get -y install postgresql-client-10
 
   PGPASSWORD="${db_setup_password}" \
-  common_retry psql \
+  retry psql \
     --host="${db_host}" \
     --username="${db_setup_user}" \
     --dbname=postgres \
@@ -96,23 +93,30 @@ function write_credentials() {
   umount "/mnt/db-setup-creds"
 }
 
+function mount_existing() {
+}
+
 function format_xvd() {
   local device="/dev/xvd$1"
   local partition="$device"'1'
   local name="$2"
   local dir="/mnt/$name"
 
-  common_wait_for_device "$device"
+  wait_for_device "$device"
   lsblk
   parted "$device" mklabel gpt
   parted -a opt "$device" mkpart primary ext4 0% 100%
 
-  common_wait_for_device "$partition"
+  wait_for_device "$partition"
   lsblk
-  common_retry mkfs.ext4 -L "$name" "$partition"
+  retry mkfs.ext4 -L "$name" "$partition"
 
   mkdir -p "$dir"
   mount "$partition" "$dir"
+}
+
+function wait_for_device() {
+  retry test -e "$device"
 }
 
 function write_pgpass() {
@@ -121,7 +125,7 @@ function write_pgpass() {
   local db_user="$3"
   local db_password="$4"
   mkdir -p "$dir"
-  echo "${db_host}:$db_port:$db_name:$db_user:$db_password" >"$dir/pgpass"
+  echo "${db_host}:5432:$db_name:$db_user:$db_password" >"$dir/pgpass"
 }
 
 function write_env() {
@@ -130,13 +134,7 @@ function write_env() {
   local db_user="$3"
   local db_password="$4"
   mkdir -p "$dir"
-  echo "DATABASE_URL=postgres://$db_user:$db_password@${db_host}:$db_port/$db_name" >"$dir/env"
-}
-
-function shutdown1() {
-  echo "Provision script done, shutting down in 2 seconds."
-  sleep 2
-  halt
+  echo "DATABASE_URL=postgres://$db_user:$db_password@${db_host}:5432/$db_name" >"$dir/env"
 }
 
 function write_vpc_cert() {
@@ -165,6 +163,8 @@ function write_github_key() {
 ${github_tar_bz2_base64}
 EOF
 }
+
+function retry() { until "$@"; do sleep 1; echo "Retrying '%*'"; done; }
 
 umask 022 # TODO remove
 set -x # TODO remove

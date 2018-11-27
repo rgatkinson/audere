@@ -37,6 +37,7 @@ data "aws_acm_certificate" "auderenow_io" {
 data "template_file" "sequelize_migrate_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
+    common_sh = "${file("${path.module}/../assets/common.sh")}"
     api_port = "${local.instance_port}"
     subdomain = "${local.subdomain}"
     domain = "${local.subdomain}.auderenow.io"

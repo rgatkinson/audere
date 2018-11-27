@@ -25,21 +25,30 @@
 //
 // So to set up a current working system, run something like:
 //   for i in {0..$MAX_EPOCH}; do
-//     terraform apply -var "epoch=$i" -var "provision=true"
+//     terraform apply -var "epoch=$i" -var "provision=migrate"
 //     # wait for provisioning server for this phase to enter "stopped" state
+//     terraform apply -var "epoch=$i" -var "provision=cleanup"
 //   done
-//   terraform apply -var "epoch=$MAX_EPOCH"
+//   terraform apply
 //
 // This runs all the migration scripts in order, and the final apply
-// switches out of "provision=true" mode and disables any provisioning
+// switches out of "provision=cleanup" mode and disables any provisioning
 // server(s).
+//
+// To add an administrator account, add the userid to the default list of
+// admins below and run something like:
+//   terraform apply -var "provision=new-admin"
+//   terraform apply -var "provision=cleanup"
+//   terraform apply
 
 variable "epoch" {
+  description = "Migration epoch to migrate to, cleanup after, or run under."
+  // should always default to the latest migration epoch defined.
   default = 0
 }
 
 variable "provision" {
-  description = "One of 'run', 'cleanup', or 'done'"
+  description = "One of 'migrate', 'new-admin', 'cleanup', or 'done'"
   default = "done"
 }
 
@@ -68,4 +77,12 @@ variable "vpc_dhparam_filename" {
 
 variable "availability_zone" {
   default = "us-west-2a"
+}
+
+variable "admins" {
+  description = "List of admin userids."
+  default = [
+    "mmarucheck",
+    "ram",
+  ]
 }

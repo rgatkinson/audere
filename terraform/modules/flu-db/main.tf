@@ -3,20 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-locals {
-  is_provision_0 = "${(var.epoch == 0 && (var.provision == "run")) ? 1 : 0}"
-  is_done_provisioning = "${(var.provision == "done") ? 1 : 0}"
-  db_setup_password = "${file("${var.db_setup_password_filename}")}"
-  github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
-  module_name = "flu-db-${var.environment}"
-  random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
-  vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
-}
-
-data "aws_security_group" "ssh" { name = "ssh" }
-
-data "aws_security_group" "default" { name = "default" }
-
 resource "aws_db_instance" "fludb" {
   identifier = "${local.module_name}"
   engine = "postgres"
@@ -84,9 +70,11 @@ resource "aws_instance" "flu_provision_0" {
     Name = "${local.module_name}-provision0"
   }
 }
+
 data "template_file" "provision_0_sh" {
   template = "${file("${path.module}/provision-0.sh")}"
   vars {
+    common_sh = "${file("${path.module}/../assets/common.sh")}"
     environment = "${var.environment}"
     db_host = "${aws_db_instance.fludb.address}"
     db_setup_user = "flusetup"
@@ -171,4 +159,18 @@ resource "aws_ebs_volume" "db_setup_creds" {
   tags {
     Name = "flu-${var.environment}-db-setup-creds"
   }
+}
+
+data "aws_security_group" "ssh" { name = "ssh" }
+
+data "aws_security_group" "default" { name = "default" }
+
+locals {
+  is_provision_0 = "${(var.epoch == 0 && (var.provision == "run")) ? 1 : 0}"
+  is_done_provisioning = "${(var.provision == "done") ? 1 : 0}"
+  db_setup_password = "${file("${var.db_setup_password_filename}")}"
+  github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
+  module_name = "flu-db-${var.environment}"
+  random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
+  vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
 }
