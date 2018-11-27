@@ -489,9 +489,7 @@ export const questionnaire = [
         autoFocus: false,
         placeholder: "Date",
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withDate" },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
     },
   },
   {

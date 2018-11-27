@@ -3,6 +3,7 @@ import React from "react";
 import {
   createDrawerNavigator,
   createStackNavigator,
+  createBottomTabNavigator,
   NavigationScreenProp,
 } from "react-navigation";
 import { AppLoading, Font } from "expo";
@@ -11,6 +12,7 @@ import { store, persistor, StoreState } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
+import { Icon } from "react-native-elements";
 import { createUploader } from "./src/transport";
 import i18n from "./src/i18n";
 
@@ -40,7 +42,7 @@ export function interact(data: string): void {
   uploader.save("remove-me", { data });
 }
 
-const MainStack = createStackNavigator(
+const Home = createStackNavigator(
   {
     Home: {
       screen: HomeScreen,
@@ -72,13 +74,15 @@ const MainStack = createStackNavigator(
   {
     mode: "modal",
     headerMode: "float",
-    navigationOptions: ({ navigation }) => ({
-      header: <HeaderBar navigation={navigation} />,
-    }),
-  }
+    navigationOptions: ({ navigation }) => {
+      return {
+        header: <HeaderBar navigation={navigation} />,
+      };
+    },
+  },
 );
 
-const AdminStack = createStackNavigator(
+const Admin = createStackNavigator(
   {
     Settings: SettingsScreen,
     Prior: PriorScreen,
@@ -92,10 +96,40 @@ const AdminStack = createStackNavigator(
   }
 );
 
+const tabBarVisible = (navigation) => {
+  const { routes } = navigation.state;
+  return navigation.state.index === 0;
+};
+
+const FluStudy = createBottomTabNavigator(
+  {
+    Home,
+    Admin,
+  },
+  {
+    navigationOptions: ({ navigation }) => ({
+      tabBarVisible: tabBarVisible(navigation),
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
+        const iconName =
+          routeName === 'Home' ? 'home' : 'settings';
+
+        return (
+          <Icon
+            name={iconName}
+            color={tintColor}
+            size={horizontal ? 20 : 25}
+            type="feather"
+          />
+        );
+      },
+    }),
+  }
+);
+
 const Drawer = createDrawerNavigator({
-  MainStack,
+  FluStudy,
   About: { screen: AboutScreen },
-  AdminStack,
 });
 
 const Root = connect((state: StoreState) => ({}))(() => (
