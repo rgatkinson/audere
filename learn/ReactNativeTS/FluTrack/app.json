@@ -7,7 +7,10 @@
     "slug": "FluTrack",
     "sdkVersion": "30.0.0",
     "ios": {
-      "bundleIdentifier": "org.auderenow.flutrack"
+      "bundleIdentifier": "org.auderenow.flutrack",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "org.auderenow.flutrack"
