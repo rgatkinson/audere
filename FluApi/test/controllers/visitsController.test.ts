@@ -1,10 +1,16 @@
 import request from "supertest";
 import app from "../../src/app";
 import { Visit } from "../../src/models/visit";
+import { AccessKey } from "../../src/models/accessKey";
 
-describe("PUT /api/documents/...", () => {
-  const DOCUMENT_ID = "ABC123-_".repeat(8);
+const DOCUMENT_ID = "ABC123-_".repeat(8);
+const DOCUMENT_CONTENTS = {
+  csruid: DOCUMENT_ID,
+  device: { info: "fakeDeviceInfo" },
+  visit: { data: "fakeVisitData" }
+};
 
+describe("putDocument", () => {
   it("rejects malformed json", async () => {
     const response = await request(app)
       .put(`/api/documents/${DOCUMENT_ID}`)
@@ -40,21 +46,15 @@ describe("PUT /api/documents/...", () => {
   });
 
   it("adds the document to the visits table", async () => {
-    const contents = {
-      csruid: DOCUMENT_ID,
-      device: { info: "fakeDeviceInfo" },
-      visit: { data: "fakeVisitData" }
-    };
-
     const response = await request(app)
       .put(`/api/documents/${DOCUMENT_ID}`)
-      .send(contents)
+      .send(DOCUMENT_CONTENTS)
       .expect(200);
 
     const visit = await Visit.findOne({ where: { csruid: DOCUMENT_ID } });
     expect(visit.csruid).toEqual(DOCUMENT_ID);
-    expect(visit.device).toEqual(contents.device);
-    expect(visit.visit).toEqual(contents.visit);
+    expect(visit.device).toEqual(DOCUMENT_CONTENTS.device);
+    expect(visit.visit).toEqual(DOCUMENT_CONTENTS.visit);
 
     await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
   });
@@ -82,5 +82,63 @@ describe("PUT /api/documents/...", () => {
     expect(newVisit.visit).toEqual(newContents.visit);
 
     await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
+  });
+});
+describe("putDocumentWithKey", () => {
+  const BAD_ACCESS_KEY = "thisisNOTanaccesskey12345";
+  it("accepts a docuent with a valid key", async () => {
+    const accessKey = await AccessKey.create({
+      key: "accesskey1",
+      valid: true
+    });
+
+    await request(app)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
+      .send(DOCUMENT_CONTENTS)
+      .expect(200);
+
+    const newVisit = await Visit.findOne({
+      where: { csruid: DOCUMENT_ID }
+    });
+    expect(newVisit).not.toBeNull();
+
+    await newVisit.destroy();
+    await accessKey.destroy();
+  });
+  it("rejects a docuent with a bogus key", async () => {
+    const accessKey = await AccessKey.create({
+      key: "accesskey2",
+      valid: true
+    });
+
+    await request(app)
+      .put(`/api/documents/notaccesskey2/${DOCUMENT_ID}`)
+      .send(DOCUMENT_CONTENTS)
+      .expect(404);
+
+    const newVisit = await Visit.findOne({
+      where: { csruid: DOCUMENT_ID }
+    });
+    expect(newVisit).toBeNull();
+
+    await accessKey.destroy();
+  });
+  it("rejects a docuent with key that's no longer valid", async () => {
+    const accessKey = await AccessKey.create({
+      key: "accesskey3",
+      valid: false
+    });
+
+    await request(app)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
+      .send(DOCUMENT_CONTENTS)
+      .expect(404);
+
+    const newVisit = await Visit.findOne({
+      where: { csruid: DOCUMENT_ID }
+    });
+    expect(newVisit).toBeNull();
+
+    await accessKey.destroy();
   });
 });

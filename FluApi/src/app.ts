@@ -65,7 +65,12 @@ app.post(
 );
 
 app.put(
-  "/api/documents/:documentId([A-Za-z0-9-_]*)",
+  "/api/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
+  VisitsController.putDocumentWithKey
+);
+
+app.put(
+  "/api/documents/:documentId([A-Za-z0-9-_]{0,})",
   wrap(VisitsController.putDocument)
 );
 

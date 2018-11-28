@@ -11,7 +11,13 @@
     "paths": {
       "*": ["node_modules/*", "src/types/*"]
     },
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "lib": [
+      // Default libs
+      "dom", "ES6", "DOM.Iterable", "ScriptHost",
+      // Extra goodies
+      "es2016.array.include"
+    ]
   },
   "include": ["src/**/*", "test/**/*"]
 }

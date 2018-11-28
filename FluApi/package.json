@@ -12,7 +12,8 @@
     "test-watch": "jest --verbose --no-watchman --watchAll",
     "sequelize": "sequelize",
     "lint": "prettier --list-different '{src,tests}/**/*.ts' 'db/**/*.js'",
-    "lint-fix": "prettier --write '{src,tests}/**/*.ts' 'db/**/*.js'"
+    "lint-fix": "prettier --write '{src,tests}/**/*.ts' 'db/**/*.js'",
+    "generate-access-key": "yarn run build && node build/src/scripts/generateAccessKey.js"
   },
   "main": "build/src/server.js",
   "dependencies": {
@@ -20,6 +21,7 @@
     "@types/helmet": "^0.0.42",
     "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
+    "buffer-xor": "^2.0.2",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "helmet": "^3.13.0",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/buffer-xor": "^2.0.0",
     "@types/dotenv": "^4.0.3",
     "@types/express": "^4.16.0",
     "@types/jest": "^23.3.2",
