@@ -3,33 +3,36 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+// --------------------------------------------------------------------------------
+// database
+
 resource "aws_db_instance" "fludb" {
-  identifier = "${local.module_name}"
-  engine = "postgres"
-  engine_version = "10.5"
-  availability_zone = "${var.availability_zone}"
-  instance_class = "db.t2.small"
   allocated_storage = 20
-  license_model = "postgresql-license"
-  username = "flusetup"
-  password = "${local.db_setup_password}"
+  availability_zone = "${var.availability_zone}"
   backup_retention_period = 35
   backup_window = "10:00-10:59"
-  publicly_accessible = false
-  maintenance_window = "Sun:11:00-Sun:11:59"
-  storage_encrypted = true
   copy_tags_to_snapshot = true
-  parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
-  tags {
-    Name = "${local.module_name}"
-  }
-
-  skip_final_snapshot = true // TODO
   deletion_protection = false // TODO
+  engine = "postgres"
+  engine_version = "10.5"
+  identifier = "${local.base_name}"
+  instance_class = "db.t2.small"
+  license_model = "postgresql-license"
+  maintenance_window = "Sun:11:00-Sun:11:59"
+  parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
+  password = "${local.db_setup_password}"
+  publicly_accessible = false
+  skip_final_snapshot = true // TODO
+  storage_encrypted = true
+  username = "${local.first_admin_userid}"
+
+  tags {
+    Name = "${local.base_name}"
+  }
 }
 
 resource "aws_db_parameter_group" "fludb_parameters" {
-  name = "${local.module_name}-parameters"
+  name = "${local.base_name}-parameters"
   family = "postgres10"
 
   parameter {
@@ -57,120 +60,170 @@ resource "aws_db_parameter_group" "fludb_parameters" {
   }
 }
 
-resource "aws_instance" "flu_provision_0" {
-  count = "${local.is_provision_0}"
+// --------------------------------------------------------------------------------
+// provision0
+
+resource "aws_instance" "provision0" {
+  count = "${local.mode_provision0}"
+
   ami = "${var.ami_id}"
-  instance_type = "t2.micro"
   availability_zone = "${var.availability_zone}"
+  instance_type = "t2.micro"
+  user_data = "${data.template_file.provision0_sh.rendered}"
+
   vpc_security_group_ids = [
-    "${data.aws_security_group.default.id}",
+    "${data.aws_security_group.default.id}"
   ]
-  user_data = "${data.template_file.provision_0_sh.rendered}"
+
   tags {
-    Name = "${local.module_name}-provision0"
+    Name = "${local.base_name}-provision0"
   }
 }
 
-data "template_file" "provision_0_sh" {
+data "template_file" "provision0_sh" {
   template = "${file("${path.module}/provision-0.sh")}"
+
   vars {
-    common_sh = "${file("${path.module}/../assets/common.sh")}"
-    environment = "${var.environment}"
+    api_device_letter = "n"
     db_host = "${aws_db_instance.fludb.address}"
-    db_setup_user = "flusetup"
     db_setup_password = "${local.db_setup_password}"
+    environment = "${var.environment}"
     github_tar_bz2_base64 = "${local.github_tar_bz2_base64}"
+    my_device_letter = "p"
+    my_userid = "${local.my_userid}"
     random_seed = "${local.random_seed_base64}"
+    util_sh = "${file("${path.module}/../assets/util.sh")}"
     vpc_dhparam_base64 = "${local.vpc_dhparam_base64}"
   }
 }
 
-resource "aws_volume_attachment" "provision_api" {
-  count = "${local.is_provision_0}"
-  device_name = "/dev/sdf"
-  volume_id = "${aws_ebs_volume.api.id}"
-  instance_id = "${aws_instance.flu_provision_0.id}"
+resource "aws_volume_attachment" "provision0_api_creds" {
+  count = "${local.mode_provision0}"
+
+  device_name = "/dev/sd${data.template_file.provision0_sh.vars.api_device_letter}"
+  instance_id = "${aws_instance.provision0.id}"
+  volume_id = "${aws_ebs_volume.api_creds.id}"
 }
 
-resource "aws_volume_attachment" "provision_ram_creds" {
-  count = "${local.is_provision_0}"
-  device_name = "/dev/sdn"
-  volume_id = "${aws_ebs_volume.ram_creds.id}"
-  instance_id = "${aws_instance.flu_provision_0.id}"
+resource "aws_volume_attachment" "provision0_my_creds" {
+  count = "${local.mode_provision0}"
+
+  device_name = "/dev/sd${data.template_file.provision0_sh.vars.admin_device_letter}"
+  instance_id = "${aws_instance.provision0.id}"
+  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
 }
 
-resource "aws_volume_attachment" "provision_mmarucheck_creds" {
-  count = "${local.is_provision_0}"
-  device_name = "/dev/sdo"
-  volume_id = "${aws_ebs_volume.mmarucheck_creds.id}"
-  instance_id = "${aws_instance.flu_provision_0.id}"
+// --------------------------------------------------------------------------------
+// add admin
+
+resource "aws_instance" "add_admin" {
+  count = "${local.provision_admin}"
+
+  ami = "${var.ami_id}"
+  availability_zone = "${var.availability_zone}"
+  instance_type = "t2.micro"
+  user_data = "${data.template_file.add_admin_sh.rendered}"
+
+  vpc_security_group_ids = [
+    "${data.aws_security_group.default.id}",
+  ]
+
+  tags {
+    Name = "${local.base_name}-add-admin"
+  }
 }
 
-resource "aws_volume_attachment" "provision_db_setup_creds" {
-  count = "${local.is_provision_0}"
-  device_name = "/dev/sdp"
-  volume_id = "${aws_ebs_volume.db_setup_creds.id}"
-  instance_id = "${aws_instance.flu_provision_0.id}"
+data "template_file" "add_admin_sh" {
+  template = "${file("${path.module}/add-admin.sh")}"
+
+  vars {
+    db_host = "${aws_db_instance.fludb.address}"
+    my_device_letter = "p"
+    my_userid = "${local.my_userid}"
+    new_device_letter = "n"
+    new_userid = "${local.new_admin_userid}"
+    random_seed = "${local.random_seed_base64}"
+    util_sh = "${file("${path.module}/../assets/util.sh")}"
+  }
 }
 
-resource "aws_ebs_volume" "api" {
+resource "aws_volume_attachment" "add_admin_my_creds" {
+  count = "${local.provision_admin}"
+
+  device_name = "/dev/sd${data.template_file.add_admin_sh.vars.my_device_letter}"
+  volume_id = "${aws_ebs_volume.   .id}"
+  instance_id = "${aws_instance.add_admin.id}"
+}
+
+resource "aws_volume_attachment" "add_admin_new_creds" {
+  count = "${local.provision_admin}"
+
+  device_name = "/dev/sd${data.template_file.add_admin_sh.vars.new_device_letter}"
+  volume_id = "${aws_ebs_volume.   .id}"
+  instance_id = "${aws_instance.add_admin.id}"
+}
+
+// --------------------------------------------------------------------------------
+// api credentials
+
+resource "aws_ebs_volume" "api_creds" {
   availability_zone = "${var.availability_zone}"
   type = "gp2"
   encrypted = true
   size = 1
+
   tags {
     Name = "flu-api-${var.environment}"
   }
 }
 
-resource "aws_ebs_snapshot" "api" {
-  count = "${local.is_done_provisioning}"
-  volume_id = "${aws_ebs_volume.api.id}"
+resource "aws_ebs_snapshot" "api_creds" {
+  count = "${local.mode_run}"
+
+  volume_id = "${aws_ebs_volume.api_creds.id}"
+
   tags {
     Name = "flu-api-${var.environment}"
   }
 }
 
-resource "aws_ebs_volume" "ram_creds" {
-  availability_zone = "${var.availability_zone}"
+// --------------------------------------------------------------------------------
+// admin credentials
+
+resource "aws_ebs_volume" "admin_creds" {
+  count = "${length(var.admins)}"
+
   type = "gp2"
   encrypted = true
   size = 1
+
   tags {
-    Name = "flu-${var.environment}-ram-creds"
+    Name = "flu-${var.environment}-${element(var.admins, count.index)}-creds"
   }
 }
 
-resource "aws_ebs_volume" "mmarucheck_creds" {
-  availability_zone = "${var.availability_zone}"
-  type = "gp2"
-  encrypted = true
-  size = 1
-  tags {
-    Name = "flu-${var.environment}-mmarucheck-creds"
-  }
-}
-
-resource "aws_ebs_volume" "db_setup_creds" {
-  availability_zone = "${var.availability_zone}"
-  type = "gp2"
-  encrypted = true
-  size = 1
-  tags {
-    Name = "flu-${var.environment}-db-setup-creds"
-  }
-}
+// --------------------------------------------------------------------------------
 
 data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_security_group" "default" { name = "default" }
 
+data "aws_caller_identity" "current" {}
+
 locals {
-  is_provision_0 = "${(var.epoch == 0 && (var.provision == "run")) ? 1 : 0}"
-  is_done_provisioning = "${(var.provision == "done") ? 1 : 0}"
+  mode_provision0 = "${(var.mode == "provision0") ? 1 : 0}"
+  mode_provision1 = "${(var.mode == "provision1") ? 1 : 0}"
+  mode_add_admin = "${(var.mode == "add-admin") ? 1 : 0}"
+  mode_run = "${(var.mode == "run") ? 1 : 0}"
   db_setup_password = "${file("${var.db_setup_password_filename}")}"
   github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
-  module_name = "flu-db-${var.environment}"
+  base_name = "flu-db-${var.environment}"
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
   vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
+  my_userid = "${element(split("/", data.aws_caller_identity.current.arn), 1)}"
+  my_admin_index = "${index(var.admins, "${local.myuserid}"}"
+  new_admin_userid = "${local.mode_add_admin
+    ? element(var.admins, length(var.admins)-1)
+    : "NotCurrentlyAddingNewAdmin"
+  }"
 }

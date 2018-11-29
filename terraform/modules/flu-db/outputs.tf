@@ -8,5 +8,5 @@ output "database_address" {
 }
 
 output "api_creds_snapshot_id" {
-  value = "${element(concat(aws_ebs_snapshot.api.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
+  value = "${element(concat(aws_ebs_snapshot.api_creds.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
 }

@@ -5,28 +5,28 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
-${common_sh}
+${util_sh}
 
 function main() {
-  apt-get update
+  install_updates
+
+  # fallback in case /home mount ever fails
+  echo_ssh_key | write_sshkey ubuntu
+
   apt-get -y install nvme-cli
-  write_sshkey ubuntu
-  format_mount_home
-  common_add_developer "${userid}" <<EOF
-${ssh_public_key}
-EOF
-  # sshfs normally only allows the current user access.
+  parted_mkfs_mount "${home_volume_letter}" "${userid}-home" "/home"
+  echo_ssh_key | add_developer "${userid}"
+
+  # sshfs normally only allows the current user access, which means 'sudo'
+  # command cannot access remotely mounted credentials.  This allows setting
+  # allow_root (or allow_other) options in sshfs.
   echo "user_allow_other" >>"/etc/fuse.conf"
-  common_install_updates
 }
 
-function format_mount_home() {
-  local readonly dev="$(common_device_by_letter ${home_volume_letter})"
-  local readonly part="$(common_parted_mkfs "$dev" "${userid}-home")"
-  local readonly uuid="$(common_partition_uuid "$part")"
-  printf "UUID=%s\t/home\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
-  mount -a
-  lsblk
+function ssh_key() {
+  cat <<EOF
+${ssh_public_key}
+EOF
 }
 
 export TERM="xterm-256color"

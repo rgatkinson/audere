@@ -12,7 +12,7 @@
 // and populating the database accounts is not declaratively
 // supported by Terraform.
 //
-// To work around this, the "provisioning" variable specifies whether
+// To work around this, the "mode" variable specifies whether
 // we currently should have a provisioning server running.  The
 // provisioning server adds database accounts and store passwords
 // and certs on encrypted drives, and then shutdown when it completes
@@ -25,20 +25,18 @@
 //
 // So to set up a current working system, run something like:
 //   for i in {0..$MAX_EPOCH}; do
-//     terraform apply -var "epoch=$i" -var "provision=migrate"
+//     terraform apply -var "mode=provision$i"
 //     # wait for provisioning server for this phase to enter "stopped" state
-//     terraform apply -var "epoch=$i" -var "provision=cleanup"
 //   done
 //   terraform apply
 //
 // This runs all the migration scripts in order, and the final apply
-// switches out of "provision=cleanup" mode and disables any provisioning
+// switches out of "mode=cleanup" mode and disables any provisioning
 // server(s).
 //
 // To add an administrator account, add the userid to the default list of
 // admins below and run something like:
-//   terraform apply -var "provision=new-admin"
-//   terraform apply -var "provision=cleanup"
+//   terraform apply -var "mode=add-admin"
 //   terraform apply
 
 variable "epoch" {
@@ -47,9 +45,9 @@ variable "epoch" {
   default = 0
 }
 
-variable "provision" {
-  description = "One of 'migrate', 'new-admin', 'cleanup', or 'done'"
-  default = "done"
+variable "mode" {
+  description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"
+  default = "run"
 }
 
 variable "environment" {

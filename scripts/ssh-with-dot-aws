@@ -21,7 +21,7 @@ sudo systemsetup -setremotelogin on
     "
       umask 077 &&\
       mkdir -p .local-aws &&\
-      sshfs -p 22222 -o idmap=user,allow_other,nonempty,ro $USER@localhost:$HOME/.aws .local-aws &&\
+      sshfs -p 22222 -o idmap=user,allow_root,nonempty,ro $USER@localhost:$HOME/.aws .local-aws &&\
       "${@:-bash}"
       fusermount -u .local-aws
       rmdir .local-aws

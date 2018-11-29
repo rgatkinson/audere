@@ -2,9 +2,8 @@
 # Copyright (c) 2018 by Audere
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
-set -euo pipefail
-set -x
-umask 077
+
+${util_sh}
 
 function main() {
   add_developer_accounts
@@ -16,85 +15,36 @@ function main() {
 
   apt-get -y install git postgresql-client-common
   [[ "${mode}" != service ]] || init_nginx
-  start_api
-  [[ "${mode}" != migrate ]] || shutdown1
-}
-
-function install_updates() {
-  (
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update
-    apt-get dist-upgrade \
-      -y \
-      -o Dpkg::Options::="--force-confdef" \
-      -o Dpkg::Options::="--force-confold" \
-      --allow-change-held-packages
-  )
+  configure_api
 }
 
 function add_developer_accounts() {
-  add_ssh_account ram <<EOF
+  add_developer ram <<EOF
 ${ram_ssh_public_key}
 EOF
 
-  add_ssh_account mmarucheck <<EOF
+  add_developer mmarucheck <<EOF
 ${mmarucheck_ssh_public_key}
 EOF
 }
 
-function add_ssh_account() {
-  (
-    readonly user="$1"
-    readonly sshdir="/home/$user/.ssh"
-
-    adduser --gecos "$user" --disabled-password "$user"
-    mkdir -p "$sshdir"
-    cat >"$sshdir/authorized_keys"
-    chown --recursive "$user:$user" "$sshdir"
-    chmod --recursive go-rwx "$sshdir"
-    echo "$user ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$user"
-  )
-}
-
 function mount_creds() {
+  local readonly dev="$(device_by_letter f)"
+  local readonly part="$(wait_for_device "$dev"1 "$dev"p1)"
   mkdir -p /creds
-  for i in {1..10}; do
-    if mount /dev/xvdf1 /creds; then
-      break
-    fi
-    echo "Waiting for /dev/xvdf1"
-    sleep 1
-  done
-
-  uuid=""
-  for u in /dev/disk/by-uuid/*; do
-    if [[ "$(readlink "$u")" =~ xvdf1 ]]; then
-      uuid="$${u#/dev/disk/by-uuid/}"
-      break
-    fi
-  done
-  if [[ -n "$uuid" ]]; then
-    printf "UUID=%s\t/creds\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
-  else
-    echo 1>&2 "Could not find UUID for xvdf1"
-    echo 1>&2 "  === lsblk ==="
-    lsblk 1>&2
-    echo 1>&2 "  === /dev/disk/by-uuid ==="
-    ls 1>&2 -alF /dev/disk/by-uuid
-    exit 1
-  fi
+  retry mount "$part" "/creds"
+  uuid="$(partition_uuid "/dev/xvdf1")"
+  printf "UUID=%s\t/creds\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
 }
 
-function start_api() {
-  (
-    readonly API=/home/api
-    (base64 -d | tar xj --directory "$API") <<EOF
+function configure_api() {
+  local readonly API=/home/api
+  (base64 -d | tar xj --directory "$API") <<EOF
 ${init_tar_bz2_base64}
 EOF
-    chown -R "api:api" "$API"
-    sudo -H --login --user=api bash "$API/init/api-init" "${mode}"
-    [[ "${mode}" != service ]] || pm2_startup
-  )
+  chown -R "api:api" "$API"
+  sudo -H --login --user=api bash "$API/init/api-init" "${mode}"
+  [[ "${mode}" != service ]] || pm2_startup
 }
 
 function pm2_startup() {
@@ -157,14 +107,13 @@ EOF
   sudo service nginx restart
 }
 
-function shutdown1() {
-  echo "Migration script done, shutting down in 2 seconds."
-  sleep 2
-  halt
-}
-
 umask 022 # TODO remove
 set -x # TODO remove
 export TERM="xterm-256color"
 main &>/setup.log
-reboot
+
+case "${mode}" in
+  migrate) halt;;
+  service) reboot;;
+  *) fail "Unrecognized mode '${mode}'";;
+esac

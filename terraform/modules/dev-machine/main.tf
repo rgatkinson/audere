@@ -59,7 +59,7 @@ resource "aws_route53_record" "api_record" {
 data "template_file" "provision_sh" {
   template = "${file("${path.module}/provision.sh")}"
   vars {
-    common_sh = "${file("${path.module}/../assets/common.sh")}"
+    util_sh = "${file("${path.module}/../assets/util.sh")}"
     home_volume_letter = "${var.home_volume_letter}"
     ssh_public_key = "${var.ssh_public_key}"
     userid = "${var.userid}"
