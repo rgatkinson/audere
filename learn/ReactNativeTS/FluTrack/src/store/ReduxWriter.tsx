@@ -10,14 +10,11 @@ import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionProps } from "../ui/components/SurveyQuestion";
-
-interface ButtonConfig {
-  key: string;
-}
-
-interface OptionListConfig {
-  options: string[];
-}
+import {
+  ButtonConfig,
+  EnabledOption,
+  SurveyQuestionData,
+} from "../resources/QuestionnaireConfig";
 
 interface InnerProps {
   surveyResponses: Map<string, SurveyResponse>;
@@ -42,44 +39,48 @@ export default function reduxWriter<P extends ReduxWriterProps>(
         ? new Map<string, SurveyResponse>(this.props.surveyResponses)
         : new Map<string, SurveyResponse>();
 
-      if (!responses.has(this.props.id)) {
+      if (!responses.has(this.props.data.id)) {
         const buttonOptions = new Map<string, string>(
-          this.props.buttons.map<[string, string]>((button: ButtonConfig) => [
-            button.key,
-            this.props.t("surveyButton:" + button.key),
-          ])
+          this.props.data.buttons.map<[string, string]>(
+            (button: ButtonConfig) => [
+              button.key,
+              this.props.t("surveyButton:" + button.key),
+            ]
+          )
         );
 
-        const optionKeysToLabel = this.props.optionList
+        const optionKeysToLabel = this.props.data.optionList
           ? new Map<string, string>(
-              this.props.optionList.options.map<[string, string]>(optionKey => [
-                optionKey,
-                this.props.t("surveyOption:" + optionKey),
-              ])
+              this.props.data.optionList.options.map<[string, string]>(
+                optionKey => [
+                  optionKey,
+                  this.props.t("surveyOption:" + optionKey),
+                ]
+              )
             )
           : undefined;
 
-        responses.set(this.props.id, {
+        responses.set(this.props.data.id, {
           answer: {},
           buttonOptions: buttonOptions,
           optionKeysToLabel: optionKeysToLabel,
-          questionId: this.props.id,
-          questionText: this.props.title || this.props.description,
+          questionId: this.props.data.id,
+          questionText: this.props.data.title || this.props.data.description,
         });
       }
 
       return [
         responses,
-        responses.has(this.props.id)
-          ? responses.get(this.props.id)!.answer!
+        responses.has(this.props.data.id)
+          ? responses.get(this.props.data.id)!.answer!
           : {},
       ];
     };
 
     _updateAnswer = (update: object) => {
       const [responses, existingAnswer] = this._initializeResponse();
-      responses.set(this.props.id, {
-        ...responses.get(this.props.id),
+      responses.set(this.props.data.id, {
+        ...responses.get(this.props.data.id),
         answer: {
           ...existingAnswer,
           ...update,
@@ -91,10 +92,10 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     _getAnswer = (key: string): any => {
       return (
         (!!this.props.surveyResponses &&
-          this.props.surveyResponses!.has(this.props.id) &&
-          this.props.surveyResponses!.get(this.props.id) &&
-          this.props.surveyResponses!.get(this.props.id)!.answer &&
-          this.props.surveyResponses!.get(this.props.id)!.answer![key]) ||
+          this.props.surveyResponses!.has(this.props.data.id) &&
+          this.props.surveyResponses!.get(this.props.data.id) &&
+          this.props.surveyResponses!.get(this.props.data.id)!.answer &&
+          this.props.surveyResponses!.get(this.props.data.id)!.answer![key]) ||
         null
       );
     };

@@ -13,7 +13,7 @@ import {
 import { PostCollectionQuestions } from "./QuestionConfig";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import { OptionListConfig } from "../../components/SurveyQuestion";
+import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 
 interface Props {
   dispatch(action: Action): void;

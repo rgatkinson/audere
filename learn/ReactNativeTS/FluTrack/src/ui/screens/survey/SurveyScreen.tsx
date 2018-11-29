@@ -55,8 +55,8 @@ export default class SurveyScreen extends React.Component<Props> {
     }
   };
 
-  _addData = (nextQuestion: string) => {
-    if (!nextQuestion) {
+  _addData = (nextQuestion: string | null) => {
+    if (nextQuestion === null) {
       this.props.navigation.push("PassBack");
       return;
     }
@@ -173,19 +173,9 @@ export default class SurveyScreen extends React.Component<Props> {
             const lastItem = section.data.length - 1 === index;
             return (
               <SurveyQuestion
-                id={item.id}
                 active={activeSection && lastItem}
-                addressInput={item.addressInput}
-                buttons={item.buttons}
-                dateInput={item.dateInput}
-                conditionalNext={item.conditionalNext}
+                data={item}
                 dispatch={this.props.dispatch}
-                description={item.description}
-                title={item.title}
-                nextQuestion={item.nextQuestion}
-                numberInput={item.numberInput}
-                optionList={item.optionList}
-                textInput={item.textInput}
                 onActivate={() => this._activateQuestion(section.title, index)}
                 onNext={(nextQuestion: string) => this._addData(nextQuestion)}
               />

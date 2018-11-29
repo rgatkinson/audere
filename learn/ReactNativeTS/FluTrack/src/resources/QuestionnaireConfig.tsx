@@ -8,6 +8,64 @@ export const sectionDescriptions = new Map<string, string>([
   [demo, "Next, we are going to ask you some questions about yourself."],
 ]);
 
+export interface SurveyQuestionData {
+  addressInput?: AddressInputConfig;
+  buttons: ButtonConfig[];
+  conditionalNext?: ConditionalNextConfig;
+  id: string;
+  dateInput?: DateInputConfig;
+  description?: string;
+  nextQuestion: string | null;
+  numberInput?: NumberInputConfig;
+  optionList?: OptionListConfig;
+  textInput?: TextInputConfig;
+  title?: string;
+}
+
+interface AddressInputConfig {
+  showLocationField: boolean;
+}
+
+export interface ButtonConfig {
+  key: string;
+  primary: boolean;
+  enabled: EnabledOption;
+}
+
+interface ConditionalNextConfig {
+  options?: Map<string, string>;
+  buttonKeys?: Map<string, string>;
+}
+
+interface DateInputConfig {
+  autoFocus: boolean;
+  placeholder: string;
+}
+
+interface NumberInputConfig {
+  placeholder: string;
+}
+
+export interface OptionListConfig {
+  options: string[];
+  multiSelect: boolean;
+  numColumns?: number;
+  withOther: boolean;
+}
+
+interface TextInputConfig {
+  placeholder: string;
+}
+
+export type EnabledOption =
+  | true
+  | false
+  | "withOption"
+  | "withText"
+  | "withAddress"
+  | "withNumber"
+  | "withDate";
+
 export const questionnaire = [
   {
     section: comp,
@@ -565,6 +623,7 @@ export const questionnaire = [
       id: "MedicalInsurance",
       title: "Do you have medical insurance?",
       description: "Please select all that apply.",
+      nextQuestion: null,
       optionList: {
         options: ["none", "medicaid", "privateInsurance", "medicare", "other"],
         multiSelect: true,

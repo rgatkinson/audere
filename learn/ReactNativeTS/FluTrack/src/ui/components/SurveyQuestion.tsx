@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
+import { ButtonConfig, EnabledOption, SurveyQuestionData } from "../../resources/QuestionnaireConfig";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -12,82 +13,28 @@ import OptionList from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
 
-type EnabledOption =
-  | true
-  | false
-  | "withOption"
-  | "withText"
-  | "withAddress"
-  | "withNumber"
-  | "withDate";
-
-interface ButtonConfig {
-  key: string;
-  primary: boolean;
-  enabled: EnabledOption;
-}
-
-interface ConditionalNextConfig {
-  options?: Map<string, string>;
-  buttonKeys?: Map<string, string>;
-}
-
-export interface OptionListConfig {
-  options: string[];
-  multiSelect: boolean;
-  numColumns?: number;
-  withOther: boolean;
-}
-
-interface TextInputConfig {
-  placeholder: string;
-}
-
-interface NumberInputConfig {
-  placeholder: string;
-}
-
-interface AddressInputConfig {
-  showLocationField: boolean;
-}
-
-interface DateInputConfig {
-  autoFocus: boolean;
-  placeholder: string;
-}
-
 export interface SurveyQuestionProps {
-  id: string;
   active: boolean;
-  addressInput: AddressInputConfig;
-  buttons: ButtonConfig[];
-  conditionalNext: ConditionalNextConfig;
-  dateInput: DateInputConfig;
-  description: string;
-  nextQuestion: string;
-  numberInput: NumberInputConfig;
-  title: string;
-  textInput: TextInputConfig;
-  optionList: OptionListConfig;
+  data: SurveyQuestionData;
   dispatch(action: Action): void;
   onActivate(): void;
-  onNext(nextQuestion: string): void;
+  onNext(nextQuestion: string | null): void;
 }
 
 class SurveyQuestion extends Component<
   SurveyQuestionProps & WithNamespaces & ReduxWriterProps
 > {
-  _getNextQuestion = (selectedButtonKey: string): string => {
-    let nextQuestion = this.props.nextQuestion;
-    if (this.props.conditionalNext) {
-      this.props.conditionalNext!.options &&
+  _getNextQuestion = (selectedButtonKey: string): string | null => {
+    let nextQuestion = this.props.data.nextQuestion;
+    if (this.props.data.conditionalNext) {
+      this.props.data.conditionalNext!.options &&
         this._getSelectedOptionMap().forEach((value, key) => {
-          if (value && this.props.conditionalNext!.options!.has(key)) {
-            nextQuestion = this.props.conditionalNext!.options!.get(key)!;
+          if (value && this.props.data.conditionalNext!.options!.has(key)) {
+            nextQuestion = this.props.data.conditionalNext!.options!.get(key)!;
           }
         });
-      !!this.props.conditionalNext!.buttonKeys &&
-        this.props.conditionalNext!.buttonKeys!.forEach((question: string, key: string) => {
+      !!this.props.data.conditionalNext!.buttonKeys &&
+        this.props.data.conditionalNext!.buttonKeys!.forEach((question: string, key: string) => {
           if (key === selectedButtonKey) {
             nextQuestion = question;
           }
@@ -98,10 +45,13 @@ class SurveyQuestion extends Component<
   };
 
   _getSelectedOptionMap = (): Map<string, boolean> => {
+    const allOptions = this.props.data.optionList
+      ? this.props.data.optionList!.options
+      : [];
     const options = this.props.getAnswer("options");
     return options
       ? new Map<string, boolean>(options)
-      : OptionList.emptyMap(this.props.optionList.options);
+      : OptionList.emptyMap(allOptions);
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
@@ -132,14 +82,16 @@ class SurveyQuestion extends Component<
             }}
           />
         )}
-        <Title label={this.props.title} size="small" />
-        {this.props.description && (
-          <Description content={this.props.description} />
+        {this.props.data.title && (
+          <Title label={this.props.data.title} size="small" />
         )}
-        {this.props.textInput && (
+        {this.props.data.description && (
+          <Description content={this.props.data.description} />
+        )}
+        {this.props.data.textInput && (
           <TextInput
             autoFocus={true}
-            placeholder={this.props.textInput!.placeholder}
+            placeholder={this.props.data.textInput!.placeholder}
             returnKeyType="done"
             value={this.props.getAnswer("textInput")}
             onChange={text => {
@@ -147,30 +99,30 @@ class SurveyQuestion extends Component<
             }}
           />
         )}
-        {this.props.dateInput && (
+        {this.props.data.dateInput && (
           <DateInput
-            autoFocus={this.props.dateInput.autoFocus}
+            autoFocus={this.props.data.dateInput.autoFocus}
             date={this.props.getAnswer("dateInput")}
-            placeholder={this.props.dateInput.placeholder}
+            placeholder={this.props.data.dateInput.placeholder}
             onDateChange={(date: Date) => {
               this.props.updateAnswer({ dateInput: date });
             }}
           />
         )}
-        {this.props.addressInput && (
+        {this.props.data.addressInput && (
           <AddressInput
             autoFocus={true}
-            showLocationField={this.props.addressInput!.showLocationField}
+            showLocationField={this.props.data.addressInput!.showLocationField}
             value={this.props.getAnswer("addressInput")}
             onChange={address => {
               this.props.updateAnswer({ addressInput: address });
             }}
           />
         )}
-        {this.props.numberInput && (
+        {this.props.data.numberInput && (
           <NumberInput
             autoFocus={true}
-            placeholder={this.props.numberInput!.placeholder}
+            placeholder={this.props.data.numberInput!.placeholder}
             returnKeyType="done"
             value={
               this.props.getAnswer("numberInput")
@@ -183,12 +135,12 @@ class SurveyQuestion extends Component<
             onSubmit={() => {}}
           />
         )}
-        {this.props.optionList && (
+        {this.props.data.optionList && (
           <OptionList
             data={this._getSelectedOptionMap()}
-            multiSelect={this.props.optionList.multiSelect}
-            numColumns={this.props.optionList.numColumns || 1}
-            withOther={this.props.optionList.withOther}
+            multiSelect={this.props.data.optionList.multiSelect}
+            numColumns={this.props.data.optionList.numColumns || 1}
+            withOther={this.props.data.optionList.withOther}
             otherOption={this.props.getAnswer("otherOption")}
             onOtherChange={value => {
               this.props.updateAnswer({ otherOption: value });
@@ -199,7 +151,7 @@ class SurveyQuestion extends Component<
           />
         )}
         <View style={styles.buttonContainer}>
-          {this.props.buttons.map((button: ButtonConfig) => (
+          {this.props.data.buttons.map((button: ButtonConfig) => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={
