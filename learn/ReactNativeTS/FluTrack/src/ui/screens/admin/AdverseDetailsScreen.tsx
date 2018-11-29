@@ -23,10 +23,10 @@ interface Props {
   screenProps: any;
 }
 
-const participantName = "John Doe"; //TODO: read the name out of redux
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   surveyResponses: state.form!.surveyResponses,
+  name: state.form!.name,
 }))
 class AdverseDetailsScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({
@@ -149,7 +149,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces> {
     if (responseValid) {
       Alert.alert(
         "Submit?",
-        `Adverse events will be recorded for ${participantName}.`,
+        `Adverse events will be recorded for ${this.props.name}.`,
         [
           {
             text: "Cancel",

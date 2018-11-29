@@ -22,11 +22,11 @@ interface Props {
   surveyResponses?: Map<string, SurveyResponse>;
 }
 
-const participantName = "John Doe"; //TODO: read the name out of redux
 const WereThereAdverse = PostCollectionQuestions.WereThereAdverse;
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   surveyResponses: state.form!.surveyResponses,
+  name: state.form!.name,
 }))
 class AdverseScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({
@@ -136,7 +136,7 @@ class AdverseScreen extends React.Component<Props & WithNamespaces> {
     } else {
       Alert.alert(
         "Submit?",
-        `No adverse events will be recorded for this collection for ${participantName}.`,
+        `No adverse events will be recorded for this collection for ${this.props.name}.`,
         [
           {
             text: "Cancel",

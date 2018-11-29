@@ -100,7 +100,7 @@ export const questionnaire = [
       id: "ExpoDesc",
       nextQuestion: "NearSickPeople",
       description:
-        "Next, we are going to ask you some questions about people you may have been in contact with. For the purposes of this study, we define contact as physical touching between you and another person, or being within 6 feet of another person for at least two minutes. As a reference, 6 feet is approximately 2 rows of a city bus.",
+        "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
       buttons: [{ key: "understand", primary: true, enabled: true }],
     },
   },
