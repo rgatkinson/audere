@@ -1,10 +1,9 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { Action, setLocation } from "../../../store";
-import OptionList from "../experiment/components/OptionList";
-import ScreenContainer from "../experiment/components/ScreenContainer";
+import { Action, StoreState, setLocation } from "../../../store";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;

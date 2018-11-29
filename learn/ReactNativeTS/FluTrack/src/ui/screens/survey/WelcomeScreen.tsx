@@ -2,11 +2,11 @@ import React from "react";
 import { StoreState } from "../../../store/index";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
-import Button from "./components/Button";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import Title from "./components/Title";
-import ScreenContainer from "./components/ScreenContainer";
+import Button from "../../components/Button";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import Title from "../../components/Title";
+import ScreenContainer from "../../components/ScreenContainer";
 
 interface Props {
   formId: string;

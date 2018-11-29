@@ -1,8 +1,8 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Icon } from "react-native-elements";
-import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
 import { Action, startForm } from "../../../store";
 
 interface Props {
@@ -23,7 +23,7 @@ export default class HomeScreen extends React.Component<Props> {
       <View style={styles.container}>
         <Image
           style={{ height: 30, width: 380 }}
-          source={require("./UWLogo.png")}
+          source={require("../../../img/UWLogo.png")}
         />
         <Text style={styles.title}>SEATTLE FLU STUDY</Text>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>

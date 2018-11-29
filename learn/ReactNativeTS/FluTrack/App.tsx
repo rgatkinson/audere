@@ -16,19 +16,19 @@ import { Icon } from "react-native-elements";
 import { createUploader } from "./src/transport";
 import i18n from "./src/i18n";
 
-import HomeScreen from "./src/ui/screens/experiment/HomeScreen";
-import WelcomeScreen from "./src/ui/screens/experiment/WelcomeScreen";
-import AgeScreen from "./src/ui/screens/experiment/AgeScreen";
-import SymptomsScreen from "./src/ui/screens/experiment/SymptomsScreen";
-import SwabScreen from "./src/ui/screens/experiment/SwabScreen";
-import BloodScreen from "./src/ui/screens/experiment/BloodScreen";
-import ConsentScreen from "./src/ui/screens/experiment/ConsentScreen";
-import EnrolledScreen from "./src/ui/screens/experiment/EnrolledScreen";
-import InelligibleScreen from "./src/ui/screens/experiment/InelligibleScreen";
-import HeaderBar from "./src/ui/screens/experiment/components/HeaderBar";
-import SurveyStartScreen from "./src/ui/screens/experiment/SurveyStartScreen";
-import SurveyScreen from "./src/ui/screens/experiment/SurveyScreen";
-import PassBackScreen from "./src/ui/screens/experiment/PassBackScreen";
+import HomeScreen from "./src/ui/screens/survey/HomeScreen";
+import WelcomeScreen from "./src/ui/screens/survey/WelcomeScreen";
+import AgeScreen from "./src/ui/screens/survey/AgeScreen";
+import SymptomsScreen from "./src/ui/screens/survey/SymptomsScreen";
+import SwabScreen from "./src/ui/screens/survey/SwabScreen";
+import BloodScreen from "./src/ui/screens/survey/BloodScreen";
+import ConsentScreen from "./src/ui/screens/survey/ConsentScreen";
+import EnrolledScreen from "./src/ui/screens/survey/EnrolledScreen";
+import InelligibleScreen from "./src/ui/screens/survey/InelligibleScreen";
+import HeaderBar from "./src/ui/components/HeaderBar";
+import SurveyStartScreen from "./src/ui/screens/survey/SurveyStartScreen";
+import SurveyScreen from "./src/ui/screens/survey/SurveyScreen";
+import PassBackScreen from "./src/ui/screens/survey/PassBackScreen";
 
 import SettingsScreen from "./src/ui/screens/admin/SettingsScreen";
 import PriorScreen from "./src/ui/screens/admin/PriorScreen";
@@ -96,7 +96,7 @@ const Admin = createStackNavigator(
   }
 );
 
-const tabBarVisible = (navigation) => {
+const tabBarVisible = (navigation: NavigationScreenProp<any, any>) => {
   const { routes } = navigation.state;
   return navigation.state.index === 0;
 };
@@ -109,7 +109,7 @@ const FluStudy = createBottomTabNavigator(
   {
     navigationOptions: ({ navigation }) => ({
       tabBarVisible: tabBarVisible(navigation),
-      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+      tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         const iconName =
           routeName === 'Home' ? 'home' : 'settings';
@@ -117,8 +117,8 @@ const FluStudy = createBottomTabNavigator(
         return (
           <Icon
             name={iconName}
-            color={tintColor}
-            size={horizontal ? 20 : 25}
+            color={tintColor!}
+            size={20}
             type="feather"
           />
         );

@@ -1,26 +1,27 @@
 import React from "react";
+import { withNamespaces, WithNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
+import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
+import { Icon } from "react-native-elements";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
 import {
   Action,
   setSurveyResponses,
+  StoreState,
   SurveyResponse,
   SurveyAnswer,
 } from "../../../store";
-import OptionList from "../experiment/components/OptionList";
-import { Icon } from "react-native-elements";
-import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
-import ScreenContainer from "../experiment/components/ScreenContainer";
-import { withNamespaces, WithNamespaces } from "react-i18next";
-import { OptionListConfig } from "../experiment/components/SurveyQuestion";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
+import { OptionListConfig } from "../../components/SurveyQuestion";
 
 interface Props {
+  name: string;
   navigation: NavigationScreenProp<any, any>;
   surveyResponses?: Map<string, SurveyResponse>;
-  dispatch(action: Action): void;
   screenProps: any;
+  dispatch(action: Action): void;
 }
 
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;

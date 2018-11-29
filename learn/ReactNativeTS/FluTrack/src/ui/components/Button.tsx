@@ -1,42 +1,95 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { colors } from "../Styles";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Icon } from "react-native-elements";
 
 interface Props {
-  title: string;
-  style?: any;
-  onPress(arg: any): void;
+  checked?: boolean;
+  enabled: boolean;
+  primary: boolean;
+  label: string;
+  subtext?: string;
+  onPress: any;
 }
 
-// Custom button that looks like the button on auderenow.org
 export default class Button extends React.Component<Props> {
   render() {
+    const subtext = this.props.subtext ? (
+      <Text style={styles.subtext}>{this.props.subtext}</Text>
+    ) : null;
+
     return (
-      <TouchableOpacity
-        style={[styles.button, this.props.style]}
-        activeOpacity={0.5}
-        onPress={this.props.onPress}
+      <View
+        style={[styles.container, { opacity: this.props.enabled ? 0.95 : 0.5 }]}
       >
-        <Text style={styles.text}>{this.props.title}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          disabled={!this.props.enabled}
+          style={[styles.button, this.props.primary && styles.primaryButton]}
+          onPress={this.props.enabled ? this.props.onPress : null}
+        >
+          {this.props.checked && (
+            <Icon
+              name="check"
+              color={this.props.primary ? "#FFFFFF" : "#4B2E83"}
+              size={20}
+              iconStyle={styles.check}
+              type="feather"
+            />
+          )}
+          <Text
+            style={[
+              styles.text,
+              this.props.primary
+                ? styles.primaryButtonText
+                : styles.secondaryButtonText,
+            ]}
+          >
+            {this.props.label}
+          </Text>
+        </TouchableOpacity>
+        {subtext}
+      </View>
     );
   }
 }
 
-const HEIGHT = 44;
-
 const styles = StyleSheet.create({
-  text: {
-    color: "white",
-    fontWeight: "bold",
-  },
   button: {
     alignItems: "center",
+    borderColor: "#4B2E83",
+    borderRadius: 8,
+    borderWidth: 2,
+    flexDirection: "row",
+    height: 50,
     justifyContent: "center",
-    margin: 8,
-    paddingHorizontal: 30,
-    height: HEIGHT,
-    borderRadius: HEIGHT / 2,
-    backgroundColor: colors.accent,
+  },
+  check: {
+    paddingRight: 8,
+  },
+  container: {
+    marginVertical: 20,
+    width: 343,
+  },
+  text: {
+    fontFamily: "OpenSans-SemiBold",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 22,
+    textAlign: "center",
+  },
+  primaryButton: {
+    backgroundColor: "#4B2E83",
+  },
+  primaryButtonText: {
+    color: "#FFFFFF",
+  },
+  secondaryButtonText: {
+    color: "#4B2E83",
+  },
+  subtext: {
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 26,
+    marginTop: 10,
   },
 });

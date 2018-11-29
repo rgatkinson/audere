@@ -1,12 +1,11 @@
 import React from "react";
-import { NavigationScreenProp } from "react-navigation";
-import EditSettingButton from "./components/EditSettingButton";
-import Description from "../experiment/components/Description";
 import { View, StyleSheet, Text, Alert } from "react-native";
-import ScreenContainer from "../experiment/components/ScreenContainer";
+import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { SurveyResponse } from "../../../store";
+import { StoreState, SurveyResponse } from "../../../store";
+import EditSettingButton from "../../components/EditSettingButton";
+import Description from "../../components/Description";
+import ScreenContainer from "../../components/ScreenContainer";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;

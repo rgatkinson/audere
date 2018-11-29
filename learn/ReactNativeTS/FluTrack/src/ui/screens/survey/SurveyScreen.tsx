@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import { questionnaire, sectionDescriptions } from "./QuestionnaireConfig";
-import Button from "./components/Button";
-import Description from "./components/Description";
-import SurveyQuestion from "./components/SurveyQuestion";
-import StatusBar from "./components/StatusBar";
+import { questionnaire, sectionDescriptions } from "../../../resources/QuestionnaireConfig";
+import Button from "../../components/Button";
+import Description from "../../components/Description";
+import SurveyQuestion from "../../components/SurveyQuestion";
+import StatusBar from "../../components/StatusBar";
 
 interface Props {
   dispatch(action: Action): void;

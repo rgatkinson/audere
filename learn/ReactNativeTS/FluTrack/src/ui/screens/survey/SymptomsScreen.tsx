@@ -1,15 +1,14 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { Action, setSymptoms } from "../../../store";
-import Button from "./components/Button";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import OptionList from "./components/OptionList";
-import ScreenContainer from "./components/ScreenContainer";
-import StatusBar from "./components/StatusBar";
-import Title from "./components/Title";
+import { Action, StoreState, setSymptoms } from "../../../store";
+import Button from "../../components/Button";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
+import StatusBar from "../../components/StatusBar";
+import Title from "../../components/Title";
 
 interface Props {
   dispatch(action: Action): void;

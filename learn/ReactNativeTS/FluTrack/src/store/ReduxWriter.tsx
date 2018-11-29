@@ -1,14 +1,15 @@
 import React from "react";
 import {
   Action,
+  StoreState,
   SurveyAnswer,
   SurveyResponse,
   setSurveyResponses,
-} from "../../../store";
+} from "./index";
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { SurveyQuestionProps } from "../ui/components/SurveyQuestion";
 
 interface ButtonConfig {
   key: string;
@@ -20,13 +21,7 @@ interface OptionListConfig {
 
 interface InnerProps {
   surveyResponses: Map<string, SurveyResponse>;
-  id: string;
-  buttons: ButtonConfig[];
-  optionList: OptionListConfig;
-  title: string;
-  description: string;
   t(key: string): string;
-  dispatch(action: Action): void;
 }
 
 export interface ReduxWriterProps {
@@ -39,7 +34,9 @@ type OuterProps<P> = Dissoc<P, keyof ReduxWriterProps>;
 export default function reduxWriter<P extends ReduxWriterProps>(
   WrappedComponent: React.ComponentType<P>
 ) {
-  class ReduxWriter extends React.Component<InnerProps & OuterProps<P>> {
+  class ReduxWriter extends React.Component<
+    SurveyQuestionProps & InnerProps & OuterProps<P>
+  > {
     _initializeResponse = (): [Map<string, SurveyResponse>, SurveyAnswer] => {
       const responses = this.props.surveyResponses
         ? new Map<string, SurveyResponse>(this.props.surveyResponses)
@@ -119,5 +116,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     };
   };
 
-  return withNamespaces()(connect(mapStateToProps)(ReduxWriter));
+  return withNamespaces()<SurveyQuestionProps>(
+    connect(mapStateToProps)(ReduxWriter)
+  );
 }

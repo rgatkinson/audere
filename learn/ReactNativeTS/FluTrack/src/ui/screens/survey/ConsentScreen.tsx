@@ -10,20 +10,21 @@ import {
   View,
 } from "react-native";
 import { connect } from "react-redux";
-import { Action, setName, setSignaturePng } from "../../../store";
+import { Action, StoreState, setName, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
-import Button from "./components/Button";
-import Description from "./components/Description";
-import StatusBar from "./components/StatusBar";
-import TextInput from "./components/TextInput";
-import Title from "./components/Title";
+import Button from "../../components/Button";
+import Description from "../../components/Description";
+import StatusBar from "../../components/StatusBar";
+import TextInput from "../../components/TextInput";
+import Title from "../../components/Title";
 
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
+  name: string;
 }
 interface SnapshotImage {
   height: number;
@@ -149,7 +150,7 @@ export default class ConsentScreen extends React.Component<Props> {
             onPress={this._onClear}
           />
           <Button
-            enabled={(!!this.state.image || remoteDebugging) && this.props.name}
+            enabled={(!!this.state.image || remoteDebugging) && !!this.props.name}
             label="Submit"
             primary={true}
             onPress={this._onSubmit}

@@ -2,15 +2,14 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { Action, setEmail, setEmailOptions } from "../../../store";
-import Button from "./components/Button";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import EmailInput from "./components/EmailInput";
-import OptionList from "./components/OptionList";
-import ScreenContainer from "./components/ScreenContainer";
-import Title from "./components/Title";
+import { Action, StoreState, setEmail, setEmailOptions } from "../../../store";
+import Button from "../../components/Button";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import EmailInput from "../../components/EmailInput";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
+import Title from "../../components/Title";
 
 interface Props {
   dispatch(action: Action): void;

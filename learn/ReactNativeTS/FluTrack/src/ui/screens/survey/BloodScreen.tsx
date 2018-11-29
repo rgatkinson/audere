@@ -2,12 +2,12 @@ import React from "react";
 import { connect } from "react-redux";
 import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import Button from "./components/Button";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import ScreenContainer from "./components/ScreenContainer";
-import StatusBar from "./components/StatusBar";
-import Title from "./components/Title";
+import Button from "../../components/Button";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import ScreenContainer from "../../components/ScreenContainer";
+import StatusBar from "../../components/StatusBar";
+import Title from "../../components/Title";
 
 interface Props {
   dispatch(action: Action): void;

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { Action } from "../../store/index";
+import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -9,7 +11,6 @@ import NumberInput from "./NumberInput";
 import OptionList from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
-import reduxWriter, { ReduxWriterProps } from "../ReduxWriter";
 
 type EnabledOption =
   | true
@@ -55,7 +56,7 @@ interface DateInputConfig {
   placeholder: string;
 }
 
-interface Props {
+export interface SurveyQuestionProps {
   id: string;
   active: boolean;
   addressInput: AddressInputConfig;
@@ -68,12 +69,13 @@ interface Props {
   title: string;
   textInput: TextInputConfig;
   optionList: OptionListConfig;
+  dispatch(action: Action): void;
   onActivate(): void;
   onNext(nextQuestion: string): void;
 }
 
 class SurveyQuestion extends Component<
-  Props & WithNamespaces & ReduxWriterProps
+  SurveyQuestionProps & WithNamespaces & ReduxWriterProps
 > {
   _getNextQuestion = (selectedButtonKey: string): string => {
     let nextQuestion = this.props.nextQuestion;
@@ -85,7 +87,7 @@ class SurveyQuestion extends Component<
           }
         });
       !!this.props.conditionalNext!.buttonKeys &&
-        this.props.conditionalNext!.buttonKeys!.forEach((question, key) => {
+        this.props.conditionalNext!.buttonKeys!.forEach((question: string, key: string) => {
           if (key === selectedButtonKey) {
             nextQuestion = question;
           }
@@ -197,7 +199,7 @@ class SurveyQuestion extends Component<
           />
         )}
         <View style={styles.buttonContainer}>
-          {this.props.buttons.map(button => (
+          {this.props.buttons.map((button: ButtonConfig) => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={

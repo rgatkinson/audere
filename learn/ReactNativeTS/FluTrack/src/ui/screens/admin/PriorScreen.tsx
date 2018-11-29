@@ -1,13 +1,12 @@
 import React from "react";
+import { Text, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { Action, setBloodCollection } from "../../../store";
-import OptionList from "../experiment/components/OptionList";
-import EditSettingButton from "./components/EditSettingButton";
-import KeyValueLine from "./components/KeyValueLine";
-import { Text, StyleSheet } from "react-native";
-import ScreenContainer from "../experiment/components/ScreenContainer";
+import { Action, StoreState, setBloodCollection } from "../../../store";
+import EditSettingButton from "../../components/EditSettingButton";
+import KeyValueLine from "../../components/KeyValueLine";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
 
 interface Props {
   location: string;

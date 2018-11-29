@@ -1,7 +1,7 @@
 import React from "react";
-import { Icon } from "react-native-elements";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { colors } from "../../../Styles";
+import { Icon } from "react-native-elements";
+import { colors } from "../Styles";
 
 interface Props {
   label: string;

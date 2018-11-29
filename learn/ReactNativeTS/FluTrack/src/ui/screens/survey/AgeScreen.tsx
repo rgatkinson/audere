@@ -1,15 +1,14 @@
 import React from "react";
-import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
-import { Action, setAge, setMonths } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import Button from "./components/Button";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import NumberInput from "./components/NumberInput";
-import ScreenContainer from "./components/ScreenContainer";
-import StatusBar from "./components/StatusBar";
-import Title from "./components/Title";
+import { connect } from "react-redux";
+import { Action, StoreState, setAge, setMonths } from "../../../store";
+import Button from "../../components/Button";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import NumberInput from "../../components/NumberInput";
+import ScreenContainer from "../../components/ScreenContainer";
+import StatusBar from "../../components/StatusBar";
+import Title from "../../components/Title";
 
 interface Props {
   age: number;

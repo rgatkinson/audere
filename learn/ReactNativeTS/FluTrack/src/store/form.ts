@@ -77,7 +77,7 @@ export default function reducer(state = initialState, action: FormAction) {
     return { ...state, symptoms: action.symptoms };
   }
   if (action.type === "SET_NAME") {
-    return { ...state, name: action.name};
+    return { ...state, name: action.name };
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email };

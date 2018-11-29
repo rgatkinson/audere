@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import ContentContainer from "./components/ContentContainer";
-import Description from "./components/Description";
-import ScreenContainer from "./components/ScreenContainer";
-import Title from "./components/Title";
+import ContentContainer from "../../components/ContentContainer";
+import Description from "../../components/Description";
+import ScreenContainer from "../../components/ScreenContainer";
+import Title from "../../components/Title";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;

@@ -1,23 +1,24 @@
 import React from "react";
+import { withNamespaces, WithNamespaces } from "react-i18next";
+import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store/index";
 import {
   Action,
+  StoreState,
   SurveyResponse,
   setSurveyResponses,
   SurveyAnswer,
 } from "../../../store";
 import { PostCollectionQuestions } from "./QuestionConfig";
-import OptionList from "../experiment/components/OptionList";
-import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
-import ScreenContainer from "../experiment/components/ScreenContainer";
-import { withNamespaces, WithNamespaces } from "react-i18next";
-import { OptionListConfig } from "../experiment/components/SurveyQuestion";
+import OptionList from "../../components/OptionList";
+import ScreenContainer from "../../components/ScreenContainer";
+import { OptionListConfig } from "../../components/SurveyQuestion";
 
 interface Props {
-  navigation: NavigationScreenProp<any, any>;
   dispatch(action: Action): void;
+  navigation: NavigationScreenProp<any, any>;
+  name: string;
   screenProps: any;
   surveyResponses?: Map<string, SurveyResponse>;
 }

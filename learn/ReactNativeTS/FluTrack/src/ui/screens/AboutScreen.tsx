@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, Clipboard, Platform, View } from "react-native";
-import Button from "./experiment/components/Button";
-import ScreenView from "../components/ScreenView";
-import Text from "../components/Text";
 import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
+import Button from "../components/Button";
+import ScreenView from "../components/ScreenView";
+import Text from "../components/Text";
 
 const buildInfo = require("../../../buildInfo.json");
 
