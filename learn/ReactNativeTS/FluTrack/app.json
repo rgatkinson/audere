@@ -8,7 +8,9 @@
     "sdkVersion": "30.0.0",
     "ios": {
       "bundleIdentifier": "org.auderenow.flutrack",
-      "buildNumber": "2",
+      "buildNumber": "3",
+      "supportsTablet": true,
+      "isTabletOnly": true,
       "config": {
         "usesNonExemptEncryption": false
       }
