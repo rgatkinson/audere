@@ -74,7 +74,9 @@ export default class SelectLocationScreen extends React.Component<Props> {
         locations.set(COLLECTION_LOCATIONS[cat].category + " - " + loc, false)
       )
     );
-    locations.set(selectedLocation, true);
+    if (!!selectedLocation) {
+      locations.set(selectedLocation, true);
+    }
     return locations;
   }
   render() {

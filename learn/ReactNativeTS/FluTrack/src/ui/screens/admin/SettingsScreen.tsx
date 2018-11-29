@@ -15,7 +15,7 @@ interface Props {
 }
 
 @connect((state: StoreState) => ({
-  surveyResponses: state.form!.surveyResponses,
+  surveyResponses: !!state.form ? state.form.surveyResponses : null,
 }))
 export default class SettingsScreen extends React.Component<Props> {
   static navigationOptions = {
