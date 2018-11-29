@@ -3,7 +3,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
 import { Action, setBloodCollection } from "../../../store";
-import OptionTable from "./components/OptionTable";
+import OptionList from "../experiment/components/OptionList";
 import EditSettingButton from "./components/EditSettingButton";
 import KeyValueLine from "./components/KeyValueLine";
 import { Text, StyleSheet } from "react-native";
@@ -32,6 +32,12 @@ export default class PriorScreen extends React.Component<Props> {
   _onSelectLocation = () => {
     this.props.navigation.push("SelectLocation");
   };
+  _getBloodCollectionOptions(bloodCollection: boolean): Map<string, boolean> {
+    return new Map([
+      ["Available", bloodCollection],
+      ["Not Available", !bloodCollection],
+    ]);
+  }
   render() {
     return (
       <ScreenContainer>
@@ -46,12 +52,14 @@ export default class PriorScreen extends React.Component<Props> {
           collection
         </Text>
         <Text style={styles.sectionHeaderText}>Blood Collection</Text>
-        <OptionTable
-          data={["Available", "Not Available"]}
+        <OptionList
+          data={this._getBloodCollectionOptions(this.props.bloodCollection)}
           numColumns={1}
-          selected={this.props.bloodCollection ? "Available" : "Not Available"}
-          onChange={(answer: string) =>
-            this.props.dispatch(setBloodCollection(answer === "Available"))
+          fullWidth={true}
+          multiSelect={false}
+          backgroundColor="#fff"
+          onChange={data =>
+            this.props.dispatch(setBloodCollection(!!data.get("Available")))
           }
         />
         <Text style={styles.descriptionText}>

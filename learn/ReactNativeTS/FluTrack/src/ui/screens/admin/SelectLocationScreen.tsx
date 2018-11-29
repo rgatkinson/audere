@@ -3,7 +3,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store/index";
 import { Action, setLocation } from "../../../store";
-import OptionTable from "./components/OptionTable";
+import OptionList from "../experiment/components/OptionList";
 import ScreenContainer from "../experiment/components/ScreenContainer";
 
 interface Props {
@@ -17,7 +17,7 @@ const COLLECTION_LOCATIONS: {
   [key: string]: { category: string; locations: string[] };
 } = {
   // TODO: Let's read this out of a DB not hardcode
-  // Should dynamically read in locations if not categories (Should category be localized?)
+  // Should dynamically read in locations if not categories
   clinic: {
     category: "Clinics",
     locations: [
@@ -59,15 +59,6 @@ const COLLECTION_LOCATIONS: {
     locations: ["Boeing", "Microsoft", "Amazon", "Other"],
   },
 };
-function getLocations() {
-  let locations = new Array<string>(0);
-  Object.keys(COLLECTION_LOCATIONS).map((cat: string) =>
-    COLLECTION_LOCATIONS[cat].locations.forEach((loc: string) =>
-      locations.push(COLLECTION_LOCATIONS[cat].category + " - " + loc)
-    )
-  );
-  return locations;
-}
 
 @connect((state: StoreState) => ({
   location: state.admin == null ? null : state.admin.location,
@@ -76,16 +67,33 @@ export default class SelectLocationScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Select Location",
   };
+  _getLocations(selectedLocation: string): Map<string, boolean> {
+    let locations = new Map<string, boolean>();
+    Object.keys(COLLECTION_LOCATIONS).map((cat: string) =>
+      COLLECTION_LOCATIONS[cat].locations.forEach((loc: string) =>
+        locations.set(COLLECTION_LOCATIONS[cat].category + " - " + loc, false)
+      )
+    );
+    locations.set(selectedLocation, true);
+    return locations;
+  }
   render() {
     return (
       <ScreenContainer>
-        <OptionTable
-          data={getLocations()}
+        <OptionList
+          data={this._getLocations(this.props.location)}
           numColumns={1}
-          selected={this.props.location}
-          onChange={(location: string) =>
-            this.props.dispatch(setLocation(location))
-          }
+          multiSelect={false}
+          fullWidth={true}
+          backgroundColor="#fff"
+          onChange={data => {
+            for (const key of data.keys()) {
+              if (data.get(key)) {
+                this.props.dispatch(setLocation(key));
+                break;
+              }
+            }
+          }}
         />
       </ScreenContainer>
     );

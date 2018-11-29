@@ -20,7 +20,6 @@ export default function reducer(state = initialState, action: AdminAction) {
 }
 
 export function setLocation(location: string): AdminAction {
-  console.log("SETTING LOCATION to " + location);
   return {
     type: "SET_LOCATION",
     location,
