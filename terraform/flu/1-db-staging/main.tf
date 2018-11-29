@@ -6,10 +6,10 @@
 module "flu_db" {
   source = "../../modules/flu-db"
 
-  epoch = "${var.epoch}"
-  provision = "${var.provision}"
-  environment = "staging"
+  admins = "${var.admins}"
   ami_id = "${module.ami.ubuntu}"
+  environment = "staging"
+  mode = "${var.mode}"
 }
 
 module "ami" {

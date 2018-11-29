@@ -43,7 +43,7 @@ function configure_api() {
 ${init_tar_bz2_base64}
 EOF
   chown -R "api:api" "$API"
-  sudo -H --login --user=api bash "$API/init/api-init" "${mode}"
+  sudo -H --login --user=api bash "$API/init/api-init" "${mode}" "${commit}"
   [[ "${mode}" != service ]] || pm2_startup
 }
 
@@ -56,7 +56,8 @@ function pm2_startup() {
 }
 
 function init_nginx() {
-  readonly VPC_CERT="/creds/vpc-cert"
+  readonly local VPC_CERT="/creds/vpc-cert"
+  readonly local service_url = "http://localhost:3000"
 
   apt-get -y install nginx
   rm /etc/nginx/sites-enabled/default
@@ -96,7 +97,7 @@ server {
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
 
-    proxy_pass ${service_url};
+    proxy_pass $service_url;
     proxy_redirect off;
   }
 }

@@ -24,7 +24,7 @@ resource "aws_db_instance" "fludb" {
   publicly_accessible = false
   skip_final_snapshot = true // TODO
   storage_encrypted = true
-  username = "${local.first_admin_userid}"
+  username = "${local.my_userid}"
 
   tags {
     Name = "${local.base_name}"
@@ -81,7 +81,7 @@ resource "aws_instance" "provision0" {
 }
 
 data "template_file" "provision0_sh" {
-  template = "${file("${path.module}/provision-0.sh")}"
+  template = "${file("${path.module}/provision0.sh")}"
 
   vars {
     api_device_letter = "n"
@@ -117,7 +117,7 @@ resource "aws_volume_attachment" "provision0_my_creds" {
 // add admin
 
 resource "aws_instance" "add_admin" {
-  count = "${local.provision_admin}"
+  count = "${local.mode_add_admin}"
 
   ami = "${var.ami_id}"
   availability_zone = "${var.availability_zone}"
@@ -148,18 +148,18 @@ data "template_file" "add_admin_sh" {
 }
 
 resource "aws_volume_attachment" "add_admin_my_creds" {
-  count = "${local.provision_admin}"
+  count = "${local.mode_add_admin}"
 
   device_name = "/dev/sd${data.template_file.add_admin_sh.vars.my_device_letter}"
-  volume_id = "${aws_ebs_volume.   .id}"
+  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
   instance_id = "${aws_instance.add_admin.id}"
 }
 
 resource "aws_volume_attachment" "add_admin_new_creds" {
-  count = "${local.provision_admin}"
+  count = "${local.mode_add_admin}"
 
   device_name = "/dev/sd${data.template_file.add_admin_sh.vars.new_device_letter}"
-  volume_id = "${aws_ebs_volume.   .id}"
+  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.new_admin_index)}"
   instance_id = "${aws_instance.add_admin.id}"
 }
 
@@ -193,9 +193,10 @@ resource "aws_ebs_snapshot" "api_creds" {
 resource "aws_ebs_volume" "admin_creds" {
   count = "${length(var.admins)}"
 
-  type = "gp2"
+  availability_zone = "${var.availability_zone}"
   encrypted = true
   size = 1
+  type = "gp2"
 
   tags {
     Name = "flu-${var.environment}-${element(var.admins, count.index)}-creds"
@@ -221,9 +222,13 @@ locals {
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
   vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
   my_userid = "${element(split("/", data.aws_caller_identity.current.arn), 1)}"
-  my_admin_index = "${index(var.admins, "${local.myuserid}"}"
+  my_admin_index = "${index(var.admins, local.my_userid)}"
+  new_admin_index = "${local.mode_add_admin
+    ? (length(var.admins) - 1)
+    : 0
+  }"
   new_admin_userid = "${local.mode_add_admin
-    ? element(var.admins, length(var.admins)-1)
+    ? element(var.admins, local.new_admin_index)
     : "NotCurrentlyAddingNewAdmin"
   }"
 }

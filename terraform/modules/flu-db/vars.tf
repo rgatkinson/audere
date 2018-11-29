@@ -20,41 +20,30 @@
 //
 // Since these actions are no longer declarative, we need a system
 // of migrations for the provisioning actions.  We manage this by
-// assigning an epoch that increments, each corresponding to a
-// "provision-$N.sh" script that runs at epoch $N.
+// running stages of mode=provision0, mode=provision1, etc.  Once
+// all provision modes have completed, we set mode=run to run.
 //
-// So to set up a current working system, run something like:
-//   for i in {0..$MAX_EPOCH}; do
-//     terraform apply -var "mode=provision$i"
-//     # wait for provisioning server for this phase to enter "stopped" state
-//   done
-//   terraform apply
-//
-// This runs all the migration scripts in order, and the final apply
-// switches out of "mode=cleanup" mode and disables any provisioning
-// server(s).
-//
-// To add an administrator account, add the userid to the default list of
-// admins below and run something like:
+// To add an administrator account, add the userid to the list of
+// admins and run something like:
 //   terraform apply -var "mode=add-admin"
 //   terraform apply
 
-variable "epoch" {
-  description = "Migration epoch to migrate to, cleanup after, or run under."
-  // should always default to the latest migration epoch defined.
-  default = 0
+variable "admins" {
+  type = "list"
+}
+
+variable "ami_id" {
+  type = "string"
+}
+
+variable "environment" {
+  description = "One of 'staging' or 'prod'"
+  type = "string"
 }
 
 variable "mode" {
   description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"
   default = "run"
-}
-
-variable "environment" {
-  description = "One of 'staging' or 'prod'"
-}
-
-variable "ami_id" {
 }
 
 variable "db_setup_password_filename" {
@@ -75,12 +64,4 @@ variable "vpc_dhparam_filename" {
 
 variable "availability_zone" {
   default = "us-west-2a"
-}
-
-variable "admins" {
-  description = "List of admin userids."
-  default = [
-    "mmarucheck",
-    "ram",
-  ]
 }

@@ -9,11 +9,15 @@ locals {
     staging = "api.staging"
   }
   subdomain = "${local.subdomains["${var.environment}"]}"
+  full_domain = "${local.subdomain}.auderenow.io"
   module_name = "flu-api-${var.environment}"
+  instance_port = 3000
+  service_url = "http://localhost:${local.instance_port}"
+  util_sh = "${file("${path.module}/../assets/util.sh")}"
 
   availability_zones = ["us-west-2a"]
-  instance_port = 3000
 
+  // TODO: archive_file can create a .zip
   init_tar_bz2_base64_filename = "${path.module}/../../../local/flu-api-staging-init.tar.bz2.base64"
   init_tar_bz2_base64 = "${file("${local.init_tar_bz2_base64_filename}")}"
 
@@ -37,31 +41,30 @@ data "aws_acm_certificate" "auderenow_io" {
 data "template_file" "sequelize_migrate_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    util_sh = "${file("${path.module}/../assets/util.sh")}"
-    api_port = "${local.instance_port}"
-    subdomain = "${local.subdomain}"
-    domain = "${local.subdomain}.auderenow.io"
-    service_url = "http://localhost:3000"
     commit = "master"
-    mode = "migrate"
+    domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    ram_ssh_public_key = "${local.ram_ssh_public_key}"
     mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
+    mode = "migrate"
+    ram_ssh_public_key = "${local.ram_ssh_public_key}"
+    service_url = "${local.service_url}"
+    subdomain = "${local.subdomain}"
+    util_sh = "${local.util_sh}"
   }
 }
 
 data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    api_port = "${local.instance_port}"
-    subdomain = "${local.subdomain}"
-    domain = "${local.subdomain}.auderenow.io"
-    service_url = "http://localhost:3000"
     commit = "master"
-    mode = "service"
+    domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    ram_ssh_public_key = "${local.ram_ssh_public_key}"
     mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
+    mode = "service"
+    ram_ssh_public_key = "${local.ram_ssh_public_key}"
+    service_url = "${local.service_url}"
+    subdomain = "${local.subdomain}"
+    util_sh = "${local.util_sh}"
   }
 }
 
@@ -72,8 +75,9 @@ data "template_file" "service_init_sh" {
 resource "aws_instance" "migrate_instance" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "2018-mmarucheck"
+  key_name = "2018-mmarucheck" // TODO remove
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
+
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
     "${data.aws_security_group.ssh.id}",
@@ -93,13 +97,14 @@ resource "aws_instance" "migrate_instance" {
 
 
 // --------------------------------------------------------------------------------
-// Single-instance mode
+// Single-instance mode (for debugging)
 
 resource "aws_instance" "flu_api_instance" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
   key_name = "2018-mmarucheck"
   user_data = "${data.template_file.service_init_sh.rendered}"
+
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
     "${data.aws_security_group.ssh.id}",
@@ -178,9 +183,9 @@ resource "aws_elb" "flu_api_elb" {
   health_check {
     healthy_threshold = 2
     unhealthy_threshold = 2
-    timeout = 10
-    interval = 120
-    target = "HTTP:${local.instance_port}/"
+    timeout = 5
+    interval = 30
+    target = "HTTPS:443/api"
   }
 
   tags {
@@ -235,8 +240,8 @@ resource "aws_security_group" "flu_api_elb" {
 
   # TODO: allow egress only to api instances
   egress {
-    from_port = 0
-    to_port = 0
+    from_port = 443
+    to_port = 443
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -249,8 +254,8 @@ resource "aws_security_group" "flu_api_instance_from_elb" {
 
   # TODO: allow ingress only from elb
   ingress {
-    from_port = "${local.instance_port}"
-    to_port = "${local.instance_port}"
+    from_port = 443
+    to_port = 443
     protocol = "tcp"
     security_groups = [
       "${aws_security_group.flu_api_elb.id}"
