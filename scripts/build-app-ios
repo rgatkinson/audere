@@ -1,10 +1,30 @@
 #!/usr/bin/env bash
 # This will increment FluTrack ios.buildNumber in app.json and then trigger Circle build-ios job 
 
-USAGE="Usage: build-app-ios release-channel commit-hash branch [--no-increment]"
+USAGE="Usage: build-app-ios <release-channel> <branch> [<commithash>] [--no-increment]"
+INCREMENT=true
+
 case "$#" in
-  3) ;;
-  4) if [ "$4" != "--no-increment" ]; then echo 1>&2 $USAGE; exit 1; fi;;
+  2) CHANNEL=$1
+     BRANCH=$2;;
+  3) if [ "$3" == "--no-increment" ]; then 
+       CHANNEL=$1
+       BRANCH=$2
+       INCREMENT=false
+     else 
+       echo 1>&2 "Error: If <commithash> is specified, then must set --no-increment also since the incremented"
+       echo 1>&2 "build number cannot be reflected in the build."
+       exit 1
+     fi;;
+  4) if [ "$4" != "--no-increment" ]; then 
+       echo 1>&2 $USAGE
+       exit 1
+     else 
+       CHANNEL=$1
+       BRANCH=$2
+       COMMIT=$3
+       INCREMENT=false 
+     fi;;
   *) echo 1>&2 $USAGE; exit 1;;
 esac
 
@@ -14,16 +34,20 @@ if [[ -z "$CIRCLE_TOKEN" ]]; then
   exit 1 
 fi
 
-REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-CHANNEL=$1
-COMMIT=$2
-BRANCH=$3
+if [ "$INCREMENT" = true ]; then 
+  REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+  source $REPO_ROOT_DIR/scripts/increment-ios-build-number
+fi 
 
-if [ "$#" -ne 4 ]; then source $REPO_ROOT_DIR/scripts/increment-ios-build-number; fi 
+if [[ -z "$COMMIT" ]]; then 
+  REVISION=""
+else 
+  REVISION="\"revision\": \"$COMMIT\","
+fi
 
 set -x
 curl --user ${CIRCLE_TOKEN}:\
      -X POST\
      --header "Content-Type: application/json"\
-     -d '{"revision": "'$COMMIT'", "build_parameters": {"CIRCLE_JOB": "build_ios", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'"}}' \
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_ios", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'"}}' \
 https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/$BRANCH
