@@ -1,0 +1,17 @@
+#!/bin/bash
+# Called by build-app-ios
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
+BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+VERSION_FILE="$APP_DIR/app.json"
+IOS_BUILD_NUM="$(node --eval 'console.log(require("'$VERSION_FILE'").expo.ios.buildNumber)')"
+
+((IOS_BUILD_NUM++))
+
+read -p "Will increment ios.buildNumber to $IOS_BUILD_NUM and commit to $BRANCH. Press Enter to continue or Ctrl-C to abort."
+
+sed -i '' -E "s/buildNumber\": \"[0-9]+\"/buildNumber\": \"$IOS_BUILD_NUM\"/" $VERSION_FILE $VERSION_FILE
+
+git add $VERSION_FILE
+git commit -m "Incrementing ios.buildNumber to $IOS_BUILD_NUM"
+git push origin $BRANCH
