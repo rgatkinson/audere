@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# This will increment FluTrack ios.buildNumber in app.json and then trigger Circle build-ios job 
+
+case "$#" in
+  3) ;;
+  *) set +x; echo 1>&2 "Usage: build-app-ios release-channel commit-hash branch"; exit 1;;
+esac
+
+if [[ -z "$CIRCLE_TOKEN" ]]; then
+  set +x
+  echo 1>&2 "Error: CIRCLE_TOKEN env variable is not set. Set this before running this script."
+  echo 1>&2 "       If you have no API token, get one here: https://circleci.com/account/api"
+  exit 1 
+fi
+
+CHANNEL=$1
+COMMIT=$2
+BRANCH=$3
+
+./increment-ios-build-number
+curl --user ${CIRCLE_TOKEN}:\
+     --request POST\
+     --data '{"build_parameters": {"CIRCLE_JOB": "all-tests", "EXPO_RELEASE_CHANNEL": "$CHANNEL"}}'\
+     --form revision=$COMMIT\
+     --form notify=false\
+https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/$BRANCH
