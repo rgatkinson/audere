@@ -1,7 +1,10 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState, setSymptoms } from "../../../store";
+import { WithNamespaces, withNamespaces } from "react-i18next";
+import { StoreState } from "../../../store";
+import { SurveyQuestionData } from "../../../resources/QuestionnaireConfig";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -11,32 +14,42 @@ import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
 
 interface Props {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   age: number;
-  symptoms?: Map<string, boolean>;
+  data: SurveyQuestionData;
+}
+
+export const SymptomsConfig = {
+  id: 'Symptoms',
+  title: '3. What symptoms have you experienced in the last week?',
+  description: 'Please select all that apply.',
+  optionList: {
+    options: [
+      "feelingFeverish",
+      "headaches",
+      "cough",
+      "diarrhea",
+      "soreThroat",
+      "nauseaOrVomiting",
+      "runnyOrStuffyNose",
+      "rash",
+      "fatigue",
+      "muscleOrBodyAches",
+      "increasedTroubleBreathing",
+      "earPainOrDischarge",
+    ],
+    multiSelect: true,
+  },
+  buttons: [
+    { key: "done", primary: true, enabled: "withOption" },
+    { key: "noneOfTheAbove", primary: false, enabled: true },
+  ],
 }
 
 @connect((state: StoreState) => ({
   age: state.form!.age,
-  symptoms: state.form!.symptoms,
 }))
-export default class SymptomsScreen extends React.PureComponent<Props> {
-  symptoms = [
-    "feelingFeverish",
-    "headaches",
-    "cough",
-    "diarrhea",
-    "soreThroat",
-    "nauseaOrVomiting",
-    "runnyOrStuffyNose",
-    "rash",
-    "fatigue",
-    "muscleOrBodyAches",
-    "increasedTroubleBreathing",
-    "earPainOrDischarge",
-  ];
-
+class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
     if (this._numSymptoms() > 1) {
       if (!isNaN(this.props.age) && this.props.age < 18) {
@@ -50,12 +63,20 @@ export default class SymptomsScreen extends React.PureComponent<Props> {
   };
 
   _numSymptoms = () => {
-    return this.props.symptoms
-      ? Array.from(this.props.symptoms.values()).reduce(
-          (count, value) => (value ? count + 1 : count),
+    const symptoms: Map<string, boolean> = this.props.getAnswer("options");
+    return symptoms
+      ? Array.from(symptoms.values()).reduce(
+          (count: number, value: boolean) => (value ? count + 1 : count),
           0
         )
       : 0;
+  };
+
+  _getSelectedOptionMap = (): Map<string, boolean> => {
+    const options = this.props.getAnswer("options");
+    return options
+      ? new Map<string, boolean>(options)
+      : OptionList.emptyMap(SymptomsConfig.optionList.options);
   };
 
   render() {
@@ -70,37 +91,36 @@ export default class SymptomsScreen extends React.PureComponent<Props> {
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label="3. What symptoms have you experienced in the last week?" />
-          <Description content="Please select all that apply." center={true} />
+          <Title label={SymptomsConfig.title} />
+          <Description content={SymptomsConfig.description} center={true} />
           <OptionList
-            data={
-              this.props.symptoms
-                ? this.props.symptoms
-                : OptionList.emptyMap(this.symptoms)
-            }
+            data={this._getSelectedOptionMap()}
             multiSelect={true}
             numColumns={2}
-            onChange={symptoms => this.props.dispatch(setSymptoms(symptoms))}
+            onChange={symptoms => this.props.updateAnswer({ options: symptoms })}
           />
-          <Button
-            enabled={this._numSymptoms() > 0}
-            primary={true}
-            label="Done"
-            onPress={this._onDone}
-          />
-          <Button
-            enabled={true}
-            primary={false}
-            label="None of the above"
-            onPress={() => {
-              this.props.dispatch(
-                setSymptoms(OptionList.emptyMap(this.symptoms))
-              );
-              this.props.navigation.push("Inelligible");
-            }}
-          />
+          {SymptomsConfig.buttons.map(button => (
+            <Button
+              checked={this.props.getAnswer("selectedButtonKey") === button.key}
+              enabled={button.key === "done" ? this._numSymptoms() > 0 : true}
+              key={button.key}
+              label={this.props.t("surveyButton:" + button.key)}
+              onPress={() => {
+                if (button.key === "done") {
+                  this.props.updateAnswer({ selectedButtonKey: button.key });
+                  this._onDone();
+                } else {
+                  this.props.updateAnswer({ selectedButtonKey: button.key });
+                  this.props.navigation.push("Inelligible");
+                }
+              }}
+              primary={button.primary}
+            />
+          ))}
         </ContentContainer>
       </ScreenContainer>
     );
   }
 }
+
+export default reduxWriter(withNamespaces()(SymptomsScreen));

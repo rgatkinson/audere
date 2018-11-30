@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, StoreState, setAge, setMonths } from "../../../store";
+import { SymptomsConfig } from "./SymptomsScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -25,7 +26,7 @@ export default class AgeScreen extends React.Component<Props> {
   monthInput = React.createRef<NumberInput>();
 
   _onDone = () => {
-    this.props.navigation.push("Symptoms");
+    this.props.navigation.push("Symptoms", { data: SymptomsConfig });
   };
 
   render() {
