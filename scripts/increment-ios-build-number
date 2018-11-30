@@ -13,5 +13,5 @@ read -p "Will increment ios.buildNumber to $IOS_BUILD_NUM and commit to $BRANCH.
 sed -i '' -E "s/buildNumber\": \"[0-9]+\"/buildNumber\": \"$IOS_BUILD_NUM\"/" $VERSION_FILE $VERSION_FILE
 
 git add $VERSION_FILE
-git commit -m "Incrementing ios.buildNumber to $IOS_BUILD_NUM"
+git commit -m "Build script incrementing ios.buildNumber to $IOS_BUILD_NUM"
 git push origin $BRANCH

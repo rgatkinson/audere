@@ -125,6 +125,7 @@ jobs:
           command: |
             if [ -z "$EXPO_RELEASE_CHANNEL" ]; then echo "Set EXPO_RELEASE_CHANNEL"; exit 1; fi
             if [[ $EXPO_RELEASE_CHANNEL == *prod ]]; then export REACT_NATIVE_API_SERVER=$PROD_SERVER; else export REACT_NATIVE_API_SERVER=$STAGING_SERVER; fi
+            echo $REACT_NATIVE_API_SERVER
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
@@ -164,7 +165,7 @@ jobs:
             echo "About to build iOS binary $IOS_BUILD_NUM for $EXPO_RELEASE_CHANNEL"
             expo build:ios --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
             export IPA_URL=`expo url:ipa`
-            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM, channel $EXPO_RELEASE_CHANNEL, kicked off by $CIRCLE_USERNAME, is ready to upload: $IPA_URL \", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
+            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, commit $CIRCLE_SHA1, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
 
 workflows:
   version: 2
