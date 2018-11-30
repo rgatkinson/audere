@@ -8,7 +8,7 @@
     "sdkVersion": "31.0.0",
     "ios": {
       "bundleIdentifier": "org.auderenow.flutrack",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "supportsTablet": true,
       "isTabletOnly": true,
       "config": {
