@@ -23,6 +23,7 @@ if [ "$#" -ne 4 ]; then source $REPO_ROOT_DIR/scripts/increment-ios-build-number
 
 set -x
 curl --user ${CIRCLE_TOKEN}:\
-     --request POST\
-     -d '{"revision": "'$COMMIT'", "notify": "false", build_parameters": {"CIRCLE_JOB": "build-ios", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'"}}' \
+     -X POST\
+     --header "Content-Type: application/json"\
+     -d '{"revision": "'$COMMIT'", "build_parameters": {"CIRCLE_JOB": "build_ios", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'"}}' \
 https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/$BRANCH
