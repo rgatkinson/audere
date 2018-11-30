@@ -69,10 +69,12 @@ resource "aws_instance" "provision0" {
   ami = "${var.ami_id}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
+  key_name = "2018-mmarucheck" // TODO remove
   user_data = "${data.template_file.provision0_sh.rendered}"
 
   vpc_security_group_ids = [
-    "${data.aws_security_group.default.id}"
+    "${data.aws_security_group.default.id}",
+    "${data.aws_security_group.ssh.id}", // TODO remove
   ]
 
   tags {
@@ -100,7 +102,7 @@ data "template_file" "provision0_sh" {
 resource "aws_volume_attachment" "provision0_api_creds" {
   count = "${local.mode_provision0}"
 
-  device_name = "/dev/sd${data.template_file.provision0_sh.vars.api_device_letter}"
+  device_name = "/dev/sdn"
   instance_id = "${aws_instance.provision0.id}"
   volume_id = "${aws_ebs_volume.api_creds.id}"
 }
@@ -108,7 +110,7 @@ resource "aws_volume_attachment" "provision0_api_creds" {
 resource "aws_volume_attachment" "provision0_my_creds" {
   count = "${local.mode_provision0}"
 
-  device_name = "/dev/sd${data.template_file.provision0_sh.vars.admin_device_letter}"
+  device_name = "/dev/sdp"
   instance_id = "${aws_instance.provision0.id}"
   volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
 }
@@ -122,10 +124,12 @@ resource "aws_instance" "add_admin" {
   ami = "${var.ami_id}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
+  key_name = "2018-mmarucheck" // TODO remove
   user_data = "${data.template_file.add_admin_sh.rendered}"
 
   vpc_security_group_ids = [
     "${data.aws_security_group.default.id}",
+    "${data.aws_security_group.ssh.id}", // TODO remove
   ]
 
   tags {
@@ -150,17 +154,17 @@ data "template_file" "add_admin_sh" {
 resource "aws_volume_attachment" "add_admin_my_creds" {
   count = "${local.mode_add_admin}"
 
-  device_name = "/dev/sd${data.template_file.add_admin_sh.vars.my_device_letter}"
-  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
+  device_name = "/dev/sdp"
   instance_id = "${aws_instance.add_admin.id}"
+  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
 }
 
 resource "aws_volume_attachment" "add_admin_new_creds" {
   count = "${local.mode_add_admin}"
 
-  device_name = "/dev/sd${data.template_file.add_admin_sh.vars.new_device_letter}"
-  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.new_admin_index)}"
+  device_name = "/dev/sdn"
   instance_id = "${aws_instance.add_admin.id}"
+  volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.new_admin_index)}"
 }
 
 // --------------------------------------------------------------------------------

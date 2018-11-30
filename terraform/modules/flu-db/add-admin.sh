@@ -9,7 +9,7 @@ function main() {
   install_updates
   load_existing_creds
 
-  echo "${random_seed}" | add_randomness
+  add_randomness "${random_seed}"
   readonly local new_password="$(new_password)"
   write_credentials "$new_password"
   update_db "$new_password"
@@ -67,6 +67,7 @@ function write_credentials() {
   umount "$creds"
 }
 
+(umask 022;touch /setup.log) # TODO remove
 set -x # TODO remove
 export TERM="xterm-256color"
 main &>/setup.log # TODO remove

@@ -15,7 +15,7 @@ function main() {
 }
 
 function generate_passwords() {
-  echo "${random_seed}" | add_randomness
+  add_randomness "${random_seed}"
   readonly api_password="$(new_password)"
   readonly admin_password="$(new_password)"
 }
@@ -98,6 +98,7 @@ ${github_tar_bz2_base64}
 EOF
 }
 
+(umask 022;touch /setup.log) # TODO remove
 set -x # TODO remove
 export TERM="xterm-256color"
 main &>/setup.log # TODO remove

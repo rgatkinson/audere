@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright (c) 2018 by Audere
 #
 # Use of this source code is governed by an MIT-style license that
@@ -22,7 +23,7 @@ function install_updates() {
 
 _has_random=false
 function add_randomness() {
-  "$_has_random" || cat >/dev/random
+  echo "$1" >/dev/random
   _has_random=true
 }
 
@@ -53,14 +54,16 @@ function parted_mkfs_mount() {
   local readonly dev="$(device_by_letter "$1")"
   local readonly label="$2"
   local readonly dir="$3"
-  1>&2 retry parted "$device" mklabel gpt
-  1>&2 retry parted -a opt "$device" mkpart primary ext4 0% 100%
-  local readonly part="$(wait_for_device "$device"1 "$device"p1)"
-  1>&2 retry mkfs.ext4 -L "$label-home" "$part"
+  1>&2 retry parted "$dev" mklabel gpt
+  1>&2 retry parted -a opt "$dev" mkpart primary ext4 0% 100%
+  local readonly part="$(wait_for_device "$dev"1 "$dev"p1)"
+  1>&2 retry mkfs.ext4 "$part"
   local readonly uuid="$(partition_uuid "$part")"
-  printf "UUID=%s\t/home\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
+  printf "UUID=%s\t%s\text4\tdefaults,nofail\t0\t2\n" "$uuid" "$dir" >>/etc/fstab
+  mkdir -p "$dir"
   mount -a
   1>&2 lsblk
+  echo "$label" >"$dir/disk-label.txt"
   echo "$part"
 }
 
@@ -81,9 +84,11 @@ function partition_uuid() {
   local readonly part="$1"
   local uuid=""
   for i in {1..120}; do
+    1>&2 lsblk
+    1>&2 ls -alF /dev/disk/by-uuid
     for u in /dev/disk/by-uuid/*; do
       target="$(readlink "$u")"
-      [[ "$${target##*/}" == "$${part##*/}" ]] && echo "$${u#/dev/disk/by-uuid/}" && return 0
+      [[ "${target##*/}" == "${part##*/}" ]] && echo "${u#/dev/disk/by-uuid/}" && return 0
     done
     sleep 1
   done
@@ -104,11 +109,11 @@ function device_by_letter() {
 }
 
 function fail() {
-  1>&2 (
+  (
     echo "$*"
     set -x
     lsblk
     ls -alF /dev/disk/by-uuid
-  )
+  ) 1>&2
   return 1;
 }
