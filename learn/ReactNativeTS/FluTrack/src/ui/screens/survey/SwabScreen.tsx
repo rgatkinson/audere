@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { BloodConfig } from "./BloodScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -37,7 +38,7 @@ export const SwabConfig = {
 
 class SwabScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onNext = () => {
-    this.props.navigation.push("Blood");
+    this.props.navigation.push("Blood", { data: BloodConfig });
   };
 
   _onNone = () => {
@@ -96,7 +97,6 @@ class SwabScreen extends React.Component<Props & WithNamespaces & ReduxWriterPro
               primary={button.primary}
             />
           ))}
-
         </ContentContainer>
       </ScreenContainer>
     );

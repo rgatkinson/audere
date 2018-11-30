@@ -180,9 +180,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonText: {
-    color: "white",
-  },
   inactive: {
     opacity: 0.25,
   },

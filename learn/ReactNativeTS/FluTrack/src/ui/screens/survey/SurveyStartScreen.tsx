@@ -1,6 +1,4 @@
 import React from "react";
-import { StoreState } from "../../../store/index";
-import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -13,10 +11,6 @@ interface Props {
 }
 
 export default class SurveyStartScreen extends React.Component<Props> {
-  _onNext = () => {
-    this.props.navigation.push("Survey");
-  };
-
   render() {
     return (
       <ScreenContainer>
@@ -27,7 +21,7 @@ export default class SurveyStartScreen extends React.Component<Props> {
             enabled={true}
             primary={true}
             label="Get Started"
-            onPress={this._onNext}
+            onPress={() => this.props.navigation.push("Survey")}
           />
         </ContentContainer>
       </ScreenContainer>
