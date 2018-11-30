@@ -9,6 +9,7 @@ import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
+import SimpleStatusBar from "../../components/SimpleStatusBar";
 import Title from "../../components/Title";
 
 interface Props {
@@ -38,9 +39,7 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
   render() {
     return (
       <ScreenContainer>
-        <View style={styles.statusBar}>
-          <Text style={styles.statusBarTitle}>Enrollment complete!</Text>
-        </View>
+        <SimpleStatusBar title="Enrollment complete!" />
         <ContentContainer>
           <Title label="We would like to email you." />
           <Description content="Please select when we may email you, and provide your email address (optional)." />
@@ -82,25 +81,3 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  statusBar: {
-    backgroundColor: "#E8E3D3",
-    height: 90,
-    justifyContent: "center",
-    padding: 20,
-    shadowColor: "#000000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 2,
-    shadowOpacity: 0.5,
-  },
-  statusBarTitle: {
-    fontFamily: "OpenSans-Regular",
-    fontSize: 20,
-    letterSpacing: -0.41,
-    lineHeight: 22,
-  },
-});

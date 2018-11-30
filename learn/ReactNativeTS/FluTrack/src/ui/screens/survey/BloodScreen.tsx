@@ -33,7 +33,7 @@ export const BloodConfig = {
   ],
 }
 
-export default class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
+class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
     this.props.navigation.push("Consent");
   };
