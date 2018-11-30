@@ -30,6 +30,7 @@ export interface ButtonConfig {
   key: string;
   primary: boolean;
   enabled: EnabledOption;
+  subtext?: string;
 }
 
 interface ConditionalNextConfig {

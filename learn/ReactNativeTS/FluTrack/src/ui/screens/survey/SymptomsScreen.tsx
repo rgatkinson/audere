@@ -3,6 +3,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AgeBucketConfig } from "./AgeScreen";
+import { SwabConfig } from "./SwabScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -46,7 +47,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
   _onDone = () => {
     if (this._numSymptoms() > 1) {
       if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver") {
-        this.props.navigation.push("Swab");
+        this.props.navigation.push("Swab", { data: SwabConfig });
       } else {
         this.props.navigation.push("Consent");
       }

@@ -103,6 +103,7 @@
     "noneOfTheAbove": "None of the above",
     "18orOver": "18 or older",
     "13to17": "13 to 17",
-    "under13": "12 or younger"
+    "under13": "12 or younger",
+    "noSwabs": "I do not want any nasal swabs collected."
   }
 }
