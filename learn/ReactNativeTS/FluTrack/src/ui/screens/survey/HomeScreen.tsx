@@ -4,6 +4,7 @@ import { Icon } from "react-native-elements";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, startForm } from "../../../store";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -12,26 +13,25 @@ interface Props {
 }
 
 @connect()
-export default class HomeScreen extends React.Component<Props> {
+class HomeScreen extends React.Component<Props & WithNamespaces> {
   _onStart = () => {
     this.props.dispatch(startForm());
     this.props.navigation.push("Welcome");
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
         <Image
           style={{ height: 30, width: 380 }}
           source={require("../../../img/UWLogo.png")}
         />
-        <Text style={styles.title}>SEATTLE FLU STUDY</Text>
+        <Text style={styles.title}>{t("seattleFluStudy")}</Text>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>
-          <Text style={styles.buttonHeader}>Welcome</Text>
+          <Text style={styles.buttonHeader}>{t("welcome")}</Text>
           <View style={styles.textContainer}>
-            <Text style={styles.buttonText}>
-              Learn more about this research and how to participate.
-            </Text>
+            <Text style={styles.buttonText}>{t("learnMore")}</Text>
             <Icon
               name="chevron-right"
               color="#007AFF"
@@ -87,3 +87,5 @@ const styles = StyleSheet.create({
     paddingTop: 43,
   },
 });
+
+export default withNamespaces("homeScreen")<Props>(HomeScreen);

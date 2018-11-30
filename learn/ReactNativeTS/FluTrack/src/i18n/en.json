@@ -1,26 +1,89 @@
 {
   "common": {
-    "validatedInput": {
-      "id": "id",
-      "password": "password",
-      "nonNegativeInteger": "whole number",
-      "phone": "phone",
-      "email": "email",
-      "text-short": "text",
-      "address": "address",
-      "requiredError": "Required",
-      "invalidFormatError": "Invalid format for {{inputType}}",
-      "minValueError": "Minimum is {{min}}",
-      "minLengthError": "Minimum {{min}} characters",
-      "maxValueError": "Maximum is {{max}}",
-      "maxLengthError": "Maximum is {{max}} characters"
+    "button": {
+      "select": "Select",
+      "cancel": "Cancel",
+      "submit": "Submit",
+      "done": "Done",
+      "getStarted": "Get Started"
+    },
+    "tab": {
+      "Home": "Home",
+      "Admin": "Admin"
+    },
+    "statusBar": {
+      "enrollment": "Enrollment",
+      "studyQuestionnaire": "Study Questionnaire",
+      "complete": "Complete"
     }
   },
-  "account": {
-    "title": "My Account",
-    "introduction": "Hello, {{name}}",
-    "startFormButton": "START FORM",
-    "logoutButton": "LOGOUT"
+  "addressInput": {
+    "locationName": "Location name or neighborhood",
+    "streetAddress": "Street address",
+    "city": "City",
+    "state": "State",
+    "zipcode": "Zipcode",
+    "country": "Country"
+  },
+  "emailInput": {
+    "disclaimer": "You can opt out of receiving Seattle Flu Study emails at any time.",
+    "emailAddress": "Email address"
+  },
+  "feedbackModal": {
+    "provideFeedback": "Provide Feedback",
+    "subject": "Subject",
+    "comments": "Comments..."
+  },
+  "headerBar": {
+    "exitSurvey": "Exit Survey?",
+    "returningWillDiscard": "Returning to Home will discard all responses.",
+    "discard": "Discard",
+    "continue": "Continue",
+    "returnToHome": "Return to Home",
+    "exitStudy": "Exit Study",
+    "welcome": "Welcome"
+  },
+  "optionList": {
+    "pleaseSpecify": "Please specify:"
+  },
+  "ageScreen": {
+    "welcomeFluStudy": "1. Welcome to the Seattle Flu Study",
+    "numYears": "Number of years",
+    "numMonths": "Number of months"
+  },
+  "consentScreen": {
+    "pleaseSign": "Please sign in the signature box using your fingertip or Apple Pencil.",
+    "consent": "Consent",
+    "thankYouAssisting": "Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below.",
+    "todaysDate": "Today's Date",
+    "fullName": "Full name of subject",
+    "signature": "Signature of subject",
+    "clearSignature": "Clear Signature"
+  },
+  "enrolledScreen": {
+    "complete": "Enrollment complete!"
+  },
+  "homeScreen": {
+    "seattleFluStudy": "SEATTLE FLU STUDY",
+    "welcome": "Welcome",
+    "learnMore": "Learn more about this research and how to participate."
+  },
+  "inelligibleScreen": {
+    "thankYouParticipating": "Thank you for participating.",
+    "youDoNotQuality": "You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future."
+  },
+  "passBackScreen": {
+    "complete": "Questionnaire complete!",
+    "pleaseReturn": "Please return this tablet to Seattle Flu Study Staff.",
+    "theyWillAssist": "They will assist you with the next step."
+  },
+  "surveyStartScreen": {
+    "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. Please answer the following questions about household composition and exposure, illness history, and demographic information."
+  },
+  "symptomsScreen": {},
+  "welcomeScreen": {
+    "welcomeTo": "Welcome to the Seattle Flu Study",
+    "theGoal": "The goal of this study is to determine the rate and spread of respiratory viruses in an urban area. Respiratory viruses commonly infect adults and children. Infection is usually mild in healthy adults and children, leading to runny noses, coughing, and wheezing. However, infection can become more serious, especially in older and very young people and those with lung diseases or weak immune systems."
   },
   "surveyOption": {
     "sendCopyOfMyConsent": "Send me a copy of my consent",

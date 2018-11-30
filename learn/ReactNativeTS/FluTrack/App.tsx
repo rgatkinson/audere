@@ -36,12 +36,6 @@ import SelectLocationScreen from "./src/ui/screens/admin/SelectLocationScreen";
 import AdverseScreen from "./src/ui/screens/admin/AdverseScreen";
 import AdverseDetailsScreen from "./src/ui/screens/admin/AdverseDetailsScreen";
 
-const uploader = createUploader();
-export function interact(data: string): void {
-  console.warn("Use uploader.save() instead of App.interact()");
-  uploader.save("remove-me", { data });
-}
-
 const Home = createStackNavigator(
   {
     Home: {
@@ -79,7 +73,7 @@ const Home = createStackNavigator(
         header: <HeaderBar navigation={navigation} />,
       };
     },
-  },
+  }
 );
 
 const Admin = createStackNavigator(
@@ -111,18 +105,13 @@ const FluStudy = createBottomTabNavigator(
       tabBarVisible: tabBarVisible(navigation),
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
-        const iconName =
-          routeName === 'Home' ? 'home' : 'settings';
+        const iconName = routeName === "Home" ? "home" : "settings";
 
         return (
-          <Icon
-            name={iconName}
-            color={tintColor!}
-            size={20}
-            type="feather"
-          />
+          <Icon name={iconName} color={tintColor!} size={20} type="feather" />
         );
       },
+      tabBarLabel: i18n.t("common:tab:" + navigation.state.routeName),
     }),
   }
 );

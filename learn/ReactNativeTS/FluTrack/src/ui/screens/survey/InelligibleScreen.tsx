@@ -9,6 +9,7 @@ import EmailInput from "../../components/EmailInput";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -17,7 +18,7 @@ interface Props {
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
-export default class InelligibleScreen extends React.PureComponent<Props> {
+class InelligibleScreen extends React.PureComponent<Props & WithNamespaces> {
   _onDone = () => {
     // TODO: write doc (completed)
     // TODO: clear state
@@ -25,11 +26,12 @@ export default class InelligibleScreen extends React.PureComponent<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Title label="Thank you for participating." />
-          <Description content="You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future." />
+          <Title label={t("thankYouParticipating")} />
+          <Description content={t("youDoNotQuality")} />
           <EmailInput
             autoFocus={true}
             returnKeyType="done"
@@ -40,7 +42,7 @@ export default class InelligibleScreen extends React.PureComponent<Props> {
           <Button
             primary={true}
             enabled={true}
-            label="Done"
+            label={t("common:button:done")}
             onPress={this._onDone}
           />
         </ContentContainer>
@@ -48,3 +50,5 @@ export default class InelligibleScreen extends React.PureComponent<Props> {
     );
   }
 }
+
+export default withNamespaces("inelligibleScreen")<Props>(InelligibleScreen);

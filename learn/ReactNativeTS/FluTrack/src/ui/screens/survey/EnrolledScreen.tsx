@@ -11,6 +11,7 @@ import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import SimpleStatusBar from "../../components/SimpleStatusBar";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -23,7 +24,7 @@ interface Props {
   email: state.form!.email,
   options: state.form!.emailOptions,
 }))
-export default class EnrolledScreen extends React.PureComponent<Props> {
+class EnrolledScreen extends React.PureComponent<Props & WithNamespaces> {
   options = [
     "sendCopyOfMyConsent",
     "askAboutMyIllness",
@@ -37,9 +38,10 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <ScreenContainer>
-        <SimpleStatusBar title="Enrollment complete!" />
+        <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
           <Title label="We would like to email you." />
           <Description content="Please select when we may email you, and provide your email address (optional)." />
@@ -81,3 +83,5 @@ export default class EnrolledScreen extends React.PureComponent<Props> {
     );
   }
 }
+
+export default withNamespaces("enrolledScreen")<Props>(EnrolledScreen);

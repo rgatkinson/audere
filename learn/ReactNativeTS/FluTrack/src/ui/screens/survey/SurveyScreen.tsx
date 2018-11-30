@@ -9,18 +9,22 @@ import {
 } from "react-native";
 import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import { questionnaire, sectionDescriptions } from "../../../resources/QuestionnaireConfig";
+import {
+  questionnaire,
+  sectionDescriptions,
+} from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
 import Description from "../../components/Description";
 import SurveyQuestion from "../../components/SurveyQuestion";
 import StatusBar from "../../components/StatusBar";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
-export default class SurveyScreen extends React.Component<Props> {
+class SurveyScreen extends React.Component<Props & WithNamespaces> {
   state = {
     questions: [
       {
@@ -132,6 +136,7 @@ export default class SurveyScreen extends React.Component<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
@@ -141,8 +146,8 @@ export default class SurveyScreen extends React.Component<Props> {
               (100.0 * this._getQuestionnaireIndex()) / questionnaire.length
             ) + "%"
           }
-          progressLabel="Complete"
-          title="Study Questionnaire"
+          progressLabel={t("common:statusBar:complete")}
+          title={t("common:statusBar:studyQuestionnaire")}
           onBack={this._back}
           onForward={this._next}
         />
@@ -222,3 +227,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default withNamespaces("surveyScreen")<Props>(SurveyScreen);

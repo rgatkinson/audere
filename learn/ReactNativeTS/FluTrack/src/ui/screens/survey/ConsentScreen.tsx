@@ -20,6 +20,7 @@ import Description from "../../components/Description";
 import StatusBar from "../../components/StatusBar";
 import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -38,7 +39,7 @@ const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 @connect((state: StoreState) => ({
   name: state.form!.name,
 }))
-export default class ConsentScreen extends React.Component<Props> {
+class ConsentScreen extends React.Component<Props & WithNamespaces> {
   state = {
     image: null,
   };
@@ -52,9 +53,7 @@ export default class ConsentScreen extends React.Component<Props> {
 
   _onSubmit = () => {
     if (!this.state.image && !remoteDebugging) {
-      Alert.alert(
-        "Please sign in the signature box using your fingertip or Apple Pencil."
-      );
+      Alert.alert(this.props.t("pleaseSign"));
       return;
     } else if (!!this.state.image) {
       this.saveBase64Async(this.state.image!);
@@ -100,33 +99,32 @@ export default class ConsentScreen extends React.Component<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
           canProceed={false}
           progressNumber="80%"
-          progressLabel="Enrollment"
+          progressLabel={t("common:statusBar:enrollment")}
           title="5. Would you like to take part in a blood collection?"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onSubmit}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Title label="Consent" />
-          <Description content="Thank you for assisting us with this study. Your informed consent is required for participation. Please read the following statements carefully. Then sign your acknowledgement below." />
+          <Title label={t("consent")} />
+          <Description content={t("thankYouAssisting")} />
           <Text>{CONSENT_FORM_TEXT}</Text>
         </ScrollView>
         <View style={styles.input}>
           <View style={styles.dateContainer}>
-            <Text style={styles.text}>
-              Today's Date
-            </Text>
+            <Text style={styles.text}>{t("todaysDate")}</Text>
             <Text style={[styles.text, styles.dateText]}>
               {format(new Date(), "MM/D/YYYY")}
             </Text>
           </View>
           <TextInput
             autoFocus={false}
-            placeholder="Full name of subject"
+            placeholder={t("fullName")}
             returnKeyType="done"
             value={this.props.name}
             onChange={text => {
@@ -140,18 +138,20 @@ export default class ConsentScreen extends React.Component<Props> {
             style={styles.sketch}
             onChange={this._onChangeAsync}
           />
-          <Text style={styles.textHint}>Signature of subject</Text>
+          <Text style={styles.textHint}>{t("signature")}</Text>
         </View>
         <View style={styles.buttonRow}>
           <Button
             enabled={true}
-            label="Clear Signature"
+            label={t("clearSignature")}
             primary={false}
             onPress={this._onClear}
           />
           <Button
-            enabled={(!!this.state.image || remoteDebugging) && !!this.props.name}
-            label="Submit"
+            enabled={
+              (!!this.state.image || remoteDebugging) && !!this.props.name
+            }
+            label={t("common:button:submit")}
             primary={true}
             onPress={this._onSubmit}
           />
@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   dateContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    justifyContent: "space-between",
+    flexDirection: "row",
     borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
     height: 30,
@@ -214,3 +214,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
+
+export default withNamespaces("consentScreen")<Props>(ConsentScreen);

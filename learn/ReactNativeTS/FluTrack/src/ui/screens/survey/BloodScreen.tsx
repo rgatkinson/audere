@@ -8,6 +8,7 @@ import Description from "../../components/Description";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -45,7 +46,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
         <StatusBar
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="70%"
-          progressLabel="Enrollment"
+          progressLabel={t("common:statusBar:enrollment")}
           title="4. Would you like to take part in an extra part of the..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
@@ -73,4 +74,4 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
   }
 }
 
-export default reduxWriter(withNamespaces()(BloodScreen));
+export default reduxWriter(withNamespaces("bloodScreen")(BloodScreen));

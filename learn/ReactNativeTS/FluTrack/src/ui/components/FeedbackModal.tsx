@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import AnimatedModal from "react-native-modal";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 const IOS_MODAL_ANIMATION = {
   from: { opacity: 0, scale: 1.2 },
@@ -19,13 +20,14 @@ interface Props {
   onDismiss(): void;
 }
 
-export default class FeedbackModal extends React.Component<Props> {
+class FeedbackModal extends React.Component<Props & WithNamespaces> {
   state = {
     subject: undefined,
     comments: undefined,
   };
 
   render() {
+    const { t } = this.props;
     return (
       <AnimatedModal
         backdropOpacity={0.3}
@@ -38,9 +40,11 @@ export default class FeedbackModal extends React.Component<Props> {
           <View style={styles.blur}>
             <View style={styles.header}>
               <TouchableOpacity onPress={this.props.onDismiss}>
-                <Text style={styles.actionText}>Cancel</Text>
+                <Text style={styles.actionText}>
+                  {t("common:button:cancel")}
+                </Text>
               </TouchableOpacity>
-              <Text style={styles.title}>Provide Feedback</Text>
+              <Text style={styles.title}>{t("provideFeedback")}</Text>
               <TouchableOpacity
                 onPress={() => {
                   // TODO store in redux
@@ -48,19 +52,21 @@ export default class FeedbackModal extends React.Component<Props> {
                   this.props.onDismiss();
                 }}
               >
-                <Text style={styles.actionText}>Submit</Text>
+                <Text style={styles.actionText}>
+                  {t("common:button:submit")}
+                </Text>
               </TouchableOpacity>
             </View>
             <TextInput
               style={[styles.text, styles.subject]}
-              placeholder="Subject"
+              placeholder={t("subject")}
               value={this.state.subject}
               onChangeText={text => this.setState({ subject: text })}
             />
             <TextInput
               style={[styles.text, styles.comments]}
               multiline={true}
-              placeholder="Comments..."
+              placeholder={t("comments")}
               value={this.state.comments}
               onChangeText={text => this.setState({ comments: text })}
             />
@@ -128,3 +134,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export default withNamespaces("feedbackModal")<Props>(FeedbackModal);

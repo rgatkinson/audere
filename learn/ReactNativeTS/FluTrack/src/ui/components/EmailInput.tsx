@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   autoFocus?: boolean;
@@ -15,21 +16,20 @@ interface Props {
   onSubmit(): void;
 }
 
-export default class EmailInput extends React.Component<Props> {
+class EmailInput extends React.Component<Props & WithNamespaces> {
   textInput = React.createRef<TextInput>();
 
   // TODO: validate on submit
   // TODO: accept a required prop and show error if required and not entered
   render() {
-    const disclaimer =
-      "You can opt out of receiving Seattle Flu Study emails at any time.";
+    const { t } = this.props;
 
     return (
       <View style={styles.container}>
         <TextInput
           autoFocus={this.props.autoFocus}
           keyboardType="email-address"
-          placeholder="Email address"
+          placeholder={t("emailAddress")}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
           style={styles.textInput}
@@ -37,7 +37,7 @@ export default class EmailInput extends React.Component<Props> {
           onChangeText={this.props.onChange}
           onSubmitEditing={this.props.onSubmit}
         />
-        <Text style={styles.disclaimer}>{disclaimer}</Text>
+        <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
       </View>
     );
   }
@@ -70,3 +70,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
+
+export default withNamespaces("emailInput")<Props>(EmailInput);

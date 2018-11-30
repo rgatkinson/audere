@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Address } from "../../store";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   autoFocus?: boolean;
@@ -9,7 +10,7 @@ interface Props {
   onChange(value: Address): void;
 }
 
-export default class AddressInput extends React.Component<Props> {
+class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
   state = React.createRef<TextInput>();
@@ -18,12 +19,13 @@ export default class AddressInput extends React.Component<Props> {
 
   // TODO: validate on submit
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
         {this.props.showLocationField && (
           <TextInput
             autoFocus={this.props.autoFocus}
-            placeholder="Location name or neighborhood"
+            placeholder={t("locationName")}
             placeholderTextColor="#8E8E93"
             returnKeyType="next"
             style={styles.textInput}
@@ -38,7 +40,7 @@ export default class AddressInput extends React.Component<Props> {
         )}
         <TextInput
           autoFocus={this.props.autoFocus && !this.props.showLocationField}
-          placeholder="Street address"
+          placeholder={t("streetAddress")}
           placeholderTextColor="#8E8E93"
           ref={this.address}
           returnKeyType="next"
@@ -52,7 +54,7 @@ export default class AddressInput extends React.Component<Props> {
           onSubmitEditing={() => this.city.current!.focus()}
         />
         <TextInput
-          placeholder="City"
+          placeholder={t("city")}
           placeholderTextColor="#8E8E93"
           ref={this.city}
           returnKeyType="next"
@@ -67,7 +69,7 @@ export default class AddressInput extends React.Component<Props> {
         />
         <View style={{ flexDirection: "row" }}>
           <TextInput
-            placeholder="State"
+            placeholder={t("state")}
             placeholderTextColor="#8E8E93"
             ref={this.state}
             returnKeyType="next"
@@ -81,7 +83,7 @@ export default class AddressInput extends React.Component<Props> {
             onSubmitEditing={() => this.zipcode.current!.focus()}
           />
           <TextInput
-            placeholder="Zipcode"
+            placeholder={t("zipcode")}
             placeholderTextColor="#8E8E93"
             ref={this.zipcode}
             returnKeyType="next"
@@ -103,7 +105,7 @@ export default class AddressInput extends React.Component<Props> {
           />
         </View>
         <TextInput
-          placeholder="Country"
+          placeholder={t("country")}
           placeholderTextColor="#8E8E93"
           ref={this.country}
           returnKeyType="done"
@@ -137,3 +139,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
+
+export default withNamespaces("addressInput")<Props>(AddressInput);

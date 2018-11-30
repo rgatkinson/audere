@@ -5,22 +5,24 @@ import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import Title from "../../components/Title";
 import ScreenContainer from "../../components/ScreenContainer";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-export default class SurveyStartScreen extends React.Component<Props> {
+class SurveyStartScreen extends React.Component<Props & WithNamespaces> {
   render() {
+    const { t } = this.props;
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Title label="Study Questionnaire" />
-          <Description content="You are now enrolled in the Seattle Flu Study. Please answer the following questions about household composition and exposure, illness history, and demographic information." />
+          <Title label={t("common:statusBar:studyQuestionnaire")} />
+          <Description content={t("youAreNowEnrolled")} />
           <Button
             enabled={true}
             primary={true}
-            label="Get Started"
+            label={t("common:button:getStarted")}
             onPress={() => this.props.navigation.push("Survey")}
           />
         </ContentContainer>
@@ -28,3 +30,5 @@ export default class SurveyStartScreen extends React.Component<Props> {
     );
   }
 }
+
+export default withNamespaces("surveyStartScreen")<Props>(SurveyStartScreen);

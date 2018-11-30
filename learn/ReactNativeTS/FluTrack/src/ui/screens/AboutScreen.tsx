@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleSheet, Clipboard, Platform, View } from "react-native";
+import { StyleSheet, Clipboard, Platform, View, Text } from "react-native";
+import ScreenContainer from "../components/ScreenContainer";
+import ContentContainer from "../components/ContentContainer";
 import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
 import Button from "../components/Button";
-import ScreenView from "../components/ScreenView";
-import Text from "../components/Text";
 
 const buildInfo = require("../../../buildInfo.json");
 
@@ -37,20 +37,22 @@ export default class AboutScreen extends React.Component<Props> {
       Constants.installationId;
 
     return (
-      <ScreenView>
-        <Text style={styles.headerText}>About {buildInfo.name}</Text>
-        <View style={styles.aboutContainer}>
-          <Text style={styles.aboutText}>{aboutContent}</Text>
-        </View>
-        <Button
-          label="Copy"
-          primary={true}
-          enabled={true}
-          onPress={() => {
-            this.copyToClipboard(aboutContent);
-          }}
-        />
-      </ScreenView>
+      <ScreenContainer>
+        <ContentContainer>
+          <Text style={styles.headerText}>About {buildInfo.name}</Text>
+          <View style={styles.aboutContainer}>
+            <Text style={styles.aboutText}>{aboutContent}</Text>
+          </View>
+          <Button
+            label="Copy"
+            primary={true}
+            enabled={true}
+            onPress={() => {
+              this.copyToClipboard(aboutContent);
+            }}
+          />
+        </ContentContainer>
+      </ScreenContainer>
     );
   }
 }

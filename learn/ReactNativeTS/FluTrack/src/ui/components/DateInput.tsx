@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { format } from "date-fns";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   autoFocus: boolean;
@@ -50,7 +51,7 @@ export default class DateInput extends React.Component<Props> {
           )}
         </TouchableOpacity>
         {this.state.open ? (
-          <Picker
+          <TranslatedPicker
             date={this.props.date ? this.props.date : new Date()}
             closePicker={date => {
               LayoutAnimation.configureNext(
@@ -73,7 +74,7 @@ interface PickerProps {
   onDateChange(date: Date): void;
 }
 
-class Picker extends React.Component<PickerProps> {
+class Picker extends React.Component<PickerProps & WithNamespaces> {
   componentWillMount() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }
@@ -93,7 +94,9 @@ class Picker extends React.Component<PickerProps> {
           style={styles.actionContainer}
           onPress={() => this.props.closePicker(this.props.date)}
         >
-          <Text style={styles.actionText}>Select</Text>
+          <Text style={styles.actionText}>
+            {this.props.t("common:button:select")}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -141,3 +144,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+
+const TranslatedPicker = withNamespaces()<PickerProps>(Picker);

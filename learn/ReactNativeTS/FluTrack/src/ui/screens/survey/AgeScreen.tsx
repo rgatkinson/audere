@@ -8,6 +8,7 @@ import ContentContainer from "../../components/ContentContainer";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -35,8 +36,8 @@ class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProp
         <StatusBar
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="20%"
-          progressLabel="Enrollment"
-          title="1. Welcome to the Seattle Flu Study"
+          progressLabel={t("common:statusBar:enrollment")}
+          title={t("welcomeFluStudy")}
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />
@@ -61,4 +62,4 @@ class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProp
   }
 }
 
-export default reduxWriter(withNamespaces()(AgeScreen));
+export default reduxWriter(withNamespaces("ageScreen")(AgeScreen));

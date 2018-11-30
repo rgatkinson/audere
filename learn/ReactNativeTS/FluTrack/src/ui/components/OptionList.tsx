@@ -26,7 +26,7 @@ interface Props {
   backgroundColor?: string;
 }
 
-export default class OptionList extends React.Component<Props> {
+class OptionList extends React.Component<Props & WithNamespaces> {
   static emptyMap = (data: string[]) => {
     return new Map<string, boolean>(
       data.map((entry: string): [string, boolean] => [entry, false])
@@ -44,6 +44,7 @@ export default class OptionList extends React.Component<Props> {
   };
 
   render() {
+    const { t } = this.props;
     const marginHorizontal = this.props.fullWidth ? 0 : 50;
     const itemWidth =
       (Dimensions.get("window").width -
@@ -76,7 +77,7 @@ export default class OptionList extends React.Component<Props> {
         {this.props.withOther &&
           this.props.data.get("other") && (
             <View>
-              <Description content="Please specify:" />
+              <Description content={t("pleaseSpecify")} />
               <View style={[{ width: itemWidth }, styles.item]}>
                 <TextInput
                   autoFocus={false}
@@ -94,6 +95,7 @@ export default class OptionList extends React.Component<Props> {
     );
   }
 }
+export default withNamespaces("optionList")<Props>(OptionList);
 
 interface ItemProps {
   id: string;

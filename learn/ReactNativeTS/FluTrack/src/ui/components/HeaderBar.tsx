@@ -3,13 +3,14 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { NavigationScreenProp } from "react-navigation";
 import FeedbackModal from "./FeedbackModal";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   completedSurvey?: boolean;
 }
 
-export default class HeaderBar extends React.Component<Props> {
+class HeaderBar extends React.Component<Props & WithNamespaces> {
   state = {
     feedbackVisible: false,
   };
@@ -21,23 +22,21 @@ export default class HeaderBar extends React.Component<Props> {
 
   _toHomeWarn = () => {
     // TODO: log cancellation, clear form
-    Alert.alert(
-      "Exit Survey?",
-      "Returning to Home will discard all responses.",
-      [
-        {
-          text: "Discard",
-          onPress: () => {
-            this.props.navigation.popToTop();
-          },
-          style: "destructive",
+    const { t } = this.props;
+    Alert.alert(t("exitSurvey"), t("returningWillDiscard"), [
+      {
+        text: t("discard"),
+        onPress: () => {
+          this.props.navigation.popToTop();
         },
-        { text: "Continue", onPress: () => {} },
-      ]
-    );
+        style: "destructive",
+      },
+      { text: t("continue"), onPress: () => {} },
+    ]);
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View>
         <FeedbackModal
@@ -58,14 +57,16 @@ export default class HeaderBar extends React.Component<Props> {
               type="feather"
             />
             <Text style={styles.actionText}>
-              {this.props.completedSurvey ? "Return to Home" : "Exit Study"}
+              {t(this.props.completedSurvey ? "returnToHome" : "exitStudy")}
             </Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Welcome</Text>
+          <Text style={styles.title}>{t("welcome")}</Text>
           <TouchableOpacity
             onPress={() => this.setState({ feedbackVisible: true })}
           >
-            <Text style={styles.actionText}>Provide Feedback</Text>
+            <Text style={styles.actionText}>
+              {t("feedbackModal:provideFeedback")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -103,3 +104,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export default withNamespaces("headerBar")<Props>(HeaderBar);

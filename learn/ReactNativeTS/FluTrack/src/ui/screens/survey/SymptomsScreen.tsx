@@ -11,6 +11,7 @@ import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -80,7 +81,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         <StatusBar
           canProceed={this._numSymptoms() > 0}
           progressNumber="40%"
-          progressLabel="Enrollment"
+          progressLabel={t("common:statusBar:enrollment")}
           title="2. What is the age of the participant?"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
@@ -118,4 +119,4 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
   }
 }
 
-export default reduxWriter(withNamespaces()(SymptomsScreen));
+export default reduxWriter(withNamespaces("symptomsScreen")(SymptomsScreen));
