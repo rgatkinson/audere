@@ -14,6 +14,11 @@ aliases:
     branches:
       ignore: /.*/
 
+const: &const
+  environment:
+    PROD_SERVER: "https://api.auderenow.io/api"
+    STAGING_SERVER: "https://api.staging.auderenow.io/api"
+
 defaults: &defaults
   docker:
     - image: circleci/node:10.12
@@ -77,6 +82,7 @@ jobs:
           paths: learn/ReactNativeTS/FluTrack
 
   publish: &publish
+    <<: *const
     <<: *defaults
     steps:
       - attach_workspace:
@@ -84,6 +90,7 @@ jobs:
       - run:
           name: Set .env for target environment
           command: |
+            if [[ $EXPO_RELEASE_CHANNEL == *prod ]]; then export REACT_NATIVE_API_SERVER=$PROD_SERVER; else export REACT_NATIVE_API_SERVER=$STAGING_SERVER; fi
             cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
       - run:
@@ -100,25 +107,24 @@ jobs:
 
   publish_to_expo_staging:
     environment:
-      REACT_NATIVE_API_SERVER: "https://api.staging.auderenow.io/api"
       EXPO_RELEASE_CHANNEL: v0-staging
     <<: *publish
 
   publish_to_expo_prod:
     environment:
-      REACT_NATIVE_API_SERVER: "https://api.auderenow.io/api"
       EXPO_RELEASE_CHANNEL: v0-prod
     <<: *publish
 
   build_ios:
+    <<: *const
     <<: *defaults
     steps:
       - checkout
       - run:
           name: Test env variables
           command: |
-            if [ -z "$REACT_NATIVE_API_SERVER" ]; then echo "Set REACT_NATIVE_API_SERVER"; exit 1; fi
-            if [ -z "$EXPO_RELEASE_CHANNEL"]; then echo "Set EXPO_RELEASE_CHANNEL"; exit 1; fi
+            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then echo "Set EXPO_RELEASE_CHANNEL"; exit 1; fi
+            if [[ $EXPO_RELEASE_CHANNEL == *prod ]]; then export REACT_NATIVE_API_SERVER=$PROD_SERVER; else export REACT_NATIVE_API_SERVER=$STAGING_SERVER; fi
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
