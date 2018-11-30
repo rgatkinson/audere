@@ -57,7 +57,7 @@ function pm2_startup() {
 
 function init_nginx() {
   readonly local VPC_CERT="/creds/vpc-cert"
-  readonly local service_url = "http://localhost:3000"
+  readonly local service_url="http://localhost:3000"
 
   apt-get -y install nginx
   rm /etc/nginx/sites-enabled/default
