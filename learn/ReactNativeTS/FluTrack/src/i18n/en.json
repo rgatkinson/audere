@@ -100,6 +100,9 @@
     "understand": "I understand",
     "yesLot": "Yes, a lot",
     "yesLittle": "Yes, a little",
-    "noneOfTheAbove": "None of the above"
+    "noneOfTheAbove": "None of the above",
+    "18orOver": "18 or older",
+    "13to17": "13 to 17",
+    "under13": "12 or younger"
   }
 }

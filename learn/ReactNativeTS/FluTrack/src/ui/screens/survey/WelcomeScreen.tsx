@@ -2,6 +2,7 @@ import React from "react";
 import { StoreState } from "../../../store/index";
 import { connect } from "react-redux";
 import { NavigationScreenProp } from "react-navigation";
+import { AgeBucketConfig } from "./AgeScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -18,7 +19,7 @@ interface Props {
 export default class WelcomeScreen extends React.Component<Props> {
   _onNext = () => {
     this.props.screenProps.uploader.save(this.props.formId, { name: "data!" });
-    this.props.navigation.push("Age");
+    this.props.navigation.push("Age", { data: AgeBucketConfig });
   };
 
   render() {

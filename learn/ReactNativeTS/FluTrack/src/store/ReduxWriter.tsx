@@ -25,7 +25,7 @@ interface InnerProps {
 
 export interface ReduxWriterProps {
   updateAnswer(answer: object): void;
-  getAnswer(key: string): any;
+  getAnswer(key: string, id?: string): any;
 }
 
 interface State {
@@ -105,13 +105,13 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       this.props.dispatch(setSurveyResponses(responses));
     };
 
-    _getAnswer = (key: string): any => {
+    _getAnswer = (key: string, id: string = this.state.data.id): any => {
       return (
         (!!this.props.surveyResponses &&
-          this.props.surveyResponses!.has(this.state.data.id) &&
-          this.props.surveyResponses!.get(this.state.data.id) &&
-          this.props.surveyResponses!.get(this.state.data.id)!.answer &&
-          this.props.surveyResponses!.get(this.state.data.id)!.answer![key]) ||
+          this.props.surveyResponses!.has(id) &&
+          this.props.surveyResponses!.get(id) &&
+          this.props.surveyResponses!.get(id)!.answer &&
+          this.props.surveyResponses!.get(id)!.answer![key]) ||
         null
       );
     };

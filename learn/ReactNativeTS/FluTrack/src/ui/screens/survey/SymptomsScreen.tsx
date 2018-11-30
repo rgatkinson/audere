@@ -1,10 +1,8 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
-import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { StoreState } from "../../../store";
-import { SurveyQuestionData } from "../../../resources/QuestionnaireConfig";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { AgeBucketConfig } from "./AgeScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -15,8 +13,6 @@ import Title from "../../components/Title";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  age: number;
-  data: SurveyQuestionData;
 }
 
 export const SymptomsConfig = {
@@ -46,16 +42,13 @@ export const SymptomsConfig = {
   ],
 }
 
-@connect((state: StoreState) => ({
-  age: state.form!.age,
-}))
 class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
     if (this._numSymptoms() > 1) {
-      if (!isNaN(this.props.age) && this.props.age < 18) {
-        this.props.navigation.push("Consent");
-      } else {
+      if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver") {
         this.props.navigation.push("Swab");
+      } else {
+        this.props.navigation.push("Consent");
       }
     } else {
       this.props.navigation.push("Inelligible");
@@ -80,6 +73,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
   };
 
   render() {
+    const { t } = this.props;
     return (
       <ScreenContainer>
         <StatusBar
@@ -104,7 +98,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={button.key === "done" ? this._numSymptoms() > 0 : true}
               key={button.key}
-              label={this.props.t("surveyButton:" + button.key)}
+              label={t("surveyButton:" + button.key)}
               onPress={() => {
                 if (button.key === "done") {
                   this.props.updateAnswer({ selectedButtonKey: button.key });

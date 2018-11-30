@@ -2,8 +2,6 @@ import uuidv4 from "uuid/v4";
 
 export type FormAction =
   | { type: "START_FORM" }
-  | { type: "SET_AGE"; age: number }
-  | { type: "SET_MONTHS"; months: number }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
@@ -49,8 +47,6 @@ export interface SurveyResponse {
 
 export type FormState = null | {
   formId?: string;
-  age?: number;
-  months?: number;
   name?: string;
   email?: string;
   signatureBase64?: string;
@@ -64,12 +60,6 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "START_FORM") {
     // Resets all form data
     return { formId: uuidv4() };
-  }
-  if (action.type === "SET_AGE") {
-    return { ...state, age: action.age };
-  }
-  if (action.type === "SET_MONTHS") {
-    return { ...state, months: action.months };
   }
   if (action.type === "SET_NAME") {
     return { ...state, name: action.name };
@@ -92,20 +82,6 @@ export default function reducer(state = initialState, action: FormAction) {
 export function startForm(): FormAction {
   return {
     type: "START_FORM",
-  };
-}
-
-export function setAge(age: number): FormAction {
-  return {
-    type: "SET_AGE",
-    age,
-  };
-}
-
-export function setMonths(months: number): FormAction {
-  return {
-    type: "SET_MONTHS",
-    months,
   };
 }
 
