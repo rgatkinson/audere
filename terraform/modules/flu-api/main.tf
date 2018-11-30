@@ -242,7 +242,7 @@ resource "aws_security_group" "flu_api_elb" {
   egress {
     from_port = 443
     to_port = 443
-    protocol = "-1"
+    protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

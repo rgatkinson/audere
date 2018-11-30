@@ -10,20 +10,20 @@ function main() {
   load_existing_creds
 
   add_randomness "${random_seed}"
-  readonly local new_password="$(new_password)"
+  local new_password="$(new_password)"
   write_credentials "$new_password"
   update_db "$new_password"
 }
 
 function load_existing_creds() {
-  local readonly dev="$(device_by_letter "${my_device_letter}")"
-  local readonly part="$(wait_for_device "$dev"1 "$dev"p1)"
+  local dev="$(device_by_letter "${my_device_letter}")"
+  local part="$(wait_for_device "$dev"1 "$dev"p1)"
 
-  local readonly mem="/mnt/mem"
+  local mem="/mnt/mem"
   mkdir "$mem"
   mount -t ramfs -o size=1m ext4 "$mem"
 
-  local readonly creds="/mnt/my-creds"
+  local creds="/mnt/my-creds"
   mkdir "$creds"
   mount "$part" "$creds"
   rsync -a "$creds/db/" "$mem/db"
@@ -33,7 +33,7 @@ function load_existing_creds() {
 }
 
 function update_db() {
-  local readonly new_password="$1"
+  local new_password="$1"
   apt-get -y install postgresql-client-10
 
   retry psql \
@@ -58,8 +58,9 @@ EOF
 }
 
 function write_credentials() {
-  local readonly creds="/mnt/new-creds"
-  parted_mkfs_mount "${new_device_letter}" "${new_userid}-creds" "$creds"
+  local new_password="$1"
+  local creds="/mnt/new-creds"
+  parted_mkfs_mount "${new_device_letter}" "${new_userid}" "$creds"
 
   mkdir -p "$creds/db"
   echo "${db_host}:5432:postgres:${new_userid}:$new_password" >"$creds/db/pgpass"

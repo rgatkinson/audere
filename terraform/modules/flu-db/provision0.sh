@@ -58,7 +58,7 @@ function write_credentials() {
   write_vpc_cert "api.${environment}" "/mnt/api"
   umount "/mnt/api"
 
-  parted_mkfs_mount "${my_device_letter}" "${my_userid}-creds" "/mnt/admin"
+  parted_mkfs_mount "${my_device_letter}" "${my_userid}" "/mnt/admin"
   write_db_creds "/mnt/admin/db" "postgres" "${my_userid}" "$admin_password"
   umount "/mnt/admin"
 }

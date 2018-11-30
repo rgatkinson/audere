@@ -1,12 +1,10 @@
-#!/bin/bash
 # Copyright (c) 2018 by Audere
 #
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
 set -euo pipefail
-# TODO remove
-set -x
+set -x # TODO remove
 umask 077
 
 function install_updates() {
@@ -34,15 +32,15 @@ function new_password() {
 }
 
 function add_developer() {
-  local readonly u="$1"
+  local u="$1"
   adduser --gecos "$u" --disabled-password "$u"
   write_sshkey "$u"
   echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
 }
 
 function write_sshkey() {
-  local readonly u="$1"
-  local readonly d="/home/$u/.ssh"
+  local u="$1"
+  local d="/home/$u/.ssh"
   mkdir -p "$d"
   # We expect stdin to be the ssh public key
   cat >"$d/authorized_keys"
@@ -51,14 +49,18 @@ function write_sshkey() {
 }
 
 function parted_mkfs_mount() {
-  local readonly dev="$(device_by_letter "$1")"
-  local readonly label="$2"
-  local readonly dir="$3"
+  local dev="$(device_by_letter "$1")"
+  local label="$2"
+  local dir="$3"
   1>&2 retry parted "$dev" mklabel gpt
   1>&2 retry parted -a opt "$dev" mkpart primary ext4 0% 100%
-  local readonly part="$(wait_for_device "$dev"1 "$dev"p1)"
-  1>&2 retry mkfs.ext4 "$part"
-  local readonly uuid="$(partition_uuid "$part")"
+  local part="$(wait_for_device "$dev"1 "$dev"p1)"
+  # Sometimes Linux does not assign a uuid if we don't give some time here
+  #sleep 10
+  1>&2 retry mkfs.ext4 -L "$label" "$part"
+  local uuid=$(uuidgen)
+  1>&2 retry tune2fs -U "$uuid" "$part"
+  #local uuid="$(partition_uuid "$part")"
   printf "UUID=%s\t%s\text4\tdefaults,nofail\t0\t2\n" "$uuid" "$dir" >>/etc/fstab
   mkdir -p "$dir"
   mount -a
@@ -81,7 +83,7 @@ function retry() {
 }
 
 function partition_uuid() {
-  local readonly part="$1"
+  local part="$1"
   local uuid=""
   for i in {1..120}; do
     1>&2 lsblk
@@ -96,8 +98,8 @@ function partition_uuid() {
 }
 
 function device_by_letter() {
-  local readonly letter="$1"
-  local readonly xvd="/dev/xvd$letter"
+  local letter="$1"
+  local xvd="/dev/xvd$letter"
   [[ -b "$xvd" ]] && echo "$xvd" && return 0
   for dev in /dev/nvme?n?; do
     if nvme id-ctrl -v "$dev" | 1>&2 grep " \"/dev/sd$letter\.\."; then
