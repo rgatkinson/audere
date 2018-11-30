@@ -110,6 +110,56 @@ jobs:
       EXPO_RELEASE_CHANNEL: v0-prod
     <<: *publish
 
+  build_ios:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Test env variables
+          command: |
+            if [ -z "$REACT_NATIVE_API_SERVER" ]; then echo "Set REACT_NATIVE_API_SERVER"; exit 1; fi
+            if [ -z "$EXPO_RELEASE_CHANNEL"]; then echo "Set EXPO_RELEASE_CHANNEL"; exit 1; fi
+      - run:
+          name: Update yarn
+          command: "sudo npm install -g yarn@latest"
+      - restore_cache:
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+      - run:
+          name: App Yarn Install
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn install
+      - run:
+          name: Generate Build Info
+          command: |
+            scripts/generate-build-info
+      - run:
+          name: App Tests
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn test
+      - save_cache:
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          paths:
+            - learn/ReactNativeTS/FluTrack/node_modules
+      - run:
+          name: Set .env for target environment
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+      - run:
+          name: Build iOS
+          command: |
+            yarn global add expo-cli
+            export PATH="$PATH:$(yarn global bin)"
+            cd learn/ReactNativeTS/FluTrack
+            expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+            export IOS_BUILD_NUM=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['ios']['buildNumber'])"`
+            echo "About to build iOS binary $IOS_BUILD_NUM for $EXPO_RELEASE_CHANNEL"
+            expo build:ios --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
+            export IPA_URL=`expo url:ipa`
+            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM, channel $EXPO_RELEASE_CHANNEL, kicked off by $CIRCLE_USERNAME, is ready to upload: $IPA_URL \", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
+
 workflows:
   version: 2
   build_and_publish:
