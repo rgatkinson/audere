@@ -9,7 +9,7 @@ import Button from "./Button";
 import DateInput from "./DateInput";
 import Description from "./Description";
 import NumberInput from "./NumberInput";
-import OptionList from "./OptionList";
+import OptionList, { newSelectedOptionsMap } from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
 
@@ -27,8 +27,9 @@ class SurveyQuestion extends Component<
   _getNextQuestion = (selectedButtonKey: string): string | null => {
     let nextQuestion = this.props.data.nextQuestion;
     if (this.props.data.conditionalNext) {
-      this.props.data.conditionalNext!.options &&
-        this._getSelectedOptionMap().forEach((value, key) => {
+      !!this.props.data.conditionalNext!.options &&
+        !!this.props.getAnswer("options") &&
+        this.props.getAnswer("options").forEach((value: boolean, key: string) => {
           if (value && this.props.data.conditionalNext!.options!.has(key)) {
             nextQuestion = this.props.data.conditionalNext!.options!.get(key)!;
           }
@@ -44,21 +45,15 @@ class SurveyQuestion extends Component<
     return nextQuestion;
   };
 
-  _getSelectedOptionMap = (): Map<string, boolean> => {
-    const allOptions = this.props.data.optionList
-      ? this.props.data.optionList!.options
-      : [];
-    const options = this.props.getAnswer("options");
-    return options
-      ? new Map<string, boolean>(options)
-      : OptionList.emptyMap(allOptions);
-  };
-
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
     if (enabledStatus === "withOption") {
-      return Array.from(this._getSelectedOptionMap().values()).reduce(
-        (val, entry) => val || entry
-      );
+      return Array.from(newSelectedOptionsMap(
+        this.props.data.optionList
+          ? this.props.data.optionList!.options
+          : [],
+        this.props.getAnswer("options")).values()).reduce(
+          (val, entry) => val || entry
+        );
     } else if (enabledStatus === "withText") {
       return !!this.props.getAnswer("textInput");
     } else if (enabledStatus === "withNumber") {
@@ -137,7 +132,12 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.optionList && (
           <OptionList
-            data={this._getSelectedOptionMap()}
+            data={newSelectedOptionsMap(
+              this.props.data.optionList
+              ? this.props.data.optionList!.options
+              : [],
+              this.props.getAnswer("options")
+            )}
             multiSelect={this.props.data.optionList.multiSelect}
             numColumns={this.props.data.optionList.numColumns || 1}
             withOther={this.props.data.optionList.withOther}

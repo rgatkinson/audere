@@ -8,7 +8,6 @@ import ContentContainer from "../../components/ContentContainer";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -18,9 +17,9 @@ export const AgeBucketConfig = {
   id: 'AgeBucket',
   title: '2. What is the age of the participant?',
   buttons: [
-    { key: "18orOver", primary: false, enabled: true },
-    { key: "13to17", primary: false, enabled: true },
-    { key: "under13", primary: false, enabled: true },
+    { key: "18orOver", primary: false },
+    { key: "13to17", primary: false },
+    { key: "under13", primary: false },
   ],
 }
 

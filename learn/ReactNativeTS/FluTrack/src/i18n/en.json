@@ -70,7 +70,7 @@
   },
   "inelligibleScreen": {
     "thankYouParticipating": "Thank you for participating.",
-    "youDoNotQuality": "You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future."
+    "youDoNotQualify": "You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future."
   },
   "passBackScreen": {
     "complete": "Questionnaire complete!",
@@ -167,6 +167,9 @@
     "18orOver": "18 or older",
     "13to17": "13 to 17",
     "under13": "12 or younger",
-    "noSwabs": "I do not want any nasal swabs collected."
+    "noSwabs": "I do not want any nasal swabs collected.",
+    "submit": "Submit",
+    "clearSignature": "Clear Signature",
+    "doNotEmailMe": "Please do not email me"
   }
 }

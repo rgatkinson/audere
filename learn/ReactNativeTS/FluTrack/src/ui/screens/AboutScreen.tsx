@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Clipboard, Platform, View, Text } from "react-native";
+import { StyleSheet, Clipboard, Platform, View, Text, TextStyle } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ContentContainer from "../components/ContentContainer";
 import { NavigationScreenProp } from "react-navigation";
@@ -39,7 +39,7 @@ export default class AboutScreen extends React.Component<Props> {
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Text style={styles.headerText}>About {buildInfo.name}</Text>
+          <Text style={styles.headerText as TextStyle}>About {buildInfo.name}</Text>
           <View style={styles.aboutContainer}>
             <Text style={styles.aboutText}>{aboutContent}</Text>
           </View>

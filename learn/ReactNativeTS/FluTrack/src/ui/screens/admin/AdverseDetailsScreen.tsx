@@ -12,7 +12,7 @@ import {
   SurveyAnswer,
 } from "../../../store";
 import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
-import OptionList from "../../components/OptionList";
+import OptionList, { emptyMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 
@@ -80,7 +80,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces> {
       ? new Map<string, boolean>(
           this.props.surveyResponses.get(id)!.answer!.options!
         )
-      : OptionList.emptyMap(optionList.options);
+      : emptyMap(optionList.options);
   };
   _getAndInitializeResponse = (
     id: string,

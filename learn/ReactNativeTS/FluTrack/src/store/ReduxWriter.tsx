@@ -81,7 +81,11 @@ export default function reduxWriter<P extends ReduxWriterProps>(
           buttonOptions: buttonOptions,
           optionKeysToLabel: optionKeysToLabel,
           questionId: this.state.data.id,
-          questionText: this.state.data.title || this.state.data.description,
+          questionText: (
+            (this.state.data.title ? this.state.data.title : "") +
+            " " +
+            (this.state.data.description ? this.state.data.description : "")
+          ).trim(),
         });
       }
 

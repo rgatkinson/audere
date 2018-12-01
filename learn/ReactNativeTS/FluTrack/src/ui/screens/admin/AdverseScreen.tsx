@@ -11,7 +11,7 @@ import {
   SurveyAnswer,
 } from "../../../store";
 import { PostCollectionQuestions } from "./QuestionConfig";
-import OptionList from "../../components/OptionList";
+import OptionList, { emptyMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 
@@ -74,7 +74,7 @@ class AdverseScreen extends React.Component<Props & WithNamespaces> {
       ? new Map<string, boolean>(
           this.props.surveyResponses.get(id)!.answer!.options!
         )
-      : OptionList.emptyMap(optionList.options);
+      : emptyMap(optionList.options);
   };
   _getAndInitializeResponse = (
     id: string,

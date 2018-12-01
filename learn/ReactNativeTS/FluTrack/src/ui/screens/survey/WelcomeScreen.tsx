@@ -28,7 +28,9 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
             enabled={true}
             primary={true}
             label={t("common:button:getStarted")}
-            onPress={this._onNext}
+            onPress={() => {
+              this.props.navigation.push("Age", { data: AgeBucketConfig });
+            }}
           />
         </ContentContainer>
       </ScreenContainer>

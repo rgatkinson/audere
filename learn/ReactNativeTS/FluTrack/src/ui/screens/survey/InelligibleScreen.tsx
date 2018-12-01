@@ -1,4 +1,5 @@
 import React from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, StoreState, setEmail } from "../../../store";
@@ -9,12 +10,17 @@ import EmailInput from "../../components/EmailInput";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
   email: string;
   navigation: NavigationScreenProp<any, any>;
+}
+
+const InelligibleConfig = {
+  id: 'Inelligible',
+  title: 'thankYouParticipating',
+  description: 'youDoNotQualify',
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
@@ -30,8 +36,8 @@ class InelligibleScreen extends React.PureComponent<Props & WithNamespaces> {
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Title label={t("thankYouParticipating")} />
-          <Description content={t("youDoNotQuality")} />
+          <Title label={t(InelligibleConfig.title)} />
+          <Description content={t(InelligibleConfig.description)} />
           <EmailInput
             autoFocus={true}
             returnKeyType="done"

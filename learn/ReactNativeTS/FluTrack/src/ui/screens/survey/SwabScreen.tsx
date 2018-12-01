@@ -23,16 +23,14 @@ export const SwabConfig = {
     {
       key: "yes",
       primary: true,
-      enabled: true,
       subtext: "I understand I will have 2 nasal swabs collected. One by me and the other by research staff."
     },
     {
       key: "no",
       primary: true,
-      enabled: true,
       subtext: "I only want 1 nasal swab."
     },
-    { key: "noSwabs", primary: false, enabled: true },
+    { key: "noSwabs", primary: false },
   ],
 }
 

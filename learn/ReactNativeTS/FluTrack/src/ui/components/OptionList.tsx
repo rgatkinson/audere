@@ -26,18 +26,26 @@ interface Props {
   backgroundColor?: string;
 }
 
-class OptionList extends React.Component<Props & WithNamespaces> {
-  static emptyMap = (data: string[]) => {
-    return new Map<string, boolean>(
-      data.map((entry: string): [string, boolean] => [entry, false])
-    );
-  };
+const emptyMap = (data: string[]) => {
+  return new Map<string, boolean>(
+    data.map((entry: string): [string, boolean] => [entry, false])
+  );
+};
 
+const newSelectedOptionsMap = (options: string[], selected?: Map<string, boolean>) => {
+  return selected
+    ? new Map<string, boolean>(selected)
+    : emptyMap(options);
+}
+
+export { emptyMap, newSelectedOptionsMap };
+
+class OptionList extends React.Component<Props & WithNamespaces> {
   _onPressItem = (id: string) => {
     const toggled = !this.props.data.get(id);
     const data = this.props.multiSelect
       ? new Map<string, boolean>(this.props.data)
-      : OptionList.emptyMap(Array.from(this.props.data.keys()));
+      : emptyMap(Array.from(this.props.data.keys()));
 
     data.set(id, toggled);
     this.props.onChange(data);
@@ -95,7 +103,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default withNamespaces("optionList")<Props>(OptionList);
+export default withNamespaces("optionList")(OptionList);
 
 interface ItemProps {
   id: string;

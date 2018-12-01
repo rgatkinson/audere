@@ -1,17 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState, setEmail, setEmailOptions } from "../../../store";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { Action, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
-import OptionList from "../../components/OptionList";
+import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import SimpleStatusBar from "../../components/SimpleStatusBar";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -20,20 +21,30 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
+export const EnrolledConfig = {
+  id: 'Enrolled',
+  title: "We would like to email you.",
+  description: "Please select when we may email you, and provide your email address (optional).",
+  optionList: {
+    options: [
+      "sendCopyOfMyConsent",
+      "askAboutMyIllness",
+      "learnAboutStudy",
+      "allOfTheAbove",
+    ],
+    multiSelect: true,
+  },
+  buttons: [
+    { key: "done", primary: true },
+    { key: "doNotEmailMe", primary: false },
+  ],
+}
+
 @connect((state: StoreState) => ({
   email: state.form!.email,
-  options: state.form!.emailOptions,
 }))
-class EnrolledScreen extends React.PureComponent<Props & WithNamespaces> {
-  options = [
-    "sendCopyOfMyConsent",
-    "askAboutMyIllness",
-    "learnAboutStudy",
-    "allOfTheAbove",
-  ];
-
+class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    // TODO: write doc
     this.props.navigation.push("SurveyStart");
   };
 
@@ -43,45 +54,40 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces> {
       <ScreenContainer>
         <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
-          <Title label="We would like to email you." />
-          <Description content="Please select when we may email you, and provide your email address (optional)." />
+          <Title label={EnrolledConfig.title} />
+          <Description content={EnrolledConfig.description} />
           <OptionList
-            data={
-              this.props.options
-                ? this.props.options
-                : OptionList.emptyMap(this.options)
-            }
+            data={newSelectedOptionsMap(
+              EnrolledConfig.optionList.options,
+              this.props.getAnswer("options"),
+            )}
             multiSelect={true}
             numColumns={1}
-            onChange={options => this.props.dispatch(setEmailOptions(options))}
+            onChange={options => this.props.updateAnswer({ options })}
           />
           <EmailInput
             returnKeyType="done"
             value={this.props.email && this.props.email}
             onChange={text => this.props.dispatch(setEmail(text))}
-            onSubmit={this._onDone}
+            onSubmit={() => {}}
           />
-          <Button
-            primary={true}
-            enabled={true}
-            label="Done"
-            onPress={this._onDone}
-          />
-          <Button
-            primary={false}
-            enabled={true}
-            label="Please do not email me"
-            onPress={() => {
-              this.props.dispatch(
-                setEmailOptions(OptionList.emptyMap(this.options))
-              );
-              this._onDone();
-            }}
-          />
+          {EnrolledConfig.buttons.map(button => (
+            <Button
+              checked={this.props.getAnswer("selectedButtonKey") === button.key}
+              enabled={true}
+              key={button.key}
+              label={t("surveyButton:" + button.key)}
+              primary={button.primary}
+              onPress={() => {
+                this.props.updateAnswer({ selectedButtonKey: button.key });
+                this._onDone();
+              }}
+            />
+          ))}
         </ContentContainer>
       </ScreenContainer>
     );
   }
 }
 
-export default withNamespaces("enrolledScreen")<Props>(EnrolledScreen);
+export default reduxWriter(withNamespaces("enrolledScreen")(EnrolledScreen));

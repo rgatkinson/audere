@@ -8,7 +8,6 @@ import Description from "../../components/Description";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -22,13 +21,11 @@ export const BloodConfig = {
     {
       key: "yes",
       primary: true,
-      enabled: true,
       subtext: "I would like to join the extra part of the study. I understand I will have my blood collected."
     },
     {
       key: "no",
       primary: true,
-      enabled: true,
       subtext: "I do not want any blood collected from me."
     },
   ],

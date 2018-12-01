@@ -7,11 +7,10 @@ import { SwabConfig } from "./SwabScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
-import OptionList from "../../components/OptionList";
+import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -39,8 +38,8 @@ export const SymptomsConfig = {
     multiSelect: true,
   },
   buttons: [
-    { key: "done", primary: true, enabled: "withOption" },
-    { key: "noneOfTheAbove", primary: false, enabled: true },
+    { key: "done", primary: true },
+    { key: "noneOfTheAbove", primary: false },
   ],
 }
 
@@ -67,13 +66,6 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
       : 0;
   };
 
-  _getSelectedOptionMap = (): Map<string, boolean> => {
-    const options = this.props.getAnswer("options");
-    return options
-      ? new Map<string, boolean>(options)
-      : OptionList.emptyMap(SymptomsConfig.optionList.options);
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -90,7 +82,10 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           <Title label={SymptomsConfig.title} />
           <Description content={SymptomsConfig.description} center={true} />
           <OptionList
-            data={this._getSelectedOptionMap()}
+            data={newSelectedOptionsMap(
+              SymptomsConfig.optionList.options,
+              this.props.getAnswer("options"),
+            )}
             multiSelect={true}
             numColumns={2}
             onChange={symptoms => this.props.updateAnswer({ options: symptoms })}

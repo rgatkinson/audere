@@ -10,17 +10,18 @@ import {
   View,
 } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, StoreState, setName, setSignaturePng } from "../../../store";
 import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
+import { EnrolledConfig } from "./EnrolledScreen";
 import Button from "../../components/Button";
 import Description from "../../components/Description";
 import StatusBar from "../../components/StatusBar";
 import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   dispatch(action: Action): void;
@@ -35,6 +36,16 @@ interface SnapshotImage {
 
 // @ts-ignore
 const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
+
+const ConsentConfig = {
+  id: 'Consent',
+  title: "consent",
+  description: "thankYouAssisting",
+  buttons: [
+    { key: "clearSignature", primary: false },
+    { key: "submit", primary: true },
+  ],
+}
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
@@ -58,7 +69,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
     } else if (!!this.state.image) {
       this.saveBase64Async(this.state.image!);
     }
-    this.props.navigation.push("Enrolled");
+    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
   };
 
   _onChangeAsync = async () => {
@@ -98,12 +109,16 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
     return true;
   };
 
+  _canProceed = () => {
+    return (!!this.state.image || remoteDebugging) && !!this.props.name;
+  };
+
   render() {
     const { t } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
-          canProceed={false}
+          canProceed={this._canProceed()}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title="5. Would you like to take part in a blood collection?"
@@ -111,8 +126,8 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           onForward={this._onSubmit}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Title label={t("consent")} />
-          <Description content={t("thankYouAssisting")} />
+          <Title label={t(ConsentConfig.title)} />
+          <Description content={t(ConsentConfig.description)} />
           <Text>{CONSENT_FORM_TEXT}</Text>
         </ScrollView>
         <View style={styles.input}>
@@ -141,20 +156,21 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           <Text style={styles.textHint}>{t("signature")}</Text>
         </View>
         <View style={styles.buttonRow}>
-          <Button
-            enabled={true}
-            label={t("clearSignature")}
-            primary={false}
-            onPress={this._onClear}
-          />
-          <Button
-            enabled={
-              (!!this.state.image || remoteDebugging) && !!this.props.name
-            }
-            label={t("common:button:submit")}
-            primary={true}
-            onPress={this._onSubmit}
-          />
+          {ConsentConfig.buttons.map(button => (
+            <Button
+              enabled={button.key === "submit" ? this._canProceed() : true}
+              key={button.key}
+              label={t("surveyButton:" + button.key)}
+              onPress={() => {
+                if (button.key === "submit") {
+                  this._onSubmit();
+                } else {
+                  this._onClear();
+                }
+              }}
+              primary={button.primary}
+            />
+          ))}
         </View>
       </KeyboardAvoidingView>
     );
