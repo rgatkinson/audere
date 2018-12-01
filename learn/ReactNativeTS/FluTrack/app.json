@@ -17,6 +17,7 @@
     },
     "android": {
       "package": "org.auderenow.flutrack"
-    }
+    },
+    "orientation": "portrait"
   }
 }
