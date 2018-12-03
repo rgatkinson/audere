@@ -62,20 +62,27 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
   };
   const form = state.form;
   if (form != null) {
+    if (!!form.name) {
+      pouch.patient.name = form.name;
+    }
+    if (!!form.email) {
+      pouch.patient.telecom.push({
+        system: "email",
+        value: form.email,
+      });
+    }
     const responses = form.surveyResponses;
     if (!!responses && responses instanceof Map) {
-      //TODO Set patient name in surveyResponses
-      if (responses.has("patient.name")) {
-        pouch.patient.name = responses.get("patient.name")!.answer!.textInput;
+      if (responses.has("BirthDate")) {
+        const birthDate = responses.get("BirthDate")!.answer!.dateInput;
+        if (!!birthDate) {
+          pouch.patient.birthDate = birthDate.toISOString().substring(0, 10); // FHIR:date
+        }
       }
-      //TODO Set patient email in surveyResponses
-      if (responses.has("patient.email")) {
-        pouch.patient.telecom.push({
-          system: "email",
-          value: responses.get("patient.email")!.answer!.textInput,
-        });
-      }
-      if (responses.has("Address")) {
+      if (
+        responses.has("Address") &&
+        !!responses.get("Address")!.answer!.addressInput
+      ) {
         pouch.patient.address.push({
           use: "home",
           ...addressInputToPouchAddress(
@@ -83,7 +90,10 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
           ),
         });
       }
-      if (responses.has("WorkAddress")) {
+      if (
+        responses.has("WorkAddress") &&
+        !!responses.get("WorkAddress")!.answer!.addressInput
+      ) {
         pouch.patient.address.push({
           use: "work",
           ...addressInputToPouchAddress(
