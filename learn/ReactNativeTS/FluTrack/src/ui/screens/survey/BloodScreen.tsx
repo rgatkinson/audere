@@ -15,7 +15,7 @@ interface Props {
 
 export const BloodConfig = {
   id: 'BloodScreen',
-  title: "5. Would you like to take part in a blood collection?",
+  title: "4. Would you like to take part in a blood collection?",
   description: "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
   buttons: [
     {
@@ -44,7 +44,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="70%"
           progressLabel={t("common:statusBar:enrollment")}
-          title="4. Would you like to take part in an extra part of the..."
+          title="3. What symptoms have you experienced in..."
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />

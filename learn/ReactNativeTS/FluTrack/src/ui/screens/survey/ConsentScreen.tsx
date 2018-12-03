@@ -127,7 +127,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           canProceed={this._canProceed()}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
-          title="5. Would you like to take part in a blood collection?"
+          title="4. Would you like to take part in a blood collection?"
           onBack={() => this.props.navigation.pop()}
           onForward={this._onSubmit}
         />
