@@ -200,17 +200,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   sketch: {
+    borderRadius: 13,
     flex: 1,
     zIndex: 10,
   },
   sketchContainer: {
+    backgroundColor: 'white',
+    borderRadius: 13,
     height: "14%",
-    borderWidth: 1,
-    borderRadius: 1,
-    borderColor: "#555",
-    minHeight: 130,
     marginHorizontal: 30,
     marginTop: 10,
+    minHeight: 130,
+    overflow: 'hidden',
   },
   textHint: {
     color: "#aaa",
