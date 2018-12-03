@@ -48,6 +48,14 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
     this.props.navigation.push("SurveyStart");
   };
 
+  _haveEmailOption = () => {
+    const options: Map<string, boolean> = this.props.getAnswer("options");
+    return options && Array.from(options.values()).reduce(
+        (result: boolean, value: boolean) => (result || value),
+        false
+      );
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -74,7 +82,7 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           {EnrolledConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
-              enabled={true}
+              enabled={button.key === "done" ? (!!this.props.email && this._haveEmailOption()) : true}
               key={button.key}
               label={t("surveyButton:" + button.key)}
               primary={button.primary}
