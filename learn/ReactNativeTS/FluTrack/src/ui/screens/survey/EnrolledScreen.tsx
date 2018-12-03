@@ -24,7 +24,9 @@ interface Props {
 export const EnrolledConfig = {
   id: 'Enrolled',
   title: "We would like to email you.",
-  description: "Please select when we may email you, and provide your email address (optional).",
+  description: {
+    label: "Please select when we may email you, and provide your email address (optional).",
+  },
   optionList: {
     options: [
       "sendCopyOfMyConsent",
@@ -63,7 +65,7 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
           <Title label={EnrolledConfig.title} />
-          <Description content={EnrolledConfig.description} />
+          <Description content={EnrolledConfig.description.label} />
           <OptionList
             data={newSelectedOptionsMap(
               EnrolledConfig.optionList.options,

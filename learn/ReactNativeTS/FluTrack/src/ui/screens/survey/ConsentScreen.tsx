@@ -45,7 +45,9 @@ const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 const ConsentConfig = {
   id: "Consent",
   title: "consent",
-  description: "thankYouAssisting",
+  description: {
+    label: "thankYouAssisting",
+  },
   buttons: [
     { key: "clearSignature", primary: false },
     { key: "submit", primary: true },
@@ -133,7 +135,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
-          <Description content={t(ConsentConfig.description)} />
+          <Description content={t(ConsentConfig.description.label)} />
           <Text>{t("consentFormText")}</Text>
         </ScrollView>
         <View style={styles.input}>

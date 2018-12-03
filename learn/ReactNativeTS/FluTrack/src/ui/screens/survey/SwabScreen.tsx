@@ -18,7 +18,9 @@ interface Props {
 export const SwabConfig = {
   id: 'SwabScreen',
   title: "4. Would you like to take part in an extra part of the study?",
-  description: "There is an extra part of the study. You have the choice to join this extra part. If you join this extra part, 2 nasal swabs would be collected from you. One collected by research staff. One collected by you.",
+  description: {
+    label: "There is an extra part of the study. You have the choice to join this extra part. If you join this extra part, 2 nasal swabs would be collected from you. One collected by research staff. One collected by you.",
+  },
   buttons: [
     {
       key: "yes",
@@ -76,7 +78,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces & ReduxWriterPro
         />
         <ContentContainer>
           <Title label={SwabConfig.title} />
-          <Description content={SwabConfig.description} />
+          <Description content={SwabConfig.description.label} />
           {SwabConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}

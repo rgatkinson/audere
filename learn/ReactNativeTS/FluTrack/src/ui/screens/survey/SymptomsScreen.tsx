@@ -20,7 +20,10 @@ interface Props {
 export const SymptomsConfig = {
   id: 'Symptoms',
   title: '3. What symptoms have you experienced in the last week?',
-  description: 'Please select all that apply.',
+  description: {
+    label: 'Please select all that apply.',
+    center: true,
+  },
   optionList: {
     options: [
       "feelingFeverish",
@@ -94,7 +97,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         />
         <ContentContainer>
           <Title label={SymptomsConfig.title} />
-          <Description content={SymptomsConfig.description} center={true} />
+          <Description content={SymptomsConfig.description.label} center={SymptomsConfig.description.center} />
           <OptionList
             data={newSelectedOptionsMap(
               SymptomsConfig.optionList.options,

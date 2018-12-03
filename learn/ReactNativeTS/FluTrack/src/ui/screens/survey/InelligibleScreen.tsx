@@ -20,7 +20,9 @@ interface Props {
 const InelligibleConfig = {
   id: 'Inelligible',
   title: 'thankYouParticipating',
-  description: 'youDoNotQualify',
+  description: {
+    label: 'youDoNotQualify',
+  },
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
@@ -37,7 +39,7 @@ class InelligibleScreen extends React.PureComponent<Props & WithNamespaces> {
       <ScreenContainer>
         <ContentContainer>
           <Title label={t(InelligibleConfig.title)} />
-          <Description content={t(InelligibleConfig.description)} />
+          <Description content={t(InelligibleConfig.description.label)} />
           <EmailInput
             autoFocus={true}
             returnKeyType="done"

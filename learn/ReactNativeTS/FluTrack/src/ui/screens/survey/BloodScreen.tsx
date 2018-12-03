@@ -16,7 +16,9 @@ interface Props {
 export const BloodConfig = {
   id: 'BloodScreen',
   title: "4. Would you like to take part in a blood collection?",
-  description: "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
+  description: {
+    label: "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
+  },
   buttons: [
     {
       key: "yes",
@@ -50,7 +52,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
         />
         <ContentContainer>
           <Title label={BloodConfig.title} />
-          <Description content={BloodConfig.description} />
+          <Description content={BloodConfig.description.label} />
           {BloodConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
