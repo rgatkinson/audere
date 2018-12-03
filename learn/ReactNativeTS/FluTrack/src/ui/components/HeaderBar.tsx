@@ -28,9 +28,12 @@ class HeaderBar extends React.Component<Props & WithNamespaces> {
         text: t("cancel"),
         onPress: () => {},
       },
-      { text: t("continue"), onPress: () => {
+      {
+        text: t("continue"),
+        onPress: () => {
           this.props.navigation.popToTop();
         },
+        style: "destructive",
       },
     ]);
   };
