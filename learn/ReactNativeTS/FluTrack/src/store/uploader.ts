@@ -3,17 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as user, UserState, UserAction } from "./user";
-import {
-  default as form,
-  FormState,
-  FormAction,
-  SurveyResponse,
-  Address,
-} from "./form";
+import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
+import { default as form, Address } from "./form";
 import { StoreState } from "./StoreState";
-import { DocumentUploader, createUploader } from "../transport";
+import { createUploader } from "../transport";
+import { format } from "date-fns";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -70,6 +64,14 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         system: "email",
         value: form.email,
       });
+    }
+    if (!!form.signatureBase64 && !!form.consentTerms && !!form.name) {
+      pouch.patient.consent = {
+        terms: form.consentTerms,
+        name: form.name,
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature: form.signatureBase64,
+      };
     }
     const responses = form.surveyResponses;
     if (!!responses && responses instanceof Map) {

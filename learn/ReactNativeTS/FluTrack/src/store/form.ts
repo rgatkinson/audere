@@ -5,6 +5,7 @@ export type FormAction =
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
+  | { type: "SET_CONSENT_TERMS"; consentTerms: string }
   | {
       type: "SET_SURVEY_RESPONSES";
       surveyResponses: Map<string, SurveyResponse>;
@@ -48,6 +49,7 @@ export type FormState = null | {
   formId?: string;
   name?: string;
   email?: string;
+  consentTerms?: string;
   signatureBase64?: string;
   surveyResponses?: Map<string, SurveyResponse>;
 };
@@ -64,6 +66,9 @@ export default function reducer(state = initialState, action: FormAction) {
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email };
+  }
+  if (action.type === "SET_CONSENT_TERMS") {
+    return { ...state, consentTerms: action.consentTerms };
   }
   if (action.type === "SET_SIGNATURE_PNG") {
     return { ...state, signatureBase64: action.signatureBase64 };
@@ -98,6 +103,13 @@ export function setSignaturePng(signatureBase64: string): FormAction {
   return {
     type: "SET_SIGNATURE_PNG",
     signatureBase64,
+  };
+}
+
+export function setConsentTerms(consentTerms: string): FormAction {
+  return {
+    type: "SET_CONSENT_TERMS",
+    consentTerms,
   };
 }
 

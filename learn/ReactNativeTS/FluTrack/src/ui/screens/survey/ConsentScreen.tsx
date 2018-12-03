@@ -11,7 +11,13 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Action, StoreState, setName, setSignaturePng } from "../../../store";
+import {
+  Action,
+  StoreState,
+  setName,
+  setSignaturePng,
+  setConsentTerms,
+} from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
@@ -66,6 +72,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
       Alert.alert(this.props.t("pleaseSign"));
       return;
     } else if (!!this.state.image) {
+      this.props.dispatch(setConsentTerms(this.props.t("consentFormText")));
       this.saveBase64Async(this.state.image!);
     }
     this.props.navigation.push("Enrolled", { data: EnrolledConfig });
