@@ -37,7 +37,7 @@
   "headerBar": {
     "exitSurvey": "Exit Survey?",
     "returningWillDiscard": "Returning to Home will discard all responses.",
-    "discard": "Discard",
+    "cancel": "Cancel",
     "continue": "Continue",
     "returnToHome": "Return to Home",
     "exitStudy": "Exit Study",

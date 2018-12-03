@@ -25,13 +25,13 @@ class HeaderBar extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     Alert.alert(t("exitSurvey"), t("returningWillDiscard"), [
       {
-        text: t("discard"),
-        onPress: () => {
+        text: t("cancel"),
+        onPress: () => {},
+      },
+      { text: t("continue"), onPress: () => {
           this.props.navigation.popToTop();
         },
-        style: "destructive",
       },
-      { text: t("continue"), onPress: () => {} },
     ]);
   };
 
