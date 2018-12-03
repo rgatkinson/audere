@@ -57,6 +57,12 @@ export default class SettingsScreen extends React.Component<Props> {
           label="Specimen Scans"
           onPress={this._onSpecimenScans}
         />
+        <View style={styles.supportContainer}>
+          <Text style={styles.supportText}>
+            For technical support in using this app, contact Audere Support at
+            support@auderenow.org.
+          </Text>
+        </View>
       </ScreenContainer>
     );
   }
@@ -73,5 +79,12 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     marginLeft: 15,
     fontSize: 24,
+  },
+  supportContainer: {
+    marginTop: 50,
+    marginHorizontal: 15,
+  },
+  supportText: {
+    fontSize: 18,
   },
 });
