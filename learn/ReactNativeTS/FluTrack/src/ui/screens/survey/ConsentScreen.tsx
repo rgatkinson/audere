@@ -12,7 +12,6 @@ import {
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, StoreState, setName, setSignaturePng } from "../../../store";
-import { CONSENT_FORM_TEXT } from "../../../resources/consentForm";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
@@ -38,14 +37,14 @@ interface SnapshotImage {
 const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 
 const ConsentConfig = {
-  id: 'Consent',
+  id: "Consent",
   title: "consent",
   description: "thankYouAssisting",
   buttons: [
     { key: "clearSignature", primary: false },
     { key: "submit", primary: true },
   ],
-}
+};
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
@@ -128,7 +127,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
           <Description content={t(ConsentConfig.description)} />
-          <Text>{CONSENT_FORM_TEXT}</Text>
+          <Text>{t("consentFormText")}</Text>
         </ScrollView>
         <View style={styles.input}>
           <View style={styles.dateContainer}>
