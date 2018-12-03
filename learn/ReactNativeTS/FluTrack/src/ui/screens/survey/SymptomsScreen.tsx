@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
@@ -52,7 +53,20 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         this.props.navigation.push("Consent");
       }
     } else {
-      this.props.navigation.push("Inelligible");
+      Alert.alert(
+        "Are you sure?",
+        "You must have experienced at least 2 symptoms to participate in the study.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {},
+          },
+          { text: "Continue", onPress: () => {
+              this.props.navigation.push("Inelligible");
+            },
+          },
+        ]
+      );
     }
   };
 
