@@ -81,7 +81,7 @@ class SurveyQuestion extends Component<
           <Title label={this.props.data.title} size="small" />
         )}
         {this.props.data.description && (
-          <Description content={this.props.data.description} />
+          <Description content={this.props.data.description.label} center={this.props.data.description.center} />
         )}
         {this.props.data.textInput && (
           <TextInput

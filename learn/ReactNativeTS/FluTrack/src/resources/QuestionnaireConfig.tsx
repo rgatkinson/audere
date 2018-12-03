@@ -14,7 +14,7 @@ export interface SurveyQuestionData {
   conditionalNext?: ConditionalNextConfig;
   id: string;
   dateInput?: DateInputConfig;
-  description?: string;
+  description?: DescriptionConfig;
   nextQuestion: string | null;
   numberInput?: NumberInputConfig;
   optionList?: OptionListConfig;
@@ -45,6 +45,11 @@ interface DateInputConfig {
 
 interface NumberInputConfig {
   placeholder: string;
+}
+
+interface DescriptionConfig {
+  label: string;
+  center: boolean;
 }
 
 export interface OptionListConfig {
@@ -84,14 +89,15 @@ export const questionnaire = [
       optionList: {
         options: [
           "house",
-          "shelter",
-          "apartment",
-          "dormitory",
           "assistedLiving",
+          "shelter",
           "skilledNursingCenter",
+          "apartment",
           "noneOfTheAbove",
+          "dormitory",
         ],
         multiSelect: false,
+        numColumns: 2,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -158,8 +164,11 @@ export const questionnaire = [
     data: {
       id: "ExpoDesc",
       nextQuestion: "NearSickPeople",
-      description:
-        "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
+      description: {
+        label:
+          "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
+        center: false,
+      },
       buttons: [{ key: "understand", primary: true, enabled: true }],
     },
   },
@@ -250,6 +259,10 @@ export const questionnaire = [
       ],
       nextQuestion: "RecentTravel",
       title: "Does anyone in your house smoke?",
+      description: {
+        label: "Smoking includes tobacco, marijuana, and vape.",
+        center: true,
+      },
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -586,7 +599,10 @@ export const questionnaire = [
       id: "Race",
       nextQuestion: "HispanicLatino",
       title: "How would you describe your race",
-      description: "Please select all that apply",
+      description: {
+        label: "Please select all that apply",
+        center: true,
+      },
       optionList: {
         options: [
           "americanIndianOrAlaskaNative",
@@ -623,7 +639,10 @@ export const questionnaire = [
     data: {
       id: "MedicalInsurance",
       title: "Do you have medical insurance?",
-      description: "Please select all that apply.",
+      description: {
+        label: "Please select all that apply.",
+        center: true,
+      },
       nextQuestion: null,
       optionList: {
         options: ["none", "medicaid", "privateInsurance", "medicare", "other"],

@@ -84,7 +84,9 @@ export default function reduxWriter<P extends ReduxWriterProps>(
           questionText: (
             (this.state.data.title ? this.state.data.title : "") +
             " " +
-            (this.state.data.description ? this.state.data.description : "")
+            (this.state.data.description
+              ? this.state.data.description!.label
+              : "")
           ).trim(),
         });
       }
