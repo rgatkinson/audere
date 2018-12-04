@@ -77,12 +77,25 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
     this.setState({ image: null });
   };
 
+  _getConsentTerms = () => {
+    const { t } = this.props;
+    return !!this.props.locationType && this.props.locationType == "childcare"
+      ? t("daycareFormText", {
+        name: getContactName(this.props.location),
+        phone: getContactPhone(this.props.location),
+      })
+      : t("consentFormText", {
+        name: getContactName(this.props.location),
+        phone: getContactPhone(this.props.location),
+      });
+  };
+
   _onSubmit = () => {
     if (!this.state.image && !remoteDebugging) {
       Alert.alert(this.props.t("pleaseSign"));
       return;
     } else if (!!this.state.image) {
-      this.props.dispatch(setConsentTerms(this.props.t("consentFormText")));
+      this.props.dispatch(setConsentTerms(this._getConsentTerms()));
       this.saveBase64Async(this.state.image!);
     }
     this.props.navigation.push("Enrolled", { data: EnrolledConfig });
@@ -145,15 +158,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           <Title label={t(ConsentConfig.title)} />
           <Description content={t(ConsentConfig.description.label)} />
           <Text>
-            {!!this.props.locationType && this.props.locationType == "childcare"
-              ? t("daycareFormText", {
-                  name: getContactName(this.props.location),
-                  phone: getContactPhone(this.props.location),
-                })
-              : t("consentFormText", {
-                  name: getContactName(this.props.location),
-                  phone: getContactPhone(this.props.location),
-                })}
+            {this._getConsentTerms()}
           </Text>
         </ScrollView>
         <View style={styles.input}>
