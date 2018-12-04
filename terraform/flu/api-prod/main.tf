@@ -15,9 +15,11 @@ module "flu_api" {
 }
 
 data "terraform_remote_state" "flu_db" {
-  backend = "local"
+  backend = "s3"
   config {
-    path = "../1-db-prod/terraform.tfstate"
+    bucket = "${local.state_bucket}"
+    key = "db/terraform.state"
+    region = "${local.region}"
   }
 }
 
@@ -27,7 +29,7 @@ module "ami" {
 
 provider "aws" {
   version = "~> 1.50"
-  region = "us-west-2"
+  region = "${local.region}"
 }
 
 provider "template" {
@@ -36,8 +38,13 @@ provider "template" {
 
 terraform {
   backend "s3" {
-    bucket = "flu-prod-terraform.auderenow.io"
+    bucket = "${local.state_bucket}"
     key = "api/terraform.state"
-    region = "us-west-2"
+    region = "${local.region}"
   }
+}
+
+locals {
+  region = "us-west-2"
+  state_bucket = "flu-prod-terraform.auderenow.io"
 }
