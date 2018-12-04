@@ -7,27 +7,25 @@ provider "aws" {
   region = "us-west-2"
 }
 
-output "db_arn" {
-  value = "${aws_s3_bucket.db_state.arn}"
-}
-resource "aws_s3_bucket" "db_state" {
-  bucket = "flu-db-state"
+resource "aws_s3_bucket" "staging_terraform" {
+  bucket = "flu-staging-terraform.auderenow.io"
+
   versioning {
     enabled = true
   }
+
   lifecycle {
     prevent_destroy = true
   }
 }
 
-output "api_staging_arn" {
-  value = "${aws_s3_bucket.api_staging_state.arn}"
-}
-resource "aws_s3_bucket" "api_staging_state" {
-  bucket = "flu-api-state"
+resource "aws_s3_bucket" "prod_terraform" {
+  bucket = "flu-prod-terraform.auderenow.io"
+
   versioning {
     enabled = true
   }
+
   lifecycle {
     prevent_destroy = true
   }
