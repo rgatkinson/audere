@@ -1,44 +1,137 @@
+export type locationType =
+  | "clinic"
+  | "communityClinic"
+  | "childcare"
+  | "homeless"
+  | "pharmacy"
+  | "port"
+  | "workplace";
+
+export function getLocationType(locationKey: string) {
+  return COLLECTION_LOCATIONS[locationKey].type;
+}
+export function getContactName(locationKey: string) {
+  return COLLECTION_LOCATIONS[locationKey].contactName;
+}
+export function getContactPhone(locationKey: string) {
+  return COLLECTION_LOCATIONS[locationKey].contactPhone;
+}
+
 export const COLLECTION_LOCATIONS: {
-  [key: string]: { category: string; locations: string[] };
+  [key: string]: {
+    type: locationType;
+    contactName: string;
+    contactPhone: string;
+  };
 } = {
-  clinic: {
-    category: "Clinics",
-    locations: [
-      "University of Washington",
-      "Harborview",
-      "Northwest Hospital",
-      "Seattle Children's",
-      "Fred Hutch",
-      "UW Fremont Clinic",
-    ],
+  UniversityOfWashington: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  communityClinic: {
-    category: "Clinical Sites",
-    locations: ["Seamar So. King County", "UW Healthcare Equity"],
+  Harborview: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  childcare: {
-    category: "Childcare Facilities",
-    locations: ["Hutch Kids", "UW Daycare"],
+  NorthwestHospital: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  homeless: {
-    category: "Homeless Shelters",
-    locations: ["Health Care for the Homeless", "King County Public Health"],
+  SeattleChildrens: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  pharmacy: {
-    category: "Pharmacies",
-    locations: ["Bartell", "Walgreens"],
+  FredHutch: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  port: {
-    category: "International Ports",
-    locations: [
-      "Domestic Arrivals (SeaTac)",
-      "Alaska Cruises",
-      "International Arrivals (CDC)",
-      "Alaska Airlines",
-    ],
+  UWFremontClinic: {
+    type: "clinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
-  workplace: {
-    category: "Workplaces",
-    locations: ["Boeing", "Microsoft", "Amazon", "Other"],
+  SeamarSoKingCounty: {
+    type: "communityClinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  UWHealthcareEquity: {
+    type: "communityClinic",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  HutchKids: {
+    type: "childcare",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  UWDaycare: {
+    type: "childcare",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  HealthCareForTheHomeless: {
+    type: "homeless",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  KingCountyPublicHealth: {
+    type: "homeless",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  Bartell: {
+    type: "pharmacy",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  Walgreens: {
+    type: "pharmacy",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  DomesticArrivalsSeaTac: {
+    type: "port",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  AlaskaCruises: {
+    type: "port",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  InternationalArrivalsCDC: {
+    type: "port",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  AlaskaAirlines: {
+    type: "port",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  Boeing: {
+    type: "workplace",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  Microsoft: {
+    type: "workplace",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  Amazon: {
+    type: "workplace",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
+  },
+  OtherWorkplace: {
+    type: "workplace",
+    contactName: "[INSERT NAME]",
+    contactPhone: "[INSERT PHONE]",
   },
 };

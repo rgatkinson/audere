@@ -7,6 +7,7 @@ import EditSettingButton from "../../components/EditSettingButton";
 import KeyValueLine from "../../components/KeyValueLine";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   location: string;
@@ -24,7 +25,7 @@ function getTodaysDate(): string {
   location: state.admin == null ? null : state.admin.location,
   bloodCollection: state.admin == null ? false : state.admin.bloodCollection,
 }))
-export default class PriorScreen extends React.Component<Props> {
+class PriorScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = {
     title: "Prior to Collection",
   };
@@ -38,12 +39,17 @@ export default class PriorScreen extends React.Component<Props> {
     ]);
   }
   render() {
+    const { t } = this.props;
     return (
       <ScreenContainer>
         <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
         <EditSettingButton
-          label={this.props.location ? this.props.location : "Select one"}
+          label={
+            this.props.location
+              ? t("surveyOption:" + this.props.location)
+              : "Select one"
+          }
           onPress={this._onSelectLocation}
         />
         <Text style={styles.descriptionText}>
@@ -82,3 +88,5 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 });
+
+export default withNamespaces()(PriorScreen);

@@ -19,7 +19,7 @@ import {
   setConsentTerms,
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import { format } from "date-fns";
+import { format, addMinutes } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
 import { EnrolledConfig } from "./EnrolledScreen";
 import Button from "../../components/Button";
@@ -32,6 +32,7 @@ interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
+  locationType: string;
 }
 interface SnapshotImage {
   height: number;
@@ -56,6 +57,7 @@ const ConsentConfig = {
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
+  locationType: state.admin!.locationType,
 }))
 class ConsentScreen extends React.Component<Props & WithNamespaces> {
   state = {
@@ -136,7 +138,11 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
           <Description content={t(ConsentConfig.description.label)} />
-          <Text>{t("consentFormText")}</Text>
+          <Text>
+            {this.props.locationType == "childcare"
+              ? "daycareText"
+              : t("consentFormText")}
+          </Text>
         </ScrollView>
         <View style={styles.input}>
           <View style={styles.dateContainer}>
@@ -207,13 +213,13 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   sketchContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 13,
     height: "14%",
     marginHorizontal: 30,
     marginTop: 10,
     minHeight: 130,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   textHint: {
     color: "#aaa",
