@@ -27,11 +27,16 @@ import Description from "../../components/Description";
 import StatusBar from "../../components/StatusBar";
 import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
+import {
+  getContactName,
+  getContactPhone,
+} from "../../../resources/LocationConfig";
 
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
+  location: string;
   locationType: string;
 }
 interface SnapshotImage {
@@ -57,6 +62,7 @@ const ConsentConfig = {
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
+  location: state.admin!.location,
   locationType: state.admin!.locationType,
 }))
 class ConsentScreen extends React.Component<Props & WithNamespaces> {
@@ -140,8 +146,14 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           <Description content={t(ConsentConfig.description.label)} />
           <Text>
             {this.props.locationType == "childcare"
-              ? "daycareText"
-              : t("consentFormText")}
+              ? t("daycareFormText", {
+                  name: getContactName(this.props.location),
+                  phone: getContactPhone(this.props.location),
+                })
+              : t("consentFormText", {
+                  name: getContactName(this.props.location),
+                  phone: getContactPhone(this.props.location),
+                })}
           </Text>
         </ScrollView>
         <View style={styles.input}>

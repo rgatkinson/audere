@@ -41,7 +41,6 @@ export function setLocation(location: string): AdminAction {
 }
 
 export function setLocationType(locationType: string): AdminAction {
-  console.log("SETTING LOCATION TYPE", locationType);
   return {
     type: "SET_LOCATION_TYPE",
     locationType,
