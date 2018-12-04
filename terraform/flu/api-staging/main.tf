@@ -26,7 +26,12 @@ module "ami" {
 }
 
 provider "aws" {
+  version = "~> 1.50"
   region = "us-west-2"
+}
+
+provider "template" {
+  version = "~> 1.0"
 }
 
 terraform {

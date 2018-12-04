@@ -6,10 +6,10 @@
 module "flu_db" {
   source = "../../modules/flu-db"
 
-  epoch = "${var.epoch}"
-  provision = "${var.provision}"
-  environment = "prod"
+  admins = "${var.admins}"
   ami_id = "${module.ami.ubuntu}"
+  environment = "prod"
+  mode = "${var.mode}"
 }
 
 module "ami" {
@@ -17,7 +17,12 @@ module "ami" {
 }
 
 provider "aws" {
+  version = "~> 1.50"
   region = "us-west-2"
+}
+
+provider "template" {
+  version = "~> 1.0"
 }
 
 terraform {

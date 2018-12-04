@@ -5,11 +5,15 @@
 
 // See epoch/provision documentation in modules/flu-db/main.tf
 
-variable "epoch" {
-  default = 0
+variable "mode" {
+  description = "See 'mode' in modules/flu-db/vars.tf"
+  default = "run"
 }
 
-variable "provision" {
-  description = "One of 'run', 'cleanup', or 'done'"
-  default = "done"
+variable "admins" {
+  description = "List of admin userids."
+  default = [
+    "mmarucheck",
+    "ram",
+  ]
 }
