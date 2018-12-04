@@ -58,10 +58,7 @@ export default class SettingsScreen extends React.Component<Props> {
           onPress={this._onSpecimenScans}
         />
         <View style={styles.supportContainer}>
-          <Text style={styles.supportText}>
-            For technical support in using this app, contact Audere Support at
-            support@auderenow.org.
-          </Text>
+          <Description content="For technical support in using this app, contact Audere Support at support@auderenow.org." />
         </View>
       </ScreenContainer>
     );
@@ -83,8 +80,5 @@ const styles = StyleSheet.create({
   supportContainer: {
     marginTop: 50,
     marginHorizontal: 15,
-  },
-  supportText: {
-    fontSize: 18,
   },
 });
