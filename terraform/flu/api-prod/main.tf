@@ -28,3 +28,11 @@ module "ami" {
 provider "aws" {
   region = "us-west-2"
 }
+
+terraform {
+  backend "s3" {
+    bucket = "flu-prod-terraform.auderenow.io"
+    key = "api/terraform.state"
+    region = "us-west-2"
+  }
+}
