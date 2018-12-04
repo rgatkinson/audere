@@ -11,10 +11,14 @@ export function getLocationType(locationKey: string) {
   return COLLECTION_LOCATIONS[locationKey].type;
 }
 export function getContactName(locationKey: string) {
-  return COLLECTION_LOCATIONS[locationKey].contactName;
+  return !!locationKey && COLLECTION_LOCATIONS[locationKey]
+    ? COLLECTION_LOCATIONS[locationKey].contactName
+    : null;
 }
 export function getContactPhone(locationKey: string) {
-  return COLLECTION_LOCATIONS[locationKey].contactPhone;
+  return !!locationKey && COLLECTION_LOCATIONS[locationKey]
+    ? COLLECTION_LOCATIONS[locationKey].contactPhone
+    : null;
 }
 
 export const COLLECTION_LOCATIONS: {

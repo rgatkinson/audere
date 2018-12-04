@@ -19,7 +19,7 @@ import {
   setConsentTerms,
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
-import { format, addMinutes } from "date-fns";
+import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
 import { EnrolledConfig } from "./EnrolledScreen";
 import Button from "../../components/Button";
@@ -145,7 +145,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           <Title label={t(ConsentConfig.title)} />
           <Description content={t(ConsentConfig.description.label)} />
           <Text>
-            {this.props.locationType == "childcare"
+            {!!this.props.locationType && this.props.locationType == "childcare"
               ? t("daycareFormText", {
                   name: getContactName(this.props.location),
                   phone: getContactPhone(this.props.location),
