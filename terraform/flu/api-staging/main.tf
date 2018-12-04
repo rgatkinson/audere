@@ -3,6 +3,23 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+terraform {
+  backend "s3" {
+    bucket = "flu-prod-terraform.auderenow.io"
+    key = "api/terraform.state"
+    region = "us-west-2"
+  }
+}
+
+provider "aws" {
+  version = "~> 1.50"
+  region = "us-west-2"
+}
+
+provider "template" {
+  version = "~> 1.0"
+}
+
 module "flu_api" {
   source = "../../modules/flu-api"
 
@@ -17,34 +34,12 @@ module "flu_api" {
 data "terraform_remote_state" "flu_db" {
   backend = "s3"
   config {
-    bucket = "${local.state_bucket}"
+    bucket = "flu-staging-terraform.auderenow.io"
     key = "db/terraform.state"
-    region = "${local.region}"
+    region = "us-west-2"
   }
 }
 
 module "ami" {
   source = "../../modules/ami"
-}
-
-provider "aws" {
-  version = "~> 1.50"
-  region = "${local.region}"
-}
-
-provider "template" {
-  version = "~> 1.0"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "${local.state_bucket}"
-    key = "api/terraform.state"
-    region = "${local.region}"
-  }
-}
-
-locals {
-  region = "us-west-2"
-  state_bucket = "flu-staging-terraform.auderenow.io"
 }
