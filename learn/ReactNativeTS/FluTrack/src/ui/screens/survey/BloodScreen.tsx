@@ -35,7 +35,7 @@ export const BloodConfig = {
 
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Consent");
+    this.props.navigation.push("Consent", { priorTitle: BloodConfig.title });
   };
 
   render() {
@@ -46,7 +46,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="70%"
           progressLabel={t("common:statusBar:enrollment")}
-          title="3. What symptoms have you experienced in..."
+          title={this.props.navigation.getParam("priorTitle")}
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />

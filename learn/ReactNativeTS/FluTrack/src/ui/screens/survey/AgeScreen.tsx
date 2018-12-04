@@ -25,7 +25,7 @@ export const AgeBucketConfig = {
 
 class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Symptoms", { data: SymptomsConfig });
+    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: AgeBucketConfig.title });
   };
 
   render() {

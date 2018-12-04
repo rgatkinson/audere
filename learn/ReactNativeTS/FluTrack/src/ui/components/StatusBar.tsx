@@ -29,7 +29,7 @@ export default class StatusBar extends React.Component<Props> {
           </Text>
           <Text style={styles.progressText}>{this.props.progressLabel}</Text>
         </View>
-        <Text style={styles.statusBarTitle}>{this.props.title}</Text>
+        <Text numberOfLines={1} style={styles.statusBarTitle}>{this.props.title}</Text>
         <View style={styles.nav}>
           <TouchableOpacity onPress={this._back}>
             <Icon
@@ -106,5 +106,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.41,
     lineHeight: 22,
     textAlign: "center",
+    width: 500,
   },
 });
