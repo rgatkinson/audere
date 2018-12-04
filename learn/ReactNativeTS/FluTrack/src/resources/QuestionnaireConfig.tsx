@@ -39,7 +39,6 @@ interface ConditionalNextConfig {
 }
 
 interface DateInputConfig {
-  autoFocus: boolean;
   placeholder: string;
 }
 
@@ -73,6 +72,18 @@ export type EnabledOption =
   | "withDate";
 
 export const questionnaire = [
+  {
+    section: comp,
+    data: {
+      id: "BirthDate",
+      nextQuestion: "WhereLive",
+      title: "What is your date of birth?",
+      dateInput: {
+        placeholder: "Select date",
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
+    },
+  },
   {
     section: comp,
     data: {
@@ -455,8 +466,7 @@ export const questionnaire = [
       nextQuestion: "FirstSick",
       title: "What was the date of vaccination?",
       dateInput: {
-        autoFocus: false,
-        placeholder: "Date",
+        placeholder: "Select date",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withDate" },
@@ -472,8 +482,7 @@ export const questionnaire = [
       nextQuestion: "Antibiotics",
       title: "What day did you start to feel sick?",
       dateInput: {
-        autoFocus: false,
-        placeholder: "Date",
+        placeholder: "Select date",
       },
       buttons: [{ key: "done", primary: true, enabled: "withDate" }],
     },
@@ -537,7 +546,7 @@ export const questionnaire = [
     section: hist,
     data: {
       id: "DoctorThisYear",
-      nextQuestion: "BirthDate",
+      nextQuestion: "AssignedSex",
       title:
         "In the last year, how many times have you been to a doctor for a cough or a cold?",
       optionList: {
@@ -549,19 +558,6 @@ export const questionnaire = [
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
-    },
-  },
-  {
-    section: demo,
-    data: {
-      id: "BirthDate",
-      nextQuestion: "AssignedSex",
-      title: "What is your date of birth?",
-      dateInput: {
-        autoFocus: false,
-        placeholder: "Date",
-      },
-      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
     },
   },
   {

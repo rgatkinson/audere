@@ -18,6 +18,7 @@ import {
 } from "../resources/QuestionnaireConfig";
 
 interface InnerProps {
+  dispatch(action: Action): void;
   navigation?: NavigationScreenProp<any, any>;
   surveyResponses: Map<string, SurveyResponse>;
   t(key: string): string;

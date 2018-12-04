@@ -16,7 +16,6 @@ import Title from "./Title";
 export interface SurveyQuestionProps {
   active: boolean;
   data: SurveyQuestionData;
-  dispatch(action: Action): void;
   onActivate(): void;
   onNext(nextQuestion: string | null): void;
 }
@@ -96,7 +95,6 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.dateInput && (
           <DateInput
-            autoFocus={this.props.data.dateInput.autoFocus}
             date={this.props.getAnswer("dateInput")}
             placeholder={this.props.data.dateInput.placeholder}
             onDateChange={(date: Date) => {

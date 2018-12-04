@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { Action } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import {
   questionnaire,
@@ -20,7 +19,6 @@ import StatusBar from "../../components/StatusBar";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
@@ -180,7 +178,6 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
               <SurveyQuestion
                 active={activeSection && lastItem}
                 data={item}
-                dispatch={this.props.dispatch}
                 onActivate={() => this._activateQuestion(section.title, index)}
                 onNext={(nextQuestion: string) => this._addData(nextQuestion)}
               />
