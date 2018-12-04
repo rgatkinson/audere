@@ -1,9 +1,15 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState, setLocation } from "../../../store";
+import {
+  Action,
+  StoreState,
+  setLocation,
+  setLocationType,
+} from "../../../store";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
+import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -12,52 +18,14 @@ interface Props {
   screenProps: any;
 }
 
-const COLLECTION_LOCATIONS: {
-  [key: string]: { category: string; locations: string[] };
-} = {
-  // TODO: Let's read this out of a DB not hardcode
-  // Should dynamically read in locations if not categories
-  clinic: {
-    category: "Clinics",
-    locations: [
-      "University of Washington",
-      "Harborview",
-      "Northwest Hospital",
-      "Seattle Children's",
-      "Fred Hutch",
-      "UW Fremont Clinic",
-    ],
-  },
-  communityClinic: {
-    category: "Clinical Sites",
-    locations: ["Seamar So. King County", "UW Healthcare Equity"],
-  },
-  childcare: {
-    category: "Childcare Facilities",
-    locations: ["Hutch Kids", "UW Daycare"],
-  },
-  homeless: {
-    category: "Homeless Shelters",
-    locations: ["Health Care for the Homeless", "King County Public Health"],
-  },
-  pharmacy: {
-    category: "Pharmacies",
-    locations: ["Bartell", "Walgreens"],
-  },
-  port: {
-    category: "International Ports",
-    locations: [
-      "Domestic Arrivals (SeaTac)",
-      "Alaska Cruises",
-      "International Arrivals (CDC)",
-      "Alaska Airlines",
-    ],
-  },
-  workplace: {
-    category: "Workplaces",
-    locations: ["Boeing", "Microsoft", "Amazon", "Other"],
-  },
-};
+// Better place to put this? Only needs to run once, not on every render
+let locationToLocationType = new Map<string, string>();
+Object.keys(COLLECTION_LOCATIONS).map((cat: string) =>
+  COLLECTION_LOCATIONS[cat].locations.forEach((loc: string) => {
+    const locationString = COLLECTION_LOCATIONS[cat].category + " - " + loc;
+    locationToLocationType.set(locationString, cat);
+  })
+);
 
 @connect((state: StoreState) => ({
   location: state.admin == null ? null : state.admin.location,
@@ -66,12 +34,14 @@ export default class SelectLocationScreen extends React.Component<Props> {
   static navigationOptions = {
     title: "Select Location",
   };
+
   _getLocations(selectedLocation: string): Map<string, boolean> {
     let locations = new Map<string, boolean>();
     Object.keys(COLLECTION_LOCATIONS).map((cat: string) =>
-      COLLECTION_LOCATIONS[cat].locations.forEach((loc: string) =>
-        locations.set(COLLECTION_LOCATIONS[cat].category + " - " + loc, false)
-      )
+      COLLECTION_LOCATIONS[cat].locations.forEach((loc: string) => {
+        const locationString = COLLECTION_LOCATIONS[cat].category + " - " + loc;
+        locations.set(locationString, false);
+      })
     );
     if (!!selectedLocation) {
       locations.set(selectedLocation, true);
@@ -88,9 +58,14 @@ export default class SelectLocationScreen extends React.Component<Props> {
           fullWidth={true}
           backgroundColor="#fff"
           onChange={data => {
-            for (const key of data.keys()) {
-              if (data.get(key)) {
-                this.props.dispatch(setLocation(key));
+            for (const location of data.keys()) {
+              if (data.get(location)) {
+                this.props.dispatch(setLocation(location));
+                this.props.dispatch(
+                  setLocationType(
+                    locationToLocationType.get(location) || "unknown"
+                  )
+                );
                 break;
               }
             }
