@@ -1,3 +1,8 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 /**
  * This script generates a  64 character base64url-encoded random key
  * and prints out 3 keys that xor to it.
