@@ -5,7 +5,7 @@
 
 terraform {
   backend "s3" {
-    bucket = "flu-prod-terraform.auderenow.io"
+    bucket = "flu-staging-terraform.auderenow.io"
     key = "api/terraform.state"
     region = "us-west-2"
   }
