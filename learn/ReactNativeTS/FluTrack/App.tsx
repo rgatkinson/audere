@@ -8,12 +8,11 @@ import {
 } from "react-navigation";
 import { AppLoading, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
-import { store, persistor, StoreState } from "./src/store/";
+import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
 import { Icon } from "react-native-elements";
-import { createUploader } from "./src/transport";
 import i18n from "./src/i18n";
 
 import HomeScreen from "./src/ui/screens/survey/HomeScreen";
@@ -121,11 +120,7 @@ const Drawer = createDrawerNavigator({
   About: { screen: AboutScreen },
 });
 
-const Root = connect((state: StoreState) => ({}))(() => (
-  <Drawer screenProps={{ t: i18n.getFixedT(), uploader: createUploader() }} />
-));
-
-const ReloadAppOnLanguageChange = withNamespaces("common")(Root);
+const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(Drawer));
 
 export default class App extends React.Component {
   state = {

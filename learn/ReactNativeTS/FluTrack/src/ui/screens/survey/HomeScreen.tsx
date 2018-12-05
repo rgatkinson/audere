@@ -9,7 +9,6 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
-  uploader: any;
 }
 
 @connect()
