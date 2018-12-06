@@ -150,7 +150,7 @@ export const questionnaire = [
         placeholder: "Bed assignment",
       },
       buttons: [
-        { key: "done", primary: true, enabled: "withText" },
+        { key: "done", primary: true, enabled: "withNumber" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "none", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
