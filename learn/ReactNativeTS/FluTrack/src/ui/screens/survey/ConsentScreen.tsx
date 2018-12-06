@@ -1,8 +1,5 @@
 import React from "react";
 import {
-  Alert,
-  ImageEditor,
-  ImageStore,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -20,10 +17,9 @@ import {
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
-import * as ExpoPixi from "expo-pixi";
 import { EnrolledConfig } from "./EnrolledScreen";
-import Button from "../../components/Button";
 import Description from "../../components/Description";
+import SignatureBox from "../../components/SignatureBox";
 import StatusBar from "../../components/StatusBar";
 import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
@@ -38,15 +34,8 @@ interface Props {
   name: string;
   location: string;
   locationType: string;
+  signature: string;
 }
-interface SnapshotImage {
-  height: number;
-  width: number;
-  uri: string;
-}
-
-// @ts-ignore
-const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 
 const ConsentConfig = {
   id: "Consent",
@@ -54,29 +43,15 @@ const ConsentConfig = {
   description: {
     label: "thankYouAssisting",
   },
-  buttons: [
-    { key: "clearSignature", primary: false },
-    { key: "submit", primary: true },
-  ],
 };
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
   location: state.admin!.location,
   locationType: state.admin!.locationType,
+  signature: state.form!.signatureBase64,
 }))
 class ConsentScreen extends React.Component<Props & WithNamespaces> {
-  state = {
-    image: null,
-  };
-
-  sketch: any;
-
-  _onClear = () => {
-    this.sketch.clear();
-    this.setState({ image: null });
-  };
-
   _getConsentTerms = () => {
     const { t } = this.props;
     return !!this.props.locationType && this.props.locationType == "childcare"
@@ -90,56 +65,10 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
       });
   };
 
-  _onSubmit = () => {
-    if (!this.state.image && !remoteDebugging) {
-      Alert.alert(this.props.t("pleaseSign"));
-      return;
-    } else if (!!this.state.image) {
-      this.props.dispatch(setConsentTerms(this._getConsentTerms()));
-      this.saveBase64Async(this.state.image!);
-    }
+  _onSubmit = (signature: string) => {
+    this.props.dispatch(setConsentTerms(this._getConsentTerms()));
+    this.props.dispatch(setSignaturePng(signature));
     this.props.navigation.push("Enrolled", { data: EnrolledConfig });
-  };
-
-  _onChangeAsync = async () => {
-    const image: SnapshotImage = await this.sketch.takeSnapshotAsync({
-      format: "png",
-    });
-    this.setState({ image });
-  };
-
-  saveBase64Async = async (image: SnapshotImage) => {
-    const cropData = {
-      offset: { x: 0, y: 0 },
-      size: {
-        width: image.width,
-        height: image.height,
-      },
-      displaySize: { width: 600, height: 130 }, // shrink the PNG to this max width and height
-      resizeMode: "contain" as "contain", // preserve aspect ratio
-    };
-
-    ImageEditor.cropImage(
-      image.uri,
-      cropData,
-      imageURI => {
-        ImageStore.getBase64ForTag(
-          imageURI,
-          (base64Data: string) => {
-            console.log(base64Data);
-            this.props.dispatch(setSignaturePng(base64Data));
-          },
-          reason => console.error(reason)
-        );
-      },
-      reason => console.error(reason)
-    );
-
-    return true;
-  };
-
-  _canProceed = () => {
-    return (!!this.state.image || remoteDebugging) && !!this.props.name;
   };
 
   render() {
@@ -147,12 +76,14 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
-          canProceed={this._canProceed()}
+          canProceed={!!this.props.name && !!this.props.signature}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={this.props.navigation.getParam("priorTitle")}
           onBack={() => this.props.navigation.pop()}
-          onForward={this._onSubmit}
+          onForward={() => {
+            this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+          }}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
@@ -178,31 +109,12 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
             }}
           />
         </View>
-        <View style={styles.sketchContainer}>
-          <ExpoPixi.Signature
-            ref={(ref: any) => (this.sketch = ref)}
-            style={styles.sketch}
-            onChange={this._onChangeAsync}
-          />
-          <Text style={styles.textHint}>{t("signature")}</Text>
-        </View>
-        <View style={styles.buttonRow}>
-          {ConsentConfig.buttons.map(button => (
-            <Button
-              enabled={button.key === "submit" ? this._canProceed() : true}
-              key={button.key}
-              label={t("surveyButton:" + button.key)}
-              onPress={() => {
-                if (button.key === "submit") {
-                  this._onSubmit();
-                } else {
-                  this._onClear();
-                }
-              }}
-              primary={button.primary}
-            />
-          ))}
-        </View>
+        <SignatureBox
+          canSubmit={!!this.props.name}
+          onSubmit={(signature: string) => {
+            this._onSubmit(signature);
+          }}
+        />
       </KeyboardAvoidingView>
     );
   }
@@ -215,35 +127,8 @@ const styles = StyleSheet.create({
   contentContainer: {
     marginHorizontal: 20,
   },
-  buttonRow: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 30,
-  },
   input: {
     marginHorizontal: 30,
-  },
-  sketch: {
-    borderRadius: 13,
-    flex: 1,
-    zIndex: 10,
-  },
-  sketchContainer: {
-    backgroundColor: "white",
-    borderRadius: 13,
-    height: "14%",
-    marginHorizontal: 30,
-    marginTop: 10,
-    minHeight: 130,
-    overflow: "hidden",
-  },
-  textHint: {
-    color: "#aaa",
-    left: 20,
-    bottom: 8,
-    zIndex: 20,
-    position: "absolute",
   },
   dateContainer: {
     justifyContent: "space-between",
