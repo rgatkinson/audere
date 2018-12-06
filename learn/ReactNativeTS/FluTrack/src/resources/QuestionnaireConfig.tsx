@@ -39,6 +39,7 @@ interface ConditionalNextConfig {
 }
 
 interface DateInputConfig {
+  mode: "day" | "month";
   placeholder: string;
 }
 
@@ -79,6 +80,7 @@ export const questionnaire = [
       nextQuestion: "WhereLive",
       title: "What is your date of birth?",
       dateInput: {
+        mode: "day",
         placeholder: "Select date",
       },
       buttons: [{ key: "done", primary: true, enabled: "withDate" }],
@@ -466,7 +468,8 @@ export const questionnaire = [
       nextQuestion: "FirstSick",
       title: "What was the date of vaccination?",
       dateInput: {
-        placeholder: "Select date",
+        mode: "month",
+        placeholder: "Select month",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withDate" },
@@ -482,6 +485,7 @@ export const questionnaire = [
       nextQuestion: "Antibiotics",
       title: "What day did you start to feel sick?",
       dateInput: {
+        mode: "day",
         placeholder: "Select date",
       },
       buttons: [{ key: "done", primary: true, enabled: "withDate" }],

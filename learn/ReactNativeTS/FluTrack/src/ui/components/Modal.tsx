@@ -16,6 +16,7 @@ const IOS_MODAL_ANIMATION = {
 
 interface Props {
   height?: number;
+  width?: number;
   dismissText?: string;
   submitText?: string;
   title?: string;
@@ -35,7 +36,13 @@ class Modal extends React.Component<Props & WithNamespaces> {
         animationIn={IOS_MODAL_ANIMATION}
         animationOut={"fadeOut"}
       >
-        <View style={[styles.modalContainer, { height: this.props.height ? this.props.height : 620 }]}>
+        <View style={[
+          styles.modalContainer,
+          {
+            height: this.props.height ? this.props.height : 620,
+            width: this.props.width ? this.props.width : 540,
+          },
+        ]}>
           <View style={styles.blur}>
             <View style={styles.header}>
               <TouchableOpacity onPress={this.props.onDismiss}>
@@ -92,7 +99,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    width: 540,
     justifyContent: "center",
   },
   title: {

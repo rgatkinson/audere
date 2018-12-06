@@ -96,6 +96,7 @@ class SurveyQuestion extends Component<
         {this.props.data.dateInput && (
           <DateInput
             date={this.props.getAnswer("dateInput")}
+            mode={this.props.data.dateInput.mode}
             placeholder={this.props.data.dateInput.placeholder}
             onDateChange={(date: Date) => {
               this.props.updateAnswer({ dateInput: date });
