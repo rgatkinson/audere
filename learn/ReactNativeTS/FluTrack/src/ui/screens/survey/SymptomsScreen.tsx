@@ -7,6 +7,7 @@ import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { StoreState } from "../../../store";
 import { AgeBucketConfig } from "./AgeScreen";
 import { BloodConfig } from "./BloodScreen";
+import { ConsentConfig } from "./ConsentScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -59,7 +60,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
       if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" && this.props.bloodCollection) {
         this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: SymptomsConfig.title });
       } else {
-        this.props.navigation.push("Consent", { priorTitle: SymptomsConfig.title});
+        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: SymptomsConfig.title});
       }
     } else {
       Alert.alert(

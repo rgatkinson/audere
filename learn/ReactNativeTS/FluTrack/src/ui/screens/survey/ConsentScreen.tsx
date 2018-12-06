@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import {
   Action,
   StoreState,
@@ -17,6 +18,8 @@ import {
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
+import { AgeBucketConfig } from "./AgeScreen";
+import { BloodConfig } from "./BloodScreen";
 import { EnrolledConfig } from "./EnrolledScreen";
 import Description from "../../components/Description";
 import SignatureBox from "../../components/SignatureBox";
@@ -37,7 +40,7 @@ interface Props {
   signature: string;
 }
 
-const ConsentConfig = {
+export const ConsentConfig = {
   id: "Consent",
   title: "consent",
   description: {
@@ -51,7 +54,7 @@ const ConsentConfig = {
   locationType: state.admin!.locationType,
   signature: state.form!.signatureBase64,
 }))
-class ConsentScreen extends React.Component<Props & WithNamespaces> {
+class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _getConsentTerms = () => {
     const { t } = this.props;
     return !!this.props.locationType && this.props.locationType == "childcare"
@@ -68,7 +71,16 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
   _onSubmit = (signature: string) => {
     this.props.dispatch(setConsentTerms(this._getConsentTerms()));
     this.props.dispatch(setSignaturePng(signature));
-    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+    this._next();
+  };
+
+  _next = () => {
+    if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
+        this.props.getAnswer("selectedButtonKey", BloodConfig.id) === "yes") {
+      this.props.navigation.push("BloodConsent", { priorTitle: this.props.t(ConsentConfig.title) });
+    } else {
+      this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+    }
   };
 
   render() {
@@ -80,10 +92,8 @@ class ConsentScreen extends React.Component<Props & WithNamespaces> {
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={this.props.navigation.getParam("priorTitle")}
-          onBack={() => this.props.navigation.pop()}
-          onForward={() => {
-            this.props.navigation.push("Enrolled", { data: EnrolledConfig });
-          }}
+          onBack={this.props.navigation.pop}
+          onForward={this._next}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
@@ -148,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("consentScreen")<Props>(ConsentScreen);
+export default reduxWriter(withNamespaces("consentScreen")(ConsentScreen));

@@ -94,7 +94,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           <Button
             enabled={true}
             key="clear"
-            label={t("surveyButton:clear")}
+            label={t("surveyButton:clearSignature")}
             primary={false}
             onPress={this._onClear}
           />

@@ -2,6 +2,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { ConsentConfig } from "./ConsentScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -35,7 +36,7 @@ export const BloodConfig = {
 
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Consent", { priorTitle: BloodConfig.title });
+    this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: BloodConfig.title});
   };
 
   render() {

@@ -3,9 +3,11 @@ import uuidv4 from "uuid/v4";
 export type FormAction =
   | { type: "START_FORM" }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
+  | { type: "SET_BLOOD_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_CONSENT_TERMS"; consentTerms: string }
+  | { type: "SET_BLOOD_CONSENT_TERMS"; consentTerms: string }
   | {
       type: "SET_SURVEY_RESPONSES";
       surveyResponses: Map<string, SurveyResponse>;
@@ -50,7 +52,9 @@ export type FormState = null | {
   name?: string;
   email?: string;
   consentTerms?: string;
+  bloodConsentTerms?: string;
   signatureBase64?: string;
+  bloodSignatureBase64?: string;
   surveyResponses?: Map<string, SurveyResponse>;
 };
 
@@ -70,8 +74,14 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "SET_CONSENT_TERMS") {
     return { ...state, consentTerms: action.consentTerms };
   }
+  if (action.type === "SET_BLOOD_CONSENT_TERMS") {
+    return { ...state, bloodConsentTerms: action.consentTerms };
+  }
   if (action.type === "SET_SIGNATURE_PNG") {
     return { ...state, signatureBase64: action.signatureBase64 };
+  }
+  if (action.type === "SET_BLOOD_SIGNATURE_PNG") {
+    return { ...state, bloodSignatureBase64: action.signatureBase64 };
   }
   if (action.type === "SET_SURVEY_RESPONSES") {
     return { ...state, surveyResponses: action.surveyResponses };
@@ -106,9 +116,23 @@ export function setSignaturePng(signatureBase64: string): FormAction {
   };
 }
 
+export function setBloodSignaturePng(signatureBase64: string): FormAction {
+  return {
+    type: "SET_BLOOD_SIGNATURE_PNG",
+    signatureBase64,
+  };
+}
+
 export function setConsentTerms(consentTerms: string): FormAction {
   return {
     type: "SET_CONSENT_TERMS",
+    consentTerms,
+  };
+}
+
+export function setBloodConsentTerms(consentTerms: string): FormAction {
+  return {
+    type: "SET_BLOOD_CONSENT_TERMS",
     consentTerms,
   };
 }
