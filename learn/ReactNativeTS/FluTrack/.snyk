@@ -1,0 +1,109 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-ISMOBILEJS-72624:
+    - expo-pixi > pixi.js > ismobilejs:
+        reason: No patch yet on expo-pixi
+        expires: '2019-01-11T15:32:40.055Z'
+  SNYK-JS-MERGE-72553:
+    - react-native > metro > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro-core > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro-core > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro > metro-core > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro > metro-core > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.057Z'
+    - react-native > metro > metro-cache > metro-core > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+    - react-native > metro > metro-config > metro-core > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+    - react-native > metro > metro-config > metro-cache > metro-core > jest-haste-map > sane > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+    - react-native > metro > metro-cache > metro-core > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+    - react-native > metro > metro-config > metro-core > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+    - react-native > metro > metro-config > metro-cache > metro-core > jest-haste-map > sane > watch > exec-sh > merge:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+  'npm:atob:20180429':
+    - pouchdb-react-native > pouchdb-adapter-asyncstorage > atob:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.058Z'
+  'npm:braces:20180219':
+    - react-native > metro-core > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-core > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-cache > metro-core > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-config > metro-core > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-config > metro-cache > metro-core > jest-haste-map > micromatch > braces:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+  'npm:chownr:20180731':
+    - node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro-core > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-core > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-cache > metro-core > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.059Z'
+    - react-native > metro > metro-config > metro-core > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+    - react-native > metro > metro-config > metro-cache > metro-core > jest-haste-map > sane > fsevents > node-pre-gyp > tar > chownr:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+  'npm:cryptiles:20180710':
+    - pouchdb-react-native > pouchdb-adapter-http > pouchdb-ajax > request > hawk > cryptiles:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+  'npm:mem:20180117':
+    - react-native > yargs > os-locale > mem:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+    - react-native > metro > yargs > os-locale > mem:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+    - expo > @expo/vector-icons > react-native-vector-icons > yargs > os-locale > mem:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+  'npm:plist:20180219':
+    - react-native > xcode > simple-plist > plist:
+        reason: No patch yet.
+        expires: '2019-01-11T15:32:40.060Z'
+patch: {}
