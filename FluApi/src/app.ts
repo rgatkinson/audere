@@ -20,7 +20,7 @@ const app = express();
 const buildInfo = require("../static/buildInfo.json");
 
 app.set("port", process.env.PORT || 3000);
-app.use(helmet());
+app.use(helmet.noCache());
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
