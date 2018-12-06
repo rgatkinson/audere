@@ -8,7 +8,7 @@ import Ouch from "ouch";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import { promises as fs } from "fs";
-import * as VisitsController from "./controllers/visitsController";
+import * as DocumentsController from "./controllers/documentsController";
 import { ButtonPush } from "./models/buttonPush";
 import { ValidationError } from "sequelize";
 import { sequelize } from "./models";
@@ -71,12 +71,12 @@ app.post(
 
 app.put(
   "/api/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
-  VisitsController.putDocumentWithKey
+  DocumentsController.putDocumentWithKey
 );
 
 app.put(
   "/api/documents/:documentId([A-Za-z0-9-_]{0,})",
-  wrap(VisitsController.putDocument)
+  wrap(DocumentsController.putDocument)
 );
 
 app.get(

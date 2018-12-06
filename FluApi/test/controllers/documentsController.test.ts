@@ -1,4 +1,5 @@
 import request from "supertest";
+import { DocumentType } from "audere-lib";
 import app from "../../src/app";
 import { Visit } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
@@ -6,8 +7,9 @@ import { AccessKey } from "../../src/models/accessKey";
 const DOCUMENT_ID = "ABC123-_".repeat(8);
 const DOCUMENT_CONTENTS = {
   csruid: DOCUMENT_ID,
+  documentType: DocumentType.Visit,
   device: { info: "fakeDeviceInfo" },
-  visit: { data: "fakeVisitData" }
+  document: { data: "fakeVisitData" }
 };
 
 describe("putDocument", () => {
@@ -22,8 +24,9 @@ describe("putDocument", () => {
   it("converts invalid UTF8 to replacement characters", async () => {
     const contents = {
       device: { info: "☢" },
+      documentType: DocumentType.Visit,
       csruid: DOCUMENT_ID,
-      visit: { data: "fakeVisitData" }
+      document: { data: "fakeVisitData" }
     };
     const contentsBuffer = Buffer.from(JSON.stringify(contents));
 
@@ -42,7 +45,7 @@ describe("putDocument", () => {
     expect(visit.device).not.toEqual(contents.device);
     expect(visit.device).toEqual({ info: "���" });
 
-    await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
+    await visit.destroy();
   });
 
   it("adds the document to the visits table", async () => {
@@ -54,9 +57,9 @@ describe("putDocument", () => {
     const visit = await Visit.findOne({ where: { csruid: DOCUMENT_ID } });
     expect(visit.csruid).toEqual(DOCUMENT_ID);
     expect(visit.device).toEqual(DOCUMENT_CONTENTS.device);
-    expect(visit.visit).toEqual(DOCUMENT_CONTENTS.visit);
+    expect(visit.visit).toEqual(DOCUMENT_CONTENTS.document);
 
-    await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
+    await visit.destroy();
   });
 
   it("updates an existing document in the visits table", async () => {
@@ -68,8 +71,9 @@ describe("putDocument", () => {
 
     const newContents = {
       csruid: DOCUMENT_ID,
+      documentType: DocumentType.Visit,
       device: { info: "fakeDeviceInfo" },
-      visit: { data: "new fakeVisitData" }
+      document: { data: "new fakeVisitData" }
     };
     const response = await request(app)
       .put(`/api/documents/${DOCUMENT_ID}`)
@@ -79,9 +83,9 @@ describe("putDocument", () => {
     const newVisit = await Visit.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisit.visit).toEqual(newContents.visit);
+    expect(newVisit.visit).toEqual(newContents.document);
 
-    await Visit.destroy({ where: { csruid: DOCUMENT_ID } });
+    await newVisit.destroy();
   });
 });
 describe("putDocumentWithKey", () => {

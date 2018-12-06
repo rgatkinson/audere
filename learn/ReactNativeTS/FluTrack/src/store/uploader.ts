@@ -19,7 +19,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     const result = next(action);
     const state = getState();
     if (state.form != null) {
-      uploader.save(state.form.formId, redux_to_pouch(state));
+      uploader.saveVisit(state.form.formId, redux_to_pouch(state));
     }
     return result;
   };

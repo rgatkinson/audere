@@ -6,10 +6,11 @@
 import { getLogger } from "./LogUtil";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
+import { DocumentType } from "audere-lib";
 
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
-import { PouchDoc, VisitDoc } from "./Types";
+import { PouchDoc, UploadDoc } from "./Types";
 import { Timer } from "./Timer";
 import { summarize } from "./LogUtil";
 
@@ -24,7 +25,9 @@ type Event = SaveEvent | UploadNextEvent;
 interface SaveEvent {
   type: "Save";
   localUid: string;
-  visit: VisitDoc;
+  document: UploadDoc;
+  priority: number;
+  documentType: DocumentType;
 }
 
 interface UploadNextEvent {
@@ -52,8 +55,19 @@ export class DocumentUploader {
     this.db.destroy();
   }
 
-  public save(localUid: string, visit: any): void {
-    this.fireEvent({ type: "Save", localUid, visit });
+  public save(
+    localUid: string,
+    document: UploadDoc,
+    documentType: DocumentType,
+    priority: number
+  ): void {
+    this.fireEvent({
+      type: "Save",
+      localUid,
+      document,
+      documentType,
+      priority,
+    });
   }
 
   private uploadNext() {
@@ -90,28 +104,33 @@ export class DocumentUploader {
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
-    const key = `documents/${save.localUid}`;
+    const key = `documents/${save.priority}/${save.localUid}`;
     let pouch: PouchDoc;
     try {
       pouch = await this.db.get(key);
       pouch.body.device = DEVICE_INFO;
-      pouch.body.visit = save.visit;
+      pouch.body.document = save.document;
       logger.debug(
-        `Updating existing '${key}':\n  ${JSON.stringify(save.visit, null, 2)}`
+        `Updating existing '${key}':\n  ${JSON.stringify(
+          save.document,
+          null,
+          2
+        )}`
       );
     } catch (e) {
       pouch = {
         _id: key,
         body: {
           csruid: null,
+          documentType: save.documentType,
           // Assign device info at save time rather than upload time,
           // in case version info changes between the two.
           device: DEVICE_INFO,
-          visit: save.visit,
+          document: save.document,
         },
       };
       logger.debug(
-        `Saving new '${key}':\n  ${JSON.stringify(save.visit, null, 2)}`
+        `Saving new '${key}':\n  ${JSON.stringify(save.document, null, 2)}`
       );
     }
     await this.db.put(pouch);
@@ -211,7 +230,9 @@ export class DocumentUploader {
   }
 
   private async logPouchKeys(): Promise<void> {
-    const items = await this.db.allDocs();
+    const items = await this.db.allDocs({
+      include_docs: true,
+    });
     logger.debug("Pouch contents:");
     items.rows.forEach((row: any) => {
       logger.debug(`  ${row.doc._id}`);

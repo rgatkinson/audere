@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/errorhandler": "^0.0.32",
     "@types/helmet": "^0.0.42",
+    "audere-lib": "file:../lib",
     "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
     "buffer-xor": "^2.0.2",

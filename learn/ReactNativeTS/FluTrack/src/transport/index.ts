@@ -6,22 +6,44 @@
 import PouchDB from "pouchdb-react-native";
 import axios from "axios";
 import URL from "url-parse";
+import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
+import { DocumentType } from "audere-lib";
+import { AxiosInstance } from "axios";
 import { getLogger } from "./LogUtil";
+import { UploadDoc } from "./Types";
 import { DocumentUploader } from "./DocumentUploader";
-
-export { DocumentUploader } from "./DocumentUploader";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 const logger = getLogger("api");
 
-export function createUploader(): DocumentUploader {
+export function createUploader(): TypedDocumentUploader {
   const api = createAxios();
   const db = new PouchDB("clientDB");
-  // if (IS_NODE_ENV_DEVELOPMENT) {
-  //   PouchDB.debug.enable("*");
-  // }
-  return new DocumentUploader(db, api);
+  return new TypedDocumentUploader(db, api);
+}
+
+class TypedDocumentUploader {
+  private readonly uploader: DocumentUploader;
+  private logId?: string;
+
+  constructor(db: any, api: AxiosInstance) {
+    this.uploader = new DocumentUploader(db, api);
+  }
+
+  public saveVisit(localUid: string, visit: UploadDoc) {
+    this.uploader.save(localUid, visit, DocumentType.Visit, 0);
+  }
+  public saveFeedback(feedback: string) {
+    this.uploader.save(uuidv4(), { feedback }, DocumentType.Feedback, 1);
+  }
+  public saveLog(log: string) {
+    // TODO(ram): Batch these saves
+    if (!this.logId) {
+      this.logId = uuidv4();
+    }
+    this.uploader.save(this.logId, { log }, DocumentType.Log, 2);
+  }
 }
 
 function createAxios() {

@@ -1,5 +1,5 @@
 import Axios, { AxiosInstance, AxiosResponse } from "axios";
-import PouchDB from "pouchdb-react-native";
+import PouchDB from "pouchdb";
 import {
   anyString,
   anything,
@@ -10,13 +10,15 @@ import {
   verify,
   when,
 } from "ts-mockito";
-import { DocumentUploader } from "../../src/transport";
+import { DocumentType } from "audere-lib";
+import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
 
 const FAKE_VISIT_RECORD = {
   _id: "documents/fakeRecordId",
-  body: { visit: "someFakeData" },
+  priority: 0,
+  body: { document: "someFakeData" },
 };
 const FAKE_CSRUID = "abc123";
 
@@ -32,11 +34,11 @@ describe("DocumentUploader", () => {
     it("adds visit info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
 
-      uploader.save("fakeUID", FAKE_VISIT_RECORD);
+      uploader.save("fakeUID", FAKE_VISIT_RECORD, DocumentType.Visit, 0);
 
       await nextCall(mockPouchDB, "put", [anything()]);
       const newRecord = capture(mockPouchDB.put).last()[0] as PouchDoc;
-      expect(newRecord.body.visit).toEqual(FAKE_VISIT_RECORD);
+      expect(newRecord.body.document).toEqual(FAKE_VISIT_RECORD);
     });
     it("uploads a saved record to the api server", async () => {
       const contents = {
@@ -45,7 +47,7 @@ describe("DocumentUploader", () => {
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
       when(mockPouchDB.allDocs(anything())).thenReturn(contents);
-      uploader.save("fakeUID", FAKE_VISIT_RECORD);
+      uploader.save("fakeUID", FAKE_VISIT_RECORD, DocumentType.Visit, 0);
 
       when(mockAxios.get("/documentId")).thenReturn(
         axiosResponse({ id: FAKE_CSRUID })
@@ -62,6 +64,40 @@ describe("DocumentUploader", () => {
         ...FAKE_VISIT_RECORD.body,
       });
       expect(url).toEqual(`/documents/${FAKE_CSRUID}`);
+    });
+  });
+  describe("firstDocument", () => {
+    let db: PouchDB.Database;
+    beforeEach(() => {
+      db = new PouchDB("testDB");
+    });
+    afterEach(done => {
+      db.destroy({}, done);
+    });
+    it("returns documents in priority order", async () => {
+      const uploader = new DocumentUploader(db, Axios.create());
+      const docB = await db.put({
+        _id: "documents/1/1",
+        body: { document: { data: "b" } },
+      });
+      const docA = await db.put({
+        _id: "documents/0/2",
+        body: { document: { data: "a" } },
+      });
+      const docC = await db.put({
+        _id: "documents/2/3",
+        body: { document: { data: "c" } },
+      });
+
+      let doc = await uploader["firstDocument"]();
+      expect(doc!.body.document.data).toEqual("a");
+      await db.remove(docA.id, docA.rev);
+      doc = await uploader["firstDocument"]();
+      expect(doc!.body.document.data).toEqual("b");
+      await db.remove(docB.id, docB.rev);
+      doc = await uploader["firstDocument"]();
+      expect(doc!.body.document.data).toEqual("c");
+      await db.remove(docC.id, docC.rev);
     });
   });
 });
