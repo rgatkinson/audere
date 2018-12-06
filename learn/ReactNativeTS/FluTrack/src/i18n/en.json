@@ -217,6 +217,7 @@
     "noSwabs": "I do not want any nasal swabs collected.",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
-    "doNotEmailMe": "Please do not email me"
+    "doNotEmailMe": "Please do not email me",
+    "none": "None"
   }
 }

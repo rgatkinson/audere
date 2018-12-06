@@ -146,12 +146,13 @@ export const questionnaire = [
       id: "BedAssignment",
       nextQuestion: "Address",
       title: "What is your bed assignment?",
-      textInput: {
+      numberInput: {
         placeholder: "Bed assignment",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "none", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
