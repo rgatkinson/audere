@@ -7,22 +7,13 @@ afterAll(() => {
   sequelize.close();
 });
 
-describe("GET /", () => {
-  it("returns 200 OK", async () => {
-    await request(app)
-      .get("/")
-      .expect(200)
-      .expect("OK");
-  });
-});
-
 describe("GET /api", () => {
-  it("returns CSRF token", async () => {
+  it("returns OK", async () => {
     const response = await request(app)
       .get("/api")
       .expect(200)
       .expect("content-type", /json/);
-    expect(response.body.Status).toEqual("SUCCESS");
+    expect(response.body.Status).toEqual("OK");
   });
 });
 
