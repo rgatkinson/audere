@@ -37,7 +37,7 @@ export type VisitInfo = {
   location?: string;
   samples: SampleInfo[];
   patient: PatientInfo;
-  consent: ConsentInfo;
+  consents: ConsentInfo[];
   responses: ResponseInfo[];
   events: EventInfo[];
 }
@@ -58,38 +58,37 @@ export type SampleInfo = {
 // This is a subset of the FHIR 'Patient' resource
 // https://www.hl7.org/fhir/patient.html
 export type PatientInfo = {
-  name: string;
-  birthDate: string; // FHIR:date
-
-  // The following options come from:
-  // https://www.hl7.org/fhir/valueset-administrative-gender.html
-  gender: "male" | "female" | "other" | "unknown";
-
+  name?: string;
+  birthDate?: string; // FHIR:date
+  gender?: PatientInfoGender;
   telecom: TelecomInfo[];
   address: AddressInfo[];
 }
 
+// The following options come from:
+// https://www.hl7.org/fhir/valueset-administrative-gender.html
+export type PatientInfoGender = "male" | "female" | "other" | "unknown";
+
 export type TelecomInfo = {
-  system: "phone" | "sms" | "email";
+  system: TelecomInfoSystem;
   value: string;
 }
 
-export type AddressInfo = {
-  use: "home" | "work";
-  line: string[];
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
+export type TelecomInfoSystem = "phone" | "sms" | "email";
+
+export type AddressInfo = { use: AddressInfoUse; } & AddressValueInfo;
+
+export type AddressInfoUse = "home" | "work";
 
 export type ConsentInfo = {
-  terms: string;
-  name: string;
-  signerType: "Subject" | "Parent" | "Representative";
-  date: string; // date only
-  signature: string; // Base64-encoded PNG of the signature
+    name: string;
+    terms: string;
+    signerType: ConsentInfoSignerType;
+    date: string; // date only
+    signature: string; // Base64-encoded PNG of the signature
 }
+
+export type ConsentInfoSignerType = "Subject" | "Parent" | "Representative";
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html
@@ -131,7 +130,7 @@ export type AnswerInfo = {
 }
 
 export type AddressValueInfo = {
-  line: [string];
+  line: string[];
   city: string;
   state: string;
   postalCode: string;
@@ -145,7 +144,7 @@ export type OtherValueInfo = {
 }
 
 export type EventInfo = {
-  kind: "visit" | "response" | "sample";
+  kind: EventInfoKind;
 
   at: string; // FHIR:instant
   until: string; // FHIR:instant
@@ -153,3 +152,5 @@ export type EventInfo = {
   // id of the item this event describes (e.g. question id), if applicable
   refId?: string;
 }
+
+export type EventInfoKind = "visit" | "response" | "sample";

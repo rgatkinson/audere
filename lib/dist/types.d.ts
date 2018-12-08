@@ -23,7 +23,7 @@ export declare type VisitInfo = {
     location?: string;
     samples: SampleInfo[];
     patient: PatientInfo;
-    consent: ConsentInfo;
+    consents: ConsentInfo[];
     responses: ResponseInfo[];
     events: EventInfo[];
 };
@@ -36,31 +36,35 @@ export declare type SampleInfo = {
     code: string;
 };
 export declare type PatientInfo = {
-    name: string;
-    birthDate: string;
-    gender: "male" | "female" | "other" | "unknown";
+    name?: string;
+    birthDate?: string;
+    gender?: PatientInfoGender;
     telecom: TelecomInfo[];
     address: AddressInfo[];
 };
+export declare type PatientInfoGender = "male" | "female" | "other" | "unknown";
 export declare type TelecomInfo = {
-    system: "phone" | "sms" | "email";
+    system: TelecomInfoSystem;
     value: string;
 };
+export declare type TelecomInfoSystem = "phone" | "sms" | "email";
 export declare type AddressInfo = {
-    use: "home" | "work";
+    use: AddressInfoUse;
     line: string[];
     city: string;
     state: string;
     postalCode: string;
     country: string;
 };
+export declare type AddressInfoUse = "home" | "work";
 export declare type ConsentInfo = {
     terms: string;
     name: string;
-    signerType: "Subject" | "Parent" | "Representative";
+    signerType: ConsentInfoSignerType;
     date: string;
     signature: string;
 };
+export declare type ConsentInfoSignerType = "Subject" | "Parent" | "Representative";
 export declare type ResponseInfo = {
     id: string;
     item: ResponseItemInfo[];
@@ -99,8 +103,9 @@ export declare type OtherValueInfo = {
     valueString: string;
 };
 export declare type EventInfo = {
-    kind: "visit" | "response" | "sample";
+    kind: EventInfoKind;
     at: string;
     until: string;
     refId?: string;
 };
+export declare type EventInfoKind = "visit" | "response" | "sample";

@@ -4,10 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as form, Address } from "./form";
+import { default as form, Address, FormState } from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
+import { AddressInfo, AddressInfoUse, VisitInfo, ConsentInfo, ResponseItemInfo, QuestionAnswerOption, AddressValueInfo } from "audere-lib";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -25,34 +26,18 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   };
 }
 
-function addressInputToPouchAddress(addressInput?: Address): AddressType {
-  if (!addressInput) {
-    return {};
-  }
-  let pouchAddress: AddressType = {
-    city: addressInput.city,
-    state: addressInput.state,
-    postalCode: addressInput.zipcode,
-    country: addressInput.country,
-  };
-  pouchAddress.line = [];
-  if (!!addressInput.location) {
-    pouchAddress.line.push(addressInput.location);
-  }
-  if (!!addressInput.address) {
-    pouchAddress.line.push(addressInput.address);
-  }
-  return pouchAddress;
-}
-
 // Exported so we can write unit tests for this
-export function redux_to_pouch(state: StoreState): PouchDoc {
-  const pouch: PouchDoc = {
+export function redux_to_pouch(state: StoreState): VisitInfo {
+  const pouch: VisitInfo = {
+    complete: false,
+    samples: [],
     patient: {
       telecom: [],
       address: [],
-      responses: [],
     },
+    consents: [],
+    responses: [],
+    events: [],
   };
   const form = state.form;
   if (form != null) {
@@ -65,14 +50,8 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         value: form.email,
       });
     }
-    if (!!form.signatureBase64 && !!form.consentTerms && !!form.name) {
-      pouch.patient.consent = {
-        terms: form.consentTerms,
-        name: form.name,
-        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-        signature: form.signatureBase64,
-      };
-    }
+
+    maybePushConsent(form, pouch.consents);
     const responses = form.surveyResponses;
     if (!!responses && responses instanceof Map) {
       if (responses.has("BirthDate")) {
@@ -81,27 +60,19 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
           pouch.patient.birthDate = birthDate.toISOString().substring(0, 10); // FHIR:date
         }
       }
-      if (
-        responses.has("Address") &&
-        !!responses.get("Address")!.answer!.addressInput
-      ) {
-        pouch.patient.address.push({
-          use: "home",
-          ...addressInputToPouchAddress(
-            responses.get("Address")!.answer!.addressInput
-          ),
-        });
+      if (responses.has("Address")) {
+        maybePushAddress(
+          responses.get("Address")!.answer!.addressInput,
+          "home",
+          pouch.patient.address
+        );
       }
-      if (
-        responses.has("WorkAddress") &&
-        !!responses.get("WorkAddress")!.answer!.addressInput
-      ) {
-        pouch.patient.address.push({
-          use: "work",
-          ...addressInputToPouchAddress(
-            responses.get("WorkAddress")!.answer!.addressInput
-          ),
-        });
+      if (responses.has("WorkAddress")) {
+        maybePushAddress(
+          responses.get("WorkAddress")!.answer!.addressInput,
+          "work",
+          pouch.patient.address
+        );
       }
       if (responses.has("AssignedSex")) {
         let buttonKey = responses.get("AssignedSex")!.answer!.selectedButtonKey;
@@ -116,19 +87,20 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
             pouch.patient.gender = "unknown";
         }
       }
-      //Set all surveyResponses into pouch.patient.responses
-      let items: ItemType[] = [];
+
+      // Set all surveyResponses into pouch.responses
+      let items: ResponseItemInfo[] = [];
       for (const [key, value] of responses.entries()) {
-        let item: ItemType = {
+        let item: ResponseItemInfo = {
           id: key,
-          text: value!.questionText,
+          text: value.questionText,
           answer: [],
         };
         const surveyAnswer = value.answer;
         if (!surveyAnswer) {
           continue;
         }
-        let answerOptions: { id: string; text?: string }[] = [];
+        let answerOptions: QuestionAnswerOption[] = [];
         const options = surveyAnswer.options;
         const optionKeysToLabel = value.optionKeysToLabel;
         if (!!optionKeysToLabel) {
@@ -147,7 +119,7 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
             if (button !== "preferNotToSay" && button !== "done") {
               answerOptions.push({
                 id: button,
-                text: buttonOptions.get(button),
+                text: checkNotNull(buttonOptions.get(button)),
               });
             }
           }
@@ -193,13 +165,12 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
               }
             }
           }
-          if (surveyAnswer.addressInput) {
-            item.answer.push({
-              valueAddress: addressInputToPouchAddress(
-                surveyAnswer.addressInput
-              ),
-            });
+
+          const valueAddress = addressValueInfo(surveyAnswer.addressInput);
+          if (valueAddress != null) {
+            item.answer.push({ valueAddress });
           }
+
           if (surveyAnswer.dateInput) {
             item.answer.push({
               valueDateTime: surveyAnswer.dateInput.toISOString(),
@@ -218,64 +189,69 @@ export function redux_to_pouch(state: StoreState): PouchDoc {
         }
         items.push(item);
       }
-      pouch.patient.responses.push({ id: "Questionnaire", item: items });
+      pouch.responses.push({ id: "Questionnaire", item: items });
     }
   }
   return pouch;
 }
 
-type AddressType = {
-  line?: string[];
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
-};
+function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
+  const signature = form.signatureBase64;
+  const terms = form.consentTerms;
+  const name = form.name;
 
-type ItemType = {
-  // human-readable, locale-independent id of the question
-  id: string;
-  // localized text of question
-  text?: string;
-  // For multiple-choice questions, the exact text of each option, in order
-  answerOptions?: {
-    id: string;
-    text?: string;
-  }[];
-  answer: {
-    valueBoolean?: boolean;
-    valueDateTime?: string; // FHIR:dateTime
-    valueDecimal?: number;
-    valueInteger?: number;
-    valueString?: string;
-    valueAddress?: AddressType;
-    valueOther?: {
-      // Index in answerOptions of the selected choice
-      selectedIndex: Number;
-      valueString: String;
-    };
-    valueDeclined?: boolean;
-  }[];
-};
+  if (signature != null && terms != null && name != null) {
+    consents.push({
+      name,
+      terms,
+      signature,
+      signerType: "Subject", // TODO
+      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+    });
+  }
+}
 
-type PouchDoc = {
-  patient: {
-    name?: string;
-    birthDate?: string; // FHIR:date
-    gender?: "male" | "female" | "other" | "unknown";
-    telecom: { system: "phone" | "sms" | "email"; value?: string }[];
-    address: ({ use: "home" | "work" } & AddressType)[];
-    consent?: {
-      terms: string;
-      name: string;
-      date: string;
-      // Base64-encoded PNG of their signature
-      signature: string;
-    };
-    responses: {
-      id: string;
-      item: ItemType[];
-    }[];
-    // TODO: add events: []
-  };
-};
+function maybePushAddress(addressInput: Address|undefined|null, use: AddressInfoUse, addresses: AddressInfo[]): void {
+  const info = addressValueInfo(addressInput);
+  if (info != null) {
+    addresses.push({
+      use,
+      ...info,
+    })
+  }
+}
+
+function addressValueInfo(addressInput: Address|undefined|null): AddressValueInfo | null {
+  if (addressInput != null) {
+    const city = addressInput.city;
+    const state = addressInput.state;
+    const zipcode = addressInput.zipcode;
+    const country = addressInput.country;
+    if (city != null && state != null && zipcode != null && country != null) {
+      const line: string[] = [addressInput.location, addressInput.address].filter(isNonNull);
+      return {
+        line,
+        city,
+        state,
+        postalCode: zipcode,
+        country,
+      };
+    }
+  }
+  return null;
+}
+
+function isNonNull<T>(item: T | null | undefined): item is T {
+  return item != null;
+}
+
+function checkNotNull<T>(item: T | null | undefined): T {
+  if (item == null) {
+    if (item === null) {
+      throw new Error("item is null");
+    } else {
+      throw new Error("item is undefined");
+    }
+  }
+  return item;
+}

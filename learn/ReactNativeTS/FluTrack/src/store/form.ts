@@ -44,8 +44,8 @@ export interface SurveyResponse {
   answer?: SurveyAnswer;
   buttonOptions?: Map<string, string>;
   optionKeysToLabel?: Map<string, string>;
-  questionId?: string;
-  questionText?: string;
+  questionId: string;
+  questionText: string;
 }
 
 export type FormState = {
