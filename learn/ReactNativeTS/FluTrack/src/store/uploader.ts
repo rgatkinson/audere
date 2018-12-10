@@ -11,14 +11,14 @@ import { format } from "date-fns";
 import {
   AddressInfo,
   AddressInfoUse,
-  VisitInfo,
-  ConsentInfo,
-  ResponseItemInfo,
-  QuestionAnswerOption,
   AddressValueInfo,
-  PatientInfoGender,
-  TelecomInfoSystem,
+  ConsentInfo,
   ConsentInfoSignerType,
+  PatientInfoGender,
+  QuestionAnswerOption,
+  ResponseItemInfo,
+  TelecomInfoSystem,
+  VisitInfo,
 } from "audere-lib";
 import { checkNotNull, isNotNull } from "../util/check";
 
