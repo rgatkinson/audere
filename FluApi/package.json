@@ -13,6 +13,7 @@
     "sequelize": "sequelize",
     "lint": "prettier --list-different '{src,tests}/**/*.ts' 'db/**/*.js'",
     "lint-fix": "prettier --write '{src,tests}/**/*.ts' 'db/**/*.js'",
+    "typecheck": "tsc --noEmit",
     "generate-access-key": "yarn run build && node build/src/scripts/generateAccessKey.js"
   },
   "main": "build/src/server.js",
