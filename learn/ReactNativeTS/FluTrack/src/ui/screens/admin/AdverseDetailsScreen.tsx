@@ -17,7 +17,7 @@ import FeedbackModal from "../../components/FeedbackModal";
 import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
-import { checkNotNull } from "../../../common/check";
+import { checkNotNull } from "../../../util/check";
 
 interface Props {
   name: string;

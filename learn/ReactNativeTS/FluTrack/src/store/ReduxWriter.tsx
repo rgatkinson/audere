@@ -21,7 +21,7 @@ import {
   EnabledOption,
   SurveyQuestionData,
 } from "../resources/QuestionnaireConfig";
-import { checkNotNull } from "../common/check";
+import { checkNotNull } from "../util/check";
 
 interface InnerProps {
   dispatch(action: Action): void;

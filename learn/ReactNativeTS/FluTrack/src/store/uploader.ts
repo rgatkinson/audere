@@ -8,7 +8,16 @@ import { default as form, Address, FormState } from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
-import { AddressInfo, AddressInfoUse, VisitInfo, ConsentInfo, ResponseItemInfo, QuestionAnswerOption, AddressValueInfo } from "audere-lib";
+import {
+  AddressInfo,
+  AddressInfoUse,
+  VisitInfo,
+  ConsentInfo,
+  ResponseItemInfo,
+  QuestionAnswerOption,
+  AddressValueInfo,
+} from "audere-lib";
+import { checkNotNull, isNotNull } from "../util/check";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -211,24 +220,33 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   }
 }
 
-function maybePushAddress(addressInput: Address|undefined|null, use: AddressInfoUse, addresses: AddressInfo[]): void {
+function maybePushAddress(
+  addressInput: Address | undefined | null,
+  use: AddressInfoUse,
+  addresses: AddressInfo[]
+): void {
   const info = addressValueInfo(addressInput);
   if (info != null) {
     addresses.push({
       use,
       ...info,
-    })
+    });
   }
 }
 
-function addressValueInfo(addressInput: Address|undefined|null): AddressValueInfo | null {
+function addressValueInfo(
+  addressInput: Address | undefined | null
+): AddressValueInfo | null {
   if (addressInput != null) {
     const city = addressInput.city;
     const state = addressInput.state;
     const zipcode = addressInput.zipcode;
     const country = addressInput.country;
     if (city != null && state != null && zipcode != null && country != null) {
-      const line: string[] = [addressInput.location, addressInput.address].filter(isNonNull);
+      const line: string[] = [
+        addressInput.location,
+        addressInput.address,
+      ].filter(isNotNull);
       return {
         line,
         city,
@@ -239,19 +257,4 @@ function addressValueInfo(addressInput: Address|undefined|null): AddressValueInf
     }
   }
   return null;
-}
-
-function isNonNull<T>(item: T | null | undefined): item is T {
-  return item != null;
-}
-
-function checkNotNull<T>(item: T | null | undefined): T {
-  if (item == null) {
-    if (item === null) {
-      throw new Error("item is null");
-    } else {
-      throw new Error("item is undefined");
-    }
-  }
-  return item;
 }
