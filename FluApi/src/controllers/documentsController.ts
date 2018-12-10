@@ -21,10 +21,10 @@ export async function putDocument(req, res) {
       break;
     case DocumentType.Feedback:
       // TODO(ram): send an email
-      logger.info(req.body);
+      logger.info(JSON.stringify(req.body));
       break;
     case DocumentType.Log:
-      clientLogger.info(req.body);
+      clientLogger.info(JSON.stringify(req.body));
       break;
     default:
       throw new Error("Invalid document type");
