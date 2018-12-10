@@ -1,3 +1,8 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import {
@@ -16,6 +21,7 @@ import {
   EnabledOption,
   SurveyQuestionData,
 } from "../resources/QuestionnaireConfig";
+import { checkNotNull } from "../common/check";
 
 interface InnerProps {
   dispatch(action: Action): void;
@@ -100,7 +106,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     ) => {
       const [responses, existingAnswer] = this._initializeResponse(data);
       responses.set(data.id, {
-        ...responses.get(data.id),
+        ...checkNotNull(responses.get(data.id)),
         answer: {
           ...existingAnswer,
           ...update,

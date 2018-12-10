@@ -1,3 +1,8 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
 import { withNamespaces, WithNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
@@ -12,6 +17,7 @@ import FeedbackModal from "../../components/FeedbackModal";
 import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
+import { checkNotNull } from "../../../common/check";
 
 interface Props {
   name: string;
