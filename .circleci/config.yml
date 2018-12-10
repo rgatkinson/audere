@@ -17,6 +17,12 @@ aliases:
 defaults: &defaults
   docker:
     - image: circleci/node:10.12
+      environment:
+        TEST_DATABASE_URL: postgresql://audere@localhost/circle_test
+    - image: circleci/postgres:10.5-ram
+      environment:
+        POSTGRES_USER: audere
+        POSTGRES_DB: circle_test
   working_directory: ~/repo
 
 version: 2
@@ -55,6 +61,7 @@ jobs:
           name: Server Tests
           command: |
             cd FluApi
+            echo DATABASE_URL=$TEST_DATABASE_URL > .env
             yarn setup
             yarn test
       - save_cache:

@@ -4,7 +4,7 @@
   "description": "A starting point for Node.js express apps with TypeScript",
   "private": true,
   "scripts": {
-    "setup": "cp -n .env.example .env && yarn run build && sequelize db:migrate",
+    "setup": "yarn run build && sequelize db:migrate",
     "build": "../scripts/generate-build-info && tsc && cp -R static build/",
     "start": "concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "yarn run build && NODE_ENV=production node .",
@@ -32,7 +32,6 @@
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.39.0",
     "sequelize-log-syntax-colors": "^2.0.0",
-    "sqlite3": "^4.0.2",
     "winston": "^3.1.0"
   },
   "devDependencies": {
