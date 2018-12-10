@@ -9,7 +9,7 @@ export enum DocumentType {
   Log = 'LOG',
 }
 
-export type VisitDocument = {
+export interface VisitDocument {
   // cryptographically secure unique id for this document.
   csruid: string;
 
@@ -22,7 +22,7 @@ export type VisitDocument = {
   visit: VisitInfo;
 }
 
-export type DeviceInfo = {
+export interface DeviceInfo {
   installation: string; // uuid
   clientVersion: string;
   deviceName: string;
@@ -31,7 +31,7 @@ export type DeviceInfo = {
   platform: string;
 }
 
-export type VisitInfo = {
+export interface VisitInfo {
   complete: boolean;
   gps_location?: GpsLocationInfo;
   location?: string;
@@ -42,13 +42,13 @@ export type VisitInfo = {
   events: EventInfo[];
 }
 
-export type GpsLocationInfo = {
+export interface GpsLocationInfo {
   latitude: string;
   longitude: string;
 }
 
 // Information about swabs or other physical samples collected during visit
-export type SampleInfo = {
+export interface SampleInfo {
   // Possible values TBD
   sample_type: string;
   // Value read from the test kit's QR code, or another unique identifier
@@ -57,7 +57,7 @@ export type SampleInfo = {
 
 // This is a subset of the FHIR 'Patient' resource
 // https://www.hl7.org/fhir/patient.html
-export type PatientInfo = {
+export interface PatientInfo {
   name?: string;
   birthDate?: string; // FHIR:date
   gender?: PatientInfoGender;
@@ -67,20 +67,34 @@ export type PatientInfo = {
 
 // The following options come from:
 // https://www.hl7.org/fhir/valueset-administrative-gender.html
-export type PatientInfoGender = "male" | "female" | "other" | "unknown";
+export enum PatientInfoGender {
+  Male = "male",
+  Female = "female",
+  Other = "other",
+  Unknown = "unknown",
+}
 
-export type TelecomInfo = {
+export interface TelecomInfo {
   system: TelecomInfoSystem;
   value: string;
 }
 
-export type TelecomInfoSystem = "phone" | "sms" | "email";
+export enum TelecomInfoSystem {
+  Phone = "phone",
+  SMS = "sms",
+  Email = "email",
+}
 
-export type AddressInfo = { use: AddressInfoUse; } & AddressValueInfo;
+export interface AddressInfo extends AddressValueInfo {
+  use: AddressInfoUse;
+}
 
-export type AddressInfoUse = "home" | "work";
+export enum AddressInfoUse {
+  Home = "home",
+  Work = "work",
+}
 
-export type ConsentInfo = {
+export interface ConsentInfo {
     name: string;
     terms: string;
     signerType: ConsentInfoSignerType;
@@ -88,18 +102,24 @@ export type ConsentInfo = {
     signature: string; // Base64-encoded PNG of the signature
 }
 
-export type ConsentInfoSignerType = "Subject" | "Parent" | "Representative";
+export enum ConsentInfoSignerType {
+  Subject = "Subject",
+  Parent = "Parent",
+  Representative = "Representative",
+}
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html
-export type ResponseInfo = {
+export interface ResponseInfo {
   id: string;
   item: ResponseItemInfo[];
 }
 
-export type ResponseItemInfo = QuestionInfo & { answer: AnswerInfo[]; }
+export interface ResponseItemInfo extends QuestionInfo {
+  answer: AnswerInfo[];
+}
 
-export type QuestionInfo = {
+export interface QuestionInfo {
   // human-readable, locale-independent id of the question
   id: string;
   // localized text of question
@@ -108,12 +128,12 @@ export type QuestionInfo = {
   answerOptions?: QuestionAnswerOption[];
 }
 
-export type QuestionAnswerOption = {
+export interface QuestionAnswerOption {
   id: string;
   text: string;
 }
 
-export type AnswerInfo = {
+export interface AnswerInfo {
   valueBoolean?: boolean;
   valueDateTime?: string; // FHIR:dateTime
   valueDecimal?: number;
@@ -129,7 +149,7 @@ export type AnswerInfo = {
   valueDeclined?: boolean;
 }
 
-export type AddressValueInfo = {
+export interface AddressValueInfo {
   line: string[];
   city: string;
   state: string;
@@ -137,13 +157,13 @@ export type AddressValueInfo = {
   country: string;
 }
 
-export type OtherValueInfo = {
+export interface OtherValueInfo {
   // Index in answerOptions of the selected choice
   selectedIndex: Number;
   valueString: string;
 }
 
-export type EventInfo = {
+export interface EventInfo {
   kind: EventInfoKind;
 
   at: string; // FHIR:instant
@@ -153,4 +173,8 @@ export type EventInfo = {
   refId?: string;
 }
 
-export type EventInfoKind = "visit" | "response" | "sample";
+export enum EventInfoKind {
+  Visit = "visit",
+  Response = "response",
+  Sample = "sample",
+}
