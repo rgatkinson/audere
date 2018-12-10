@@ -47,10 +47,12 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
 
   _onSubmit = () => {
     const image = this.state && this.state.image;
-    if (image === undefined && !remoteDebugging) {
+    if (!image && !remoteDebugging) {
       Alert.alert(this.props.t("pleaseSign"));
       return;
-    } else if (image !== undefined) {
+    } else if (remoteDebugging) {
+      this.props.onSubmit('debugSignature');
+    } else if (!!image) {
       const cropData = {
         offset: { x: 0, y: 0 },
         size: {

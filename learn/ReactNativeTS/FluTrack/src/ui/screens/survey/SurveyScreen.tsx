@@ -23,6 +23,9 @@ interface Props {
 }
 
 class SurveyScreen extends React.Component<Props & WithNamespaces> {
+  // @ts-ignore
+  list = React.createRef<SectionList>();
+
   state = {
     questions: [
       {
@@ -55,6 +58,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
         questions: this.state.questions.slice(0, sectionIndex + 1),
       });
     }
+    this.list.current.getScrollResponder().scrollTo({ x: 0, y: 0, animated: false });
   };
 
   _addData = (nextQuestion: string | null) => {
@@ -155,6 +159,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
           contentContainerStyle={styles.list}
           keyExtractor={item => item.title}
           sections={this.state.questions}
+          ref={this.list}
           renderSectionHeader={({ section: { title } }) => (
             <View>
               <View style={styles.sectionHeaderOuter}>
