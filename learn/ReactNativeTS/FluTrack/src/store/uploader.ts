@@ -16,6 +16,9 @@ import {
   ResponseItemInfo,
   QuestionAnswerOption,
   AddressValueInfo,
+  PatientInfoGender,
+  TelecomInfoSystem,
+  ConsentInfoSignerType,
 } from "audere-lib";
 import { checkNotNull, isNotNull } from "../util/check";
 
@@ -55,7 +58,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     }
     if (!!form.email) {
       pouch.patient.telecom.push({
-        system: "email",
+        system: TelecomInfoSystem.Email,
         value: form.email,
       });
     }
@@ -72,14 +75,14 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
       if (responses.has("Address")) {
         maybePushAddress(
           responses.get("Address")!.answer!.addressInput,
-          "home",
+          AddressInfoUse.Home,
           pouch.patient.address
         );
       }
       if (responses.has("WorkAddress")) {
         maybePushAddress(
           responses.get("WorkAddress")!.answer!.addressInput,
-          "work",
+          AddressInfoUse.Work,
           pouch.patient.address
         );
       }
@@ -87,13 +90,18 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
         let buttonKey = responses.get("AssignedSex")!.answer!.selectedButtonKey;
         switch (buttonKey) {
           case "male":
+            pouch.patient.gender = PatientInfoGender.Male;
+            break;
           case "female":
+            pouch.patient.gender = PatientInfoGender.Female;
+            break;
           case "other":
-            pouch.patient.gender = buttonKey;
+            pouch.patient.gender = PatientInfoGender.Other;
             break;
           default:
             // Prefer not to say
-            pouch.patient.gender = "unknown";
+            pouch.patient.gender = PatientInfoGender.Unknown;
+            break;
         }
       }
 
@@ -214,7 +222,7 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
       name,
       terms,
       signature,
-      signerType: "Subject", // TODO
+      signerType: ConsentInfoSignerType.Subject, // TODO
       date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
     });
   }
