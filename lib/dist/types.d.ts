@@ -50,16 +50,11 @@ export declare type TelecomInfo = {
 export declare type TelecomInfoSystem = "phone" | "sms" | "email";
 export declare type AddressInfo = {
     use: AddressInfoUse;
-    line: string[];
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-};
+} & AddressValueInfo;
 export declare type AddressInfoUse = "home" | "work";
 export declare type ConsentInfo = {
-    terms: string;
     name: string;
+    terms: string;
     signerType: ConsentInfoSignerType;
     date: string;
     signature: string;
@@ -92,7 +87,7 @@ export declare type AnswerInfo = {
     valueDeclined?: boolean;
 };
 export declare type AddressValueInfo = {
-    line: [string];
+    line: string[];
     city: string;
     state: string;
     postalCode: string;
