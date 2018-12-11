@@ -6,11 +6,11 @@
 import { getLogger } from "./LogUtil";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
-import { DocumentType } from "audere-lib";
+import { DocumentType, VisitInfo, FeedbackInfo, LogInfo, ProtocolDocument } from "audere-lib";
 
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
-import { PouchDoc, UploadDoc } from "./Types";
+import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
 import { summarize } from "./LogUtil";
 
@@ -19,13 +19,16 @@ const logger = getLogger("transport");
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const RETRY_DELAY = 1 * MINUTE;
+const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
 
 type Event = SaveEvent | UploadNextEvent;
+
+type DocumentContents = VisitInfo | FeedbackInfo | LogInfo;
 
 interface SaveEvent {
   type: "Save";
   localUid: string;
-  document: UploadDoc;
+  document: DocumentContents;
   priority: number;
   documentType: DocumentType;
 }
@@ -57,7 +60,7 @@ export class DocumentUploader {
 
   public save(
     localUid: string,
-    document: UploadDoc,
+    document: DocumentContents,
     documentType: DocumentType,
     priority: number
   ): void {
@@ -108,8 +111,7 @@ export class DocumentUploader {
     let pouch: PouchDoc;
     try {
       pouch = await this.db.get(key);
-      pouch.body.device = DEVICE_INFO;
-      pouch.body.document = save.document;
+      pouch.body = protocolDocument(save);
       logger.debug(
         `Updating existing '${key}':\n  ${JSON.stringify(
           save.document,
@@ -120,14 +122,7 @@ export class DocumentUploader {
     } catch (e) {
       pouch = {
         _id: key,
-        body: {
-          csruid: null,
-          documentType: save.documentType,
-          // Assign device info at save time rather than upload time,
-          // in case version info changes between the two.
-          device: DEVICE_INFO,
-          document: save.document,
-        },
+        body: protocolDocument(save),
       };
       logger.debug(
         `Saving new '${key}':\n  ${JSON.stringify(save.document, null, 2)}`
@@ -153,7 +148,7 @@ export class DocumentUploader {
     this.timer.start();
 
     // TODO: get enough ids for all the documents that don't have one.
-    if (pouch.body.csruid != null) {
+    if (pouch.body.csruid != CSRUID_PLACEHOLDER) {
       logger.debug(`csruid loaded for '${pouch._id}': '${pouch.body.csruid}`);
     } else {
       logger.debug(`Requesting csruid for '${pouch._id}'`);
@@ -175,6 +170,9 @@ export class DocumentUploader {
 
     {
       const body = pouch.body;
+      if (body.csruid === CSRUID_PLACEHOLDER) {
+        throw new Error("Expected body.csruid to be initialized by this point");
+      }
       const url = `/documents/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
@@ -256,4 +254,78 @@ export class DocumentUploader {
 // To be used as `await idleness()`.
 function idleness(): Promise<void> {
   return new Promise(InteractionManager.runAfterInteractions);
+}
+
+function protocolDocument(save: SaveEvent): ProtocolDocument {
+  switch (save.documentType) {
+    case DocumentType.Visit:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        csruid: CSRUID_PLACEHOLDER,
+        device: DEVICE_INFO,
+        visit: asVisitInfo(save.document),
+      };
+
+    case DocumentType.Feedback:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        device: DEVICE_INFO,
+        csruid: CSRUID_PLACEHOLDER,
+        feedback: asFeedbackInfo(save.document),
+      };
+
+    case DocumentType.Log:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        device: DEVICE_INFO,
+        csruid: CSRUID_PLACEHOLDER,
+        log: asLogInfo(save.document),
+      };
+  }
+}
+
+function asVisitInfo(contents: DocumentContents): VisitInfo {
+  if (isProbablyVisitInfo(contents)) {
+    return contents;
+  }
+  throw new Error(`Expected VisitInfo, got ${contents}`);
+}
+
+function isProbablyVisitInfo(contents: any): contents is VisitInfo {
+  return (
+    typeof contents.complete === "boolean" &&
+    typeof contents.samples === "object" &&
+    typeof contents.patient === "object" &&
+    typeof contents.consents === "object" &&
+    typeof contents.responses === "object" &&
+    typeof contents.events === "object"
+  );
+}
+
+function asFeedbackInfo(contents: DocumentContents): FeedbackInfo {
+  if (isProbablyFeedbackInfo(contents)) {
+    return contents;
+  }
+  throw new Error(`Expected FeedbackInfo, got ${contents}`);
+}
+
+function isProbablyFeedbackInfo(contents: any): contents is FeedbackInfo {
+  return (
+    typeof contents.subject === "string" &&
+    typeof contents.body === "string"
+  );
+}
+
+function asLogInfo(contents: DocumentContents): LogInfo {
+  if (isProbablyLogInfo(contents)) {
+    return contents;
+  }
+  throw new Error(`Expected LogInfo, got ${contents}`);
+}
+
+function isProbablyLogInfo(contents: any): contents is LogInfo {
+  return typeof contents.logentry === "string";
 }

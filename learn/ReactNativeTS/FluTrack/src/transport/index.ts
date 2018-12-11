@@ -8,10 +8,9 @@ import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import { DocumentType } from "audere-lib";
+import { DocumentType, VisitInfo } from "audere-lib";
 import { AxiosInstance } from "axios";
 import { getLogger } from "./LogUtil";
-import { UploadDoc } from "./Types";
 import { DocumentUploader } from "./DocumentUploader";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
@@ -31,18 +30,18 @@ class TypedDocumentUploader {
     this.uploader = new DocumentUploader(db, api);
   }
 
-  public saveVisit(localUid: string, visit: UploadDoc) {
+  public saveVisit(localUid: string, visit: VisitInfo) {
     this.uploader.save(localUid, visit, DocumentType.Visit, 0);
   }
-  public saveFeedback(feedback: string) {
-    this.uploader.save(uuidv4(), { feedback }, DocumentType.Feedback, 1);
+  public saveFeedback(subject: string, body: string) {
+    this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 1);
   }
-  public saveLog(log: string) {
+  public saveLog(logentry: string) {
     // TODO(ram): Batch these saves
     if (!this.logId) {
       this.logId = uuidv4();
     }
-    this.uploader.save(this.logId, { log }, DocumentType.Log, 2);
+    this.uploader.save(this.logId, { logentry }, DocumentType.Log, 2);
   }
 }
 

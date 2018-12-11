@@ -3,22 +3,48 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+// ========================================================================
+//
+// PLEASE NOTE:
+//
+// If you need to change types here sometime after we store real data:
+// Because these types are used across client/server, we have to maintain
+// compatibility.  The two ways of doing this are:
+//   1) Add a new optional field.
+//   2) Bump the top-level schemaId, and create a new version of each
+//      container type from the modified type up to the root of the
+//      containment tree.
+//
+// ========================================================================
+
+export interface ProtocolDocumentBase {
+  documentType: string;
+  schemaId: number;
+
+  // cryptographically secure unique id for this document.
+  csruid: string;
+
+  // information about client device
+  device: DeviceInfo;
+}
+
 export enum DocumentType {
   Visit = 'VISIT',
   Feedback = 'FEEDBACK',
   Log = 'LOG',
 }
 
-export interface VisitDocument {
-  // cryptographically secure unique id for this document.
-  csruid: string;
+export type ProtocolDocument =
+    FeedbackDocument
+  | LogDocument
+  | VisitDocument;
 
+// ================================================================================
+// Visit
+
+export interface VisitDocument extends ProtocolDocumentBase {
   documentType: DocumentType.Visit;
-
-  // information about client device
-  device: DeviceInfo;
-
-  // clinical data related to the visit
+  schemaId: 1;
   visit: VisitInfo;
 }
 
@@ -177,4 +203,33 @@ export enum EventInfoKind {
   Visit = "visit",
   Response = "response",
   Sample = "sample",
+}
+
+// ================================================================================
+// Feedback
+
+export interface FeedbackDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Feedback;
+  schemaId: 1;
+  feedback: FeedbackInfo;
+}
+
+export interface FeedbackInfo {
+  subject: string;
+  body: string;
+}
+
+
+// ================================================================================
+// Log
+
+export interface LogDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Log;
+  schemaId: 1;
+  log: LogInfo;
+}
+
+export interface LogInfo {
+  // TODO (ram): batch
+  logentry: string;
 }

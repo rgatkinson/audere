@@ -14,12 +14,22 @@ import { DocumentType } from "audere-lib";
 import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
+import { VisitInfo } from "audere-lib";
+import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 
-const FAKE_VISIT_RECORD = {
-  _id: "documents/fakeRecordId",
-  priority: 0,
-  body: { document: "someFakeData" },
+const FAKE_VISIT_CONTENTS: VisitInfo = {
+  complete: false,
+  samples: [],
+  patient: {
+    name: "Some Fake Name",
+    telecom: [],
+    address: [],
+  },
+  consents: [],
+  responses: [],
+  events: [],
 };
+
 const FAKE_CSRUID = "abc123";
 
 describe("DocumentUploader", () => {
@@ -34,20 +44,24 @@ describe("DocumentUploader", () => {
     it("adds visit info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
 
-      uploader.save("fakeUID", FAKE_VISIT_RECORD, DocumentType.Visit, 0);
+      uploader.save("fakeUID", FAKE_VISIT_CONTENTS, DocumentType.Visit, 0);
 
       await nextCall(mockPouchDB, "put", [anything()]);
-      const newRecord = capture(mockPouchDB.put).last()[0] as PouchDoc;
-      expect(newRecord.body.document).toEqual(FAKE_VISIT_RECORD);
+      const newRecord = capture(mockPouchDB.put).last()[0] as any;
+      expect(newRecord.body.documentType).toEqual(DocumentType.Visit);
+      expect(newRecord.body.visit).toEqual(FAKE_VISIT_CONTENTS);
     });
     it("uploads a saved record to the api server", async () => {
       const contents = {
         total_rows: 1,
-        rows: [{ doc: JSON.parse(JSON.stringify(FAKE_VISIT_RECORD)) }],
+        rows: [{
+          _id: "Some Local Id",
+          doc: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
+        }],
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
       when(mockPouchDB.allDocs(anything())).thenReturn(contents);
-      uploader.save("fakeUID", FAKE_VISIT_RECORD, DocumentType.Visit, 0);
+      uploader.save("fakeUID", FAKE_VISIT_CONTENTS, DocumentType.Visit, 0);
 
       when(mockAxios.get("/documentId")).thenReturn(
         axiosResponse({ id: FAKE_CSRUID })
@@ -61,7 +75,9 @@ describe("DocumentUploader", () => {
       const [url, postData] = capture(mockAxios.put as any).last();
       expect(postData).toEqual({
         csruid: FAKE_CSRUID,
-        ...FAKE_VISIT_RECORD.body,
+        documentType: DocumentType.Visit,
+        schemaId: 1,
+        visit: FAKE_VISIT_CONTENTS,
       });
       expect(url).toEqual(`/documents/${FAKE_CSRUID}`);
     });
@@ -78,25 +94,25 @@ describe("DocumentUploader", () => {
       const uploader = new DocumentUploader(db, Axios.create());
       const docB = await db.put({
         _id: "documents/1/1",
-        body: { document: { data: "b" } },
+        body: { data: "b" },
       });
       const docA = await db.put({
         _id: "documents/0/2",
-        body: { document: { data: "a" } },
+        body: { data: "a" },
       });
       const docC = await db.put({
         _id: "documents/2/3",
-        body: { document: { data: "c" } },
+        body: { data: "c" },
       });
 
-      let doc = await uploader["firstDocument"]();
-      expect(doc!.body.document.data).toEqual("a");
+      let doc: any = await uploader["firstDocument"]();
+      expect(doc!.body.data).toEqual("a");
       await db.remove(docA.id, docA.rev);
       doc = await uploader["firstDocument"]();
-      expect(doc!.body.document.data).toEqual("b");
+      expect(doc!.body.data).toEqual("b");
       await db.remove(docB.id, docB.rev);
       doc = await uploader["firstDocument"]();
-      expect(doc!.body.document.data).toEqual("c");
+      expect(doc!.body.data).toEqual("c");
       await db.remove(docC.id, docC.rev);
     });
   });

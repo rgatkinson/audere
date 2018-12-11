@@ -1,12 +1,18 @@
+export interface ProtocolDocumentBase {
+    documentType: string;
+    schemaId: number;
+    csruid: string;
+    device: DeviceInfo;
+}
 export declare enum DocumentType {
     Visit = "VISIT",
     Feedback = "FEEDBACK",
     Log = "LOG"
 }
-export interface VisitDocument {
-    csruid: string;
+export declare type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument;
+export interface VisitDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Visit;
-    device: DeviceInfo;
+    schemaId: 1;
     visit: VisitInfo;
 }
 export interface DeviceInfo {
@@ -123,4 +129,21 @@ export declare enum EventInfoKind {
     Visit = "visit",
     Response = "response",
     Sample = "sample"
+}
+export interface FeedbackDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Feedback;
+    schemaId: 1;
+    feedback: FeedbackInfo;
+}
+export interface FeedbackInfo {
+    subject: string;
+    body: string;
+}
+export interface LogDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Log;
+    schemaId: 1;
+    log: LogInfo;
+}
+export interface LogInfo {
+    logentry: string;
 }
