@@ -15,7 +15,7 @@ interface Props {
 
 export const AgeBucketConfig = {
   id: 'AgeBucket',
-  title: '2. What is the age of the participant?',
+  title: 'ageTitle',
   buttons: [
     { key: "18orOver", primary: false },
     { key: "13to17", primary: false },
@@ -25,7 +25,7 @@ export const AgeBucketConfig = {
 
 class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: AgeBucketConfig.title });
+    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: this.props.t(AgeBucketConfig.title) });
   };
 
   render() {
@@ -41,7 +41,7 @@ class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProp
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label={AgeBucketConfig.title} />
+          <Title label={t(AgeBucketConfig.title)} />
           {AgeBucketConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}

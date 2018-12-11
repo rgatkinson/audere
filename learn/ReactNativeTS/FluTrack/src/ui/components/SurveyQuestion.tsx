@@ -66,6 +66,7 @@ class SurveyQuestion extends Component<
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View style={[styles.card, !this.props.active && styles.inactive]}>
         {!this.props.active && (
@@ -77,15 +78,15 @@ class SurveyQuestion extends Component<
           />
         )}
         {this.props.data.title && (
-          <Title label={this.props.data.title} size="small" />
+          <Title label={t("surveyTitle:" + this.props.data.title)} size="small" />
         )}
         {this.props.data.description && (
-          <Description content={this.props.data.description.label} center={this.props.data.description.center} />
+          <Description content={t("surveyDescription:" + this.props.data.description.label)} center={this.props.data.description.center} />
         )}
         {this.props.data.textInput && (
           <TextInput
             autoFocus={true}
-            placeholder={this.props.data.textInput!.placeholder}
+            placeholder={t("surveyPlaceholder:" + this.props.data.textInput!.placeholder)}
             returnKeyType="done"
             value={this.props.getAnswer("textInput")}
             onChange={text => {
@@ -97,7 +98,7 @@ class SurveyQuestion extends Component<
           <DateInput
             date={this.props.getAnswer("dateInput")}
             mode={this.props.data.dateInput.mode}
-            placeholder={this.props.data.dateInput.placeholder}
+            placeholder={t("surveyPlaceholder:" + this.props.data.dateInput.placeholder)}
             onDateChange={(date: Date) => {
               this.props.updateAnswer({ dateInput: date });
             }}
@@ -116,7 +117,7 @@ class SurveyQuestion extends Component<
         {this.props.data.numberInput && (
           <NumberInput
             autoFocus={true}
-            placeholder={this.props.data.numberInput!.placeholder}
+            placeholder={t("surveyPlaceholder:" + this.props.data.numberInput!.placeholder)}
             returnKeyType="done"
             value={
               this.props.getAnswer("numberInput")
@@ -157,7 +158,7 @@ class SurveyQuestion extends Component<
                 this.props.active && this._getButtonEnabled(button.enabled)
               }
               key={button.key}
-              label={this.props.t("surveyButton:" + button.key)}
+              label={t("surveyButton:" + button.key)}
               onPress={() => {
                 this.props.updateAnswer({ selectedButtonKey: button.key });
                 this.props.onNext(this._getNextQuestion(button.key));

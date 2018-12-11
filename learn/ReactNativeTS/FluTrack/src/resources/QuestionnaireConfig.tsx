@@ -1,11 +1,11 @@
-const comp = "HOUSEHOLD COMPOSITION";
-const expo = "HOUSEHOLD EXPOSURE";
-const hist = "ILLNESS HISTORY";
-const demo = "DEMOGRAPHIC INFORMATION";
+const comp = "comp";
+const expo = "expo";
+const hist = "hist";
+const demo = "demo";
 
 export const sectionDescriptions = new Map<string, string>([
-  [hist, "Next, we are going to ask you some questions about your health."],
-  [demo, "Next, we are going to ask you some questions about yourself."],
+  [hist, "histSection"],
+  [demo, "demoSection"],
 ]);
 
 export interface SurveyQuestionData {
@@ -78,10 +78,10 @@ export const questionnaire = [
     data: {
       id: "BirthDate",
       nextQuestion: "WhereLive",
-      title: "What is your date of birth?",
+      title: "birth",
       dateInput: {
         mode: "day",
-        placeholder: "Select date",
+        placeholder: "selectDate",
       },
       buttons: [{ key: "done", primary: true, enabled: "withDate" }],
     },
@@ -98,7 +98,7 @@ export const questionnaire = [
         ]),
       },
       nextQuestion: "Address",
-      title: "Where do you live?",
+      title: "whereLive",
       optionList: {
         options: [
           "house",
@@ -123,7 +123,7 @@ export const questionnaire = [
     data: {
       id: "Bedrooms",
       nextQuestion: "Address",
-      title: "How many bedrooms do you have?",
+      title: "howManyBedrooms",
       optionList: {
         options: [
           "1bedroom",
@@ -145,9 +145,9 @@ export const questionnaire = [
     data: {
       id: "BedAssignment",
       nextQuestion: "Address",
-      title: "What is your bed assignment?",
+      title: "bedAssignment",
       numberInput: {
-        placeholder: "Bed assignment",
+        placeholder: "bedAssignment",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withNumber" },
@@ -162,7 +162,7 @@ export const questionnaire = [
     data: {
       id: "Address",
       nextQuestion: "ExpoDesc",
-      title: "What is your current address?",
+      title: "address",
       addressInput: {
         showLocationField: false,
       },
@@ -179,8 +179,7 @@ export const questionnaire = [
       id: "ExpoDesc",
       nextQuestion: "NearSickPeople",
       description: {
-        label:
-          "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
+        label: "expoToSickPeople",
         center: false,
       },
       buttons: [{ key: "understand", primary: true, enabled: true }],
@@ -194,8 +193,7 @@ export const questionnaire = [
         buttonKeys: new Map([["yes", "CoughSneeze"]]),
       },
       nextQuestion: "NearChildren",
-      title:
-        "In the past week, have you been around a person who seemed to have a cold?",
+      title: "nearSickPeople",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -209,7 +207,7 @@ export const questionnaire = [
     data: {
       id: "CoughSneeze",
       nextQuestion: "NearChildren",
-      title: "Were they coughing or sneezing?",
+      title: "coughSneeze",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -222,8 +220,7 @@ export const questionnaire = [
     data: {
       id: "NearChildren",
       nextQuestion: "ChildrenNearChildren",
-      title:
-        "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
+      title: "contactWithChildren",
       optionList: {
         options: ["1child", "2to5children", "moreThan5children", "none"],
         multiSelect: false,
@@ -240,8 +237,7 @@ export const questionnaire = [
     data: {
       id: "ChildrenNearChildren",
       nextQuestion: "Smoke",
-      title:
-        "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours / week?",
+      title: "childrenWithChildren",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -255,7 +251,7 @@ export const questionnaire = [
     data: {
       id: "Smoke",
       nextQuestion: "HouseholdSmoke",
-      title: "Do you smoke tobacco, marijuana, or vape?",
+      title: "smokeOrVape",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -272,9 +268,9 @@ export const questionnaire = [
         // if cruise ship or whatever, "ArrivedFrom"
       ],
       nextQuestion: "RecentTravel",
-      title: "Does anyone in your house smoke?",
+      title: "householdSmoke",
       description: {
-        label: "Smoking includes tobacco, marijuana, and vape.",
+        label: "smokingDef",
         center: true,
       },
       buttons: [
@@ -291,9 +287,9 @@ export const questionnaire = [
       // TODO: figure out how to determine if they arrived from outside of wa,
       // add conditional next if within to RecentTravel default to TimeSpent
       nextQuestion: "RecentTravel",
-      title: "Where have you arrived from?",
+      title: "arrivedFrom",
       textInput: {
-        placeholder: "City",
+        placeholder: "city",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
@@ -307,7 +303,7 @@ export const questionnaire = [
     data: {
       id: "RecentTravel",
       nextQuestion: "TimeSpent",
-      title: "Where have you travelled in the last week?",
+      title: "travelledLastWeek",
       optionList: {
         options: [
           "withinWashingtonStateOnly",
@@ -331,8 +327,7 @@ export const questionnaire = [
         options: new Map([["work", "Occupation"], ["school", "SchoolName"]]),
       },
       nextQuestion: "NumPeople",
-      title:
-        "Over the last 4 weeks and when you are awake, where have you spent the majority of your time?",
+      title: "majorityOfTime",
       optionList: {
         options: ["work", "school", "home", "other"],
         multiSelect: false,
@@ -348,9 +343,9 @@ export const questionnaire = [
     data: {
       id: "Occupation",
       nextQuestion: "WorkAddress",
-      title: "What is your occupation?",
+      title: "occupation",
       textInput: {
-        placeholder: "Occupation",
+        placeholder: "occupation",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
@@ -363,7 +358,7 @@ export const questionnaire = [
     data: {
       id: "WorkAddress",
       nextQuestion: "HoursWorked",
-      title: "Where do you work?",
+      title: "workAddress",
       addressInput: {
         showLocationField: true,
       },
@@ -378,9 +373,9 @@ export const questionnaire = [
     data: {
       id: "HoursWorked",
       nextQuestion: "NumPeople",
-      title: "How many hours worked per day?",
+      title: "hoursWorked",
       numberInput: {
-        placeholder: "Number of hours",
+        placeholder: "numHours",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withNumber" },
@@ -393,9 +388,9 @@ export const questionnaire = [
     data: {
       id: "SchoolName",
       nextQuestion: "SchoolType",
-      title: "What is the name of your school?",
+      title: "schoolName",
       textInput: {
-        placeholder: "School name",
+        placeholder: "schoolName",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
@@ -408,7 +403,7 @@ export const questionnaire = [
     data: {
       id: "SchoolType",
       nextQuestion: "NumPeople",
-      title: "What type of school do you attend?",
+      title: "schoolType",
       optionList: {
         options: [
           "elementary",
@@ -432,8 +427,7 @@ export const questionnaire = [
     data: {
       id: "NumPeople",
       nextQuestion: "FluShot",
-      title:
-        "During a normal day, how many people are you around (within 6 feet for more than 2 minutes)?",
+      title: "peopleCloseTo",
       optionList: {
         options: ["1to5people", "6to10people", "moreThan10people"],
         multiSelect: false,
@@ -453,7 +447,7 @@ export const questionnaire = [
         buttonKeys: new Map([["yes", "VaccineDate"]]),
       },
       nextQuestion: "FirstSick",
-      title: "Did you get a flu shot in the last year?",
+      title: "fluShot",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -467,10 +461,10 @@ export const questionnaire = [
     data: {
       id: "VaccineDate",
       nextQuestion: "FirstSick",
-      title: "What was the date of vaccination?",
+      title: "vacDate",
       dateInput: {
         mode: "month",
-        placeholder: "Select month",
+        placeholder: "selectMonth",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withDate" },
@@ -484,7 +478,7 @@ export const questionnaire = [
     data: {
       id: "FirstSick",
       nextQuestion: "Antibiotics",
-      title: "What day did you start to feel sick?",
+      title: "startSick",
       dateInput: {
         mode: "day",
         placeholder: "Select date",
@@ -497,7 +491,7 @@ export const questionnaire = [
     data: {
       id: "Antibiotics",
       nextQuestion: "Antivirals",
-      title: "Did you take antibiotics for this current illness/cold?",
+      title: "antibiotics",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -510,8 +504,7 @@ export const questionnaire = [
     data: {
       id: "Antivirals",
       nextQuestion: "DailyInterference",
-      title:
-        "Did you take an antiviral (like tamiflu) for this current illness/cold?",
+      title: "anitviral",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -524,8 +517,7 @@ export const questionnaire = [
     data: {
       id: "DailyInterference",
       nextQuestion: "DoctorThisWeek",
-      title:
-        "Is your cold stopping you from doing things you would usually do?",
+      title: "interferring",
       buttons: [
         { key: "yesLot", primary: true, enabled: true },
         { key: "yesLittle", primary: true, enabled: true },
@@ -539,7 +531,7 @@ export const questionnaire = [
     data: {
       id: "DoctorThisWeek",
       nextQuestion: "DoctorThisYear",
-      title: "Have you seen a doctor for your cold this week?",
+      title: "seenADoc",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -552,8 +544,7 @@ export const questionnaire = [
     data: {
       id: "DoctorThisYear",
       nextQuestion: "AssignedSex",
-      title:
-        "In the last year, how many times have you been to a doctor for a cough or a cold?",
+      title: "doctorVisits",
       optionList: {
         options: ["1to5times", "6to10times", "moreThan10times", "none"],
         multiSelect: false,
@@ -573,7 +564,7 @@ export const questionnaire = [
         buttonKeys: new Map([["female", "Pregnant"]]),
       },
       nextQuestion: "Race",
-      title: "What was your assigned sex at birth?",
+      title: "assignedSex",
       buttons: [
         { key: "male", primary: true, enabled: true },
         { key: "female", primary: true, enabled: true },
@@ -586,7 +577,7 @@ export const questionnaire = [
     data: {
       id: "Pregnant",
       nextQuestion: "Race",
-      title: "Are you currently pregnant?",
+      title: "pregnant",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -599,9 +590,9 @@ export const questionnaire = [
     data: {
       id: "Race",
       nextQuestion: "HispanicLatino",
-      title: "How would you describe your race",
+      title: "race",
       description: {
-        label: "Please select all that apply",
+        label: "selectAll",
         center: true,
       },
       optionList: {
@@ -627,7 +618,7 @@ export const questionnaire = [
     data: {
       id: "HispanicLatino",
       nextQuestion: "MedicalInsurance",
-      title: "Are you Hispanic or Latino?",
+      title: "hispanicLatino",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -639,9 +630,9 @@ export const questionnaire = [
     section: demo,
     data: {
       id: "MedicalInsurance",
-      title: "Do you have medical insurance?",
+      title: "medInsurance",
       description: {
-        label: "Please select all that apply.",
+        label: "selectAll",
         center: true,
       },
       nextQuestion: null,

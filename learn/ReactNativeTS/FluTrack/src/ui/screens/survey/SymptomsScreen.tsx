@@ -23,9 +23,9 @@ interface Props {
 
 export const SymptomsConfig = {
   id: 'Symptoms',
-  title: '3. What symptoms have you experienced in the last week?',
+  title: 'symptomTitle',
   description: {
-    label: 'Please select all that apply.',
+    label: 'symptomDescription',
     center: true,
   },
   optionList: {
@@ -56,22 +56,23 @@ export const SymptomsConfig = {
 }))
 class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
+    const { t } = this.props;
     if (this._numSymptoms() > 1) {
       if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" && this.props.bloodCollection) {
-        this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: SymptomsConfig.title });
+        this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: t(SymptomsConfig.title) });
       } else {
-        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: SymptomsConfig.title});
+        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: t(SymptomsConfig.title) });
       }
     } else {
       Alert.alert(
-        "Are you sure?",
-        "You must have experienced at least 2 symptoms to participate in the study.",
+        t("areYouSure"),
+        t("minSymptoms"),
         [
           {
-            text: "Cancel",
+            text: t("headerBar:cancel"),
             onPress: () => {},
           },
-          { text: "Continue", onPress: () => {
+          { text: t("headerBar:continue"), onPress: () => {
               this.props.navigation.push("Inelligible");
             },
           },
@@ -103,8 +104,8 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label={SymptomsConfig.title} />
-          <Description content={SymptomsConfig.description.label} center={SymptomsConfig.description.center} />
+          <Title label={t(SymptomsConfig.title)} />
+          <Description content={t(SymptomsConfig.description.label)} center={SymptomsConfig.description.center} />
           <OptionList
             data={newSelectedOptionsMap(
               SymptomsConfig.optionList.options,

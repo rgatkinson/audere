@@ -155,21 +155,23 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
         />
         <SectionList
           inverted
-          initialNumToRender={questionnaire.length + 10}
           contentContainerStyle={styles.list}
+          extraData={this.state.questions}
+          initialNumToRender={questionnaire.length + 10}
           keyExtractor={item => item.title}
           sections={this.state.questions}
+          stickySectionHeadersEnabled={false}
           ref={this.list}
           renderSectionHeader={({ section: { title } }) => (
             <View>
               <View style={styles.sectionHeaderOuter}>
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionHeaderText}>{title}</Text>
+                  <Text style={styles.sectionHeaderText}>{t("sectionTitle:" + title)}</Text>
                 </View>
               </View>
               {sectionDescriptions.has(title) && (
                 <View style={styles.descContainer}>
-                  <Description content={sectionDescriptions.get(title)!} />
+                  <Description content={t("sectionDescription:" + sectionDescriptions.get(title)!)} />
                 </View>
               )}
             </View>
@@ -188,8 +190,6 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
               />
             );
           }}
-          extraData={this.state.questions}
-          stickySectionHeadersEnabled={false}
         />
       </KeyboardAvoidingView>
     );
