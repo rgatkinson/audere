@@ -12,7 +12,7 @@ import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 import i18n from "./src/i18n";
 
 import HomeScreen from "./src/ui/screens/survey/HomeScreen";
@@ -107,7 +107,7 @@ const FluStudy = createBottomTabNavigator(
         const iconName = routeName === "Home" ? "home" : "settings";
 
         return (
-          <Icon name={iconName} color={tintColor!} size={20} type="feather" />
+          <Feather name={iconName} color={tintColor!} size={20} />
         );
       },
       tabBarLabel: i18n.t("common:tab:" + navigation.state.routeName),

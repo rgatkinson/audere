@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 import { NavigationScreenProp } from "react-navigation";
 import FeedbackModal from "./FeedbackModal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -53,11 +53,10 @@ class HeaderBar extends React.Component<Props & WithNamespaces> {
             }
             style={styles.actionContainer}
           >
-            <Icon
+            <Feather
               name="chevron-left"
               color="#007AFF"
               size={30}
-              type="feather"
             />
             <Text style={styles.actionText}>
               {t(this.props.completedSurvey ? "returnToHome" : "exitStudy")}

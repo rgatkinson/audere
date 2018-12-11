@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, startForm } from "../../../store";
@@ -31,11 +31,10 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
           <Text style={styles.buttonHeader}>{t("welcome")}</Text>
           <View style={styles.textContainer}>
             <Text style={styles.buttonText}>{t("learnMore")}</Text>
-            <Icon
+            <Feather
               name="chevron-right"
               color="#007AFF"
               size={32}
-              type="feather"
             />
           </View>
         </TouchableOpacity>

@@ -1,18 +1,12 @@
+import { Localization } from "expo-localization";
 import i18n from "i18next";
-import Expo from "expo";
 import enStrings from "./en.json";
 import esStrings from "./es.json";
 
 const languageDetector = {
   type: "languageDetector",
   async: true,
-  detect: (callback: any) => {
-    return Expo.DangerZone.Localization.getCurrentLocaleAsync().then(
-      (lng: string) => {
-        callback(lng.replace("_", "-"));
-      }
-    );
-  },
+  detect: () => Localization.locale,
   init: () => {},
   cacheUserLanguage: () => {},
 };

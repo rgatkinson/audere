@@ -2,7 +2,6 @@ import React from "react";
 import { withNamespaces, WithNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
-import { Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";

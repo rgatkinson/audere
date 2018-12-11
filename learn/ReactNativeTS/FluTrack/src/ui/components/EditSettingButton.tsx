@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 import { colors } from "../Styles";
 
 interface Props {
@@ -29,11 +29,10 @@ export default class EditSettingButton extends React.Component<Props> {
           >
             {this.props.label}
           </Text>
-          <Icon
+          <Feather
             name="chevron-right"
             color={this.props.disabled ? colors.disabledText : "gray"}
             size={24}
-            type="feather"
           />
         </View>
       </TouchableOpacity>

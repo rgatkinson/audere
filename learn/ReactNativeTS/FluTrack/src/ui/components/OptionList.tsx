@@ -10,7 +10,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Description from "./Description";
 
@@ -138,7 +138,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
           {this.props.t("surveyOption:" + this.props.id)}
         </Text>
         {this.props.selected && (
-          <Icon name="check" color="blue" size={20} type="feather" />
+          <Feather name="check" color="blue" size={20} />
         )}
       </TouchableOpacity>
     );

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 
 interface Props {
   checked?: boolean;
@@ -27,12 +27,11 @@ export default class Button extends React.Component<Props> {
           onPress={this.props.enabled ? this.props.onPress : null}
         >
           {this.props.checked && (
-            <Icon
+            <Feather
               name="check"
               color={this.props.primary ? "#FFFFFF" : "#4B2E83"}
               size={20}
-              iconStyle={styles.check}
-              type="feather"
+              style={styles.check}
             />
           )}
           <Text

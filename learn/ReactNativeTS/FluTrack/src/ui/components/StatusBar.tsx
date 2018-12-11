@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Icon } from "react-native-elements";
+import { Feather } from '@expo/vector-icons';
 
 interface Props {
   canProceed: boolean;
@@ -32,24 +32,22 @@ export default class StatusBar extends React.Component<Props> {
         <Text numberOfLines={1} style={styles.statusBarTitle}>{this.props.title}</Text>
         <View style={styles.nav}>
           <TouchableOpacity onPress={this._back}>
-            <Icon
+            <Feather
               color="blue"
-              containerStyle={[styles.icon, styles.iconLeft]}
+              style={[styles.icon, styles.iconLeft]}
               name="chevron-up"
               size={40}
-              type="feather"
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={this._forward}
             disabled={!this.props.canProceed}
           >
-            <Icon
+            <Feather
               color={this.props.canProceed ? "blue" : "gray"}
-              containerStyle={styles.icon}
+              style={styles.icon}
               name="chevron-down"
               size={40}
-              type="feather"
             />
           </TouchableOpacity>
         </View>
