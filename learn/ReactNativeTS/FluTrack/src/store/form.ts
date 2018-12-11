@@ -2,6 +2,7 @@ import uuidv4 from "uuid/v4";
 
 export type FormAction =
   | { type: "START_FORM" }
+  | { type: "COMPLETE_SURVEY" }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_BLOOD_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_NAME"; name: string }
@@ -47,7 +48,8 @@ export interface SurveyResponse {
   questionText?: string;
 }
 
-export type FormState = null | {
+export type FormState = {
+  completedSurvey: boolean;
   formId?: string;
   name?: string;
   email?: string;
@@ -58,12 +60,17 @@ export type FormState = null | {
   surveyResponses?: Map<string, SurveyResponse>;
 };
 
-const initialState: FormState = null;
+const initialState: FormState = {
+  completedSurvey: false,
+};
 
 export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "START_FORM") {
     // Resets all form data
-    return { formId: uuidv4() };
+    return { formId: uuidv4(), completedSurvey: false };
+  }
+  if (action.type === "COMPLETE_SURVEY") {
+    return { ...state, completedSurvey: true };
   }
   if (action.type === "SET_NAME") {
     return { ...state, name: action.name };
@@ -92,6 +99,12 @@ export default function reducer(state = initialState, action: FormAction) {
 export function startForm(): FormAction {
   return {
     type: "START_FORM",
+  };
+}
+
+export function completeSurvey(): FormAction {
+  return {
+    type: "COMPLETE_SURVEY",
   };
 }
 

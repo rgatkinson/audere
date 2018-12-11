@@ -41,7 +41,7 @@ class SurveyQuestion extends Component<
         });
     }
     // TODO admin conditional next
-    return nextQuestion;
+    return nextQuestion === undefined ? null : nextQuestion;
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {

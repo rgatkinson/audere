@@ -15,7 +15,7 @@ export interface SurveyQuestionData {
   id: string;
   dateInput?: DateInputConfig;
   description?: DescriptionConfig;
-  nextQuestion: string | null;
+  nextQuestion?: string | null;
   numberInput?: NumberInputConfig;
   optionList?: OptionListConfig;
   textInput?: TextInputConfig;

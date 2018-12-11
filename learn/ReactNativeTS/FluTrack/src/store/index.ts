@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import immutableTransform from 'redux-persist-transform-immutable'
+import immutableTransform from "redux-persist-transform-immutable";
 
 import { uploaderMiddleware } from "./uploader";
 
@@ -23,7 +23,6 @@ const persistConfig = {
   key: "store",
   storage,
 };
-
 
 const reducer = combineReducers({
   user,
