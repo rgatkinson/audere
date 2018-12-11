@@ -19,7 +19,9 @@ const logger = getLogger("transport");
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const RETRY_DELAY = 1 * MINUTE;
-const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
+
+// exported for testing
+export const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
 
 type Event = SaveEvent | UploadNextEvent;
 
@@ -223,7 +225,6 @@ export class DocumentUploader {
       return null;
     }
 
-    //logger.debug(`firstDocument returning:\n${JSON.stringify(item, null, 2)}`);
     return item;
   }
 

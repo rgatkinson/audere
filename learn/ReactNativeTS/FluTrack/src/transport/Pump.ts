@@ -29,7 +29,7 @@ export class Pump {
 
   private runSafely = () => {
     this.run().catch(error =>
-      logger.error(`Pump completed with error: ${error}`)
+      logger.error(`Pump completed with error: ${error}:\n${error.stack}`)
     );
   };
 

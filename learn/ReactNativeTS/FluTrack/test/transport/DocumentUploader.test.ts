@@ -11,7 +11,7 @@ import {
   when,
 } from "ts-mockito";
 import { DocumentType } from "audere-lib";
-import { DocumentUploader } from "../../src/transport/DocumentUploader";
+import { DocumentUploader, CSRUID_PLACEHOLDER } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
 import { VisitInfo } from "audere-lib";
@@ -55,8 +55,16 @@ describe("DocumentUploader", () => {
       const contents = {
         total_rows: 1,
         rows: [{
-          _id: "Some Local Id",
-          doc: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
+          doc: {
+            _id: "documents/random_id",
+            body: {
+              documentType: DocumentType.Visit,
+              schemaId: 1,
+              csruid: CSRUID_PLACEHOLDER,
+              device: DEVICE_INFO,
+              visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
+            },
+          }
         }],
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
@@ -74,9 +82,10 @@ describe("DocumentUploader", () => {
       );
       const [url, postData] = capture(mockAxios.put as any).last();
       expect(postData).toEqual({
-        csruid: FAKE_CSRUID,
         documentType: DocumentType.Visit,
         schemaId: 1,
+        csruid: FAKE_CSRUID,
+        device: DEVICE_INFO,
         visit: FAKE_VISIT_CONTENTS,
       });
       expect(url).toEqual(`/documents/${FAKE_CSRUID}`);
