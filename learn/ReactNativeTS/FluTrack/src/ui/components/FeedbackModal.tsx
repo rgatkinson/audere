@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Modal from "./Modal";
-import { Action, addFeedback, StoreState } from "../../store";
+import { uploader } from "../../store/uploader";
 
 const IOS_MODAL_ANIMATION = {
   from: { opacity: 0, scale: 1.2 },
@@ -22,11 +21,7 @@ interface Props {
   onDismiss(): void;
 }
 
-interface DispatchProps {
-  dispatch(action: Action): void;
-}
-
-class FeedbackModal extends React.Component<Props & WithNamespaces & DispatchProps> {
+class FeedbackModal extends React.Component<Props & WithNamespaces> {
   state = {
     subject: undefined,
     comments: undefined,
@@ -40,9 +35,9 @@ class FeedbackModal extends React.Component<Props & WithNamespaces & DispatchPro
         visible={this.props.visible}
         onDismiss={this.props.onDismiss}
         onSubmit={() => {
-          this.props.dispatch(addFeedback(
+          uploader.saveFeedback(
             ((this.state.subject ? this.state.subject : "") + " " + (this.state.comments ? this.state.comments : "")).trim()
-          ));
+          );
           this.setState({
             subject: undefined,
             comments: undefined,
@@ -89,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect()(withNamespaces("feedbackModal")(FeedbackModal));
+export default withNamespaces("feedbackModal")(FeedbackModal);

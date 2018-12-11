@@ -6,8 +6,8 @@ import FeedbackModal from "./FeedbackModal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  navigation: NavigationScreenProp<any, any>;
   completedSurvey?: boolean;
+  navigation: NavigationScreenProp<any, any>;
 }
 
 class HeaderBar extends React.Component<Props & WithNamespaces> {

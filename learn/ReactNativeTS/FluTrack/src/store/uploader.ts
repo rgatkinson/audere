@@ -12,7 +12,7 @@ import { format } from "date-fns";
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
 
-const uploader = createUploader();
+export const uploader = createUploader();
 
 export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {

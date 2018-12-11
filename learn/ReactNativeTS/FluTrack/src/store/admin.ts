@@ -1,18 +1,16 @@
 export type AdminAction =
   | { type: "SET_LOCATION"; location: string }
   | { type: "SET_BLOOD_COLLECTION"; bloodCollection: boolean }
-  | { type: "ADD_FEEDBACK"; feedback: string }
   | { type: "SET_LOCATION_TYPE"; locationType: string };
 
 export type AdminState = {
   location?: string;
   locationType?: string;
-  bloodCollection?: boolean;
-  feedback: Array<string>;
+  bloodCollection: boolean;
 };
 
 const initialState: AdminState = {
-  feedback: new Array<string>(),
+  bloodCollection: true,
 };
 
 export default function reducer(state = initialState, action: AdminAction) {
@@ -24,11 +22,6 @@ export default function reducer(state = initialState, action: AdminAction) {
   }
   if (action.type === "SET_BLOOD_COLLECTION") {
     return { ...state, bloodCollection: action.bloodCollection };
-  }
-  if (action.type === "ADD_FEEDBACK") {
-    const feedback = state!.feedback.slice();
-    feedback.push(action.feedback);
-    return { ...state, feedback };
   }
   return state;
 }
@@ -51,12 +44,5 @@ export function setBloodCollection(bloodCollection: boolean): AdminAction {
   return {
     type: "SET_BLOOD_COLLECTION",
     bloodCollection,
-  };
-}
-
-export function addFeedback(feedback: string): AdminAction {
-  return {
-    type: "ADD_FEEDBACK",
-    feedback,
   };
 }
