@@ -8,20 +8,23 @@ import {
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
 import {
   questionnaire,
   sectionDescriptions,
 } from "../../../resources/QuestionnaireConfig";
-import Button from "../../components/Button";
+import { Action, completeSurvey } from "../../../store";
 import Description from "../../components/Description";
 import SurveyQuestion from "../../components/SurveyQuestion";
 import StatusBar from "../../components/StatusBar";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
+  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
+@connect()
 class SurveyScreen extends React.Component<Props & WithNamespaces> {
   // @ts-ignore
   list = React.createRef<SectionList>();
@@ -62,20 +65,17 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
   };
 
   _addData = (nextQuestion: string | null) => {
-    if (nextQuestion === null) {
+    const item = questionnaire.find(
+      question => question.data.id === nextQuestion
+    );
+    if (nextQuestion === null || !item) {
+      this.props.dispatch(completeSurvey());
       this.props.navigation.push("PassBack");
       return;
     }
 
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-    const item = questionnaire.find(
-      question => question.data.id === nextQuestion
-    );
-    if (!item) {
-      this.props.navigation.push("PassBack");
-      return;
-    }
     let questions = [...this.state.questions];
     const sectionIndex = questions.findIndex(obj => obj.title === item.section);
     const sectionExists = sectionIndex > -1;
