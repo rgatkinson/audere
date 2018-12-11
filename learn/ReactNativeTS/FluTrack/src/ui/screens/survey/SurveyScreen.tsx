@@ -13,14 +13,12 @@ import {
   questionnaire,
   sectionDescriptions,
 } from "../../../resources/QuestionnaireConfig";
-import { Action, completeSurvey } from "../../../store";
 import Description from "../../components/Description";
 import SurveyQuestion from "../../components/SurveyQuestion";
 import StatusBar from "../../components/StatusBar";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
@@ -69,7 +67,6 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
       question => question.data.id === nextQuestion
     );
     if (nextQuestion === null || !item) {
-      this.props.dispatch(completeSurvey());
       this.props.navigation.push("PassBack");
       return;
     }

@@ -6,7 +6,13 @@
 import { getLogger } from "./LogUtil";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
-import { DocumentType, VisitInfo, FeedbackInfo, LogInfo, ProtocolDocument } from "audere-lib";
+import {
+  DocumentType,
+  VisitInfo,
+  FeedbackInfo,
+  LogInfo,
+  ProtocolDocument,
+} from "audere-lib";
 
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
@@ -315,8 +321,7 @@ function asFeedbackInfo(contents: DocumentContents): FeedbackInfo {
 
 function isProbablyFeedbackInfo(contents: any): contents is FeedbackInfo {
   return (
-    typeof contents.subject === "string" &&
-    typeof contents.body === "string"
+    typeof contents.subject === "string" && typeof contents.body === "string"
   );
 }
 

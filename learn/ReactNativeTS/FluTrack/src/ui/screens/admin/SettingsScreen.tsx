@@ -54,7 +54,13 @@ export default class SettingsScreen extends React.Component<Props> {
   };
 
   _onSpecimenScans = () => {
-    Alert.alert("This feature is not part of IRB 1");
+    if (!!this.props.form.signatureBase64 && !this.props.form.completedSurvey) {
+      this.props.navigation.push("Specimen");
+    } else {
+      Alert.alert(
+        "There is no active consented participant. Please have a participant complete the survey first.",
+      );
+    }
   };
 
   render() {

@@ -41,7 +41,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
 // Exported so we can write unit tests for this
 export function redux_to_pouch(state: StoreState): VisitInfo {
   const pouch: VisitInfo = {
-    complete: false,
+    complete: state.form.completedSurvey,
     samples: [],
     patient: {
       telecom: [],
@@ -256,10 +256,9 @@ function addressValueInfo(
     const state = addressInput.state || "";
     const zipcode = addressInput.zipcode || "";
     const country = addressInput.country || "";
-    const line: string[] = [
-      addressInput.location,
-      addressInput.address,
-    ].filter(isNotNull);
+    const line: string[] = [addressInput.location, addressInput.address].filter(
+      isNotNull
+    );
     return {
       line,
       city,

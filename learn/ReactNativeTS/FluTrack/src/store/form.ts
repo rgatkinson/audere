@@ -9,6 +9,7 @@ export type FormAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_BLOOD_CONSENT_TERMS"; consentTerms: string }
+  | { type: "SET_SAMPLES"; samples: Sample[] }
   | {
       type: "SET_SURVEY_RESPONSES";
       surveyResponses: Map<string, SurveyResponse>;
@@ -21,6 +22,11 @@ export interface Address {
   state?: string;
   zipcode?: string;
   country?: string;
+}
+
+export interface Sample {
+  sampleType: string;
+  code: string;
 }
 
 export interface SurveyAnswer {
@@ -58,6 +64,7 @@ export type FormState = {
   signatureBase64?: string;
   bloodSignatureBase64?: string;
   surveyResponses?: Map<string, SurveyResponse>;
+  samples?: Sample[];
 };
 
 const initialState: FormState = {
@@ -89,6 +96,9 @@ export default function reducer(state = initialState, action: FormAction) {
   }
   if (action.type === "SET_BLOOD_SIGNATURE_PNG") {
     return { ...state, bloodSignatureBase64: action.signatureBase64 };
+  }
+  if (action.type === "SET_SAMPLES") {
+    return { ...state, samples: action.samples };
   }
   if (action.type === "SET_SURVEY_RESPONSES") {
     return { ...state, surveyResponses: action.surveyResponses };
@@ -147,6 +157,13 @@ export function setBloodConsentTerms(consentTerms: string): FormAction {
   return {
     type: "SET_BLOOD_CONSENT_TERMS",
     consentTerms,
+  };
+}
+
+export function setSamples(samples: Sample[]): FormAction {
+  return {
+    type: "SET_SAMPLES",
+    samples,
   };
 }
 

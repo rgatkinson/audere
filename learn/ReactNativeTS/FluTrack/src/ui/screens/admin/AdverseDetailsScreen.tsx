@@ -28,7 +28,7 @@ interface Props {
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 
 @connect((state: StoreState) => ({
-  name: state.form!.name,
+  name: state.form.name,
 }))
 class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {

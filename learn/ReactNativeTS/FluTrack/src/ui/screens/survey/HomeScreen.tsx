@@ -2,19 +2,14 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { NavigationScreenProp } from "react-navigation";
-import { connect } from "react-redux";
-import { Action, startForm } from "../../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect()
 class HomeScreen extends React.Component<Props & WithNamespaces> {
   _onStart = () => {
-    this.props.dispatch(startForm());
     this.props.navigation.push("Welcome");
   };
 
