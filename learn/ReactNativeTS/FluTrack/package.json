@@ -71,6 +71,7 @@
     "expo": "^30.0.0",
     "expo-pixi": "^0.3.1",
     "i18next": "^11.10.0",
+    "immutable": "^4.0.0-rc.12",
     "pouchdb-react-native": "^6.4.1",
     "react": "16.3.1",
     "react-i18next": "^8.1.0",
@@ -85,6 +86,7 @@
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",
+    "redux-persist-transform-immutable": "^5.0.0",
     "url-parse": "^1.4.4",
     "uuid": "^3.3.2"
   }
