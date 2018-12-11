@@ -1,13 +1,9 @@
-type AdminQuestionType = {
-  id: string;
-  nextQuestion?: string;
-  title: string;
-  optionList: { options: string[]; multiSelect: boolean; withOther: boolean };
-};
+import { SurveyQuestionData } from "../../../resources/QuestionnaireConfig";
+
 export const PostCollectionQuestions = {
   WereThereAdverse: {
+    buttons: [],
     id: "WereThereAdverse",
-    nextQuestion: "WhichProcedures",
     title:
       "Were there any adverse events experienced from the last collection?",
     optionList: {
@@ -17,6 +13,7 @@ export const PostCollectionQuestions = {
     },
   },
   WhichProcedures: {
+    buttons: [],
     id: "WhichProcedures",
     title: "Which procedures had adverse events?",
     optionList: {
@@ -26,6 +23,7 @@ export const PostCollectionQuestions = {
     },
   },
   BloodDrawEvents: {
+    buttons: [],
     id: "BloodDrawEvents",
     title: "For blood draw, what were the adverse events?",
     optionList: {
@@ -35,6 +33,7 @@ export const PostCollectionQuestions = {
     },
   },
   NasalSwabEvents: {
+    buttons: [],
     id: "NasalSwabEvents",
     title: "For nasal swab, what were the adverse events?",
     optionList: {
@@ -45,7 +44,7 @@ export const PostCollectionQuestions = {
   },
 };
 
-export const OptionKeyToQuestion: { [key: string]: AdminQuestionType } = {
+export const OptionKeyToQuestion: { [key: string]: SurveyQuestionData } = {
   bloodDraw: PostCollectionQuestions.BloodDrawEvents,
   nasalSwab: PostCollectionQuestions.NasalSwabEvents,
 };

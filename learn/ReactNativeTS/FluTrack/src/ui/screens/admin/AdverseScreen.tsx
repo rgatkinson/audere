@@ -3,137 +3,65 @@ import { withNamespaces, WithNamespaces } from "react-i18next";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import {
-  Action,
-  StoreState,
-  SurveyResponse,
-  setSurveyResponses,
-  SurveyAnswer,
-} from "../../../store";
+import { StoreState, SurveyResponse } from "../../../store";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { PostCollectionQuestions } from "./QuestionConfig";
-import OptionList, { emptyMap } from "../../components/OptionList";
+import FeedbackButton from "../../components/FeedbackButton";
+import FeedbackModal from "../../components/FeedbackModal";
+import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
+import Button from "../../components/Button";
 
 interface Props {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
   screenProps: any;
-  surveyResponses?: Map<string, SurveyResponse>;
 }
 
 const WereThereAdverse = PostCollectionQuestions.WereThereAdverse;
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
+
 @connect((state: StoreState) => ({
-  surveyResponses: state.form!.surveyResponses,
-  name: state.form!.name,
+  name: state.form.name,
 }))
-class AdverseScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = ({
-    navigation,
-  }: {
-    navigation: NavigationScreenProp<any, any>;
-  }) => {
-    const params = navigation.state.params;
-    return params == null
-      ? {}
-      : {
-          title: "Adverse Events",
-          headerLeft: (
-            <TouchableOpacity
-              onPress={() => navigation.popToTop()}
-              style={styles.actionContainer}
-            >
-              <Text style={styles.actionText}>Cancel</Text>
-            </TouchableOpacity>
-          ),
-          headerRight: (
-            <TouchableOpacity
-              onPress={params._onNext}
-              style={styles.actionContainer}
-            >
-              <Text style={styles.actionText}>Next</Text>
-            </TouchableOpacity>
-          ),
-        };
+class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
+  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any> }) => {
+    const { params = null } = navigation.state;
+    return {
+      title: "Adverse Events",
+      headerBackTitle: "Back",
+      headerRight: (!!params ?
+        <FeedbackButton onPress={params.showFeedback} />
+        : null
+      ),
+    };
   };
-  componentWillMount() {
+
+  state = {
+    feedbackVisible: false,
+  };
+
+  componentDidMount() {
     this.props.navigation.setParams({
-      _onNext: this._onNext,
+      showFeedback: () => this.setState({ feedbackVisible: true }),
     });
   }
-  _getSelectedOptionMap = (
-    id: string,
-    optionList: OptionListConfig
-  ): Map<string, boolean> => {
-    return !!this.props.surveyResponses &&
-      this.props.surveyResponses!.has(id) &&
-      !!this.props.surveyResponses!.get(id)!.answer &&
-      !!this.props.surveyResponses!.get(id)!.answer!.options
-      ? new Map<string, boolean>(
-          this.props.surveyResponses.get(id)!.answer!.options!
-        )
-      : emptyMap(optionList.options);
-  };
-  _getAndInitializeResponse = (
-    id: string,
-    title: string,
-    optionList: OptionListConfig
-  ): [Map<string, SurveyResponse>, SurveyAnswer] => {
-    const responses = this.props.surveyResponses
-      ? new Map<string, SurveyResponse>(this.props.surveyResponses)
-      : new Map<string, SurveyResponse>();
 
-    if (!responses.has(id)) {
-      const optionKeysToLabel =
-        optionList && optionList.options
-          ? new Map<string, string>(
-              optionList.options.map<[string, string]>(key => [
-                key,
-                this.props.t("surveyOption:" + key),
-              ])
-            )
-          : undefined;
-      responses.set(id, {
-        answer: {},
-        optionKeysToLabel: optionKeysToLabel,
-        questionId: id,
-        questionText: title,
-      });
-    }
+  _adverseEventsOccurred = (key: string): boolean => {
+    const adverseEvents: Map<string, boolean> = this.props.getAnswer("options", WereThereAdverse.id);
+    return !!adverseEvents && adverseEvents.has(key) && !!adverseEvents.get(key);
+  };
 
-    return [responses, responses.has(id) ? responses.get(id)!.answer! : {}];
+  _adverseProceduresSelected = (): boolean => {
+    const adverseProcedures: Map<string, boolean> = this.props.getAnswer("options", WhichProcedures.id);
+    return !!adverseProcedures &&
+      Array.from(adverseProcedures.values()).reduce((result, value) => result || value, false);
   };
-  _adverseEventsOccurred = (): boolean => {
-    return (
-      !!this.props.surveyResponses &&
-      !!this.props.surveyResponses.get(WereThereAdverse.id) &&
-      !!this.props.surveyResponses.get(WereThereAdverse.id)!.answer!.options &&
-      !!this.props.surveyResponses
-        .get(WereThereAdverse.id)!
-        .answer!.options!.get("yes")
-    );
-  };
+
   _onNext = () => {
-    if (this._adverseEventsOccurred()) {
-      let options =
-        this.props.surveyResponses!.has(WhichProcedures.id) &&
-        !!this.props.surveyResponses!.get(WhichProcedures.id)!.answer
-          ? this.props.surveyResponses!.get(WhichProcedures.id)!.answer!.options
-          : null;
-      if (
-        !!options
-          ? Array.from(options.values()).reduce(
-              (result, value) => result || value,
-              false
-            )
-          : false
-      ) {
-        this.props.navigation.push("AdverseDetails");
-      } else {
-        Alert.alert("Please specify which procedures had adverse events.");
-      }
+    if (this._adverseEventsOccurred("yes")) {
+      this.props.navigation.push("AdverseDetails");
     } else {
       Alert.alert(
         "Submit?",
@@ -157,86 +85,68 @@ class AdverseScreen extends React.Component<Props & WithNamespaces> {
   render() {
     return (
       <ScreenContainer>
+        <FeedbackModal
+          visible={this.state.feedbackVisible}
+          onDismiss={() => this.setState({ feedbackVisible: false })}
+        />
         <Text style={styles.sectionHeaderText}>{WereThereAdverse.title}</Text>
         <OptionList
-          data={this._getSelectedOptionMap(
-            WereThereAdverse.id,
-            WereThereAdverse.optionList
+          backgroundColor="#fff"
+          data={newSelectedOptionsMap(
+            WereThereAdverse.optionList.options,
+            this.props.getAnswer("options", WereThereAdverse.id),
           )}
+          fullWidth={true}
           multiSelect={WereThereAdverse.optionList.multiSelect}
           numColumns={1}
-          fullWidth={true}
-          backgroundColor="#fff"
-          onChange={data => {
-            const [responses, existingAnswer] = this._getAndInitializeResponse(
-              WereThereAdverse.id,
-              WereThereAdverse.title,
-              WereThereAdverse.optionList
-            );
-            responses.set(WereThereAdverse.id, {
-              ...responses.get(WereThereAdverse.id),
-              answer: { ...existingAnswer, options: data },
-            });
-            this.props.dispatch(setSurveyResponses(responses));
-          }}
+          onChange={data => this.props.updateAnswer({ options: data }, WereThereAdverse)}
         />
-        {this._adverseEventsOccurred() && (
+        {this._adverseEventsOccurred("yes") && (
           <View>
             <Text style={styles.sectionHeaderText}>
               {WhichProcedures.title}
             </Text>
             <OptionList
-              data={this._getSelectedOptionMap(
-                WhichProcedures.id,
-                WhichProcedures.optionList
+              backgroundColor="#fff"
+              data={newSelectedOptionsMap(
+                WhichProcedures.optionList.options,
+                this.props.getAnswer("options", WhichProcedures.id),
               )}
+              fullWidth={true}
               multiSelect={WhichProcedures.optionList.multiSelect}
               numColumns={1}
-              fullWidth={true}
-              backgroundColor="#fff"
-              onChange={data => {
-                const [
-                  responses,
-                  existingAnswer,
-                ] = this._getAndInitializeResponse(
-                  WhichProcedures.id,
-                  WhichProcedures.title,
-                  WhichProcedures.optionList
-                );
-                responses.set(WhichProcedures.id, {
-                  ...responses.get(WhichProcedures.id),
-                  answer: { ...existingAnswer, options: data },
-                });
-                this.props.dispatch(setSurveyResponses(responses));
-              }}
+              onChange={data => this.props.updateAnswer({ options: data }, WhichProcedures)}
             />
           </View>
         )}
+        <View style={styles.buttonContainer}>
+          <Button
+            enabled={(
+              this._adverseEventsOccurred("no") ||
+              (this._adverseEventsOccurred("yes") && this._adverseProceduresSelected())
+            )}
+            key="next"
+            label="Next"
+            primary={true}
+            onPress={this._onNext}
+          />
+        </View>
       </ScreenContainer>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   sectionHeaderText: {
     marginTop: 35,
     marginBottom: 7,
     marginLeft: 15,
     fontSize: 24,
   },
-  actionContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingHorizontal: 15,
-  },
-  actionText: {
-    fontFamily: "System",
-    fontSize: 17,
-    color: "#007AFF",
-    lineHeight: 22,
-    letterSpacing: -0.41,
-  },
 });
 
-export default withNamespaces()<Props>(AdverseScreen);
+export default reduxWriter(withNamespaces()(AdverseScreen));

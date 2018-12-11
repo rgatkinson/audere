@@ -1,46 +1,69 @@
 import React from "react";
-import { View, StyleSheet, Text, Alert } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState, SurveyResponse } from "../../../store";
-import EditSettingButton from "../../components/EditSettingButton";
+import { FormState, StoreState } from "../../../store";
+import FeedbackButton from "../../components/FeedbackButton";
+import FeedbackModal from "../../components/FeedbackModal";
 import Description from "../../components/Description";
+import EditSettingButton from "../../components/EditSettingButton";
 import ScreenContainer from "../../components/ScreenContainer";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  screenProps: any;
-  surveyResponses: Map<string, SurveyResponse>;
+  form: FormState;
 }
 
 @connect((state: StoreState) => ({
-  surveyResponses: !!state.form ? state.form.surveyResponses : null,
+  form: state.form,
 }))
 export default class SettingsScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: "Admin Settings",
+  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+    const { params = null } = navigation.state;
+    return {
+      title: "Admin Settings",
+      headerRight: (!!params ?
+        <FeedbackButton onPress={params.showFeedback} />
+        : null
+      ),
+    };
   };
+
+  state = {
+    feedbackVisible: false,
+  };
+
+  componentDidMount() {
+    this.props.navigation.setParams({
+      showFeedback: () => this.setState({ feedbackVisible: true }),
+    });
+  }
+
   _onPrior = () => {
     this.props.navigation.push("Prior");
   };
+
   _onAdverseEvents = () => {
-    if (
-      !!this.props.surveyResponses &&
-      this.props.surveyResponses instanceof Map
-    ) {
+    if (!!this.props.form.signatureBase64 && !this.props.form.completedSurvey) {
       this.props.navigation.push("Adverse");
     } else {
       Alert.alert(
-        "No participant responses recorded. Please complete survey first."
+        "There is no active consented participant. Please have a participant complete the survey first.",
       );
     }
   };
+
   _onSpecimenScans = () => {
     Alert.alert("This feature is not part of IRB 1");
   };
+
   render() {
     return (
       <ScreenContainer>
+        <FeedbackModal
+          visible={this.state.feedbackVisible}
+          onDismiss={() => this.setState({ feedbackVisible: false })}
+        />
         <View style={styles.descriptionContainer}>
           <Description content="These settings should be set by study administrators and staff only." />
         </View>

@@ -17,6 +17,9 @@
       "complete": "Complete"
     }
   },
+  "feedbackButton": {
+    "provideFeedback": "Provide Feedback"
+  },
   "dateInput": {
     "january": "January",
     "february": "February",

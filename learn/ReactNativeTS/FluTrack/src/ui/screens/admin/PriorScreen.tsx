@@ -4,6 +4,8 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, StoreState, setBloodCollection } from "../../../store";
 import EditSettingButton from "../../components/EditSettingButton";
+import FeedbackButton from "../../components/FeedbackButton";
+import FeedbackModal from "../../components/FeedbackModal";
 import KeyValueLine from "../../components/KeyValueLine";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -26,22 +28,46 @@ function getTodaysDate(): string {
   bloodCollection: state.admin == null ? false : state.admin.bloodCollection,
 }))
 class PriorScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = {
-    title: "Prior to Collection",
+  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+    const { params = null } = navigation.state;
+    return {
+      title: "Prior to Collection",
+      headerRight: (!!params ?
+        <FeedbackButton onPress={params.showFeedback} />
+        : null
+      ),
+    };
   };
+
+  state = {
+    feedbackVisible: false,
+  };
+
+  componentDidMount() {
+    this.props.navigation.setParams({
+      showFeedback: () => this.setState({ feedbackVisible: true }),
+    });
+  }
+
   _onSelectLocation = () => {
     this.props.navigation.push("SelectLocation");
   };
+
   _getBloodCollectionOptions(bloodCollection: boolean): Map<string, boolean> {
     return new Map([
       ["Available", bloodCollection],
       ["Not Available", !bloodCollection],
     ]);
   }
+
   render() {
     const { t } = this.props;
     return (
       <ScreenContainer>
+        <FeedbackModal
+          visible={this.state.feedbackVisible}
+          onDismiss={() => this.setState({ feedbackVisible: false })}
+        />
         <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
         <EditSettingButton

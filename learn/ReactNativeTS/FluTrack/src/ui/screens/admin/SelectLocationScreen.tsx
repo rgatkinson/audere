@@ -7,8 +7,11 @@ import {
   setLocation,
   setLocationType,
 } from "../../../store";
+import FeedbackButton from "../../components/FeedbackButton";
+import FeedbackModal from "../../components/FeedbackModal";
 import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
+
 import {
   COLLECTION_LOCATIONS,
   getLocationType,
@@ -22,12 +25,29 @@ interface Props {
 }
 
 @connect((state: StoreState) => ({
-  location: state.admin == null ? null : state.admin.location,
+  location: state.admin.location,
 }))
 export default class SelectLocationScreen extends React.Component<Props> {
-  static navigationOptions = {
-    title: "Select Location",
+  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+    const { params = null } = navigation.state;
+    return {
+      title: "Select Location",
+      headerRight: (!!params ?
+        <FeedbackButton onPress={params.showFeedback} />
+        : null
+      ),
+    };
   };
+
+  state = {
+    feedbackVisible: false,
+  };
+
+  componentDidMount() {
+    this.props.navigation.setParams({
+      showFeedback: () => this.setState({ feedbackVisible: true }),
+    });
+  }
 
   _getLocations(selectedLocation: string): Map<string, boolean> {
     let locations = new Map<string, boolean>();
@@ -39,9 +59,14 @@ export default class SelectLocationScreen extends React.Component<Props> {
     }
     return locations;
   }
+
   render() {
     return (
       <ScreenContainer>
+        <FeedbackModal
+          visible={this.state.feedbackVisible}
+          onDismiss={() => this.setState({ feedbackVisible: false })}
+        />
         <OptionList
           data={this._getLocations(this.props.location)}
           numColumns={1}
