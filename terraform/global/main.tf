@@ -3,77 +3,70 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+provider "aws" {
+  version                 = "~> 1.50"
+  region                  = "us-west-2"
+}
 
 // --------------------------------------------------------------------------------
 // CloudTrail S3 events logging
 
 resource "aws_cloudtrail" "cloudtrail-s3-events" {
-  name = "cloudtrail-s3-events"
-  s3_bucket_name = "${aws_s3_bucket.cloudtrail-s3-events.id}"
+  name                          = "cloudtrail-s3-events"
+  s3_bucket_name                = "${aws_s3_bucket.audere-cloudtrail-s3-logs.id}"
   include_global_service_events = true
-  enable_logging = true
-  enable_log_file_validation = true
+  enable_logging                = true
+  enable_log_file_validation    = true
 
   event_selector {
-    read_write_type = "All"
+    read_write_type           = "All"
     include_management_events = true
 
     data_resource {
-      type = "AWS::S3::Object"
+      type   = "AWS::S3::Object"
       values = ["arn:aws:s3:::"]
     }
   }
+
+  depends_on = ["aws_s3_bucket_policy.cloudtrail-s3"]
 }
 
-resource "aws_s3_bucket" "cloudtrail-s3-events" {
-  bucket = "cloudtrail-s3-events"
+resource "aws_s3_bucket" "audere-cloudtrail-s3-logs" {
+  bucket        = "audere-cloudtrail-s3-logs"
   force_destroy = true
-
-  policy = "${aws_iam_policy.cloudtrail-s3-events-policy.id}"
 }
 
-data "aws_iam_policy_document" "cloudtrail-s3-events-policy" {
-
+data "aws_iam_policy_document" "allow-cloudtrail-s3" {
   statement {
-    sid = "AWSCloudTrailAclCheck"
-    effect = "Allow"
+    sid       = "AWSCloudTrailAclCheck"
+    actions   = ["s3:GetBucketAcl"]
+    resources = ["arn:aws:s3:::audere-cloudtrail-s3-logs"]
+
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
-    actions = [
-      "s3:GetBucketAcl",
-    ]
-    resources = [
-      "arn:aws:s3:::cloudtrail-s3-events",
-    ]
   }
 
   statement {
-    sid = "AWSCloudTrailWrite"
-    effect = "Allow"
+    sid       = "AWSCloudTrailWrite"
+    actions   = ["s3:PutObject"]
+    resources = ["arn:aws:s3:::audere-cloudtrail-s3-logs/*"]
+
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
-    actions = [
-      "s3:PutObject",
-    ]
-    resources = [
-      "arn:aws:s3:::cloudtrail-s3-events/*",
-    ]
+
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = [
-        "bucket-owner-full-control",
-      ]
+      values   = ["bucket-owner-full-control"]
     }
   }
 }
 
-resource "aws_iam_policy" "cloudtrail-s3-events-policy" {
-  name   = "cloudtrail-s3-events-policy"
-  path   = "/"
-  policy = "${data.aws_iam_policy_document.cloudtrail-s3-events-policy.json}"
+resource "aws_s3_bucket_policy" "cloudtrail-s3" {
+  bucket = "${aws_s3_bucket.audere-cloudtrail-s3-logs.id}"
+  policy = "${data.aws_iam_policy_document.allow-cloudtrail-s3.json}"
 }
