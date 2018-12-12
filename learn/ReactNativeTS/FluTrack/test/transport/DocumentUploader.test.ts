@@ -32,6 +32,17 @@ const FAKE_VISIT_CONTENTS: VisitInfo = {
 
 const FAKE_CSRUID = "abc123";
 
+const FAKE_POUCH_DOC: PouchDoc = {
+  _id: "documents/random_id",
+  body: {
+    documentType: DocumentType.Visit,
+    schemaId: 1,
+    csruid: CSRUID_PLACEHOLDER,
+    device: DEVICE_INFO,
+    visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
+  },
+};
+
 describe("DocumentUploader", () => {
   describe("save", () => {
     let uploader: DocumentUploader, mockAxios: AxiosInstance, mockPouchDB: any;
@@ -55,16 +66,7 @@ describe("DocumentUploader", () => {
       const contents = {
         total_rows: 1,
         rows: [{
-          doc: {
-            _id: "documents/random_id",
-            body: {
-              documentType: DocumentType.Visit,
-              schemaId: 1,
-              csruid: CSRUID_PLACEHOLDER,
-              device: DEVICE_INFO,
-              visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
-            },
-          }
+          doc: FAKE_POUCH_DOC
         }],
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
@@ -81,13 +83,7 @@ describe("DocumentUploader", () => {
         axiosResponse()
       );
       const [url, postData] = capture(mockAxios.put as any).last();
-      expect(postData).toEqual({
-        documentType: DocumentType.Visit,
-        schemaId: 1,
-        csruid: FAKE_CSRUID,
-        device: DEVICE_INFO,
-        visit: FAKE_VISIT_CONTENTS,
-      });
+      expect(postData).toEqual(FAKE_POUCH_DOC.body);
       expect(url).toEqual(`/documents/${FAKE_CSRUID}`);
     });
   });
