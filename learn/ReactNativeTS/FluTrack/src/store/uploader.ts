@@ -51,6 +51,14 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     responses: [],
     events: [],
   };
+
+  const admin = state.admin;
+  if (admin != null) {
+    if (admin.location != null) {
+      pouch.location = admin.location;
+    }
+  }
+
   const form = state.form;
   if (form != null) {
     if (!!form.name) {
