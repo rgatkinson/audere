@@ -18,7 +18,7 @@
   },
   "main": "build/src/server.js",
   "dependencies": {
-    "audere-lib": "file:../lib",
+    "audere-lib": "link:../lib",
     "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
     "buffer-xor": "^2.0.2",

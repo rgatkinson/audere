@@ -65,7 +65,7 @@
     "@types/expo-localization": "^1.0.0",
     "@types/expo__vector-icons": "^6.2.3",
     "@types/i18next": "^11.9.3",
-    "audere-lib": "file:../../../lib",
+    "audere-lib": "link:../../../lib",
     "axios": "^0.18.0",
     "babel-plugin-inline-dotenv": "^1.2.0",
     "date-fns": "^1.29.0",
