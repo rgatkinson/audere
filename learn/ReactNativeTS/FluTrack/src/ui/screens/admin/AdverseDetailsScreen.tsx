@@ -112,7 +112,6 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
               />
             </View>
           ))}
-        }
         <View style={styles.buttonContainer}>
           <Button
             enabled={this._canSave()}
