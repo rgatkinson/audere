@@ -18,7 +18,7 @@ APP_VERSION="$(node --eval 'console.log(require("'$APP_DIR'/package.json").versi
 SERVER_NAME="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").name)')"
 SERVER_VERSION="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").version)')"
 
-if [ "$CIRCLECI" = true ] && [ -n "$CIRCLE_SHA1" ]; then
+if [ "${CIRCLECI:-}" = true ] && [ -n "$CIRCLE_SHA1" ]; then
   # Ask Circle for the hash; this will be accurate for tagged builds 
   GITHASH="$CIRCLE_SHA1"
 else 
