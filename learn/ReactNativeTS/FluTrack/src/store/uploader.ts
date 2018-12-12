@@ -213,19 +213,17 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
 }
 
 function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
-  const signature = form.signatureBase64;
-  const terms = form.consentTerms;
-  const name = form.name;
+  const signature = form.signatureBase64 || "";
+  const terms = form.consentTerms || "";
+  const name = form.name || "";
 
-  if (signature != null && terms != null && name != null) {
-    consents.push({
-      name,
-      terms,
-      signature,
-      signerType: ConsentInfoSignerType.Subject, // TODO
-      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-    });
-  }
+  consents.push({
+    name,
+    terms,
+    signature,
+    signerType: ConsentInfoSignerType.Subject, // TODO
+    date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+  });
 }
 
 function maybePushAddress(
@@ -246,23 +244,21 @@ function addressValueInfo(
   addressInput: Address | undefined | null
 ): AddressValueInfo | null {
   if (addressInput != null) {
-    const city = addressInput.city;
-    const state = addressInput.state;
-    const zipcode = addressInput.zipcode;
-    const country = addressInput.country;
-    if (city != null && state != null && zipcode != null && country != null) {
-      const line: string[] = [
-        addressInput.location,
-        addressInput.address,
-      ].filter(isNotNull);
-      return {
-        line,
-        city,
-        state,
-        postalCode: zipcode,
-        country,
-      };
-    }
+    const city = addressInput.city || "";
+    const state = addressInput.state || "";
+    const zipcode = addressInput.zipcode || "";
+    const country = addressInput.country || "";
+    const line: string[] = [
+      addressInput.location,
+      addressInput.address,
+    ].filter(isNotNull);
+    return {
+      line,
+      city,
+      state,
+      postalCode: zipcode,
+      country,
+    };
   }
   return null;
 }
