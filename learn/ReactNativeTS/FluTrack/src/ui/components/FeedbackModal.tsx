@@ -21,11 +21,13 @@ interface Props {
   onDismiss(): void;
 }
 
-class FeedbackModal extends React.Component<Props & WithNamespaces> {
-  state = {
-    subject: undefined,
-    comments: undefined,
-  };
+interface State {
+  subject?: string,
+  comments?: string,
+}
+
+class FeedbackModal extends React.Component<Props & WithNamespaces, State> {
+  state: State = {};
 
   render() {
     const { t } = this.props;
@@ -36,12 +38,10 @@ class FeedbackModal extends React.Component<Props & WithNamespaces> {
         onDismiss={this.props.onDismiss}
         onSubmit={() => {
           uploader.saveFeedback(
-            ((this.state.subject ? this.state.subject : "") + " " + (this.state.comments ? this.state.comments : "")).trim()
+            (this.state.subject || "").trim(),
+            (this.state.comments || "").trim()
           );
-          this.setState({
-            subject: undefined,
-            comments: undefined,
-          });
+          this.setState({});
           this.props.onDismiss();
         }}
       >
