@@ -24,8 +24,8 @@ IOS_BUILD_NUM="$(node --eval 'console.log(require("'$VERSION_FILE'").expo.ios.bu
 
 read -p "Will increment ios.buildNumber to $IOS_BUILD_NUM and commit to $BRANCH. Press Enter to continue or Ctrl-C to abort."
 
-sed -i '' -E "s/buildNumber\": \"[0-9]+\"/buildNumber\": \"$IOS_BUILD_NUM\"/" $VERSION_FILE $VERSION_FILE
+sed -i '' -E "s/buildNumber\": \"[0-9]+\"/buildNumber\": \"$IOS_BUILD_NUM\"/" "$VERSION_FILE" "$VERSION_FILE"
 
-git add $VERSION_FILE
+git add "$VERSION_FILE"
 git commit -m "Build script incrementing ios.buildNumber to $IOS_BUILD_NUM"
-git push origin $BRANCH
+git push origin "$BRANCH"
