@@ -1,10 +1,18 @@
 import React from "react";
-import { StyleSheet, Clipboard, Platform, View, Text, TextStyle } from "react-native";
+import {
+  StyleSheet,
+  Clipboard,
+  Platform,
+  View,
+  Text,
+  TextStyle,
+} from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ContentContainer from "../components/ContentContainer";
 import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
 import Button from "../components/Button";
+import { getApiBaseUrl } from "../../transport";
 
 const buildInfo = require("../../../buildInfo.json");
 
@@ -34,12 +42,16 @@ export default class AboutScreen extends React.Component<Props> {
       " " +
       Platform.Version +
       "\nInstallation: " +
-      Constants.installationId;
+      Constants.installationId +
+      "\nAPI Server: " +
+      getApiBaseUrl();
 
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Text style={styles.headerText as TextStyle}>About {buildInfo.name}</Text>
+          <Text style={styles.headerText as TextStyle}>
+            About {buildInfo.name}
+          </Text>
           <View style={styles.aboutContainer}>
             <Text style={styles.aboutText}>{aboutContent}</Text>
           </View>

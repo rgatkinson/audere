@@ -72,7 +72,7 @@ function createAxios() {
   return api;
 }
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   let api: string;
   if (process.env.REACT_NATIVE_API_SERVER) {
     api = process.env.REACT_NATIVE_API_SERVER;
