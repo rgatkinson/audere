@@ -1,4 +1,11 @@
 #!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
 SERVER_DIR="$REPO_ROOT_DIR/FluApi"

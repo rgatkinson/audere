@@ -1,5 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
 # This will increment FluTrack ios.buildNumber in app.json and then trigger Circle build-ios job 
+
+set -eo pipefail
 
 USAGE="Usage: build-app-ios <release-channel> <branch> [<commithash>] [--no-increment]"
 INCREMENT=true
@@ -17,7 +24,7 @@ case "$#" in
        exit 1
      fi;;
   4) if [ "$4" != "--no-increment" ]; then 
-       echo 1>&2 $USAGE
+       echo 1>&2 "$USAGE"
        exit 1
      else 
        CHANNEL=$1
@@ -25,7 +32,7 @@ case "$#" in
        COMMIT=$3
        INCREMENT=false 
      fi;;
-  *) echo 1>&2 $USAGE; exit 1;;
+  *) echo 1>&2 "$USAGE"; exit 1;;
 esac
 
 if [[ -z "$CIRCLE_TOKEN" ]]; then

@@ -90,7 +90,11 @@ jobs:
       - run:
           name: Set .env for target environment
           command: |
-            if [[ $EXPO_RELEASE_CHANNEL == *prod ]]; then export REACT_NATIVE_API_SERVER=$PROD_SERVER; else export REACT_NATIVE_API_SERVER=$STAGING_SERVER; fi
+            if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+              export REACT_NATIVE_API_SERVER="$PROD_SERVER"; 
+            else 
+              export REACT_NATIVE_API_SERVER="$STAGING_SERVER"; 
+            fi
             cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
       - run:
@@ -99,8 +103,8 @@ jobs:
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)"
             cd learn/ReactNativeTS/FluTrack
-            expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
-            expo publish --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
+            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
+            expo publish --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
             export EXPO_APPNAME=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['name'])"`
             export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
             curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build, triggered by tag $CIRCLE_TAG, has been published to <$EXPO_URL>.\", \"icon_emoji\": \":hatching_chick:\"}" $SLACK_WEBHOOK
@@ -123,9 +127,15 @@ jobs:
       - run:
           name: Test env variables
           command: |
-            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then echo "Set EXPO_RELEASE_CHANNEL"; exit 1; fi
-            if [[ $EXPO_RELEASE_CHANNEL == *prod ]]; then export REACT_NATIVE_API_SERVER=$PROD_SERVER; else export REACT_NATIVE_API_SERVER=$STAGING_SERVER; fi
-            echo $REACT_NATIVE_API_SERVER
+            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then 
+              echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
+            fi
+            if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+              export REACT_NATIVE_API_SERVER="$PROD_SERVER"; 
+            else 
+              export REACT_NATIVE_API_SERVER="$STAGING_SERVER"; 
+            fi
+            echo "$REACT_NATIVE_API_SERVER"
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
@@ -160,10 +170,10 @@ jobs:
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)"
             cd learn/ReactNativeTS/FluTrack
-            expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             export IOS_BUILD_NUM=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['ios']['buildNumber'])"`
             echo "About to build iOS binary $IOS_BUILD_NUM for $EXPO_RELEASE_CHANNEL"
-            expo build:ios --non-interactive --release-channel $EXPO_RELEASE_CHANNEL
+            expo build:ios --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
             export IPA_URL=`expo url:ipa`
             curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1.\", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
 

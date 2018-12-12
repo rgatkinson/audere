@@ -1,5 +1,19 @@
 #!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
 # Called by build-app-ios
+
+set -euo pipefail
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Error: Cannot increment build number. You have uncommitted changes; please commit first."
+  git status
+  exit 1
+fi
+
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
 BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
