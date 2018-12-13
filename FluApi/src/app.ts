@@ -18,6 +18,7 @@ const buildInfo = require("../static/buildInfo.json");
 
 app.set("port", process.env.PORT || 3000);
 app.use(helmet.noCache());
+app.use(helmet.frameguard({ action: "deny" }));
 app.use(bodyParser.json());
 
 app.get("/api", (req, res) => res.json({ Status: "OK" }));
