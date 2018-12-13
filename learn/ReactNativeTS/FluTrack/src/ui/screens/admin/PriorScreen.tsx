@@ -2,7 +2,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, Option, StoreState, setBloodCollection } from "../../../store";
+import { Action, Option, StoreState, setAdministrator, setBloodCollection } from "../../../store";
 import EditSettingButton from "../../components/EditSettingButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -12,11 +12,12 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  location: string;
   bloodCollection: boolean;
-  dispatch(action: Action): void;
+  administrator: string;
+  location: string;
   navigation: NavigationScreenProp<any, any>;
   screenProps: any;
+  dispatch(action: Action): void;
 }
 
 function getTodaysDate(): string {
@@ -24,8 +25,9 @@ function getTodaysDate(): string {
 }
 
 @connect((state: StoreState) => ({
-  location: state.admin == null ? null : state.admin.location,
-  bloodCollection: state.admin == null ? false : state.admin.bloodCollection,
+  administrator: state.admin.administrator,
+  bloodCollection: state.admin.bloodCollection,
+  location: state.admin.location,
 }))
 class PriorScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
@@ -60,6 +62,10 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
     ];
   }
 
+  _onSelectAdministrator = () => {
+    this.props.navigation.push("SelectAdmin");
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -69,12 +75,21 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
           onDismiss={() => this.setState({ feedbackVisible: false })}
         />
         <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
+        <Text style={styles.sectionHeaderText}>Current Administrator</Text>
+        <EditSettingButton
+          label={
+            this.props.administrator
+              ? this.props.administrator
+              : "Select"
+          }
+          onPress={this._onSelectAdministrator}
+        />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
         <EditSettingButton
           label={
             this.props.location
               ? t("surveyOption:" + this.props.location)
-              : "Select one"
+              : "Select"
           }
           onPress={this._onSelectLocation}
         />

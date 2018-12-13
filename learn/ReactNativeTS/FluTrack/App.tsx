@@ -32,6 +32,7 @@ import PassBackScreen from "./src/ui/screens/survey/PassBackScreen";
 import SettingsScreen from "./src/ui/screens/admin/SettingsScreen";
 import PriorScreen from "./src/ui/screens/admin/PriorScreen";
 import SelectLocationScreen from "./src/ui/screens/admin/SelectLocationScreen";
+import SelectAdminScreen from "./src/ui/screens/admin/SelectAdminScreen";
 import AdverseScreen from "./src/ui/screens/admin/AdverseScreen";
 import AdverseDetailsScreen from "./src/ui/screens/admin/AdverseDetailsScreen";
 import SpecimenScreen from "./src/ui/screens/admin/SpecimenScreen";
@@ -81,6 +82,7 @@ const Admin = createStackNavigator(
     Settings: SettingsScreen,
     Prior: PriorScreen,
     SelectLocation: SelectLocationScreen,
+    SelectAdmin: SelectAdminScreen,
     Adverse: AdverseScreen,
     AdverseDetails: AdverseDetailsScreen,
     Specimen: SpecimenScreen,
