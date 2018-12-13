@@ -91,9 +91,9 @@ jobs:
           name: Set .env for target environment
           command: |
             if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-              export REACT_NATIVE_API_SERVER="$PROD_SERVER"; 
+              export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
             else 
-              export REACT_NATIVE_API_SERVER="$STAGING_SERVER"; 
+              export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
             fi
             cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
@@ -131,11 +131,10 @@ jobs:
               echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
             fi
             if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-              export REACT_NATIVE_API_SERVER="$PROD_SERVER"; 
+              echo 'export REACT_NATIVE_API_SERVER="$PROD_SERVER"' >> $BASH_ENV 
             else 
-              export REACT_NATIVE_API_SERVER="$STAGING_SERVER"; 
+              echo 'export REACT_NATIVE_API_SERVER="$STAGING_SERVER"' >> $BASH_ENV
             fi
-            echo "$REACT_NATIVE_API_SERVER"
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
@@ -164,6 +163,7 @@ jobs:
           command: |
             cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+            more .env
       - run:
           name: Build iOS
           command: |
