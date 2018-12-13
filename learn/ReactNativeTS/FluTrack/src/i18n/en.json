@@ -20,7 +20,7 @@
   "feedbackButton": {
     "provideFeedback": "Provide Feedback"
   },
-  "dateInput": {
+  "dateModal": {
     "january": "January",
     "february": "February",
     "march": "March",
