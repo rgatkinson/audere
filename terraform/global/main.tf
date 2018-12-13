@@ -602,11 +602,6 @@ data "aws_iam_user" "ram" {
 // Locals
 
 locals {
-  mfa_condition = {
-      test = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
-  }
   mfa_condition_test = "NumericLessThan"
   mfa_condition_variable = "aws:MultiFactorAuthAge"
   mfa_condition_value = "${6 * 60 * 60}"
