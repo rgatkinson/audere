@@ -137,11 +137,11 @@ resource "aws_iam_role_policy" "logs_role_policy" {
 // infrastructurers
 
 resource "aws_iam_group" "infrastructurers" {
-  name = "infrastructurers"
+  name = "Infrastructurers"
 }
 
 resource "aws_iam_group_membership" "infrastructurers" {
-  name = "infrastructurers"
+  name = "Infrastructurers"
   group = "${aws_iam_group.infrastructurers.name}"
   users = [
     "${data.aws_iam_user.mmarucheck.user_name}",
@@ -173,11 +173,11 @@ resource "aws_iam_group_policy_attachment" "ses_send_email" {
 // securers
 
 resource "aws_iam_group" "securers" {
-  name = "securers"
+  name = "Securers"
 }
 
 resource "aws_iam_group_membership" "securers" {
-  name = "securers"
+  name = "Securers"
   group = "${aws_iam_group.securers.name}"
   users = [
     "${data.aws_iam_user.mpomarole.user_name}",
