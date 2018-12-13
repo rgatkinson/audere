@@ -64,8 +64,8 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
       <ScreenContainer>
         <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
-          <Title label={t(EnrolledConfig.title)} />
-          <Description content={t(EnrolledConfig.description.label)} />
+          <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
+          <Description content={t("surveyDescription:" + EnrolledConfig.description.label)} />
           <OptionList
             data={newSelectedOptionsMap(
               EnrolledConfig.optionList.options,

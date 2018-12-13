@@ -59,9 +59,9 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
       if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" && this.props.bloodCollection) {
-        this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: t(SymptomsConfig.title) });
+        this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: t("surveyTitle:" + SymptomsConfig.title) });
       } else {
-        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: t(SymptomsConfig.title) });
+        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: t("surveyTitle:" + SymptomsConfig.title) });
       }
     } else {
       Alert.alert(
@@ -104,8 +104,8 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label={t(SymptomsConfig.title)} />
-          <Description content={t(SymptomsConfig.description.label)} center={SymptomsConfig.description.center} />
+          <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
+          <Description content={t("surveyDescription:" + SymptomsConfig.description.label)} center={SymptomsConfig.description.center} />
           <OptionList
             data={newSelectedOptionsMap(
               SymptomsConfig.optionList.options,

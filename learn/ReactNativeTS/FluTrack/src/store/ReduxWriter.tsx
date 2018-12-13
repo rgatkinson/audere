@@ -60,6 +60,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     _initializeResponse = (
       data: SurveyQuestionData
     ): [Map<string, SurveyResponse>, SurveyAnswer] => {
+      const { t } = this.props;
       const responses = this.props.surveyResponses
         ? new Map<string, SurveyResponse>(this.props.surveyResponses)
         : new Map<string, SurveyResponse>();
@@ -68,7 +69,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
         const buttonOptions = new Map<string, string>(
           data.buttons.map<[string, string]>((button: ButtonConfig) => [
             button.key,
-            this.props.t("surveyButton:" + button.key),
+            t("surveyButton:" + button.key),
           ])
         );
 
@@ -76,7 +77,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
           ? new Map<string, string>(
               data.optionList.options.map<[string, string]>(optionKey => [
                 optionKey,
-                this.props.t("surveyOption:" + optionKey),
+                t("surveyOption:" + optionKey),
               ])
             )
           : undefined;
@@ -87,9 +88,9 @@ export default function reduxWriter<P extends ReduxWriterProps>(
           optionKeysToLabel: optionKeysToLabel,
           questionId: data.id,
           questionText: (
-            (data.title ? data.title : "") +
+            (data.title ? t("surveyTitle:" + data.title) : "") +
             " " +
-            (data.description ? data.description!.label : "")
+            (data.description ? t("surveyDescription:" + data.description!.label) : "")
           ).trim(),
         });
       }

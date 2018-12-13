@@ -25,7 +25,7 @@ export const AgeBucketConfig = {
 
 class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: this.props.t(AgeBucketConfig.title) });
+    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: this.props.t("surveyTitle:" + AgeBucketConfig.title) });
   };
 
   render() {
@@ -41,7 +41,7 @@ class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProp
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label={t(AgeBucketConfig.title)} />
+          <Title label={t("surveyTitle:" + AgeBucketConfig.title)} />
           {AgeBucketConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}

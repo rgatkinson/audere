@@ -36,7 +36,7 @@ export const BloodConfig = {
 
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: this.props.t(BloodConfig.title) });
+    this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: this.props.t("surveyTitle:" + BloodConfig.title) });
   };
 
   render() {
@@ -52,8 +52,8 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
           onForward={this._onDone}
         />
         <ContentContainer>
-          <Title label={t(BloodConfig.title)} />
-          <Description content={t(BloodConfig.description.label)} />
+          <Title label={t("surveyTitle:" + BloodConfig.title)} />
+          <Description content={t("surveyDescription:" + BloodConfig.description.label)} />
           {BloodConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
