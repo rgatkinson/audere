@@ -2,7 +2,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState, setBloodCollection } from "../../../store";
+import { Action, Option, StoreState, setBloodCollection } from "../../../store";
 import EditSettingButton from "../../components/EditSettingButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -53,11 +53,11 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
     this.props.navigation.push("SelectLocation");
   };
 
-  _getBloodCollectionOptions(bloodCollection: boolean): Map<string, boolean> {
-    return new Map([
-      ["Available", bloodCollection],
-      ["Not Available", !bloodCollection],
-    ]);
+  _getBloodCollectionOptions(bloodCollection: boolean): Option[] {
+    return [
+      { key: "Available", selected: bloodCollection },
+      { key: "Not Available", selected: !bloodCollection },
+    ];
   }
 
   render() {
@@ -89,9 +89,10 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
           fullWidth={true}
           multiSelect={false}
           backgroundColor="#fff"
-          onChange={data =>
-            this.props.dispatch(setBloodCollection(!!data.get("Available")))
-          }
+          onChange={data => {
+            const availableOption = data.find(option => option.key === "Available")!.selected;
+            this.props.dispatch(setBloodCollection(!!availableOption));
+          }}
         />
         <Text style={styles.descriptionText}>
           If blood sample collection is available at this site, then the option

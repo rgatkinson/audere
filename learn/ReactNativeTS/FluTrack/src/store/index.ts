@@ -5,16 +5,13 @@ import immutableTransform from "redux-persist-transform-immutable";
 
 import { uploaderMiddleware } from "./uploader";
 
-import { default as user, UserState, UserAction } from "./user";
-export * from "./user";
-
 import { default as form, FormState, FormAction } from "./form";
 export * from "./form";
 
 import { default as admin, AdminState, AdminAction } from "./admin";
 export * from "./admin";
 
-export type Action = UserAction | FormAction | AdminAction;
+export type Action = FormAction | AdminAction;
 
 export { StoreState } from "./StoreState";
 
@@ -25,7 +22,6 @@ const persistConfig = {
 };
 
 const reducer = combineReducers({
-  user,
   form,
   admin,
 });

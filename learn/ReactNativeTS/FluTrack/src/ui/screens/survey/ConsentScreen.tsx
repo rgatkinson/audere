@@ -114,7 +114,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
             placeholder={t("fullName")}
             returnKeyType="done"
             value={this.props.name}
-            onChange={text => {
+            onChangeText={text => {
               this.props.dispatch(setName(text));
             }}
           />

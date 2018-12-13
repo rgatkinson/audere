@@ -9,7 +9,7 @@ import {
 } from "../../../store";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList from "../../components/OptionList";
+import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 
 import {
@@ -49,16 +49,15 @@ export default class SelectLocationScreen extends React.Component<Props> {
     });
   }
 
-  _getLocations(selectedLocation: string): Map<string, boolean> {
-    let locations = new Map<string, boolean>();
-    Object.keys(COLLECTION_LOCATIONS).map((location: string) =>
-      locations.set(location, false)
-    );
-    if (!!selectedLocation) {
-      locations.set(selectedLocation, true);
-    }
-    return locations;
-  }
+  _getSelectedOptions = () => {
+    const list = newSelectedOptionsList(Object.keys(COLLECTION_LOCATIONS));
+    return list.map((location) => {
+      return {
+        key: location.key,
+        selected: location.key === this.props.location,
+      };
+    });
+  };
 
   render() {
     return (
@@ -68,18 +67,16 @@ export default class SelectLocationScreen extends React.Component<Props> {
           onDismiss={() => this.setState({ feedbackVisible: false })}
         />
         <OptionList
-          data={this._getLocations(this.props.location)}
+          data={this._getSelectedOptions()}
           numColumns={1}
           multiSelect={false}
           fullWidth={true}
           backgroundColor="#fff"
           onChange={data => {
-            for (const location of data.keys()) {
-              if (data.get(location)) {
-                this.props.dispatch(setLocation(location));
-                this.props.dispatch(setLocationType(getLocationType(location)));
-                break;
-              }
+            const location = data.find(option => option.selected);
+            if (!!location) {
+              this.props.dispatch(setLocation(location.key));
+              this.props.dispatch(setLocationType(getLocationType(location.key)));
             }
           }}
         />

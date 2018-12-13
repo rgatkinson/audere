@@ -4,12 +4,12 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { Action, StoreState, setEmail } from "../../../store";
+import { Action, Option, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
-import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
+import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import SimpleStatusBar from "../../components/SimpleStatusBar";
 import Title from "../../components/Title";
@@ -17,7 +17,7 @@ import Title from "../../components/Title";
 interface Props {
   dispatch(action: Action): void;
   email: string;
-  options: Map<string, boolean>;
+  options: Option[];
   navigation: NavigationScreenProp<any, any>;
 }
 
@@ -51,9 +51,9 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
   };
 
   _haveEmailOption = () => {
-    const options: Map<string, boolean> = this.props.getAnswer("options");
-    return options && Array.from(options.values()).reduce(
-        (result: boolean, value: boolean) => (result || value),
+    const options: Option[] = this.props.getAnswer("options");
+    return options && options.reduce(
+        (result: boolean, option: Option) => (result || option.selected),
         false
       );
   };
@@ -67,7 +67,7 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
           <Description content={t("surveyDescription:" + EnrolledConfig.description.label)} />
           <OptionList
-            data={newSelectedOptionsMap(
+            data={newSelectedOptionsList(
               EnrolledConfig.optionList.options,
               this.props.getAnswer("options"),
             )}

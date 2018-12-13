@@ -8,16 +8,15 @@ import { withNamespaces, WithNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store";
+import { Option, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
+import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
-import { checkNotNull } from "../../../util/check";
 
 interface Props {
   name: string;
@@ -55,7 +54,11 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
 
   _eventsOccurred = (eventTypeKey: string): boolean => {
     const adverseProcedures = this.props.getAnswer("options", WhichProcedures.id);
-    return !!adverseProcedures && adverseProcedures.has(eventTypeKey) && adverseProcedures.get(eventTypeKey);
+    if (!!adverseProcedures) {
+      const event = adverseProcedures.find((procedure: Option) => procedure.key === eventTypeKey);
+      return !!event && event.selected;
+    }
+    return false;
   };
 
   _canSave = (): boolean => {
@@ -63,7 +66,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
       .filter(key => this._eventsOccurred(key))
       .map(key => {
         const options = this.props.getAnswer("options", OptionKeyToQuestion[key].id);
-        return !!options && Array.from(options.values()).reduce((result, value) => result || value, false);
+        return !!options && options.reduce((result: boolean, option: Option) => result || option.selected, false);
       })
       .reduce((result, value) => result && value, true);
     return !!allValid;
@@ -104,7 +107,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
               </Text>
               <OptionList
                 backgroundColor="#fff"
-                data={newSelectedOptionsMap(
+                data={newSelectedOptionsList(
                   OptionKeyToQuestion[key].optionList!.options,
                   this.props.getAnswer("options", OptionKeyToQuestion[key].id)
                 )}
@@ -112,8 +115,9 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
                 multiSelect={OptionKeyToQuestion[key].optionList!.multiSelect}
                 withOther={OptionKeyToQuestion[key].optionList!.withOther}
                 numColumns={1}
+                otherOption={this.props.getAnswer("otherOption", OptionKeyToQuestion[key].id)}
                 onOtherChange={value => this.props.updateAnswer({ otherOption: value }, OptionKeyToQuestion[key])}
-                onChange={data => this.props.updateAnswer({ options: data }, OptionKeyToQuestion[key])}
+                onChange={options => this.props.updateAnswer({ options }, OptionKeyToQuestion[key])}
               />
             </View>
           ))}

@@ -11,31 +11,22 @@ interface Props {
   autoFocus?: boolean;
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
-  value?: string | null;
-  onChange?(text: string): void;
-  onSubmit?(): void;
+  value: string | null;
+  onChangeText(text: string): void;
 }
 
 export default class TextInput extends React.Component<Props> {
-  textInput = React.createRef<SystemTextInput>();
-
   render() {
     return (
       <SystemTextInput
         autoFocus={this.props.autoFocus}
         placeholder={this.props.placeholder}
-        style={styles.textInput}
-        ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
+        style={styles.textInput}
         value={this.props.value ? this.props.value : undefined}
-        onChangeText={this.props.onChange}
-        onSubmitEditing={this.props.onSubmit}
+        onChangeText={this.props.onChangeText}
       />
     );
-  }
-
-  focus() {
-    this.textInput.current!.focus();
   }
 }
 

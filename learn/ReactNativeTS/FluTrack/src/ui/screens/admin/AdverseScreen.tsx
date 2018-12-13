@@ -8,12 +8,12 @@ import { withNamespaces, WithNamespaces } from "react-i18next";
 import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState, SurveyResponse } from "../../../store";
+import { Option, StoreState, SurveyResponse } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { PostCollectionQuestions } from "./QuestionConfig";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
+import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
@@ -54,14 +54,17 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   }
 
   _adverseEventsOccurred = (key: string): boolean => {
-    const adverseEvents: Map<string, boolean> = this.props.getAnswer("options", WereThereAdverse.id);
-    return !!adverseEvents && adverseEvents.has(key) && !!adverseEvents.get(key);
+    const adverseEvents: Option[] = this.props.getAnswer("options", WereThereAdverse.id);
+    if (!!adverseEvents) {
+      const option = adverseEvents.find(option => option.key === key);
+      return !!option && option.selected;
+    }
+    return false;
   };
 
   _adverseProceduresSelected = (): boolean => {
-    const adverseProcedures: Map<string, boolean> = this.props.getAnswer("options", WhichProcedures.id);
-    return !!adverseProcedures &&
-      Array.from(adverseProcedures.values()).reduce((result, value) => result || value, false);
+    const adverseProcedures: Option[] = this.props.getAnswer("options", WhichProcedures.id);
+    return !!adverseProcedures && adverseProcedures.reduce((result, option) => result || option.selected, false);
   };
 
   _onNext = () => {
@@ -97,14 +100,14 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
         <Text style={styles.sectionHeaderText}>{WereThereAdverse.title}</Text>
         <OptionList
           backgroundColor="#fff"
-          data={newSelectedOptionsMap(
+          data={newSelectedOptionsList(
             WereThereAdverse.optionList.options,
             this.props.getAnswer("options", WereThereAdverse.id),
           )}
           fullWidth={true}
           multiSelect={WereThereAdverse.optionList.multiSelect}
           numColumns={1}
-          onChange={data => this.props.updateAnswer({ options: data }, WereThereAdverse)}
+          onChange={options => this.props.updateAnswer({ options }, WereThereAdverse)}
         />
         {this._adverseEventsOccurred("yes") && (
           <View>
@@ -113,14 +116,14 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
             </Text>
             <OptionList
               backgroundColor="#fff"
-              data={newSelectedOptionsMap(
+              data={newSelectedOptionsList(
                 WhichProcedures.optionList.options,
                 this.props.getAnswer("options", WhichProcedures.id),
               )}
               fullWidth={true}
               multiSelect={WhichProcedures.optionList.multiSelect}
               numColumns={1}
-              onChange={data => this.props.updateAnswer({ options: data }, WhichProcedures)}
+              onChange={options => this.props.updateAnswer({ options }, WhichProcedures)}
             />
           </View>
         )}

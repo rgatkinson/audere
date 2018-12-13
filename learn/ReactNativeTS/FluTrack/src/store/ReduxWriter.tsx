@@ -7,10 +7,12 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import {
   Action,
+  OptionLabel,
+  ButtonLabel,
   StoreState,
   SurveyAnswer,
   SurveyResponse,
-  setSurveyResponses,
+  setResponses,
 } from "./index";
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
@@ -21,12 +23,11 @@ import {
   EnabledOption,
   SurveyQuestionData,
 } from "../resources/QuestionnaireConfig";
-import { checkNotNull } from "../util/check";
 
 interface InnerProps {
   dispatch(action: Action): void;
   navigation?: NavigationScreenProp<any, any>;
-  surveyResponses: Map<string, SurveyResponse>;
+  responses: SurveyResponse[];
   t(key: string): string;
 }
 
@@ -57,74 +58,63 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       };
     }
 
-    _initializeResponse = (
-      data: SurveyQuestionData
-    ): [Map<string, SurveyResponse>, SurveyAnswer] => {
+    _updateAnswer = (
+      update: SurveyAnswer,
+      data: SurveyQuestionData = this.state.data
+    ) => {
       const { t } = this.props;
-      const responses = this.props.surveyResponses
-        ? new Map<string, SurveyResponse>(this.props.surveyResponses)
-        : new Map<string, SurveyResponse>();
+      const responses = this.props.responses.slice(0);
+      const response = responses.find(
+        response => response.questionId === data.id
+      );
+      if (!response) {
+        // Initialize response
+        const buttonLabels: ButtonLabel[] = [];
+        data.buttons.forEach(button => {
+          buttonLabels.push({
+            key: button.key,
+            label: t("surveyButton:" + button.key),
+          });
+        });
 
-      if (!responses.has(data.id)) {
-        const buttonOptions = new Map<string, string>(
-          data.buttons.map<[string, string]>((button: ButtonConfig) => [
-            button.key,
-            t("surveyButton:" + button.key),
-          ])
-        );
+        const optionLabels: OptionLabel[] = [];
+        if (!!data.optionList) {
+          data.optionList.options.forEach(option => {
+            optionLabels.push({
+              key: option,
+              label: t("surveyOption:" + option),
+            });
+          });
+        }
 
-        const optionKeysToLabel = data.optionList
-          ? new Map<string, string>(
-              data.optionList.options.map<[string, string]>(optionKey => [
-                optionKey,
-                t("surveyOption:" + optionKey),
-              ])
-            )
-          : undefined;
-
-        responses.set(data.id, {
-          answer: {},
-          buttonOptions: buttonOptions,
-          optionKeysToLabel: optionKeysToLabel,
+        responses.push({
+          answer: update,
+          buttonLabels,
+          optionLabels,
           questionId: data.id,
           questionText: (
             (data.title ? t("surveyTitle:" + data.title) : "") +
             " " +
-            (data.description ? t("surveyDescription:" + data.description!.label) : "")
+            (data.description
+              ? t("surveyDescription:" + data.description!.label)
+              : "")
           ).trim(),
         });
+      } else {
+        response!.answer = { ...response!.answer, ...update };
       }
 
-      return [
-        responses,
-        responses.has(data.id) ? responses.get(data.id)!.answer! : {},
-      ];
-    };
-
-    _updateAnswer = (
-      update: object,
-      data: SurveyQuestionData = this.state.data
-    ) => {
-      const [responses, existingAnswer] = this._initializeResponse(data);
-      responses.set(data.id, {
-        ...checkNotNull(responses.get(data.id)),
-        answer: {
-          ...existingAnswer,
-          ...update,
-        },
-      });
-      this.props.dispatch(setSurveyResponses(responses));
+      this.props.dispatch(setResponses(responses));
     };
 
     _getAnswer = (key: string, id: string = this.state.data.id): any => {
-      return (
-        (!!this.props.surveyResponses &&
-          this.props.surveyResponses.has(id) &&
-          this.props.surveyResponses.get(id) &&
-          this.props.surveyResponses.get(id)!.answer &&
-          this.props.surveyResponses.get(id)!.answer![key]) ||
-        null
+      const response = this.props.responses.find(
+        response => response.questionId === id
       );
+      if (!response || !response!.answer || !response!.answer![key]) {
+        return null;
+      }
+      return response!.answer![key];
     };
 
     render() {
@@ -140,7 +130,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
 
   const mapStateToProps = function(state: StoreState) {
     return {
-      surveyResponses: state.form.surveyResponses,
+      responses: state.form.responses,
     };
   };
 

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as form, Address, FormState } from "./form";
+import { default as form, Address, FormState, Option } from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
@@ -20,7 +20,7 @@ import {
   TelecomInfoSystem,
   VisitInfo,
 } from "audere-lib";
-import { checkNotNull, isNotNull } from "../util/check";
+import { isNotNull } from "../util/check";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -60,163 +60,177 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
   }
 
   const form = state.form;
-  if (form != null) {
-    if (!!form.name) {
-      pouch.patient.name = form.name;
-    }
-    if (!!form.email) {
-      pouch.patient.telecom.push({
-        system: TelecomInfoSystem.Email,
-        value: form.email,
-      });
-    }
+  if (!!form.name) {
+    pouch.patient.name = form.name;
+  }
+  if (!!form.email) {
+    pouch.patient.telecom.push({
+      system: TelecomInfoSystem.Email,
+      value: form.email,
+    });
+  }
 
-    maybePushConsent(form, pouch.consents);
-    const responses = form.surveyResponses;
-    if (!!responses && responses instanceof Map) {
-      if (responses.has("BirthDate")) {
-        const birthDate = responses.get("BirthDate")!.answer!.dateInput;
-        if (!!birthDate) {
-          pouch.patient.birthDate = birthDate.toISOString().substring(0, 10); // FHIR:date
-        }
-      }
-      if (responses.has("Address")) {
-        maybePushAddress(
-          responses.get("Address")!.answer!.addressInput,
-          AddressInfoUse.Home,
-          pouch.patient.address
-        );
-      }
-      if (responses.has("WorkAddress")) {
-        maybePushAddress(
-          responses.get("WorkAddress")!.answer!.addressInput,
-          AddressInfoUse.Work,
-          pouch.patient.address
-        );
-      }
-      if (responses.has("AssignedSex")) {
-        let buttonKey = responses.get("AssignedSex")!.answer!.selectedButtonKey;
-        switch (buttonKey) {
-          case "male":
-            pouch.patient.gender = PatientInfoGender.Male;
-            break;
-          case "female":
-            pouch.patient.gender = PatientInfoGender.Female;
-            break;
-          case "other":
-            pouch.patient.gender = PatientInfoGender.Other;
-            break;
-          default:
-            // Prefer not to say
-            pouch.patient.gender = PatientInfoGender.Unknown;
-            break;
-        }
-      }
+  maybePushConsent(form, pouch.consents);
+  const responses = form.responses;
 
-      // Set all surveyResponses into pouch.responses
-      let items: ResponseItemInfo[] = [];
-      for (const [key, value] of responses.entries()) {
-        let item: ResponseItemInfo = {
-          id: key,
-          text: value.questionText,
-          answer: [],
-        };
-        const surveyAnswer = value.answer;
-        if (!surveyAnswer) {
-          continue;
-        }
-        let answerOptions: QuestionAnswerOption[] = [];
-        const options = surveyAnswer.options;
-        const optionKeysToLabel = value.optionKeysToLabel;
-        if (!!optionKeysToLabel) {
-          for (const [key, value] of optionKeysToLabel.entries()) {
-            answerOptions.push({
-              id: key,
-              text: value,
-            });
-          }
-        }
-        const buttonOptions = value.buttonOptions;
-        // Consider all buttons besides "done" and "preferNotToSay" to be
-        // multiple choice options
-        if (!!buttonOptions) {
-          for (const button of buttonOptions.keys()) {
-            if (button !== "preferNotToSay" && button !== "done") {
-              answerOptions.push({
-                id: button,
-                text: checkNotNull(buttonOptions.get(button)),
-              });
-            }
-          }
-        }
-        if (answerOptions.length > 0) {
-          item.answerOptions = answerOptions;
-        }
-        if (surveyAnswer.selectedButtonKey === "preferNotToSay") {
-          item.answer.push({ valueDeclined: true });
-        } else {
-          if (item.answerOptions) {
-            if (
-              !!options &&
-              (surveyAnswer.selectedButtonKey === "done" ||
-                surveyAnswer.selectedButtonKey == null)
-            ) {
-              // Actual multiple choice; find indices of all true values
-              const optionArray: string[] = Array.from(options.keys());
-              for (let i = 0; i < optionArray.length; i++) {
-                if (options.get(optionArray[i])) {
-                  item.answer.push({ valueInteger: i });
-                  // ASSUME the "Other" choice is always keyed "other"
-                  if (
-                    !!surveyAnswer.otherOption &&
-                    optionArray[i].toLowerCase() === "other"
-                  ) {
-                    item.answer.push({
-                      valueOther: {
-                        selectedIndex: i,
-                        valueString: surveyAnswer.otherOption,
-                      },
-                    });
-                  }
-                }
-              }
-            } else {
-              // Check if user pressed other button ("yes" "no" "do not know")
-              const choiceArray = item.answerOptions;
-              for (let i = 0; i < choiceArray.length; i++) {
-                if (choiceArray[i].id === surveyAnswer.selectedButtonKey) {
-                  item.answer.push({ valueInteger: i });
-                }
-              }
-            }
-          }
-
-          const valueAddress = addressValueInfo(surveyAnswer.addressInput);
-          if (valueAddress != null) {
-            item.answer.push({ valueAddress });
-          }
-
-          if (surveyAnswer.dateInput) {
-            item.answer.push({
-              valueDateTime: surveyAnswer.dateInput.toISOString(),
-            });
-          }
-          if (surveyAnswer.numberInput) {
-            if (Number.isInteger(surveyAnswer.numberInput)) {
-              item.answer.push({ valueInteger: surveyAnswer.numberInput });
-            } else {
-              item.answer.push({ valueDecimal: surveyAnswer.numberInput });
-            }
-          }
-          if (surveyAnswer.textInput) {
-            item.answer.push({ valueString: surveyAnswer.textInput });
-          }
-        }
-        items.push(item);
-      }
-      pouch.responses.push({ id: "Questionnaire", item: items });
+  const birthDateResponse = responses.find(
+    response => response.questionId === "BirthDate"
+  );
+  if (!!birthDateResponse) {
+    const birthDate = birthDateResponse!.answer!.dateInput;
+    if (!!birthDate) {
+      pouch.patient.birthDate = birthDate.toISOString().substring(0, 10); // FHIR:date
     }
   }
+
+  const addressResponse = responses.find(
+    response => response.questionId === "Address"
+  );
+  if (!!addressResponse) {
+    maybePushAddress(
+      addressResponse!.answer!.addressInput,
+      AddressInfoUse.Home,
+      pouch.patient.address
+    );
+  }
+
+  const workAddressResponse = responses.find(
+    response => response.questionId === "WorkAddress"
+  );
+  if (!!workAddressResponse) {
+    maybePushAddress(
+      workAddressResponse!.answer!.addressInput,
+      AddressInfoUse.Work,
+      pouch.patient.address
+    );
+  }
+
+  const assignedSexResponse = responses.find(
+    response => response.questionId === "AssignedSex"
+  );
+  if (!!assignedSexResponse) {
+    let buttonKey = assignedSexResponse!.answer!.selectedButtonKey;
+    switch (buttonKey) {
+      case "male":
+        pouch.patient.gender = PatientInfoGender.Male;
+        break;
+      case "female":
+        pouch.patient.gender = PatientInfoGender.Female;
+        break;
+      case "other":
+        pouch.patient.gender = PatientInfoGender.Other;
+        break;
+      default:
+        // Prefer not to say
+        pouch.patient.gender = PatientInfoGender.Unknown;
+        break;
+    }
+  }
+
+  // Set all surveyResponses into pouch.responses
+  let items: ResponseItemInfo[] = [];
+  responses.forEach(response => {
+    let item: ResponseItemInfo = {
+      id: response.questionId,
+      text: response.questionText,
+      answer: [],
+    };
+
+    if (!!response.answer) {
+      let answerOptions: QuestionAnswerOption[] = [];
+      if (!!response.optionLabels) {
+        response.optionLabels.forEach(({ key, label }) => {
+          answerOptions.push({
+            id: key,
+            text: label,
+          });
+        });
+      }
+
+      if (!!response.buttonLabels) {
+        // Consider all buttons besides "done" and "preferNotToSay" to be
+        // multiple choice options
+        response.buttonLabels.forEach(({ key, label }) => {
+          if (key !== "preferNotToSay" && key !== "done") {
+            answerOptions.push({
+              id: key,
+              text: label,
+            });
+          }
+        });
+      }
+
+      if (answerOptions.length > 0) {
+        item.answerOptions = answerOptions;
+      }
+
+      if (response.answer.selectedButtonKey === "preferNotToSay") {
+        item.answer.push({ valueDeclined: true });
+      } else {
+        if (item.answerOptions) {
+          if (
+            !!response.answer.options &&
+            (response.answer.selectedButtonKey === "done" ||
+              !response.answer.selectedButtonKey)
+          ) {
+            // Actual multiple choice; find indices of all true values
+            let i = 0;
+            const otherOption = response.answer.otherOption;
+            response.answer.options.forEach((option: Option) => {
+              if (option.selected) {
+                item.answer.push({ valueInteger: i });
+              }
+              // ASSUME the "Other" choice is always keyed "other"
+              if (!!otherOption && option.key.toLowerCase() === "other") {
+                item.answer.push({
+                  valueOther: {
+                    selectedIndex: i,
+                    valueString: otherOption,
+                  },
+                });
+              }
+              i = i + 1;
+            });
+          } else {
+            // Check if user pressed other button ("yes" "no" "do not know")
+            const choiceArray = item.answerOptions;
+            for (let i = 0; i < choiceArray.length; i++) {
+              if (choiceArray[i].id === response.answer.selectedButtonKey) {
+                item.answer.push({ valueInteger: i });
+              }
+            }
+          }
+        }
+
+        const valueAddress = addressValueInfo(response.answer.addressInput);
+        if (valueAddress != null) {
+          item.answer.push({ valueAddress });
+        }
+
+        if (response.answer.dateInput) {
+          item.answer.push({
+            valueDateTime: response.answer.dateInput.toISOString(),
+          });
+        }
+
+        if (response.answer.numberInput) {
+          if (Number.isInteger(response.answer.numberInput)) {
+            item.answer.push({ valueInteger: response.answer.numberInput });
+          } else {
+            item.answer.push({ valueDecimal: response.answer.numberInput });
+          }
+        }
+
+        if (response.answer.textInput) {
+          item.answer.push({ valueString: response.answer.textInput });
+        }
+      }
+
+      items.push(item);
+    }
+  });
+  pouch.responses.push({ id: "Questionnaire", item: items });
+
   return pouch;
 }
 

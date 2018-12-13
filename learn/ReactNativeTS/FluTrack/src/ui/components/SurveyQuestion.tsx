@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Action } from "../../store/index";
+import { Action, Option } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { ButtonConfig, EnabledOption, SurveyQuestionData } from "../../resources/QuestionnaireConfig";
 import AddressInput from "./AddressInput";
@@ -9,7 +9,7 @@ import Button from "./Button";
 import DateInput from "./DateInput";
 import Description from "./Description";
 import NumberInput from "./NumberInput";
-import OptionList, { newSelectedOptionsMap } from "./OptionList";
+import OptionList, { newSelectedOptionsList } from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
 
@@ -46,13 +46,8 @@ class SurveyQuestion extends Component<
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
     if (enabledStatus === "withOption") {
-      return Array.from(newSelectedOptionsMap(
-        this.props.data.optionList
-          ? this.props.data.optionList!.options
-          : [],
-        this.props.getAnswer("options")).values()).reduce(
-          (val, entry) => val || entry
-        );
+      const options = this.props.getAnswer("options");
+      return !!options && options.reduce((result: boolean, option: Option) => result || option.selected, false);
     } else if (enabledStatus === "withText") {
       return !!this.props.getAnswer("textInput");
     } else if (enabledStatus === "withNumber") {
@@ -88,8 +83,8 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             placeholder={t("surveyPlaceholder:" + this.props.data.textInput!.placeholder)}
             returnKeyType="done"
-            value={this.props.getAnswer("textInput")}
-            onChange={text => {
+            value={this.props.getAnswer("textInput") ? this.props.getAnswer("textInput") : undefined}
+            onChangeText={text => {
               this.props.updateAnswer({ textInput: text });
             }}
           />
@@ -132,10 +127,8 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.optionList && (
           <OptionList
-            data={newSelectedOptionsMap(
-              this.props.data.optionList
-              ? this.props.data.optionList!.options
-              : [],
+            data={newSelectedOptionsList(
+              this.props.data.optionList!.options,
               this.props.getAnswer("options")
             )}
             multiSelect={this.props.data.optionList.multiSelect}
@@ -145,8 +138,8 @@ class SurveyQuestion extends Component<
             onOtherChange={value => {
               this.props.updateAnswer({ otherOption: value });
             }}
-            onChange={data => {
-              this.props.updateAnswer({ options: data });
+            onChange={options => {
+              this.props.updateAnswer({ options });
             }}
           />
         )}

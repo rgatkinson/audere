@@ -10,10 +10,7 @@ export type FormAction =
   | { type: "SET_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_BLOOD_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
-  | {
-      type: "SET_SURVEY_RESPONSES";
-      surveyResponses: Map<string, SurveyResponse>;
-    };
+  | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
   location?: string;
@@ -29,27 +26,36 @@ export interface Sample {
   code: string;
 }
 
+export interface Option {
+  key: string;
+  selected: boolean;
+}
+
 export interface SurveyAnswer {
   addressInput?: Address;
   dateInput?: Date;
-  options?: Map<string, boolean>;
+  options?: Option[];
   otherOption?: string;
   numberInput?: number;
   selectedButtonKey?: string;
   textInput?: string;
-  [key: string]:
-    | Address
-    | Date
-    | Map<string, boolean>
-    | string
-    | number
-    | undefined;
+  [key: string]: Address | Date | Option[] | string | number | undefined;
+}
+
+export interface ButtonLabel {
+  key: string;
+  label: string;
+}
+
+export interface OptionLabel {
+  key: string;
+  label: string;
 }
 
 export interface SurveyResponse {
   answer?: SurveyAnswer;
-  buttonOptions?: Map<string, string>;
-  optionKeysToLabel?: Map<string, string>;
+  buttonLabels?: ButtonLabel[];
+  optionLabels?: OptionLabel[];
   questionId: string;
   questionText: string;
 }
@@ -63,18 +69,19 @@ export type FormState = {
   bloodConsentTerms?: string;
   signatureBase64?: string;
   bloodSignatureBase64?: string;
-  surveyResponses?: Map<string, SurveyResponse>;
+  responses: SurveyResponse[];
   samples?: Sample[];
 };
 
 const initialState: FormState = {
   completedSurvey: false,
+  responses: [],
 };
 
 export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "START_FORM") {
     // Resets all form data
-    return { formId: uuidv4(), completedSurvey: false };
+    return { ...initialState, formId: uuidv4() };
   }
   if (action.type === "COMPLETE_SURVEY") {
     return { ...state, completedSurvey: true };
@@ -100,8 +107,8 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "SET_SAMPLES") {
     return { ...state, samples: action.samples };
   }
-  if (action.type === "SET_SURVEY_RESPONSES") {
-    return { ...state, surveyResponses: action.surveyResponses };
+  if (action.type === "SET_RESPONSES") {
+    return { ...state, responses: action.responses };
   }
   return state;
 }
@@ -167,11 +174,9 @@ export function setSamples(samples: Sample[]): FormAction {
   };
 }
 
-export function setSurveyResponses(
-  surveyResponses: Map<string, SurveyResponse>
-): FormAction {
+export function setResponses(responses: SurveyResponse[]): FormAction {
   return {
-    type: "SET_SURVEY_RESPONSES",
-    surveyResponses,
+    type: "SET_RESPONSES",
+    responses,
   };
 }

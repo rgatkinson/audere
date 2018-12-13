@@ -4,14 +4,14 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { StoreState } from "../../../store";
+import { Option, StoreState } from "../../../store";
 import { AgeBucketConfig } from "./AgeScreen";
 import { BloodConfig } from "./BloodScreen";
 import { ConsentConfig } from "./ConsentScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
-import OptionList, { newSelectedOptionsMap } from "../../components/OptionList";
+import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
@@ -82,10 +82,10 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
   };
 
   _numSymptoms = () => {
-    const symptoms: Map<string, boolean> = this.props.getAnswer("options");
+    const symptoms: Option[] = this.props.getAnswer("options");
     return symptoms
-      ? Array.from(symptoms.values()).reduce(
-          (count: number, value: boolean) => (value ? count + 1 : count),
+      ? symptoms.reduce(
+          (count: number, option: Option) => (option.selected ? count + 1 : count),
           0
         )
       : 0;
@@ -107,7 +107,7 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
           <Description content={t("surveyDescription:" + SymptomsConfig.description.label)} center={SymptomsConfig.description.center} />
           <OptionList
-            data={newSelectedOptionsMap(
+            data={newSelectedOptionsList(
               SymptomsConfig.optionList.options,
               this.props.getAnswer("options"),
             )}

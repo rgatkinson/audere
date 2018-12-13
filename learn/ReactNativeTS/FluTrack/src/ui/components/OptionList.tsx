@@ -14,41 +14,58 @@ import { Feather } from '@expo/vector-icons';
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Description from "./Description";
 
+interface Option {
+  key: string;
+  selected: boolean;
+}
+
 interface Props {
-  data: Map<string, boolean>;
+  data: Option[];
   multiSelect: boolean;
   numColumns: number;
   withOther?: boolean;
   otherOption?: string | null;
-  onChange(data: Map<string, boolean>): void;
+  onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
   fullWidth?: boolean;
   backgroundColor?: string;
 }
 
-const emptyMap = (data: string[]) => {
-  return new Map<string, boolean>(
-    data.map((entry: string): [string, boolean] => [entry, false])
-  );
-};
-
-const newSelectedOptionsMap = (options: string[], selected?: Map<string, boolean>) => {
-  return selected
-    ? new Map<string, boolean>(selected)
-    : emptyMap(options);
+const emptyList = (data: string[]) => {
+  return data.map(option => {
+    return {
+      key: option,
+      selected: false,
+    };
+  });
 }
 
-export { emptyMap, newSelectedOptionsMap };
+const newSelectedOptionsList = (options: string[], selected?: Option[]): Option[] => {
+  return selected
+    ? selected.slice(0)
+    : emptyList(options);
+}
+
+export { newSelectedOptionsList };
 
 class OptionList extends React.Component<Props & WithNamespaces> {
   _onPressItem = (id: string) => {
-    const toggled = !this.props.data.get(id);
-    const data = this.props.multiSelect
-      ? new Map<string, boolean>(this.props.data)
-      : emptyMap(Array.from(this.props.data.keys()));
+    const dataItem = this.props.data.find(option => option.key === id);
+    if (!!dataItem) {
+      const toggled = !dataItem.selected;
 
-    data.set(id, toggled);
-    this.props.onChange(data);
+      let data = this.props.multiSelect
+        ? this.props.data.slice(0)
+        : emptyList(this.props.data.map(option => option.key));
+
+      data = data.map(option => {
+        return {
+          key: option.key,
+          selected: option.key === id ? toggled : option.selected,
+        };
+      });
+      this.props.onChange(data);
+    }
   };
 
   render() {
@@ -60,20 +77,20 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         this.props.numColumns * 20) /
       this.props.numColumns;
     const totalHeight =
-      Math.ceil(this.props.data.size / this.props.numColumns) * 44;
+      Math.ceil(this.props.data.length / this.props.numColumns) * 44;
 
     return (
       <View style={styles.container}>
         <View style={{ height: totalHeight }}>
           <FlatList
-            data={Array.from(this.props.data.entries())}
+            data={this.props.data}
             numColumns={this.props.numColumns}
             scrollEnabled={false}
-            keyExtractor={item => item[0]}
+            keyExtractor={item => item.key}
             renderItem={({ item }) => (
               <TranslatedListItem
-                id={item[0]}
-                selected={item[1]}
+                id={item.key}
+                selected={item.selected}
                 width={itemWidth}
                 fullWidth={this.props.fullWidth}
                 backgroundColor={this.props.backgroundColor}
@@ -83,7 +100,8 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           />
         </View>
         {this.props.withOther &&
-          this.props.data.get("other") && (
+          !!(this.props.data.find(option => option.key === "other")) &&
+          (this.props.data.find(option => option.key === "other")!).selected && (
             <View>
               <Description content={t("pleaseSpecify")} />
               <View style={[{ width: itemWidth }, styles.item]}>
