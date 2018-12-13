@@ -28,9 +28,9 @@ class SurveyQuestion extends Component<
     if (this.props.data.conditionalNext) {
       !!this.props.data.conditionalNext!.options &&
         !!this.props.getAnswer("options") &&
-        this.props.getAnswer("options").forEach((value: boolean, key: string) => {
-          if (value && this.props.data.conditionalNext!.options!.has(key)) {
-            nextQuestion = this.props.data.conditionalNext!.options!.get(key)!;
+        this.props.getAnswer("options").forEach((option: Option) => {
+          if (option.selected && this.props.data.conditionalNext!.options!.has(option.key)) {
+            nextQuestion = this.props.data.conditionalNext!.options!.get(option.key)!;
           }
         });
       !!this.props.data.conditionalNext!.buttonKeys &&
