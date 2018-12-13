@@ -129,3 +129,167 @@ resource "aws_iam_role_policy" "logs_role_policy" {
 
   policy = "${data.aws_iam_policy_document.logs_policy.json}"
 }
+
+// --------------------------------------------------------------------------------
+// Policies
+
+// ----------------
+// infrastructurers
+
+resource "aws_iam_group" "infrastructurers" {
+  name = "infrastructurers"
+}
+
+resource "aws_iam_group_membership" "infrastructurers" {
+  name = "infrastructurers"
+  group = "${aws_iam_group.infrastructurers.name}"
+  users = [
+    "${data.aws_iam_user.mmarucheck.name}",
+    "${data.aws_iam_user.ram.name}",
+  ]
+}
+
+resource "aws_iam_group_policy_attachment" "eks_full_access" {
+  group = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.eks_full_access.arn}"
+}
+
+resource "aws_iam_group_policy_attachment" "ses_send_email" {
+  group = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.ses_send_email.arn}"
+}
+
+// --------
+// securers
+
+resource "aws_iam_group" "securers" {
+  name = "securers"
+}
+
+resource "aws_iam_group_membership" "securers" {
+  name = "securers"
+  group = "${aws_iam_group.securers.name}"
+  users = [
+    "${data.aws_iam_user.mpomarole.name}",
+  ]
+}
+
+// ----------------
+// Policy documents
+
+// ses_send_email
+resource "aws_iam_policy" "ses_send_email" {
+  name = "SESSendEmail"
+  description = "Grant ses:SendEmail and related"
+  policy = "${data.aws_iam_policy_document.ses_send_email.json}"
+}
+data "aws_iam_policy_document" "ses_send_email" {
+  statement {
+    actions = [
+      "ses:SendEmail",
+      "ses:VerifyEmailIdentity"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// eks_full_access
+resource "aws_iam_policy" "eks_full_access" {
+  name = "EKSFullAccess"
+  policy = "${data.aws_iam_policy_document.eks_full_access.json}"
+}
+data "aws_iam_policy_document" "eks_full_access" {
+  statement {
+    actions = [
+      "eks:*",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// ec2_full_access (copied from AmazonEC2FullAccess managed policy)
+resource "aws_iam_policy" "ec2_full_access" {
+  name = "EC2FullAccess"
+  policy = "${data.aws_iam_policy_document.ec2_full_access.json}"
+}
+data "aws_iam_policy_document" "ec2_full_access" {
+  statement {
+    actions = [
+      "ec2:*",
+      "elasticloadbalancing:*",
+      "cloudwatch:*",
+      "autoscaling:*",
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+
+  statement {
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+    resources = ["*"]
+
+    condition {
+      test = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values = [
+        "autoscaling.amazonaws.com",
+        "ec2scheduled.amazonaws.com",
+        "elasticloadbalancing.amazonaws.com",
+        "spot.amazonaws.com",
+        "spotfleet.amazonaws.com",
+        "transitgateway.amazonaws.com"
+      ]
+    }
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// --------------------------------------------------------------------------------
+// Users with managed AWS privileges
+
+data "aws_iam_user" "mmarucheck" {
+  user_name = "mmarucheck"
+}
+
+data "aws_iam_user" "mpomarole" {
+  user_name = "mpomarole"
+}
+
+data "aws_iam_user" "ram" {
+  user_name = "ram"
+}
+
+// --------------------------------------------------------------------------------
+// Locals
+
+locals {
+  mfa_condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+  }
+  mfa_condition_test = "NumericLessThan"
+  mfa_condition_variable = "aws:MultiFactorAuthAge"
+  mfa_condition_value = "${6 * 60 * 60}"
+}
