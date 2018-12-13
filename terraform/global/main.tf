@@ -144,9 +144,19 @@ resource "aws_iam_group_membership" "infrastructurers" {
   name = "infrastructurers"
   group = "${aws_iam_group.infrastructurers.name}"
   users = [
-    "${data.aws_iam_user.mmarucheck.name}",
-    "${data.aws_iam_user.ram.name}",
+    "${data.aws_iam_user.mmarucheck.user_name}",
+    "${data.aws_iam_user.ram.user_name}",
   ]
+}
+
+resource "aws_iam_group_policy_attachment" "ec2_full_access" {
+  group = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.ec2_full_access.arn}"
+}
+
+resource "aws_iam_group_policy_attachment" "route53_full_access" {
+  group = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.route53_full_access.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "eks_full_access" {
@@ -170,53 +180,22 @@ resource "aws_iam_group_membership" "securers" {
   name = "securers"
   group = "${aws_iam_group.securers.name}"
   users = [
-    "${data.aws_iam_user.mpomarole.name}",
+    "${data.aws_iam_user.mpomarole.user_name}",
   ]
+}
+
+resource "aws_iam_group_policy_attachment" "security_audit" {
+  group = "${aws_iam_group.securers.name}"
+  policy_arn = "${aws_iam_policy.security_audit.arn}"
+}
+
+resource "aws_iam_group_policy_attachment" "security_hub_full_access" {
+  group = "${aws_iam_group.securers.name}"
+  policy_arn = "${aws_iam_policy.security_hub_full_access.arn}"
 }
 
 // ----------------
 // Policy documents
-
-// ses_send_email
-resource "aws_iam_policy" "ses_send_email" {
-  name = "SESSendEmail"
-  description = "Grant ses:SendEmail and related"
-  policy = "${data.aws_iam_policy_document.ses_send_email.json}"
-}
-data "aws_iam_policy_document" "ses_send_email" {
-  statement {
-    actions = [
-      "ses:SendEmail",
-      "ses:VerifyEmailIdentity"
-    ]
-    resources = ["*"]
-    condition = {
-      test = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
-    }
-  }
-}
-
-// eks_full_access
-resource "aws_iam_policy" "eks_full_access" {
-  name = "EKSFullAccess"
-  policy = "${data.aws_iam_policy_document.eks_full_access.json}"
-}
-data "aws_iam_policy_document" "eks_full_access" {
-  statement {
-    actions = [
-      "eks:*",
-      "iam:PassRole"
-    ]
-    resources = ["*"]
-    condition = {
-      test = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
-    }
-  }
-}
 
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
@@ -257,6 +236,345 @@ data "aws_iam_policy_document" "ec2_full_access" {
         "transitgateway.amazonaws.com"
       ]
     }
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// route53_full_access (copied from AmazonRoute53FullAccess managed policy)
+resource "aws_iam_policy" "route53_full_access" {
+  name = "Rout53FullAccess"
+  policy = "${data.aws_iam_policy_document.route53_full_access.json}"
+}
+data "aws_iam_policy_document" "route53_full_access" {
+  statement {
+    actions = [
+      "route53:*",
+      "route53domains:*",
+      "cloudfront:ListDistributions",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticbeanstalk:DescribeEnvironments",
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketWebsite",
+      "ec2:DescribeVpcs",
+      "ec2:DescribeRegions",
+      "sns:ListTopics",
+      "sns:ListSubscriptionsByTopic",
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:GetMetricStatistics",
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// eks_full_access
+resource "aws_iam_policy" "eks_full_access" {
+  name = "EKSFullAccess"
+  policy = "${data.aws_iam_policy_document.eks_full_access.json}"
+}
+data "aws_iam_policy_document" "eks_full_access" {
+  statement {
+    actions = [
+      "eks:*",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// ses_send_email
+resource "aws_iam_policy" "ses_send_email" {
+  name = "SESSendEmail"
+  policy = "${data.aws_iam_policy_document.ses_send_email.json}"
+}
+data "aws_iam_policy_document" "ses_send_email" {
+  statement {
+    actions = [
+      "ses:SendEmail",
+      "ses:VerifyEmailIdentity"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// security_audit (copied from SecurityAudit managed policy)
+resource "aws_iam_policy" "security_audit" {
+  name = "SecurityAudit"
+  policy = "${data.aws_iam_policy_document.security_audit.json}"
+}
+data "aws_iam_policy_document" "security_audit" {
+  statement {
+    actions = [
+      "acm:DescribeCertificate",
+      "acm:ListCertificates",
+      "application-autoscaling:Describe*",
+      "athena:List*",
+      "autoscaling:Describe*",
+      "batch:DescribeComputeEnvironments",
+      "batch:DescribeJobDefinitions",
+      "cloud9:Describe*",
+      "cloud9:ListEnvironments",
+      "clouddirectory:ListDirectories",
+      "cloudformation:DescribeStack*",
+      "cloudformation:GetTemplate",
+      "cloudformation:ListStack*",
+      "cloudformation:GetStackPolicy",
+      "cloudfront:Get*",
+      "cloudfront:List*",
+      "cloudhsm:ListHapgs",
+      "cloudhsm:ListHsms",
+      "cloudhsm:ListLunaClients",
+      "cloudsearch:DescribeDomains",
+      "cloudsearch:DescribeServiceAccessPolicies",
+      "cloudtrail:DescribeTrails",
+      "cloudtrail:GetEventSelectors",
+      "cloudtrail:GetTrailStatus",
+      "cloudtrail:ListTags",
+      "cloudtrail:LookupEvents",
+      "cloudwatch:Describe*",
+      "codebuild:ListProjects",
+      "codecommit:BatchGetRepositories",
+      "codecommit:GetBranch",
+      "codecommit:GetObjectIdentifier",
+      "codecommit:GetRepository",
+      "codecommit:List*",
+      "codedeploy:Batch*",
+      "codedeploy:Get*",
+      "codedeploy:List*",
+      "codepipeline:ListPipelines",
+      "codestar:Describe*",
+      "codestar:List*",
+      "cognito-identity:ListIdentityPools",
+      "cognito-idp:ListUserPools",
+      "cognito-sync:Describe*",
+      "cognito-sync:List*",
+      "config:Deliver*",
+      "config:Describe*",
+      "config:Get*",
+      "datapipeline:DescribeObjects",
+      "datapipeline:DescribePipelines",
+      "datapipeline:EvaluateExpression",
+      "datapipeline:GetPipelineDefinition",
+      "datapipeline:ListPipelines",
+      "datapipeline:QueryObjects",
+      "datapipeline:ValidatePipelineDefinition",
+      "dax:Describe*",
+      "dax:ListTags",
+      "directconnect:Describe*",
+      "dms:Describe*",
+      "dms:ListTagsForResource",
+      "ds:DescribeDirectories",
+      "dynamodb:DescribeContinuousBackups",
+      "dynamodb:DescribeGlobalTable",
+      "dynamodb:DescribeTable",
+      "dynamodb:DescribeTimeToLive",
+      "dynamodb:ListBackups",
+      "dynamodb:ListGlobalTables",
+      "dynamodb:ListStreams",
+      "dynamodb:ListTables",
+      "ec2:Describe*",
+      "ecr:DescribeRepositories",
+      "ecr:GetRepositoryPolicy",
+      "ecs:Describe*",
+      "ecs:List*",
+      "eks:DescribeCluster",
+      "eks:ListClusters",
+      "elasticache:Describe*",
+      "elasticbeanstalk:Describe*",
+      "elasticfilesystem:DescribeFileSystems",
+      "elasticloadbalancing:Describe*",
+      "elasticmapreduce:Describe*",
+      "elasticmapreduce:ListClusters",
+      "elasticmapreduce:ListInstances",
+      "es:Describe*",
+      "es:ListDomainNames",
+      "events:DescribeEventBus",
+      "events:ListRules",
+      "firehose:Describe*",
+      "firehose:List*",
+      "gamelift:ListBuilds",
+      "gamelift:ListFleets",
+      "glacier:DescribeVault",
+      "glacier:GetVaultAccessPolicy",
+      "glacier:ListVaults",
+      "guardduty:Get*",
+      "guardduty:List*",
+      "iam:GenerateCredentialReport",
+      "iam:Get*",
+      "iam:GetAccountAuthorizationDetails",
+      "iam:GetContextKeysForCustomPolicy",
+      "iam:GetContextKeysForPrincipalPolicy",
+      "iam:List*",
+      "iam:SimulateCustomPolicy",
+      "iam:SimulatePrincipalPolicy",
+      "iot:DescribeEndpoint",
+      "iot:ListThings",
+      "kinesis:DescribeStream",
+      "kinesis:ListStreams",
+      "kinesis:ListTagsForStream",
+      "kinesisanalytics:ListApplications",
+      "kms:Describe*",
+      "kms:Get*",
+      "kms:List*",
+      "lambda:GetAccountSettings",
+      "lambda:GetPolicy",
+      "lambda:ListFunctions",
+      "logs:Describe*",
+      "logs:ListTagsLogGroup",
+      "machinelearning:DescribeMLModels",
+      "mediastore:GetContainerPolicy",
+      "mediastore:ListContainers",
+      "opsworks-cm:DescribeServers",
+      "organizations:List*",
+      "organizations:Describe*",
+      "rds:Describe*",
+      "rds:DownloadDBLogFilePortion",
+      "rds:ListTagsForResource",
+      "redshift:Describe*",
+      "rekognition:Describe*",
+      "rekognition:List*",
+      "route53:Get*",
+      "route53:List*",
+      "route53domains:GetDomainDetail",
+      "route53domains:GetOperationDetail",
+      "route53domains:ListDomains",
+      "route53domains:ListOperations",
+      "route53domains:ListTagsForDomain",
+      "s3:GetAccelerateConfiguration",
+      "s3:GetAnalyticsConfiguration",
+      "s3:GetBucket*",
+      "s3:GetEncryptionConfiguration",
+      "s3:GetInventoryConfiguration",
+      "s3:GetLifecycleConfiguration",
+      "s3:GetMetricsConfiguration",
+      "s3:GetObjectAcl",
+      "s3:GetObjectVersionAcl",
+      "s3:GetReplicationConfiguration",
+      "s3:ListAllMyBuckets",
+      "sagemaker:Describe*",
+      "sagemaker:List*",
+      "sdb:DomainMetadata",
+      "sdb:ListDomains",
+      "serverlessrepo:GetApplicationPolicy",
+      "serverlessrepo:ListApplications",
+      "ses:GetIdentityDkimAttributes",
+      "ses:GetIdentityVerificationAttributes",
+      "ses:ListIdentities",
+      "ses:ListVerifiedEmailAddresses",
+      "shield:Describe*",
+      "shield:List*",
+      "snowball:ListClusters",
+      "snowball:ListJobs",
+      "sns:GetTopicAttributes",
+      "sns:ListSubscriptionsByTopic",
+      "sns:ListTopics",
+      "sqs:GetQueueAttributes",
+      "sqs:ListQueues",
+      "ssm:Describe*",
+      "ssm:ListDocuments",
+      "states:ListStateMachines",
+      "storagegateway:DescribeBandwidthRateLimit",
+      "storagegateway:DescribeCache",
+      "storagegateway:DescribeCachediSCSIVolumes",
+      "storagegateway:DescribeGatewayInformation",
+      "storagegateway:DescribeMaintenanceStartTime",
+      "storagegateway:DescribeNFSFileShares",
+      "storagegateway:DescribeSnapshotSchedule",
+      "storagegateway:DescribeStorediSCSIVolumes",
+      "storagegateway:DescribeTapeArchives",
+      "storagegateway:DescribeTapeRecoveryPoints",
+      "storagegateway:DescribeTapes",
+      "storagegateway:DescribeUploadBuffer",
+      "storagegateway:DescribeVTLDevices",
+      "storagegateway:DescribeWorkingStorage",
+      "storagegateway:List*",
+      "tag:GetResources",
+      "tag:GetTagKeys",
+      "trustedadvisor:Describe*",
+      "waf:ListWebACLs",
+      "waf-regional:ListWebACLs",
+      "workspaces:Describe*"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+
+  statement {
+    actions = [
+      "apigateway:HEAD",
+      "apigateway:GET",
+      "apigateway:OPTIONS"
+    ]
+    resources = [
+      "arn:aws:apigateway:*::/restapis",
+      "arn:aws:apigateway:*::/restapis/*/authorizers",
+      "arn:aws:apigateway:*::/restapis/*/authorizers/*",
+      "arn:aws:apigateway:*::/restapis/*/resources",
+      "arn:aws:apigateway:*::/restapis/*/resources/*",
+      "arn:aws:apigateway:*::/restapis/*/resources/*/methods/*",
+      "arn:aws:apigateway:*::/vpclinks"
+    ]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// security_hub_full_access
+resource "aws_iam_policy" "security_hub_full_access" {
+  name = "SecurityHubFullAccess"
+  policy = "${data.aws_iam_policy_document.security_hub_full_access.json}"
+}
+data "aws_iam_policy_document" "security_hub_full_access" {
+  statement {
+    actions = [
+      "securityhub:*"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+
+  statement {
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+    resources = ["*"]
+
+    condition = {
+      test = "StringLike"
+      variable = "iam:AWSServiceName"
+      values = ["securityhub.amazonaws.com"]
+    }
+
     condition = {
       test = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
