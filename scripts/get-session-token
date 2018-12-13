@@ -1,0 +1,63 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euo pipefail
+umask 077
+
+base="$HOME/.aws/credentials"
+session="${AWS_SHARED_CREDENTIALS_FILE:-}"
+json="$session.json"
+backup="$session.original"
+
+if [[ -z "$session" ]]; then
+  echo 1>&2 "aws-cli-token: please add something like this to your '~/.bashrc':"
+  echo 1>&2 "  export AWS_SHARED_CREDENTIALS_FILE=\"\$HOME/.aws/audere-session-token\""
+  echo 1>&2 ""
+  echo 1>&2 "This tool will overwrite that file, and the variable will tell the"
+  echo 1>&2 "'aws' command where to pick up the temporary session credentials."
+  exit 1
+fi
+
+if [[ "$session" == "$base" ]]; then
+  echo 1>&2 "aws-cli-token: cowardly refusing to overwrite default creds in '$base'"
+  exit 1
+fi
+
+if [[ ! -e "$base" ]]; then
+  echo 1>&2 "aws-cli-token: file not found: '$base'"
+  exit 1
+fi
+
+if ! type jq &>/dev/null; then
+  echo 1>&2 "aws-cli-token: jq: command not found"
+  echo 1>&2 "  please install 'jq' with your preferred package manager"
+  exit 1
+fi
+
+read -p "Enter AWS 2-factor auth code for '$USER': " auth_code
+
+(
+  # Use base only for get-session-token call
+  export AWS_SHARED_CREDENTIALS_FILE="$base"
+  aws sts get-session-token \
+      --serial-number "arn:aws:iam::475613123583:mfa/$USER" \
+      --token-code "$auth_code" \
+      > "$json"
+)
+
+if [[ -e "$session" && ! -e "$backup" ]]; then
+  echo 1>&2 "Backing up original '$session' to '$backup'"
+  echo 1>&2 "  (this will only happen once)"
+  mv "$session" "$backup"
+fi
+
+cat >"$session" <<EOF
+[${AWS_PROFILE:-default}]
+aws_access_key_id=$(jq     --raw-output <"$json" ".Credentials.AccessKeyId")
+aws_secret_access_key=$(jq --raw-output <"$json" ".Credentials.SecretAccessKey")
+aws_session_token=$(jq     --raw-output <"$json" ".Credentials.SessionToken")
+EOF
+
+echo "Wrote session token to '$session'"
