@@ -134,7 +134,7 @@ resource "aws_iam_role_policy" "logs_role_policy" {
 // Policy Group: Administrators
 
 resource "aws_iam_group" "administrators" {
-  name = "Administrators"
+  name = "AudereAdministrators"
 }
 
 resource "aws_iam_group_policy_attachment" "administrator_access" {
@@ -165,7 +165,7 @@ data "aws_iam_policy_document" "administrator_access" {
 // Policy Group: Infrastructurers
 
 resource "aws_iam_group" "infrastructurers" {
-  name = "Infrastructurers"
+  name = "AudereInfrastructurers"
 }
 
 resource "aws_iam_group_policy_attachment" "ec2_full_access" {
@@ -326,7 +326,7 @@ data "aws_iam_policy_document" "ses_send_email" {
 // Policy Group: Securers
 
 resource "aws_iam_group" "securers" {
-  name = "Securers"
+  name = "AudereSecurers"
 }
 
 resource "aws_iam_group_policy_attachment" "security_hub_full_access" {
