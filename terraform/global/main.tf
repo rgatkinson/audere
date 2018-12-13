@@ -138,23 +138,25 @@ resource "aws_iam_group" "administrators" {
 }
 
 resource "aws_iam_group_policy_attachment" "administrator_access" {
-  group = "${aws_iam_group.administrators.name}"
+  group      = "${aws_iam_group.administrators.name}"
   policy_arn = "${aws_iam_policy.administrator_access.arn}"
 }
 
 // administrator access (copied from AdministratorAccess managed policy)
 resource "aws_iam_policy" "administrator_access" {
-  name = "AdministratorAccessPolicy"
+  name   = "AdministratorAccessPolicy"
   policy = "${data.aws_iam_policy_document.administrator_access.json}"
 }
+
 data "aws_iam_policy_document" "administrator_access" {
   statement {
-    actions = ["*"]
+    actions   = ["*"]
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
@@ -167,30 +169,31 @@ resource "aws_iam_group" "infrastructurers" {
 }
 
 resource "aws_iam_group_policy_attachment" "ec2_full_access" {
-  group = "${aws_iam_group.infrastructurers.name}"
+  group      = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.ec2_full_access.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "route53_full_access" {
-  group = "${aws_iam_group.infrastructurers.name}"
+  group      = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.route53_full_access.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "eks_full_access" {
-  group = "${aws_iam_group.infrastructurers.name}"
+  group      = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.eks_full_access.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "ses_send_email" {
-  group = "${aws_iam_group.infrastructurers.name}"
+  group      = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
 }
 
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
-  name = "EC2FullAccess"
+  name   = "EC2FullAccess"
   policy = "${data.aws_iam_policy_document.ec2_full_access.json}"
 }
+
 data "aws_iam_policy_document" "ec2_full_access" {
   statement {
     actions = [
@@ -199,45 +202,51 @@ data "aws_iam_policy_document" "ec2_full_access" {
       "cloudwatch:*",
       "autoscaling:*",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 
   statement {
     actions = [
-      "iam:CreateServiceLinkedRole"
+      "iam:CreateServiceLinkedRole",
     ]
+
     resources = ["*"]
 
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "iam:AWSServiceName"
+
       values = [
         "autoscaling.amazonaws.com",
         "ec2scheduled.amazonaws.com",
         "elasticloadbalancing.amazonaws.com",
         "spot.amazonaws.com",
         "spotfleet.amazonaws.com",
-        "transitgateway.amazonaws.com"
+        "transitgateway.amazonaws.com",
       ]
     }
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
 
 // route53_full_access (copied from AmazonRoute53FullAccess managed policy)
 resource "aws_iam_policy" "route53_full_access" {
-  name = "Rout53FullAccess"
+  name   = "Rout53FullAccess"
   policy = "${data.aws_iam_policy_document.route53_full_access.json}"
 }
+
 data "aws_iam_policy_document" "route53_full_access" {
   statement {
     actions = [
@@ -256,51 +265,59 @@ data "aws_iam_policy_document" "route53_full_access" {
       "cloudwatch:DescribeAlarms",
       "cloudwatch:GetMetricStatistics",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
 
 // eks_full_access
 resource "aws_iam_policy" "eks_full_access" {
-  name = "EKSFullAccess"
+  name   = "EKSFullAccess"
   policy = "${data.aws_iam_policy_document.eks_full_access.json}"
 }
+
 data "aws_iam_policy_document" "eks_full_access" {
   statement {
     actions = [
       "eks:*",
-      "iam:PassRole"
+      "iam:PassRole",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
 
 // ses_send_email
 resource "aws_iam_policy" "ses_send_email" {
-  name = "SESSendEmail"
+  name   = "SESSendEmail"
   policy = "${data.aws_iam_policy_document.ses_send_email.json}"
 }
+
 data "aws_iam_policy_document" "ses_send_email" {
   statement {
     actions = [
       "ses:SendEmail",
-      "ses:VerifyEmailIdentity"
+      "ses:VerifyEmailIdentity",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
@@ -313,58 +330,63 @@ resource "aws_iam_group" "securers" {
 }
 
 resource "aws_iam_group_policy_attachment" "security_hub_full_access" {
-  group = "${aws_iam_group.securers.name}"
+  group      = "${aws_iam_group.securers.name}"
   policy_arn = "${aws_iam_policy.security_hub_full_access.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "security_audit" {
-  group = "${aws_iam_group.securers.name}"
+  group      = "${aws_iam_group.securers.name}"
   policy_arn = "${aws_iam_policy.security_audit.arn}"
 }
 
 // security_hub_full_access
 resource "aws_iam_policy" "security_hub_full_access" {
-  name = "SecurityHubFullAccess"
+  name   = "SecurityHubFullAccess"
   policy = "${data.aws_iam_policy_document.security_hub_full_access.json}"
 }
+
 data "aws_iam_policy_document" "security_hub_full_access" {
   statement {
     actions = [
-      "securityhub:*"
+      "securityhub:*",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 
   statement {
     actions = [
-      "iam:CreateServiceLinkedRole"
+      "iam:CreateServiceLinkedRole",
     ]
+
     resources = ["*"]
 
     condition = {
-      test = "StringLike"
+      test     = "StringLike"
       variable = "iam:AWSServiceName"
-      values = ["securityhub.amazonaws.com"]
+      values   = ["securityhub.amazonaws.com"]
     }
 
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
 
 // security_audit (copied from SecurityAudit managed policy)
 resource "aws_iam_policy" "security_audit" {
-  name = "SecurityAudit"
+  name   = "SecurityAudit"
   policy = "${data.aws_iam_policy_document.security_audit.json}"
 }
+
 data "aws_iam_policy_document" "security_audit" {
   statement {
     actions = [
@@ -556,13 +578,15 @@ data "aws_iam_policy_document" "security_audit" {
       "trustedadvisor:Describe*",
       "waf:ListWebACLs",
       "waf-regional:ListWebACLs",
-      "workspaces:Describe*"
+      "workspaces:Describe*",
     ]
+
     resources = ["*"]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 
@@ -570,8 +594,9 @@ data "aws_iam_policy_document" "security_audit" {
     actions = [
       "apigateway:HEAD",
       "apigateway:GET",
-      "apigateway:OPTIONS"
+      "apigateway:OPTIONS",
     ]
+
     resources = [
       "arn:aws:apigateway:*::/restapis",
       "arn:aws:apigateway:*::/restapis/*/authorizers",
@@ -579,12 +604,13 @@ data "aws_iam_policy_document" "security_audit" {
       "arn:aws:apigateway:*::/restapis/*/resources",
       "arn:aws:apigateway:*::/restapis/*/resources/*",
       "arn:aws:apigateway:*::/restapis/*/resources/*/methods/*",
-      "arn:aws:apigateway:*::/vpclinks"
+      "arn:aws:apigateway:*::/vpclinks",
     ]
+
     condition = {
-      test = "${local.mfa_condition_test}"
+      test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
@@ -612,8 +638,9 @@ data "aws_iam_user" "ram" {
 // Group membership
 
 resource "aws_iam_group_membership" "administrators" {
-  name = "Administrators"
+  name  = "Administrators"
   group = "${aws_iam_group.infrastructurers.name}"
+
   users = [
     "mmarucheck",
     "philip",
@@ -621,8 +648,9 @@ resource "aws_iam_group_membership" "administrators" {
 }
 
 resource "aws_iam_group_membership" "infrastructurers" {
-  name = "Infrastructurers"
+  name  = "Infrastructurers"
   group = "${aws_iam_group.infrastructurers.name}"
+
   users = [
     "mmarucheck",
     "ram",
@@ -630,8 +658,9 @@ resource "aws_iam_group_membership" "infrastructurers" {
 }
 
 resource "aws_iam_group_membership" "securers" {
-  name = "Securers"
+  name  = "Securers"
   group = "${aws_iam_group.securers.name}"
+
   users = [
     "mpomarole",
   ]
@@ -641,7 +670,7 @@ resource "aws_iam_group_membership" "securers" {
 // Locals
 
 locals {
-  mfa_condition_test = "NumericLessThan"
+  mfa_condition_test     = "NumericLessThan"
   mfa_condition_variable = "aws:MultiFactorAuthAge"
-  mfa_condition_value = "${6 * 60 * 60}"
+  mfa_condition_value    = "${6 * 60 * 60}"
 }
