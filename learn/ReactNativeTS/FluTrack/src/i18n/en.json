@@ -5,7 +5,8 @@
       "cancel": "Cancel",
       "submit": "Submit",
       "done": "Done",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "ok": "Ok"
     },
     "tab": {
       "Home": "Home",
@@ -84,6 +85,8 @@
     "bloodFormText": "UNIVERSITY OF WASHINGTON\nCONSENT FORM FOR OPTIONAL SAMPLE COLLECTION SUB-STUDY\n\nPURPOSE OF THE OPTIONAL SAMPLE COLLECTION SUB-STUDY\nYou are being invited to join this optional sub-study because you agreed to join the main study “Respiratory virus surveillance in an Urban Setting”.  For this sub-study we would like to collect additional optional samples from adults who are hospitalized with symptoms of a respiratory virus. These samples will give us more information about what kinds of antibodies (molecules that protect you against disease), you have.  This helps us understand your own ability to fight certain viruses at the time the blood is obtained. \nSTUDY PROCEDURES\nIf you agree to the optional sub-study, the study procedures will include:\nCollecting a nasal swab each day while you are in the hospital for up to 7 days\nGetting your blood up to 2 times while you are in the hospital  (up to 50 mL)\n\nRISKS, STRESS, OR DISCOMFORT\nWe do not expect serious side effects from this sub-study.  Like in the main study, getting the nasal swab may cause some mild discomfort, watery eyes, or sneezing.  Doing a blood draw may cause mild discomfort for a short time, or rarely, a little bleeding. If you have a central catheter in place, we may be able to have a health care person draw blood from that line.  If blood is left over from other studies we may be able to use that blood.\n\nBENEFITS OF THE SUB-STUDY\nThis sub-study will not benefit you directly.  It may help others in the future by helping us understand how antibodies make a difference in the type of viruses that infect people.    \n\nCONFIDENTIALITY OF RESEARCH INFORMATION\nYour record will be kept confidential as described in the consent form for the main study.  \n\nOTHER INFORMATION\nYou may refuse to participate and you are free to withdraw from this sub-study at any time without penalty or loss of benefits to which you are otherwise entitled.  You will receive a $10 gift card for participating in this sub-study.  This is in addition to the $10 gift card you received for the main study. Reimbursement will be received either the day you join the study or will be sent to you within two weeks.\n\nSubject’s statement\nThis study has been explained to me.  I volunteer to take part in this research.  I will receive a copy of this consent form.\n"
   },
   "homeScreen": {
+    "studyLocationRequiredAlertTitle": "Study Location Required",
+    "studyLocationRequiredAlertBody": "Please have a study administrator select the current collection location, available on the Admin tab within 'Prior to Collection'.",
     "seattleFluStudy": "SEATTLE FLU STUDY",
     "welcome": "Welcome",
     "learnMore": "Learn more about this research and how to participate."

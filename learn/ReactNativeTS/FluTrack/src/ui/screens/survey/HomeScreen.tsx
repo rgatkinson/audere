@@ -1,16 +1,36 @@
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { connect } from "react-redux";
 import { Feather } from '@expo/vector-icons';
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { StoreState } from "../../../store";
 
 interface Props {
+  location: string;
   navigation: NavigationScreenProp<any, any>;
 }
 
+@connect((state: StoreState) => ({
+  location: state.admin.location,
+}))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
   _onStart = () => {
-    this.props.navigation.push("Welcome");
+    const { t } = this.props;
+    if (!this.props.location) {
+     Alert.alert(
+        t("studyLocationRequiredAlertTitle"),
+        t("studyLocationRequiredAlertBody"),
+        [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {},
+          }
+        ],
+      );
+    } else {
+      this.props.navigation.push("Welcome");
+    }
   };
 
   render() {
