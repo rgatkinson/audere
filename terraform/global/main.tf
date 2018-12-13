@@ -131,22 +131,39 @@ resource "aws_iam_role_policy" "logs_role_policy" {
 }
 
 // --------------------------------------------------------------------------------
-// Policies
+// Policy Group: Administrators
 
-// ----------------
-// infrastructurers
+resource "aws_iam_group" "administrators" {
+  name = "Administrators"
+}
+
+resource "aws_iam_group_policy_attachment" "administrator_access" {
+  group = "${aws_iam_group.administrators.name}"
+  policy_arn = "${aws_iam_policy.administrator_access.arn}"
+}
+
+// administrator access (copied from AdministratorAccess managed policy)
+resource "aws_iam_policy" "administrator_access" {
+  name = "AdministratorAccessPolicy"
+  policy = "${data.aws_iam_policy_document.administrator_access.json}"
+}
+data "aws_iam_policy_document" "administrator_access" {
+  statement {
+    actions = ["*"]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// --------------------------------------------------------------------------------
+// Policy Group: Infrastructurers
 
 resource "aws_iam_group" "infrastructurers" {
   name = "Infrastructurers"
-}
-
-resource "aws_iam_group_membership" "infrastructurers" {
-  name = "Infrastructurers"
-  group = "${aws_iam_group.infrastructurers.name}"
-  users = [
-    "${data.aws_iam_user.mmarucheck.user_name}",
-    "${data.aws_iam_user.ram.user_name}",
-  ]
 }
 
 resource "aws_iam_group_policy_attachment" "ec2_full_access" {
@@ -168,34 +185,6 @@ resource "aws_iam_group_policy_attachment" "ses_send_email" {
   group = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
 }
-
-// --------
-// securers
-
-resource "aws_iam_group" "securers" {
-  name = "Securers"
-}
-
-resource "aws_iam_group_membership" "securers" {
-  name = "Securers"
-  group = "${aws_iam_group.securers.name}"
-  users = [
-    "${data.aws_iam_user.mpomarole.user_name}",
-  ]
-}
-
-resource "aws_iam_group_policy_attachment" "security_audit" {
-  group = "${aws_iam_group.securers.name}"
-  policy_arn = "${aws_iam_policy.security_audit.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "security_hub_full_access" {
-  group = "${aws_iam_group.securers.name}"
-  policy_arn = "${aws_iam_policy.security_hub_full_access.arn}"
-}
-
-// ----------------
-// Policy documents
 
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
@@ -308,6 +297,61 @@ data "aws_iam_policy_document" "ses_send_email" {
       "ses:VerifyEmailIdentity"
     ]
     resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+// --------------------------------------------------------------------------------
+// Policy Group: Securers
+
+resource "aws_iam_group" "securers" {
+  name = "Securers"
+}
+
+resource "aws_iam_group_policy_attachment" "security_hub_full_access" {
+  group = "${aws_iam_group.securers.name}"
+  policy_arn = "${aws_iam_policy.security_hub_full_access.arn}"
+}
+
+resource "aws_iam_group_policy_attachment" "security_audit" {
+  group = "${aws_iam_group.securers.name}"
+  policy_arn = "${aws_iam_policy.security_audit.arn}"
+}
+
+// security_hub_full_access
+resource "aws_iam_policy" "security_hub_full_access" {
+  name = "SecurityHubFullAccess"
+  policy = "${data.aws_iam_policy_document.security_hub_full_access.json}"
+}
+data "aws_iam_policy_document" "security_hub_full_access" {
+  statement {
+    actions = [
+      "securityhub:*"
+    ]
+    resources = ["*"]
+    condition = {
+      test = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values = ["${local.mfa_condition_value}"]
+    }
+  }
+
+  statement {
+    actions = [
+      "iam:CreateServiceLinkedRole"
+    ]
+    resources = ["*"]
+
+    condition = {
+      test = "StringLike"
+      variable = "iam:AWSServiceName"
+      values = ["securityhub.amazonaws.com"]
+    }
+
     condition = {
       test = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
@@ -545,44 +589,6 @@ data "aws_iam_policy_document" "security_audit" {
   }
 }
 
-// security_hub_full_access
-resource "aws_iam_policy" "security_hub_full_access" {
-  name = "SecurityHubFullAccess"
-  policy = "${data.aws_iam_policy_document.security_hub_full_access.json}"
-}
-data "aws_iam_policy_document" "security_hub_full_access" {
-  statement {
-    actions = [
-      "securityhub:*"
-    ]
-    resources = ["*"]
-    condition = {
-      test = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
-    }
-  }
-
-  statement {
-    actions = [
-      "iam:CreateServiceLinkedRole"
-    ]
-    resources = ["*"]
-
-    condition = {
-      test = "StringLike"
-      variable = "iam:AWSServiceName"
-      values = ["securityhub.amazonaws.com"]
-    }
-
-    condition = {
-      test = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values = ["${local.mfa_condition_value}"]
-    }
-  }
-}
-
 // --------------------------------------------------------------------------------
 // Users with managed AWS privileges
 
@@ -594,8 +600,41 @@ data "aws_iam_user" "mpomarole" {
   user_name = "mpomarole"
 }
 
+data "aws_iam_user" "philip" {
+  user_name = "philip"
+}
+
 data "aws_iam_user" "ram" {
   user_name = "ram"
+}
+
+// --------------------------------------------------------------------------------
+// Group membership
+
+resource "aws_iam_group_membership" "administrators" {
+  name = "Administrators"
+  group = "${aws_iam_group.infrastructurers.name}"
+  users = [
+    "mmarucheck",
+    "philip",
+  ]
+}
+
+resource "aws_iam_group_membership" "infrastructurers" {
+  name = "Infrastructurers"
+  group = "${aws_iam_group.infrastructurers.name}"
+  users = [
+    "mmarucheck",
+    "ram",
+  ]
+}
+
+resource "aws_iam_group_membership" "securers" {
+  name = "Securers"
+  group = "${aws_iam_group.securers.name}"
+  users = [
+    "mpomarole",
+  ]
 }
 
 // --------------------------------------------------------------------------------
