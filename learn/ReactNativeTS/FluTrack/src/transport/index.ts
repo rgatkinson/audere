@@ -81,7 +81,7 @@ export function getApiBaseUrl(): string {
   ) {
     api = `http://${new URL(Constants.linkingUri).hostname}:3000/api`;
   } else {
-    api = "https://api.staging.auderenow.io";
+    api = "https://api.staging.auderenow.io/api";
   }
   console.log(`API server: '${api}'`);
   return api;
