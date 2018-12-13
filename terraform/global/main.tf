@@ -243,7 +243,7 @@ data "aws_iam_policy_document" "ec2_full_access" {
 
 // route53_full_access (copied from AmazonRoute53FullAccess managed policy)
 resource "aws_iam_policy" "route53_full_access" {
-  name   = "Rout53FullAccess"
+  name   = "Route53FullAccess"
   policy = "${data.aws_iam_policy_document.route53_full_access.json}"
 }
 
@@ -639,7 +639,7 @@ data "aws_iam_user" "ram" {
 
 resource "aws_iam_group_membership" "administrators" {
   name  = "Administrators"
-  group = "${aws_iam_group.infrastructurers.name}"
+  group = "${aws_iam_group.administrators.name}"
 
   users = [
     "mmarucheck",
