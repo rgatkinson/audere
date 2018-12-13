@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as form, Address, FormState, Option } from "./form";
+import { default as form, Address, FormState, Option, Sample } from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
@@ -67,6 +67,15 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     pouch.patient.telecom.push({
       system: TelecomInfoSystem.Email,
       value: form.email,
+    });
+  }
+
+  if (!!form.samples) {
+    form.samples.forEach((sample: Sample) => {
+      pouch.samples.push({
+        sample_type: sample.sampleType,
+        code: sample.code,
+      });
     });
   }
 
