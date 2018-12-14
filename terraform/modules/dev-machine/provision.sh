@@ -13,7 +13,7 @@ function main() {
   # fallback in case /home mount ever fails
   echo_ssh_key | write_sshkey ubuntu
 
-  apt-get -y install nvme-cli
+  apt-get -y install nvme-cli sshfs
   parted_mkfs_mount "${home_volume_letter}" "${userid}-home" "/home"
   echo_ssh_key | add_developer "${userid}"
 
@@ -23,7 +23,7 @@ function main() {
   echo "user_allow_other" >>"/etc/fuse.conf"
 }
 
-function ssh_key() {
+function echo_ssh_key() {
   cat <<EOF
 ${ssh_public_key}
 EOF
