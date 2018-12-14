@@ -634,6 +634,10 @@ data "aws_iam_user" "ram" {
   user_name = "ram"
 }
 
+data "aws_iam_user" "terri" {
+  user_name = "terri"
+}
+
 // --------------------------------------------------------------------------------
 // Group membership
 
@@ -655,6 +659,7 @@ resource "aws_iam_group_membership" "infrastructurers" {
     "mmarucheck",
     "ram",
     "mpomarole",
+    "terri",
   ]
 }
 

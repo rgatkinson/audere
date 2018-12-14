@@ -15,5 +15,6 @@ variable "admins" {
   default = [
     "mmarucheck",
     "ram",
+    "terri",
   ]
 }

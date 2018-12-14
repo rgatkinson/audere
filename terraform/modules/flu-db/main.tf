@@ -133,7 +133,7 @@ resource "aws_instance" "add_admin" {
   ]
 
   tags {
-    Name = "${local.base_name}-add-admin"
+    Name = "${local.base_name}-add-admin-${local.new_admin_userid}"
   }
 }
 
