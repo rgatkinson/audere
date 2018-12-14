@@ -250,13 +250,15 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   const bloodSignature = form.bloodSignatureBase64 || "";
   const bloodTerms = form.bloodConsentTerms || "";
 
-  consents.push({
-    name,
-    terms,
-    signature,
-    signerType: ConsentInfoSignerType.Subject, // TODO
-    date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-  });
+  if (signature.length > 0) {
+    consents.push({
+      name,
+      terms,
+      signature,
+      signerType: ConsentInfoSignerType.Subject, // TODO
+      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+    });
+  }
 
   if (bloodSignature.length > 0) {
     consents.push({
