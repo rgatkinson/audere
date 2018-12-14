@@ -189,7 +189,6 @@
     "complete": "Enrollment complete!"
   },
   "surveyOption": {
-    "sendCopyOfMyConsent": "Send me a copy of my consent",
     "askAboutMyIllness": "To ask me questions about my illness/cold",
     "learnAboutStudy": "To learn more about this study and related topics",
     "allOfTheAbove": "All of the above",

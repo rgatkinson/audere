@@ -1,3 +1,8 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -9,7 +14,9 @@ import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
-import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
+import OptionList, {
+  newSelectedOptionsList,
+} from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import SimpleStatusBar from "../../components/SimpleStatusBar";
 import Title from "../../components/Title";
@@ -22,40 +29,40 @@ interface Props {
 }
 
 export const EnrolledConfig = {
-  id: 'Enrolled',
-  title: 'enrolledTitle',
+  id: "Enrolled",
+  title: "enrolledTitle",
   description: {
-    label: 'enrolledDescription',
+    label: "enrolledDescription",
   },
   optionList: {
-    options: [
-      "sendCopyOfMyConsent",
-      "askAboutMyIllness",
-      "learnAboutStudy",
-      "allOfTheAbove",
-    ],
+    options: ["askAboutMyIllness", "learnAboutStudy", "allOfTheAbove"],
     multiSelect: true,
   },
   buttons: [
     { key: "done", primary: true },
     { key: "doNotEmailMe", primary: false },
   ],
-}
+};
 
 @connect((state: StoreState) => ({
   email: state.form!.email,
 }))
-class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
+class EnrolledScreen extends React.PureComponent<
+  Props & WithNamespaces & ReduxWriterProps
+> {
   _onDone = () => {
     this.props.navigation.push("SurveyStart");
   };
 
   _haveEmailOption = () => {
     const options: Option[] = this.props.getAnswer("options");
-    return options && options.reduce(
-        (result: boolean, option: Option) => (result || option.selected),
+    return (
+      options &&
+      options.reduce(
+        (result: boolean, option: Option) => result || option.selected,
         false
-      );
+      )
+    );
   };
 
   render() {
@@ -65,11 +72,13 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
-          <Description content={t("surveyDescription:" + EnrolledConfig.description.label)} />
+          <Description
+            content={t("surveyDescription:" + EnrolledConfig.description.label)}
+          />
           <OptionList
             data={newSelectedOptionsList(
               EnrolledConfig.optionList.options,
-              this.props.getAnswer("options"),
+              this.props.getAnswer("options")
             )}
             multiSelect={true}
             numColumns={1}
@@ -84,7 +93,11 @@ class EnrolledScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
           {EnrolledConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
-              enabled={button.key === "done" ? (!!this.props.email && this._haveEmailOption()) : true}
+              enabled={
+                button.key === "done"
+                  ? !!this.props.email && this._haveEmailOption()
+                  : true
+              }
               key={button.key}
               label={t("surveyButton:" + button.key)}
               primary={button.primary}
