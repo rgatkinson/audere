@@ -672,5 +672,5 @@ resource "aws_iam_group_membership" "securers" {
 locals {
   mfa_condition_test     = "NumericLessThan"
   mfa_condition_variable = "aws:MultiFactorAuthAge"
-  mfa_condition_value    = "${6 * 60 * 60}"
+  mfa_condition_value    = "${12 * 60 * 60}"
 }
