@@ -654,6 +654,7 @@ resource "aws_iam_group_membership" "infrastructurers" {
   users = [
     "mmarucheck",
     "ram",
+    "mpomarole",
   ]
 }
 
