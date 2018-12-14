@@ -182,7 +182,7 @@ resource "aws_ebs_volume" "api_creds" {
 }
 
 resource "aws_ebs_snapshot" "api_creds" {
-  count = "${local.mode_run}"
+  count = "${local.mode_after_provision0}"
 
   volume_id = "${aws_ebs_volume.api_creds.id}"
 
@@ -217,6 +217,7 @@ data "aws_caller_identity" "current" {}
 
 locals {
   mode_provision0 = "${(var.mode == "provision0") ? 1 : 0}"
+  mode_after_provision0 = "${(var.mode == "provision0") ? 0 : 1}"
   mode_provision1 = "${(var.mode == "provision1") ? 1 : 0}"
   mode_add_admin = "${(var.mode == "add-admin") ? 1 : 0}"
   mode_run = "${(var.mode == "run") ? 1 : 0}"
