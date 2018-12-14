@@ -144,7 +144,7 @@ resource "aws_iam_group_policy_attachment" "administrator_access" {
 
 // administrator access (copied from AdministratorAccess managed policy)
 resource "aws_iam_policy" "administrator_access" {
-  name   = "AdministratorAccessPolicy"
+  name   = "AudereAdministratorAccess"
   policy = "${data.aws_iam_policy_document.administrator_access.json}"
 }
 
@@ -190,7 +190,7 @@ resource "aws_iam_group_policy_attachment" "ses_send_email" {
 
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
-  name   = "EC2FullAccess"
+  name   = "AudereEC2FullAccess"
   policy = "${data.aws_iam_policy_document.ec2_full_access.json}"
 }
 
@@ -243,7 +243,7 @@ data "aws_iam_policy_document" "ec2_full_access" {
 
 // route53_full_access (copied from AmazonRoute53FullAccess managed policy)
 resource "aws_iam_policy" "route53_full_access" {
-  name   = "Route53FullAccess"
+  name   = "AudereRoute53FullAccess"
   policy = "${data.aws_iam_policy_document.route53_full_access.json}"
 }
 
@@ -278,7 +278,7 @@ data "aws_iam_policy_document" "route53_full_access" {
 
 // eks_full_access
 resource "aws_iam_policy" "eks_full_access" {
-  name   = "EKSFullAccess"
+  name   = "AudereEKSFullAccess"
   policy = "${data.aws_iam_policy_document.eks_full_access.json}"
 }
 
@@ -301,7 +301,7 @@ data "aws_iam_policy_document" "eks_full_access" {
 
 // ses_send_email
 resource "aws_iam_policy" "ses_send_email" {
-  name   = "SESSendEmail"
+  name   = "AudereSESSendEmail"
   policy = "${data.aws_iam_policy_document.ses_send_email.json}"
 }
 
@@ -341,7 +341,7 @@ resource "aws_iam_group_policy_attachment" "security_audit" {
 
 // security_hub_full_access
 resource "aws_iam_policy" "security_hub_full_access" {
-  name   = "SecurityHubFullAccess"
+  name   = "AudereSecurityHubFullAccess"
   policy = "${data.aws_iam_policy_document.security_hub_full_access.json}"
 }
 
@@ -383,7 +383,7 @@ data "aws_iam_policy_document" "security_hub_full_access" {
 
 // security_audit (copied from SecurityAudit managed policy)
 resource "aws_iam_policy" "security_audit" {
-  name   = "SecurityAudit"
+  name   = "AudereSecurityAudit"
   policy = "${data.aws_iam_policy_document.security_audit.json}"
 }
 
