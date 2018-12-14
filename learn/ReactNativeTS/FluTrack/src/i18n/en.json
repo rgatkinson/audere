@@ -150,12 +150,11 @@
     "medInsurance": "Do you have medical insurance?"
   },
   "surveyDescription": {
-    "symptomDescription": "Please select all that apply.",
     "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
     "enrolledDescription": "Please select when we may email you, and provide your email address (optional).",
     "expoToSickPeople": "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
     "smokingDef": "Smoking includes tobacco, marijuana, and vape.",
-    "selectAll": "Please select all that apply"
+    "selectAll": "Please select all that apply."
   },
   "surveyPlaceholder": {
     "selectDate": "Select date",
@@ -293,7 +292,6 @@
     "18orOver": "18 or older",
     "13to17": "13 to 17",
     "under13": "12 or younger",
-    "noSwabs": "I do not want any nasal swabs collected.",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
     "doNotEmailMe": "Please do not email me",

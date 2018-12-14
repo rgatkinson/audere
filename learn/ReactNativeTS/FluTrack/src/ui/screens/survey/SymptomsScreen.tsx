@@ -1,3 +1,8 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
 import { Alert } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
@@ -11,7 +16,9 @@ import { ConsentConfig } from "./ConsentScreen";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
-import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
+import OptionList, {
+  newSelectedOptionsList,
+} from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
@@ -22,10 +29,10 @@ interface Props {
 }
 
 export const SymptomsConfig = {
-  id: 'Symptoms',
-  title: 'symptomTitle',
+  id: "Symptoms",
+  title: "symptomTitle",
   description: {
-    label: 'symptomDescription',
+    label: "selectAll",
     center: true,
   },
   optionList: {
@@ -49,35 +56,45 @@ export const SymptomsConfig = {
     { key: "done", primary: true },
     { key: "noneOfTheAbove", primary: false },
   ],
-}
+};
 
 @connect((state: StoreState) => ({
   bloodCollection: state.admin.bloodCollection,
 }))
-class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxWriterProps> {
+class SymptomsScreen extends React.PureComponent<
+  Props & WithNamespaces & ReduxWriterProps
+> {
   _onDone = () => {
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
-      if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" && this.props.bloodCollection) {
-        this.props.navigation.push("Blood", { data: BloodConfig, priorTitle: t("surveyTitle:" + SymptomsConfig.title) });
+      if (
+        this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) ===
+          "18orOver" &&
+        this.props.bloodCollection
+      ) {
+        this.props.navigation.push("Blood", {
+          data: BloodConfig,
+          priorTitle: t("surveyTitle:" + SymptomsConfig.title),
+        });
       } else {
-        this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: t("surveyTitle:" + SymptomsConfig.title) });
+        this.props.navigation.push("Consent", {
+          data: ConsentConfig,
+          priorTitle: t("surveyTitle:" + SymptomsConfig.title),
+        });
       }
     } else {
-      Alert.alert(
-        t("areYouSure"),
-        t("minSymptoms"),
-        [
-          {
-            text: t("headerBar:cancel"),
-            onPress: () => {},
+      Alert.alert(t("areYouSure"), t("minSymptoms"), [
+        {
+          text: t("headerBar:cancel"),
+          onPress: () => {},
+        },
+        {
+          text: t("headerBar:continue"),
+          onPress: () => {
+            this.props.navigation.push("Inelligible");
           },
-          { text: t("headerBar:continue"), onPress: () => {
-              this.props.navigation.push("Inelligible");
-            },
-          },
-        ]
-      );
+        },
+      ]);
     }
   };
 
@@ -85,7 +102,8 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
     const symptoms: Option[] = this.props.getAnswer("options");
     return symptoms
       ? symptoms.reduce(
-          (count: number, option: Option) => (option.selected ? count + 1 : count),
+          (count: number, option: Option) =>
+            option.selected ? count + 1 : count,
           0
         )
       : 0;
@@ -105,15 +123,20 @@ class SymptomsScreen extends React.PureComponent<Props & WithNamespaces & ReduxW
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
-          <Description content={t("surveyDescription:" + SymptomsConfig.description.label)} center={SymptomsConfig.description.center} />
+          <Description
+            content={t("surveyDescription:" + SymptomsConfig.description.label)}
+            center={SymptomsConfig.description.center}
+          />
           <OptionList
             data={newSelectedOptionsList(
               SymptomsConfig.optionList.options,
-              this.props.getAnswer("options"),
+              this.props.getAnswer("options")
             )}
             multiSelect={true}
             numColumns={2}
-            onChange={symptoms => this.props.updateAnswer({ options: symptoms })}
+            onChange={symptoms =>
+              this.props.updateAnswer({ options: symptoms })
+            }
           />
           {SymptomsConfig.buttons.map(button => (
             <Button
