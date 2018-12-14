@@ -247,6 +247,8 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   const signature = form.signatureBase64 || "";
   const terms = form.consentTerms || "";
   const name = form.name || "";
+  const bloodSignature = form.bloodSignatureBase64 || "";
+  const bloodTerms = form.bloodConsentTerms || "";
 
   consents.push({
     name,
@@ -255,6 +257,16 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
     signerType: ConsentInfoSignerType.Subject, // TODO
     date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
   });
+
+  if (bloodSignature.length > 0) {
+    consents.push({
+      name,
+      terms: bloodTerms,
+      signature: bloodSignature,
+      signerType: ConsentInfoSignerType.Subject, // TODO
+      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+    });
+  }
 }
 
 function maybePushAddress(
