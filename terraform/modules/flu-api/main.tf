@@ -28,8 +28,6 @@ locals {
 
 data "aws_security_group" "default" { name = "default" }
 
-data "aws_security_group" "http" { name = "http" }
-
 data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_acm_certificate" "auderenow_io" {
@@ -99,29 +97,29 @@ resource "aws_instance" "migrate_instance" {
 // --------------------------------------------------------------------------------
 // Single-instance mode (for debugging)
 
-resource "aws_instance" "flu_api_instance" {
-  ami = "${var.ami_id}"
-  instance_type = "t2.micro"
-  key_name = "2018-mmarucheck"
-  user_data = "${data.template_file.service_init_sh.rendered}"
+# resource "aws_instance" "flu_api_instance" {
+#   ami = "${var.ami_id}"
+#   instance_type = "t2.micro"
+#   key_name = "2018-mmarucheck"
+#   user_data = "${data.template_file.service_init_sh.rendered}"
 
-  vpc_security_group_ids = [
-    "${data.aws_security_group.default.id}",
-    "${data.aws_security_group.ssh.id}",
-    "${data.aws_security_group.http.id}",
-  ]
+#   vpc_security_group_ids = [
+#     "${data.aws_security_group.default.id}",
+#     "${data.aws_security_group.ssh.id}",
+#     "${data.aws_security_group.http.id}",
+#   ]
 
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    snapshot_id = "${var.creds_snapshot_id}"
-  }
+#   ebs_block_device {
+#     device_name = "/dev/sdf"
+#     snapshot_id = "${var.creds_snapshot_id}"
+#   }
 
-  tags {
-    Name = "${local.module_name}-single"
-  }
+#   tags {
+#     Name = "${local.module_name}-single"
+#   }
 
-  count = "${var.service == "single" ? 1 : 0}"
-}
+#   count = "${var.service == "single" ? 1 : 0}"
+# }
 
 
 // --------------------------------------------------------------------------------
