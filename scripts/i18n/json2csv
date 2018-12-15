@@ -1,0 +1,27 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
+JSON_DIR="$APP_DIR/src/i18n/locales"
+
+type i18next-json-csv-converter >/dev/null 2>&1 || yarn global add i18next-json-csv-converter 
+type sync-i18n >/dev/null 2>&1 || yarn global add i18next-json-sync
+
+# TODO: Fix re-ordering of keys or don't use this package 
+sync-i18n --files "$JSON_DIR/*.json" --primary en --space 2 --finalnewline true --newkeysempty true
+
+for jsonfile in "$JSON_DIR"/*.json; do 
+  echo "Converting $jsonfile to csv"
+  FILENAME=`basename $jsonfile`
+  LANGUAGE="${FILENAME:0:2}"
+  # TODO: Can we make the namespace separator a . instead of |
+  i18next-json-csv-converter "$JSON_DIR/$LANGUAGE.json" "$JSON_DIR/FluTrack_$LANGUAGE.csv"
+done
+
+echo "Next, upload the FluTrack_*.csv files to Google Sheets and share with translator."
