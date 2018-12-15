@@ -16,4 +16,4 @@ DB_DATABASE="$(pgpass 3)"
 DB_USERNAME="$(pgpass 4)"
 DB_PASSWORD="$(pgpass 5)"
 
-psql --host="$DB_HOSTNAME" --port="$DB_PORT" --USERNAME="$DB_USERNAME" $DB_DATABASE "$@"
+psql --host="$DB_HOSTNAME" --port="$DB_PORT" --username="$DB_USERNAME" $DB_DATABASE "$@"
