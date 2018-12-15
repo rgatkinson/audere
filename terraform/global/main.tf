@@ -310,6 +310,11 @@ data "aws_iam_policy_document" "ses_send_email" {
     actions = [
       "ses:SendEmail",
       "ses:VerifyEmailIdentity",
+      "ses:DeleteVerifiedEmailAddress",
+      "ses:GetIdentityVerificationAttributes",
+      "ses:VerifyDomainIdentity",
+      "ses:ListIdentities",
+      "ses:ListIdentityPolicies",
     ]
 
     resources = ["*"]
