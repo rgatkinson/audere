@@ -100,6 +100,7 @@ function partition_uuid() {
 function device_by_letter() {
   local letter="$1"
   local xvd="/dev/xvd$letter"
+  ( type nvme || apt-get -y install nvme-cli ) 1>&2
   [[ -b "$xvd" ]] && echo "$xvd" && return 0
   for dev in /dev/nvme?n?; do
     if nvme id-ctrl -v "$dev" | 1>&2 grep " \"/dev/sd$letter\.\."; then
