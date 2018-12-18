@@ -3,6 +3,7 @@ import uuidv4 from "uuid/v4";
 export type FormAction =
   | { type: "START_FORM" }
   | { type: "COMPLETE_SURVEY" }
+  | { type: "CLEAR_FORM" }
   | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_BLOOD_SIGNATURE_PNG"; signatureBase64: string }
   | { type: "SET_NAME"; name: string }
@@ -63,6 +64,7 @@ export interface SurveyResponse {
 export type FormState = {
   completedSurvey: boolean;
   formId?: string;
+  timestamp?: number;
   name?: string;
   email?: string;
   consentTerms?: string;
@@ -81,34 +83,65 @@ const initialState: FormState = {
 export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "START_FORM") {
     // Resets all form data
-    return { ...initialState, formId: uuidv4() };
+    return {
+      ...initialState,
+      formId: uuidv4(),
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "COMPLETE_SURVEY") {
     return { ...state, completedSurvey: true };
   }
+  if (action.type === "CLEAR_FORM") {
+    return initialState;
+  }
   if (action.type === "SET_NAME") {
-    return { ...state, name: action.name };
+    return { ...state, name: action.name, timestamp: new Date().getTime() };
   }
   if (action.type === "SET_EMAIL") {
-    return { ...state, email: action.email };
+    return { ...state, email: action.email, timestamp: new Date().getTime() };
   }
   if (action.type === "SET_CONSENT_TERMS") {
-    return { ...state, consentTerms: action.consentTerms };
+    return {
+      ...state,
+      consentTerms: action.consentTerms,
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "SET_BLOOD_CONSENT_TERMS") {
-    return { ...state, bloodConsentTerms: action.consentTerms };
+    return {
+      ...state,
+      bloodConsentTerms: action.consentTerms,
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "SET_SIGNATURE_PNG") {
-    return { ...state, signatureBase64: action.signatureBase64 };
+    return {
+      ...state,
+      signatureBase64: action.signatureBase64,
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "SET_BLOOD_SIGNATURE_PNG") {
-    return { ...state, bloodSignatureBase64: action.signatureBase64 };
+    return {
+      ...state,
+      bloodSignatureBase64: action.signatureBase64,
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "SET_SAMPLES") {
-    return { ...state, samples: action.samples };
+    return {
+      ...state,
+      samples: action.samples,
+      timestamp: new Date().getTime(),
+    };
   }
   if (action.type === "SET_RESPONSES") {
-    return { ...state, responses: action.responses };
+    return {
+      ...state,
+      responses: action.responses,
+      timestamp: new Date().getTime(),
+    };
   }
   return state;
 }
@@ -116,6 +149,12 @@ export default function reducer(state = initialState, action: FormAction) {
 export function startForm(): FormAction {
   return {
     type: "START_FORM",
+  };
+}
+
+export function clearForm(): FormAction {
+  return {
+    type: "CLEAR_FORM",
   };
 }
 

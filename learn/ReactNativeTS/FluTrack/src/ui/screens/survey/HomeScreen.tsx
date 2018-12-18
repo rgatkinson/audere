@@ -1,10 +1,11 @@
 import React from "react";
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AppState, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import { Feather } from '@expo/vector-icons';
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
+import { completeFormIfExpired } from "../../../util/formTimeout";
 
 interface Props {
   location: string;
@@ -15,6 +16,18 @@ interface Props {
   location: state.admin.location,
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
+  componentWillUnMount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = (nextAppState: string) => {
+    completeFormIfExpired(this.props.navigation);
+  }
+
   _onStart = () => {
     const { t } = this.props;
     if (!this.props.location) {
