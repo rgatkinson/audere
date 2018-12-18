@@ -96,8 +96,12 @@ jobs:
               export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
             fi
             cd learn/ReactNativeTS/FluTrack
+            ls node_modules/audere-lib
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
             more .env
+            echo $PROD_SERVER
+            echo $STAGING_SERVER
+            echo $REACT_NATIVE_API_SERVER
       - run:
           name: Publish to Expo
           command: |
