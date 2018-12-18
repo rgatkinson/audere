@@ -82,8 +82,12 @@ jobs:
           paths: learn/ReactNativeTS/FluTrack
 
   publish: &publish
-    <<: *const
-    <<: *defaults
+    docker:
+      - image: circleci/node:10.12
+    working_directory: ~/repo
+    environment:
+      PROD_SERVER: "https://api.auderenow.io/api"
+      STAGING_SERVER: "https://api.staging.auderenow.io/api"
     steps:
       - attach_workspace:
           at: ~/repo
@@ -102,7 +106,10 @@ jobs:
             fi
             cd learn/ReactNativeTS/FluTrack
             echo `ls`
+            echo `ls node_modules`
             echo `ls node_modules/audere-lib`
+            cd node_modules/audere-lib
+            echo `ls`
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
             more .env
             echo $PROD_SERVER
