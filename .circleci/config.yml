@@ -88,6 +88,11 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: App Yarn Install
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn install
+      - run:
           name: Set .env for target environment
           command: |
             if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
@@ -96,7 +101,8 @@ jobs:
               export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
             fi
             cd learn/ReactNativeTS/FluTrack
-            ls node_modules/audere-lib
+            echo `ls`
+            echo `ls node_modules/audere-lib`
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
             more .env
             echo $PROD_SERVER
