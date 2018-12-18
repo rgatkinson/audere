@@ -19,7 +19,8 @@ export const AgeBucketConfig = {
   buttons: [
     { key: "18orOver", primary: false },
     { key: "13to17", primary: false },
-    { key: "under13", primary: false },
+    { key: "7to12", primary: false },
+    { key: "under7", primary: false },
   ],
 }
 
