@@ -11,6 +11,7 @@ import DateModal from "./DateModal";
 
 interface Props {
   date: Date | null;
+  defaultYear: number | null;
   mode: "day" | "month";
   placeholder: string;
   onDateChange(date: Date): void;
@@ -36,6 +37,11 @@ class DateInput extends React.Component<Props & WithNamespaces> {
   }
 
   render() {
+    const newDate = new Date();
+    if (!!this.props.defaultYear) {
+      newDate.setFullYear(this.props.defaultYear);
+    }
+    const date = !!this.props.date ? this.props.date : newDate;
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -51,7 +57,7 @@ class DateInput extends React.Component<Props & WithNamespaces> {
           )}
         </TouchableOpacity>
         <DateModal
-          date={!!this.props.date ? this.props.date : new Date()}
+          date={date}
           mode={this.props.mode}
           visible={this.state.open}
           onDismiss={(date) => {

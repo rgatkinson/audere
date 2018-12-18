@@ -17,10 +17,10 @@ export const AgeBucketConfig = {
   id: 'AgeBucket',
   title: 'ageTitle',
   buttons: [
-    { key: "18orOver", primary: false },
-    { key: "13to17", primary: false },
-    { key: "7to12", primary: false },
-    { key: "under7", primary: false },
+    { key: "18orOver", primary: false, enabled: true },
+    { key: "13to17", primary: false, enabled: true },
+    { key: "7to12", primary: false, enabled: true },
+    { key: "under7", primary: false, enabled: true },
   ],
 }
 

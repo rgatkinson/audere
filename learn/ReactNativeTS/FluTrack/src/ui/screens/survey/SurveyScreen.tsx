@@ -182,6 +182,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
               <SurveyQuestion
                 active={activeSection && lastItem}
                 data={item}
+                navigation={this.props.navigation}
                 onActivate={() => this._activateQuestion(section.title, index)}
                 onNext={(nextQuestion: string) => this._addData(nextQuestion)}
               />

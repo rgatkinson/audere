@@ -52,9 +52,10 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     constructor(props: SurveyQuestionProps & InnerProps & OuterProps<P>) {
       super(props);
       this.state = {
-        data: !!this.props.navigation
-          ? this.props.navigation.getParam("data")
-          : this.props.data,
+        data:
+          !!this.props.navigation && !!this.props.navigation.getParam("data")
+            ? this.props.navigation.getParam("data")
+            : this.props.data,
       };
     }
 

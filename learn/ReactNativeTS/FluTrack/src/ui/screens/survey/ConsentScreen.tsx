@@ -75,7 +75,9 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   };
 
   _next = () => {
-    if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
+    if (this.props.navigation.getParam("reconsent")) {
+      this.props.navigation.push("Survey");
+    } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
         this.props.getAnswer("selectedButtonKey", BloodConfig.id) === "yes") {
       this.props.navigation.push("BloodConsent", { priorTitle: this.props.t(ConsentConfig.title) });
     } else {
@@ -88,7 +90,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
-          canProceed={!!this.props.name && !!this.props.signature}
+          canProceed={!!this.props.name && !!this.props.signature && !this.props.navigation.getParam("reconsent")}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={this.props.navigation.getParam("priorTitle")}

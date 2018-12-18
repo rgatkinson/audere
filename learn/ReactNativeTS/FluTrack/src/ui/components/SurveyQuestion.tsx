@@ -1,9 +1,12 @@
 import React, { Component } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, View, StyleSheet, TouchableOpacity } from "react-native";
+import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, Option } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { ButtonConfig, EnabledOption, SurveyQuestionData } from "../../resources/QuestionnaireConfig";
+import { AgeBucketConfig } from "../screens/survey/AgeScreen";
+import { ConsentConfig } from "../screens/survey/ConsentScreen";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -16,6 +19,7 @@ import Title from "./Title";
 export interface SurveyQuestionProps {
   active: boolean;
   data: SurveyQuestionData;
+  navigation: NavigationScreenProp<any, any>;
   onActivate(): void;
   onNext(nextQuestion: string | null): void;
 }
@@ -60,6 +64,61 @@ class SurveyQuestion extends Component<
     return !!enabledStatus;
   };
 
+  _getBirthDateDefaultYear() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+    if (ageBucket === "18orOver") {
+      date.setFullYear(year - 35);
+    } else if (ageBucket === "13to17") {
+      date.setFullYear(year - 15);
+    } else if (ageBucket === "7to12") {
+      date.setFullYear(year - 10);
+    }
+    return date.getFullYear();
+  }
+
+  _getAdjustedAgeBucket(): string {
+    var today = new Date();
+    var birthDate = this.props.getAnswer("dateInput");
+    var age = today.getFullYear() - birthDate.getFullYear();
+    var m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age = age - 1;
+    }
+
+    if (age >= 18) {
+      return "18orOver";
+    } else if (age >= 13) {
+      return "13to17";
+    } else if (age >= 7) {
+      return "7to12";
+    } else {
+      return "under7";
+    }
+  }
+
+  _reconsent() {
+    const { t } = this.props;
+    Alert.alert(
+      t("newConsentRequired"),
+      t("ageDoesntMatch"),
+      [
+        {
+          text: t("cancel"),
+          onPress: () => {},
+        },
+        {
+          text: t("continue"),
+          onPress: () => {
+            this.props.updateAnswer({ selectedButtonKey: this._getAdjustedAgeBucket() }, AgeBucketConfig );
+            this.props.navigation.push("Consent", { data: ConsentConfig, reconsent: true });
+          },
+        },
+      ],
+    );
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -92,6 +151,7 @@ class SurveyQuestion extends Component<
         {this.props.data.dateInput && (
           <DateInput
             date={this.props.getAnswer("dateInput")}
+            defaultYear={this.props.data.id === "BirthDate" ? this._getBirthDateDefaultYear() : null}
             mode={this.props.data.dateInput.mode}
             placeholder={t("surveyPlaceholder:" + this.props.data.dateInput.placeholder)}
             onDateChange={(date: Date) => {
@@ -153,8 +213,13 @@ class SurveyQuestion extends Component<
               key={button.key}
               label={t("surveyButton:" + button.key)}
               onPress={() => {
-                this.props.updateAnswer({ selectedButtonKey: button.key });
-                this.props.onNext(this._getNextQuestion(button.key));
+                if (this.props.data.id === "BirthDate" &&
+                    this._getAdjustedAgeBucket() !== this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id)) {
+                  this._reconsent();
+                } else {
+                  this.props.updateAnswer({ selectedButtonKey: button.key });
+                  this.props.onNext(this._getNextQuestion(button.key));
+                }
               }}
               primary={button.primary}
             />
@@ -186,4 +251,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default reduxWriter(withNamespaces()(SurveyQuestion));
+export default reduxWriter(withNamespaces("surveyQuestion")(SurveyQuestion));
