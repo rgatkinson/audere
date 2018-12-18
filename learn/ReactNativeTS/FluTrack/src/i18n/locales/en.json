@@ -68,7 +68,7 @@
     "newConsentRequired": "New consent form required",
     "ageDoesntMatch": "This birth date does not fall into the age range specified at the start of the survey and requires a new consent form.",
     "cancel": "Cancel",
-    "continue": "Continue",
+    "continue": "Continue"
   },
   "signatureBox": {
     "pleaseSign": "Please sign in the signature box using your fingertip or Apple Pencil.",
