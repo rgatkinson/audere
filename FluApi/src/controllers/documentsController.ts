@@ -1,5 +1,10 @@
 import winston, { createLogger } from "winston";
-import { DocumentType } from "audere-lib";
+import {
+  DocumentType,
+  VisitDocument,
+  FeedbackDocument,
+  LogDocument
+} from "audere-lib";
 import { AccessKey } from "../models/accessKey";
 import { Visit } from "../models/visit";
 import logger from "../util/logger";
@@ -13,18 +18,21 @@ const clientLogger = createLogger({
 export async function putDocument(req, res) {
   switch (req.body.documentType) {
     case DocumentType.Visit:
+      const visit = req.body as VisitDocument;
       await Visit.upsert({
         csruid: req.params.documentId,
-        device: req.body.device,
-        visit: req.body.document
+        device: visit.device,
+        visit: visit.visit
       });
       break;
     case DocumentType.Feedback:
+      const feedback = req.body as FeedbackDocument;
       // TODO(ram): send an email
-      logger.info(JSON.stringify(req.body));
+      logger.info(JSON.stringify(feedback));
       break;
     case DocumentType.Log:
-      clientLogger.info(JSON.stringify(req.body));
+      const log = req.body as LogDocument;
+      clientLogger.info(JSON.stringify(log));
       break;
     default:
       throw new Error("Invalid document type");
