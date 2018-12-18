@@ -188,6 +188,11 @@ resource "aws_iam_group_policy_attachment" "ses_send_email" {
   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
 }
 
+resource "aws_iam_group_policy_attachment" "iam_manage_own_mfa" {
+  group      = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.iam_manage_own_mfa.arn}"
+}
+
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
   name   = "AudereEC2FullAccess"
@@ -318,6 +323,105 @@ data "aws_iam_policy_document" "ses_send_email" {
     ]
 
     resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "iam_manage_own_mfa" {
+  name   = "AudereManageOwnMFA"
+  policy = "${data.aws_iam_policy_document.iam_manage_own_mfa.json}"
+}
+
+data "aws_iam_policy_document" "iam_manage_own_mfa" {
+  statement {
+    sid = "AllowAllUsersToListAccounts"
+    actions = [
+      "iam:ListAccountAliases",
+      "iam:ListUsers",
+      "iam:ListVirtualMFADevices",
+      "iam:GetAccountPasswordPolicy",
+      "iam:GetAccountSummary"
+    ]
+    resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+  statement {
+    sid = "AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation"
+    actions = [
+      "iam:ChangePassword",
+      "iam:CreateAccessKey",
+      "iam:CreateLoginProfile",
+      "iam:DeleteAccessKey",
+      "iam:DeleteLoginProfile",
+      "iam:GetLoginProfile",
+      "iam:ListAccessKeys",
+      "iam:UpdateAccessKey",
+      "iam:UpdateLoginProfile",
+      "iam:ListSigningCertificates",
+      "iam:DeleteSigningCertificate",
+      "iam:UpdateSigningCertificate",
+      "iam:UploadSigningCertificate",
+      "iam:ListSSHPublicKeys",
+      "iam:GetSSHPublicKey",
+      "iam:DeleteSSHPublicKey",
+      "iam:UpdateSSHPublicKey",
+      "iam:UploadSSHPublicKey"
+    ]
+    resources = [
+      "arn:aws:iam::*:user/$${aws:username}"
+    ]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+  statement {
+    sid = "AllowIndividualUserToViewAndManageTheirOwnMFA"
+    actions = [
+      "iam:CreateVirtualMFADevice",
+      "iam:DeleteVirtualMFADevice",
+      "iam:EnableMFADevice",
+      "iam:ListMFADevices",
+      "iam:ResyncMFADevice"
+    ]
+    resources = [
+      "arn:aws:iam::*:mfa/$${aws:username}",
+      "arn:aws:iam::*:user/$${aws:username}"
+    ]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+  statement {
+    sid = "AllowIndividualUserToDeactivateOnlyTheirOwnMFAOnlyWhenUsingMFA"
+    actions = [
+      "iam:DeactivateMFADevice"
+    ]
+    resources = [
+      "arn:aws:iam::*:mfa/$${aws:username}",
+      "arn:aws:iam::*:user/$${aws:username}"
+    ]
+
+    condition = {
+      test = "Bool"
+      variable = "aws:MultiFactorAuthPresent"
+      values = ["true"]
+    }
 
     condition = {
       test     = "${local.mfa_condition_test}"
