@@ -178,11 +178,6 @@ resource "aws_iam_group_policy_attachment" "route53_full_access" {
   policy_arn = "${aws_iam_policy.route53_full_access.arn}"
 }
 
-resource "aws_iam_group_policy_attachment" "eks_full_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.eks_full_access.arn}"
-}
-
 resource "aws_iam_group_policy_attachment" "ses_send_email" {
   group      = "${aws_iam_group.infrastructurers.name}"
   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
@@ -269,29 +264,6 @@ data "aws_iam_policy_document" "route53_full_access" {
       "sns:ListSubscriptionsByTopic",
       "cloudwatch:DescribeAlarms",
       "cloudwatch:GetMetricStatistics",
-    ]
-
-    resources = ["*"]
-
-    condition = {
-      test     = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values   = ["${local.mfa_condition_value}"]
-    }
-  }
-}
-
-// eks_full_access
-resource "aws_iam_policy" "eks_full_access" {
-  name   = "AudereEKSFullAccess"
-  policy = "${data.aws_iam_policy_document.eks_full_access.json}"
-}
-
-data "aws_iam_policy_document" "eks_full_access" {
-  statement {
-    actions = [
-      "eks:*",
-      "iam:PassRole",
     ]
 
     resources = ["*"]
