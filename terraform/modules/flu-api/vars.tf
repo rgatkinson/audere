@@ -15,6 +15,22 @@ variable "migrate" {
   description = "Cycle this false -> true -> false to run a db migration"
 }
 
+variable "subnet_api_cidr" {
+  description = "CIDR for private subnet for api tier instances."
+  type = "string"
+}
+
+variable "subnet_public_cidr" {
+  description = "CIDR for public subnet we create for the application load balancer and any other public endpoints."
+  type = "string"
+}
+
+variable "vpc_id" {
+  description = "VPC id for adding subnets"
+  type = "string"
+}
+
+
 variable "commit" {
   description = "Git commit tag (or hash) to sync"
   default = "master"

@@ -10,3 +10,11 @@ output "database_address" {
 output "api_creds_snapshot_id" {
   value = "${element(concat(aws_ebs_snapshot.api_creds.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
 }
+
+output "vpc_id" {
+  value = "value"
+}
+
+output "fludb_client_sg_id" {
+  value = "${aws_security_group.fludb_client.id}"
+}

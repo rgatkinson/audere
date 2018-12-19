@@ -23,12 +23,22 @@ provider "template" {
 module "flu_api" {
   source = "../../modules/flu-api"
 
-  environment = "prod"
-  service = "${var.service}"
-  migrate = "${var.migrate}"
+  ami_id = "${module.ami.ubuntu}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
-  ami_id = "${module.ami.ubuntu}"
+  environment = "prod"
+  migrate = "${var.migrate}"
+  service = "${var.service}"
+  subnet_api_cidr = "${data.terraform_remote_state.global.subnet_prod_api_cidr}"
+  subnet_public_cidr = "${data.terraform_remote_state.global.subnet_prod_public_cidr}"
+  vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
+}
+
+data "terraform_remote_state" "global" {
+  backend = "local"
+  config {
+    path = "../../global/terraform.tfstate"
+  }
 }
 
 data "terraform_remote_state" "flu_db" {

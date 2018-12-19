@@ -25,6 +25,7 @@ resource "aws_db_instance" "fludb" {
   skip_final_snapshot = true // TODO
   storage_encrypted = true
   username = "${local.my_userid}"
+  vpc_security_group_ids = ["${module.fludb_sg.server_id}"]
 
   tags {
     Name = "${local.base_name}"

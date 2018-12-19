@@ -10,6 +10,8 @@ module "flu_db" {
   ami_id = "${module.ami.ubuntu}"
   environment = "prod"
   mode = "${var.mode}"
+  subnet_db_cidr = "${data.terraform_remote_state.global.subnet_prod_db_cidr}"
+  vpc_cidr = "${data.terraform_remote_state.global.vpc_prod_cidr}"
 }
 
 module "ami" {
@@ -23,6 +25,13 @@ provider "aws" {
 
 provider "template" {
   version = "~> 1.0"
+}
+
+data "terraform_remote_state" "global" {
+  backend = "local"
+  config {
+    path = "../../global/terraform.tfstate"
+  }
 }
 
 terraform {

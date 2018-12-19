@@ -1084,4 +1084,48 @@ locals {
   mfa_condition_test     = "NumericLessThan"
   mfa_condition_variable = "aws:MultiFactorAuthAge"
   mfa_condition_value    = "${12 * 60 * 60}"
+
+  // ==== Network configuration ====
+  //
+  // Since the IPv4 space is global to the instance, we specify allocations here.
+  // Actually creating the resources is up to the individual modules, but assigning
+  // address ranges here helps ensure we don't have collisions.
+  //
+  // ==== VPCs ====
+  //
+  // According to:
+  // https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#VPC_Sizing
+  // the recommended IPv4 CIDR blocks come from RFC 1918:
+  //   10.0.0.0 - 10.255.255.255 (10/8 prefix)
+  //   172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
+  //   192.168.0.0 - 192.168.255.255 (192.168/16 prefix)
+  //
+  // VPCs can be up to 16-bits, of which there would be 256 + 16 + 1 = 273.
+  // I think this is more than we will use, but conceivably in the future we
+  // can resize the non-prod VPCs smaller if we need the ability to create more
+  // VPCs.
+  //
+  // Since 192.168.0.0/16 has exactly one 16-bit range, we give that to prod so
+  // there will never be any question of fragmentation.
+  //
+  // ==== Subnets ====
+  //
+  // For simplicity, I'm making 8-bit subnets.  I'm giving the db the first block (0),
+  // making the last block public (255), and allocating other services in 1-254.
+
+  vpc_aws_default_cidr = "172.31.0.0/16"  // AWS default--we don't control this
+
+  vpc_prod_cidr = "192.168.0.0/16"
+  subnet_prod_db_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 0)}"
+  subnet_prod_api_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 1)}"
+  subnet_prod_public_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 255)}"
+
+  vpc_staging_cidr = "172.16.0.0/16"
+  subnet_staging_db_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 0)}"
+  subnet_staging_api_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 1)}"
+  subnet_staging_public_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 255)}"
+
+  vpc_dev_cidr = "172.30.0.0/16"
+  subnet_dev_machine = "${cidrsubnet(local.vpc_dev_cidr, 8, 0)}"
+  subnet_dev_bastion = "${cidrsubnet(local.vpc_dev_cidr, 8, 255)}"
 }

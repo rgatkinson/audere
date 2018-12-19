@@ -41,6 +41,17 @@ variable "environment" {
   type = "string"
 }
 
+variable "subnet_db_cidr" {
+  description = "CIDR for private subnet for db tier instances."
+  type = "string"
+}
+
+variable "vpc_cidr" {
+  description = "CIDR for VPC containing all subnets for this environment."
+  type = "string"
+}
+
+
 variable "mode" {
   description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"
   default = "run"
