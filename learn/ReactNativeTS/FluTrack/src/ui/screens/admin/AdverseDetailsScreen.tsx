@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { Option, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { PostCollectionQuestions, OptionKeyToQuestion } from "./QuestionConfig";
+import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -34,7 +35,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
     const { params = null } = navigation.state;
     return {
       title: "Adverse Events",
-      headerBackTitle: "Back",
+      headerLeft: <BackButton navigation={navigation} text={"Back"} />,
       headerRight: (!!params ?
         <FeedbackButton onPress={params.showFeedback} />
         : null

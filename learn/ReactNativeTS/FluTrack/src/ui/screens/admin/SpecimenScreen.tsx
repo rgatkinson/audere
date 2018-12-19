@@ -8,6 +8,7 @@ import {
   StoreState,
   setSamples,
 } from "../../../store";
+import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -28,6 +29,7 @@ export default class SpecimentScreen extends React.Component<Props> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
     const { params = null } = navigation.state;
     return {
+      headerLeft: <BackButton navigation={navigation} text={"Admin Settings"} />,
       title: "Specimen Scan",
       headerRight: (!!params ?
         <FeedbackButton onPress={params.showFeedback} />

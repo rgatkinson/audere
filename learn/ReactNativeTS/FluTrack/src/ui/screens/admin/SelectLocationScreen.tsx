@@ -7,6 +7,7 @@ import {
   setLocation,
   setLocationType,
 } from "../../../store";
+import BackButton from "../../components/BackButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
 import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
@@ -31,6 +32,7 @@ export default class SelectLocationScreen extends React.Component<Props> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
     const { params = null } = navigation.state;
     return {
+      headerLeft: <BackButton navigation={navigation} text={"Prior to Collection"} />,
       title: "Select Location",
       headerRight: (!!params ?
         <FeedbackButton onPress={params.showFeedback} />

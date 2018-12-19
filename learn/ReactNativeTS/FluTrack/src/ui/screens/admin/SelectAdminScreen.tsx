@@ -8,6 +8,7 @@ import {
   setAdministrator,
   setAdmins,
 } from "../../../store";
+import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -31,6 +32,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
     const { params = null } = navigation.state;
     return {
       title: "Select Administrator",
+      headerLeft: <BackButton navigation={navigation} text={"Prior to Collection"} />,
       headerRight: (!!params ?
         <FeedbackButton onPress={params.showFeedback} />
         : null

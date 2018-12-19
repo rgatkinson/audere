@@ -3,6 +3,7 @@ import { Text, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, Option, StoreState, setAdministrator, setBloodCollection } from "../../../store";
+import BackButton from "../../components/BackButton";
 import EditSettingButton from "../../components/EditSettingButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
@@ -33,6 +34,7 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
     const { params = null } = navigation.state;
     return {
+      headerLeft: <BackButton navigation={navigation} text={"Admin Settings"} />,
       title: "Prior to Collection",
       headerRight: (!!params ?
         <FeedbackButton onPress={params.showFeedback} />
