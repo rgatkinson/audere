@@ -36,6 +36,7 @@ import SelectAdminScreen from "./src/ui/screens/admin/SelectAdminScreen";
 import AdverseScreen from "./src/ui/screens/admin/AdverseScreen";
 import AdverseDetailsScreen from "./src/ui/screens/admin/AdverseDetailsScreen";
 import SpecimenScreen from "./src/ui/screens/admin/SpecimenScreen";
+import ManualBarcodeScreen from "./src/ui/screens/admin/ManualBarcodeScreen";
 
 const Home = createStackNavigator(
   {
@@ -86,6 +87,7 @@ const Admin = createStackNavigator(
     Adverse: AdverseScreen,
     AdverseDetails: AdverseDetailsScreen,
     Specimen: SpecimenScreen,
+    ManualBarcode: ManualBarcodeScreen,
   },
   {
     mode: "modal",

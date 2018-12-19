@@ -8,9 +8,10 @@ import {
   StoreState,
   setSamples,
 } from "../../../store";
+import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import { BarCodeScanner, Permissions } from 'expo';
+import { AppLoading, Camera, Permissions } from 'expo';
 
 interface Props {
   dispatch(action: Action): void;
@@ -49,6 +50,21 @@ export default class SpecimentScreen extends React.Component<Props> {
     this.setState({ hasCameraPermission: status === 'granted' });
   }
 
+  _onHelp = () => {
+    Alert.alert(
+      "Scanning Instructions",
+      "Hold the barcode about 8 inches away from the iPad until the text is in clear focus. An alert will pop up when the barcode is successfully scanned. If scanning isn't working, you can enter the barcode data manually.",
+      [{
+        text: "OK",
+        onPress: () => {}
+      }],
+    );
+  }
+
+  _onManualEntry = () => {
+    this.props.navigation.push("ManualBarcode");
+  }
+
   handleBarCodeScanned = (
     { type, data }: { type: any, data: string }
   ) => {
@@ -79,30 +95,70 @@ export default class SpecimentScreen extends React.Component<Props> {
   render() {
     const { hasCameraPermission } = this.state;
 
-    return (
-      <View style={styles.container}>
-        <FeedbackModal
-          visible={this.state.feedbackVisible}
-          onDismiss={() => this.setState({ feedbackVisible: false })}
-        />
-        <BarCodeScanner
-          onBarCodeScanned={({ type, data }: { type: any, data: string }) => {
-            if (!this.state.activeScan) {
-              this.setState({ activeScan: true });
-              this.handleBarCodeScanned({ type, data });
-            }
-          }}
-          style={StyleSheet.absoluteFill}
-        />
-      </View>
-    );
+    return hasCameraPermission === null
+      ? ( <AppLoading /> )
+      : (
+        <View style={styles.container}>
+          <FeedbackModal
+            visible={this.state.feedbackVisible}
+            onDismiss={() => this.setState({ feedbackVisible: false })}
+          />
+          {hasCameraPermission
+            ? <View style={{ flex: 1 }}>
+                <Camera
+                  autoFocus={false}
+                  focusDepth={0.4}
+                  style={{flex: 1, alignSelf: 'stretch'}}
+                  onBarCodeScanned={({ type, data }: { type: any, data: string }) => {
+                    if (!this.state.activeScan) {
+                      this.setState({ activeScan: true });
+                      this.handleBarCodeScanned({ type, data });
+                    }
+                  }}
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                  <Button
+                    enabled={true}
+                    key="help"
+                    label="Help"
+                    primary={true}
+                    onPress={this._onHelp}
+                  />
+                  <Button
+                    enabled={true}
+                    key="manual"
+                    label="Enter Manually"
+                    primary={true}
+                    onPress={this._onManualEntry}
+                  />
+                </View>
+              </View>
+            : <View>
+                <Text style={styles.headerText}>
+                  Camera Permission Required
+               </Text>
+               <Text style={styles.bodyText}>
+                  Grant permission in this iPad's Settings app under FluTrack.
+               </Text>
+            </View>
+          }
+        </View>
+      );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-  }
+  },
+  headerText: {
+    alignSelf: 'center',
+    fontSize: 24,
+    margin: 15,
+  },
+  bodyText: {
+    alignSelf: 'center',
+    fontSize: 20,
+  },
 });
