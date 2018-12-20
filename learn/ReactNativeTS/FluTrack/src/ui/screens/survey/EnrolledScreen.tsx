@@ -35,7 +35,12 @@ export const EnrolledConfig = {
     label: "enrolledDescription",
   },
   optionList: {
-    options: ["askAboutMyIllness", "learnAboutStudy", "allOfTheAbove"],
+    options: [
+      "sendCopyOfMyConsent",
+      "askAboutMyIllness",
+      "learnAboutStudy",
+      "allOfTheAbove",
+    ],
     multiSelect: true,
   },
   buttons: [
