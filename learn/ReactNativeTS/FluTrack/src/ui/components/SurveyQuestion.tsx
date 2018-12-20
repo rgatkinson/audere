@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import { Alert, View, StyleSheet, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Action, Option } from "../../store/index";
+import { Action, Address, Option } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { ButtonConfig, EnabledOption, SurveyQuestionData } from "../../resources/QuestionnaireConfig";
-import { AgeBucketConfig } from "../screens/survey/AgeScreen";
-import { ConsentConfig } from "../screens/survey/ConsentScreen";
+import { AgeBucketConfig, ConsentConfig } from "../../resources/ScreenConfig";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -24,9 +23,19 @@ export interface SurveyQuestionProps {
   onNext(nextQuestion: string | null): void;
 }
 
+interface State {
+  addressInput?: Address;
+  numberInput?: number;
+  textInput?: string;
+  otherOption?: string;
+  [key: string]: undefined | Address | string | number;
+}
+
 class SurveyQuestion extends Component<
-  SurveyQuestionProps & WithNamespaces & ReduxWriterProps
+  SurveyQuestionProps & WithNamespaces & ReduxWriterProps, State
 > {
+  state: State = {};
+
   _getNextQuestion = (selectedButtonKey: string): string | null => {
     let nextQuestion = this.props.data.nextQuestion;
     if (this.props.data.conditionalNext) {
@@ -53,11 +62,13 @@ class SurveyQuestion extends Component<
       const options = this.props.getAnswer("options");
       return !!options && options.reduce((result: boolean, option: Option) => result || option.selected, false);
     } else if (enabledStatus === "withText") {
-      return !!this.props.getAnswer("textInput");
+      return !!this._getValue("textInput");
     } else if (enabledStatus === "withNumber") {
-      return !!this.props.getAnswer("numberInput");
+      return Number.isInteger(parseInt(this._getValue("numberInput")));
     } else if (enabledStatus === "withAddress") {
-      return !!this.props.getAnswer("addressInput");
+      // TODO: validates an empty Address object. Should explicitly check
+      // required fields once ready to do validation
+      return !!this._getValue("addressInput");
     } else if (enabledStatus === "withDate") {
       return !!this.props.getAnswer("dateInput");
     }
@@ -119,6 +130,12 @@ class SurveyQuestion extends Component<
     );
   }
 
+  _getValue = (valueType: string): any => {
+    return typeof this.state[valueType] !== 'undefined'
+      ? this.state[valueType]
+      : this.props.getAnswer(valueType);
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -142,10 +159,8 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             placeholder={t("surveyPlaceholder:" + this.props.data.textInput!.placeholder)}
             returnKeyType="done"
-            value={this.props.getAnswer("textInput") ? this.props.getAnswer("textInput") : undefined}
-            onChangeText={text => {
-              this.props.updateAnswer({ textInput: text });
-            }}
+            value={this._getValue("textInput")}
+            onChangeText={textInput => this.setState({ textInput })}
           />
         )}
         {this.props.data.dateInput && (
@@ -154,19 +169,15 @@ class SurveyQuestion extends Component<
             defaultYear={this.props.data.id === "BirthDate" ? this._getBirthDateDefaultYear() : null}
             mode={this.props.data.dateInput.mode}
             placeholder={t("surveyPlaceholder:" + this.props.data.dateInput.placeholder)}
-            onDateChange={(date: Date) => {
-              this.props.updateAnswer({ dateInput: date });
-            }}
+            onDateChange={(dateInput: Date) => this.props.updateAnswer({ dateInput })}
           />
         )}
         {this.props.data.addressInput && (
           <AddressInput
             autoFocus={true}
             showLocationField={this.props.data.addressInput!.showLocationField}
-            value={this.props.getAnswer("addressInput")}
-            onChange={address => {
-              this.props.updateAnswer({ addressInput: address });
-            }}
+            value={this._getValue("addressInput")}
+            onChange={(addressInput: Address) => this.setState({ addressInput })}
           />
         )}
         {this.props.data.numberInput && (
@@ -174,15 +185,8 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             placeholder={t("surveyPlaceholder:" + this.props.data.numberInput!.placeholder)}
             returnKeyType="done"
-            value={
-              this.props.getAnswer("numberInput")
-                ? "" + this.props.getAnswer("numberInput")
-                : undefined
-            }
-            onChange={text => {
-              this.props.updateAnswer({ numberInput: parseInt(text) });
-            }}
-            onSubmit={() => {}}
+            value={this._getValue("numberInput") === null ? undefined : "" + this._getValue("numberInput")}
+            onChange={text => this.setState({ numberInput: parseInt(text) })}
           />
         )}
         {this.props.data.optionList && (
@@ -194,13 +198,9 @@ class SurveyQuestion extends Component<
             multiSelect={this.props.data.optionList.multiSelect}
             numColumns={this.props.data.optionList.numColumns || 1}
             withOther={this.props.data.optionList.withOther}
-            otherOption={this.props.getAnswer("otherOption")}
-            onOtherChange={value => {
-              this.props.updateAnswer({ otherOption: value });
-            }}
-            onChange={options => {
-              this.props.updateAnswer({ options });
-            }}
+            otherOption={this._getValue("otherOption")}
+            onOtherChange={otherOption => this.setState({ otherOption })}
+            onChange={options => this.props.updateAnswer({ options })}
           />
         )}
         <View style={styles.buttonContainer}>
@@ -217,6 +217,19 @@ class SurveyQuestion extends Component<
                     this._getAdjustedAgeBucket() !== this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id)) {
                   this._reconsent();
                 } else {
+                  if (typeof this.state.textInput !== 'undefined') {
+                    this.props.updateAnswer({ textInput: this.state.textInput });
+                  }
+                  if (typeof this.state.numberInput !== 'undefined') {
+                    this.props.updateAnswer({ numberInput: this.state.numberInput });
+                  }
+                  if (typeof this.state.otherOption !== 'undefined') {
+                    this.props.updateAnswer({ otherOption: this.state.otherOption });
+                  }
+                  if (typeof this.state.addressInput !== 'undefined') {
+                    this.props.updateAnswer({ addressInput: this.state.addressInput });
+                  }
+
                   this.props.updateAnswer({ selectedButtonKey: button.key });
                   this.props.onNext(this._getNextQuestion(button.key));
                 }

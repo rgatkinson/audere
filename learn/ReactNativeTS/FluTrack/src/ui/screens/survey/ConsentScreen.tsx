@@ -18,9 +18,7 @@ import {
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
-import { AgeBucketConfig } from "./AgeScreen";
-import { BloodConfig } from "./BloodScreen";
-import { EnrolledConfig } from "./EnrolledScreen";
+import { AgeBucketConfig, BloodConfig, ConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
 import Description from "../../components/Description";
 import SignatureBox from "../../components/SignatureBox";
 import StatusBar from "../../components/StatusBar";
@@ -40,13 +38,9 @@ interface Props {
   signature: string;
 }
 
-export const ConsentConfig = {
-  id: "Consent",
-  title: "consent",
-  description: {
-    label: "thankYouAssisting",
-  },
-};
+interface State {
+  name?: string;
+}
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
@@ -54,7 +48,9 @@ export const ConsentConfig = {
   locationType: state.admin!.locationType,
   signature: state.form!.signatureBase64,
 }))
-class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
+class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps, State> {
+  state: State = {};
+
   _getConsentTerms = () => {
     const { t } = this.props;
     return !!this.props.locationType && this.props.locationType == "childcare"
@@ -68,13 +64,15 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
       });
   };
 
-  _onSubmit = (signature: string) => {
+  _onSubmit = (signature: string | undefined) => {
+    if (!!this.state.name) {
+      this.props.dispatch(setName(this.state.name));
+    }
     this.props.dispatch(setConsentTerms(this._getConsentTerms()));
-    this.props.dispatch(setSignaturePng(signature));
-    this._next();
-  };
+    if (!!signature) {
+      this.props.dispatch(setSignaturePng(signature));
+    }
 
-  _next = () => {
     if (this.props.navigation.getParam("reconsent")) {
       this.props.navigation.push("Survey");
     } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
@@ -85,21 +83,25 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     }
   };
 
+  _getName = (): string => {
+    return typeof this.state.name !== 'undefined' ? this.state.name : this.props.name;
+  }
+
   render() {
     const { t } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <StatusBar
-          canProceed={!!this.props.name && !!this.props.signature && !this.props.navigation.getParam("reconsent")}
+          canProceed={!!this._getName() && !!this.props.signature && !this.props.navigation.getParam("reconsent")}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={this.props.navigation.getParam("priorTitle")}
           onBack={this.props.navigation.pop}
-          onForward={this._next}
+          onForward={this._onSubmit}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(ConsentConfig.title)} />
-          <Description content={t(ConsentConfig.description.label)} />
+          <Description content={t(ConsentConfig.description!.label)} />
           <Text>
             {this._getConsentTerms()}
           </Text>
@@ -115,14 +117,12 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
             autoFocus={false}
             placeholder={t("fullName")}
             returnKeyType="done"
-            value={this.props.name}
-            onChangeText={text => {
-              this.props.dispatch(setName(text));
-            }}
+            value={this._getName()}
+            onChangeText={text => this.setState({ name: text })}
           />
         </View>
         <SignatureBox
-          canSubmit={!!this.props.name}
+          canSubmit={!!this.state.name}
           onSubmit={(signature: string) => {
             this._onSubmit(signature);
           }}

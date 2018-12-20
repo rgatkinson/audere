@@ -2,7 +2,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { ConsentConfig } from "./ConsentScreen";
+import { BloodConfig, ConsentConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -12,26 +12,6 @@ import Title from "../../components/Title";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-}
-
-export const BloodConfig = {
-  id: 'BloodScreen',
-  title: 'bloodTitle',
-  description: {
-    label: 'bloodDescription',
-  },
-  buttons: [
-    {
-      key: "yes",
-      primary: true,
-      subtextKey: "yesBloodButtonSubtext",
-    },
-    {
-      key: "no",
-      primary: true,
-      subtextKey: "noBloodButtonSubtext"
-    },
-  ],
 }
 
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
@@ -53,7 +33,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + BloodConfig.title)} />
-          <Description content={t("surveyDescription:" + BloodConfig.description.label)} />
+          <Description content={t("surveyDescription:" + BloodConfig.description!.label)} />
           {BloodConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}

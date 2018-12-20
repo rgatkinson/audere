@@ -10,9 +10,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { Option, StoreState } from "../../../store";
-import { AgeBucketConfig } from "./AgeScreen";
-import { BloodConfig } from "./BloodScreen";
-import { ConsentConfig } from "./ConsentScreen";
+import { AgeBucketConfig, BloodConfig, ConsentConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -27,36 +25,6 @@ interface Props {
   bloodCollection: boolean;
   navigation: NavigationScreenProp<any, any>;
 }
-
-export const SymptomsConfig = {
-  id: "Symptoms",
-  title: "symptomTitle",
-  description: {
-    label: "selectAll",
-    center: true,
-  },
-  optionList: {
-    options: [
-      "feelingFeverish",
-      "headaches",
-      "cough",
-      "diarrhea",
-      "soreThroat",
-      "nauseaOrVomiting",
-      "runnyOrStuffyNose",
-      "rash",
-      "fatigue",
-      "muscleOrBodyAches",
-      "increasedTroubleBreathing",
-      "earPainOrDischarge",
-    ],
-    multiSelect: true,
-  },
-  buttons: [
-    { key: "done", primary: true },
-    { key: "noneOfTheAbove", primary: false },
-  ],
-};
 
 @connect((state: StoreState) => ({
   bloodCollection: state.admin.bloodCollection,
@@ -124,12 +92,12 @@ class SymptomsScreen extends React.PureComponent<
         <ContentContainer>
           <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
           <Description
-            content={t("surveyDescription:" + SymptomsConfig.description.label)}
-            center={SymptomsConfig.description.center}
+            content={t("surveyDescription:" + SymptomsConfig.description!.label)}
+            center={true}
           />
           <OptionList
             data={newSelectedOptionsList(
-              SymptomsConfig.optionList.options,
+              SymptomsConfig.optionList!.options,
               this.props.getAnswer("options")
             )}
             multiSelect={true}

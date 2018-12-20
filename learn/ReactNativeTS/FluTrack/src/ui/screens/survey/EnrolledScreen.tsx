@@ -9,6 +9,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { EnrolledConfig } from "../../../resources/ScreenConfig";
 import { Action, Option, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -28,34 +29,22 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-export const EnrolledConfig = {
-  id: "Enrolled",
-  title: "enrolledTitle",
-  description: {
-    label: "enrolledDescription",
-  },
-  optionList: {
-    options: [
-      "sendCopyOfMyConsent",
-      "askAboutMyIllness",
-      "learnAboutStudy",
-      "allOfTheAbove",
-    ],
-    multiSelect: true,
-  },
-  buttons: [
-    { key: "done", primary: true },
-    { key: "doNotEmailMe", primary: false },
-  ],
-};
+interface State {
+  email?: string;
+}
 
 @connect((state: StoreState) => ({
   email: state.form!.email,
 }))
 class EnrolledScreen extends React.PureComponent<
-  Props & WithNamespaces & ReduxWriterProps
+  Props & WithNamespaces & ReduxWriterProps, State
 > {
+  state: State = {};
+
   _onDone = () => {
+    if (!!this.state.email) {
+      this.props.dispatch(setEmail(this.state.email));
+    }
     this.props.navigation.push("SurveyStart");
   };
 
@@ -70,6 +59,10 @@ class EnrolledScreen extends React.PureComponent<
     );
   };
 
+  _getEmail = (): string => {
+    return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -78,11 +71,11 @@ class EnrolledScreen extends React.PureComponent<
         <ContentContainer>
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
           <Description
-            content={t("surveyDescription:" + EnrolledConfig.description.label)}
+            content={t("surveyDescription:" + EnrolledConfig.description!.label)}
           />
           <OptionList
             data={newSelectedOptionsList(
-              EnrolledConfig.optionList.options,
+              EnrolledConfig.optionList!.options,
               this.props.getAnswer("options")
             )}
             multiSelect={true}
@@ -91,8 +84,8 @@ class EnrolledScreen extends React.PureComponent<
           />
           <EmailInput
             returnKeyType="done"
-            value={this.props.email && this.props.email}
-            onChange={text => this.props.dispatch(setEmail(text))}
+            value={this._getEmail()}
+            onChange={text => this.setState({ email: text })}
             onSubmit={() => {}}
           />
           {EnrolledConfig.buttons.map(button => (
@@ -100,7 +93,7 @@ class EnrolledScreen extends React.PureComponent<
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={
                 button.key === "done"
-                  ? !!this.props.email && this._haveEmailOption()
+                  ? !!this._getEmail() && this._haveEmailOption()
                   : true
               }
               key={button.key}

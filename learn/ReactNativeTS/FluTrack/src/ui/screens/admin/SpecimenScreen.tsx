@@ -12,7 +12,7 @@ import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import { AppLoading, Camera, Permissions } from 'expo';
+import { AppLoading, BarCodeScanner, Permissions } from 'expo';
 
 interface Props {
   dispatch(action: Action): void;
@@ -107,9 +107,7 @@ export default class SpecimentScreen extends React.Component<Props> {
           />
           {hasCameraPermission
             ? <View style={{ flex: 1 }}>
-                <Camera
-                  autoFocus={false}
-                  focusDepth={0.4}
+                <BarCodeScanner
                   style={{flex: 1, alignSelf: 'stretch'}}
                   onBarCodeScanned={({ type, data }: { type: any, data: string }) => {
                     if (!this.state.activeScan) {

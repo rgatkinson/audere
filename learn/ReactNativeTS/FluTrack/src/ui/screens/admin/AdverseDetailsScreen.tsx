@@ -25,12 +25,17 @@ interface Props {
   screenProps: any;
 }
 
+interface State {
+  otherOptionMap: Map<string, string>,
+  feedbackVisible: boolean,
+}
+
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 
 @connect((state: StoreState) => ({
   name: state.form.name,
 }))
-class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
+class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps, State> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
     const { params = null } = navigation.state;
     return {
@@ -45,6 +50,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
 
   state = {
     feedbackVisible: false,
+    otherOptionMap: new Map<string, string>(),
   };
 
   componentDidMount() {
@@ -85,12 +91,21 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
         {
           text: "OK",
           onPress: () => {
+            this.state.otherOptionMap.forEach((otherOption, key) => {
+              this.props.updateAnswer({ otherOption }, OptionKeyToQuestion[key]);
+            });
             this.props.navigation.popToTop();
           },
         },
       ]
     );
   };
+
+  _getOtherOption = (key: string): string | null => {
+    return this.state.otherOptionMap.has(key)
+      ? this.state.otherOptionMap.get(key)
+      : this.props.getAnswer("otherOption", OptionKeyToQuestion[key].id);
+  }
 
   render() {
     return (
@@ -116,8 +131,12 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
                 multiSelect={OptionKeyToQuestion[key].optionList!.multiSelect}
                 withOther={OptionKeyToQuestion[key].optionList!.withOther}
                 numColumns={1}
-                otherOption={this.props.getAnswer("otherOption", OptionKeyToQuestion[key].id)}
-                onOtherChange={value => this.props.updateAnswer({ otherOption: value }, OptionKeyToQuestion[key])}
+                otherOption={this._getOtherOption(key)}
+                onOtherChange={value => {
+                  const otherOptionMap = this.state.otherOptionMap;
+                  otherOptionMap.set(key, value);
+                  this.setState({ otherOptionMap });
+                }}
                 onChange={options => this.props.updateAnswer({ options }, OptionKeyToQuestion[key])}
               />
             </View>

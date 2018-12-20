@@ -30,7 +30,7 @@ export interface ButtonConfig {
   key: string;
   primary: boolean;
   enabled: EnabledOption;
-  subtext?: string;
+  subtextKey?: string;
 }
 
 interface ConditionalNextConfig {
@@ -49,7 +49,7 @@ interface NumberInputConfig {
 
 interface DescriptionConfig {
   label: string;
-  center: boolean;
+  center?: boolean;
 }
 
 export interface OptionListConfig {
@@ -72,7 +72,12 @@ export type EnabledOption =
   | "withNumber"
   | "withDate";
 
-export const questionnaire = [
+export interface SurveyQuestion {
+  section: string;
+  data: SurveyQuestionData;
+}
+
+export const questionnaire: SurveyQuestion[] = [
   {
     section: comp,
     data: {
@@ -111,6 +116,7 @@ export const questionnaire = [
         ],
         multiSelect: false,
         numColumns: 2,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -133,6 +139,7 @@ export const questionnaire = [
           "moreThan4Bedrooms",
         ],
         multiSelect: false,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -224,6 +231,7 @@ export const questionnaire = [
       optionList: {
         options: ["1child", "2to5children", "moreThan5children", "none"],
         multiSelect: false,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -263,10 +271,6 @@ export const questionnaire = [
     section: expo,
     data: {
       id: "HouseholdSmoke",
-      adminConditionalNext: [
-        // TODO: read location from admin settings
-        // if cruise ship or whatever, "ArrivedFrom"
-      ],
       nextQuestion: "RecentTravel",
       title: "householdSmoke",
       description: {
@@ -311,6 +315,7 @@ export const questionnaire = [
           "toAnotherCountry",
         ],
         multiSelect: true,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -331,6 +336,7 @@ export const questionnaire = [
       optionList: {
         options: ["work", "school", "home", "other"],
         multiSelect: false,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -415,6 +421,7 @@ export const questionnaire = [
         ],
         multiSelect: true,
         numColumns: 2,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -431,6 +438,7 @@ export const questionnaire = [
       optionList: {
         options: ["1to5people", "6to10people", "moreThan10people"],
         multiSelect: false,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -548,6 +556,7 @@ export const questionnaire = [
       optionList: {
         options: ["1to5times", "6to10times", "moreThan10times", "none"],
         multiSelect: false,
+        withOther: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },

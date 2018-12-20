@@ -2,7 +2,7 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, completeSurvey, startForm } from "../../../store";
-import { AgeBucketConfig } from "./AgeScreen";
+import { AgeBucketConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";

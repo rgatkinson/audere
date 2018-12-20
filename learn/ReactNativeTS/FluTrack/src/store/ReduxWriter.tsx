@@ -59,52 +59,67 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       };
     }
 
+    componentDidMount() {
+      if (!!this.state.data) {
+        const responses = this.props.responses.slice(0);
+        const response = responses.find(response => response.questionId === this.state.data.id);
+        if (response == null) {
+          responses.push(this._initializeResponse(this.state.data));
+          this.props.dispatch(setResponses(responses));
+        }
+      }
+    }
+
+    _initializeResponse = (
+      data: SurveyQuestionData = this.state.data
+    ): SurveyResponse => {
+      const { t } = this.props;
+      const buttonLabels: ButtonLabel[] = [];
+      data.buttons.forEach(button => {
+        buttonLabels.push({
+          key: button.key,
+          label: t("surveyButton:" + button.key),
+        });
+      });
+
+      const optionLabels: OptionLabel[] = [];
+      if (!!data.optionList) {
+        data.optionList.options.forEach(option => {
+          optionLabels.push({
+            key: option,
+            label: t("surveyOption:" + option),
+          });
+        });
+      }
+
+      return {
+        answer: {},
+        buttonLabels,
+        optionLabels,
+        questionId: data.id,
+        questionText: (
+          (data.title ? t("surveyTitle:" + data.title) : "") +
+          " " +
+          (data.description
+            ? t("surveyDescription:" + data.description!.label)
+            : "")
+        ).trim(),
+      };
+    };
+
     _updateAnswer = (
       update: SurveyAnswer,
       data: SurveyQuestionData = this.state.data
     ) => {
-      const { t } = this.props;
       const responses = this.props.responses.slice(0);
-      const response = responses.find(
+      let response = responses.find(
         response => response.questionId === data.id
       );
-      if (!response) {
-        // Initialize response
-        const buttonLabels: ButtonLabel[] = [];
-        data.buttons.forEach(button => {
-          buttonLabels.push({
-            key: button.key,
-            label: t("surveyButton:" + button.key),
-          });
-        });
-
-        const optionLabels: OptionLabel[] = [];
-        if (!!data.optionList) {
-          data.optionList.options.forEach(option => {
-            optionLabels.push({
-              key: option,
-              label: t("surveyOption:" + option),
-            });
-          });
-        }
-
-        responses.push({
-          answer: update,
-          buttonLabels,
-          optionLabels,
-          questionId: data.id,
-          questionText: (
-            (data.title ? t("surveyTitle:" + data.title) : "") +
-            " " +
-            (data.description
-              ? t("surveyDescription:" + data.description!.label)
-              : "")
-          ).trim(),
-        });
-      } else {
-        response!.answer = { ...response!.answer, ...update };
+      if (response == null) {
+        response = this._initializeResponse(data);
+        responses.push(response);
       }
-
+      response.answer = { ...response.answer, ...update };
       this.props.dispatch(setResponses(responses));
     };
 

@@ -16,7 +16,7 @@ import {
 } from "../../../store";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
-import { EnrolledConfig } from "./EnrolledScreen";
+import { BloodConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
 import Description from "../../components/Description";
 import SignatureBox from "../../components/SignatureBox";
 import StatusBar from "../../components/StatusBar";
@@ -28,14 +28,6 @@ interface Props {
   name: string;
   bloodSignature: string;
 }
-
-const BloodConsentConfig = {
-  id: "BloodConsent",
-  title: "bloodConsent",
-  description: {
-    label: "bloodThankYouAssisting",
-  },
-};
 
 @connect((state: StoreState) => ({
   name: state.form!.name,
@@ -64,7 +56,7 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Title label={t(BloodConsentConfig.title)} />
-          <Description content={t(BloodConsentConfig.description.label)} />
+          <Description content={t(BloodConsentConfig.description!.label)} />
           <Text>
             {this.props.t("bloodFormText")}
           </Text>

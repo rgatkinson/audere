@@ -2,7 +2,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { SymptomsConfig } from "./SymptomsScreen";
+import { AgeBucketConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -11,17 +11,6 @@ import Title from "../../components/Title";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-}
-
-export const AgeBucketConfig = {
-  id: 'AgeBucket',
-  title: 'ageTitle',
-  buttons: [
-    { key: "18orOver", primary: false, enabled: true },
-    { key: "13to17", primary: false, enabled: true },
-    { key: "7to12", primary: false, enabled: true },
-    { key: "under7", primary: false, enabled: true },
-  ],
 }
 
 class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {

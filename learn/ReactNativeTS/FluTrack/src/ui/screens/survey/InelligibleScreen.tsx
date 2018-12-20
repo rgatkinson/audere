@@ -25,13 +25,24 @@ const InelligibleConfig = {
   },
 }
 
+interface State {
+  email?: string;
+}
+
 @connect((state: StoreState) => ({ email: state.form!.email }))
-class InelligibleScreen extends React.PureComponent<Props & WithNamespaces> {
+class InelligibleScreen extends React.PureComponent<Props & WithNamespaces, State> {
+  state: State = {};
+
   _onDone = () => {
-    // TODO: write doc (completed)
-    // TODO: clear state
+    if (!!this.state.email) {
+      this.props.dispatch(setEmail(this.state.email));
+    }
     this.props.navigation.popToTop();
   };
+
+  _getEmail = (): string => {
+    return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
+  }
 
   render() {
     const { t } = this.props;
@@ -43,8 +54,8 @@ class InelligibleScreen extends React.PureComponent<Props & WithNamespaces> {
           <EmailInput
             autoFocus={true}
             returnKeyType="done"
-            value={this.props.email && this.props.email}
-            onChange={text => this.props.dispatch(setEmail(text))}
+            value={this._getEmail()}
+            onChange={text => this.setState({ email: text })}
             onSubmit={this._onDone}
           />
           <Button
