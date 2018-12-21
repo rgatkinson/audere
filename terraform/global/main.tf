@@ -1126,6 +1126,6 @@ locals {
   subnet_staging_public_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 255)}"
 
   vpc_dev_cidr = "172.30.0.0/16"
-  subnet_dev_machine = "${cidrsubnet(local.vpc_dev_cidr, 8, 0)}"
-  subnet_dev_bastion = "${cidrsubnet(local.vpc_dev_cidr, 8, 255)}"
+  subnet_dev_machine_cidr = "${cidrsubnet(local.vpc_dev_cidr, 8, 0)}"
+  subnet_dev_bastion_cidr = "${cidrsubnet(local.vpc_dev_cidr, 8, 255)}"
 }

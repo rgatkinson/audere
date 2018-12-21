@@ -39,13 +39,13 @@ output "client_id" {
 
 resource "aws_security_group" "server" {
   name = "sg-${var.name}"
-  description = "Allow incoming traffic from sg-${name}-client (port ${port})."
+  description = "Allow incoming traffic from sg-${var.name}-client (port ${var.port})."
   vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group" "client" {
   name = "sg-${var.name}-client"
-  description = "Allow outgoing traffic to sg-${name} (port ${port})."
+  description = "Allow outgoing traffic to sg-${var.name} (port ${var.port})."
   vpc_id = "${var.vpc_id}"
 }
 

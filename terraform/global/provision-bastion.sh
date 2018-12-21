@@ -9,26 +9,36 @@ ${util_sh}
 
 function main() {
   install_updates
-
-  # fallback in case /home mount ever fails
-  echo_ssh_key | write_sshkey ubuntu
-
-  apt-get -y install nvme-cli sshfs
-  parted_mkfs_mount "${home_volume_letter}" "${userid}-home" "/home"
-  echo_ssh_key | add_developer "${userid}"
-
-  # sshfs normally only allows the current user access, which means 'sudo'
-  # command cannot access remotely mounted credentials.  This allows setting
-  # allow_root (or allow_other) options in sshfs.
-  echo "user_allow_other" >>"/etc/fuse.conf"
+  apt-get -y install jq
+  add_users
+  update_sshd
 }
 
-function echo_ssh_key() {
-  cat <<EOF
-${ssh_public_key}
+function add_users() {
+  for u in $(echo_ssh_keys | jq -r 'keys[]'); do
+    adduser --gecos "$u" --disabled-password "$u"
+    echo_ssh_keys | jq -r ".$u" | write_sshkey "$u"
+  done
+
+  adduser --gecos "rightparen" --disabled-password "rightparen"
+  echo_ssh_keys | jq -r ".mmarucheck" | write_sshkey "rightparen"
+  echo "rightparen ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-rightparen"
+}
+
+function echo_ssh_keys() {
+  cat <<'EOF'
+${ssh_public_key_map}
+EOF
+}
+
+function update_sshd() {
+  cat <<'EOF'
+Port ${bastion_port}
+PermitRootLogin no
 EOF
 }
 
 export TERM="xterm-256color"
-main &>/setup.log
+( umask 022; touch /setup.log )
+main &>>/setup.log
 reboot
