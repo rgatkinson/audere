@@ -62,7 +62,9 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     componentDidMount() {
       if (!!this.state.data) {
         const responses = this.props.responses.slice(0);
-        const response = responses.find(response => response.questionId === this.state.data.id);
+        const response = responses.find(
+          response => response.questionId === this.state.data.id
+        );
         if (response == null) {
           responses.push(this._initializeResponse(this.state.data));
           this.props.dispatch(setResponses(responses));

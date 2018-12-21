@@ -30,6 +30,7 @@ import {
 } from "../../../resources/LocationConfig";
 
 interface Props {
+  bloodCollection: boolean;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
@@ -43,6 +44,7 @@ interface State {
 }
 
 @connect((state: StoreState) => ({
+  bloodCollection: state.admin.bloodCollection,
   name: state.form!.name,
   location: state.admin!.location,
   locationType: state.admin!.locationType,
@@ -74,10 +76,14 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     }
 
     if (this.props.navigation.getParam("reconsent")) {
+      // TODO: if over 18, ask about blood?
       this.props.navigation.push("Survey");
     } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
-        this.props.getAnswer("selectedButtonKey", BloodConfig.id) === "yes") {
-      this.props.navigation.push("BloodConsent", { priorTitle: this.props.t(ConsentConfig.title) });
+        this.props.bloodCollection) {
+        this.props.navigation.push("Blood", {
+          data: BloodConfig,
+          priorTitle: this.props.t("surveyTitle:" + ConsentConfig.title),
+        });
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }

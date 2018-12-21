@@ -9,8 +9,8 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { Option, StoreState } from "../../../store";
-import { AgeBucketConfig, BloodConfig, ConsentConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
+import { Option } from "../../../store";
+import { ConsentConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -22,34 +22,20 @@ import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
 
 interface Props {
-  bloodCollection: boolean;
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect((state: StoreState) => ({
-  bloodCollection: state.admin.bloodCollection,
-}))
+@connect()
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onDone = () => {
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
-      if (
-        this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) ===
-          "18orOver" &&
-        this.props.bloodCollection
-      ) {
-        this.props.navigation.push("Blood", {
-          data: BloodConfig,
-          priorTitle: t("surveyTitle:" + SymptomsConfig.title),
-        });
-      } else {
-        this.props.navigation.push("Consent", {
-          data: ConsentConfig,
-          priorTitle: t("surveyTitle:" + SymptomsConfig.title),
-        });
-      }
+      this.props.navigation.push("Consent", {
+        data: ConsentConfig,
+        priorTitle: t("surveyTitle:" + SymptomsConfig.title),
+      });
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
         {

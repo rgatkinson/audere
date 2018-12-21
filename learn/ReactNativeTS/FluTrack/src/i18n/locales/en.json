@@ -117,9 +117,10 @@
     "demoSection": "Next, we are going to ask you some questions about yourself."
   },
   "surveyTitle": {
-    "ageTitle": "2. What is the age of the participant?",
-    "symptomTitle": "3. What symptoms have you experienced in the last week?",
-    "bloodTitle": "4. Would you like to take part in a blood collection?",
+    "ageTitle": "What is the age of the participant?",
+    "symptomTitle": "What symptoms have you experienced in the last week?",
+    "bloodTitle": "Would you like to take part in a blood collection?",
+    "consent": "Consent",
     "enrolledTitle": "We would like to email you.",
     "birth": "What is your date of birth?",
     "whereLive": "Where do you live?",
@@ -187,7 +188,7 @@
     "theGoal": "The goal of this study is to determine the rate and spread of respiratory viruses in an urban area. Respiratory viruses commonly infect adults and children. Infection is usually mild in healthy adults and children, leading to runny noses, coughing, and wheezing. However, infection can become more serious, especially in older and very young people and those with lung diseases or weak immune systems."
   },
   "ageScreen": {
-    "welcomeFluStudy": "1. Welcome to the Seattle Flu Study",
+    "welcomeFluStudy": "Welcome to the Seattle Flu Study",
     "numYears": "Number of years",
     "numMonths": "Number of months"
   },

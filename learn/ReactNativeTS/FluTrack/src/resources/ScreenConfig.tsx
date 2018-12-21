@@ -59,7 +59,12 @@ export const EnrolledConfig: SurveyQuestionData = {
   },
   optionList: {
     multiSelect: true,
-    options: ["sendCopyOfMyConsent", "askAboutMyIllness", "learnAboutStudy", "allOfTheAbove"],
+    options: [
+      "sendCopyOfMyConsent",
+      "askAboutMyIllness",
+      "learnAboutStudy",
+      "allOfTheAbove",
+    ],
     withOther: false,
   },
   buttons: [

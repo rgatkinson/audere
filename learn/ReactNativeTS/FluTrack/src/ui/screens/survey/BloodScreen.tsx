@@ -2,7 +2,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { BloodConfig, ConsentConfig } from "../../../resources/ScreenConfig";
+import { BloodConfig, ConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -15,8 +15,13 @@ interface Props {
 }
 
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
-  _onDone = () => {
-    this.props.navigation.push("Consent", { data: ConsentConfig, priorTitle: this.props.t("surveyTitle:" + BloodConfig.title) });
+  _onDone = (key: string) => {
+    this.props.updateAnswer({ selectedButtonKey: key });
+    if (key === "yes") {
+      this.props.navigation.push("BloodConsent", { priorTitle: this.props.t("surveyTitle:" + BloodConfig.title) });
+    } else {
+      this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+    }
   };
 
   render() {
@@ -24,12 +29,12 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
     return (
       <ScreenContainer>
         <StatusBar
-          canProceed={!!this.props.getAnswer("selectedButtonKey")}
+          canProceed={false}
           progressNumber="70%"
           progressLabel={t("common:statusBar:enrollment")}
           title={this.props.navigation.getParam("priorTitle")}
           onBack={() => this.props.navigation.pop()}
-          onForward={this._onDone}
+          onForward={() => {}}
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + BloodConfig.title)} />
@@ -42,8 +47,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
               label={t("surveyButton:" + button.key)}
               subtext={t(button.subtextKey)}
               onPress={() => {
-                this.props.updateAnswer({ selectedButtonKey: button.key });
-                this._onDone();
+                this._onDone(button.key);
               }}
               primary={button.primary}
             />
