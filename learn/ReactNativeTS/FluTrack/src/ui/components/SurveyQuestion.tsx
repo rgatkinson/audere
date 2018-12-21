@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, Keyboard, View, StyleSheet, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, Address, Option } from "../../store/index";
@@ -213,6 +213,7 @@ class SurveyQuestion extends Component<
               key={button.key}
               label={t("surveyButton:" + button.key)}
               onPress={() => {
+                Keyboard.dismiss();
                 if (this.props.data.id === "BirthDate" &&
                     this._getAdjustedAgeBucket() !== this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id)) {
                   this._reconsent();

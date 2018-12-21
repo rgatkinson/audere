@@ -155,6 +155,8 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
           contentContainerStyle={styles.list}
           extraData={this.state.questions}
           initialNumToRender={questionnaire.length + 10}
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
           keyExtractor={item => item.title}
           sections={this.state.questions}
           stickySectionHeadersEnabled={false}
