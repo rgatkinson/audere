@@ -219,6 +219,7 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -326,7 +327,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "TimeSpent",
       conditionalNext: {
-        options: new Map([["work", "Occupation"], ["school", "SchoolName"]]),
+        options: new Map([["work", "Occupation"], ["school", "SchoolType"]]),
       },
       nextQuestion: "NumPeople",
       title: "majorityOfTime",
@@ -389,23 +390,8 @@ export const questionnaire: SurveyQuestion[] = [
   {
     section: expo,
     data: {
-      id: "SchoolName",
-      nextQuestion: "SchoolType",
-      title: "schoolName",
-      textInput: {
-        placeholder: "schoolName",
-      },
-      buttons: [
-        { key: "done", primary: true, enabled: "withText" },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: expo,
-    data: {
       id: "SchoolType",
-      nextQuestion: "NumPeople",
+      nextQuestion: "SchoolName",
       title: "schoolType",
       optionList: {
         options: [
@@ -422,6 +408,21 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "SchoolName",
+      nextQuestion: "NumPeople",
+      title: "schoolName",
+      textInput: {
+        placeholder: "schoolName",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -495,21 +496,8 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "Antibiotics",
-      nextQuestion: "Antivirals",
-      title: "antibiotics",
-      buttons: [
-        { key: "yes", primary: true, enabled: true },
-        { key: "no", primary: true, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: hist,
-    data: {
-      id: "Antivirals",
       nextQuestion: "DailyInterference",
-      title: "anitviral",
+      title: "antibiotics",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -535,29 +523,11 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "DoctorThisWeek",
-      nextQuestion: "DoctorThisYear",
+      nextQuestion: "AssignedSex",
       title: "seenADoc",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: hist,
-    data: {
-      id: "DoctorThisYear",
-      nextQuestion: "AssignedSex",
-      title: "doctorVisits",
-      optionList: {
-        options: ["1to5times", "6to10times", "moreThan10times", "none"],
-        multiSelect: false,
-        withOther: false,
-      },
-      buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
-        { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
