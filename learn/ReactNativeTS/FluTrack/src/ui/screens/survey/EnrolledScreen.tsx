@@ -16,6 +16,7 @@ import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
 import OptionList, {
+  emptyList,
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
@@ -63,6 +64,25 @@ class EnrolledScreen extends React.PureComponent<
     return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
   }
 
+  _getSelectedOptions = (): Option[] => {
+    const storedAnswer = this.props.getAnswer("options");
+    if (storedAnswer == null) {
+      const list = emptyList(EnrolledConfig.optionList!.options);
+      const options = list.map(option => {
+        if (!!EnrolledConfig.optionList!.defaultOptions!.find(key => key === option.key)) {
+          return {
+            key: option.key,
+            selected: true,
+          };
+        }
+        return option;
+      });
+      this.props.updateAnswer({ options });
+      return options;
+    }
+    return storedAnswer;
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -76,7 +96,7 @@ class EnrolledScreen extends React.PureComponent<
           <OptionList
             data={newSelectedOptionsList(
               EnrolledConfig.optionList!.options,
-              this.props.getAnswer("options")
+              this._getSelectedOptions()
             )}
             multiSelect={true}
             numColumns={1}

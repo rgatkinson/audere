@@ -31,7 +31,7 @@ interface Props {
   backgroundColor?: string;
 }
 
-const emptyList = (data: string[]) => {
+export const emptyList = (data: string[]) => {
   return data.map(option => {
     return {
       key: option,

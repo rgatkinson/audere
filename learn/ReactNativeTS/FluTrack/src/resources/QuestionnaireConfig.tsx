@@ -57,6 +57,7 @@ export interface OptionListConfig {
   multiSelect: boolean;
   numColumns?: number;
   withOther: boolean;
+  defaultOptions?: string[];
 }
 
 interface TextInputConfig {
