@@ -10,7 +10,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { Option } from "../../../store";
-import { ConsentConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
+import { SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -33,7 +33,6 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
       this.props.navigation.push("Consent", {
-        data: ConsentConfig,
         priorTitle: t("surveyTitle:" + SymptomsConfig.title),
       });
     } else {

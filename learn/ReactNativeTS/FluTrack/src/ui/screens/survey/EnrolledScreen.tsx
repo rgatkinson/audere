@@ -45,7 +45,7 @@ class EnrolledScreen extends React.PureComponent<
   };
 
   static getDerivedStateFromProps(props: Props & ReduxWriterProps, state: State) {
-    if (state.options == null) {
+    if (state.options.length === 0) {
       const storedAnswer = props.getAnswer("options");
       if (storedAnswer == null) {
         const list = emptyList(EnrolledConfig.optionList!.options);
