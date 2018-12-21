@@ -14,7 +14,7 @@ export type AdminState = {
 };
 
 const initialState: AdminState = {
-  bloodCollection: true,
+  bloodCollection: false,
 };
 
 export default function reducer(state = initialState, action: AdminAction) {
