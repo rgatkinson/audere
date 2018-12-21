@@ -25,6 +25,7 @@ import BloodConsentScreen from "./src/ui/screens/survey/BloodConsentScreen";
 import EnrolledScreen from "./src/ui/screens/survey/EnrolledScreen";
 import InelligibleScreen from "./src/ui/screens/survey/InelligibleScreen";
 import HeaderBar from "./src/ui/components/HeaderBar";
+import PaperConsentScreen from "./src/ui/screens/survey/PaperConsentScreen";
 import SurveyStartScreen from "./src/ui/screens/survey/SurveyStartScreen";
 import SurveyScreen from "./src/ui/screens/survey/SurveyScreen";
 import PassBackScreen from "./src/ui/screens/survey/PassBackScreen";
@@ -54,6 +55,7 @@ const Home = createStackNavigator(
     BloodConsent: BloodConsentScreen,
     Inelligible: InelligibleScreen,
     Enrolled: EnrolledScreen,
+    PaperConsent: PaperConsentScreen,
     SurveyStart: SurveyStartScreen,
     Survey: SurveyScreen,
     PassBack: {

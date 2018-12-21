@@ -26,12 +26,12 @@ import Title from "../../components/Title";
 interface Props {
   dispatch(action: Action): void;
   email: string;
-  options: Option[];
   navigation: NavigationScreenProp<any, any>;
 }
 
 interface State {
   email?: string;
+  options: Option[];
 }
 
 @connect((state: StoreState) => ({
@@ -40,20 +40,57 @@ interface State {
 class EnrolledScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps, State
 > {
-  state: State = {};
+  state: State = {
+    options: [],
+  };
 
-  _onDone = () => {
+  static getDerivedStateFromProps(props: Props & ReduxWriterProps, state: State) {
+    if (state.options == null) {
+      const storedAnswer = props.getAnswer("options");
+      if (storedAnswer == null) {
+        const list = emptyList(EnrolledConfig.optionList!.options);
+        const options = list.map(option => {
+          if (!!EnrolledConfig.optionList!.defaultOptions!.find(key => key === option.key)) {
+            return {
+              key: option.key,
+              selected: true,
+            };
+          }
+          return option;
+        });
+        return { options };
+      } else {
+        return { options: storedAnswer };
+      }
+    }
+    return null;
+  }
+
+  _onDone = (buttonKey: string) => {
     if (!!this.state.email) {
       this.props.dispatch(setEmail(this.state.email));
     }
-    this.props.navigation.push("SurveyStart");
+    this.props.updateAnswer({ options: this.state.options });
+    if (buttonKey === "done" && this._receiveConsent()) {
+      this.props.navigation.push("SurveyStart");
+    } else {
+      this.props.navigation.push("PaperConsent");
+    }
   };
 
+  _receiveConsent = () => {
+    return (!!this.state.email && !!this.state.options &&
+      this.state.options.reduce(
+        (result: boolean, option: Option) => result || (option.selected && (option.key === "sendCopyOfMyConsent" || option.key === "allOfTheAbove")),
+        false
+      )
+    );
+  }
+
   _haveEmailOption = () => {
-    const options: Option[] = this.props.getAnswer("options");
     return (
-      options &&
-      options.reduce(
+      !!this.state.options &&
+      this.state.options.reduce(
         (result: boolean, option: Option) => result || option.selected,
         false
       )
@@ -62,25 +99,6 @@ class EnrolledScreen extends React.PureComponent<
 
   _getEmail = (): string => {
     return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
-  }
-
-  _getSelectedOptions = (): Option[] => {
-    const storedAnswer = this.props.getAnswer("options");
-    if (storedAnswer == null) {
-      const list = emptyList(EnrolledConfig.optionList!.options);
-      const options = list.map(option => {
-        if (!!EnrolledConfig.optionList!.defaultOptions!.find(key => key === option.key)) {
-          return {
-            key: option.key,
-            selected: true,
-          };
-        }
-        return option;
-      });
-      this.props.updateAnswer({ options });
-      return options;
-    }
-    return storedAnswer;
   }
 
   render() {
@@ -94,13 +112,10 @@ class EnrolledScreen extends React.PureComponent<
             content={t("surveyDescription:" + EnrolledConfig.description!.label)}
           />
           <OptionList
-            data={newSelectedOptionsList(
-              EnrolledConfig.optionList!.options,
-              this._getSelectedOptions()
-            )}
+            data={this.state.options}
             multiSelect={true}
             numColumns={1}
-            onChange={options => this.props.updateAnswer({ options })}
+            onChange={options => this.setState({ options })}
           />
           <EmailInput
             returnKeyType="done"
@@ -121,7 +136,7 @@ class EnrolledScreen extends React.PureComponent<
               primary={button.primary}
               onPress={() => {
                 this.props.updateAnswer({ selectedButtonKey: button.key });
-                this._onDone();
+                this._onDone(button.key);
               }}
             />
           ))}
