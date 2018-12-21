@@ -11,7 +11,7 @@ variable "vpc_id" {
 }
 
 variable "name" {
-  description = "Name for security groups.  Server will be named as 'sg-{name}, client as 'sg-{name}-client'."
+  description = "Name for security groups.  Server will be named as '{name}, client as '{name}-client'."
   type = "string"
 }
 
@@ -38,14 +38,14 @@ output "client_id" {
 // Logic
 
 resource "aws_security_group" "server" {
-  name = "sg-${var.name}"
-  description = "Allow incoming traffic from sg-${var.name}-client (port ${var.port})."
+  name = "${var.name}"
+  description = "Allow incoming traffic from ${var.name}-client (port ${var.port})."
   vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group" "client" {
-  name = "sg-${var.name}-client"
-  description = "Allow outgoing traffic to sg-${var.name} (port ${var.port})."
+  name = "${var.name}-client"
+  description = "Allow outgoing traffic to ${var.name} (port ${var.port})."
   vpc_id = "${var.vpc_id}"
 }
 

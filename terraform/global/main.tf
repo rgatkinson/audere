@@ -74,61 +74,58 @@ resource "aws_s3_bucket_policy" "cloudtrail-s3" {
 // --------------------------------------------------------------------------------
 // Initial Network Configs with flow logs
 
-// TODO: This has to be imported for now. Add the configurations for future separate VPCs here
-resource "aws_vpc" "default" {
-  cidr_block           = "172.31.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-}
+# data "aws_vpc" "default" {
+#   default = true
+# }
 
-resource "aws_flow_log" "default_vpc_flow_log" {
-  iam_role_arn    = "${aws_iam_role.vpc_flow_log_role.arn}"
-  log_destination = "${aws_cloudwatch_log_group.vpc_flow_log.arn}"
-  traffic_type    = "ALL"
-  vpc_id          = "${aws_vpc.default.id}"
-}
+# resource "aws_flow_log" "default_vpc_flow_log" {
+#   iam_role_arn    = "${aws_iam_role.vpc_flow_log_role.arn}"
+#   log_destination = "${aws_cloudwatch_log_group.vpc_flow_log.arn}"
+#   traffic_type    = "ALL"
+#   vpc_id          = "${aws_vpc.default.id}"
+# }
 
-resource "aws_cloudwatch_log_group" "vpc_flow_log" {
-  name = "VPCFlowLogs"
-}
+# resource "aws_cloudwatch_log_group" "vpc_flow_log" {
+#   name = "VPCFlowLogs"
+# }
 
-data "aws_iam_policy_document" "vpc_flow_log_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
+# data "aws_iam_policy_document" "vpc_flow_log_role_policy" {
+#   statement {
+#     actions = ["sts:AssumeRole"]
 
-    principals {
-      type        = "Service"
-      identifiers = ["vpc-flow-logs.amazonaws.com"]
-    }
-  }
-}
+#     principals {
+#       type        = "Service"
+#       identifiers = ["vpc-flow-logs.amazonaws.com"]
+#     }
+#   }
+# }
 
-resource "aws_iam_role" "vpc_flow_log_role" {
-  name = "VPCFlowLogRole"
+# resource "aws_iam_role" "vpc_flow_log_role" {
+#   name = "VPCFlowLogRole"
 
-  assume_role_policy = "${data.aws_iam_policy_document.vpc_flow_log_role_policy.json}"
-}
+#   assume_role_policy = "${data.aws_iam_policy_document.vpc_flow_log_role_policy.json}"
+# }
 
-data "aws_iam_policy_document" "logs_policy" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams",
-    ]
+# data "aws_iam_policy_document" "logs_policy" {
+#   statement {
+#     actions = [
+#       "logs:CreateLogGroup",
+#       "logs:CreateLogStream",
+#       "logs:PutLogEvents",
+#       "logs:DescribeLogGroups",
+#       "logs:DescribeLogStreams",
+#     ]
 
-    resources = ["*"]
-  }
-}
+#     resources = ["*"]
+#   }
+# }
 
-resource "aws_iam_role_policy" "logs_role_policy" {
-  name = "LogsRolePolicy"
-  role = "${aws_iam_role.vpc_flow_log_role.id}"
+# resource "aws_iam_role_policy" "logs_role_policy" {
+#   name = "LogsRolePolicy"
+#   role = "${aws_iam_role.vpc_flow_log_role.id}"
 
-  policy = "${data.aws_iam_policy_document.logs_policy.json}"
-}
+#   policy = "${data.aws_iam_policy_document.logs_policy.json}"
+# }
 
 // --------------------------------------------------------------------------------
 // AWS Config rules

@@ -5,16 +5,17 @@
 
 resource "aws_vpc" "dev" {
   cidr_block = "${local.vpc_dev_cidr}"
+  assign_generated_ipv6_cidr_block = true
 
   tags = {
     Name = "vpc-dev"
   }
 }
 
-resource "aws_subnet" "dev_bastion" {
+resource "aws_subnet" "bastion" {
   availability_zone = "${var.availability_zone}"
   cidr_block = "${local.subnet_dev_bastion_cidr}"
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch = true
   vpc_id = "${aws_vpc.dev.id}"
 
   tags = {
@@ -33,8 +34,43 @@ resource "aws_subnet" "dev_machine" {
   }
 }
 
+resource "aws_internet_gateway" "bastion" {
+  vpc_id = "${aws_vpc.dev.id}"
+
+  tags = {
+    Name = "dev-bastion-gateway"
+  }
+}
+
+resource "aws_egress_only_internet_gateway" "egress_gateway" {
+  vpc_id = "${aws_vpc.dev.id}"
+}
+
+resource "aws_route_table" "bastion" {
+  vpc_id = "${aws_vpc.dev.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.bastion.id}"
+  }
+
+  route {
+    ipv6_cidr_block        = "::/0"
+    egress_only_gateway_id = "${aws_egress_only_internet_gateway.egress_gateway.id}"
+  }
+
+  tags = {
+    Name = "bastion"
+  }
+}
+
+resource "aws_route_table_association" "bastion" {
+  subnet_id      = "${aws_subnet.bastion.id}"
+  route_table_id = "${aws_route_table.bastion.id}"
+}
+
 resource "aws_security_group" "bastion" {
-  name = "sg-bastion"
+  name = "bastion"
   description = "Allow traffic from known IP addresses to access bastion"
   vpc_id = "${aws_vpc.dev.id}"
 }
@@ -47,6 +83,16 @@ resource "aws_security_group_rule" "bastion_ingress" {
 
   security_group_id = "${aws_security_group.bastion.id}"
   cidr_blocks = ["${var.bastion_cidr_blocks}"]
+}
+
+resource "aws_security_group_rule" "bastion_egress" {
+  type = "egress"
+  from_port = 0
+  to_port = 65535
+  protocol = "tcp"
+
+  security_group_id = "${aws_security_group.bastion.id}"
+  cidr_blocks = ["0.0.0.0/0"]
 }
 
 module "dev_machine_sg" {
@@ -69,7 +115,7 @@ resource "aws_instance" "bastion" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t3.nano"
-  subnet_id = "${aws_subnet.dev_bastion.id}"
+  subnet_id = "${aws_subnet.bastion.id}"
   user_data = "${data.template_file.provision_bastion_sh.rendered}"
 
   root_block_device {
@@ -158,16 +204,6 @@ resource "aws_volume_attachment" "dev_machine_home" {
   device_name = "/dev/sd${local.home_volume_letter}"
   instance_id = "${aws_instance.dev_machine.*.id[count.index]}"
   volume_id = "${aws_ebs_volume.dev_machine_home.*.id[count.index]}"
-}
-
-resource "aws_route53_record" "api_record" {
-  count = "${length(local.devs)}"
-
-  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.devs[count.index]}-dev.${data.aws_route53_zone.auderenow_io.name}"
-  type = "A"
-  ttl = "300"
-  records = ["${aws_instance.dev_machine.*.public_ip[count.index]}"]
 }
 
 module "ami" {

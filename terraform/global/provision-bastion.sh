@@ -11,6 +11,7 @@ function main() {
   install_updates
   apt-get -y install jq
   add_users
+  deluser --remove-home ubuntu
   update_sshd
 }
 
@@ -31,6 +32,7 @@ ${ssh_public_key_map}
 EOF
 }
 
+# TODO remove ubuntu
 function update_sshd() {
   cat <<'EOF'
 Port ${bastion_port}
