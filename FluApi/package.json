@@ -6,7 +6,7 @@
   "scripts": {
     "setup": "yarn run build && sequelize db:migrate",
     "build": "../scripts/generate-build-info && tsc && cp -R static build/",
-    "start": "concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
+    "start": "NODE_ENV=development concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "yarn run build && NODE_ENV=production node .",
     "test": "jest --verbose --no-watchman",
     "test-watch": "jest --verbose --no-watchman --watchAll",
@@ -19,6 +19,7 @@
   "main": "build/src/server.js",
   "dependencies": {
     "audere-lib": "link:../lib",
+    "aws-sdk": "^2.373.0",
     "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
     "buffer-xor": "^2.0.2",

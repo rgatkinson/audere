@@ -55,7 +55,11 @@ app.use((err, req, res, next) => {
     next();
     return;
   }
-  logger.error(err);
+  if (err) {
+    logger.error("Uncaught exception:");
+    logger.error(err.message);
+    logger.error(err.stack);
+  }
   const ouch = new Ouch();
   ouch.pushHandler(new Ouch.handlers.PrettyPageHandler("orange", null));
   ouch.handleException(err, req, res);

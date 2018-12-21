@@ -7,6 +7,8 @@ import {
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
 import { Visit } from "../models/visit";
+import { Feedback } from "../models/feedback";
+import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 
 const clientLogger = createLogger({
@@ -14,6 +16,9 @@ const clientLogger = createLogger({
     new winston.transports.File({ filename: "clients.log", level: "debug" })
   ]
 });
+
+const FEEDBACK_EMAIL = "feedback@auderenow.org";
+const FEEDBACK_SENDER_EMAIL = "app@auderenow.org";
 
 export async function putDocument(req, res) {
   switch (req.body.documentType) {
@@ -26,9 +31,22 @@ export async function putDocument(req, res) {
       });
       break;
     case DocumentType.Feedback:
-      const feedback = req.body as FeedbackDocument;
-      // TODO(ram): send an email
-      logger.info(JSON.stringify(feedback));
+      const feedbackDocument = req.body as FeedbackDocument;
+      await sendEmail({
+        subject: `[In-App Feedback] ${feedbackDocument.feedback.subject}`,
+        body:
+          feedbackDocument.feedback.body +
+          "\n\n" +
+          JSON.stringify(feedbackDocument.device, null, 2),
+        to: [FEEDBACK_EMAIL],
+        from: FEEDBACK_SENDER_EMAIL,
+        replyTo: FEEDBACK_EMAIL
+      });
+      await Feedback.create({
+        subject: feedbackDocument.feedback.subject,
+        body: feedbackDocument.feedback.body,
+        device: feedbackDocument.device
+      });
       break;
     case DocumentType.Log:
       const log = req.body as LogDocument;
