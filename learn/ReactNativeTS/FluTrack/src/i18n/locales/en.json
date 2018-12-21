@@ -127,21 +127,21 @@
     "howManyBedrooms": "How many bedrooms do you have?",
     "bedAssignment": "What is your bed assignment?",
     "address": "What is your current address?",
-    "nearSickPeople": "In the past week, have you been around a person who seemed to have a cold?",
+    "nearSickPeople": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "contactWithChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
-    "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours / week?",
+    "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
     "smokeOrVape": "Do you smoke tobacco, marijuana, or vape?",
-    "householdSmoke": "Does anyone in your house smoke?",
+    "householdSmoke": "Does anyone in your household smoke tobacco, marijuana, or vape?",
     "arrivedFrom": "Where have you arrived from?",
-    "travelledLastWeek": "Where have you travelled in the last week?",
-    "majorityOfTime": "Over the last 4 weeks and when you are awake, where have you spent the majority of your time?",
+    "travelledLastMonth": "Where have you traveled in the last month?",
+    "majorityOfTime": "Over the past 7 days and when you are awake, where have you spent the majority of your time?",
     "occupation": "What is your occupation?",
     "workAddress": "Where do you work?",
-    "hoursWorked": "How many hours worked per day?",
+    "hoursWorked": "How many hours do you work each day, on average?",
     "schoolName": "What is the name of your school?",
     "schoolType": "What type of school do you attend?",
-    "peopleCloseTo": "During a normal day, how many people are you around (within 6 feet for more than 2 minutes)?",
+    "peopleCloseTo": "During a normal day, how many people are you in contact with?",
     "fluShot": "Did you get a flu shot in the last year?",
     "vacDate": "What was the date of vaccination?",
     "startSick": "What day did you start to feel sick?",
@@ -152,15 +152,14 @@
     "doctorVisits": "In the last year, how many times have you been to a doctor for a cough or a cold?",
     "assignedSex": "What was your assigned sex at birth?",
     "pregnant": "Are you currently pregnant?",
-    "race": "How would you describe your race",
+    "race": "How would you describe your race?",
     "hispanicLatino": "Are you Hispanic or Latino?",
     "medInsurance": "Do you have medical insurance?"
   },
   "surveyDescription": {
     "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
     "enrolledDescription": "Please select when we may email you, and provide your email address (optional).",
-    "expoToSickPeople": "These questions are about being around people who have a cold. Being around means being by them for 2 minutes or more. Being around them means, they are so close you could touch them, they are within 6 feet of you, or they are within 2 rows of you on the bus.",
-    "smokingDef": "Smoking includes tobacco, marijuana, and vape.",
+    "expoToSickPeople": "These questions are about being in contact with people who seemed to have a cold. In contact means being within 6 feet of them for at least 2 minutes. For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
     "selectAll": "Please select all that apply."
   },
   "surveyPlaceholder": {
@@ -177,7 +176,7 @@
     "paperConsent": "If you'd like a paper copy of the consent form you've signed, please let a staff member know now."
   },
   "surveyStartScreen": {
-    "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. Please answer the following questions about household composition and exposure, illness history, and demographic information."
+    "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. Please answer the following questions about your house, your medical history, and other information about yourself."
   },
   "symptomsScreen": {
     "areYouSure": "Are you sure?",
@@ -189,7 +188,7 @@
   },
   "welcomeScreen": {
     "welcomeTo": "Welcome to the Seattle Flu Study",
-    "theGoal": "The goal of this study is to determine the rate and spread of respiratory viruses in an urban area. Respiratory viruses commonly infect adults and children. Infection is usually mild in healthy adults and children, leading to runny noses, coughing, and wheezing. However, infection can become more serious, especially in older and very young people and those with lung diseases or weak immune systems."
+    "theGoal": "The flu and colds are common in children and adults, and can cause a runny nose, cough, or trouble breathing. We want to understand how people get sick with these germs and how they spread from person to person. Once we understand how the germs start and spread, we can have a better plan to prevent them from making people sick."
   },
   "ageScreen": {
     "welcomeFluStudy": "Welcome to the Seattle Flu Study",
@@ -208,7 +207,7 @@
     "headaches": "Headaches",
     "cough": "Cough",
     "diarrhea": "Diarrhea",
-    "soreThroat": "Sore Throat",
+    "soreThroat": "Sore throat",
     "nauseaOrVomiting": "Nausea or vomiting",
     "runnyOrStuffyNose": "Runny or stuffy nose",
     "rash": "Rash",
@@ -303,7 +302,7 @@
     "18orOver": "18 or older",
     "13to17": "13 to 17",
     "7to12": "7 to 12",
-    "under7": "6 or younger",
+    "under7": "Younger than 7",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
     "doNotEmailMe": "Please do not email me",

@@ -274,10 +274,6 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HouseholdSmoke",
       nextQuestion: "RecentTravel",
       title: "householdSmoke",
-      description: {
-        label: "smokingDef",
-        center: true,
-      },
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
@@ -308,7 +304,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "RecentTravel",
       nextQuestion: "TimeSpent",
-      title: "travelledLastWeek",
+      title: "travelledLastMonth",
       optionList: {
         options: [
           "withinWashingtonStateOnly",
