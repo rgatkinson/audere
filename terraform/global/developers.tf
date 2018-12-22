@@ -3,6 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+// -----------------------------------------------------------------
+// Dev VPC
+
 resource "aws_vpc" "dev" {
   cidr_block = "${local.vpc_dev_cidr}"
   assign_generated_ipv6_cidr_block = true
@@ -11,6 +14,37 @@ resource "aws_vpc" "dev" {
     Name = "vpc-dev"
   }
 }
+
+resource "aws_egress_only_internet_gateway" "dev_ipv6_egress" {
+  vpc_id = "${aws_vpc.dev.id}"
+}
+
+resource "aws_internet_gateway" "dev_ipv4" {
+  vpc_id = "${aws_vpc.dev.id}"
+
+  tags = {
+    Name = "dev-ipv4-gateway"
+  }
+}
+
+resource "aws_eip" "dev_machine_ipv4_nat" {
+  vpc = true
+  depends_on = ["${aws_internet_gateway.dev_ipv4}"]
+}
+
+resource "aws_nat_gateway" "dev_machine_ipv4" {
+  allocation_id = ""
+  subnet_id = "${aws_subnet.dev_machine}"
+
+  tags = {
+    Name = "dev-nat-gateway"
+  }
+
+  depends_on = ["${aws_internet_gateway.dev_ipv4}"]
+}
+
+// -----------------------------------------------------------------
+// Bastion
 
 resource "aws_subnet" "bastion" {
   availability_zone = "${var.availability_zone}"
@@ -23,40 +57,17 @@ resource "aws_subnet" "bastion" {
   }
 }
 
-resource "aws_subnet" "dev_machine" {
-  availability_zone = "${var.availability_zone}"
-  cidr_block = "${local.subnet_dev_machine_cidr}"
-  map_public_ip_on_launch = false
-  vpc_id = "${aws_vpc.dev.id}"
-
-  tags = {
-    Name = "subnet-dev-machine"
-  }
-}
-
-resource "aws_internet_gateway" "bastion" {
-  vpc_id = "${aws_vpc.dev.id}"
-
-  tags = {
-    Name = "dev-bastion-gateway"
-  }
-}
-
-resource "aws_egress_only_internet_gateway" "egress_gateway" {
-  vpc_id = "${aws_vpc.dev.id}"
-}
-
 resource "aws_route_table" "bastion" {
   vpc_id = "${aws_vpc.dev.id}"
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.bastion.id}"
+    gateway_id = "${aws_internet_gateway.dev_ipv4.id}"
   }
 
   route {
     ipv6_cidr_block        = "::/0"
-    egress_only_gateway_id = "${aws_egress_only_internet_gateway.egress_gateway.id}"
+    egress_only_gateway_id = "${aws_egress_only_internet_gateway.dev_ipv6_egress.id}"
   }
 
   tags = {
@@ -71,7 +82,7 @@ resource "aws_route_table_association" "bastion" {
 
 resource "aws_security_group" "bastion" {
   name = "bastion"
-  description = "Allow traffic from known IP addresses to access bastion"
+  description = "Allow bastion ingress from known IP addresses and general egress"
   vpc_id = "${aws_vpc.dev.id}"
 }
 
@@ -95,22 +106,6 @@ resource "aws_security_group_rule" "bastion_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-module "dev_machine_sg" {
-  source = "../modules/sg-pair"
-
-  name = "dev-machine"
-  port = "22"
-  vpc_id = "${aws_vpc.dev.id}"
-}
-
-module "dev_debug_sg" {
-  source = "../modules/sg-pair"
-
-  name = "dev-debug"
-  port = "22"
-  vpc_id = "${aws_vpc.dev.id}"
-}
-
 resource "aws_instance" "bastion" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
@@ -124,7 +119,8 @@ resource "aws_instance" "bastion" {
   }
 
   vpc_security_group_ids = [
-    "${aws_security_group.bastion.id}"
+    "${aws_security_group.bastion.id}",
+    "${module.dev_machine_sg.client_id}"
   ]
 
   tags {
@@ -145,6 +141,59 @@ data "template_file" "provision_bastion_sh" {
   }
 }
 
+// -----------------------------------------------------------------
+// Dev-machine
+
+resource "aws_subnet" "dev_machine" {
+  availability_zone = "${var.availability_zone}"
+  cidr_block = "${local.subnet_dev_machine_cidr}"
+  map_public_ip_on_launch = false
+  vpc_id = "${aws_vpc.dev.id}"
+
+  tags = {
+    Name = "subnet-dev-machine"
+  }
+}
+
+resource "aws_route_table" "dev_machine" {
+  vpc_id = "${aws_vpc.dev.id}"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "${aws_internet_gateway.dev_ipv4.id}"
+  }
+
+  route {
+    ipv6_cidr_block        = "::/0"
+    egress_only_gateway_id = "${aws_egress_only_internet_gateway.dev_ipv6_egress.id}"
+  }
+
+  tags = {
+    Name = "dev-machine"
+  }
+}
+
+resource "aws_route_table_association" "dev_machine" {
+  subnet_id      = "${aws_subnet.dev_machine.id}"
+  route_table_id = "${aws_route_table.dev_machine.id}"
+}
+
+resource "aws_security_group" "dev_machine_egress" {
+  name = "dev-machine-egress"
+  description = "Allow dev-machines to access internet"
+  vpc_id = "${aws_vpc.dev.id}"
+}
+
+resource "aws_security_group_rule" "dev_machine_egress" {
+  type = "egress"
+  from_port = 0
+  to_port = 65535
+  protocol = "tcp"
+
+  security_group_id = "${aws_security_group.dev_machine_egress.id}"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
 resource "aws_instance" "dev_machine" {
   count = "${length(local.devs)}"
 
@@ -154,6 +203,9 @@ resource "aws_instance" "dev_machine" {
   subnet_id = "${aws_subnet.dev_machine.id}"
   user_data = "${data.template_file.provision_dev_sh.*.rendered[count.index]}"
 
+  # TODO remove
+  key_name = "2018-mmarucheck"
+
   root_block_device {
     volume_type = "gp2"
     volume_size = 15
@@ -161,6 +213,7 @@ resource "aws_instance" "dev_machine" {
 
   vpc_security_group_ids = [
     "${module.dev_machine_sg.server_id}",
+    "${aws_security_group.dev_machine_egress.id}",
     "${module.dev_debug_sg.client_id}",
   ]
 
@@ -204,6 +257,25 @@ resource "aws_volume_attachment" "dev_machine_home" {
   device_name = "/dev/sd${local.home_volume_letter}"
   instance_id = "${aws_instance.dev_machine.*.id[count.index]}"
   volume_id = "${aws_ebs_volume.dev_machine_home.*.id[count.index]}"
+}
+
+// -----------------------------------------------------------------
+// modules, data
+
+module "dev_machine_sg" {
+  source = "../modules/sg-pair"
+
+  name = "dev-machine"
+  port = "22"
+  vpc_id = "${aws_vpc.dev.id}"
+}
+
+module "dev_debug_sg" {
+  source = "../modules/sg-pair"
+
+  name = "dev-debug"
+  port = "22"
+  vpc_id = "${aws_vpc.dev.id}"
 }
 
 module "ami" {

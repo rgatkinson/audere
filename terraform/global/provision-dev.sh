@@ -30,5 +30,6 @@ EOF
 }
 
 export TERM="xterm-256color"
-main &>/setup.log
+( umask 022; touch /setup.log )
+main &>>/setup.log
 reboot

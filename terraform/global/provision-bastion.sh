@@ -32,9 +32,8 @@ ${ssh_public_key_map}
 EOF
 }
 
-# TODO remove ubuntu
 function update_sshd() {
-  cat <<'EOF'
+  cat >>/etc/ssh/sshd_config <<'EOF'
 Port ${bastion_port}
 PermitRootLogin no
 EOF
