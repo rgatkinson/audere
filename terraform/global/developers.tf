@@ -7,8 +7,10 @@
 // Dev VPC
 
 resource "aws_vpc" "dev" {
-  cidr_block = "${local.vpc_dev_cidr}"
   assign_generated_ipv6_cidr_block = true
+  cidr_block = "${local.vpc_dev_cidr}"
+  enable_dns_support = true
+  enable_dns_hostnames = true
 
   tags = {
     Name = "vpc-dev"
@@ -19,36 +21,38 @@ resource "aws_egress_only_internet_gateway" "dev_ipv6_egress" {
   vpc_id = "${aws_vpc.dev.id}"
 }
 
-resource "aws_internet_gateway" "dev_ipv4" {
+resource "aws_internet_gateway" "dev_gateway" {
   vpc_id = "${aws_vpc.dev.id}"
 
   tags = {
-    Name = "dev-ipv4-gateway"
+    Name = "dev-gateway-gateway"
   }
 }
 
-resource "aws_eip" "dev_machine_ipv4_nat" {
-  vpc = true
-  depends_on = ["${aws_internet_gateway.dev_ipv4}"]
-}
+# resource "aws_eip" "dev_machine_ipv4_nat" {
+#   vpc = true
+#   depends_on = ["${aws_internet_gateway.dev_ipv4}"]
+# }
 
-resource "aws_nat_gateway" "dev_machine_ipv4" {
-  allocation_id = ""
-  subnet_id = "${aws_subnet.dev_machine}"
+# resource "aws_nat_gateway" "dev_machine_ipv4" {
+#   allocation_id = ""
+#   subnet_id = "${aws_subnet.dev_machine}"
 
-  tags = {
-    Name = "dev-nat-gateway"
-  }
+#   tags = {
+#     Name = "dev-nat-gateway"
+#   }
 
-  depends_on = ["${aws_internet_gateway.dev_ipv4}"]
-}
+#   depends_on = ["${aws_internet_gateway.dev_ipv4}"]
+# }
 
 // -----------------------------------------------------------------
 // Bastion
 
 resource "aws_subnet" "bastion" {
+  assign_ipv6_address_on_creation = true
   availability_zone = "${var.availability_zone}"
   cidr_block = "${local.subnet_dev_bastion_cidr}"
+  ipv6_cidr_block = "${local.dev_bastion_ipv6_cidr}"
   map_public_ip_on_launch = true
   vpc_id = "${aws_vpc.dev.id}"
 
@@ -62,12 +66,12 @@ resource "aws_route_table" "bastion" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.dev_ipv4.id}"
+    gateway_id = "${aws_internet_gateway.dev_gateway.id}"
   }
 
   route {
     ipv6_cidr_block        = "::/0"
-    egress_only_gateway_id = "${aws_egress_only_internet_gateway.dev_ipv6_egress.id}"
+    gateway_id = "${aws_internet_gateway.dev_gateway.id}"
   }
 
   tags = {
@@ -145,9 +149,11 @@ data "template_file" "provision_bastion_sh" {
 // Dev-machine
 
 resource "aws_subnet" "dev_machine" {
+  assign_ipv6_address_on_creation = true
   availability_zone = "${var.availability_zone}"
   cidr_block = "${local.subnet_dev_machine_cidr}"
-  map_public_ip_on_launch = false
+  ipv6_cidr_block = "${local.dev_machine_ipv6_cidr}"
+  map_public_ip_on_launch = true  # TODO: remove?
   vpc_id = "${aws_vpc.dev.id}"
 
   tags = {
@@ -160,12 +166,13 @@ resource "aws_route_table" "dev_machine" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.dev_ipv4.id}"
+    gateway_id = "${aws_internet_gateway.dev_gateway.id}"
   }
 
   route {
     ipv6_cidr_block        = "::/0"
-    egress_only_gateway_id = "${aws_egress_only_internet_gateway.dev_ipv6_egress.id}"
+    # egress_only_gateway_id = "${aws_egress_only_internet_gateway.dev_ipv6_egress.id}"
+    gateway_id = "${aws_internet_gateway.dev_gateway.id}"
   }
 
   tags = {
@@ -180,7 +187,7 @@ resource "aws_route_table_association" "dev_machine" {
 
 resource "aws_security_group" "dev_machine_egress" {
   name = "dev-machine-egress"
-  description = "Allow dev-machines to access internet"
+  description = "Allow dev-machines to access internet over IPv6"
   vpc_id = "${aws_vpc.dev.id}"
 }
 
@@ -192,6 +199,7 @@ resource "aws_security_group_rule" "dev_machine_egress" {
 
   security_group_id = "${aws_security_group.dev_machine_egress.id}"
   cidr_blocks = ["0.0.0.0/0"]
+  ipv6_cidr_blocks = ["::/0"]
 }
 
 resource "aws_instance" "dev_machine" {
@@ -200,6 +208,7 @@ resource "aws_instance" "dev_machine" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "${var.instance_type}"
+  ipv6_address_count = 1
   subnet_id = "${aws_subnet.dev_machine.id}"
   user_data = "${data.template_file.provision_dev_sh.*.rendered[count.index]}"
 
@@ -298,4 +307,7 @@ locals {
   bastion_port = 12893
   devs = "${keys(module.devs.ssh_keys)}"
   home_volume_letter = "h"
+
+  dev_machine_ipv6_cidr = "${cidrsubnet(aws_vpc.dev.ipv6_cidr_block, 8, 0)}"
+  dev_bastion_ipv6_cidr = "${cidrsubnet(aws_vpc.dev.ipv6_cidr_block, 8, 255)}"
 }
