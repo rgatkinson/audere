@@ -47,7 +47,11 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
   };
 
   _proceed = () => {
-    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+    if (this.props.navigation.getParam("reconsent")) {
+      this.props.navigation.push("Survey");
+    } else {
+      this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+    }
   }
 
   render() {

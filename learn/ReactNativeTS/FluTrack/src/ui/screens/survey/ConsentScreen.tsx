@@ -89,14 +89,13 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   }
 
   _proceed = () =>{
-    if (this.props.navigation.getParam("reconsent")) {
-      // TODO: if now over 18, ask about blood?
-      this.props.navigation.push("Survey");
-    } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
+    if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
         this.props.bloodCollection) {
-        this.props.navigation.push("Blood", { data: BloodConfig });
+        this.props.navigation.push("Blood", { data: BloodConfig, reconsent: this.props.navigation.getParam("reconsent") });
     } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "7to12") {
-      this.props.navigation.push("Assent");
+      this.props.navigation.push("Assent", { reconsent: this.props.navigation.getParam("reconsent") });
+    } else if (this.props.navigation.getParam("reconsent")) {
+      this.props.navigation.push("Survey");
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }

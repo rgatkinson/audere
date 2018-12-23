@@ -18,7 +18,9 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
   _onDone = (key: string) => {
     this.props.updateAnswer({ selectedButtonKey: key });
     if (key === "yes") {
-      this.props.navigation.push("BloodConsent", { priorTitle: this.props.t("surveyTitle:" + BloodConfig.title) });
+      this.props.navigation.push("BloodConsent", { reconsent: this.props.navigation.getParam("reconsent") });
+    } else if (this.props.navigation.getParam("reconsent")) {
+      this.props.navigation.push("Survey");
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }
