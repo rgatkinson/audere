@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   consentText: {
+    alignSelf: 'stretch',
     backgroundColor: 'white',
     fontFamily: "OpenSans-Regular",
     fontSize: 16,

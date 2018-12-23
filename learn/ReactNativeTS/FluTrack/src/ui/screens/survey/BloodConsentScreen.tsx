@@ -66,6 +66,9 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <Description content={t(BloodConsentConfig.description!.label)} style={{ marginHorizontal: 20 }} />
+          <Text style={[styles.consentText, {textAlign: 'center'}]}>
+            {t("bloodConsentFormHeader")}
+          </Text>
           <Text style={styles.consentText}>
             {this.props.t("bloodFormText")}
           </Text>
@@ -97,6 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   consentText: {
+    alignSelf: 'stretch',
     backgroundColor: 'white',
     fontFamily: "OpenSans-Regular",
     fontSize: 16,
