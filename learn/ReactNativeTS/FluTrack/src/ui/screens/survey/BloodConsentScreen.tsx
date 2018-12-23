@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,74 +10,81 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Action,
   StoreState,
-  setBloodSignaturePng,
-  setBloodConsentTerms,
+  setBloodConsent,
 } from "../../../store";
+import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import { BloodConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
+import Button from "../../components/Button";
 import Description from "../../components/Description";
-import SignatureBox from "../../components/SignatureBox";
+import SignatureInput from "../../components/SignatureInput";
 import StatusBar from "../../components/StatusBar";
-import Title from "../../components/Title";
 
 interface Props {
+  bloodConsent?: ConsentInfo;
+  consent: ConsentInfo;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
-  bloodSignature: string;
+  signerName: string;
+  signerType: ConsentInfoSignerType,
 }
 
 @connect((state: StoreState) => ({
+  bloodConsent: state.form.bloodConsent,
+  consent: state.form.consent,
   name: state.form!.name,
-  bloodSignature: state.form!.bloodSignatureBase64,
 }))
 class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
-  _onSubmit = (signature: string) => {
-    this.props.dispatch(setBloodConsentTerms(this.props.t("bloodFormText")));
-    this.props.dispatch(setBloodSignaturePng(signature));
-    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+
+  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
+    this.props.dispatch(setBloodConsent({
+      name: signerName,
+      terms: this.props.t("bloodFormText"),
+      signerType, 
+      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+      signature,
+    }));
   };
+
+  _proceed = () => {
+    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+  }
 
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+      <View style={styles.container}>
         <StatusBar
-          canProceed={!!this.props.bloodSignature}
+          canProceed={!!this.props.bloodConsent}
           progressNumber="90%"
           progressLabel={t("common:statusBar:enrollment")}
-          title={this.props.navigation.getParam("priorTitle")}
+          title={t(BloodConsentConfig.title)}
           onBack={() => this.props.navigation.pop()}
-          onForward={() => {
-            this.props.navigation.push("Enrolled", { data: EnrolledConfig });
-          }}
+          onForward={this._proceed}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Title label={t(BloodConsentConfig.title)} />
-          <Description content={t(BloodConsentConfig.description!.label)} />
-          <Text>
+          <Description content={t(BloodConsentConfig.description!.label)} style={{ marginHorizontal: 20 }} />
+          <Text style={styles.consentText}>
             {this.props.t("bloodFormText")}
           </Text>
+          <SignatureInput
+            consent={this.props.bloodConsent}
+            editableNames={false}
+            participantName={this.props.name}
+            signerType={this.props.consent.signerType}
+            signerName={this.props.consent.name}
+            onSubmit={this._onSubmit}
+          />
+          <Button
+            enabled={!!this.props.bloodConsent}
+            label={t("surveyButton:done")}
+            primary={true}
+            onPress={this._proceed}
+          />
         </ScrollView>
-        <View style={styles.input}>
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>{t("todaysDate")}</Text>
-            <Text style={[styles.text, styles.dateText]}>
-              {format(new Date(), "MM/D/YYYY")}
-            </Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>{this.props.name}</Text>
-          </View>
-        </View>
-        <SignatureBox
-          canSubmit={true}
-          onSubmit={(signature: string) => {
-            this._onSubmit(signature);
-          }}
-        />
-      </KeyboardAvoidingView>
+      </View>
     );
   }
 }
@@ -88,8 +94,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    marginHorizontal: 20,
+    alignItems: 'center',
   },
+  consentText: {
+    backgroundColor: 'white',
+    fontFamily: "OpenSans-Regular",
+    fontSize: 16,
+    padding: 16,
+  },
+
   input: {
     marginHorizontal: 30,
   },

@@ -244,30 +244,19 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
 }
 
 function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
-  const signature = form.signatureBase64 || "";
-  const terms = form.consentTerms || "";
-  const name = form.name || "";
-  const bloodSignature = form.bloodSignatureBase64 || "";
-  const bloodTerms = form.bloodConsentTerms || "";
-
-  if (signature.length > 0) {
-    consents.push({
-      name,
-      terms,
-      signature,
-      signerType: ConsentInfoSignerType.Subject, // TODO
-      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-    });
+  const consent = form.consent;
+  if (consent != null) {
+    consents.push(consent);
   }
 
-  if (bloodSignature.length > 0) {
-    consents.push({
-      name,
-      terms: bloodTerms,
-      signature: bloodSignature,
-      signerType: ConsentInfoSignerType.Subject, // TODO
-      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-    });
+  const parentConsent = form.parentConsent;
+  if (parentConsent != null) {
+    consents.push(parentConsent);
+  }
+
+  const bloodConsent = form.bloodConsent;
+  if (bloodConsent != null) {
+    consents.push(bloodConsent);
   }
 }
 

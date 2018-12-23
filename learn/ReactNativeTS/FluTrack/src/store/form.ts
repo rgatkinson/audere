@@ -1,14 +1,16 @@
 import uuidv4 from "uuid/v4";
 
+import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+
 export type FormAction =
   | { type: "START_FORM" }
   | { type: "COMPLETE_SURVEY" }
   | { type: "CLEAR_FORM" }
-  | { type: "SET_SIGNATURE_PNG"; signatureBase64: string }
-  | { type: "SET_BLOOD_SIGNATURE_PNG"; signatureBase64: string }
+  | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_BLOOD_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
-  | { type: "SET_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_BLOOD_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
@@ -62,15 +64,14 @@ export interface SurveyResponse {
 }
 
 export type FormState = {
+  bloodConsent?: ConsentInfo;
   completedSurvey: boolean;
+  consent?: ConsentInfo;
+  parentConsent?: ConsentInfo;
   formId?: string;
   timestamp?: number;
   name?: string;
   email?: string;
-  consentTerms?: string;
-  bloodConsentTerms?: string;
-  signatureBase64?: string;
-  bloodSignatureBase64?: string;
   responses: SurveyResponse[];
   samples?: Sample[];
 };
@@ -101,31 +102,24 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email, timestamp: new Date().getTime() };
   }
-  if (action.type === "SET_CONSENT_TERMS") {
+  if (action.type === "SET_CONSENT") {
     return {
       ...state,
-      consentTerms: action.consentTerms,
+      consent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
-  if (action.type === "SET_BLOOD_CONSENT_TERMS") {
+  if (action.type === "SET_PARENT_CONSENT") {
     return {
       ...state,
-      bloodConsentTerms: action.consentTerms,
+      parentConsent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
-  if (action.type === "SET_SIGNATURE_PNG") {
+  if (action.type === "SET_BLOOD_CONSENT") {
     return {
       ...state,
-      signatureBase64: action.signatureBase64,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_BLOOD_SIGNATURE_PNG") {
-    return {
-      ...state,
-      bloodSignatureBase64: action.signatureBase64,
+      bloodConsent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
@@ -178,31 +172,24 @@ export function setEmail(email: string): FormAction {
   };
 }
 
-export function setSignaturePng(signatureBase64: string): FormAction {
+export function setConsent(consent: ConsentInfo): FormAction {
   return {
-    type: "SET_SIGNATURE_PNG",
-    signatureBase64,
+    type: "SET_CONSENT",
+    consent,
   };
 }
 
-export function setBloodSignaturePng(signatureBase64: string): FormAction {
+export function setParentConsent(consent: ConsentInfo): FormAction {
   return {
-    type: "SET_BLOOD_SIGNATURE_PNG",
-    signatureBase64,
+    type: "SET_PARENT_CONSENT",
+    consent,
   };
 }
 
-export function setConsentTerms(consentTerms: string): FormAction {
+export function setBloodConsent(consent: ConsentInfo): FormAction {
   return {
-    type: "SET_CONSENT_TERMS",
-    consentTerms,
-  };
-}
-
-export function setBloodConsentTerms(consentTerms: string): FormAction {
-  return {
-    type: "SET_BLOOD_CONSENT_TERMS",
-    consentTerms,
+    type: "SET_BLOOD_CONSENT",
+    consent,
   };
 }
 

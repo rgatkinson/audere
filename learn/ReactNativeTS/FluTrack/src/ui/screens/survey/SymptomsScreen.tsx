@@ -70,7 +70,7 @@ class SymptomsScreen extends React.PureComponent<
           canProceed={this._numSymptoms() > 0}
           progressNumber="40%"
           progressLabel={t("common:statusBar:enrollment")}
-          title={this.props.navigation.getParam("priorTitle")}
+          title={t("symptoms")}
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />

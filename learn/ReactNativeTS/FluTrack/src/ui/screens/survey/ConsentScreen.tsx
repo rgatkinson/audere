@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,17 +11,18 @@ import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import {
   Action,
   StoreState,
+  setConsent,
+  setParentConsent,
   setName,
-  setSignaturePng,
-  setConsentTerms,
 } from "../../../store";
-import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
+import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import { NavigationScreenProp } from "react-navigation";
 import { AgeBucketConfig, BloodConfig, ConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
+import Button from "../../components/Button";
 import Description from "../../components/Description";
-import SignatureBox from "../../components/SignatureBox";
+import SignatureInput from "../../components/SignatureInput";
 import StatusBar from "../../components/StatusBar";
-import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
 import {
   getContactName,
@@ -31,28 +31,28 @@ import {
 
 interface Props {
   bloodCollection: boolean;
+  consent?: ConsentInfo;
+  parentConsent?: ConsentInfo;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
   location: string;
   locationType: string;
-  signature: string;
-}
-
-interface State {
-  name?: string;
+  signerName: string;
+  signerType: ConsentInfoSignerType,
 }
 
 @connect((state: StoreState) => ({
   bloodCollection: state.admin.bloodCollection,
-  name: state.form!.name,
+  consent: state.form.consent,
+  parentConsent: state.form.parentConsent,
+  name: state.form.name,
   location: state.admin!.location,
   locationType: state.admin!.locationType,
-  signature: state.form!.signatureBase64,
+  signerName: state.form.consent != null ? state.form.consent.name : undefined,
+  signerType: state.form.consent != null ? state.form.consent.signerType : undefined,
 }))
-class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps, State> {
-  state: State = {};
-
+class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _getConsentTerms = () => {
     const { t } = this.props;
     return !!this.props.locationType && this.props.locationType == "childcare"
@@ -66,17 +66,31 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
       });
   };
 
-  _onSubmit = (signature: string | undefined) => {
-    if (!!this.state.name) {
-      this.props.dispatch(setName(this.state.name));
+  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
+    this.props.dispatch(setName(participantName));
+    if (signerType === ConsentInfoSignerType.Parent) {
+      this.props.dispatch(setParentConsent({
+        name: signerName,
+        terms: this._getConsentTerms(),
+        signerType, 
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature,
+      }));
+    } else {
+      this.props.dispatch(setConsent({
+        name: signerName,
+        terms: this._getConsentTerms(),
+        signerType, 
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature,
+      }));
     }
-    this.props.dispatch(setConsentTerms(this._getConsentTerms()));
-    if (!!signature) {
-      this.props.dispatch(setSignaturePng(signature));
-    }
+  }
 
+  _proceed = () =>{
+    // TODO if 7 - 12 go to assent form
     if (this.props.navigation.getParam("reconsent")) {
-      // TODO: if over 18, ask about blood?
+      // TODO: if now over 18, ask about blood?
       this.props.navigation.push("Survey");
     } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
         this.props.bloodCollection) {
@@ -89,51 +103,112 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     }
   };
 
-  _getName = (): string => {
-    return typeof this.state.name !== 'undefined' ? this.state.name : this.props.name;
+  _canProceed = (): boolean => {
+    if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver") {
+      return !!this.props.name && !!this.props.consent;
+    } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "13to17") {
+      return !!this.props.name && !!this.props.consent && !!this.props.parentConsent;
+    } else {
+      return !!this.props.name && !!this.props.parentConsent;
+    }
+  }
+
+  renderSignatures() {
+    const { t } = this.props;
+    if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver") {
+      return (
+        <View>
+          <View style={styles.signatureContainer}>
+            <SignatureInput
+              consent={this.props.consent}
+              editableNames={true}
+              participantName={this.props.name}
+              signerType={ConsentInfoSignerType.Subject}
+              onSubmit={this._onSubmit}
+            />
+            <SignatureInput
+              consent={this.props.consent}
+              editableNames={true}
+              participantName={this.props.name}
+              signerType={ConsentInfoSignerType.Representative}
+              signerName={this.props.signerType === ConsentInfoSignerType.Representative ? this.props.signerName : undefined}
+              onSubmit={this._onSubmit}
+            />
+          </View>
+          <Description content={t("whenSubjectUnable")} style={{ marginHorizontal: 20 }}/>
+        </View>
+      );
+    } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "13to17") {
+      return (
+        <View style={{ alignSelf: 'stretch' }}>
+          <View style={styles.signatureContainer}>
+            <SignatureInput
+              consent={this.props.consent}
+              editableNames={true}
+              participantName={this.props.name}
+              signerType={ConsentInfoSignerType.Subject}
+              onSubmit={this._onSubmit}
+            />
+            <SignatureInput
+              consent={this.props.parentConsent}
+              editableNames={true}
+              participantName={this.props.name}
+              signerType={ConsentInfoSignerType.Parent}
+              signerName={this.props.parentConsent != null ? this.props.parentConsent.name : undefined}
+              onSubmit={this._onSubmit}
+            />
+          </View>
+          <Description content={t("subjectAndParent")} style={{ marginHorizontal: 20 }}/>
+        </View>
+      );
+    } else {
+      return (
+        <View style={{ alignSelf: 'stretch' }}>
+          <View style={styles.signatureContainer}>
+            <SignatureInput
+              consent={this.props.parentConsent}
+              editableNames={true}
+              participantName={this.props.name}
+              signerType={ConsentInfoSignerType.Parent}
+              signerName={this.props.parentConsent != null ? this.props.parentConsent.name : undefined}
+              onSubmit={this._onSubmit}
+            />
+          </View>
+        </View>
+      );
+
+    }
   }
 
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+      <View style={styles.container}>
         <StatusBar
-          canProceed={!!this._getName() && !!this.props.signature && !this.props.navigation.getParam("reconsent")}
+          canProceed={this._canProceed()}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
-          title={this.props.navigation.getParam("priorTitle")}
+          title={t("consent")}
           onBack={this.props.navigation.pop}
-          onForward={this._onSubmit}
+          onForward={this._proceed}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Title label={t(ConsentConfig.title)} />
-          <Description content={t(ConsentConfig.description!.label)} />
-          <Text>
+          <Description content={t(ConsentConfig.description!.label)} style={{ marginHorizontal: 20 }} />
+          <Text style={[styles.consentText, {textAlign: 'center'}]}>
+            {t("consentFormHeader")}
+          </Text>
+          <Text style={styles.consentText}>
             {this._getConsentTerms()}
           </Text>
-        </ScrollView>
-        <View style={styles.input}>
-          <View style={styles.dateContainer}>
-            <Text style={styles.text}>{t("todaysDate")}</Text>
-            <Text style={[styles.text, styles.dateText]}>
-              {format(new Date(), "MM/D/YYYY")}
-            </Text>
-          </View>
-          <TextInput
-            autoFocus={false}
-            placeholder={t("fullName")}
-            returnKeyType="done"
-            value={this._getName()}
-            onChangeText={text => this.setState({ name: text })}
+          {this.renderSignatures()}
+          <Button
+            enabled={this._canProceed()}
+            label={t("surveyButton:done")}
+            primary={true}
+            onPress={this._proceed}
           />
-        </View>
-        <SignatureBox
-          canSubmit={!!this.state.name}
-          onSubmit={(signature: string) => {
-            this._onSubmit(signature);
-          }}
-        />
-      </KeyboardAvoidingView>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -143,26 +218,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    marginHorizontal: 20,
+    alignItems: 'center',
   },
-  input: {
-    marginHorizontal: 30,
+  consentText: {
+    backgroundColor: 'white',
+    fontFamily: "OpenSans-Regular",
+    fontSize: 16,
+    padding: 16,
   },
-  dateContainer: {
-    justifyContent: "space-between",
-    flexDirection: "row",
-    borderBottomColor: "#bbb",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    height: 30,
-    marginTop: 20,
-    paddingHorizontal: 16,
-  },
-  dateText: {
-    color: "#8E8E93",
-  },
-  text: {
-    alignSelf: "stretch",
-    fontSize: 20,
+  signatureContainer: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
 });
 

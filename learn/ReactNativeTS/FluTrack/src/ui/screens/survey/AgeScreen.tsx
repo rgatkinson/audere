@@ -26,7 +26,7 @@ class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProp
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="20%"
           progressLabel={t("common:statusBar:enrollment")}
-          title={t("welcomeFluStudy")}
+          title={t("welcome")}
           onBack={() => this.props.navigation.pop()}
           onForward={this._onDone}
         />

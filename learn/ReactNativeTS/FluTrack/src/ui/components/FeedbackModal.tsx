@@ -35,13 +35,16 @@ class FeedbackModal extends React.Component<Props & WithNamespaces, State> {
       <Modal
         title={t("provideFeedback")}
         visible={this.props.visible}
-        onDismiss={this.props.onDismiss}
+        onDismiss={() => {
+          this.setState({ subject: undefined, comments: undefined });
+          this.props.onDismiss();
+        }}
         onSubmit={() => {
           uploader.saveFeedback(
             (this.state.subject || "").trim(),
             (this.state.comments || "").trim()
           );
-          this.setState({});
+          this.setState({ subject: undefined, comments: undefined });
           this.props.onDismiss();
         }}
       >

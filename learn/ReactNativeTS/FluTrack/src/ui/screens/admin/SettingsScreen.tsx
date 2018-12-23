@@ -44,7 +44,7 @@ export default class SettingsScreen extends React.Component<Props> {
   };
 
   _onAdverseEvents = () => {
-    if (!!this.props.form.signatureBase64 && !this.props.form.completedSurvey) {
+    if (!!this.props.form.consent && !this.props.form.completedSurvey) {
       this.props.navigation.push("Adverse");
     } else {
       Alert.alert(
@@ -54,7 +54,7 @@ export default class SettingsScreen extends React.Component<Props> {
   };
 
   _onSpecimenScans = () => {
-    if (!!this.props.form.signatureBase64 && !this.props.form.completedSurvey) {
+    if (!!this.props.form.consent && !this.props.form.completedSurvey) {
       this.props.navigation.push("Specimen");
     } else {
       Alert.alert(

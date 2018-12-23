@@ -62,7 +62,6 @@ class HeaderBar extends React.Component<Props & WithNamespaces> {
               {t(this.props.completedSurvey ? "returnToHome" : "exitStudy")}
             </Text>
           </TouchableOpacity>
-          <Text style={styles.title}>{t("welcome")}</Text>
           <TouchableOpacity
             onPress={() => this.setState({ feedbackVisible: true })}
           >

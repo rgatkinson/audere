@@ -22,7 +22,7 @@ interface Props {
   title?: string;
   visible: boolean;
   onDismiss(): void;
-  onSubmit(): void;
+  onSubmit?(): void;
 }
 
 class Modal extends React.Component<Props & WithNamespaces> {
@@ -54,11 +54,13 @@ class Modal extends React.Component<Props & WithNamespaces> {
                 ? <Text style={styles.title}>{this.props.title}</Text>
                 : null
               }
-              <TouchableOpacity onPress={this.props.onSubmit}>
-                <Text style={styles.actionText}>
-                  {this.props.submitText ? this.props.submitText : t("common:button:submit")}
-                </Text>
-              </TouchableOpacity>
+              {this.props.onSubmit ?
+                <TouchableOpacity onPress={this.props.onSubmit}>
+                  <Text style={[styles.actionText, {textAlign: 'right'}]}>
+                    {this.props.submitText ? this.props.submitText : t("common:button:submit")}
+                  </Text>
+                </TouchableOpacity>
+              : <View style={{width: 100}}/>}
             </View>
             {this.props.children}
           </View>
@@ -75,6 +77,7 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     lineHeight: 22,
     letterSpacing: -0.41,
+    width: 100,
   },
   blur: {
     backgroundColor: "white",

@@ -99,10 +99,9 @@ const styles = StyleSheet.create({
   },
   statusBarTitle: {
     color: "#444444",
-    fontFamily: "OpenSans-Regular",
-    fontSize: 20,
+    fontFamily: "OpenSans-Bold",
+    fontSize: 30,
     letterSpacing: -0.41,
-    lineHeight: 22,
     textAlign: "center",
     width: 500,
   },

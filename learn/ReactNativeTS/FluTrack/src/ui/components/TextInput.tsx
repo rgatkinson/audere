@@ -10,6 +10,7 @@ import {
 
 interface Props {
   autoFocus?: boolean;
+  editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
@@ -23,6 +24,7 @@ export default class TextInput extends React.Component<Props> {
     return (
       <SystemTextInput
         autoFocus={this.props.autoFocus}
+        editable={this.props.editable}
         keyboardType={!!this.props.keyboardType ? this.props.keyboardType : "default"}
         placeholder={this.props.placeholder}
         returnKeyType={this.props.returnKeyType}
