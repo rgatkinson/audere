@@ -8,6 +8,7 @@ export type FormAction =
   | { type: "CLEAR_FORM" }
   | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
   | { type: "SET_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_ASSENT"; consent: ConsentInfo }
   | { type: "SET_BLOOD_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
@@ -64,6 +65,7 @@ export interface SurveyResponse {
 }
 
 export type FormState = {
+  assent?: ConsentInfo;
   bloodConsent?: ConsentInfo;
   completedSurvey: boolean;
   consent?: ConsentInfo;
@@ -106,6 +108,13 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       consent: action.consent,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_ASSENT") {
+    return {
+      ...state,
+      assent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
@@ -175,6 +184,13 @@ export function setEmail(email: string): FormAction {
 export function setConsent(consent: ConsentInfo): FormAction {
   return {
     type: "SET_CONSENT",
+    consent,
+  };
+}
+
+export function setAssent(consent: ConsentInfo): FormAction {
+  return {
+    type: "SET_ASSENT",
     consent,
   };
 }

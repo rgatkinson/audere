@@ -21,6 +21,7 @@ import AgeScreen from "./src/ui/screens/survey/AgeScreen";
 import SymptomsScreen from "./src/ui/screens/survey/SymptomsScreen";
 import BloodScreen from "./src/ui/screens/survey/BloodScreen";
 import ConsentScreen from "./src/ui/screens/survey/ConsentScreen";
+import AssentScreen from "./src/ui/screens/survey/AssentScreen";
 import BloodConsentScreen from "./src/ui/screens/survey/BloodConsentScreen";
 import EnrolledScreen from "./src/ui/screens/survey/EnrolledScreen";
 import InelligibleScreen from "./src/ui/screens/survey/InelligibleScreen";
@@ -52,6 +53,7 @@ const Home = createStackNavigator(
     Symptoms: SymptomsScreen,
     Blood: BloodScreen,
     Consent: ConsentScreen,
+    Assent: AssentScreen,
     BloodConsent: BloodConsentScreen,
     Inelligible: InelligibleScreen,
     Enrolled: EnrolledScreen,

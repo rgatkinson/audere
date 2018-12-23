@@ -10,36 +10,34 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Action,
   StoreState,
-  setBloodConsent,
+  setAssent,
 } from "../../../store";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import { EnrolledConfig } from "../../../resources/ScreenConfig";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
-import { BloodConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import Description from "../../components/Description";
 import SignatureInput from "../../components/SignatureInput";
 import StatusBar from "../../components/StatusBar";
 
 interface Props {
-  bloodConsent?: ConsentInfo;
-  consent: ConsentInfo;
+  assent?: ConsentInfo;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
 }
 
 @connect((state: StoreState) => ({
-  bloodConsent: state.form.bloodConsent,
-  consent: state.form.consent,
+  assent: state.form.assent,
   name: state.form!.name,
 }))
-class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
+class AssentScreen extends React.Component<Props & WithNamespaces> {
 
   _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
-    this.props.dispatch(setBloodConsent({
+    this.props.dispatch(setAssent({
       name: signerName,
-      terms: this.props.t("bloodConsentFormHeader") + "\n" + this.props.t("bloodFormText"),
+      terms: this.props.t("assentFormHeader") + "\n" + this.props.t("assentFormText"),
       signerType, 
       date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
       signature,
@@ -55,31 +53,29 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <StatusBar
-          canProceed={!!this.props.bloodConsent}
+          canProceed={!!this.props.assent}
           progressNumber="90%"
           progressLabel={t("common:statusBar:enrollment")}
-          title={t(BloodConsentConfig.title)}
+          title={t("assentTitle")}
           onBack={() => this.props.navigation.pop()}
           onForward={this._proceed}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Description content={t(BloodConsentConfig.description!.label)} style={{ marginHorizontal: 20 }} />
           <Text style={[styles.consentText, {textAlign: 'center'}]}>
-            {t("bloodConsentFormHeader")}
+            {t("assentFormHeader")}
           </Text>
           <Text style={styles.consentText}>
-            {t("bloodFormText")}
+            {t("assentFormText")}
           </Text>
           <SignatureInput
-            consent={this.props.bloodConsent}
+            consent={this.props.assent}
             editableNames={false}
             participantName={this.props.name}
-            signerType={this.props.consent.signerType}
-            signerName={this.props.consent.name}
+            signerType={ConsentInfoSignerType.Subject}
             onSubmit={this._onSubmit}
           />
           <Button
-            enabled={!!this.props.bloodConsent}
+            enabled={!!this.props.assent}
             label={t("surveyButton:done")}
             primary={true}
             onPress={this._proceed}
@@ -125,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("bloodConsentScreen")<Props>(BloodConsentScreen);
+export default withNamespaces("assentScreen")<Props>(AssentScreen);

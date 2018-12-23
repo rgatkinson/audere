@@ -67,11 +67,12 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   };
 
   _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
+    const { t } = this.props;
     this.props.dispatch(setName(participantName));
     if (signerType === ConsentInfoSignerType.Parent) {
       this.props.dispatch(setParentConsent({
         name: signerName,
-        terms: this._getConsentTerms(),
+        terms: t("consentFormHeader") + "\n" + this._getConsentTerms(),
         signerType, 
         date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
         signature,
@@ -79,7 +80,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     } else {
       this.props.dispatch(setConsent({
         name: signerName,
-        terms: this._getConsentTerms(),
+        terms: t("consentFormHeader") + "\n" + this._getConsentTerms(),
         signerType, 
         date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
         signature,
@@ -88,16 +89,14 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   }
 
   _proceed = () =>{
-    // TODO if 7 - 12 go to assent form
     if (this.props.navigation.getParam("reconsent")) {
       // TODO: if now over 18, ask about blood?
       this.props.navigation.push("Survey");
     } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "18orOver" &&
         this.props.bloodCollection) {
-        this.props.navigation.push("Blood", {
-          data: BloodConfig,
-          priorTitle: this.props.t("surveyTitle:" + ConsentConfig.title),
-        });
+        this.props.navigation.push("Blood", { data: BloodConfig });
+    } else if (this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "7to12") {
+      this.props.navigation.push("Assent");
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }
@@ -176,7 +175,6 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
           </View>
         </View>
       );
-
     }
   }
 
