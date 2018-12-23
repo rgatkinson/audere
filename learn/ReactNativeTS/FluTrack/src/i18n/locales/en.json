@@ -79,7 +79,9 @@
     "continue": "Continue"
   },
   "signatureBox": {
+    "relationToParticipant": "Relationship of representative to participant",
     "fullName": "Full name of participant",
+    "relation": "Relation",
     "ParentFullName": "Full name of parent",
     "RepresentativeFullName": "Full name of representative",
     "name": "Name",

@@ -76,6 +76,7 @@ export interface ConsentInfo {
     signerType: ConsentInfoSignerType;
     date: string;
     signature: string;
+    relation?: string;
 }
 export declare enum ConsentInfoSignerType {
     Subject = "Subject",

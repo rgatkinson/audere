@@ -38,8 +38,6 @@ interface Props {
   name: string;
   location: string;
   locationType: string;
-  signerName: string;
-  signerType: ConsentInfoSignerType,
 }
 
 @connect((state: StoreState) => ({
@@ -49,8 +47,6 @@ interface Props {
   name: state.form.name,
   location: state.admin!.location,
   locationType: state.admin!.locationType,
-  signerName: state.form.consent != null ? state.form.consent.name : undefined,
-  signerType: state.form.consent != null ? state.form.consent.signerType : undefined,
 }))
 class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _getConsentTerms = () => {
@@ -66,7 +62,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
       });
   };
 
-  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
+  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string, relation?: string) => {
     const { t } = this.props;
     this.props.dispatch(setName(participantName));
     if (signerType === ConsentInfoSignerType.Parent) {
@@ -84,6 +80,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
         signerType, 
         date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
         signature,
+        relation,
       }));
     }
   }
@@ -128,8 +125,9 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
               consent={this.props.consent}
               editableNames={true}
               participantName={this.props.name}
+              relation={!!this.props.consent ? this.props.consent.relation : undefined}
               signerType={ConsentInfoSignerType.Representative}
-              signerName={this.props.signerType === ConsentInfoSignerType.Representative ? this.props.signerName : undefined}
+              signerName={!!this.props.consent && this.props.consent.signerType === ConsentInfoSignerType.Representative ? this.props.consent.name : undefined}
               onSubmit={this._onSubmit}
             />
           </View>

@@ -14,9 +14,10 @@ interface Props {
   consent?: ConsentInfo;
   editableNames: boolean;
   participantName?: string;
+  relation?: string;
   signerName?: string;
   signerType: ConsentInfoSignerType;
-  onSubmit(name: string, signerType: ConsentInfoSignerType, signerName: string, signature: string): void;
+  onSubmit(name: string, signerType: ConsentInfoSignerType, signerName: string, signature: string, relation?: string): void;
 }
 
 interface State {
@@ -48,11 +49,12 @@ class SignatureInput extends React.Component<Props & WithNamespaces> {
           open={this.state.open}
           signer={this.props.signerType}
           participantName={this.props.participantName}
+          relation={this.props.relation}
           signerName={this.props.signerName}
           label={t(this.props.signerType)}
           onDismiss={() => this.setState({ open: false })}
-          onSubmit={(name: string, signerName: string, signature: string) => {
-            this.props.onSubmit(name, this.props.signerType, signerName, signature);
+          onSubmit={(name: string, signerName: string, signature: string, relation?: string) => {
+            this.props.onSubmit(name, this.props.signerType, signerName, signature, relation);
             this.setState({ open: false });
           }}
         />

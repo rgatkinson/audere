@@ -36,13 +36,14 @@ interface Props {
 }))
 class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
 
-  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
+  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string, relation?: string) => {
     this.props.dispatch(setBloodConsent({
       name: signerName,
       terms: this.props.t("bloodConsentFormHeader") + "\n" + this.props.t("bloodFormText"),
       signerType, 
       date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
       signature,
+      relation,
     }));
   };
 
@@ -78,6 +79,7 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
             consent={this.props.bloodConsent}
             editableNames={false}
             participantName={this.props.name}
+            relation={this.props.consent.relation}
             signerType={this.props.consent.signerType}
             signerName={this.props.consent.name}
             onSubmit={this._onSubmit}

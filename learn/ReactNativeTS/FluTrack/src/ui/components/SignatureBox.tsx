@@ -20,10 +20,11 @@ interface Props {
   participantName?: string;
   signerName?: string;
   label: string;
+  relation?: string;
   signer: ConsentInfoSignerType;
   open: boolean;
   onDismiss(): void;
-  onSubmit(participantName: string, signerName: string, signature: string): void;
+  onSubmit(participantName: string, signerName: string, signature: string, relation?: string): void;
 }
 
 interface SnapshotImage {
@@ -36,6 +37,7 @@ interface State {
   image?: SnapshotImage;
   participantName?: string;
   signerName?: string;
+  relation?: string;
 }
 
 // @ts-ignore
@@ -62,6 +64,10 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
     return typeof this.state.participantName == 'undefined' ? this.props.participantName : this.state.participantName;
   }
 
+  _getRelation = (): string | undefined => {
+    return typeof this.state.relation == 'undefined' ? this.props.relation : this.state.relation;
+  }
+
   _getSignerName = (): string | undefined => {
     if (this.props.signer === ConsentInfoSignerType.Subject) {
       return this._getParticipantName();
@@ -77,7 +83,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
       Alert.alert(this.props.t("pleaseSign"));
       return;
     } else if (remoteDebugging) {
-      this.props.onSubmit(participantName, signerName, 'debugSignature');
+      this.props.onSubmit(participantName, signerName, 'debugSignature', this._getRelation());
     } else if (!!image) {
       const cropData = {
         offset: { x: 0, y: 0 },
@@ -96,7 +102,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           ImageStore.getBase64ForTag(
             imageURI,
             (base64Data: string) => {
-              this.props.onSubmit(participantName, signerName, base64Data);
+              this.props.onSubmit(participantName, signerName, base64Data, this._getRelation());
             },
             reason => console.error(reason)
           );
@@ -106,11 +112,21 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
     }
   };
 
+  _getModalHeight = (signer: ConsentInfoSignerType): number => {
+    if (signer === ConsentInfoSignerType.Subject) {
+      return 425;
+    } else if (signer === ConsentInfoSignerType.Parent) {
+      return 525;
+    } else {
+      return 625;
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
       <Modal
-        height={this.props.signer === ConsentInfoSignerType.Subject ? 425 : 525}
+        height={this._getModalHeight(this.props.signer)}
         width={700}
         title={this.props.label}
         visible={this.props.open}
@@ -152,6 +168,21 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
               />
             </View>
           ) : null}
+          {this.props.signer === ConsentInfoSignerType.Representative ? (
+            <View>
+              <Text style={styles.headerText}>{t("relationToParticipant")}</Text>
+              <TextInput
+                autoFocus={false}
+                editable={this.props.editableNames}
+                placeholder={t("relation")}
+                returnKeyType="done"
+                style={styles.inputContainer}
+                value={this._getRelation()}
+                onChangeText={text => this.setState({ relation: text })}
+              />
+            </View>
+          ) : null}
+
           <View style={styles.sketchContainer}>
             <ExpoPixi.Signature
               ref={(ref: any) => (this.sketch = ref)}
@@ -174,6 +205,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                 !!this._getParticipantName()
                 && (remoteDebugging || !!this.state.image)
                 && (this.props.signer === ConsentInfoSignerType.Subject || !!this._getSignerName())
+                && (this.props.signer !== ConsentInfoSignerType.Representative || !!this._getRelation())
               }
               key="save"
               label={t("common:button:save")}

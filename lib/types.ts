@@ -126,6 +126,7 @@ export interface ConsentInfo {
     signerType: ConsentInfoSignerType;
     date: string; // date only
     signature: string; // Base64-encoded PNG of the signature
+    relation?: string;
 }
 
 export enum ConsentInfoSignerType {
