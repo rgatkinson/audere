@@ -54,7 +54,7 @@ class AssentScreen extends React.Component<Props & WithNamespaces> {
       <View style={styles.container}>
         <StatusBar
           canProceed={!!this.props.assent}
-          progressNumber="90%"
+          progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={t("assentTitle")}
           onBack={() => this.props.navigation.pop()}

@@ -184,7 +184,7 @@ class ConsentScreen extends React.Component<Props & WithNamespaces & ReduxWriter
       <View style={styles.container}>
         <StatusBar
           canProceed={this._canProceed()}
-          progressNumber="80%"
+          progressNumber="60%"
           progressLabel={t("common:statusBar:enrollment")}
           title={t("consent")}
           onBack={this.props.navigation.pop}

@@ -30,7 +30,7 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
       <ScreenContainer>
         <StatusBar
           canProceed={false}
-          progressNumber="70%"
+          progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={t("optIn")}
           onBack={() => this.props.navigation.pop()}
