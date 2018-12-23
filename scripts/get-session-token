@@ -36,7 +36,28 @@ if ! type jq &>/dev/null; then
   exit 1
 fi
 
-read -p "Enter AWS 2-factor auth code for '$USER': " auth_code
+function usage() {
+  (( "$#" == 0 )) || echo 1>&2 "$*"
+  echo 1>&2 "Usage: get-session-token [token]"
+  echo 1>&2 "  where 'token' is an OTP 6 digit token"
+  exit 1
+}
+
+case "$#" in
+  0)
+    read -p "Enter AWS 2-factor auth code for '$USER': " auth_code
+    ;;
+  1)
+    if [[ "$1" =~ [0-9][0-9][0-9][0-9][0-9][0-9] ]]; then
+      auth_code="$1"
+    else
+      usage "Unrecognized argument '$1'"
+    fi
+    ;;
+  *)
+    usage
+    ;;
+esac
 
 (
   # Use base only for get-session-token call
