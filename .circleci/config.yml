@@ -15,13 +15,12 @@ aliases:
       ignore: /.*/
 
 const: &const
-  environment:
-    PROD_SERVER: "https://api.auderenow.io/api"
-    STAGING_SERVER: "https://api.staging.auderenow.io/api"
+  - PROD_SERVER: "https://api.auderenow.io/api"
+  - STAGING_SERVER: "https://api.staging.auderenow.io/api"
 
 defaults: &defaults
   docker:
-    - image: circleci/node:10.12
+    - image: circleci/node:10.13
       environment:
         TEST_DATABASE_URL: postgresql://audere@localhost/circle_test
     - image: circleci/postgres:10.5-ram
@@ -111,40 +110,23 @@ jobs:
             - lib
 
   publish: &publish
-    docker:
-      - image: circleci/node:10.12
-    working_directory: ~/repo
-    environment:
-      PROD_SERVER: "https://api.auderenow.io/api"
-      STAGING_SERVER: "https://api.staging.auderenow.io/api"
+    <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: App Yarn Install
-          command: |
-            cd learn/ReactNativeTS/FluTrack
-            yarn install
-            echo `ls node_modules`
+          name: Update yarn
+          command: "sudo npm install -g yarn@latest"
       - run:
           name: Set .env for target environment
           command: |
-            echo $PROD_SERVER
-            echo $STAGING_SERVER
             if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
               export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
             else 
               export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
             fi
-            cd learn/ReactNativeTS/FluTrack
-            echo `ls`
-            echo `ls node_modules`
-            echo `ls node_modules/audere-lib`
-            cd node_modules/audere-lib
-            echo `ls`
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
             more .env
-            echo $REACT_NATIVE_API_SERVER
       - run:
           name: Publish to Expo
           command: |
@@ -160,15 +142,18 @@ jobs:
   publish_to_expo_staging:
     environment:
       EXPO_RELEASE_CHANNEL: v0-staging
+      <<: *const
     <<: *publish
 
   publish_to_expo_prod:
     environment:
       EXPO_RELEASE_CHANNEL: v0-prod
+      <<: *const
     <<: *publish
 
   build_ios:
-    <<: *const
+    environment:
+      <<: *const
     <<: *defaults
     steps:
       - checkout
