@@ -155,26 +155,7 @@ export class DocumentUploader {
     // Until we know there are no more documents to upload, we want a retry timer pending.
     this.timer.start();
 
-    // TODO: get enough ids for all the documents that don't have one.
-    if (pouch.body.csruid != CSRUID_PLACEHOLDER) {
-      logger.debug(`csruid loaded for '${pouch._id}': '${pouch.body.csruid}`);
-    } else {
-      logger.debug(`Requesting csruid for '${pouch._id}'`);
-      const result = await this.check200(() => this.api.get(`/documentId`));
-      await idleness();
-      if (result == null) {
-        return;
-      }
-
-      logger.debug(`csruid data: "${result.data.id}"`);
-      const csruid = result.data.id.trim();
-      logger.debug(`Saving csruid for "${pouch._id}": "${csruid}"`);
-      pouch.body.csruid = csruid;
-
-      await this.db.put(pouch);
-      logger.debug(`Saved "${pouch._id}"`);
-      await idleness();
-    }
+    pouch.body.csruid = await this.getCSRUID(pouch._id);
 
     {
       const body = pouch.body;
@@ -203,6 +184,27 @@ export class DocumentUploader {
     this.uploadNext();
   }
 
+  private async getCSRUID(localUid: string) {
+    const pouchId = "csruid/" + localUid;
+    try {
+      const pouchResult = await this.db.get(pouchId);
+      return pouchResult.csruid;
+    } catch {}
+    const apiResult = await this.check200(() => this.api.get(`/documentId`));
+    if (apiResult === null) {
+      throw new Error("Unable to retrieve CSRUID");
+    }
+    const csruid = apiResult.data.id.trim();
+    await this.db.put({
+      _id: pouchId,
+      csruid,
+    });
+
+    //TODO(ram): clean up old csruids
+
+    return csruid;
+  }
+
   private async firstDocument(): Promise<PouchDoc | null> {
     const options = {
       startkey: "documents/",
@@ -220,7 +222,7 @@ export class DocumentUploader {
       return null;
     }
 
-    if (items.total_rows < 1) {
+    if (items.rows.length < 1) {
       logger.debug("firstDocument returning null because 0 rows");
       return null;
     }
