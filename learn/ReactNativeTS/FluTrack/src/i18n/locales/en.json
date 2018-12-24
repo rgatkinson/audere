@@ -113,7 +113,9 @@
     "studyLocationRequiredAlertBody": "Please have a study administrator select the current collection location, available on the Admin tab within 'Prior to Collection'.",
     "seattleFluStudy": "SEATTLE FLU STUDY",
     "welcome": "Welcome",
-    "learnMore": "Learn more about this research and how to participate."
+    "learnMore": "Learn more about this research and how to participate.",
+    "clinician": "Your clinician is {{name}}.",
+    "unknown": "unknown"
   },
   "inelligibleScreen": {
     "thankYouParticipating": "Thank you for participating.",

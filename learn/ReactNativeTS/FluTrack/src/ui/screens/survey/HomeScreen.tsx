@@ -8,12 +8,14 @@ import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
 
 interface Props {
+  admin: string;
   location: string;
   navigation: NavigationScreenProp<any, any>;
 }
 
 @connect((state: StoreState) => ({
   location: state.admin.location,
+  admin: state.admin.administrator,
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
@@ -48,6 +50,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
+    const clinician = !!this.props.admin ? this.props.admin : t("unknown");
     return (
       <View style={styles.container}>
         <Image
@@ -66,6 +69,9 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
             />
           </View>
         </TouchableOpacity>
+        <Text style={styles.subtitle}>
+          {t("clinician", { name: clinician })}
+        </Text>
       </View>
     );
   }
@@ -102,6 +108,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingTop: 40,
     justifyContent: "space-between",
+  },
+  subtitle: {
+    color: "#FFFFFF",
+    fontFamily: "OpenSans-Regular",
+    fontSize: 21,
+    paddingTop: 150,
   },
   title: {
     color: "#FFFFFF",
