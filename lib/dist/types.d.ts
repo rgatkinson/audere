@@ -27,6 +27,7 @@ export interface VisitInfo {
     complete: boolean;
     gps_location?: GpsLocationInfo;
     location?: string;
+    administrator?: string;
     samples: SampleInfo[];
     patient: PatientInfo;
     consents: ConsentInfo[];
