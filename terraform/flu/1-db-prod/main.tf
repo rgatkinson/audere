@@ -8,10 +8,14 @@ module "flu_db" {
 
   admins = "${var.admins}"
   ami_id = "${module.ami.ubuntu}"
+  dev_debug_target_sg = "${data.terraform_remote_state.global.dev_debug_target_sg}"
   environment = "prod"
   mode = "${var.mode}"
   subnet_db_cidr = "${data.terraform_remote_state.global.subnet_prod_db_cidr}"
+  subnet_provision_cidr = "${data.terraform_remote_state.global.subnet_prod_db_provision_cidr}"
   vpc_cidr = "${data.terraform_remote_state.global.vpc_prod_cidr}"
+  vpc_flow_log_arn = "${data.terraform_remote_state.global.vpc_flow_log_arn}"
+  vpc_flow_log_role_arn = "${data.terraform_remote_state.global.vpc_flow_log_role_arn}"
 }
 
 module "ami" {

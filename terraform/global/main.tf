@@ -1116,12 +1116,14 @@ locals {
 
   vpc_prod_cidr = "192.168.0.0/16"
   subnet_prod_db_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 0)}"
-  subnet_prod_api_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 1)}"
+  subnet_prod_db_provision_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 1)}"
+  subnet_prod_api_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 254)}"
   subnet_prod_public_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 255)}"
 
   vpc_staging_cidr = "172.16.0.0/16"
   subnet_staging_db_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 0)}"
-  subnet_staging_api_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 1)}"
+  subnet_staging_db_provision_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 1)}"
+  subnet_staging_api_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 254)}"
   subnet_staging_public_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 255)}"
 
   vpc_dev_cidr = "172.30.0.0/16"

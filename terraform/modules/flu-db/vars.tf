@@ -46,8 +46,28 @@ variable "subnet_db_cidr" {
   type = "string"
 }
 
+variable "subnet_provision_cidr" {
+  description = "CIDR for public subnet for db provisioning instances."
+  type = "string"
+}
+
 variable "vpc_cidr" {
   description = "CIDR for VPC containing all subnets for this environment."
+  type = "string"
+}
+
+variable "dev_debug_target_sg" {
+  description = "Security group id for machines that should be debugable from a dev-machine."
+  type = "string"
+}
+
+output "vpc_flow_log_role_arn" {
+  description = "ARN for aws_flow_log.iam_role_arn to set up VPC flow logging."
+  type = "string"
+}
+
+output "vpc_flow_log_arn" {
+  description = "ARN for aws_flow_log.log_destination to set up VPC flow logging."
   type = "string"
 }
 
