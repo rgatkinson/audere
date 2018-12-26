@@ -252,6 +252,11 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
     consents.push(consent);
   }
 
+  const assent = form.assent;
+  if (assent != null) {
+    consents.push(assent);
+  }
+
   const parentConsent = form.parentConsent;
   if (parentConsent != null) {
     consents.push(parentConsent);
