@@ -147,6 +147,7 @@
     "howManyBedrooms": "How many bedrooms do you have?",
     "bedAssignment": "What is your bed assignment?",
     "address": "What is your current address?",
+    "addressCampus": "What is your current address? If living on campus, please use your UW address including building and room number.",
     "nearSickPeople": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "contactWithChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",

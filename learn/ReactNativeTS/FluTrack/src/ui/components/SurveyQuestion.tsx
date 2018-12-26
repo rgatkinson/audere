@@ -19,6 +19,7 @@ export interface SurveyQuestionProps {
   active: boolean;
   data: SurveyQuestionData;
   navigation: NavigationScreenProp<any, any>;
+  locationType: string;
   onActivate(): void;
   onNext(nextQuestion: string | null): void;
 }
@@ -39,6 +40,12 @@ class SurveyQuestion extends Component<
   _getNextQuestion = (selectedButtonKey: string): string | null => {
     let nextQuestion = this.props.data.nextQuestion;
     if (this.props.data.conditionalNext) {
+      !!this.props.data.conditionalNext!.location &&
+        this.props.data.conditionalNext!.location!.forEach((question: string, locationType: string) => {
+          if (locationType === this.props.locationType) {
+            nextQuestion = question;
+          }
+        });
       !!this.props.data.conditionalNext!.options &&
         !!this.props.getAnswer("options") &&
         this.props.getAnswer("options").forEach((option: Option) => {
@@ -53,7 +60,6 @@ class SurveyQuestion extends Component<
           }
         });
     }
-    // TODO admin conditional next
     return nextQuestion === undefined ? null : nextQuestion;
   };
 

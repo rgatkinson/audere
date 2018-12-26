@@ -34,8 +34,9 @@ export interface ButtonConfig {
 }
 
 interface ConditionalNextConfig {
-  options?: Map<string, string>;
   buttonKeys?: Map<string, string>;
+  location?: Map<string, string>;
+  options?: Map<string, string>;
 }
 
 interface DateInputConfig {
@@ -102,6 +103,7 @@ export const questionnaire: SurveyQuestion[] = [
           ["apartment", "Bedrooms"],
           ["shelter", "BedAssignment"],
         ]),
+        location: new Map([["collegeCampus", "AddressCampus"]]),
       },
       nextQuestion: "Address",
       title: "whereLive",
@@ -130,6 +132,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "Bedrooms",
       nextQuestion: "Address",
+      conditionalNext: {
+        location: new Map([["collegeCampus", "AddressCampus"]]),
+      },
       title: "howManyBedrooms",
       optionList: {
         options: [
@@ -153,6 +158,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "BedAssignment",
       nextQuestion: "Address",
+      conditionalNext: {
+        location: new Map([["collegeCampus", "AddressCampus"]]),
+      },
       title: "bedAssignment",
       numberInput: {
         placeholder: "bedAssignment",
@@ -171,6 +179,22 @@ export const questionnaire: SurveyQuestion[] = [
       id: "Address",
       nextQuestion: "ExpoDesc",
       title: "address",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withAddress" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "AddressCampus",
+      nextQuestion: "ExpoDesc",
+      title: "addressCampus",
       addressInput: {
         showLocationField: false,
       },
