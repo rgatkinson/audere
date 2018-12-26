@@ -380,7 +380,7 @@ resource "aws_s3_bucket" "config_logs_bucket" {
 
 resource "aws_config_delivery_channel" "main" {
   name           = "aws-config"
-  s3_bucket_name = "aws_s3_bucket.config_logs_bucket.name"
+  s3_bucket_name = "${aws_s3_bucket.config_logs_bucket.bucket}"
 
   snapshot_delivery_properties = {
     delivery_frequency = "${var.config_delivery_frequency}"
@@ -391,7 +391,7 @@ resource "aws_config_delivery_channel" "main" {
 
 resource "aws_config_configuration_recorder" "main" {
   name     = "aws-config"
-  role_arn = "${aws_iam_role.aws_config.arn}"
+  role_arn = "${aws_iam_service_linked_role.aws_config.arn}"
 
   recording_group = {
     all_supported                 = true
@@ -412,11 +412,8 @@ data "aws_iam_policy_document" "aws_config_role_policy" {
   }
 }
 
-// This needs to be imported, AWSServiceRoleForConfig already exists in the role library
-resource "aws_iam_role" "aws_config" {
-  name = "AWSServiceRoleForConfig"
-
-  assume_role_policy = "${data.aws_iam_policy_document.aws_config_role_policy.json}"
+resource "aws_iam_service_linked_role" "aws_config" {
+  aws_service_name = "config.amazonaws.com"
 }
 
 // --------------------------------------------------------------------------------
