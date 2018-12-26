@@ -1,11 +1,4 @@
-export type locationType =
-  | "clinic"
-  | "communityClinic"
-  | "childcare"
-  | "homeless"
-  | "pharmacy"
-  | "port"
-  | "workplace";
+export type locationType = "hospital" | "collegeCampus" | "homelessShelter";
 
 export function getLocationType(locationKey: string) {
   return COLLECTION_LOCATIONS[locationKey].type;
@@ -28,114 +21,39 @@ export const COLLECTION_LOCATIONS: {
     contactPhone: string;
   };
 } = {
-  UniversityOfWashington: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
   Harborview: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+    type: "hospital",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  NorthwestHospital: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  HUB: {
+    type: "collegeCampus",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  SeattleChildrens: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  UWHallHealth: {
+    type: "collegeCampus",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  FredHutch: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  HealthSciencesRotunda: {
+    type: "collegeCampus",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  UWFremontClinic: {
-    type: "clinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  HealthSciencesLobby: {
+    type: "collegeCampus",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  SeamarSoKingCounty: {
-    type: "communityClinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  StMartins: {
+    type: "homelessShelter",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
-  UWHealthcareEquity: {
-    type: "communityClinic",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  HutchKids: {
-    type: "childcare",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  UWDaycare: {
-    type: "childcare",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  HealthCareForTheHomeless: {
-    type: "homeless",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  KingCountyPublicHealth: {
-    type: "homeless",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  Bartell: {
-    type: "pharmacy",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  Walgreens: {
-    type: "pharmacy",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  DomesticArrivalsSeaTac: {
-    type: "port",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  AlaskaCruises: {
-    type: "port",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  InternationalArrivalsCDC: {
-    type: "port",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  AlaskaAirlines: {
-    type: "port",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  Boeing: {
-    type: "workplace",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  Microsoft: {
-    type: "workplace",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  Amazon: {
-    type: "workplace",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
-  },
-  OtherWorkplace: {
-    type: "workplace",
-    contactName: "[INSERT NAME]",
-    contactPhone: "[INSERT PHONE]",
+  DESC: {
+    type: "homelessShelter",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
   },
 };

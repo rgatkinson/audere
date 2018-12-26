@@ -6,6 +6,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
+import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
 
 interface Props {
   admin: string;
@@ -32,8 +33,8 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
 
   _onStart = () => {
     const { t } = this.props;
-    if (!this.props.location) {
-     Alert.alert(
+    if (!this.props.location || !COLLECTION_LOCATIONS.hasOwnProperty(this.props.location)) {
+      Alert.alert(
         t("studyLocationRequiredAlertTitle"),
         t("studyLocationRequiredAlertBody"),
         [
