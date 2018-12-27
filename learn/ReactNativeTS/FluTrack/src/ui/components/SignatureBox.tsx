@@ -146,6 +146,17 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
     }
   };
 
+  _canSave = () => {
+    return (
+      !!this._getParticipantName() &&
+      (remoteDebugging || !!this.state.image) &&
+      (this.props.signer === ConsentInfoSignerType.Subject ||
+        !!this._getSignerName()) &&
+      (this.props.signer !== ConsentInfoSignerType.Representative ||
+        !!this._getRelation())
+    );
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -180,12 +191,14 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
               }
               editable={this.props.editableNames}
               placeholder={t("name")}
-              returnKeyType="next"
+              returnKeyType={this._canSave() ? "done" : "next"}
               style={styles.inputContainer}
               value={this._getParticipantName()}
               onChangeText={text => this.setState({ participantName: text })}
               onSubmitEditing={() => {
-                if (this.secondInput.current != null) {
+                if (this._canSave()) {
+                  this._onSubmit();
+                } else if (this.secondInput.current != null) {
                   this.secondInput.current.focus();
                 } else if (this.thirdInput.current != null) {
                   this.thirdInput.current.focus();
@@ -207,12 +220,14 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                 editable={this.props.editableNames}
                 placeholder={t("name")}
                 ref={this.secondInput}
-                returnKeyType="next"
+                returnKeyType={this._canSave() ? "done" : "next"}
                 style={styles.inputContainer}
                 value={this._getSignerName()}
                 onChangeText={text => this.setState({ signerName: text })}
                 onSubmitEditing={() => {
-                  if (this.thirdInput.current != null) {
+                  if (this._canSave()) {
+                    this._onSubmit();
+                  } else if (this.thirdInput.current != null) {
                     this.thirdInput.current!.focus();
                   }
                 }}
@@ -234,10 +249,15 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                 editable={this.props.editableNames}
                 placeholder={t("relation")}
                 ref={this.thirdInput}
-                returnKeyType="done"
+                returnKeyType={this._canSave() ? "done" : "next"}
                 style={styles.inputContainer}
                 value={this._getRelation()}
                 onChangeText={text => this.setState({ relation: text })}
+                onSubmitEditing={() => {
+                  if (this._canSave()) {
+                    this._onSubmit();
+                  }
+                }}
               />
             </View>
           ) : null}
@@ -259,14 +279,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
               onPress={this._onClear}
             />
             <Button
-              enabled={
-                !!this._getParticipantName() &&
-                (remoteDebugging || !!this.state.image) &&
-                (this.props.signer === ConsentInfoSignerType.Subject ||
-                  !!this._getSignerName()) &&
-                (this.props.signer !== ConsentInfoSignerType.Representative ||
-                  !!this._getRelation())
-              }
+              enabled={this._canSave()}
               key="save"
               label={t("common:button:save")}
               primary={true}

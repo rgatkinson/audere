@@ -48,6 +48,8 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
     feedbackVisible: false,
   };
 
+  confirmInput = React.createRef<TextInput>();
+
   componentDidMount() {
     this.props.navigation.setParams({
       showFeedback: () => this.setState({ feedbackVisible: true }),
@@ -108,14 +110,17 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
             onChangeText={(text: string) => {
               this.setState({ barcode1: text });
             }}
+            onSubmitEditing={() => this.confirmInput.current!.focus()}
           />
           <TextInput
             placeholder="Confirm barcode data"
+            ref={this.confirmInput}
             returnKeyType="done"
             value={this.state.barcode2}
             onChangeText={(text: string) => {
               this.setState({ barcode2: text });
             }}
+            onSubmitEditing={this._onSave}
           />
         </View>
         <View style={styles.buttonContainer}>

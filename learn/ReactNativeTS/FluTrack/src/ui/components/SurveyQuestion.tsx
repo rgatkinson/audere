@@ -225,6 +225,10 @@ class SurveyQuestion extends Component<
             returnKeyType="done"
             value={this._getValue("textInput")}
             onChangeText={textInput => this.setState({ textInput })}
+            onSubmitEditing={() => {
+              this.props.updateAnswer({ textInput: this.state.textInput });
+              this.props.onNext(this._getNextQuestion("done"));
+            }}
           />
         )}
         {this.props.data.dateInput && (
@@ -239,9 +243,10 @@ class SurveyQuestion extends Component<
             placeholder={t(
               "surveyPlaceholder:" + this.props.data.dateInput.placeholder
             )}
-            onDateChange={(dateInput: Date) =>
-              this.props.updateAnswer({ dateInput })
-            }
+            onDateChange={(dateInput: Date) => {
+              this.props.updateAnswer({ dateInput });
+              this.props.onNext(this._getNextQuestion("done"));
+            }}
           />
         )}
         {this.props.data.addressInput && (
@@ -252,6 +257,12 @@ class SurveyQuestion extends Component<
             onChange={(addressInput: Address) =>
               this.setState({ addressInput })
             }
+            onDone={() => {
+              this.props.updateAnswer({
+                addressInput: this.state.addressInput,
+              });
+              this.props.onNext(this._getNextQuestion("done"));
+            }}
           />
         )}
         {this.props.data.numberInput && (
@@ -281,6 +292,10 @@ class SurveyQuestion extends Component<
                 }
               }
             }}
+            onDone={() => {
+              this.props.updateAnswer({ numberInput: this.state.numberInput });
+              this.props.onNext(this._getNextQuestion("done"));
+            }}
           />
         )}
         {this.props.data.numberSelector && (
@@ -292,9 +307,10 @@ class SurveyQuestion extends Component<
             placeholder={t(
               "surveyPlaceholder:" + this.props.data.numberSelector!.placeholder
             )}
-            onNumChange={(numberInput: number) =>
-              this.props.updateAnswer({ numberInput })
-            }
+            onNumChange={(numberInput: number) => {
+              this.props.updateAnswer({ numberInput });
+              this.props.onNext(this._getNextQuestion("done"));
+            }}
           />
         )}
         {this.props.data.optionList && (

@@ -49,6 +49,7 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
         relation,
       })
     );
+    this._proceed();
   };
 
   _proceed = () => {

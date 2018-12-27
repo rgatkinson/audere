@@ -8,6 +8,7 @@ interface Props {
   showLocationField?: boolean;
   value?: Address | null;
   onChange(value: Address): void;
+  onDone?(): void;
 }
 
 class AddressInput extends React.Component<Props & WithNamespaces> {
@@ -116,6 +117,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.country = text;
             this.props.onChange(address);
           }}
+          onSubmitEditing={this.props.onDone}
         />
       </View>
     );

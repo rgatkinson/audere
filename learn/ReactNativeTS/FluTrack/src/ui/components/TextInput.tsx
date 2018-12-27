@@ -17,7 +17,7 @@ interface Props {
   style?: StyleProp<TextStyle>;
   value?: string | null;
   onChangeText(text: string): void;
-  onSubmitEditing?(): void;
+  onSubmitEditing(): void;
 }
 
 export default class TextInput extends React.Component<Props> {

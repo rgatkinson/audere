@@ -67,6 +67,16 @@ export default class SelectAdminScreen extends React.Component<Props> {
     });
   };
 
+  _addName = () => {
+    if (!!this.state.name) {
+      this.props.dispatch(setAdministrator(this.state.name!));
+      const admins = !!this.props.admins ? this.props.admins.slice(0) : [];
+      admins.push(this.state.name!);
+      this.props.dispatch(setAdmins(admins));
+      this.setState({ name: null });
+    }
+  };
+
   render() {
     return (
       <ScreenContainer>
@@ -85,6 +95,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
             onChangeText={(text: string) => {
               this.setState({ name: text });
             }}
+            onSubmitEditing={this._addName}
           />
           <Button
             enabled={!!this.state.name}
@@ -92,17 +103,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
             label="Add"
             primary={true}
             style={styles.button}
-            onPress={() => {
-              if (!!this.state.name) {
-                this.props.dispatch(setAdministrator(this.state.name!));
-                const admins = !!this.props.admins
-                  ? this.props.admins.slice(0)
-                  : [];
-                admins.push(this.state.name!);
-                this.props.dispatch(setAdmins(admins));
-                this.setState({ name: null });
-              }
-            }}
+            onPress={this._addName}
           />
         </View>
         {!!this.props.admins &&

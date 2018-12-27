@@ -95,6 +95,9 @@ class ConsentScreen extends React.Component<
         })
       );
     }
+    if (this._canProceed()) {
+      this._proceed();
+    }
   };
 
   _proceed = () => {

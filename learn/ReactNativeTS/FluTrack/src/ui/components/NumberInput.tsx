@@ -8,6 +8,7 @@ interface Props {
   returnKeyType: ReturnKeyTypeOptions;
   value?: string;
   onChange(text: string): void;
+  onDone(): void;
 }
 
 export default class NumberInput extends React.Component<Props> {
@@ -17,11 +18,12 @@ export default class NumberInput extends React.Component<Props> {
     return (
       <TextInput
         autoFocus={this.props.autoFocus}
-        keyboardType="numeric"
+        keyboardType="numbers-and-punctuation"
         placeholder={this.props.placeholder}
         returnKeyType={this.props.returnKeyType}
         value={this.props.value}
         onChangeText={this.props.onChange}
+        onSubmitEditing={this.props.onDone}
       />
     );
   }

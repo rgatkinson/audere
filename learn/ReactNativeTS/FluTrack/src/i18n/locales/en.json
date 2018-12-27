@@ -151,7 +151,7 @@
     "howManyBedrooms": "How many bedrooms do you have?",
     "bedAssignment": "What is your bed assignment?",
     "address": "What is your current address?",
-    "addressCampus": "What is your current address? If living on campus, please use your UW address including building and room number.",
+    "addressCampus": "What is your current address?",
     "nearSickPeople": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "contactWithChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
@@ -190,6 +190,7 @@
     "medInsurance": "Do you have medical insurance?"
   },
   "surveyDescription": {
+    "campusDescription": "If living on campus, please use your UW address including building and room number.",
     "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, we would poke your skin to collect blood from your vein.",
     "enrolledDescription": "Please select when we may email you, and provide your email address (optional).",
     "expoToSickPeople": "These questions are about being in contact with people who seemed to have a cold. In contact means being within 6 feet of them for at least 2 minutes. For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",

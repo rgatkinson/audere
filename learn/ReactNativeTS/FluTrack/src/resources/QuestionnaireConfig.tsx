@@ -205,6 +205,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "AddressCampus",
       nextQuestion: "ExpoDesc",
       title: "addressCampus",
+      description: {
+        label: "campusDescription",
+        center: true,
+      },
       addressInput: {
         showLocationField: false,
       },

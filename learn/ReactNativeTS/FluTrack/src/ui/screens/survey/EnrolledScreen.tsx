@@ -142,17 +142,17 @@ class EnrolledScreen extends React.PureComponent<
               "surveyDescription:" + EnrolledConfig.description!.label
             )}
           />
+          <EmailInput
+            returnKeyType="next"
+            value={this._getEmail()}
+            onChange={text => this.setState({ email: text })}
+            onSubmit={() => {}}
+          />
           <OptionList
             data={this.state.options}
             multiSelect={true}
             numColumns={1}
             onChange={options => this.setState({ options })}
-          />
-          <EmailInput
-            returnKeyType="done"
-            value={this._getEmail()}
-            onChange={text => this.setState({ email: text })}
-            onSubmit={() => {}}
           />
           {EnrolledConfig.buttons.map(button => (
             <Button

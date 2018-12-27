@@ -42,6 +42,7 @@ class AssentScreen extends React.Component<Props & WithNamespaces> {
         signature,
       })
     );
+    this._proceed();
   };
 
   _proceed = () => {
