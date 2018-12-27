@@ -155,6 +155,8 @@
     "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
     "smokeOrVape": "Do you smoke tobacco, marijuana, or vape?",
     "householdSmoke": "Does anyone in your household smoke tobacco, marijuana, or vape?",
+    "drinkAlcohol": "Do you drink alcohol?",
+    "howManyDrinks": "On average, how many alcoholic drinks do you consume per week? (1 drink = 1 beer, 1 glass of wine, or 1.5 fl oz/1 shot of hard alcohol)",
     "arrivedFrom": "Where have you arrived from?",
     "travelledLastMonth": "Where have you traveled in the last month?",
     "majorityOfTime": "Over the past 7 days and when you are awake, where have you spent the majority of your time?",
@@ -188,6 +190,7 @@
     "bedAssignment": "Bed assignment",
     "city": "City",
     "occupation": "Occupation",
+    "drinks": "Drinks",
     "numHours": "Number of hours",
     "schoolName": "School name",
     "selectMonth": "Select month"

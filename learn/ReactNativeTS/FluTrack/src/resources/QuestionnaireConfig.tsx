@@ -315,10 +315,44 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "HouseholdSmoke",
       nextQuestion: "RecentTravel",
+      conditionalNext: {
+        location: new Map([["collegeCampus", "DrinkAlcohol"]]),
+      },
       title: "householdSmoke",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "DrinkAlcohol",
+      nextQuestion: "RecentTravel",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "HowManyDrinks"]]),
+      },
+      title: "drinkAlcohol",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "HowManyDrinks",
+      nextQuestion: "RecentTravel",
+      title: "howManyDrinks",
+      numberInput: {
+        placeholder: "drinks",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withNumber" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
