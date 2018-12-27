@@ -172,7 +172,7 @@
     "fluShot": "Did you get a flu shot in the last year?",
     "vacDate": "What was the date of vaccination?",
     "vacLocation": "Where did you receive your vaccination?",
-    "startSick": "What day did you start to feel sick?",
+    "daysSick": "How many days have you been sick?",
     "antibiotics": "Did you take prescription medicine such as antibiotics or antivirals for this current illness/cold?",
     "interferring": "Is your cold stopping you from doing things you would usually do?",
     "keptFrom": "In the past week, has your cold kept you from:",
@@ -192,6 +192,7 @@
   },
   "surveyPlaceholder": {
     "selectDate": "Select date",
+    "days": "Number of days",
     "bedAssignment": "Bed assignment",
     "city": "City",
     "occupation": "Occupation",

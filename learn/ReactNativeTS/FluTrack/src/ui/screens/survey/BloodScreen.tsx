@@ -17,6 +17,10 @@ interface Props {
 class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = (key: string) => {
     this.props.updateAnswer({ selectedButtonKey: key });
+    this._proceed(key);
+  }
+
+  _proceed = (key: string) => {
     if (key === "yes") {
       this.props.navigation.push("BloodConsent", { reconsent: this.props.navigation.getParam("reconsent") });
     } else if (this.props.navigation.getParam("reconsent")) {
@@ -31,12 +35,14 @@ class BloodScreen extends React.Component<Props & WithNamespaces & ReduxWriterPr
     return (
       <ScreenContainer>
         <StatusBar
-          canProceed={false}
+          canProceed={!!this.props.getAnswer("selectedButtonKey")}
           progressNumber="80%"
           progressLabel={t("common:statusBar:enrollment")}
           title={t("optIn")}
           onBack={() => this.props.navigation.pop()}
-          onForward={() => {}}
+          onForward={() => {
+            this._proceed(this.props.getAnswer("selectedButtonKey"));
+          }}
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + BloodConfig.title)} />

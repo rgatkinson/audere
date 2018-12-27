@@ -21,6 +21,7 @@ class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
           canProceed={true}
           progressNumber="100%"
           progressLabel={t("common:statusBar:enrollment")}
+          title=""
           onBack={() => this.props.navigation.pop()}
           onForward={() => {
             this.props.navigation.push("SurveyStart");

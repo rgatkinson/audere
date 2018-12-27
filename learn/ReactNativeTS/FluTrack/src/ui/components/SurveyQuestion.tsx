@@ -11,6 +11,7 @@ import Button from "./Button";
 import DateInput from "./DateInput";
 import Description from "./Description";
 import NumberInput from "./NumberInput";
+import NumberSelectorInput from "./NumberSelectorInput";
 import OptionList, { newSelectedOptionsList } from "./OptionList";
 import TextInput from "./TextInput";
 import Title from "./Title";
@@ -203,6 +204,16 @@ class SurveyQuestion extends Component<
                 this.setState({ numberInput: num });
               }
             }}
+          />
+        )}
+        {this.props.data.numberSelector && (
+          <NumberSelectorInput
+            min={this.props.data.numberSelector!.min}
+            max={this.props.data.numberSelector!.max}
+            maxPlus={this.props.data.numberSelector!.maxPlus}
+            num={this._getValue("numberInput")}
+            placeholder={t("surveyPlaceholder:" + this.props.data.numberSelector!.placeholder)}
+            onNumChange={(numberInput: number) => this.props.updateAnswer({ numberInput })}
           />
         )}
         {this.props.data.optionList && (

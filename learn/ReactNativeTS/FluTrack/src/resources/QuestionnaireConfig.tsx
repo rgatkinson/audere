@@ -18,6 +18,7 @@ export interface SurveyQuestionData {
   description?: DescriptionConfig;
   nextQuestion?: string | null;
   numberInput?: NumberInputConfig;
+  numberSelector?: NumberSelectorConfig;
   optionList?: OptionListConfig;
   textInput?: TextInputConfig;
   title?: string;
@@ -48,6 +49,13 @@ interface DateInputConfig {
 
 interface NumberInputConfig {
   placeholder: string;
+}
+
+interface NumberSelectorConfig {
+  min: number;
+  max: number;
+  placeholder: string;
+  maxPlus: boolean;
 }
 
 interface DescriptionConfig {
@@ -454,7 +462,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HoursWorked",
       nextQuestion: "NumPeople",
       title: "hoursWorked",
-      numberInput: {
+      numberSelector: {
+        min: 0,
+        max: 15,
+        maxPlus: true,
         placeholder: "numHours",
       },
       buttons: [
@@ -595,7 +606,7 @@ export const questionnaire: SurveyQuestion[] = [
       conditionalNext: {
         buttonKeys: new Map([["yes", "VaccineDate"]]),
       },
-      nextQuestion: "FirstSick",
+      nextQuestion: "DaysSick",
       title: "fluShot",
       buttons: [
         { key: "yes", primary: true, enabled: true },
@@ -626,16 +637,10 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "VaccineLocation",
-      nextQuestion: "FirstSick",
+      nextQuestion: "DaysSick",
       title: "vacLocation",
       optionList: {
-        options: [
-          "pharmacy",
-          "clinic",
-          "workplace",
-          "school",
-          "other",
-        ],
+        options: ["pharmacy", "clinic", "workplace", "school", "other"],
         multiSelect: false,
         withOther: true,
       },
@@ -646,18 +651,19 @@ export const questionnaire: SurveyQuestion[] = [
       ],
     },
   },
-
   {
     section: hist,
     data: {
-      id: "FirstSick",
+      id: "DaysSick",
       nextQuestion: "Antibiotics",
-      title: "startSick",
-      dateInput: {
-        mode: "day",
-        placeholder: "Select date",
+      title: "daysSick",
+      numberSelector: {
+        min: 1,
+        max: 7,
+        maxPlus: true,
+        placeholder: "days",
       },
-      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
+      buttons: [{ key: "done", primary: true, enabled: "withNumber" }],
     },
   },
   {
