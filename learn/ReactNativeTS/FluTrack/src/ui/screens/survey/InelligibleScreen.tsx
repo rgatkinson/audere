@@ -2,7 +2,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState, setEmail } from "../../../store";
+import { Action, StoreState, completeSurvey, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -40,6 +40,7 @@ class InelligibleScreen extends React.PureComponent<
     if (!!this.state.email) {
       this.props.dispatch(setEmail(this.state.email));
     }
+    this.props.dispatch(completeSurvey());
     this.props.navigation.popToTop();
   };
 
