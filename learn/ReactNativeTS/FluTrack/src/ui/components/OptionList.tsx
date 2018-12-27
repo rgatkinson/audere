@@ -92,7 +92,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
                 id={item.key}
                 selected={item.selected}
                 width={itemWidth}
-                fullWidth={this.props.fullWidth}
+                smallText={this.props.data.length > 12 && this.props.numColumns > 1}
                 backgroundColor={this.props.backgroundColor}
                 onPressItem={this._onPressItem}
               />
@@ -104,10 +104,10 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           (this.props.data.find(option => option.key === "other")!).selected && (
             <View>
               <Description content={t("pleaseSpecify")} />
-              <View style={[{ width: itemWidth }, styles.item]}>
+              <View style={styles.item}>
                 <TextInput
-                  autoFocus={false}
-                  style={[{ width: itemWidth }, styles.itemText]}
+                  autoFocus={true}
+                  style={styles.itemText}
                   returnKeyType="done"
                   value={
                     this.props.otherOption ? this.props.otherOption : undefined
@@ -127,7 +127,7 @@ interface ItemProps {
   id: string;
   selected: boolean;
   width: number;
-  fullWidth?: boolean;
+  smallText?: boolean;
   backgroundColor?: string;
   onPressItem(id: string): void;
 }
@@ -149,9 +149,10 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
         onPress={this._onPress}
       >
         <Text
-          style={
-            this.props.fullWidth ? styles.itemText : styles.itemTextFullWidth
-          }
+          style={[
+            styles.itemText,
+            this.props.smallText && styles.smallText,
+          ]}
         >
           {this.props.t("surveyOption:" + this.props.id)}
         </Text>
@@ -177,14 +178,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemText: {
-    fontFamily: "OpenSans-Regular",
-    fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 22,
-  },
-  itemTextFullWidth: {
     fontSize: 17,
   },
+  smallText: {
+    fontSize: 14,
+  }
 });
 
 const TranslatedListItem = withNamespaces()<ItemProps>(ListItem);
