@@ -162,7 +162,11 @@ class SurveyQuestion extends Component<
           <Title label={t("surveyTitle:" + this.props.data.title)} size="small" />
         )}
         {this.props.data.description && (
-          <Description content={t("surveyDescription:" + this.props.data.description.label)} center={this.props.data.description.center} />
+          <Description
+            content={t("surveyDescription:" + this.props.data.description.label)}
+            center={this.props.data.description.center}
+            style={{marginVertical: 0}}
+          />
         )}
         {this.props.data.textInput && (
           <TextInput

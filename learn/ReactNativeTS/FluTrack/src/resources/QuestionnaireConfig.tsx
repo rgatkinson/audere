@@ -428,6 +428,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "TimeSpent",
       conditionalNext: {
         options: new Map([["work", "Occupation"], ["school", "SchoolType"]]),
+        location: new Map([["collegeCampus", "Major"]]),
       },
       nextQuestion: "NumPeople",
       title: "majorityOfTime",
@@ -477,6 +478,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "HoursWorked",
       nextQuestion: "NumPeople",
+      conditionalNext: {
+        location: new Map([["collegeCampus", "Major"]]),
+      },
       title: "hoursWorked",
       numberSelector: {
         min: 0,
@@ -593,6 +597,7 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
+        { key: "na", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
