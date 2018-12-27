@@ -29,6 +29,9 @@
     "edit": "Edit",
     "add": "Add"
   },
+  "statusBar": {
+    "complete": "Complete"
+  },
   "dateModal": {
     "january": "January",
     "february": "February",

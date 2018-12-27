@@ -30,7 +30,7 @@ interface State {
   numberInput?: number | null;
   textInput?: string;
   otherOption?: string;
-  [key: string]: undefined | Address | string | number;
+  [key: string]: undefined | Address | string | number | null;
 }
 
 class SurveyQuestion extends Component<

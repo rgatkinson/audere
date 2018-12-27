@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   canProceed: boolean;
@@ -11,7 +12,7 @@ interface Props {
   onForward: any;
 }
 
-export default class StatusBar extends React.Component<Props> {
+class StatusBar extends React.Component<Props & WithNamespaces> {
   _back = () => {
     this.props.onBack();
   };
@@ -21,15 +22,19 @@ export default class StatusBar extends React.Component<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.statusBar}>
         <View>
+          <Text style={styles.progressText}>{this.props.progressLabel}</Text>
           <Text style={[styles.progressText, styles.progressNumber]}>
             {this.props.progressNumber}
+            {" " + t("complete")}
           </Text>
-          <Text style={styles.progressText}>{this.props.progressLabel}</Text>
         </View>
-        <Text numberOfLines={1} style={styles.statusBarTitle}>{this.props.title}</Text>
+        <Text numberOfLines={1} style={styles.statusBarTitle}>
+          {this.props.title}
+        </Text>
         <View style={styles.nav}>
           <TouchableOpacity onPress={this._back}>
             <Feather
@@ -106,3 +111,5 @@ const styles = StyleSheet.create({
     width: 500,
   },
 });
+
+export default withNamespaces("statusBar")<Props>(StatusBar);

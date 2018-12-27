@@ -229,7 +229,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
           if (Number.isInteger(response.answer.numberInput)) {
             item.answer.push({ valueInteger: response.answer.numberInput });
           } else {
-            item.answer.push({ valueString: response.answer.numberInput });
+            item.answer.push({ valueString: "" + response.answer.numberInput });
           }
         }
 
