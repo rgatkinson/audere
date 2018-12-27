@@ -1,3 +1,4 @@
+const birth = "birth";
 const comp = "comp";
 const expo = "expo";
 const hist = "hist";
@@ -82,7 +83,7 @@ export interface SurveyQuestion {
 
 export const questionnaire: SurveyQuestion[] = [
   {
-    section: comp,
+    section: birth,
     data: {
       id: "BirthDate",
       nextQuestion: "WhereLive",

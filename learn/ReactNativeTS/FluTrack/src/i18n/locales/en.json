@@ -127,6 +127,7 @@
     "theyWillAssist": "They will assist you with the next step."
   },
   "sectionTitle": {
+    "birth": "DATE OF BIRTH",
     "comp": "HOUSEHOLD COMPOSITION",
     "expo": "HOUSEHOLD EXPOSURE",
     "hist": "ILLNESS HISTORY",
