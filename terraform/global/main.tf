@@ -1115,16 +1115,14 @@ locals {
   vpc_aws_default_cidr = "172.31.0.0/16"  // AWS default--we don't control this
 
   vpc_prod_cidr = "192.168.0.0/16"
-  subnet_prod_db_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 0)}"
-  subnet_prod_db_provision_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 1)}"
-  subnet_prod_api_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 254)}"
-  subnet_prod_public_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 255)}"
+  prod_db_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 0)}"
+  prod_api_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 254)}"
+  prod_public_cidr = "${cidrsubnet(local.vpc_prod_cidr, 8, 255)}"
 
   vpc_staging_cidr = "172.16.0.0/16"
-  subnet_staging_db_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 0)}"
-  subnet_staging_db_provision_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 1)}"
-  subnet_staging_api_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 254)}"
-  subnet_staging_public_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 255)}"
+  staging_db_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 0)}"
+  staging_api_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 254)}"
+  staging_public_cidr = "${cidrsubnet(local.vpc_staging_cidr, 8, 255)}"
 
   vpc_dev_cidr = "172.30.0.0/16"
   subnet_dev_machine_cidr = "${cidrsubnet(local.vpc_dev_cidr, 8, 0)}"

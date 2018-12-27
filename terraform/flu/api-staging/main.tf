@@ -27,10 +27,12 @@ module "flu_api" {
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   environment = "staging"
+  fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
+  gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
   migrate = "${var.migrate}"
   service = "${var.service}"
-  subnet_api_cidr = "${data.terraform_remote_state.global.subnet_staging_api_cidr}"
-  subnet_public_cidr = "${data.terraform_remote_state.global.subnet_staging_public_cidr}"
+  subnet_api_cidr = "${data.terraform_remote_state.global.staging_api_cidr}"
+  subnet_public_cidr = "${data.terraform_remote_state.global.staging_public_cidr}"
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
 

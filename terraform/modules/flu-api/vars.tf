@@ -30,6 +30,19 @@ variable "vpc_id" {
   type = "string"
 }
 
+variable "gateway_id" {
+  description = "Gateway id for internet access from VPC"
+  type = "string"
+}
+
+variable "fludb_client_sg_id" {
+  description = "Id of client security group to enable fludb access"
+}
+
+
+variable "availability_zone" {
+  default = "us-west-2a"
+}
 
 variable "commit" {
   description = "Git commit tag (or hash) to sync"

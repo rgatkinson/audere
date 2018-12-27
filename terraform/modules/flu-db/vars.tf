@@ -41,13 +41,8 @@ variable "environment" {
   type = "string"
 }
 
-variable "subnet_db_cidr" {
-  description = "CIDR for private subnet for db tier instances."
-  type = "string"
-}
-
-variable "subnet_provision_cidr" {
-  description = "CIDR for public subnet for db provisioning instances."
+variable "db_cidr" {
+  description = "CIDR for db tier."
   type = "string"
 }
 
@@ -61,13 +56,13 @@ variable "dev_debug_target_sg" {
   type = "string"
 }
 
-output "vpc_flow_log_role_arn" {
-  description = "ARN for aws_flow_log.iam_role_arn to set up VPC flow logging."
+variable "vpc_flow_log_arn" {
+  description = "ARN for aws_flow_log.log_destination to set up VPC flow logging."
   type = "string"
 }
 
-output "vpc_flow_log_arn" {
-  description = "ARN for aws_flow_log.log_destination to set up VPC flow logging."
+variable "vpc_flow_log_role_arn" {
+  description = "ARN for aws_flow_log.iam_role_arn to set up VPC flow logging."
   type = "string"
 }
 
@@ -95,4 +90,8 @@ variable "vpc_dhparam_filename" {
 
 variable "availability_zone" {
   default = "us-west-2a"
+}
+
+variable "backup_availability_zone" {
+  default = "us-west-2b"
 }

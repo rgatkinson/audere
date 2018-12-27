@@ -10,3 +10,15 @@ output "database_address" {
 output "api_creds_snapshot_id" {
   value = "${module.flu_db.api_creds_snapshot_id}"
 }
+
+output "fludb_client_sg_id" {
+  value = "${module.flu_db.fludb_client_sg_id}"
+}
+
+output "gateway_id" {
+  value = "${module.flu_db.gateway_id}"
+}
+
+output "vpc_id" {
+  value = "${module.flu_db.vpc_id}"
+}

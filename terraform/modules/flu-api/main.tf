@@ -10,7 +10,7 @@ locals {
   }
   subdomain = "${local.subdomains["${var.environment}"]}"
   full_domain = "${local.subdomain}.auderenow.io"
-  module_name = "flu-api-${var.environment}"
+  base_name = "flu-api-${var.environment}"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
   util_sh = "${file("${path.module}/../assets/util.sh")}"
@@ -25,10 +25,6 @@ locals {
   ram_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-ram.pub")}"
   mmarucheck_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-mmarucheck.pub")}"
 }
-
-data "aws_security_group" "default" { name = "default" }
-
-data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_acm_certificate" "auderenow_io" {
   domain = "auderenow.io"
@@ -73,12 +69,13 @@ data "template_file" "service_init_sh" {
 resource "aws_instance" "migrate_instance" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "2018-mmarucheck" // TODO remove
+  key_name = "2018-mmarucheck" # TODO remove
+  subnet_id = "${aws_subnet.migrate.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
   vpc_security_group_ids = [
-    "${data.aws_security_group.default.id}",
-    "${data.aws_security_group.ssh.id}",
+    "${aws_security_group.migrate.id}",
+    "${var.fludb_client_sg_id}",
   ]
 
   ebs_block_device {
@@ -87,7 +84,7 @@ resource "aws_instance" "migrate_instance" {
   }
 
   tags {
-    Name = "${local.module_name}-migrate"
+    Name = "${local.base_name}-migrate"
   }
 
   count = "${var.migrate == "true" ? 1 : 0}"
@@ -115,7 +112,7 @@ resource "aws_instance" "migrate_instance" {
 #   }
 
 #   tags {
-#     Name = "${local.module_name}-single"
+#     Name = "${local.base_name}-single"
 #   }
 
 #   count = "${var.service == "single" ? 1 : 0}"
@@ -144,17 +141,17 @@ resource "aws_route53_record" "api_record" {
 }
 
 resource "aws_autoscaling_group" "flu_api" {
-  launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
   availability_zones = "${local.availability_zones}"
-  load_balancers = ["${aws_elb.flu_api_elb.name}"]
   health_check_type = "ELB"
-
-  min_size = 1
+  launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
+  load_balancers = ["${aws_elb.flu_api_elb.name}"]
   max_size = 1
+  min_size = 1
+  vpc_zone_identifier = ["${aws_subnet.api.id}"]
 
   tag {
     key = "Name"
-    value = "${local.module_name}"
+    value = "${local.base_name}"
     propagate_at_launch = true
   }
 
@@ -162,12 +159,13 @@ resource "aws_autoscaling_group" "flu_api" {
 }
 
 resource "aws_elb" "flu_api_elb" {
-  name = "${local.module_name}"
-  availability_zones = "${local.availability_zones}"
+  name = "${local.base_name}"
+  # availability_zones = "${local.availability_zones}"
+  subnets = ["${aws_subnet.api.id}"]
 
   security_groups = [
-    "${aws_security_group.flu_api_elb.id}",
-    "${data.aws_security_group.default.id}",
+    "${aws_security_group.public_http.id}",
+    "${module.fluapi_sg.client_id}",
   ]
 
   listener {
@@ -188,7 +186,7 @@ resource "aws_elb" "flu_api_elb" {
 
   tags {
     key = "Name"
-    value = "${local.module_name}"
+    value = "${local.base_name}"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
@@ -199,65 +197,15 @@ resource "aws_launch_configuration" "flu_api_instance" {
   instance_type = "t2.micro"
   user_data = "${data.template_file.service_init_sh.rendered}"
 
-  # TODO: allow https from LB, from dev machines, postgres to db
   security_groups = [
-    "${data.aws_security_group.default.id}",
-    "${data.aws_security_group.ssh.id}",
-    "${aws_security_group.flu_api_instance_from_elb.id}",
+    "${module.fluapi_sg.server_id}",
+    "${var.fludb_client_sg_id}",
   ]
 
   ebs_block_device {
     device_name = "/dev/sdf"
     snapshot_id = "${var.creds_snapshot_id}"
     volume_type = "gp2"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_security_group" "flu_api_elb" {
-  name = "${local.module_name}-elb"
-
-  ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # TODO: allow egress only to api instances
-  egress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_security_group" "flu_api_instance_from_elb" {
-  name = "${local.module_name}-instance"
-
-  # TODO: allow ingress only from elb
-  ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    security_groups = [
-      "${aws_security_group.flu_api_elb.id}"
-    ]
   }
 
   lifecycle {

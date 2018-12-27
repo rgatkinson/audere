@@ -12,9 +12,13 @@ output "api_creds_snapshot_id" {
 }
 
 output "vpc_id" {
-  value = "value"
+  value = "${aws_vpc.fludb.id}"
+}
+
+output "gateway_id" {
+  value = "${aws_internet_gateway.flu_gw.id}"
 }
 
 output "fludb_client_sg_id" {
-  value = "${aws_security_group.fludb_client.id}"
+  value = "${module.fludb_sg.client_id}"
 }

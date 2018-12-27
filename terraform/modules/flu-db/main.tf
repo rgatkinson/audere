@@ -24,10 +24,11 @@ resource "aws_db_instance" "fludb" {
   publicly_accessible = false
   skip_final_snapshot = true // TODO
   storage_encrypted = true
+  db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "${local.my_userid}"
   vpc_security_group_ids = [
     "${module.fludb_sg.server_id}",
-    "${var.dev_debug_target_sg}",
+    # "${var.dev_debug_target_sg}",
   ]
 
   tags {
@@ -65,92 +66,6 @@ resource "aws_db_parameter_group" "fludb_parameters" {
 }
 
 // --------------------------------------------------------------------------------
-// Network
-
-resource "aws_vpc" "db" {
-  cidr_block = "${local.vpc_db_cidr}"
-  enable_dns_support = true
-  enable_dns_hostnames = true
-
-  tags = {
-    Name = "vpc-${local.base_name}"
-  }
-}
-
-resource "aws_flow_log" "dev_vpc_flow_log" {
-  iam_role_arn    = "${var.vpc_flow_log_role_arn}"
-  log_destination = "${var.vpc_flow_log_arn}"
-  traffic_type    = "ALL"
-  vpc_id          = "${aws_vpc.db.id}"
-}
-
-resource "aws_subnet" "db" {
-  availability_zone = "${var.availability_zone}"
-  cidr_block = "${var.subnet_db_cidr}"
-  map_public_ip_on_launch = false
-  vpc_id = "${aws_vpc.db.id}"
-
-  tags = {
-    Name = "subnet-${local.base_name}"
-  }
-}
-
-// Internet access for provision machines to install software
-
-resource "aws_internet_gateway" "provision_gateway" {
-  vpc_id = "${aws_vpc.db.id}"
-
-  tags = {
-    Name = "provision--${local.base_name}"
-  }
-}
-
-resource "aws_subnet" "provision" {
-  availability_zone = "${var.availability_zone}"
-  cidr_block = "${var.subnet_provision_cidr}"
-  map_public_ip_on_launch = true
-  vpc_id = "${aws_vpc.db.id}"
-
-  tags = {
-    Name = "subnet-provision-${local.base_name}"
-  }
-}
-
-resource "aws_route_table" "provision" {
-  vpc_id = "${aws_vpc.db.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.provision_gateway.id}"
-  }
-
-  tags = {
-    Name = "provision-${local.base_name}"
-  }
-}
-
-resource "aws_route_table_association" "provision" {
-  subnet_id      = "${aws_subnet.provision.id}"
-  route_table_id = "${aws_route_table.provision.id}"
-}
-
-resource "aws_security_group" "provision" {
-  name = "provision"
-  description = "Allow provision to have general egress"
-  vpc_id = "${aws_vpc.dev.id}"
-}
-
-resource "aws_security_group_rule" "provision_egress" {
-  type = "egress"
-  from_port = 0
-  to_port = 65535
-  protocol = "tcp"
-
-  security_group_id = "${aws_security_group.provision.id}"
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-// --------------------------------------------------------------------------------
 // provision0
 
 resource "aws_instance" "provision0" {
@@ -159,13 +74,12 @@ resource "aws_instance" "provision0" {
   ami = "${var.ami_id}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
-  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.provision.id}"
   user_data = "${data.template_file.provision0_sh.rendered}"
 
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
-    # "${data.aws_security_group.ssh.id}",
+    "${module.fludb_sg.client_id}",
   ]
 
   tags {
@@ -221,7 +135,7 @@ resource "aws_instance" "add_admin" {
 
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
-    # "${data.aws_security_group.ssh.id}",
+    "${module.fludb_sg.client_id}",
   ]
 
   tags {
@@ -301,9 +215,7 @@ resource "aws_ebs_volume" "admin_creds" {
 
 // --------------------------------------------------------------------------------
 
-data "aws_security_group" "ssh" { name = "ssh" }
-
-data "aws_security_group" "default" { name = "default" }
+# data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_caller_identity" "current" {}
 

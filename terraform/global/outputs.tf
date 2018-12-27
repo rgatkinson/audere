@@ -8,20 +8,16 @@ output "vpc_prod_cidr" {
   value = "${local.vpc_prod_cidr}"
 }
 
-output "subnet_prod_db_cidr" {
-  value = "${local.subnet_prod_db_cidr}"
+output "prod_db_cidr" {
+  value = "${local.prod_db_cidr}"
 }
 
-output "subnet_prod_db_provision_cidr" {
-  value = "${local.subnet_prod_db_provision_cidr}"
+output "prod_api_cidr" {
+  value = "${local.prod_api_cidr}"
 }
 
-output "subnet_prod_api_cidr" {
-  value = "${local.subnet_prod_api_cidr}"
-}
-
-output "subnet_prod_public_cidr" {
-  value = "${local.subnet_prod_public_cidr}"
+output "prod_public_cidr" {
+  value = "${local.prod_public_cidr}"
 }
 
 
@@ -29,37 +25,17 @@ output "vpc_staging_cidr" {
   value = "${local.vpc_staging_cidr}"
 }
 
-output "subnet_staging_db_cidr" {
-  value = "${local.subnet_staging_db_cidr}"
+output "staging_db_cidr" {
+  value = "${local.staging_db_cidr}"
 }
 
-output "subnet_staging_db_provision_cidr" {
-  value = "${local.subnet_staging_db_provision_cidr}"
+output "staging_api_cidr" {
+  value = "${local.staging_api_cidr}"
 }
 
-output "subnet_staging_api_cidr" {
-  value = "${local.subnet_staging_api_cidr}"
+output "staging_public_cidr" {
+  value = "${local.staging_public_cidr}"
 }
-
-output "subnet_staging_public_cidr" {
-  value = "${local.subnet_staging_public_cidr}"
-}
-
-
-# output "dev_vpc_id" {
-#   value = "${aws_vpc.dev.id}"
-# }
-
-# output "dev_machine_subnet_id" {
-#   value = "${aws_subnet.dev_machine.id}"
-# }
-
-# output "dev_machine_sg_ids" {
-#   value = [
-#     "${module.dev_machine_sg.server_id}",
-#     "${module.dev_debug_sg.client_id}",
-#   ]
-# }
 
 
 output "dev_debug_target_sg" {
