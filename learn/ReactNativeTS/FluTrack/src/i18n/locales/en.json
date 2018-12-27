@@ -177,6 +177,7 @@
     "interferring": "Is your cold stopping you from doing things you would usually do?",
     "keptFrom": "In the past week, has your cold kept you from:",
     "seenADoc": "Have you seen a doctor for your cold this week?",
+    "medConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "assignedSex": "What was your assigned sex at birth?",
     "pregnant": "Are you currently pregnant?",
     "race": "How would you describe your race?",
@@ -351,7 +352,9 @@
     "goingToWork": "Going to work",
     "goingToASocialEvent": "Going to a social event",
     "studying": "Studying for an exam",
-    "performingWell": "Performing well on an exam or school assignment"
+    "performingWell": "Performing well on an exam or school assignment",
+    "asthma": "Asthma",
+    "copd": "COPD"
   },
   "surveyButton": {
     "done": "Done",

@@ -655,7 +655,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "DaysSick",
-      nextQuestion: "Antibiotics",
+      nextQuestion: "DailyInterference",
       title: "daysSick",
       numberSelector: {
         min: 1,
@@ -664,19 +664,6 @@ export const questionnaire: SurveyQuestion[] = [
         placeholder: "days",
       },
       buttons: [{ key: "done", primary: true, enabled: "withNumber" }],
-    },
-  },
-  {
-    section: hist,
-    data: {
-      id: "Antibiotics",
-      nextQuestion: "DailyInterference",
-      title: "antibiotics",
-      buttons: [
-        { key: "yes", primary: true, enabled: true },
-        { key: "no", primary: true, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
     },
   },
   {
@@ -730,11 +717,43 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "DoctorThisWeek",
-      nextQuestion: "AssignedSex",
+      nextQuestion: "Antibiotics",
       title: "seenADoc",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: hist,
+    data: {
+      id: "Antibiotics",
+      nextQuestion: "MedConditions",
+      title: "antibiotics",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: hist,
+    data: {
+      id: "MedConditions",
+      nextQuestion: "AssignedSex",
+      title: "medConditions",
+      optionList: {
+        options: ["asthma", "copd"],
+        multiSelect: true,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "no", primary: true, enabled: true },
+        { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
