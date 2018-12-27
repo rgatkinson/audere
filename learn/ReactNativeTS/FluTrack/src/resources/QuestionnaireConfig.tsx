@@ -372,7 +372,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "RecentTravel",
       nextQuestion: "TimeSpent",
       conditionalNext: {
-        options: new Map([["toAnotherUSState", "WhereTravelled"], ["toAnotherCountry", "WhereTravelled"]]),
+        options: new Map([
+          ["toAnotherUSState", "WhereTravelled"],
+          ["toAnotherCountry", "WhereTravelled"],
+        ]),
       },
       title: "travelledLastMonth",
       optionList: {

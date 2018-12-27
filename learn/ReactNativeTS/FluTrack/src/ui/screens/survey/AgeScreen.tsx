@@ -15,7 +15,7 @@ interface Props {
 
 class AgeScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   _onDone = () => {
-    this.props.navigation.push("Symptoms", { data: SymptomsConfig, priorTitle: this.props.t("surveyTitle:" + AgeBucketConfig.title) });
+    this.props.navigation.push("Symptoms", { data: SymptomsConfig });
   };
 
   render() {

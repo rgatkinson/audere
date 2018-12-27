@@ -44,6 +44,9 @@ interface State {
 const remoteDebugging = typeof DedicatedWorkerGlobalScope !== "undefined";
 
 class SignatureBox extends React.Component<Props & WithNamespaces, State> {
+  secondInput = React.createRef<TextInput>();
+  thirdInput = React.createRef<TextInput>();
+
   state: State = {};
 
   sketch: any;
@@ -145,26 +148,39 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           <View>
             <Text style={styles.headerText}>{t("fullName")}</Text>
             <TextInput
-              autoFocus={false}
+              autoFocus={this.props.editableNames && !this._getParticipantName()}
               editable={this.props.editableNames}
               placeholder={t("name")}
-              returnKeyType="done"
+              returnKeyType="next"
               style={styles.inputContainer}
               value={this._getParticipantName()}
               onChangeText={text => this.setState({ participantName: text })}
+              onSubmitEditing={() => {
+                if (this.secondInput.current != null) {
+                  this.secondInput.current.focus();
+                } else if (this.thirdInput.current != null) {
+                  this.thirdInput.current.focus();
+                }
+              }}
             />
           </View>
           {this.props.signer != ConsentInfoSignerType.Subject ? (
             <View>
               <Text style={styles.headerText}>{t(this.props.signer + "FullName")}</Text>
               <TextInput
-                autoFocus={false}
+                autoFocus={this.props.editableNames && !!this._getParticipantName() && !this._getSignerName()}
                 editable={this.props.editableNames}
                 placeholder={t("name")}
-                returnKeyType="done"
+                ref={this.secondInput}
+                returnKeyType="next"
                 style={styles.inputContainer}
                 value={this._getSignerName()}
                 onChangeText={text => this.setState({ signerName: text })}
+                onSubmitEditing={() => {
+                  if (this.thirdInput.current != null) {
+                    this.thirdInput.current!.focus();
+                  }
+                }}
               />
             </View>
           ) : null}
@@ -172,9 +188,10 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
             <View>
               <Text style={styles.headerText}>{t("relationToParticipant")}</Text>
               <TextInput
-                autoFocus={false}
+                autoFocus={this.props.editableNames && !!this._getParticipantName() && !!this._getSignerName() && !this._getRelation()}
                 editable={this.props.editableNames}
                 placeholder={t("relation")}
+                ref={this.thirdInput}
                 returnKeyType="done"
                 style={styles.inputContainer}
                 value={this._getRelation()}
@@ -182,7 +199,6 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
               />
             </View>
           ) : null}
-
           <View style={styles.sketchContainer}>
             <ExpoPixi.Signature
               ref={(ref: any) => (this.sketch = ref)}

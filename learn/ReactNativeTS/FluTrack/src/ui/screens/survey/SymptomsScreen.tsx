@@ -32,9 +32,7 @@ class SymptomsScreen extends React.PureComponent<
   _onDone = () => {
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
-      this.props.navigation.push("Consent", {
-        priorTitle: t("surveyTitle:" + SymptomsConfig.title),
-      });
+      this.props.navigation.push("Consent");
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
         {
