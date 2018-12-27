@@ -168,6 +168,7 @@
     "startSick": "What day did you start to feel sick?",
     "antibiotics": "Did you take prescription medicine such as antibiotics or antivirals for this current illness/cold?",
     "interferring": "Is your cold stopping you from doing things you would usually do?",
+    "keptFrom": "In the past week, has your cold kept you from:",
     "seenADoc": "Have you seen a doctor for your cold this week?",
     "assignedSex": "What was your assigned sex at birth?",
     "pregnant": "Are you currently pregnant?",
@@ -309,11 +310,17 @@
     "Boeing": "Workplaces - Boeing",
     "Microsoft": "Workplaces - Microsoft",
     "Amazon": "Workplaces - Amazon",
-    "OtherWorkplace": "Workplaces - Other"
+    "OtherWorkplace": "Workplaces - Other",
+    "attendingClass": "Attending class",
+    "goingToWork": "Going to work",
+    "goingToASocialEvent": "Going to a social event",
+    "studying": "Studying for an exam",
+    "performingWell": "Performing well on an exam or school assignment"
   },
   "surveyButton": {
     "done": "Done",
     "preferNotToSay": "Prefer Not to Say",
+    "na": "Not applicable",
     "yes": "Yes",
     "no": "No",
     "doNotKnow": "Do Not Know",

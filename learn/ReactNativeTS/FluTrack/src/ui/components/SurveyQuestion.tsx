@@ -39,28 +39,31 @@ class SurveyQuestion extends Component<
 
   _getNextQuestion = (selectedButtonKey: string): string | null => {
     let nextQuestion = this.props.data.nextQuestion;
-    if (this.props.data.conditionalNext) {
-      !!this.props.data.conditionalNext!.location &&
-        this.props.data.conditionalNext!.location!.forEach((question: string, locationType: string) => {
-          if (locationType === this.props.locationType) {
-            nextQuestion = question;
-          }
-        });
-      !!this.props.data.conditionalNext!.options &&
-        !!this.props.getAnswer("options") &&
-        this.props.getAnswer("options").forEach((option: Option) => {
-          if (option.selected && this.props.data.conditionalNext!.options!.has(option.key)) {
-            nextQuestion = this.props.data.conditionalNext!.options!.get(option.key)!;
-          }
-        });
-      !!this.props.data.conditionalNext!.buttonKeys &&
-        this.props.data.conditionalNext!.buttonKeys!.forEach((question: string, key: string) => {
-          if (key === selectedButtonKey) {
-            nextQuestion = question;
-          }
-        });
+    if (!!this.props.data.conditionalNext) {
+      if (!!this.props.data.conditionalNext.buttonAndLocation) {
+        const location = this.props.data.conditionalNext!.location!.get(this.props.locationType);
+        if (location != null && location === this.props.data.conditionalNext!.buttonKeys!.get(selectedButtonKey)) {
+          nextQuestion = location;
+        }
+      } else {
+        if (!!this.props.data.conditionalNext!.location &&
+            this.props.data.conditionalNext!.location!.has(this.props.locationType)) {
+          nextQuestion = this.props.data.conditionalNext!.location!.get(this.props.locationType)!;
+        }
+        !!this.props.data.conditionalNext!.options &&
+          !!this.props.getAnswer("options") &&
+          this.props.getAnswer("options").forEach((option: Option) => {
+            if (option.selected && this.props.data.conditionalNext!.options!.has(option.key)) {
+              nextQuestion = this.props.data.conditionalNext!.options!.get(option.key)!;
+            }
+          });
+        if (!!this.props.data.conditionalNext!.buttonKeys &&
+          this.props.data.conditionalNext!.buttonKeys!.has(selectedButtonKey)) {
+          return this.props.data.conditionalNext!.buttonKeys!.get(selectedButtonKey)!;
+        }
+      }
     }
-    return nextQuestion === undefined ? null : nextQuestion;
+    return nextQuestion || null;
   };
 
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {

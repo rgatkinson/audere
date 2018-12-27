@@ -34,6 +34,7 @@ export interface ButtonConfig {
 }
 
 interface ConditionalNextConfig {
+  buttonAndLocation?: boolean;
   buttonKeys?: Map<string, string>;
   location?: Map<string, string>;
   options?: Map<string, string>;
@@ -535,10 +536,43 @@ export const questionnaire: SurveyQuestion[] = [
       id: "DailyInterference",
       nextQuestion: "DoctorThisWeek",
       title: "interferring",
+      conditionalNext: {
+        buttonAndLocation: true,
+        buttonKeys: new Map([
+          ["yesLot", "KeptFrom"],
+          ["yesLittle", "KeptFrom"],
+        ]),
+        location: new Map([["collegeCampus", "KeptFrom"]]),
+      },
       buttons: [
         { key: "yesLot", primary: true, enabled: true },
         { key: "yesLittle", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: hist,
+    data: {
+      id: "KeptFrom",
+      nextQuestion: "DoctorThisWeek",
+      title: "keptFrom",
+      optionList: {
+        options: [
+          "attendingClass",
+          "goingToWork",
+          "goingToASocialEvent",
+          "studying",
+          "performingWell",
+        ],
+        multiSelect: true,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "na", primary: false, enabled: true },
+        { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
