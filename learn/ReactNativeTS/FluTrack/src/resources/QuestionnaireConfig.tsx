@@ -369,26 +369,11 @@ export const questionnaire: SurveyQuestion[] = [
   {
     section: expo,
     data: {
-      id: "ArrivedFrom",
-      // TODO: figure out how to determine if they arrived from outside of wa,
-      // add conditional next if within to RecentTravel default to TimeSpent
-      nextQuestion: "RecentTravel",
-      title: "arrivedFrom",
-      textInput: {
-        placeholder: "city",
-      },
-      buttons: [
-        { key: "done", primary: true, enabled: "withText" },
-        { key: "doNotKnow", primary: false, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: expo,
-    data: {
       id: "RecentTravel",
       nextQuestion: "TimeSpent",
+      conditionalNext: {
+        options: new Map([["toAnotherUSState", "WhereTravelled"], ["toAnotherCountry", "WhereTravelled"]]),
+      },
       title: "travelledLastMonth",
       optionList: {
         options: [
@@ -402,6 +387,34 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "WhereTravelled",
+      nextQuestion: "WhenTravelled",
+      title: "whereTravelled",
+      textInput: {
+        placeholder: "locations",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "WhenTravelled",
+      nextQuestion: "TimeSpent",
+      title: "whenTravelled",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
