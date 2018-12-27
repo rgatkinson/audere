@@ -151,6 +151,7 @@
     "nearSickPeople": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "contactWithChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
+    "haveChildren": "Are there any children in your household?",
     "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
     "smokeOrVape": "Do you smoke tobacco, marijuana, or vape?",
     "householdSmoke": "Does anyone in your household smoke tobacco, marijuana, or vape?",

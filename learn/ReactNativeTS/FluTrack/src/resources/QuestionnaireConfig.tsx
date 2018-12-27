@@ -253,7 +253,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: expo,
     data: {
       id: "NearChildren",
-      nextQuestion: "ChildrenNearChildren",
+      nextQuestion: "HaveChildren",
       title: "contactWithChildren",
       optionList: {
         options: ["1child", "2to5children", "moreThan5children", "none"],
@@ -263,6 +263,22 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "HaveChildren",
+      nextQuestion: "Smoke",
+      title: "haveChildren",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "ChildrenNearChildren"]]),
+      },
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
