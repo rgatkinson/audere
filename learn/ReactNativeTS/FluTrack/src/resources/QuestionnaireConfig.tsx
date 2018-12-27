@@ -609,7 +609,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "VaccineDate",
-      nextQuestion: "FirstSick",
+      nextQuestion: "VaccineLocation",
       title: "vacDate",
       dateInput: {
         mode: "month",
@@ -622,6 +622,31 @@ export const questionnaire: SurveyQuestion[] = [
       ],
     },
   },
+  {
+    section: hist,
+    data: {
+      id: "VaccineLocation",
+      nextQuestion: "FirstSick",
+      title: "vacLocation",
+      optionList: {
+        options: [
+          "pharmacy",
+          "clinic",
+          "workplace",
+          "school",
+          "other",
+        ],
+        multiSelect: false,
+        withOther: true,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+
   {
     section: hist,
     data: {
