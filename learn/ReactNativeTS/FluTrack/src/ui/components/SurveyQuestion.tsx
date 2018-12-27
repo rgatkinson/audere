@@ -194,8 +194,15 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             placeholder={t("surveyPlaceholder:" + this.props.data.numberInput!.placeholder)}
             returnKeyType="done"
-            value={this._getValue("numberInput") === null ? undefined : "" + this._getValue("numberInput")}
-            onChange={text => this.setState({ numberInput: parseInt(text) })}
+            value={typeof this._getValue("numberInput") === "number" ? "" + this._getValue("numberInput") : ""}
+            onChange={text => {
+              var num = parseInt(text.replace(/[^0-9]/g, ''));
+              if (isNaN(num)) {
+                this.setState({ numberInput: undefined });
+              } else {
+                this.setState({ numberInput: num });
+              }
+            }}
           />
         )}
         {this.props.data.optionList && (
