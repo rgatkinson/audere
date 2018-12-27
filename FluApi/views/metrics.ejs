@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <title>SFS Metrics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="icon" type="image/x-icon" href="favicon-32x32.png" />
+  </head>
+  <body>
+      <form action="/metrics" method="get">
+        <table id="date-form">
+          <tr>
+            <td>Show data from</td>
+            <td>
+              <input name="startDate" type="text" value="<%= startDate %>" />
+            </td>
+            <td>to</td>
+            <td><input name="endDate" type="text" value="<%= endDate %>" /></td>
+            <td><button type="submit">Go</button></td>
+          </tr>
+        </table>
+      </form>
+      <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download as Excel</a>
+    <br />
+    <br />
+    <h1>SFS Survey Stats</h1>
+    <% queryTypes=[{key: "Location", data:surveyStatsData}, {key:"Administrator", data:surveyStatsByAdminData}];
+       for (let queryType of queryTypes) { %>
+    <h2>By <%= queryType.key %></h2>
+    <table class="hor-zebra">
+      <thead>
+        <tr>
+          <th><%= queryType.key %></th>
+          <th><label title="How many surveys started">Started</label></th>
+          <th><label title="How many eligible to participate">Eligible</label></th>
+          <th><label title="How many consented to participate">Consented</label></th>
+          <th><label title="How many completed the questionnaire">Completed Survey</label></th>
+          <th><label title="How many had a specimen scanned">Specimen Scanned</label></th>
+          <th><label title="Total gift cards scanned">Gift Cards</label></th>
+          <th><label title="How many had adverse events occurring">Adverse Events</label></th>
+          <% if (queryType.key === "Location") { %>
+          <th class="sectionbreak"><label title="Total number of questions answered">Total Responses</label></th>
+          <th><label title="Number of questions answered &quot;Prefer Not to Say&quot;">PNTS Responses</label></th>
+          <% } %>
+        </tr>
+      </thead>
+      <tbody>
+        <% oddRow = true;
+           queryType.data.forEach(function(row) { 
+            if (row.grouping === "Total") {
+          %>
+        <tr class="sum">
+          <% } else if (oddRow) { %>
+        <tr class="odd">
+          <% } else { %>
+        <tr>
+          <% } %> 
+          <td class="label"><%= row.grouping %></td>
+          <td><%= row.formstarts %></td>
+          <td><%= row.eligible %></td>
+          <td><%= row.consented %></td>
+          <td><%= row.completed %></td>
+          <td><%= row.specimenscanned %></td>
+          <td><%= row.giftcards %></td>
+          <td><%= row.adverseevents %></td>
+          <% if (queryType.key === "Location") { %>
+          <td class="sectionbreak"><%= row.questionsanswered %></td>
+          <td><%= row.declinedresponses %></td>
+          <% } %>
+        </tr>
+        <% oddRow = !oddRow; 
+          }); %>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <% } %>
+    <h2>Last Question on Screen</h2>
+    <table class="hor-minimalist">
+      <thead>
+        <tr>
+          <th>Question Key</th>
+          <th class="number">Count</th>
+          <th class="number">%</th>
+          <th class="questiontextth">Sample Text</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% lastQuestionData.forEach(function(row) { %>
+        <tr>
+          <td><%= row.lastquestion %></td>
+          <td class="number"><%= row.count %></td>
+          <td class="number"><%= row.percent %>%</td>
+          <td class="questiontext"><%= row.lastquestiontext %></td>
+        </tr>
+        <% } ); %>
+      </tbody>
+    </table>
+
+    <br />
+    <hr />
+    <h1>App Health Metrics</h1>
+    <table class="hor-minimalist">
+      <tbody>
+        <tr>
+          <td>Crashes logged</td>
+          <td>?</td>
+        </tr>
+        <tr>
+          <td>Feedback received via app</td>
+          <td><%= feedbackData[0].count %></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
