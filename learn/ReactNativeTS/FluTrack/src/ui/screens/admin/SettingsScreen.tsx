@@ -3,6 +3,8 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { FormState, StoreState } from "../../../store";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { AgeBucketConfig } from "../../../resources/ScreenConfig";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
 import Description from "../../components/Description";
@@ -17,7 +19,7 @@ interface Props {
 @connect((state: StoreState) => ({
   form: state.form,
 }))
-export default class SettingsScreen extends React.Component<Props> {
+class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
   static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
     const { params = null } = navigation.state;
     return {
@@ -43,8 +45,21 @@ export default class SettingsScreen extends React.Component<Props> {
     this.props.navigation.push("Prior");
   };
 
+  _hasValidConsent = () => {
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+    if (ageBucket === "18orOver") {
+      return !!this.props.form.consent;
+    } else if (ageBucket === "13to17") {
+      return !!this.props.form.consent && !!this.props.form.parentConsent;
+    } else if (ageBucket === "7to12") {
+      return !!this.props.form.parentConsent && !!this.props.form.assent;
+    } else { // under7
+      return !!this.props.form.parentConsent;
+    }
+  }
+
   _onAdverseEvents = () => {
-    if (!!this.props.form.consent && !this.props.form.completedSurvey) {
+    if (this._hasValidConsent() && !this.props.form.completedSurvey) {
       this.props.navigation.push("Adverse");
     } else {
       Alert.alert(
@@ -54,7 +69,7 @@ export default class SettingsScreen extends React.Component<Props> {
   };
 
   _onSpecimenScans = () => {
-    if (!!this.props.form.consent && !this.props.form.completedSurvey) {
+    if (this._hasValidConsent() && !this.props.form.completedSurvey) {
       this.props.navigation.push("Specimen");
     } else {
       Alert.alert(
@@ -111,3 +126,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
 });
+
+export default reduxWriter(SettingsScreen);
