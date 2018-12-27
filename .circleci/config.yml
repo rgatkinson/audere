@@ -60,10 +60,11 @@ jobs:
       - run:
           name: Snyk App Scan
           command: |
-            git show HEAD:learn/ReactNativeTS/FluTrack/yarn.lock > yarn.lock
-            yarn list --json > ~/master_packages
             cd learn/ReactNativeTS/FluTrack
             yarn list --json > ~/current_packages
+            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
+            git show $(git rev-parse origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
             if cmp --silent ~/{current,master}_packages; then
               echo "No new packages have been added to yarn.lock."
             else
@@ -85,10 +86,11 @@ jobs:
       - run:
           name: Snyk Server Scan
           command: |
-            git show HEAD:FluApi/yarn.lock > yarn.lock
-            yarn list --json > ~/master_packages
             cd FluApi
             yarn list --json > ~/current_packages
+            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
+            git show $(git rev-parse origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
             if cmp --silent ~/{current,master}_packages; then
               echo "No new packages have been added to yarn.lock."
             else
