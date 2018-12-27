@@ -28,14 +28,18 @@ export default class TextInput extends React.Component<Props> {
       <SystemTextInput
         autoFocus={this.props.autoFocus}
         editable={this.props.editable}
-        keyboardType={!!this.props.keyboardType ? this.props.keyboardType : "default"}
+        keyboardType={
+          !!this.props.keyboardType ? this.props.keyboardType : "default"
+        }
         placeholder={this.props.placeholder}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         style={[styles.textInput, this.props.style && this.props.style]}
         value={this.props.value !== null ? this.props.value : undefined}
         onChangeText={this.props.onChangeText}
-        onSubmitEditing={() => !!this.props.onSubmitEditing && this.props.onSubmitEditing()}
+        onSubmitEditing={() =>
+          !!this.props.onSubmitEditing && this.props.onSubmitEditing()
+        }
       />
     );
   }

@@ -18,19 +18,22 @@ interface Props {
 }
 
 const InelligibleConfig = {
-  id: 'Inelligible',
-  title: 'thankYouParticipating',
+  id: "Inelligible",
+  title: "thankYouParticipating",
   description: {
-    label: 'youDoNotQualify',
+    label: "youDoNotQualify",
   },
-}
+};
 
 interface State {
   email?: string;
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
-class InelligibleScreen extends React.PureComponent<Props & WithNamespaces, State> {
+class InelligibleScreen extends React.PureComponent<
+  Props & WithNamespaces,
+  State
+> {
   state: State = {};
 
   _onDone = () => {
@@ -41,8 +44,10 @@ class InelligibleScreen extends React.PureComponent<Props & WithNamespaces, Stat
   };
 
   _getEmail = (): string => {
-    return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
-  }
+    return typeof this.state.email !== "undefined"
+      ? this.state.email
+      : this.props.email;
+  };
 
   render() {
     const { t } = this.props;

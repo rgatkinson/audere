@@ -1,7 +1,15 @@
 import React from "react";
-import { AppState, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  AppState,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { connect } from "react-redux";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
@@ -20,20 +28,23 @@ interface Props {
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
 
   componentWillUnMount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
+    AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
   _handleAppStateChange = (nextAppState: string) => {
     completeFormIfExpired(this.props.navigation);
-  }
+  };
 
   _onStart = () => {
     const { t } = this.props;
-    if (!this.props.location || !COLLECTION_LOCATIONS.hasOwnProperty(this.props.location)) {
+    if (
+      !this.props.location ||
+      !COLLECTION_LOCATIONS.hasOwnProperty(this.props.location)
+    ) {
       Alert.alert(
         t("studyLocationRequiredAlertTitle"),
         t("studyLocationRequiredAlertBody"),
@@ -41,8 +52,8 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
           {
             text: t("common:button:ok"),
             onPress: () => {},
-          }
-        ],
+          },
+        ]
       );
     } else {
       this.props.navigation.push("Welcome");
@@ -63,11 +74,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
           <Text style={styles.buttonHeader}>{t("welcome")}</Text>
           <View style={styles.textContainer}>
             <Text style={styles.buttonText}>{t("learnMore")}</Text>
-            <Feather
-              name="chevron-right"
-              color="#007AFF"
-              size={32}
-            />
+            <Feather name="chevron-right" color="#007AFF" size={32} />
           </View>
         </TouchableOpacity>
         <Text style={styles.subtitle}>

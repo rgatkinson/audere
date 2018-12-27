@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import NumberSelectorModal from "./NumberSelectorModal";
 
 interface Props {
@@ -31,9 +26,7 @@ export default class NumberSelectorInput extends React.Component<Props> {
           {this.props.num != null ? (
             <Text style={styles.text}>{this.props.num}</Text>
           ) : (
-            <Text style={styles.text}>
-              {this.props.placeholder}
-            </Text>
+            <Text style={styles.text}>{this.props.placeholder}</Text>
           )}
         </TouchableOpacity>
         <NumberSelectorModal
@@ -42,7 +35,7 @@ export default class NumberSelectorInput extends React.Component<Props> {
           maxPlus={this.props.maxPlus}
           num={this.props.num}
           visible={this.state.open}
-          onDismiss={(num) => {
+          onDismiss={num => {
             this.setState({ open: false });
             this.props.onNumChange(num);
           }}

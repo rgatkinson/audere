@@ -17,7 +17,10 @@ interface State {
   setNum: boolean;
 }
 
-class NumberSelectorModal extends React.Component<Props & WithNamespaces, State> {
+class NumberSelectorModal extends React.Component<
+  Props & WithNamespaces,
+  State
+> {
   state = {
     num: -1,
     setNum: false,
@@ -35,9 +38,11 @@ class NumberSelectorModal extends React.Component<Props & WithNamespaces, State>
 
   render() {
     const { t } = this.props;
-    const range = Array(this.props.max - this.props.min + 1).fill(0).map((item: any, index: number) => {
-      return this.props.min + index;
-    });
+    const range = Array(this.props.max - this.props.min + 1)
+      .fill(0)
+      .map((item: any, index: number) => {
+        return this.props.min + index;
+      });
     const maxPlus = this.props.max + "+";
     return (
       <Modal
@@ -52,9 +57,14 @@ class NumberSelectorModal extends React.Component<Props & WithNamespaces, State>
           <Picker
             selectedValue={this._getNum()}
             style={{ height: 50, width: 100 }}
-            onValueChange={num => this.setState({ num, setNum: true })}>
-            {range.map((num: number) => <Picker.Item label={"" + num} value={num} key={num} />)}
-            {this.props.maxPlus && <Picker.Item label={maxPlus} value={maxPlus} key={maxPlus} />}
+            onValueChange={num => this.setState({ num, setNum: true })}
+          >
+            {range.map((num: number) => (
+              <Picker.Item label={"" + num} value={num} key={num} />
+            ))}
+            {this.props.maxPlus && (
+              <Picker.Item label={maxPlus} value={maxPlus} key={maxPlus} />
+            )}
           </Picker>
         </View>
       </Modal>

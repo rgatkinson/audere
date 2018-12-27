@@ -12,7 +12,9 @@ import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
+import OptionList, {
+  newSelectedOptionsList,
+} from "../../components/OptionList";
 import TextInput from "../../components/TextInput";
 import ScreenContainer from "../../components/ScreenContainer";
 
@@ -28,15 +30,20 @@ interface Props {
   admins: state.admin.admins,
 }))
 export default class SelectAdminScreen extends React.Component<Props> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
       title: "Select Administrator",
-      headerLeft: <BackButton navigation={navigation} text={"Prior to Collection"} />,
-      headerRight: (!!params ?
-        <FeedbackButton onPress={params.showFeedback} />
-        : null
+      headerLeft: (
+        <BackButton navigation={navigation} text={"Prior to Collection"} />
       ),
+      headerRight: !!params ? (
+        <FeedbackButton onPress={params.showFeedback} />
+      ) : null,
     };
   };
 
@@ -52,7 +59,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
   }
 
   _getSelectedOptions = () => {
-    return this.props.admins.map((admin) => {
+    return this.props.admins.map(admin => {
       return {
         key: admin,
         selected: this.props.administrator === admin,
@@ -76,7 +83,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
             style={styles.inputText}
             value={this.state.name}
             onChangeText={(text: string) => {
-              this.setState({ name: text })
+              this.setState({ name: text });
             }}
           />
           <Button
@@ -88,7 +95,9 @@ export default class SelectAdminScreen extends React.Component<Props> {
             onPress={() => {
               if (!!this.state.name) {
                 this.props.dispatch(setAdministrator(this.state.name!));
-                const admins = !!this.props.admins ? this.props.admins.slice(0) : [];
+                const admins = !!this.props.admins
+                  ? this.props.admins.slice(0)
+                  : [];
                 admins.push(this.state.name!);
                 this.props.dispatch(setAdmins(admins));
                 this.setState({ name: null });
@@ -96,36 +105,37 @@ export default class SelectAdminScreen extends React.Component<Props> {
             }}
           />
         </View>
-        {!!this.props.admins && this.props.admins.length > 0 &&
-          <View>
-            <OptionList
-              data={this._getSelectedOptions()}
-              numColumns={1}
-              multiSelect={false}
-              fullWidth={true}
-              backgroundColor="#fff"
-              onChange={data => {
-                const admin = data.find(option => option.selected);
-                if (!!admin) {
-                  this.props.dispatch(setAdministrator(admin.key));
-                }
-              }}
-            />
-            <View style={styles.buttonContainer}>
-              <Button
-                enabled={true}
-                key="clear"
-                label="Clear All"
-                primary={false}
-                style={styles.button}
-                onPress={() => {
-                  this.props.dispatch(setAdmins([]));
-                  this.props.dispatch(setAdministrator(null));
+        {!!this.props.admins &&
+          this.props.admins.length > 0 && (
+            <View>
+              <OptionList
+                data={this._getSelectedOptions()}
+                numColumns={1}
+                multiSelect={false}
+                fullWidth={true}
+                backgroundColor="#fff"
+                onChange={data => {
+                  const admin = data.find(option => option.selected);
+                  if (!!admin) {
+                    this.props.dispatch(setAdministrator(admin.key));
+                  }
                 }}
               />
+              <View style={styles.buttonContainer}>
+                <Button
+                  enabled={true}
+                  key="clear"
+                  label="Clear All"
+                  primary={false}
+                  style={styles.button}
+                  onPress={() => {
+                    this.props.dispatch(setAdmins([]));
+                    this.props.dispatch(setAdministrator(null));
+                  }}
+                />
+              </View>
             </View>
-          </View>
-        }
+          )}
       </ScreenContainer>
     );
   }
@@ -133,8 +143,8 @@ export default class SelectAdminScreen extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     margin: 10,
   },
   button: {
@@ -142,7 +152,7 @@ const styles = StyleSheet.create({
     width: 250,
   },
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     margin: 10,
   },
   inputText: {

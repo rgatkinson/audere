@@ -24,7 +24,12 @@ interface Props {
   signer: ConsentInfoSignerType;
   open: boolean;
   onDismiss(): void;
-  onSubmit(participantName: string, signerName: string, signature: string, relation?: string): void;
+  onSubmit(
+    participantName: string,
+    signerName: string,
+    signature: string,
+    relation?: string
+  ): void;
 }
 
 interface SnapshotImage {
@@ -64,19 +69,25 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
   };
 
   _getParticipantName = (): string | undefined => {
-    return typeof this.state.participantName == 'undefined' ? this.props.participantName : this.state.participantName;
-  }
+    return typeof this.state.participantName == "undefined"
+      ? this.props.participantName
+      : this.state.participantName;
+  };
 
   _getRelation = (): string | undefined => {
-    return typeof this.state.relation == 'undefined' ? this.props.relation : this.state.relation;
-  }
+    return typeof this.state.relation == "undefined"
+      ? this.props.relation
+      : this.state.relation;
+  };
 
   _getSignerName = (): string | undefined => {
     if (this.props.signer === ConsentInfoSignerType.Subject) {
       return this._getParticipantName();
     }
-    return typeof this.state.signerName == 'undefined' ? this.props.signerName : this.state.signerName;
-  }
+    return typeof this.state.signerName == "undefined"
+      ? this.props.signerName
+      : this.state.signerName;
+  };
 
   _onSubmit = () => {
     const image = this.state.image;
@@ -86,7 +97,12 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
       Alert.alert(this.props.t("pleaseSign"));
       return;
     } else if (remoteDebugging) {
-      this.props.onSubmit(participantName, signerName, 'debugSignature', this._getRelation());
+      this.props.onSubmit(
+        participantName,
+        signerName,
+        "debugSignature",
+        this._getRelation()
+      );
     } else if (!!image) {
       const cropData = {
         offset: { x: 0, y: 0 },
@@ -105,7 +121,12 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           ImageStore.getBase64ForTag(
             imageURI,
             (base64Data: string) => {
-              this.props.onSubmit(participantName, signerName, base64Data, this._getRelation());
+              this.props.onSubmit(
+                participantName,
+                signerName,
+                base64Data,
+                this._getRelation()
+              );
             },
             reason => console.error(reason)
           );
@@ -123,7 +144,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
     } else {
       return 625;
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -134,12 +155,18 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
         title={this.props.label}
         visible={this.props.open}
         onDismiss={() => {
-          this.setState({ image: undefined, participantName: undefined, signerName: undefined });
-          this.props.onDismiss()
+          this.setState({
+            image: undefined,
+            participantName: undefined,
+            signerName: undefined,
+          });
+          this.props.onDismiss();
         }}
       >
         <View style={styles.container}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <Text style={styles.headerText}>{t("todaysDate")}</Text>
             <Text style={styles.inputContainer}>
               {format(new Date(), "MM/D/YYYY")}
@@ -148,7 +175,9 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           <View>
             <Text style={styles.headerText}>{t("fullName")}</Text>
             <TextInput
-              autoFocus={this.props.editableNames && !this._getParticipantName()}
+              autoFocus={
+                this.props.editableNames && !this._getParticipantName()
+              }
               editable={this.props.editableNames}
               placeholder={t("name")}
               returnKeyType="next"
@@ -166,9 +195,15 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           </View>
           {this.props.signer != ConsentInfoSignerType.Subject ? (
             <View>
-              <Text style={styles.headerText}>{t(this.props.signer + "FullName")}</Text>
+              <Text style={styles.headerText}>
+                {t(this.props.signer + "FullName")}
+              </Text>
               <TextInput
-                autoFocus={this.props.editableNames && !!this._getParticipantName() && !this._getSignerName()}
+                autoFocus={
+                  this.props.editableNames &&
+                  !!this._getParticipantName() &&
+                  !this._getSignerName()
+                }
                 editable={this.props.editableNames}
                 placeholder={t("name")}
                 ref={this.secondInput}
@@ -186,9 +221,16 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           ) : null}
           {this.props.signer === ConsentInfoSignerType.Representative ? (
             <View>
-              <Text style={styles.headerText}>{t("relationToParticipant")}</Text>
+              <Text style={styles.headerText}>
+                {t("relationToParticipant")}
+              </Text>
               <TextInput
-                autoFocus={this.props.editableNames && !!this._getParticipantName() && !!this._getSignerName() && !this._getRelation()}
+                autoFocus={
+                  this.props.editableNames &&
+                  !!this._getParticipantName() &&
+                  !!this._getSignerName() &&
+                  !this._getRelation()
+                }
                 editable={this.props.editableNames}
                 placeholder={t("relation")}
                 ref={this.thirdInput}
@@ -213,20 +255,22 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
               key="clear"
               label={t("surveyButton:clearSignature")}
               primary={false}
-              style={{width: 300}}
+              style={{ width: 300 }}
               onPress={this._onClear}
             />
             <Button
               enabled={
-                !!this._getParticipantName()
-                && (remoteDebugging || !!this.state.image)
-                && (this.props.signer === ConsentInfoSignerType.Subject || !!this._getSignerName())
-                && (this.props.signer !== ConsentInfoSignerType.Representative || !!this._getRelation())
+                !!this._getParticipantName() &&
+                (remoteDebugging || !!this.state.image) &&
+                (this.props.signer === ConsentInfoSignerType.Subject ||
+                  !!this._getSignerName()) &&
+                (this.props.signer !== ConsentInfoSignerType.Representative ||
+                  !!this._getRelation())
               }
               key="save"
               label={t("common:button:save")}
               primary={true}
-              style={{width: 300}}
+              style={{ width: 300 }}
               onPress={this._onSubmit}
             />
           </View>
@@ -244,7 +288,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginHorizontal: 30,
   },
   headerText: {

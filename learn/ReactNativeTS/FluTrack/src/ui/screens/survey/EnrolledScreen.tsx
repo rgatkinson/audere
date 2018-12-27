@@ -38,19 +38,27 @@ interface State {
   email: state.form!.email,
 }))
 class EnrolledScreen extends React.PureComponent<
-  Props & WithNamespaces & ReduxWriterProps, State
+  Props & WithNamespaces & ReduxWriterProps,
+  State
 > {
   state: State = {
     options: [],
   };
 
-  static getDerivedStateFromProps(props: Props & ReduxWriterProps, state: State) {
+  static getDerivedStateFromProps(
+    props: Props & ReduxWriterProps,
+    state: State
+  ) {
     if (state.options.length === 0) {
       const storedAnswer = props.getAnswer("options");
       if (storedAnswer == null) {
         const list = emptyList(EnrolledConfig.optionList!.options);
         const options = list.map(option => {
-          if (!!EnrolledConfig.optionList!.defaultOptions!.find(key => key === option.key)) {
+          if (
+            !!EnrolledConfig.optionList!.defaultOptions!.find(
+              key => key === option.key
+            )
+          ) {
             return {
               key: option.key,
               selected: true,
@@ -72,7 +80,7 @@ class EnrolledScreen extends React.PureComponent<
     }
     this.props.updateAnswer({ options: this.state.options });
     this._proceed(buttonKey);
-  }
+  };
 
   _proceed = (buttonKey: string) => {
     if (buttonKey === "done" && this._receiveConsent()) {
@@ -83,13 +91,19 @@ class EnrolledScreen extends React.PureComponent<
   };
 
   _receiveConsent = () => {
-    return (!!this.state.email && !!this.state.options &&
+    return (
+      !!this.state.email &&
+      !!this.state.options &&
       this.state.options.reduce(
-        (result: boolean, option: Option) => result || (option.selected && (option.key === "sendCopyOfMyConsent" || option.key === "allOfTheAbove")),
+        (result: boolean, option: Option) =>
+          result ||
+          (option.selected &&
+            (option.key === "sendCopyOfMyConsent" ||
+              option.key === "allOfTheAbove")),
         false
       )
     );
-  }
+  };
 
   _haveEmailOption = () => {
     return (
@@ -102,8 +116,10 @@ class EnrolledScreen extends React.PureComponent<
   };
 
   _getEmail = (): string => {
-    return typeof this.state.email !== 'undefined' ? this.state.email : this.props.email;
-  }
+    return typeof this.state.email !== "undefined"
+      ? this.state.email
+      : this.props.email;
+  };
 
   render() {
     const { t } = this.props;
@@ -122,7 +138,9 @@ class EnrolledScreen extends React.PureComponent<
         <ContentContainer>
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
           <Description
-            content={t("surveyDescription:" + EnrolledConfig.description!.label)}
+            content={t(
+              "surveyDescription:" + EnrolledConfig.description!.label
+            )}
           />
           <OptionList
             data={this.state.options}

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { format } from "date-fns";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import DateModal from "./DateModal";
@@ -30,9 +25,7 @@ class DateInput extends React.Component<Props & WithNamespaces> {
       .split("-");
     return format(
       new Date(+year, +month - 1, +day),
-      this.props.mode === "month"
-        ? "MMMM YYYY"
-        : "MMMM D, YYYY"
+      this.props.mode === "month" ? "MMMM YYYY" : "MMMM D, YYYY"
     );
   }
 
@@ -51,16 +44,14 @@ class DateInput extends React.Component<Props & WithNamespaces> {
           {this.props.date ? (
             <Text style={styles.text}>{this.formatDate(this.props.date)}</Text>
           ) : (
-            <Text style={styles.text}>
-              {this.props.placeholder}
-            </Text>
+            <Text style={styles.text}>{this.props.placeholder}</Text>
           )}
         </TouchableOpacity>
         <DateModal
           date={date}
           mode={this.props.mode}
           visible={this.state.open}
-          onDismiss={(date) => {
+          onDismiss={date => {
             this.setState({ open: false });
             this.props.onDateChange(date);
           }}

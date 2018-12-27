@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AnimatedModal from "react-native-modal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -36,31 +31,38 @@ class Modal extends React.Component<Props & WithNamespaces> {
         animationIn={IOS_MODAL_ANIMATION}
         animationOut={"fadeOut"}
       >
-        <View style={[
-          styles.modalContainer,
-          {
-            height: this.props.height ? this.props.height : 620,
-            width: this.props.width ? this.props.width : 540,
-          },
-        ]}>
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              height: this.props.height ? this.props.height : 620,
+              width: this.props.width ? this.props.width : 540,
+            },
+          ]}
+        >
           <View style={styles.blur}>
             <View style={styles.header}>
               <TouchableOpacity onPress={this.props.onDismiss}>
                 <Text style={styles.actionText}>
-                  {this.props.dismissText ? this.props.dismissText : t("common:button:cancel")}
+                  {this.props.dismissText
+                    ? this.props.dismissText
+                    : t("common:button:cancel")}
                 </Text>
               </TouchableOpacity>
-              {this.props.title
-                ? <Text style={styles.title}>{this.props.title}</Text>
-                : null
-              }
-              {this.props.onSubmit ?
+              {this.props.title ? (
+                <Text style={styles.title}>{this.props.title}</Text>
+              ) : null}
+              {this.props.onSubmit ? (
                 <TouchableOpacity onPress={this.props.onSubmit}>
-                  <Text style={[styles.actionText, {textAlign: 'right'}]}>
-                    {this.props.submitText ? this.props.submitText : t("common:button:submit")}
+                  <Text style={[styles.actionText, { textAlign: "right" }]}>
+                    {this.props.submitText
+                      ? this.props.submitText
+                      : t("common:button:submit")}
                   </Text>
                 </TouchableOpacity>
-              : <View style={{width: 100}}/>}
+              ) : (
+                <View style={{ width: 100 }} />
+              )}
             </View>
             {this.props.children}
           </View>

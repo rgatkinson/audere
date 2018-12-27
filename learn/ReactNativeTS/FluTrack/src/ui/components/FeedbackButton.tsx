@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
@@ -15,9 +11,7 @@ class FeedbackButton extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <TouchableOpacity onPress={this.props.onPress}>
-        <Text style={styles.actionText}>
-          {t('provideFeedback')}
-        </Text>
+        <Text style={styles.actionText}>{t("provideFeedback")}</Text>
       </TouchableOpacity>
     );
   }

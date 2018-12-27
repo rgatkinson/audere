@@ -1,9 +1,6 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-} from "react-native";
-import { Feather } from '@expo/vector-icons';
+import { StyleSheet, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Button from "./Button";
 import Description from "./Description";
@@ -17,7 +14,13 @@ interface Props {
   relation?: string;
   signerName?: string;
   signerType: ConsentInfoSignerType;
-  onSubmit(name: string, signerType: ConsentInfoSignerType, signerName: string, signature: string, relation?: string): void;
+  onSubmit(
+    name: string,
+    signerType: ConsentInfoSignerType,
+    signerName: string,
+    signature: string,
+    relation?: string
+  ): void;
 }
 
 interface State {
@@ -30,8 +33,11 @@ class SignatureInput extends React.Component<Props & WithNamespaces> {
   };
 
   _signed = (): boolean => {
-    return !!this.props.consent && this.props.consent.signerType === this.props.signerType;
-  }
+    return (
+      !!this.props.consent &&
+      this.props.consent.signerType === this.props.signerType
+    );
+  };
 
   render() {
     const { t } = this.props;
@@ -42,7 +48,9 @@ class SignatureInput extends React.Component<Props & WithNamespaces> {
           enabled={true}
           label={t(this.props.signerType)}
           primary={false}
-          onPress={() => {this.setState({ open: true })}}
+          onPress={() => {
+            this.setState({ open: true });
+          }}
         />
         <SignatureBox
           editableNames={this.props.editableNames}
@@ -53,8 +61,19 @@ class SignatureInput extends React.Component<Props & WithNamespaces> {
           signerName={this.props.signerName}
           label={t(this.props.signerType)}
           onDismiss={() => this.setState({ open: false })}
-          onSubmit={(name: string, signerName: string, signature: string, relation?: string) => {
-            this.props.onSubmit(name, this.props.signerType, signerName, signature, relation);
+          onSubmit={(
+            name: string,
+            signerName: string,
+            signature: string,
+            relation?: string
+          ) => {
+            this.props.onSubmit(
+              name,
+              this.props.signerType,
+              signerName,
+              signature,
+              relation
+            );
             this.setState({ open: false });
           }}
         />
@@ -65,8 +84,8 @@ class SignatureInput extends React.Component<Props & WithNamespaces> {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    alignSelf: 'stretch',
+    alignItems: "center",
+    alignSelf: "stretch",
   },
 });
 

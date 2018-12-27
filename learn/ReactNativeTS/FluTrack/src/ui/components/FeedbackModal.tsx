@@ -22,8 +22,8 @@ interface Props {
 }
 
 interface State {
-  subject?: string,
-  comments?: string,
+  subject?: string;
+  comments?: string;
 }
 
 class FeedbackModal extends React.Component<Props & WithNamespaces, State> {

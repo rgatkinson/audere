@@ -14,7 +14,9 @@ import { PostCollectionQuestions } from "./QuestionConfig";
 import BackButton from "../../components/BackButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
+import OptionList, {
+  newSelectedOptionsList,
+} from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
@@ -31,16 +33,23 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   name: state.form.name,
 }))
-class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any> }) => {
+class AdverseScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
       title: "Adverse Events",
-      headerLeft: <BackButton navigation={navigation} text={"Admin Settings"} />,
-      headerRight: (!!params ?
-        <FeedbackButton onPress={params.showFeedback} />
-        : null
+      headerLeft: (
+        <BackButton navigation={navigation} text={"Admin Settings"} />
       ),
+      headerRight: !!params ? (
+        <FeedbackButton onPress={params.showFeedback} />
+      ) : null,
     };
   };
 
@@ -55,7 +64,10 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   }
 
   _adverseEventsOccurred = (key: string): boolean => {
-    const adverseEvents: Option[] = this.props.getAnswer("options", WereThereAdverse.id);
+    const adverseEvents: Option[] = this.props.getAnswer(
+      "options",
+      WereThereAdverse.id
+    );
     if (!!adverseEvents) {
       const option = adverseEvents.find(option => option.key === key);
       return !!option && option.selected;
@@ -64,8 +76,17 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
   };
 
   _adverseProceduresSelected = (): boolean => {
-    const adverseProcedures: Option[] = this.props.getAnswer("options", WhichProcedures.id);
-    return !!adverseProcedures && adverseProcedures.reduce((result, option) => result || option.selected, false);
+    const adverseProcedures: Option[] = this.props.getAnswer(
+      "options",
+      WhichProcedures.id
+    );
+    return (
+      !!adverseProcedures &&
+      adverseProcedures.reduce(
+        (result, option) => result || option.selected,
+        false
+      )
+    );
   };
 
   _onNext = () => {
@@ -74,7 +95,9 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
     } else {
       Alert.alert(
         "Submit?",
-        `No adverse events will be recorded for this collection for ${this.props.name}.`,
+        `No adverse events will be recorded for this collection for ${
+          this.props.name
+        }.`,
         [
           {
             text: "Cancel",
@@ -103,12 +126,14 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
           backgroundColor="#fff"
           data={newSelectedOptionsList(
             WereThereAdverse.optionList.options,
-            this.props.getAnswer("options", WereThereAdverse.id),
+            this.props.getAnswer("options", WereThereAdverse.id)
           )}
           fullWidth={true}
           multiSelect={WereThereAdverse.optionList.multiSelect}
           numColumns={1}
-          onChange={options => this.props.updateAnswer({ options }, WereThereAdverse)}
+          onChange={options =>
+            this.props.updateAnswer({ options }, WereThereAdverse)
+          }
         />
         {this._adverseEventsOccurred("yes") && (
           <View>
@@ -119,21 +144,24 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
               backgroundColor="#fff"
               data={newSelectedOptionsList(
                 WhichProcedures.optionList.options,
-                this.props.getAnswer("options", WhichProcedures.id),
+                this.props.getAnswer("options", WhichProcedures.id)
               )}
               fullWidth={true}
               multiSelect={WhichProcedures.optionList.multiSelect}
               numColumns={1}
-              onChange={options => this.props.updateAnswer({ options }, WhichProcedures)}
+              onChange={options =>
+                this.props.updateAnswer({ options }, WhichProcedures)
+              }
             />
           </View>
         )}
         <View style={styles.buttonContainer}>
           <Button
-            enabled={(
+            enabled={
               this._adverseEventsOccurred("no") ||
-              (this._adverseEventsOccurred("yes") && this._adverseProceduresSelected())
-            )}
+              (this._adverseEventsOccurred("yes") &&
+                this._adverseProceduresSelected())
+            }
             key="next"
             label="Next"
             primary={true}
@@ -147,8 +175,8 @@ class AdverseScreen extends React.Component<Props & WithNamespaces & ReduxWriter
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   sectionHeaderText: {
     marginTop: 35,

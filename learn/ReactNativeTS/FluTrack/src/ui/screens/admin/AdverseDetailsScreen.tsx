@@ -15,7 +15,9 @@ import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, { newSelectedOptionsList } from "../../components/OptionList";
+import OptionList, {
+  newSelectedOptionsList,
+} from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 
@@ -26,8 +28,8 @@ interface Props {
 }
 
 interface State {
-  otherOptionMap: Map<string, string>,
-  feedbackVisible: boolean,
+  otherOptionMap: Map<string, string>;
+  feedbackVisible: boolean;
 }
 
 const WhichProcedures = PostCollectionQuestions.WhichProcedures;
@@ -35,16 +37,22 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   name: state.form.name,
 }))
-class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps, State> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+class AdverseDetailsScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps,
+  State
+> {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
       title: "Adverse Events",
       headerLeft: <BackButton navigation={navigation} text={"Back"} />,
-      headerRight: (!!params ?
+      headerRight: !!params ? (
         <FeedbackButton onPress={params.showFeedback} />
-        : null
-      ),
+      ) : null,
     };
   };
 
@@ -60,9 +68,14 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
   }
 
   _eventsOccurred = (eventTypeKey: string): boolean => {
-    const adverseProcedures = this.props.getAnswer("options", WhichProcedures.id);
+    const adverseProcedures = this.props.getAnswer(
+      "options",
+      WhichProcedures.id
+    );
     if (!!adverseProcedures) {
-      const event = adverseProcedures.find((procedure: Option) => procedure.key === eventTypeKey);
+      const event = adverseProcedures.find(
+        (procedure: Option) => procedure.key === eventTypeKey
+      );
       return !!event && event.selected;
     }
     return false;
@@ -72,8 +85,17 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
     const allValid = Object.keys(OptionKeyToQuestion)
       .filter(key => this._eventsOccurred(key))
       .map(key => {
-        const options = this.props.getAnswer("options", OptionKeyToQuestion[key].id);
-        return !!options && options.reduce((result: boolean, option: Option) => result || option.selected, false);
+        const options = this.props.getAnswer(
+          "options",
+          OptionKeyToQuestion[key].id
+        );
+        return (
+          !!options &&
+          options.reduce(
+            (result: boolean, option: Option) => result || option.selected,
+            false
+          )
+        );
       })
       .reduce((result, value) => result && value, true);
     return !!allValid;
@@ -92,7 +114,10 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
           text: "OK",
           onPress: () => {
             this.state.otherOptionMap.forEach((otherOption, key) => {
-              this.props.updateAnswer({ otherOption }, OptionKeyToQuestion[key]);
+              this.props.updateAnswer(
+                { otherOption },
+                OptionKeyToQuestion[key]
+              );
             });
             this.props.navigation.popToTop();
           },
@@ -105,7 +130,7 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
     return this.state.otherOptionMap.has(key)
       ? this.state.otherOptionMap.get(key)
       : this.props.getAnswer("otherOption", OptionKeyToQuestion[key].id);
-  }
+  };
 
   render() {
     return (
@@ -116,31 +141,44 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
         />
         {Object.keys(OptionKeyToQuestion)
           .filter(key => this._eventsOccurred(key))
-          .map(key => (OptionKeyToQuestion[key].optionList &&
-            <View key={key}>
-              <Text style={styles.sectionHeaderText}>
-                {OptionKeyToQuestion[key].title}
-              </Text>
-              <OptionList
-                backgroundColor="#fff"
-                data={newSelectedOptionsList(
-                  OptionKeyToQuestion[key].optionList!.options,
-                  this.props.getAnswer("options", OptionKeyToQuestion[key].id)
-                )}
-                fullWidth={true}
-                multiSelect={OptionKeyToQuestion[key].optionList!.multiSelect}
-                withOther={OptionKeyToQuestion[key].optionList!.withOther}
-                numColumns={1}
-                otherOption={this._getOtherOption(key)}
-                onOtherChange={value => {
-                  const otherOptionMap = this.state.otherOptionMap;
-                  otherOptionMap.set(key, value);
-                  this.setState({ otherOptionMap });
-                }}
-                onChange={options => this.props.updateAnswer({ options }, OptionKeyToQuestion[key])}
-              />
-            </View>
-          ))}
+          .map(
+            key =>
+              OptionKeyToQuestion[key].optionList && (
+                <View key={key}>
+                  <Text style={styles.sectionHeaderText}>
+                    {OptionKeyToQuestion[key].title}
+                  </Text>
+                  <OptionList
+                    backgroundColor="#fff"
+                    data={newSelectedOptionsList(
+                      OptionKeyToQuestion[key].optionList!.options,
+                      this.props.getAnswer(
+                        "options",
+                        OptionKeyToQuestion[key].id
+                      )
+                    )}
+                    fullWidth={true}
+                    multiSelect={
+                      OptionKeyToQuestion[key].optionList!.multiSelect
+                    }
+                    withOther={OptionKeyToQuestion[key].optionList!.withOther}
+                    numColumns={1}
+                    otherOption={this._getOtherOption(key)}
+                    onOtherChange={value => {
+                      const otherOptionMap = this.state.otherOptionMap;
+                      otherOptionMap.set(key, value);
+                      this.setState({ otherOptionMap });
+                    }}
+                    onChange={options =>
+                      this.props.updateAnswer(
+                        { options },
+                        OptionKeyToQuestion[key]
+                      )
+                    }
+                  />
+                </View>
+              )
+          )}
         <View style={styles.buttonContainer}>
           <Button
             enabled={this._canSave()}
@@ -157,8 +195,8 @@ class AdverseDetailsScreen extends React.Component<Props & WithNamespaces & Redu
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   sectionHeaderText: {
     marginTop: 35,

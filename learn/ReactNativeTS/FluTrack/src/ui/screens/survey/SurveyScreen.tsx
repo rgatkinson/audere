@@ -63,7 +63,9 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
         questions: this.state.questions.slice(0, sectionIndex + 1),
       });
     }
-    this.list.current.getScrollResponder().scrollTo({ x: 0, y: 0, animated: false });
+    this.list.current
+      .getScrollResponder()
+      .scrollTo({ x: 0, y: 0, animated: false });
   };
 
   _addData = (nextQuestion: string | null) => {
@@ -169,12 +171,18 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
             <View>
               <View style={styles.sectionHeaderOuter}>
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionHeaderText}>{t("sectionTitle:" + title)}</Text>
+                  <Text style={styles.sectionHeaderText}>
+                    {t("sectionTitle:" + title)}
+                  </Text>
                 </View>
               </View>
               {sectionDescriptions.has(title) && (
                 <View style={styles.descContainer}>
-                  <Description content={t("sectionDescription:" + sectionDescriptions.get(title)!)} />
+                  <Description
+                    content={t(
+                      "sectionDescription:" + sectionDescriptions.get(title)!
+                    )}
+                  />
                 </View>
               )}
             </View>

@@ -1,6 +1,13 @@
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import { Feather } from '@expo/vector-icons';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 interface Props {
   checked?: boolean;
@@ -20,7 +27,11 @@ export default class Button extends React.Component<Props> {
 
     return (
       <View
-        style={[styles.container, { opacity: this.props.enabled ? 0.95 : 0.5 }, this.props.style && this.props.style]}
+        style={[
+          styles.container,
+          { opacity: this.props.enabled ? 0.95 : 0.5 },
+          this.props.style && this.props.style,
+        ]}
       >
         <TouchableOpacity
           disabled={!this.props.enabled}

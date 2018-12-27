@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 
 interface Props {
@@ -13,11 +13,10 @@ export default class BackButton extends React.Component<Props> {
     return (
       <TouchableOpacity
         style={styles.actionContainer}
-        onPress={() => this.props.navigation.pop() }>
+        onPress={() => this.props.navigation.pop()}
+      >
         <Feather name="chevron-left" color="#007AFF" size={30} />
-        <Text style={styles.actionText}>
-          {this.props.text}
-        </Text>
+        <Text style={styles.actionText}>{this.props.text}</Text>
       </TouchableOpacity>
     );
   }

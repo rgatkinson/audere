@@ -20,14 +20,17 @@ interface Props {
   form: state.form,
 }))
 class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
       title: "Admin Settings",
-      headerRight: (!!params ?
+      headerRight: !!params ? (
         <FeedbackButton onPress={params.showFeedback} />
-        : null
-      ),
+      ) : null,
     };
   };
 
@@ -46,24 +49,28 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
   };
 
   _hasValidConsent = () => {
-    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+    const ageBucket = this.props.getAnswer(
+      "selectedButtonKey",
+      AgeBucketConfig.id
+    );
     if (ageBucket === "18orOver") {
       return !!this.props.form.consent;
     } else if (ageBucket === "13to17") {
       return !!this.props.form.consent && !!this.props.form.parentConsent;
     } else if (ageBucket === "7to12") {
       return !!this.props.form.parentConsent && !!this.props.form.assent;
-    } else { // under7
+    } else {
+      // under7
       return !!this.props.form.parentConsent;
     }
-  }
+  };
 
   _onAdverseEvents = () => {
     if (this._hasValidConsent() && !this.props.form.completedSurvey) {
       this.props.navigation.push("Adverse");
     } else {
       Alert.alert(
-        "There is no active consented participant. Please have a participant complete the survey first.",
+        "There is no active consented participant. Please have a participant complete the survey first."
       );
     }
   };
@@ -73,7 +80,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
       this.props.navigation.push("Specimen");
     } else {
       Alert.alert(
-        "There is no active consented participant. Please have a participant complete the survey first.",
+        "There is no active consented participant. Please have a participant complete the survey first."
       );
     }
   };

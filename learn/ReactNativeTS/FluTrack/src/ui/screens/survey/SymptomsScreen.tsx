@@ -75,7 +75,9 @@ class SymptomsScreen extends React.PureComponent<
         <ContentContainer>
           <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
           <Description
-            content={t("surveyDescription:" + SymptomsConfig.description!.label)}
+            content={t(
+              "surveyDescription:" + SymptomsConfig.description!.label
+            )}
             center={true}
           />
           <OptionList

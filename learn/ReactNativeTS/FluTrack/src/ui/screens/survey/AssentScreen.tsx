@@ -1,17 +1,8 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import {
-  Action,
-  StoreState,
-  setAssent,
-} from "../../../store";
+import { Action, StoreState, setAssent } from "../../../store";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 import { EnrolledConfig } from "../../../resources/ScreenConfig";
 import { NavigationScreenProp } from "react-navigation";
@@ -33,15 +24,24 @@ interface Props {
   name: state.form!.name,
 }))
 class AssentScreen extends React.Component<Props & WithNamespaces> {
-
-  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string) => {
-    this.props.dispatch(setAssent({
-      name: signerName,
-      terms: this.props.t("assentFormHeader") + "\n" + this.props.t("assentFormText"),
-      signerType, 
-      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-      signature,
-    }));
+  _onSubmit = (
+    participantName: string,
+    signerType: ConsentInfoSignerType,
+    signerName: string,
+    signature: string
+  ) => {
+    this.props.dispatch(
+      setAssent({
+        name: signerName,
+        terms:
+          this.props.t("assentFormHeader") +
+          "\n" +
+          this.props.t("assentFormText"),
+        signerType,
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature,
+      })
+    );
   };
 
   _proceed = () => {
@@ -50,7 +50,7 @@ class AssentScreen extends React.Component<Props & WithNamespaces> {
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -65,12 +65,10 @@ class AssentScreen extends React.Component<Props & WithNamespaces> {
           onForward={this._proceed}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Text style={[styles.consentText, {textAlign: 'center'}]}>
+          <Text style={[styles.consentText, { textAlign: "center" }]}>
             {t("assentFormHeader")}
           </Text>
-          <Text style={styles.consentText}>
-            {t("assentFormText")}
-          </Text>
+          <Text style={styles.consentText}>{t("assentFormText")}</Text>
           <SignatureInput
             consent={this.props.assent}
             editableNames={false}
@@ -95,11 +93,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   consentText: {
-    alignSelf: 'stretch',
-    backgroundColor: 'white',
+    alignSelf: "stretch",
+    backgroundColor: "white",
     fontFamily: "OpenSans-Regular",
     fontSize: 16,
     padding: 16,

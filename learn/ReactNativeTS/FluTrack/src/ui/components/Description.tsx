@@ -4,13 +4,19 @@ import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
 interface Props {
   content: string;
   center?: boolean;
-  style?: StyleProp<ViewStyle>,
+  style?: StyleProp<ViewStyle>;
 }
 
 export default class Description extends React.Component<Props> {
   render() {
     return (
-      <Text style={[styles.description, this.props.center && styles.center, this.props.style]}>
+      <Text
+        style={[
+          styles.description,
+          this.props.center && styles.center,
+          this.props.style,
+        ]}
+      >
         {this.props.content}
       </Text>
     );

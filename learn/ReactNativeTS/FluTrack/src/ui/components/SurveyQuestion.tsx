@@ -1,10 +1,20 @@
 import React, { Component } from "react";
-import { Alert, Keyboard, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, Address, Option } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
-import { ButtonConfig, EnabledOption, SurveyQuestionData } from "../../resources/QuestionnaireConfig";
+import {
+  ButtonConfig,
+  EnabledOption,
+  SurveyQuestionData,
+} from "../../resources/QuestionnaireConfig";
 import { AgeBucketConfig, ConsentConfig } from "../../resources/ScreenConfig";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
@@ -34,7 +44,8 @@ interface State {
 }
 
 class SurveyQuestion extends Component<
-  SurveyQuestionProps & WithNamespaces & ReduxWriterProps, State
+  SurveyQuestionProps & WithNamespaces & ReduxWriterProps,
+  State
 > {
   state: State = {};
 
@@ -42,25 +53,46 @@ class SurveyQuestion extends Component<
     let nextQuestion = this.props.data.nextQuestion;
     if (!!this.props.data.conditionalNext) {
       if (!!this.props.data.conditionalNext.buttonAndLocation) {
-        const location = this.props.data.conditionalNext!.location!.get(this.props.locationType);
-        if (location != null && location === this.props.data.conditionalNext!.buttonKeys!.get(selectedButtonKey)) {
+        const location = this.props.data.conditionalNext!.location!.get(
+          this.props.locationType
+        );
+        if (
+          location != null &&
+          location ===
+            this.props.data.conditionalNext!.buttonKeys!.get(selectedButtonKey)
+        ) {
           nextQuestion = location;
         }
       } else {
-        if (!!this.props.data.conditionalNext!.location &&
-            this.props.data.conditionalNext!.location!.has(this.props.locationType)) {
-          nextQuestion = this.props.data.conditionalNext!.location!.get(this.props.locationType)!;
+        if (
+          !!this.props.data.conditionalNext!.location &&
+          this.props.data.conditionalNext!.location!.has(
+            this.props.locationType
+          )
+        ) {
+          nextQuestion = this.props.data.conditionalNext!.location!.get(
+            this.props.locationType
+          )!;
         }
         !!this.props.data.conditionalNext!.options &&
           !!this.props.getAnswer("options") &&
           this.props.getAnswer("options").forEach((option: Option) => {
-            if (option.selected && this.props.data.conditionalNext!.options!.has(option.key)) {
-              nextQuestion = this.props.data.conditionalNext!.options!.get(option.key)!;
+            if (
+              option.selected &&
+              this.props.data.conditionalNext!.options!.has(option.key)
+            ) {
+              nextQuestion = this.props.data.conditionalNext!.options!.get(
+                option.key
+              )!;
             }
           });
-        if (!!this.props.data.conditionalNext!.buttonKeys &&
-          this.props.data.conditionalNext!.buttonKeys!.has(selectedButtonKey)) {
-          return this.props.data.conditionalNext!.buttonKeys!.get(selectedButtonKey)!;
+        if (
+          !!this.props.data.conditionalNext!.buttonKeys &&
+          this.props.data.conditionalNext!.buttonKeys!.has(selectedButtonKey)
+        ) {
+          return this.props.data.conditionalNext!.buttonKeys!.get(
+            selectedButtonKey
+          )!;
         }
       }
     }
@@ -70,7 +102,13 @@ class SurveyQuestion extends Component<
   _getButtonEnabled = (enabledStatus: EnabledOption): boolean => {
     if (enabledStatus === "withOption") {
       const options = this.props.getAnswer("options");
-      return !!options && options.reduce((result: boolean, option: Option) => result || option.selected, false);
+      return (
+        !!options &&
+        options.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        )
+      );
     } else if (enabledStatus === "withText") {
       return !!this._getValue("textInput");
     } else if (enabledStatus === "withNumber") {
@@ -88,7 +126,10 @@ class SurveyQuestion extends Component<
   _getBirthDateDefaultYear() {
     const date = new Date();
     const year = date.getFullYear();
-    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+    const ageBucket = this.props.getAnswer(
+      "selectedButtonKey",
+      AgeBucketConfig.id
+    );
     if (ageBucket === "18orOver") {
       date.setFullYear(year - 35);
     } else if (ageBucket === "13to17") {
@@ -105,7 +146,7 @@ class SurveyQuestion extends Component<
     var age = today.getFullYear() - birthDate.getFullYear();
     var m = today.getMonth() - birthDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age = age - 1;
+      age = age - 1;
     }
 
     if (age >= 18) {
@@ -121,30 +162,32 @@ class SurveyQuestion extends Component<
 
   _reconsent() {
     const { t } = this.props;
-    Alert.alert(
-      t("newConsentRequired"),
-      t("ageDoesntMatch"),
-      [
-        {
-          text: t("cancel"),
-          onPress: () => {},
+    Alert.alert(t("newConsentRequired"), t("ageDoesntMatch"), [
+      {
+        text: t("cancel"),
+        onPress: () => {},
+      },
+      {
+        text: t("continue"),
+        onPress: () => {
+          this.props.updateAnswer(
+            { selectedButtonKey: this._getAdjustedAgeBucket() },
+            AgeBucketConfig
+          );
+          this.props.navigation.push("Consent", {
+            data: ConsentConfig,
+            reconsent: true,
+          });
         },
-        {
-          text: t("continue"),
-          onPress: () => {
-            this.props.updateAnswer({ selectedButtonKey: this._getAdjustedAgeBucket() }, AgeBucketConfig );
-            this.props.navigation.push("Consent", { data: ConsentConfig, reconsent: true });
-          },
-        },
-      ],
-    );
+      },
+    ]);
   }
 
   _getValue = (valueType: string): any => {
-    return typeof this.state[valueType] !== 'undefined'
+    return typeof this.state[valueType] !== "undefined"
       ? this.state[valueType]
       : this.props.getAnswer(valueType);
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -159,19 +202,26 @@ class SurveyQuestion extends Component<
           />
         )}
         {this.props.data.title && (
-          <Title label={t("surveyTitle:" + this.props.data.title)} size="small" />
+          <Title
+            label={t("surveyTitle:" + this.props.data.title)}
+            size="small"
+          />
         )}
         {this.props.data.description && (
           <Description
-            content={t("surveyDescription:" + this.props.data.description.label)}
+            content={t(
+              "surveyDescription:" + this.props.data.description.label
+            )}
             center={this.props.data.description.center}
-            style={{marginVertical: 0}}
+            style={{ marginVertical: 0 }}
           />
         )}
         {this.props.data.textInput && (
           <TextInput
             autoFocus={true}
-            placeholder={t("surveyPlaceholder:" + this.props.data.textInput!.placeholder)}
+            placeholder={t(
+              "surveyPlaceholder:" + this.props.data.textInput!.placeholder
+            )}
             returnKeyType="done"
             value={this._getValue("textInput")}
             onChangeText={textInput => this.setState({ textInput })}
@@ -180,10 +230,18 @@ class SurveyQuestion extends Component<
         {this.props.data.dateInput && (
           <DateInput
             date={this.props.getAnswer("dateInput")}
-            defaultYear={this.props.data.id === "BirthDate" ? this._getBirthDateDefaultYear() : null}
+            defaultYear={
+              this.props.data.id === "BirthDate"
+                ? this._getBirthDateDefaultYear()
+                : null
+            }
             mode={this.props.data.dateInput.mode}
-            placeholder={t("surveyPlaceholder:" + this.props.data.dateInput.placeholder)}
-            onDateChange={(dateInput: Date) => this.props.updateAnswer({ dateInput })}
+            placeholder={t(
+              "surveyPlaceholder:" + this.props.data.dateInput.placeholder
+            )}
+            onDateChange={(dateInput: Date) =>
+              this.props.updateAnswer({ dateInput })
+            }
           />
         )}
         {this.props.data.addressInput && (
@@ -191,18 +249,27 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             showLocationField={this.props.data.addressInput!.showLocationField}
             value={this._getValue("addressInput")}
-            onChange={(addressInput: Address) => this.setState({ addressInput })}
+            onChange={(addressInput: Address) =>
+              this.setState({ addressInput })
+            }
           />
         )}
         {this.props.data.numberInput && (
           <NumberInput
             autoFocus={true}
-            placeholder={t("surveyPlaceholder:" + this.props.data.numberInput!.placeholder)}
+            placeholder={t(
+              "surveyPlaceholder:" + this.props.data.numberInput!.placeholder
+            )}
             returnKeyType="done"
-            value={typeof this._getValue("numberInput") === "number" ? "" + this._getValue("numberInput") :
-              typeof this._getValue("numberInput") === "object" ? "" : undefined}
+            value={
+              typeof this._getValue("numberInput") === "number"
+                ? "" + this._getValue("numberInput")
+                : typeof this._getValue("numberInput") === "object"
+                  ? ""
+                  : undefined
+            }
             onChange={text => {
-              const numericText = text.replace(/[^0-9]/g, '');
+              const numericText = text.replace(/[^0-9]/g, "");
               if (numericText.length == 0) {
                 this.setState({ numberInput: null });
               } else {
@@ -222,8 +289,12 @@ class SurveyQuestion extends Component<
             max={this.props.data.numberSelector!.max}
             maxPlus={this.props.data.numberSelector!.maxPlus}
             num={this._getValue("numberInput")}
-            placeholder={t("surveyPlaceholder:" + this.props.data.numberSelector!.placeholder)}
-            onNumChange={(numberInput: number) => this.props.updateAnswer({ numberInput })}
+            placeholder={t(
+              "surveyPlaceholder:" + this.props.data.numberSelector!.placeholder
+            )}
+            onNumChange={(numberInput: number) =>
+              this.props.updateAnswer({ numberInput })
+            }
           />
         )}
         {this.props.data.optionList && (
@@ -251,21 +322,35 @@ class SurveyQuestion extends Component<
               label={t("surveyButton:" + button.key)}
               onPress={() => {
                 Keyboard.dismiss();
-                if (this.props.data.id === "BirthDate" &&
-                    this._getAdjustedAgeBucket() !== this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id)) {
+                if (
+                  this.props.data.id === "BirthDate" &&
+                  this._getAdjustedAgeBucket() !==
+                    this.props.getAnswer(
+                      "selectedButtonKey",
+                      AgeBucketConfig.id
+                    )
+                ) {
                   this._reconsent();
                 } else {
-                  if (typeof this.state.textInput !== 'undefined') {
-                    this.props.updateAnswer({ textInput: this.state.textInput });
+                  if (typeof this.state.textInput !== "undefined") {
+                    this.props.updateAnswer({
+                      textInput: this.state.textInput,
+                    });
                   }
-                  if (typeof this.state.numberInput !== 'undefined') {
-                    this.props.updateAnswer({ numberInput: this.state.numberInput });
+                  if (typeof this.state.numberInput !== "undefined") {
+                    this.props.updateAnswer({
+                      numberInput: this.state.numberInput,
+                    });
                   }
-                  if (typeof this.state.otherOption !== 'undefined') {
-                    this.props.updateAnswer({ otherOption: this.state.otherOption });
+                  if (typeof this.state.otherOption !== "undefined") {
+                    this.props.updateAnswer({
+                      otherOption: this.state.otherOption,
+                    });
                   }
-                  if (typeof this.state.addressInput !== 'undefined') {
-                    this.props.updateAnswer({ addressInput: this.state.addressInput });
+                  if (typeof this.state.addressInput !== "undefined") {
+                    this.props.updateAnswer({
+                      addressInput: this.state.addressInput,
+                    });
                   }
 
                   this.props.updateAnswer({ selectedButtonKey: button.key });

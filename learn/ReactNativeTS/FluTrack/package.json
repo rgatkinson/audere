@@ -33,8 +33,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "test": "jest",
-    "lint": "prettier --list-different *.{j,t} src/**/*.ts{,x}",
-    "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}",
+    "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
+    "lint-fix": "prettier --write *.{j,t} src/**/**/**/*.ts{,x}",
     "typecheck": "tsc --noEmit"
   },
   "prettier": {

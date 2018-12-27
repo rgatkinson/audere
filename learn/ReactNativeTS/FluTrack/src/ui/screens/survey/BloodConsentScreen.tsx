@@ -1,21 +1,15 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import {
-  Action,
-  StoreState,
-  setBloodConsent,
-} from "../../../store";
+import { Action, StoreState, setBloodConsent } from "../../../store";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
-import { BloodConsentConfig, EnrolledConfig } from "../../../resources/ScreenConfig";
+import {
+  BloodConsentConfig,
+  EnrolledConfig,
+} from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import Description from "../../components/Description";
 import SignatureInput from "../../components/SignatureInput";
@@ -35,16 +29,26 @@ interface Props {
   name: state.form!.name,
 }))
 class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
-
-  _onSubmit = (participantName: string, signerType: ConsentInfoSignerType, signerName: string, signature: string, relation?: string) => {
-    this.props.dispatch(setBloodConsent({
-      name: signerName,
-      terms: this.props.t("bloodConsentFormHeader") + "\n" + this.props.t("bloodFormText"),
-      signerType, 
-      date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-      signature,
-      relation,
-    }));
+  _onSubmit = (
+    participantName: string,
+    signerType: ConsentInfoSignerType,
+    signerName: string,
+    signature: string,
+    relation?: string
+  ) => {
+    this.props.dispatch(
+      setBloodConsent({
+        name: signerName,
+        terms:
+          this.props.t("bloodConsentFormHeader") +
+          "\n" +
+          this.props.t("bloodFormText"),
+        signerType,
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature,
+        relation,
+      })
+    );
   };
 
   _proceed = () => {
@@ -53,7 +57,7 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -68,13 +72,14 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
           onForward={this._proceed}
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Description content={t(BloodConsentConfig.description!.label)} style={{ marginHorizontal: 20 }} />
-          <Text style={[styles.consentText, {textAlign: 'center'}]}>
+          <Description
+            content={t(BloodConsentConfig.description!.label)}
+            style={{ marginHorizontal: 20 }}
+          />
+          <Text style={[styles.consentText, { textAlign: "center" }]}>
             {t("bloodConsentFormHeader")}
           </Text>
-          <Text style={styles.consentText}>
-            {t("bloodFormText")}
-          </Text>
+          <Text style={styles.consentText}>{t("bloodFormText")}</Text>
           <SignatureInput
             consent={this.props.bloodConsent}
             editableNames={false}
@@ -101,11 +106,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   consentText: {
-    alignSelf: 'stretch',
-    backgroundColor: 'white',
+    alignSelf: "stretch",
+    backgroundColor: "white",
     fontFamily: "OpenSans-Regular",
     fontSize: 16,
     padding: 16,

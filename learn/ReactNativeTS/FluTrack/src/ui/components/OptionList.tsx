@@ -10,7 +10,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Description from "./Description";
 
@@ -38,13 +38,14 @@ export const emptyList = (data: string[]) => {
       selected: false,
     };
   });
-}
+};
 
-const newSelectedOptionsList = (options: string[], selected?: Option[]): Option[] => {
-  return selected
-    ? selected.slice(0)
-    : emptyList(options);
-}
+const newSelectedOptionsList = (
+  options: string[],
+  selected?: Option[]
+): Option[] => {
+  return selected ? selected.slice(0) : emptyList(options);
+};
 
 export { newSelectedOptionsList };
 
@@ -92,7 +93,9 @@ class OptionList extends React.Component<Props & WithNamespaces> {
                 id={item.key}
                 selected={item.selected}
                 width={itemWidth}
-                smallText={this.props.data.length > 12 && this.props.numColumns > 1}
+                smallText={
+                  this.props.data.length > 12 && this.props.numColumns > 1
+                }
                 backgroundColor={this.props.backgroundColor}
                 onPressItem={this._onPressItem}
               />
@@ -100,8 +103,8 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           />
         </View>
         {this.props.withOther &&
-          !!(this.props.data.find(option => option.key === "other")) &&
-          (this.props.data.find(option => option.key === "other")!).selected && (
+          !!this.props.data.find(option => option.key === "other") &&
+          this.props.data.find(option => option.key === "other")!.selected && (
             <View>
               <Description content={t("pleaseSpecify")} />
               <View style={styles.item}>
@@ -149,16 +152,11 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
         onPress={this._onPress}
       >
         <Text
-          style={[
-            styles.itemText,
-            this.props.smallText && styles.smallText,
-          ]}
+          style={[styles.itemText, this.props.smallText && styles.smallText]}
         >
           {this.props.t("surveyOption:" + this.props.id)}
         </Text>
-        {this.props.selected && (
-          <Feather name="check" color="blue" size={20} />
-        )}
+        {this.props.selected && <Feather name="check" color="blue" size={20} />}
       </TouchableOpacity>
     );
   }
@@ -182,7 +180,7 @@ const styles = StyleSheet.create({
   },
   smallText: {
     fontSize: 14,
-  }
+  },
 });
 
 const TranslatedListItem = withNamespaces()<ItemProps>(ListItem);

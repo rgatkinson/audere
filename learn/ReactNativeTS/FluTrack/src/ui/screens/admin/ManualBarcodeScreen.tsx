@@ -7,12 +7,7 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
-import {
-  Action,
-  Sample,
-  StoreState,
-  setSamples,
-} from "../../../store";
+import { Action, Sample, StoreState, setSamples } from "../../../store";
 import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
@@ -32,15 +27,18 @@ interface Props {
   samples: state.form.samples,
 }))
 export default class ManualBarcodeScreen extends React.Component<Props> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
       title: "Manual Barcode Entry",
       headerLeft: <BackButton navigation={navigation} text={"Cancel"} />,
-      headerRight: (!!params ?
+      headerRight: !!params ? (
         <FeedbackButton onPress={params.showFeedback} />
-        : null
-      ),
+      ) : null,
     };
   };
 
@@ -60,7 +58,9 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
     if (!!this.state.barcode1 && this.state.barcode1 === this.state.barcode2) {
       Alert.alert(
         "Submit?",
-        `Bar code with data ${this.state.barcode1} will be recorded for ${this.props.name}.`,
+        `Bar code with data ${this.state.barcode1} will be recorded for ${
+          this.props.name
+        }.`,
         [
           {
             text: "Cancel",
@@ -69,8 +69,13 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
           {
             text: "OK",
             onPress: () => {
-              const samples = !!this.props.samples ? this.props.samples.slice(0) : [];
-              samples.push({ sampleType: 'manualBarcodeEntry', code: this.state.barcode1! });
+              const samples = !!this.props.samples
+                ? this.props.samples.slice(0)
+                : [];
+              samples.push({
+                sampleType: "manualBarcodeEntry",
+                code: this.state.barcode1!,
+              });
               this.props.dispatch(setSamples(samples));
               this.props.navigation.popToTop();
             },
@@ -78,16 +83,12 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
         ]
       );
     } else {
-      Alert.alert(
-        "Error",
-        `Barcode values don't match`,
-        [
-          {
-            text: "OK",
-            onPress: () => {},
-          },
-        ],
-      );
+      Alert.alert("Error", `Barcode values don't match`, [
+        {
+          text: "OK",
+          onPress: () => {},
+        },
+      ]);
     }
   };
 
@@ -105,7 +106,7 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
             returnKeyType="next"
             value={this.state.barcode1}
             onChangeText={(text: string) => {
-              this.setState({ barcode1: text })
+              this.setState({ barcode1: text });
             }}
           />
           <TextInput
@@ -113,7 +114,7 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
             returnKeyType="done"
             value={this.state.barcode2}
             onChangeText={(text: string) => {
-              this.setState({ barcode2: text })
+              this.setState({ barcode2: text });
             }}
           />
         </View>
@@ -133,8 +134,8 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputContainer: {
     margin: 15,

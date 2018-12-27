@@ -2,7 +2,13 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, Option, StoreState, setAdministrator, setBloodCollection } from "../../../store";
+import {
+  Action,
+  Option,
+  StoreState,
+  setAdministrator,
+  setBloodCollection,
+} from "../../../store";
 import BackButton from "../../components/BackButton";
 import EditSettingButton from "../../components/EditSettingButton";
 import FeedbackButton from "../../components/FeedbackButton";
@@ -31,15 +37,20 @@ function getTodaysDate(): string {
   location: state.admin.location,
 }))
 class PriorScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = ({ navigation }: { navigation: NavigationScreenProp<any, any>}) => {
+  static navigationOptions = ({
+    navigation,
+  }: {
+    navigation: NavigationScreenProp<any, any>;
+  }) => {
     const { params = null } = navigation.state;
     return {
-      headerLeft: <BackButton navigation={navigation} text={"Admin Settings"} />,
-      title: "Prior to Collection",
-      headerRight: (!!params ?
-        <FeedbackButton onPress={params.showFeedback} />
-        : null
+      headerLeft: (
+        <BackButton navigation={navigation} text={"Admin Settings"} />
       ),
+      title: "Prior to Collection",
+      headerRight: !!params ? (
+        <FeedbackButton onPress={params.showFeedback} />
+      ) : null,
     };
   };
 
@@ -79,11 +90,7 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
         <KeyValueLine item="Date of Screening" value={getTodaysDate()} />
         <Text style={styles.sectionHeaderText}>Current Administrator</Text>
         <EditSettingButton
-          label={
-            this.props.administrator
-              ? this.props.administrator
-              : "Select"
-          }
+          label={this.props.administrator ? this.props.administrator : "Select"}
           onPress={this._onSelectAdministrator}
         />
         <Text style={styles.sectionHeaderText}>Collection Location</Text>
@@ -107,7 +114,9 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
           multiSelect={false}
           backgroundColor="#fff"
           onChange={data => {
-            const availableOption = data.find(option => option.key === "Available")!.selected;
+            const availableOption = data.find(
+              option => option.key === "Available"
+            )!.selected;
             this.props.dispatch(setBloodCollection(!!availableOption));
           }}
         />
