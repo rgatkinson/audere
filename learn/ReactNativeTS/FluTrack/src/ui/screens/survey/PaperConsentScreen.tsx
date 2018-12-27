@@ -5,6 +5,7 @@ import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
 import Title from "../../components/Title";
 import ScreenContainer from "../../components/ScreenContainer";
+import StatusBar from "../../components/StatusBar";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
@@ -16,6 +17,15 @@ class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <ScreenContainer>
+        <StatusBar
+          canProceed={true}
+          progressNumber="100%"
+          progressLabel={t("common:statusBar:enrollment")}
+          onBack={() => this.props.navigation.pop()}
+          onForward={() => {
+            this.props.navigation.push("SurveyStart");
+          }}
+        />
         <ContentContainer>
           <Title label={t("getACopy")} />
           <Description content={t("paperConsent")} />

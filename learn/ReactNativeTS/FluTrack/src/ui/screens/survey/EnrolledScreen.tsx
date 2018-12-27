@@ -20,7 +20,7 @@ import OptionList, {
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import SimpleStatusBar from "../../components/SimpleStatusBar";
+import StatusBar from "../../components/StatusBar";
 import Title from "../../components/Title";
 
 interface Props {
@@ -71,6 +71,10 @@ class EnrolledScreen extends React.PureComponent<
       this.props.dispatch(setEmail(this.state.email));
     }
     this.props.updateAnswer({ options: this.state.options });
+    this._proceed(buttonKey);
+  }
+
+  _proceed = (buttonKey: string) => {
     if (buttonKey === "done" && this._receiveConsent()) {
       this.props.navigation.push("SurveyStart");
     } else {
@@ -105,7 +109,16 @@ class EnrolledScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <ScreenContainer>
-        <SimpleStatusBar title={t("complete")} />
+        <StatusBar
+          canProceed={!!this.props.getAnswer("selectedButtonKey")}
+          progressNumber="95%"
+          progressLabel={t("common:statusBar:enrollment")}
+          title={t("contactInfo")}
+          onBack={() => this.props.navigation.pop()}
+          onForward={() => {
+            this._proceed(this.props.getAnswer("selectedButtonKey"));
+          }}
+        />
         <ContentContainer>
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
           <Description
