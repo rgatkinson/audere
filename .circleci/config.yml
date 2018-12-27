@@ -15,8 +15,8 @@ aliases:
       ignore: /.*/
 
 const: &const
-  - PROD_SERVER: "https://api.auderenow.io/api"
-  - STAGING_SERVER: "https://api.staging.auderenow.io/api"
+  PROD_SERVER: "https://api.auderenow.io/api"
+  STAGING_SERVER: "https://api.staging.auderenow.io/api"
 
 defaults: &defaults
   docker:
