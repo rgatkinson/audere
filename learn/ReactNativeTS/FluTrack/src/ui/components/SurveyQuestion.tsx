@@ -27,7 +27,7 @@ export interface SurveyQuestionProps {
 
 interface State {
   addressInput?: Address;
-  numberInput?: number;
+  numberInput?: number | null;
   textInput?: string;
   otherOption?: string;
   [key: string]: undefined | Address | string | number;
@@ -199,13 +199,19 @@ class SurveyQuestion extends Component<
             autoFocus={true}
             placeholder={t("surveyPlaceholder:" + this.props.data.numberInput!.placeholder)}
             returnKeyType="done"
-            value={typeof this._getValue("numberInput") === "number" ? "" + this._getValue("numberInput") : ""}
+            value={typeof this._getValue("numberInput") === "number" ? "" + this._getValue("numberInput") :
+              typeof this._getValue("numberInput") === "object" ? "" : undefined}
             onChange={text => {
-              var num = parseInt(text.replace(/[^0-9]/g, ''));
-              if (isNaN(num)) {
-                this.setState({ numberInput: undefined });
+              const numericText = text.replace(/[^0-9]/g, '');
+              if (numericText.length == 0) {
+                this.setState({ numberInput: null });
               } else {
-                this.setState({ numberInput: num });
+                var num = parseInt(numericText);
+                if (isNaN(num)) {
+                  this.setState({ numberInput: null });
+                } else {
+                  this.setState({ numberInput: num });
+                }
               }
             }}
           />
