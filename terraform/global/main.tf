@@ -369,7 +369,7 @@ resource "aws_config_configuration_recorder_status" "main" {
 }
 
 resource "aws_s3_bucket" "config_logs_bucket" {
-  bucket        = "audere-config-logs-bucket"
+  bucket        = "audere-aws-config-logs"
   acl           = "private"
   force_destroy = true
 
@@ -378,9 +378,49 @@ resource "aws_s3_bucket" "config_logs_bucket" {
   }
 }
 
+data "aws_iam_policy_document" "aws_config_s3_policy" {
+  statement {
+    sid       = "AWSConfigBucketPermissionsCheck"
+    actions   = ["s3:GetBucketAcl"]
+    resources = ["arn:aws:s3:::audere-aws-config-logs"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid       = "AWSConfigBucketDelivery"
+    actions   = ["s3:PutObject"]
+    resources = ["arn:aws:s3:::audere-aws-config-logs/audere/AWSLogs/475613123583/Config/*"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "bucket-owner-full-control",
+      ]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "config_logs" {
+  bucket = "${aws_s3_bucket.config_logs_bucket.id}"
+
+  policy = "${data.aws_iam_policy_document.aws_config_s3_policy.json}"
+}
+
 resource "aws_config_delivery_channel" "main" {
   name           = "aws-config"
   s3_bucket_name = "${aws_s3_bucket.config_logs_bucket.bucket}"
+  s3_key_prefix  = "audere"
 
   snapshot_delivery_properties = {
     delivery_frequency = "${var.config_delivery_frequency}"
@@ -396,19 +436,6 @@ resource "aws_config_configuration_recorder" "main" {
   recording_group = {
     all_supported                 = true
     include_global_resource_types = true
-  }
-}
-
-data "aws_iam_policy_document" "aws_config_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["config.amazonaws.com"]
-    }
-
-    effect = "Allow"
   }
 }
 
