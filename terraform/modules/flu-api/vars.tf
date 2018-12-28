@@ -15,12 +15,12 @@ variable "migrate" {
   description = "Cycle this false -> true -> false to run a db migration"
 }
 
-variable "subnet_api_cidr" {
-  description = "CIDR for private subnet for api tier instances."
+variable "api_cidr" {
+  description = "CIDR for private subnets in api tier."
   type = "string"
 }
 
-variable "subnet_public_cidr" {
+variable "public_cidr" {
   description = "CIDR for public subnet we create for the application load balancer and any other public endpoints."
   type = "string"
 }
@@ -36,7 +36,11 @@ variable "gateway_id" {
 }
 
 variable "fludb_client_sg_id" {
-  description = "Id of client security group to enable fludb access"
+  description = "Id of client security group to enable db access"
+}
+
+variable "fludev_ssh_server_sg_id" {
+  description = "Id of server security group to enable ssh access"
 }
 
 

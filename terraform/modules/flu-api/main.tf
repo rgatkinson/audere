@@ -69,14 +69,14 @@ data "template_file" "service_init_sh" {
 resource "aws_instance" "migrate_instance" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  key_name = "2018-mmarucheck" # TODO remove
+  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.migrate.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
   vpc_security_group_ids = [
     "${aws_security_group.internet_egress.id}",
-    "${aws_security_group.migrate.id}",
     "${var.fludb_client_sg_id}",
+    "${var.fludev_ssh_server_sg_id}",
   ]
 
   ebs_block_device {
@@ -202,6 +202,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
     "${aws_security_group.internet_egress.id}",
     "${module.fluapi_sg.server_id}",
     "${var.fludb_client_sg_id}",
+    "${var.fludev_ssh_server_sg_id}",
   ]
 
   ebs_block_device {

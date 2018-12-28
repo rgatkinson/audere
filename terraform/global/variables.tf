@@ -3,23 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-variable "bastion_cidr_blocks" {
-  description = "CIDR blocks for source IPs allowed to connect to bastion server"
-  type = "list"
-}
-
-variable "home_size_gb" {
-  default = 50
-}
-
-variable "availability_zone" {
-  default = "us-west-2a"
-}
-
-variable "instance_type" {
-  default = "t3.small"
-}
-
 // variable for AWS Config rule
 variable "config_max_execution_frequency" {
   description = "The maximum frequency with which AWS Config runs evaluations for a rule."

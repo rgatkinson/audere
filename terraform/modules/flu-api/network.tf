@@ -90,22 +90,6 @@ resource "aws_security_group_rule" "internet_egress" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group" "migrate" {
-  name = "${local.base_name}-migrate"
-  description = "Allow migrate to have general egress"
-  vpc_id = "${var.vpc_id}"
-}
-
-resource "aws_security_group_rule" "migrate_ingress" {
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-
-  security_group_id = "${aws_security_group.migrate.id}"
-  cidr_blocks = ["24.16.71.212/32"]
-}
-
 resource "aws_security_group" "public_http" {
   name = "${local.base_name}-public-http"
   description = "Allow http/https traffic to ELB"
@@ -135,7 +119,7 @@ resource "aws_security_group_rule" "public_http" {
 data "aws_security_group" "ssh" { name = "ssh" }
 
 locals {
-  subnet_api_cidr = "${cidrsubnet(var.subnet_api_cidr, 1, 0)}"
-  subnet_migrate_cidr = "${cidrsubnet(var.subnet_api_cidr, 1, 1)}"
-  subnet_public_cidr = "${var.subnet_public_cidr}"
+  subnet_api_cidr = "${cidrsubnet(var.api_cidr, 1, 0)}"
+  subnet_migrate_cidr = "${cidrsubnet(var.api_cidr, 1, 1)}"
+  subnet_public_cidr = "${var.public_cidr}"
 }

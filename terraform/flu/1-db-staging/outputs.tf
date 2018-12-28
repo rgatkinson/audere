@@ -15,6 +15,14 @@ output "fludb_client_sg_id" {
   value = "${module.flu_db.fludb_client_sg_id}"
 }
 
+output "fludev_ssh_client_sg_id" {
+  value = "${module.flu_db.fludev_ssh_client_sg_id}"
+}
+
+output "fludev_ssh_server_sg_id" {
+  value = "${module.flu_db.fludev_ssh_server_sg_id}"
+}
+
 output "gateway_id" {
   value = "${module.flu_db.gateway_id}"
 }

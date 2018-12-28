@@ -61,6 +61,14 @@ module "fludb_sg" {
   vpc_id = "${aws_vpc.fludb.id}"
 }
 
+module "fludev_ssh_sg" {
+  source = "../sg-pair"
+
+  name = "flu-ssh"
+  port = 22
+  vpc_id = "${aws_vpc.fludb.id}"
+}
+
 resource "aws_internet_gateway" "flu_gw" {
   vpc_id = "${aws_vpc.fludb.id}"
 

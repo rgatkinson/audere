@@ -7,18 +7,20 @@ module "flu_db" {
   source = "../../modules/flu-db"
 
   admins = "${var.admins}"
-  ami_id = "${module.ami.ubuntu}"
-  db_cidr = "${data.terraform_remote_state.global.prod_db_cidr}"
-  dev_debug_target_sg = "${data.terraform_remote_state.global.dev_debug_target_sg}"
+  db_cidr = "${module.vpc_cidr.prod_db_cidr}"
   environment = "prod"
   mode = "${var.mode}"
-  vpc_cidr = "${data.terraform_remote_state.global.vpc_prod_cidr}"
+  vpc_cidr = "${module.vpc_cidr.vpc_prod_cidr}"
   vpc_flow_log_arn = "${data.terraform_remote_state.global.vpc_flow_log_arn}"
   vpc_flow_log_role_arn = "${data.terraform_remote_state.global.vpc_flow_log_role_arn}"
 }
 
 module "ami" {
   source = "../../modules/ami"
+}
+
+module "vpc_cidr" {
+  source = "../../modules/vpc-cidr"
 }
 
 provider "aws" {

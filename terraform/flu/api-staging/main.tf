@@ -24,23 +24,33 @@ module "flu_api" {
   source = "../../modules/flu-api"
 
   ami_id = "${module.ami.ubuntu}"
+  api_cidr = "${module.vpc_cidr.staging_api_cidr}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   environment = "staging"
   fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
+  fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
   gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
   migrate = "${var.migrate}"
+  public_cidr = "${module.vpc_cidr.staging_public_cidr}"
   service = "${var.service}"
-  subnet_api_cidr = "${data.terraform_remote_state.global.staging_api_cidr}"
-  subnet_public_cidr = "${data.terraform_remote_state.global.staging_public_cidr}"
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
 
-data "terraform_remote_state" "global" {
-  backend = "local"
-  config {
-    path = "../../global/terraform.tfstate"
-  }
+module "flu_dev" {
+  source = "../../modules/flu-dev"
+
+  bastion_cidr_whitelist = "${var.bastion_cidr_whitelist}"
+  dev_cidr = "${module.vpc_cidr.staging_dev_cidr}"
+  environment = "staging"
+  fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
+  fludev_ssh_client_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_client_sg_id}"
+  gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
+  vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
+}
+
+module "vpc_cidr" {
+  source = "../../modules/vpc-cidr"
 }
 
 data "terraform_remote_state" "flu_db" {

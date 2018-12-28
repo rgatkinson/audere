@@ -22,3 +22,11 @@ output "gateway_id" {
 output "fludb_client_sg_id" {
   value = "${module.fludb_sg.client_id}"
 }
+
+output "fludev_ssh_client_sg_id" {
+  value = "${module.fludev_ssh_sg.client_id}"
+}
+
+output "fludev_ssh_server_sg_id" {
+  value = "${module.fludev_ssh_sg.server_id}"
+}

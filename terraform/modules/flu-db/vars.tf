@@ -32,10 +32,6 @@ variable "admins" {
   type = "list"
 }
 
-variable "ami_id" {
-  type = "string"
-}
-
 variable "environment" {
   description = "One of 'staging' or 'prod'"
   type = "string"
@@ -51,11 +47,6 @@ variable "vpc_cidr" {
   type = "string"
 }
 
-variable "dev_debug_target_sg" {
-  description = "Security group id for machines that should be debugable from a dev-machine."
-  type = "string"
-}
-
 variable "vpc_flow_log_arn" {
   description = "ARN for aws_flow_log.log_destination to set up VPC flow logging."
   type = "string"
@@ -65,7 +56,6 @@ variable "vpc_flow_log_role_arn" {
   description = "ARN for aws_flow_log.iam_role_arn to set up VPC flow logging."
   type = "string"
 }
-
 
 variable "mode" {
   description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"

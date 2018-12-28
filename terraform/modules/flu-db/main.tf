@@ -28,7 +28,6 @@ resource "aws_db_instance" "fludb" {
   username = "${local.my_userid}"
   vpc_security_group_ids = [
     "${module.fludb_sg.server_id}",
-    # "${var.dev_debug_target_sg}",
   ]
 
   tags {
@@ -71,15 +70,17 @@ resource "aws_db_parameter_group" "fludb_parameters" {
 resource "aws_instance" "provision0" {
   count = "${local.mode_provision0}"
 
-  ami = "${var.ami_id}"
+  ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
+  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.provision.id}"
   user_data = "${data.template_file.provision0_sh.rendered}"
 
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
     "${module.fludb_sg.client_id}",
+    # "${module.fludev_ssh_sg.server_id}",
   ]
 
   tags {
@@ -126,7 +127,7 @@ resource "aws_volume_attachment" "provision0_my_creds" {
 resource "aws_instance" "add_admin" {
   count = "${local.mode_add_admin}"
 
-  ami = "${var.ami_id}"
+  ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
   # key_name = "2018-mmarucheck"
@@ -136,6 +137,7 @@ resource "aws_instance" "add_admin" {
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
     "${module.fludb_sg.client_id}",
+    # "${module.fludev_ssh_sg.server_id}",
   ]
 
   tags {
@@ -218,6 +220,10 @@ resource "aws_ebs_volume" "admin_creds" {
 # data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_caller_identity" "current" {}
+
+module "ami" {
+  source = "../ami"
+}
 
 locals {
   mode_provision0 = "${(var.mode == "provision0") ? 1 : 0}"
