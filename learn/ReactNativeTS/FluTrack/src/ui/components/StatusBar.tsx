@@ -26,7 +26,9 @@ class StatusBar extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.statusBar}>
         <View>
-          <Text style={styles.progressText}>{this.props.progressLabel}</Text>
+          {!!this.props.progressLabel &&
+            <Text style={styles.progressText}>{this.props.progressLabel}</Text>
+          }
           <Text style={[styles.progressText, styles.progressNumber]}>
             {this.props.progressNumber}
             {" " + t("complete")}

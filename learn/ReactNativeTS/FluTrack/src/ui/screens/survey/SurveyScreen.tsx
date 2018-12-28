@@ -153,7 +153,6 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
               (100.0 * this._getQuestionnaireIndex()) / questionnaire.length
             ) + "%"
           }
-          progressLabel={t("common:statusBar:complete")}
           title={t("common:statusBar:studyQuestionnaire")}
           onBack={this._back}
           onForward={this._next}
