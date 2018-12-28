@@ -74,6 +74,7 @@ resource "aws_instance" "migrate_instance" {
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
   vpc_security_group_ids = [
+    "${aws_security_group.internet_egress.id}",
     "${aws_security_group.migrate.id}",
     "${var.fludb_client_sg_id}",
   ]
@@ -198,6 +199,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
   user_data = "${data.template_file.service_init_sh.rendered}"
 
   security_groups = [
+    "${aws_security_group.internet_egress.id}",
     "${module.fluapi_sg.server_id}",
     "${var.fludb_client_sg_id}",
   ]

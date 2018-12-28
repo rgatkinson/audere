@@ -74,20 +74,26 @@ module "fluapi_sg" {
   vpc_id = "${var.vpc_id}"
 }
 
-resource "aws_security_group" "migrate" {
-  name = "${local.base_name}-migrate"
-  description = "Allow migrate to have general egress"
+resource "aws_security_group" "internet_egress" {
+  name = "${local.base_name}-egress"
+  description = "Allow instances access to the internet"
   vpc_id = "${var.vpc_id}"
 }
 
-resource "aws_security_group_rule" "migrate_egress" {
+resource "aws_security_group_rule" "internet_egress" {
   type = "egress"
   from_port = 0
   to_port = 65535
   protocol = "tcp"
 
-  security_group_id = "${aws_security_group.migrate.id}"
+  security_group_id = "${aws_security_group.internet_egress.id}"
   cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group" "migrate" {
+  name = "${local.base_name}-migrate"
+  description = "Allow migrate to have general egress"
+  vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group_rule" "migrate_ingress" {
@@ -106,7 +112,7 @@ resource "aws_security_group" "public_http" {
   vpc_id = "${var.vpc_id}"
 }
 
-resource "aws_security_group_rule" "elb_https" {
+resource "aws_security_group_rule" "public_https" {
   type = "ingress"
   from_port = 443
   to_port = 443
@@ -116,7 +122,7 @@ resource "aws_security_group_rule" "elb_https" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-resource "aws_security_group_rule" "elb_http" {
+resource "aws_security_group_rule" "public_http" {
   type = "ingress"
   from_port = 80
   to_port = 80
