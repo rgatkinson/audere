@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FluTrack",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "App for Seattle Flu Study project",
     "icon": "./src/img/app-icon.png",
     "slug": "FluTrack",
