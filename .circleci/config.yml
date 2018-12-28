@@ -125,6 +125,7 @@ jobs:
             else 
               export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
             fi
+            cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
             more .env
       - run:
