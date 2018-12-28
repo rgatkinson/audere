@@ -1,13 +1,22 @@
 import { SurveyQuestionData } from "./QuestionnaireConfig";
 
+export const AgeBuckets: {
+  [key: string]: string;
+} = {
+  Over18: "18orOver",
+  Teen: "13to17",
+  Child: "7to12",
+  Under7: "under7",
+};
+
 export const AgeBucketConfig: SurveyQuestionData = {
   id: "AgeBucket",
   title: "ageTitle",
   buttons: [
-    { key: "18orOver", primary: false, enabled: true },
-    { key: "13to17", primary: false, enabled: true },
-    { key: "7to12", primary: false, enabled: true },
-    { key: "under7", primary: false, enabled: true },
+    { key: AgeBuckets.Over18, primary: false, enabled: true },
+    { key: AgeBuckets.Teen, primary: false, enabled: true },
+    { key: AgeBuckets.Child, primary: false, enabled: true },
+    { key: AgeBuckets.Under7, primary: false, enabled: true },
   ],
 };
 

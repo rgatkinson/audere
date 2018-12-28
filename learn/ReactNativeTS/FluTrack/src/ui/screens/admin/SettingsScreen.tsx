@@ -4,7 +4,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { FormState, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import { AgeBucketConfig } from "../../../resources/ScreenConfig";
+import { AgeBuckets, AgeBucketConfig } from "../../../resources/ScreenConfig";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
 import Description from "../../components/Description";
@@ -53,11 +53,11 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
       "selectedButtonKey",
       AgeBucketConfig.id
     );
-    if (ageBucket === "18orOver") {
+    if (ageBucket === AgeBuckets.Over18) {
       return !!this.props.form.consent;
-    } else if (ageBucket === "13to17") {
+    } else if (ageBucket === AgeBuckets.Teen) {
       return !!this.props.form.consent && !!this.props.form.parentConsent;
-    } else if (ageBucket === "7to12") {
+    } else if (ageBucket === AgeBuckets.Child) {
       return !!this.props.form.parentConsent && !!this.props.form.assent;
     } else {
       // under7

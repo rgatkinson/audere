@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 import { NavigationScreenProp } from "react-navigation";
 import {
+  AgeBuckets,
   AgeBucketConfig,
   BloodConfig,
   ConsentConfig,
@@ -98,19 +99,23 @@ class ConsentScreen extends React.Component<
     }
   };
 
+  _getAgeBucket = () => {
+    if (this.props.navigation.getParam("reconsent")) {
+      return this.props.navigation.getParam("newAgeBucket");
+    }
+    return this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+  };
+
   _proceed = () => {
     if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) ===
-        "18orOver" &&
+      this._getAgeBucket() === AgeBuckets.Over18 &&
       this.props.bloodCollection
     ) {
       this.props.navigation.push("Blood", {
         data: BloodConfig,
         reconsent: this.props.navigation.getParam("reconsent"),
       });
-    } else if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "7to12"
-    ) {
+    } else if (this._getAgeBucket() === AgeBuckets.Child) {
       this.props.navigation.push("Assent", {
         reconsent: this.props.navigation.getParam("reconsent"),
       });
@@ -122,14 +127,9 @@ class ConsentScreen extends React.Component<
   };
 
   _canProceed = (): boolean => {
-    if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) ===
-      "18orOver"
-    ) {
+    if (this._getAgeBucket() === AgeBuckets.Over18) {
       return !!this.props.name && !!this.props.consent;
-    } else if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "13to17"
-    ) {
+    } else if (this._getAgeBucket() === AgeBuckets.Teen) {
       return (
         !!this.props.name && !!this.props.consent && !!this.props.parentConsent
       );
@@ -140,10 +140,7 @@ class ConsentScreen extends React.Component<
 
   renderSignatures() {
     const { t } = this.props;
-    if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) ===
-      "18orOver"
-    ) {
+    if (this._getAgeBucket() === AgeBuckets.Over18) {
       return (
         <View>
           <View style={styles.signatureContainer}>
@@ -178,9 +175,7 @@ class ConsentScreen extends React.Component<
           />
         </View>
       );
-    } else if (
-      this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id) === "13to17"
-    ) {
+    } else if (this._getAgeBucket() === AgeBuckets.Teen) {
       return (
         <View style={{ alignSelf: "stretch" }}>
           <View style={styles.signatureContainer}>

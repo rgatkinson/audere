@@ -15,7 +15,11 @@ import {
   EnabledOption,
   SurveyQuestionData,
 } from "../../resources/QuestionnaireConfig";
-import { AgeBucketConfig, ConsentConfig } from "../../resources/ScreenConfig";
+import {
+  AgeBuckets,
+  AgeBucketConfig,
+  ConsentConfig,
+} from "../../resources/ScreenConfig";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
@@ -130,37 +134,46 @@ class SurveyQuestion extends Component<
       "selectedButtonKey",
       AgeBucketConfig.id
     );
-    if (ageBucket === "18orOver") {
+    if (ageBucket === AgeBuckets.Over18) {
       date.setFullYear(year - 35);
-    } else if (ageBucket === "13to17") {
+    } else if (ageBucket === AgeBuckets.Teen) {
       date.setFullYear(year - 15);
-    } else if (ageBucket === "7to12") {
+    } else if (ageBucket === AgeBuckets.Child) {
       date.setFullYear(year - 10);
     }
     return date.getFullYear();
   }
 
-  _getAdjustedAgeBucket(): string {
-    var today = new Date();
-    var birthDate = this.props.getAnswer("dateInput");
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
+  _getAdjustedAgeBucket(birthDate: Date): string {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
       age = age - 1;
     }
 
     if (age >= 18) {
-      return "18orOver";
+      return AgeBuckets.Over18;
     } else if (age >= 13) {
-      return "13to17";
+      return AgeBuckets.Teen;
     } else if (age >= 7) {
-      return "7to12";
+      return AgeBuckets.Child;
     } else {
-      return "under7";
+      return AgeBuckets.Under7;
     }
   }
 
-  _reconsent() {
+  _reconsentNeeded(date: Date) {
+    const ageBucket = this.props.getAnswer(
+      "selectedButtonKey",
+      AgeBucketConfig.id
+    );
+    const currentBucket = this._getAdjustedAgeBucket(date);
+    return ageBucket !== currentBucket;
+  }
+
+  _reconsent(date: Date) {
+    const newAgeBucket = this._getAdjustedAgeBucket(date);
     const { t } = this.props;
     Alert.alert(t("newConsentRequired"), t("ageDoesntMatch"), [
       {
@@ -171,12 +184,13 @@ class SurveyQuestion extends Component<
         text: t("continue"),
         onPress: () => {
           this.props.updateAnswer(
-            { selectedButtonKey: this._getAdjustedAgeBucket() },
+            { selectedButtonKey: newAgeBucket },
             AgeBucketConfig
           );
           this.props.navigation.push("Consent", {
             data: ConsentConfig,
             reconsent: true,
+            newAgeBucket,
           });
         },
       },
@@ -245,7 +259,12 @@ class SurveyQuestion extends Component<
             )}
             onDateChange={(dateInput: Date) => {
               this.props.updateAnswer({ dateInput });
-              this.props.onNext(this._getNextQuestion("done"));
+              if (
+                this.props.data.id !== "BirthDate" ||
+                !this._reconsentNeeded(dateInput)
+              ) {
+                this.props.onNext(this._getNextQuestion("done"));
+              }
             }}
           />
         )}
@@ -340,13 +359,10 @@ class SurveyQuestion extends Component<
                 Keyboard.dismiss();
                 if (
                   this.props.data.id === "BirthDate" &&
-                  this._getAdjustedAgeBucket() !==
-                    this.props.getAnswer(
-                      "selectedButtonKey",
-                      AgeBucketConfig.id
-                    )
+                  this._reconsentNeeded(this.props.getAnswer("dateInput"))
                 ) {
-                  this._reconsent();
+                  this._reconsent(this.props.getAnswer("dateInput"));
+                  return;
                 } else {
                   if (typeof this.state.textInput !== "undefined") {
                     this.props.updateAnswer({
