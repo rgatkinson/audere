@@ -225,7 +225,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
           });
         }
 
-        if (response.answer.numberInput) {
+        if (response.answer.numberInput || response.answer.numberInput === 0) {
           if (Number.isInteger(response.answer.numberInput)) {
             item.answer.push({ valueInteger: response.answer.numberInput });
           } else {

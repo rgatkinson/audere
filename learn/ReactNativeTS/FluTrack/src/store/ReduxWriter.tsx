@@ -129,7 +129,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       const response = this.props.responses.find(
         response => response.questionId === id
       );
-      if (!response || !response!.answer || !response!.answer![key]) {
+      if (!response || !response!.answer || (!response!.answer![key] && response.answer![key] !== 0)) {
         return null;
       }
       return response!.answer![key];

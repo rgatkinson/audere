@@ -303,12 +303,12 @@ class SurveyQuestion extends Component<
             min={this.props.data.numberSelector!.min}
             max={this.props.data.numberSelector!.max}
             maxPlus={this.props.data.numberSelector!.maxPlus}
-            num={this._getValue("numberInput")}
+            num={this.props.getAnswer("numberInput")}
             placeholder={t(
               "surveyPlaceholder:" + this.props.data.numberSelector!.placeholder
             )}
-            onNumChange={(numberInput: number) => {
-              this.props.updateAnswer({ numberInput });
+            onNumChange={(num: number) => {
+              this.props.updateAnswer({ numberInput: num });
               this.props.onNext(this._getNextQuestion("done"));
             }}
           />
