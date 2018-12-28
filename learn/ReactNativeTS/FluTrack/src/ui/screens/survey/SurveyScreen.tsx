@@ -3,6 +3,7 @@ import {
   KeyboardAvoidingView,
   LayoutAnimation,
   SectionList,
+  StatusBar as SystemStatusBar,
   StyleSheet,
   Text,
   View,
@@ -144,6 +145,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <SystemStatusBar barStyle="dark-content" />
         <StatusBar
           canProceed={false}
           progressNumber={

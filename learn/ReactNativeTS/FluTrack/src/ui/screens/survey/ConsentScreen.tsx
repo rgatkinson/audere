@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
@@ -19,11 +19,9 @@ import {
   ConsentConfig,
   EnrolledConfig,
 } from "../../../resources/ScreenConfig";
-import Button from "../../components/Button";
+import ConsentChrome from "../../components/ConsentChrome";
 import Description from "../../components/Description";
 import SignatureInput from "../../components/SignatureInput";
-import StatusBar from "../../components/StatusBar";
-import Title from "../../components/Title";
 import {
   getContactName,
   getContactPhone,
@@ -237,51 +235,23 @@ class ConsentScreen extends React.Component<
   render() {
     const { t } = this.props;
     return (
-      <View style={styles.container}>
-        <StatusBar
-          canProceed={this._canProceed()}
-          progressNumber="60%"
-          progressLabel={t("common:statusBar:enrollment")}
-          title={t("consent")}
-          onBack={this.props.navigation.pop}
-          onForward={this._proceed}
-        />
-        <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Description
-            content={t(ConsentConfig.description!.label)}
-            style={{ marginHorizontal: 20 }}
-          />
-          <Text style={[styles.consentText, { textAlign: "center" }]}>
-            {t("consentFormHeader")}
-          </Text>
-          <Text style={styles.consentText}>{this._getConsentTerms()}</Text>
-          {this.renderSignatures()}
-          <Button
-            enabled={this._canProceed()}
-            label={t("surveyButton:done")}
-            primary={true}
-            onPress={this._proceed}
-          />
-        </ScrollView>
-      </View>
+      <ConsentChrome
+        canProceed={this._canProceed()}
+        progressNumber="60%"
+        navigation={this.props.navigation}
+        title={t("consent")}
+        proceed={this._proceed}
+        description={t(ConsentConfig.description!.label)}
+        header={t("consentFormHeader")}
+        terms={this._getConsentTerms()}
+      >
+        {this.renderSignatures()}
+      </ConsentChrome>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    alignItems: "center",
-  },
-  consentText: {
-    alignSelf: "stretch",
-    backgroundColor: "white",
-    fontFamily: "OpenSans-Regular",
-    fontSize: 16,
-    padding: 16,
-  },
   signatureContainer: {
     alignSelf: "stretch",
     alignItems: "center",

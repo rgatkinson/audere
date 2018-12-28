@@ -3,6 +3,7 @@ import {
   AppState,
   Alert,
   Image,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -65,6 +66,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
     const clinician = !!this.props.admin ? this.props.admin : t("unknown");
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
         <Image
           style={{ height: 30, width: 380 }}
           source={require("../../../img/UWLogo.png")}
