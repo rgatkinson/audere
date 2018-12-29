@@ -104,6 +104,7 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
         <View style={styles.inputContainer}>
           <TextInput
             autoFocus={true}
+            keyboardType="numbers-and-punctuation"
             placeholder="Enter barcode data"
             returnKeyType="next"
             value={this.state.barcode1}
@@ -113,6 +114,7 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
             onSubmitEditing={() => this.confirmInput.current!.focus()}
           />
           <TextInput
+            keyboardType="numbers-and-punctuation"
             placeholder="Confirm barcode data"
             ref={this.confirmInput}
             returnKeyType="done"
