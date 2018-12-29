@@ -41,6 +41,7 @@ module "flu_dev" {
   source = "../../modules/flu-dev"
 
   bastion_cidr_whitelist = "${var.bastion_cidr_whitelist}"
+  devs = "${var.devs}"
   dev_cidr = "${module.vpc_cidr.prod_dev_cidr}"
   environment = "prod"
   fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"

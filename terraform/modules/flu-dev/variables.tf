@@ -12,6 +12,11 @@ variable "bastion_cidr_whitelist" {
   type = "list"
 }
 
+variable "devs" {
+  description = "Userids for developers who should have a dev machine in this environment"
+  type = "list"
+}
+
 variable "dev_cidr" {
   description = "CIDR block in which to allocate subnets for this environment"
 }
@@ -38,7 +43,7 @@ variable "home_size_gb" {
 }
 
 variable "instance_type" {
-  default = "t3.nano"
+  default = "t3.small"
 }
 
 variable "vpc_id" {

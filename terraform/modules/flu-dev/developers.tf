@@ -94,7 +94,7 @@ resource "aws_subnet" "dev_machine" {
 }
 
 resource "aws_instance" "dev_machine" {
-  count = "${length(local.devs)}"
+  count = "${length(var.devs)}"
 
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
@@ -115,28 +115,28 @@ resource "aws_instance" "dev_machine" {
   ]
 
   tags {
-    Name = "${local.devs[count.index]}-${local.base_name}"
+    Name = "${var.devs[count.index]}-${local.base_name}"
   }
 
   volume_tags {
-    Name = "${local.devs[count.index]}-${local.base_name}-root"
+    Name = "${var.devs[count.index]}-${local.base_name}-root"
   }
 }
 
 data "template_file" "provision_dev_sh" {
-  count = "${length(local.devs)}"
+  count = "${length(var.devs)}"
 
   template = "${file("${path.module}/provision-dev.sh")}"
   vars {
     util_sh = "${file("${path.module}/../assets/util.sh")}"
     home_volume_letter = "${local.home_volume_letter}"
-    ssh_public_key = "${lookup(module.devs.ssh_keys, local.devs[count.index])}"
-    userid = "${local.devs[count.index]}"
+    ssh_public_key = "${lookup(module.devs.ssh_keys, var.devs[count.index])}"
+    userid = "${var.devs[count.index]}"
   }
 }
 
 resource "aws_ebs_volume" "dev_machine_home" {
-  count = "${length(local.devs)}"
+  count = "${length(var.devs)}"
 
   availability_zone = "${var.availability_zone}"
   encrypted = true
@@ -144,12 +144,12 @@ resource "aws_ebs_volume" "dev_machine_home" {
   type = "gp2"
 
   tags {
-    Name = "${local.devs[count.index]}-${local.base_name}-home"
+    Name = "${var.devs[count.index]}-${local.base_name}-home"
   }
 }
 
 resource "aws_volume_attachment" "dev_machine_home" {
-  count = "${length(local.devs)}"
+  count = "${length(var.devs)}"
 
   device_name = "/dev/sd${local.home_volume_letter}"
   instance_id = "${aws_instance.dev_machine.*.id[count.index]}"
@@ -215,7 +215,6 @@ data "aws_route53_zone" "auderenow_io" {
 locals {
   base_name = "${var.environment}-dev"
   bastion_port = 12893
-  devs = "${keys(module.devs.ssh_keys)}"
   home_volume_letter = "h"
 
   subnet_dev_bastion_cidr = "${cidrsubnet(var.dev_cidr, 1, 0)}"

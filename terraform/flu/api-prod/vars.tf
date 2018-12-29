@@ -8,6 +8,14 @@ variable "bastion_cidr_whitelist" {
   type = "list"
 }
 
+variable "devs" {
+  description = "Userids of developers who should have a dev machine allocated"
+  default = [
+    "mmarucheck",
+    "ram",
+  ]
+}
+
 variable "service" {
   description = "Service mode, one of 'offline', 'single', 'elb'"
   default = "elb"
