@@ -335,6 +335,8 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "na", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -453,6 +455,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "Occupation",
       nextQuestion: "WorkAddress",
       title: "occupation",
+      description: {
+        label: "occupationDescription",
+        center: true,
+      },
       textInput: {
         placeholder: "occupation",
       },
@@ -468,6 +474,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "WorkAddress",
       nextQuestion: "HoursWorked",
       title: "workAddress",
+      description: {
+        label: "workAddressDescription",
+        center: false,
+      },
       addressInput: {
         showLocationField: true,
       },
@@ -552,7 +562,7 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
-        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "doNotKnowUndecided", primary: false, enabled: true },
         { key: "na", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
@@ -864,7 +874,14 @@ export const questionnaire: SurveyQuestion[] = [
       },
       nextQuestion: null,
       optionList: {
-        options: ["none", "medicaid", "privateInsurance", "medicare", "other"],
+        options: [
+          "none",
+          "medicaid",
+          "employerPlan",
+          "privateInsurance",
+          "medicare",
+          "other",
+        ],
         multiSelect: true,
         withOther: true,
       },

@@ -38,7 +38,11 @@ class NumberSelectorModal extends React.Component<
 
   render() {
     const { t } = this.props;
-    const range = Array(this.props.max - this.props.min + 1)
+    const range = Array(
+      (this.props.maxPlus ? this.props.max - 1 : this.props.max) -
+        this.props.min +
+        1
+    )
       .fill(0)
       .map((item: any, index: number) => {
         return this.props.min + index;
