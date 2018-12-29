@@ -79,7 +79,6 @@ resource "aws_instance" "provision0" {
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
     "${module.fludb_sg.client_id}",
-    # "${module.fludev_ssh_sg.server_id}",
   ]
 
   tags {
@@ -213,8 +212,6 @@ resource "aws_ebs_volume" "admin_creds" {
 }
 
 // --------------------------------------------------------------------------------
-
-# data "aws_security_group" "ssh" { name = "ssh" }
 
 data "aws_caller_identity" "current" {}
 

@@ -116,8 +116,6 @@ resource "aws_security_group_rule" "public_http" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-data "aws_security_group" "ssh" { name = "ssh" }
-
 locals {
   subnet_api_cidr = "${cidrsubnet(var.api_cidr, 1, 0)}"
   subnet_migrate_cidr = "${cidrsubnet(var.api_cidr, 1, 1)}"

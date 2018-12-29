@@ -204,10 +204,6 @@ module "devs" {
   source = "../devs"
 }
 
-data "aws_security_group" "ssh" {
-  name = "ssh"
-}
-
 data "aws_route53_zone" "auderenow_io" {
   name = "auderenow.io."
 }
