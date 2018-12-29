@@ -103,9 +103,6 @@ resource "aws_instance" "dev_machine" {
   subnet_id = "${aws_subnet.dev_machine.id}"
   user_data = "${data.template_file.provision_dev_sh.*.rendered[count.index]}"
 
-  # TODO remove
-  key_name = "2018-mmarucheck"
-
   root_block_device {
     volume_type = "gp2"
     volume_size = 15

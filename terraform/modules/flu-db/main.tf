@@ -73,7 +73,6 @@ resource "aws_instance" "provision0" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
-  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.provision.id}"
   user_data = "${data.template_file.provision0_sh.rendered}"
 
@@ -130,14 +129,12 @@ resource "aws_instance" "add_admin" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
-  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.provision.id}"
   user_data = "${data.template_file.add_admin_sh.rendered}"
 
   vpc_security_group_ids = [
     "${aws_security_group.provision.id}",
     "${module.fludb_sg.client_id}",
-    # "${module.fludev_ssh_sg.server_id}",
   ]
 
   tags {

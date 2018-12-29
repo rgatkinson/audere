@@ -69,7 +69,6 @@ data "template_file" "service_init_sh" {
 resource "aws_instance" "migrate_instance" {
   ami = "${var.ami_id}"
   instance_type = "t2.micro"
-  # key_name = "2018-mmarucheck"
   subnet_id = "${aws_subnet.migrate.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
@@ -98,7 +97,6 @@ resource "aws_instance" "migrate_instance" {
 # resource "aws_instance" "flu_api_instance" {
 #   ami = "${var.ami_id}"
 #   instance_type = "t2.micro"
-#   key_name = "2018-mmarucheck"
 #   user_data = "${data.template_file.service_init_sh.rendered}"
 
 #   vpc_security_group_ids = [
