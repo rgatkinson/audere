@@ -28,7 +28,7 @@ resource "aws_subnet" "elb" {
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-elb"
+    Name = "${local.base_name}-elb"
   }
 }
 
@@ -44,7 +44,7 @@ resource "aws_subnet" "api" {
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-instance"
+    Name = "${local.base_name}-instance"
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_subnet" "migrate" {
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-migrate"
+    Name = "${local.base_name}-migrate"
   }
 }
 

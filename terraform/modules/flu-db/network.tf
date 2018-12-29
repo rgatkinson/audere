@@ -27,7 +27,7 @@ resource "aws_subnet" "fludb" {
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "subnet-${local.base_name}"
+    Name = "${local.base_name}"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "fludb_secondary" {
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-secondary"
+    Name = "${local.base_name}-secondary"
   }
 }
 
@@ -102,7 +102,7 @@ resource "aws_subnet" "provision" {
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-provision"
+    Name = "${local.base_name}-provision"
   }
 }
 

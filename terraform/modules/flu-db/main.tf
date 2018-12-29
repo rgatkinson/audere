@@ -182,7 +182,7 @@ resource "aws_ebs_volume" "api_creds" {
   size = 1
 
   tags {
-    Name = "flu-api-${var.environment}"
+    Name = "flu-${var.environment}-api"
   }
 }
 
@@ -192,7 +192,7 @@ resource "aws_ebs_snapshot" "api_creds" {
   volume_id = "${aws_ebs_volume.api_creds.id}"
 
   tags {
-    Name = "flu-api-${var.environment}"
+    Name = "flu-${var.environment}-api-creds"
   }
 }
 
@@ -230,7 +230,7 @@ locals {
   mode_run = "${(var.mode == "run") ? 1 : 0}"
   db_setup_password = "${file("${var.db_setup_password_filename}")}"
   github_tar_bz2_base64 = "${file("${var.github_tar_bz2_base64_filename}")}"
-  base_name = "flu-db-${var.environment}"
+  base_name = "flu-${var.environment}-db"
   random_seed_base64 = "${base64encode(file("${var.random_seed_filename}"))}"
   vpc_dhparam_base64 = "${base64encode(file("${var.vpc_dhparam_filename}"))}"
   my_userid = "${element(split("/", data.aws_caller_identity.current.arn), 1)}"

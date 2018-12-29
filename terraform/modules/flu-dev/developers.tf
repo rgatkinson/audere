@@ -18,7 +18,7 @@ resource "aws_subnet" "bastion" {
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-bastion"
+    Name = "${local.base_name}-bastion"
   }
 }
 
@@ -89,7 +89,7 @@ resource "aws_subnet" "dev_machine" {
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "subnet-${local.base_name}-dev"
+    Name = "${local.base_name}-dev"
   }
 }
 
@@ -115,11 +115,11 @@ resource "aws_instance" "dev_machine" {
   ]
 
   tags {
-    Name = "${var.devs[count.index]}-${local.base_name}"
+    Name = "${local.base_name}-${var.devs[count.index]}"
   }
 
   volume_tags {
-    Name = "${var.devs[count.index]}-${local.base_name}-root"
+    Name = "${local.base_name}-${var.devs[count.index]}-root"
   }
 }
 
@@ -144,7 +144,7 @@ resource "aws_ebs_volume" "dev_machine_home" {
   type = "gp2"
 
   tags {
-    Name = "${var.devs[count.index]}-${local.base_name}-home"
+    Name = "${local.base_name}-${var.devs[count.index]}-home"
   }
 }
 
@@ -213,7 +213,7 @@ data "aws_route53_zone" "auderenow_io" {
 }
 
 locals {
-  base_name = "${var.environment}-dev"
+  base_name = "flu-${var.environment}-dev"
   bastion_port = 12893
   home_volume_letter = "h"
 

@@ -10,7 +10,7 @@ locals {
   }
   subdomain = "${local.subdomains["${var.environment}"]}"
   full_domain = "${local.subdomain}.auderenow.io"
-  base_name = "flu-api-${var.environment}"
+  base_name = "flu-${var.environment}-api"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
   util_sh = "${file("${path.module}/../assets/util.sh")}"
@@ -24,6 +24,10 @@ locals {
   ssh_public_key_directory = "${path.module}/../../../dev/ssh-keys"
   ram_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-ram.pub")}"
   mmarucheck_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-mmarucheck.pub")}"
+}
+
+module "ami" {
+  source = "../ami"
 }
 
 data "aws_acm_certificate" "auderenow_io" {
@@ -67,7 +71,7 @@ data "template_file" "service_init_sh" {
 // Sequelize migration
 
 resource "aws_instance" "migrate_instance" {
-  ami = "${var.ami_id}"
+  ami = "${module.ami.ubuntu}"
   instance_type = "t2.micro"
   subnet_id = "${aws_subnet.migrate.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
@@ -165,7 +169,7 @@ resource "aws_elb" "flu_api_elb" {
 }
 
 resource "aws_launch_configuration" "flu_api_instance" {
-  image_id = "${var.ami_id}"
+  image_id = "${module.ami.ubuntu}"
   instance_type = "t2.micro"
   user_data = "${data.template_file.service_init_sh.rendered}"
 

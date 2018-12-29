@@ -23,7 +23,6 @@ provider "template" {
 module "flu_api" {
   source = "../../modules/flu-api"
 
-  ami_id = "${module.ami.ubuntu}"
   api_cidr = "${module.vpc_cidr.staging_api_cidr}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
@@ -61,8 +60,4 @@ data "terraform_remote_state" "flu_db" {
     key = "db/terraform.state"
     region = "us-west-2"
   }
-}
-
-module "ami" {
-  source = "../../modules/ami"
 }
