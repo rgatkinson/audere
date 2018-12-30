@@ -211,8 +211,10 @@
     "selectMonth": "Select month"
   },
   "paperConsentScreen": {
-    "getACopy": "Receive a copy of the Consent Form",
-    "paperConsent": "If you'd like a paper copy of the consent form you've signed, please let a staff member know now."
+    "getACopy": "Receive a copy of the Consent Form{{plural}}",
+    "assent": " and the assent form",
+    "subStudy": " and the optional sub-study form",
+    "paperConsent": "If you'd like a paper copy of the consent form{{additional}} you've signed, please let a staff member know now."
   },
   "surveyStartScreen": {
     "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. Please answer the following questions about your house, your medical history, and other information about yourself."

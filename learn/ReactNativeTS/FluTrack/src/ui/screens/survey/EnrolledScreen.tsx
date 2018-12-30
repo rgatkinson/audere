@@ -110,7 +110,8 @@ class EnrolledScreen extends React.PureComponent<
   _validEmail = () => {
     return (
       !!this._getEmail() &&
-      (this.emailInput.current == null || this.emailInput.current!.isValid(this._getEmail())) &&
+      (this.emailInput.current == null ||
+        this.emailInput.current!.isValid(this._getEmail())) &&
       !!this.state.options &&
       this.state.options.reduce(
         (result: boolean, option: Option) => result || option.selected,

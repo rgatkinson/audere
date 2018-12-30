@@ -12,7 +12,6 @@ export type FormAction =
   | { type: "SET_BLOOD_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
-  | { type: "SET_BLOOD_CONSENT_TERMS"; consentTerms: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 

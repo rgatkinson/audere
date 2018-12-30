@@ -1,5 +1,8 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
+import { StoreState } from "../../../store";
+import { ConsentInfo } from "audere-lib";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Description from "../../components/Description";
@@ -9,9 +12,15 @@ import StatusBar from "../../components/StatusBar";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
+  assent?: ConsentInfo;
+  bloodConsent?: ConsentInfo;
   navigation: NavigationScreenProp<any, any>;
 }
 
+@connect((state: StoreState) => ({
+  assent: state.form.assent,
+  bloodConsent: state.form.bloodConsent,
+}))
 class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -28,8 +37,24 @@ class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
           }}
         />
         <ContentContainer>
-          <Title label={t("getACopy")} />
-          <Description content={t("paperConsent")} />
+          <Title
+            label={t("getACopy", {
+              plural:
+                this.props.assent != null || this.props.bloodConsent != null
+                  ? "s"
+                  : "",
+            })}
+          />
+          <Description
+            content={t("paperConsent", {
+              additional:
+                this.props.assent != null
+                  ? t("assent")
+                  : this.props.bloodConsent != null
+                    ? t("subStudy")
+                    : "",
+            })}
+          />
           <Button
             enabled={true}
             primary={true}
