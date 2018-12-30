@@ -52,6 +52,7 @@
     "city": "City",
     "state": "State",
     "zipcode": "Zipcode",
+    "postalCode": "Postal Code",
     "country": "Country"
   },
   "feedbackModal": {

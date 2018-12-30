@@ -19,6 +19,15 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
+  postalCode = React.createRef<TextInput>();
+
+  _isZipcode = (): boolean => {
+    return (
+      !this.props.value ||
+      !this.props.value.country ||
+      this.props.value.country === "United States"
+    );
+  };
 
   state = {
     countryOpen: false,
@@ -96,7 +105,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             this.props.onChange(address);
           }}
           onSubmitEditing={() => {
-            this.zipcode.current!.focus();
+            this._isZipcode()
+              ? this.zipcode.current!.focus()
+              : this.postalCode.current!.focus();
           }}
         />
         <View style={{ flexDirection: "row" }}>
@@ -122,29 +133,40 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
-              this.zipcode.current!.focus();
+              this._isZipcode()
+                ? this.zipcode.current!.focus()
+                : this.postalCode.current!.focus();
             }}
           />
-          <NumberInput
-            placeholder={t("zipcode")}
-            ref={this.zipcode}
-            returnKeyType="next"
-            style={[
-              {
-                flex: 1,
-                borderLeftColor: "#bbb",
-                borderLeftWidth: StyleSheet.hairlineWidth,
-              },
-              styles.textInput,
-            ]}
-            value={this.props.value ? this.props.value!.zipcode : undefined}
-            onChangeText={(text: string) => {
-              const address = this.props.value || {};
-              address.zipcode = text;
-              this.props.onChange(address);
-            }}
-            onSubmitEditing={this.props.onDone}
-          />
+          {this._isZipcode() ? (
+            <NumberInput
+              placeholder={t("zipcode")}
+              ref={this.zipcode}
+              returnKeyType="next"
+              style={[styles.zipcode, styles.textInput]}
+              value={this.props.value ? this.props.value!.zipcode : undefined}
+              onChangeText={(text: string) => {
+                const address = this.props.value || {};
+                address.zipcode = text;
+                this.props.onChange(address);
+              }}
+              onSubmitEditing={this.props.onDone}
+            />
+          ) : (
+            <TextInput
+              placeholder={t("postalCode")}
+              ref={this.postalCode}
+              returnKeyType="next"
+              style={[styles.zipcode, styles.textInput]}
+              value={this.props.value ? this.props.value!.zipcode : undefined}
+              onChangeText={(text: string) => {
+                const address = this.props.value || {};
+                address.zipcode = text;
+                this.props.onChange(address);
+              }}
+              onSubmitEditing={this.props.onDone}
+            />
+          )}
         </View>
       </View>
     );
@@ -179,6 +201,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.41,
     lineHeight: 22,
     marginVertical: 0,
+  },
+  zipcode: {
+    flex: 1,
+    borderLeftColor: "#bbb",
+    borderLeftWidth: StyleSheet.hairlineWidth,
   },
 });
 
