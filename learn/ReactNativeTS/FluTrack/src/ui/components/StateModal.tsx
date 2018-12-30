@@ -75,10 +75,7 @@ const states = [
   "VI",
 ];
 
-class StateModal extends React.Component<
-  Props & WithNamespaces,
-  State
-> {
+class StateModal extends React.Component<Props & WithNamespaces, State> {
   state = {
     state: null,
   };
@@ -86,11 +83,8 @@ class StateModal extends React.Component<
   _getState = (): string => {
     if (this.state.state != null) {
       return this.state.state!;
-    } else if (this.props.state != null) {
-      return this.props.state;
-    } else {
-      return "WA";
     }
+    return this.props.state;
   };
 
   render() {

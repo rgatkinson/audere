@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import CountryModal from "./CountryModal";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
 import TextInput from "./TextInput";
@@ -18,10 +19,10 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
-  country = React.createRef<TextInput>();
 
   state = {
-    open: false,
+    countryOpen: false,
+    stateOpen: false,
   };
 
   // TODO: validate on submit
@@ -44,6 +45,31 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             onSubmitEditing={() => this.address.current!.focus()}
           />
         )}
+        <TouchableOpacity
+          style={styles.pickerContainer}
+          onPress={() => this.setState({ countryOpen: true })}
+        >
+          <Text style={styles.text}>
+            {this.props.value && this.props.value.country
+              ? this.props.value.country
+              : "United States"}
+          </Text>
+        </TouchableOpacity>
+        <CountryModal
+          country={
+            this.props.value && this.props.value!.country
+              ? this.props.value!.country!
+              : "United States"
+          }
+          visible={this.state.countryOpen}
+          onDismiss={(country: string) => {
+            this.setState({ countryOpen: false });
+            const address = this.props.value || {};
+            address.country = country;
+            this.props.onChange(address);
+            this.address.current!.focus();
+          }}
+        />
         <TextInput
           autoFocus={this.props.autoFocus && !this.props.showLocationField}
           placeholder={t("streetAddress")}
@@ -69,22 +95,30 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.city = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => {}}
+          onSubmitEditing={() => {
+            this.zipcode.current!.focus();
+          }}
         />
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
-            style={styles.stateContainer}
-            onPress={() => this.setState({ open: true })}
+            style={styles.pickerContainer}
+            onPress={() => this.setState({ stateOpen: true })}
           >
             <Text style={styles.text}>
-              {this.props.value && this.props.value.state ? this.props.value.state : 'WA'}
+              {this.props.value && this.props.value.state
+                ? this.props.value.state
+                : "WA"}
             </Text>
           </TouchableOpacity>
           <StateModal
-            state={this.props.value && this.props.value!.state  ? this.props.value!.state! : "WA"}
-            visible={this.state.open}
+            state={
+              this.props.value && this.props.value!.state
+                ? this.props.value!.state!
+                : "WA"
+            }
+            visible={this.state.stateOpen}
             onDismiss={(state: string) => {
-              this.setState({ open: false });
+              this.setState({ stateOpen: false });
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
@@ -109,22 +143,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               address.zipcode = text;
               this.props.onChange(address);
             }}
-            onSubmitEditing={() => this.country.current!.focus()}
+            onSubmitEditing={this.props.onDone}
           />
         </View>
-        <TextInput
-          placeholder={t("country")}
-          ref={this.country}
-          returnKeyType="done"
-          style={styles.textInput}
-          value={this.props.value ? this.props.value!.country : undefined}
-          onChangeText={(text: string) => {
-            const address = this.props.value || {};
-            address.country = text;
-            this.props.onChange(address);
-          }}
-          onSubmitEditing={this.props.onDone}
-        />
       </View>
     );
   }
@@ -136,12 +157,12 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: 30,
   },
-  stateContainer: {
+  pickerContainer: {
     borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
     flex: 1,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 16,
   },
   text: {
