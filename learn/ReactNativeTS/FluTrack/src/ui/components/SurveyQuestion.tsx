@@ -136,9 +136,16 @@ class SurveyQuestion extends Component<
     } else if (enabledStatus === "withNumber") {
       return Number.isInteger(parseInt(this._getValue("numberInput")));
     } else if (enabledStatus === "withAddress") {
-      // TODO: validates an empty Address object. Should explicitly check
-      // required fields once ready to do validation
-      return !!this._getValue("addressInput");
+      const address = this._getValue("addressInput");
+      return (
+        !!address &&
+        !!address.address &&
+        !!address.city &&
+        !!address.zipcode &&
+        (!address.country ||
+          (!!address.country &&
+            (address.country === "United States" || !!address.state)))
+      );
     } else if (enabledStatus === "withDate") {
       return !!this.props.getAnswer("dateInput");
     }
@@ -221,6 +228,21 @@ class SurveyQuestion extends Component<
       : this.props.getAnswer(valueType);
   };
 
+  _updateAddress = () => {
+    const address = this.state.addressInput;
+    if (address != null) {
+      if (!address.country) {
+        address.country = "United States";
+      }
+      if (!address.state && address.country === "United States") {
+        address.state = "WA";
+      }
+      this.props.updateAnswer({
+        addressInput: address,
+      });
+    }
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -295,9 +317,7 @@ class SurveyQuestion extends Component<
               this.setState({ addressInput })
             }
             onDone={() => {
-              this.props.updateAnswer({
-                addressInput: this.state.addressInput,
-              });
+              this._updateAddress();
               this.props.onNext(this._getNextQuestion("done"));
             }}
           />
@@ -398,11 +418,8 @@ class SurveyQuestion extends Component<
                     });
                   }
                   if (typeof this.state.addressInput !== "undefined") {
-                    this.props.updateAnswer({
-                      addressInput: this.state.addressInput,
-                    });
+                    this._updateAddress();
                   }
-
                   this.props.updateAnswer({ selectedButtonKey: button.key });
                   this.props.onNext(this._getNextQuestion(button.key));
                 }
