@@ -50,6 +50,7 @@ class DateModal extends React.Component<Props & WithNamespaces> {
           <DatePickerIOS
             date={this._getDate()}
             maximumDate={new Date()}
+            minimumDate={new Date(1900, 0, 1)}
             mode="date"
             onDateChange={date => {
               this.setState({ selectedDate: true, date });
