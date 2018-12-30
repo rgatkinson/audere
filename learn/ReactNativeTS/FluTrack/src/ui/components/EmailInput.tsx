@@ -20,13 +20,11 @@ interface Props extends React.Props<EmailInput> {
 
 interface State {
   submitted: boolean;
-  value?: string;
 }
 
 export default class EmailInput extends React.Component<Props, State> {
   state = {
     submitted: false,
-    value: undefined,
   };
 
   keyboardDidHideListener: any;
@@ -46,10 +44,6 @@ export default class EmailInput extends React.Component<Props, State> {
 
   textInput = React.createRef<TextInput>();
 
-  _getValue = (): string | undefined => {
-    return this.state.value != null ? this.state.value : this.props.value;
-  };
-
   render() {
     return (
       <View style={styles.container}>
@@ -60,9 +54,8 @@ export default class EmailInput extends React.Component<Props, State> {
           placeholder={this.props.placeholder}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
-          value={this._getValue()}
+          value={this.props.value}
           onChangeText={(text: string) => {
-            this.setState({ value: text });
             this.props.onChange(text);
           }}
           onSubmitEditing={() => {
@@ -85,8 +78,7 @@ export default class EmailInput extends React.Component<Props, State> {
     this.textInput.current!.focus();
   }
 
-  isValid = (): boolean => {
-    const value = this._getValue();
+  isValid = (value: string | undefined = this.props.value): boolean => {
     const validationPattern = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
     return value != null && validationPattern.test(value!);
   };
