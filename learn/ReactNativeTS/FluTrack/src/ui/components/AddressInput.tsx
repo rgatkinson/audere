@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import NumberInput from "./NumberInput";
+import StateModal from "./StateModal";
 import TextInput from "./TextInput";
 
 interface Props {
@@ -16,9 +17,12 @@ interface Props {
 class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
-  state = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
   country = React.createRef<TextInput>();
+
+  state = {
+    open: false,
+  };
 
   // TODO: validate on submit
   render() {
@@ -65,21 +69,27 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.city = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => this.state.current!.focus()}
+          onSubmitEditing={() => {}}
         />
         <View style={{ flexDirection: "row" }}>
-          <TextInput
-            placeholder={t("state")}
-            ref={this.state}
-            returnKeyType="next"
-            style={[{ flex: 1 }, styles.textInput]}
-            value={this.props.value ? this.props.value!.state : undefined}
-            onChangeText={(text: string) => {
+          <TouchableOpacity
+            style={styles.stateContainer}
+            onPress={() => this.setState({ open: true })}
+          >
+            <Text style={styles.text}>
+              {this.props.value && this.props.value.state ? this.props.value.state : 'WA'}
+            </Text>
+          </TouchableOpacity>
+          <StateModal
+            state={this.props.value && this.props.value!.state  ? this.props.value!.state! : "WA"}
+            visible={this.state.open}
+            onDismiss={(state: string) => {
+              this.setState({ open: false });
               const address = this.props.value || {};
-              address.state = text;
+              address.state = state;
               this.props.onChange(address);
+              this.zipcode.current!.focus();
             }}
-            onSubmitEditing={() => this.zipcode.current!.focus()}
           />
           <NumberInput
             placeholder={t("zipcode")}
@@ -126,8 +136,23 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: 30,
   },
+  stateContainer: {
+    borderBottomColor: "#bbb",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    height: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  text: {
+    paddingTop: 3,
+    color: "#007AFF",
+    fontSize: 17,
+    height: 30,
+    letterSpacing: -0.41,
+    lineHeight: 22,
+  },
   textInput: {
-    fontFamily: "OpenSans-Regular",
     fontSize: 17,
     height: 44,
     letterSpacing: -0.41,
