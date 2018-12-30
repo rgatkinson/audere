@@ -191,7 +191,7 @@ resource "aws_security_group_rule" "internet_egress" {
 module "dev_machine_sg" {
   source = "../sg-pair"
 
-  name = "dev-machine"
+  name = "${local.base_name}-dev-machine"
   port = "22"
   vpc_id = "${var.vpc_id}"
 }

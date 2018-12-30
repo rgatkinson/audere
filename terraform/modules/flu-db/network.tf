@@ -56,7 +56,7 @@ resource "aws_db_subnet_group" "fludb" {
 module "fludb_sg" {
   source = "../sg-pair"
 
-  name = "flu-db"
+  name = "${local.base_name}-db"
   port = 5432
   vpc_id = "${aws_vpc.fludb.id}"
 }
@@ -64,7 +64,7 @@ module "fludb_sg" {
 module "fludev_ssh_sg" {
   source = "../sg-pair"
 
-  name = "flu-ssh"
+  name = "${local.base_name}-ssh"
   port = 22
   vpc_id = "${aws_vpc.fludb.id}"
 }
@@ -107,7 +107,7 @@ resource "aws_subnet" "provision" {
 }
 
 resource "aws_security_group" "provision" {
-  name = "provision"
+  name = "${local.base_name}-provision"
   description = "Allow provision to have general egress"
   vpc_id = "${aws_vpc.fludb.id}"
 }
