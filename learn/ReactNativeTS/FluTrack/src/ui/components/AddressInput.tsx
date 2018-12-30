@@ -18,10 +18,11 @@ interface Props {
 class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
+  stateProvince = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
   postalCode = React.createRef<TextInput>();
 
-  _isZipcode = (): boolean => {
+  _isUSAddress = (): boolean => {
     return (
       !this.props.value ||
       !this.props.value.country ||
@@ -105,22 +106,38 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             this.props.onChange(address);
           }}
           onSubmitEditing={() => {
-            this._isZipcode()
+            this._isUSAddress()
               ? this.zipcode.current!.focus()
-              : this.postalCode.current!.focus();
+              : this.stateProvince.current!.focus();
           }}
         />
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-            style={styles.pickerContainer}
-            onPress={() => this.setState({ stateOpen: true })}
-          >
-            <Text style={styles.text}>
-              {this.props.value && this.props.value.state
-                ? this.props.value.state
-                : "WA"}
-            </Text>
-          </TouchableOpacity>
+          {this._isUSAddress() ? (
+            <TouchableOpacity
+              style={styles.pickerContainer}
+              onPress={() => this.setState({ stateOpen: true })}
+            >
+              <Text style={styles.text}>
+                {this.props.value && this.props.value.state
+                  ? this.props.value.state
+                  : "WA"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TextInput
+              placeholder={t("stateProvince")}
+              ref={this.stateProvince}
+              returnKeyType="next"
+              style={[{ flex: 1 }, styles.textInput]}
+              value={this.props.value ? this.props.value!.state : undefined}
+              onChangeText={(text: string) => {
+                const address = this.props.value || {};
+                address.state = text;
+                this.props.onChange(address);
+              }}
+              onSubmitEditing={() => this.postalCode.current!.focus()}
+            />
+          )}
           <StateModal
             state={
               this.props.value && this.props.value!.state
@@ -133,12 +150,12 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
-              this._isZipcode()
+              this._isUSAddress()
                 ? this.zipcode.current!.focus()
                 : this.postalCode.current!.focus();
             }}
           />
-          {this._isZipcode() ? (
+          {this._isUSAddress() ? (
             <NumberInput
               placeholder={t("zipcode")}
               ref={this.zipcode}

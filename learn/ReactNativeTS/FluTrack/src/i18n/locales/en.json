@@ -51,6 +51,7 @@
     "streetAddress": "Street address",
     "city": "City",
     "state": "State",
+    "stateProvince": "State/Province",
     "zipcode": "Zipcode",
     "postalCode": "Postal Code",
     "country": "Country"
