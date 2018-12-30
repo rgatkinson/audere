@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleSheet, Text } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
@@ -36,8 +37,10 @@ class InelligibleScreen extends React.PureComponent<
 > {
   state: State = {};
 
+  emailInput = React.createRef<EmailInput>();
+
   _onDone = () => {
-    if (!!this.state.email) {
+    if (!!this.state.email && this.emailInput.current!.isValid()) {
       this.props.dispatch(setEmail(this.state.email));
     }
     this.props.dispatch(completeSurvey());
@@ -59,11 +62,19 @@ class InelligibleScreen extends React.PureComponent<
           <Description content={t(InelligibleConfig.description.label)} />
           <EmailInput
             autoFocus={true}
+            placeholder={t("emailAddress")}
+            ref={this.emailInput}
             returnKeyType="done"
+            validationError={t("validationError")}
             value={this._getEmail()}
             onChange={text => this.setState({ email: text })}
-            onSubmit={this._onDone}
+            onSubmit={() => {
+              if (this.emailInput.current!.isValid()) {
+                this._onDone();
+              }
+            }}
           />
+          <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
           <Button
             primary={true}
             enabled={true}
@@ -75,5 +86,15 @@ class InelligibleScreen extends React.PureComponent<
     );
   }
 }
+
+const styles = StyleSheet.create({
+  disclaimer: {
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 26,
+    marginVertical: 20,
+  },
+});
 
 export default withNamespaces("inelligibleScreen")<Props>(InelligibleScreen);

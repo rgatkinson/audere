@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 interface Props {
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoFocus?: boolean;
   editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
@@ -26,6 +27,7 @@ export default class TextInput extends React.Component<Props> {
   render() {
     return (
       <SystemTextInput
+        autoCapitalize={this.props.autoCapitalize}
         autoFocus={this.props.autoFocus}
         editable={this.props.editable}
         keyboardType={

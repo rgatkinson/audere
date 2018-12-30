@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
@@ -44,6 +44,8 @@ class EnrolledScreen extends React.PureComponent<
   state: State = {
     options: [],
   };
+
+  emailInput = React.createRef<EmailInput>();
 
   static getDerivedStateFromProps(
     props: Props & ReduxWriterProps,
@@ -105,8 +107,10 @@ class EnrolledScreen extends React.PureComponent<
     );
   };
 
-  _haveEmailOption = () => {
+  _validEmail = () => {
     return (
+      !!this._getEmail() &&
+      (this.emailInput.current == null || this.emailInput.current!.isValid()) &&
       !!this.state.options &&
       this.state.options.reduce(
         (result: boolean, option: Option) => result || option.selected,
@@ -121,12 +125,20 @@ class EnrolledScreen extends React.PureComponent<
       : this.props.email;
   };
 
+  _canProceed = (): boolean => {
+    const selectedButtonKey = this.props.getAnswer("selectedButtonKey");
+    return (
+      !!selectedButtonKey &&
+      (selectedButtonKey !== "done" || this._validEmail())
+    );
+  };
+
   render() {
     const { t } = this.props;
     return (
       <ScreenContainer>
         <StatusBar
-          canProceed={!!this.props.getAnswer("selectedButtonKey")}
+          canProceed={this._canProceed()}
           progressNumber="95%"
           progressLabel={t("common:statusBar:enrollment")}
           title={t("contactInfo")}
@@ -143,11 +155,15 @@ class EnrolledScreen extends React.PureComponent<
             )}
           />
           <EmailInput
+            autoFocus={true}
+            placeholder={t("emailAddress")}
+            ref={this.emailInput}
             returnKeyType="next"
+            validationError={t("validationError")}
             value={this._getEmail()}
             onChange={text => this.setState({ email: text })}
-            onSubmit={() => {}}
           />
+          <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
           <OptionList
             data={this.state.options}
             multiSelect={true}
@@ -157,11 +173,7 @@ class EnrolledScreen extends React.PureComponent<
           {EnrolledConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
-              enabled={
-                button.key === "done"
-                  ? !!this._getEmail() && this._haveEmailOption()
-                  : true
-              }
+              enabled={button.key === "done" ? this._validEmail() : true}
               key={button.key}
               label={t("surveyButton:" + button.key)}
               primary={button.primary}
@@ -176,5 +188,15 @@ class EnrolledScreen extends React.PureComponent<
     );
   }
 }
+
+const styles = StyleSheet.create({
+  disclaimer: {
+    fontFamily: "OpenSans-Regular",
+    fontSize: 17,
+    letterSpacing: -0.41,
+    lineHeight: 26,
+    marginTop: 20,
+  },
+});
 
 export default reduxWriter(withNamespaces("enrolledScreen")(EnrolledScreen));

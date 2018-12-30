@@ -1,43 +1,82 @@
 import React from "react";
 import {
+  Keyboard,
   ReturnKeyTypeOptions,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
-import { WithNamespaces, withNamespaces } from "react-i18next";
+import TextInput from "./TextInput";
 
-interface Props {
+interface Props extends React.Props<EmailInput> {
   autoFocus?: boolean;
+  placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
+  validationError: string;
   value?: string;
   onChange(text: string): void;
-  onSubmit(): void;
+  onSubmit?(): void;
 }
 
-class EmailInput extends React.Component<Props & WithNamespaces> {
+interface State {
+  submitted: boolean;
+  value?: string;
+}
+
+export default class EmailInput extends React.Component<Props, State> {
+  state = {
+    submitted: false,
+    value: undefined,
+  };
+
+  keyboardDidHideListener: any;
+
+  componentDidMount() {
+    this.keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        this.setState({ submitted: true });
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidHideListener.remove();
+  }
+
   textInput = React.createRef<TextInput>();
 
-  // TODO: validate on submit
-  // TODO: accept a required prop and show error if required and not entered
-  render() {
-    const { t } = this.props;
+  _getValue = (): string | undefined => {
+    return this.state.value != null ? this.state.value : this.props.value;
+  };
 
+  render() {
     return (
       <View style={styles.container}>
         <TextInput
+          autoCapitalize="none"
           autoFocus={this.props.autoFocus}
           keyboardType="email-address"
-          placeholder={t("emailAddress")}
+          placeholder={this.props.placeholder}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
-          style={styles.textInput}
-          value={this.props.value}
-          onChangeText={this.props.onChange}
-          onSubmitEditing={this.props.onSubmit}
+          value={this._getValue()}
+          onChangeText={(text: string) => {
+            this.setState({ value: text });
+            this.props.onChange(text);
+          }}
+          onSubmitEditing={() => {
+            this.setState({ submitted: true });
+            if (this.props.onSubmit != null) {
+              this.props.onSubmit();
+            }
+          }}
         />
-        <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
+        <Text style={styles.errorText}>
+          {this.state.submitted && !this.isValid()
+            ? this.props.validationError
+            : ""}
+        </Text>
       </View>
     );
   }
@@ -45,30 +84,22 @@ class EmailInput extends React.Component<Props & WithNamespaces> {
   focus() {
     this.textInput.current!.focus();
   }
+
+  isValid = (): boolean => {
+    const value = this._getValue();
+    const validationPattern = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+    return value != null && validationPattern.test(value!);
+  };
 }
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginVertical: 20,
   },
-  disclaimer: {
+  errorText: {
+    color: "red",
     fontFamily: "OpenSans-Regular",
-    fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 26,
-    marginTop: 20,
-  },
-  textInput: {
-    borderBottomColor: "#bbb",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    fontFamily: "OpenSans-Regular",
-    fontSize: 17,
-    height: 30,
-    letterSpacing: -0.41,
-    lineHeight: 22,
-    paddingHorizontal: 16,
+    fontSize: 15,
+    height: 21,
   },
 });
-
-export default withNamespaces("emailInput")<Props>(EmailInput);

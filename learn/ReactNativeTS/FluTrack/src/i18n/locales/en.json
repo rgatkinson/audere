@@ -54,10 +54,6 @@
     "zipcode": "Zipcode",
     "country": "Country"
   },
-  "emailInput": {
-    "disclaimer": "We promise to only use your email address for the options you select. We will never share your email address with people outside of this research study. You can opt out of receiving Seattle Flu Study emails at any time.",
-    "emailAddress": "Email address"
-  },
   "feedbackModal": {
     "provideFeedback": "Provide Feedback",
     "subject": "Subject",
@@ -121,6 +117,9 @@
     "unknown": "unknown"
   },
   "inelligibleScreen": {
+    "disclaimer": "We will never share your email address with people outside of this research study. You can opt out of receiving Seattle Flu Study emails at any time.",
+    "emailAddress": "Email address",
+    "validationError": "* Please provide a valid email address",
     "thankYouParticipating": "Thank you for participating.",
     "youDoNotQualify": "You do not qualify for the Seattle Flu Study at this time. Please provide your email address below if you are interested in learning more about this study and related topics in the future."
   },
@@ -238,7 +237,10 @@
     "numMonths": "Number of months"
   },
   "enrolledScreen": {
-    "contactInfo": "Contact Info"
+    "contactInfo": "Contact Info",
+    "disclaimer": "We promise to only use your email address for the options you select. We will never share your email address with people outside of this research study. You can opt out of receiving Seattle Flu Study emails at any time.",
+    "emailAddress": "Email address",
+    "validationError": "* Please provide a valid email address"
   },
   "surveyOption": {
     "sendCopyOfMyConsent": "Send me a copy of my consent",

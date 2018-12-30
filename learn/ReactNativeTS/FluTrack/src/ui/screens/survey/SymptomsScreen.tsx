@@ -29,9 +29,9 @@ interface Props {
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onDone = () => {
+  _onDone = (selectedButtonKey: string) => {
     const { t } = this.props;
-    if (this._numSymptoms() > 1) {
+    if (this._numSymptoms() > 1 && selectedButtonKey === "done") {
       this.props.navigation.push("Consent");
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
@@ -98,13 +98,8 @@ class SymptomsScreen extends React.PureComponent<
               key={button.key}
               label={t("surveyButton:" + button.key)}
               onPress={() => {
-                if (button.key === "done") {
-                  this.props.updateAnswer({ selectedButtonKey: button.key });
-                  this._onDone();
-                } else {
-                  this.props.updateAnswer({ selectedButtonKey: button.key });
-                  this.props.navigation.push("Inelligible");
-                }
+                this.props.updateAnswer({ selectedButtonKey: button.key });
+                this._onDone(button.key);
               }}
               primary={button.primary}
             />
