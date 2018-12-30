@@ -73,10 +73,8 @@ export default class SpecimentScreen extends React.Component<Props> {
     const samples = !!this.props.samples ? this.props.samples.slice(0) : [];
     samples.push({ sampleType: type.toString(), code: data });
     Alert.alert(
-      "Submit?",
-      `Bar code with type ${type} and data ${data} will be recorded for ${
-        this.props.name
-      }.`,
+      `Submit ${data} ?`,
+      `Barcode ${data} will be recorded for ${this.props.name}.`,
       [
         {
           text: "Cancel",
