@@ -113,6 +113,24 @@ class SurveyQuestion extends Component<
           false
         )
       );
+    } else if (enabledStatus === "withOtherOption") {
+      const options = this.props.getAnswer("options");
+      const haveOption =
+        !!options &&
+        options.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        );
+      const haveOtherOption =
+        haveOption &&
+        options.reduce(
+          (result: boolean, option: Option) =>
+            result || (option.selected && option.key === "other"),
+          false
+        );
+      return (
+        haveOption && (!haveOtherOption || !!this._getValue("otherOption"))
+      );
     } else if (enabledStatus === "withText") {
       return !!this._getValue("textInput");
     } else if (enabledStatus === "withNumber") {

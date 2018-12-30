@@ -79,6 +79,7 @@ export type EnabledOption =
   | true
   | false
   | "withOption"
+  | "withOtherOption"
   | "withText"
   | "withAddress"
   | "withNumber"
@@ -610,7 +611,7 @@ export const questionnaire: SurveyQuestion[] = [
         withOther: true,
       },
       buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
+        { key: "done", primary: true, enabled: "withOtherOption" },
         { key: "na", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
@@ -680,7 +681,7 @@ export const questionnaire: SurveyQuestion[] = [
         withOther: true,
       },
       buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
+        { key: "done", primary: true, enabled: "withOtherOption" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
@@ -845,7 +846,7 @@ export const questionnaire: SurveyQuestion[] = [
         withOther: true,
       },
       buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
+        { key: "done", primary: true, enabled: "withOtherOption" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -886,7 +887,7 @@ export const questionnaire: SurveyQuestion[] = [
         withOther: true,
       },
       buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
+        { key: "done", primary: true, enabled: "withOtherOption" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
