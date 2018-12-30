@@ -316,7 +316,7 @@ class SurveyQuestion extends Component<
                   ? ""
                   : undefined
             }
-            onChange={text => {
+            onChangeText={text => {
               const numericText = text.replace(/[^0-9]/g, "");
               if (numericText.length == 0) {
                 this.setState({ numberInput: null });
@@ -329,7 +329,7 @@ class SurveyQuestion extends Component<
                 }
               }
             }}
-            onDone={() => {
+            onSubmitEditing={() => {
               this.props.updateAnswer({ numberInput: this.state.numberInput });
               this.props.onNext(this._getNextQuestion("done"));
             }}
