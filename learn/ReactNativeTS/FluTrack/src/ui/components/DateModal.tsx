@@ -63,8 +63,10 @@ class DateModal extends React.Component<Props & WithNamespaces> {
               selectedValue={months[this._getDate().getMonth()]}
               style={{ height: 50, width: 250 }}
               onValueChange={month => {
-                const newDate = new Date(this._getDate());
-                newDate.setMonth(months.indexOf(month));
+                const newDate = new Date(
+                  this._getDate().getFullYear(),
+                  months.indexOf(month)
+                );
                 this.setState({ selectedDate: true, date: newDate });
               }}
             >
@@ -76,8 +78,7 @@ class DateModal extends React.Component<Props & WithNamespaces> {
               selectedValue={this._getDate().getFullYear()}
               style={{ height: 50, width: 100 }}
               onValueChange={year => {
-                const newDate = new Date(this._getDate());
-                newDate.setFullYear(year);
+                const newDate = new Date(year, this._getDate().getMonth());
                 this.setState({ selectedDate: true, date: newDate });
               }}
             >
