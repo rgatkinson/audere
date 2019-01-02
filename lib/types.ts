@@ -30,6 +30,8 @@ export interface ProtocolDocumentBase {
 
 export enum DocumentType {
   Visit = 'VISIT',
+  VisitCore = 'VISIT_CORE',
+  VisitIdentity = 'VISIT_IDENTITY',
   Feedback = 'FEEDBACK',
   Log = 'LOG',
 }
@@ -38,15 +40,6 @@ export type ProtocolDocument =
     FeedbackDocument
   | LogDocument
   | VisitDocument;
-
-// ================================================================================
-// Visit
-
-export interface VisitDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.Visit;
-  schemaId: 1;
-  visit: VisitInfo;
-}
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -57,16 +50,52 @@ export interface DeviceInfo {
   platform: string;
 }
 
-export interface VisitInfo {
-  complete: boolean;
-  gps_location?: GpsLocationInfo;
-  location?: string;
-  administrator?: string;
+// ================================================================================
+// Visit
+
+export interface VisitDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Visit;
+  schemaId: 1;
+  visit: VisitInfo;
+}
+
+export interface VisitCoreDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.VisitCore;
+  schemaId: 1;
+  visit: VisitCoreInfo;
+}
+
+export interface VisitIdentityDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.VisitIdentity;
+  schemaId: 1;
+  visit: VisitIdentityInfo;
+}
+
+export type VisitInfo = VisitCoreInfo & VisitIdentityInfo;
+
+export interface VisitCoreInfo extends VisitCommonInfo {
   samples: SampleInfo[];
   giftcards: GiftCardInfo[];
+
+  // Filtered to include only non-identity information, like health data.
+  responses: ResponseInfo[];
+}
+
+// Defined here because it is a variant of VisitInfo
+export interface VisitIdentityInfo extends VisitCommonInfo {
+  gps_location?: GpsLocationInfo;
   patient: PatientInfo;
   consents: ConsentInfo[];
+
+  // Filtered to include only identity information, like name, email, and address.
   responses: ResponseInfo[];
+}
+
+// Common to Core and Identity visit info.
+export interface VisitCommonInfo {
+  complete: boolean;
+  location?: string;
+  administrator?: string;
   events: EventInfo[];
 }
 
@@ -203,7 +232,7 @@ export interface EventInfo {
   kind: EventInfoKind;
 
   at: string; // FHIR:instant
-  until: string; // FHIR:instant
+  until?: string; // FHIR:instant
 
   // id of the item this event describes (e.g. question id), if applicable
   refId?: string;

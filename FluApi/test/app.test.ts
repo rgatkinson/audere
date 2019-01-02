@@ -1,10 +1,11 @@
 import request from "supertest";
 import { promises as fs } from "fs";
 import app from "../src/app";
-import { sequelize } from "../src/models";
+import { sequelizeCore, sequelizeIdentity } from "../src/models";
 
 afterAll(() => {
-  sequelize.close();
+  sequelizeCore.close();
+  sequelizeIdentity.close();
 });
 
 describe("GET /api", () => {

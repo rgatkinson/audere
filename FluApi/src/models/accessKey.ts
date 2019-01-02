@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { sequelize } from "./";
+import { sequelizeCore } from "./";
 
 interface AccessKeyAttributes {
   id?: string;
@@ -14,7 +14,7 @@ interface AccessKeyAttributes {
 type AccessKeyInstance = Sequelize.Instance<AccessKeyAttributes> &
   AccessKeyAttributes;
 
-export const AccessKey = sequelize.define<
+export const AccessKey = sequelizeCore.define<
   AccessKeyInstance,
   AccessKeyAttributes
 >("access_key", {

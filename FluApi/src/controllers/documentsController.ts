@@ -1,12 +1,15 @@
 import winston, { createLogger } from "winston";
 import {
   DocumentType,
-  VisitDocument,
   FeedbackDocument,
-  LogDocument
+  LogDocument,
+  VisitDocument,
+  VisitCommonInfo,
+  VisitCoreInfo,
+  VisitIdentityInfo
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
-import { Visit } from "../models/visit";
+import { VisitCore, VisitIdentity } from "../models/visit";
 import { Feedback } from "../models/feedback";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
@@ -20,15 +23,53 @@ const clientLogger = createLogger({
 const FEEDBACK_EMAIL = "feedback@auderenow.org";
 const FEEDBACK_SENDER_EMAIL = "app@auderenow.org";
 
+const IDENTITY_RESPONSE_KEYS = new Set([
+  "Address",
+  "AddressCampus",
+  "BedAssignment",
+  "BirthDate",
+  "CampusBuilding",
+  "SchoolName",
+  "WorkAddress",
+]);
+
 export async function putDocument(req, res) {
   switch (req.body.documentType) {
     case DocumentType.Visit:
-      const visit = req.body as VisitDocument;
-      await Visit.upsert({
-        csruid: req.params.documentId,
-        device: visit.device,
-        visit: visit.visit
-      });
+      const csruid = req.params.documentId;
+      const visitDocument = req.body as VisitDocument;
+      const responses = visitDocument.visit.responses;
+      const visitCommon: VisitCommonInfo = {
+        complete: visitDocument.visit.complete,
+        location: visitDocument.visit.location,
+        administrator: visitDocument.visit.administrator,
+        events: visitDocument.visit.events,
+      };
+      const visitCore: VisitCoreInfo = {
+        ...visitCommon,
+        giftcards: visitDocument.visit.giftcards,
+        samples: visitDocument.visit.samples,
+        responses: responses.filter(x => !IDENTITY_RESPONSE_KEYS.has(x.id)),
+      };
+      const visitIdentity: VisitIdentityInfo = {
+        ...visitCommon,
+        gps_location: visitDocument.visit.gps_location,
+        patient: visitDocument.visit.patient,
+        consents: visitDocument.visit.consents,
+        responses: responses.filter(x => IDENTITY_RESPONSE_KEYS.has(x.id)),
+      };
+      await Promise.all([
+        VisitCore.upsert({
+          csruid,
+          device: visitDocument.device,
+          visit: visitCore,
+        }),
+        VisitIdentity.upsert({
+          csruid,
+          device: visitDocument.device,
+          visit: visitIdentity,
+        })
+      ]);
       break;
     case DocumentType.Feedback:
       const feedbackDocument = req.body as FeedbackDocument;

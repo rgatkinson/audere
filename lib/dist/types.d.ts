@@ -6,15 +6,12 @@ export interface ProtocolDocumentBase {
 }
 export declare enum DocumentType {
     Visit = "VISIT",
+    VisitCore = "VISIT_CORE",
+    VisitIdentity = "VISIT_IDENTITY",
     Feedback = "FEEDBACK",
     Log = "LOG"
 }
 export declare type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument;
-export interface VisitDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.Visit;
-    schemaId: 1;
-    visit: VisitInfo;
-}
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -23,16 +20,37 @@ export interface DeviceInfo {
     idiomText: string;
     platform: string;
 }
-export interface VisitInfo {
-    complete: boolean;
-    gps_location?: GpsLocationInfo;
-    location?: string;
-    administrator?: string;
+export interface VisitDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Visit;
+    schemaId: 1;
+    visit: VisitInfo;
+}
+export interface VisitCoreDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.VisitCore;
+    schemaId: 1;
+    visit: VisitCoreInfo;
+}
+export interface VisitIdentityDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.VisitIdentity;
+    schemaId: 1;
+    visit: VisitIdentityInfo;
+}
+export declare type VisitInfo = VisitCoreInfo & VisitIdentityInfo;
+export interface VisitCoreInfo extends VisitCommonInfo {
     samples: SampleInfo[];
     giftcards: GiftCardInfo[];
+    responses: ResponseInfo[];
+}
+export interface VisitIdentityInfo extends VisitCommonInfo {
+    gps_location?: GpsLocationInfo;
     patient: PatientInfo;
     consents: ConsentInfo[];
     responses: ResponseInfo[];
+}
+export interface VisitCommonInfo {
+    complete: boolean;
+    location?: string;
+    administrator?: string;
     events: EventInfo[];
 }
 export interface GpsLocationInfo {
@@ -130,7 +148,7 @@ export interface OtherValueInfo {
 export interface EventInfo {
     kind: EventInfoKind;
     at: string;
-    until: string;
+    until?: string;
     refId?: string;
 }
 export declare enum EventInfoKind {

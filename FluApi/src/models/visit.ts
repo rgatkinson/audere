@@ -4,28 +4,60 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { sequelize } from "./";
+import { sequelizeCore, sequelizeIdentity } from "./";
+import { VisitCoreInfo, VisitIdentityInfo, } from "audere-lib";
 
-interface VisitAttributes {
+interface VisitCoreAttributes {
   id?: string;
   csruid: string;
   device: object;
-  visit: object;
+  visit: VisitCoreInfo;
 }
-type VisitInstance = Sequelize.Instance<VisitAttributes> & VisitAttributes;
+type VisitCoreInstance = Sequelize.Instance<VisitCoreAttributes> & VisitCoreAttributes;
 
-export const Visit = sequelize.define<VisitInstance, VisitAttributes>("visit", {
-  csruid: {
-    allowNull: false,
-    unique: true,
-    type: Sequelize.STRING
-  },
-  device: {
-    allowNull: false,
-    type: Sequelize.JSON
-  },
-  visit: {
-    allowNull: false,
-    type: Sequelize.JSON
+export const VisitCore = sequelizeCore.define<VisitCoreInstance, VisitCoreAttributes>(
+  "visit_core",
+  {
+    csruid: {
+      allowNull: false,
+      unique: true,
+      type: Sequelize.STRING
+    },
+    device: {
+      allowNull: false,
+      type: Sequelize.JSON
+    },
+    visit: {
+      allowNull: false,
+      type: Sequelize.JSON
+    }
   }
-});
+);
+
+
+interface VisitIdentityAttributes {
+  id?: string;
+  csruid: string;
+  device: object;
+  visit: VisitIdentityInfo;
+}
+type VisitIdentityInstance = Sequelize.Instance<VisitIdentityAttributes> & VisitIdentityAttributes;
+
+export const VisitIdentity = sequelizeIdentity.define<VisitIdentityInstance, VisitIdentityAttributes>(
+  "visit_identity",
+  {
+    csruid: {
+      allowNull: false,
+      unique: true,
+      type: Sequelize.STRING
+    },
+    device: {
+      allowNull: false,
+      type: Sequelize.JSON
+    },
+    visit: {
+      allowNull: false,
+      type: Sequelize.JSON
+    }
+  }
+);

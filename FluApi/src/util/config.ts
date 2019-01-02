@@ -9,6 +9,10 @@ import path from "path";
 
 dotenv.config();
 
-if (!process.env.DATABASE_URL) {
+if (!process.env.NONPII_DATABASE_URL) {
+  throw new Error("Copy .env.example to .env and customize stuff :)");
+}
+
+if (!process.env.PII_DATABASE_URL) {
   throw new Error("Copy .env.example to .env and customize stuff :)");
 }

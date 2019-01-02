@@ -9,6 +9,10 @@ import Sequelize from "sequelize";
 import "../util/config";
 import sequelizeLogger from "sequelize-log-syntax-colors";
 
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
+export const sequelizeCore = new Sequelize(process.env.CORE_DATABASE_URL, {
+  logging: (str: string) => console.log(sequelizeLogger(str))
+});
+
+export const sequelizeIdentity = new Sequelize(process.env.IDENTITY_DATABASE_URL, {
   logging: (str: string) => console.log(sequelizeLogger(str))
 });
