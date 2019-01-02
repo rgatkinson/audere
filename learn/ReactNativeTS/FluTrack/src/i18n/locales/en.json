@@ -191,7 +191,8 @@
     "medInsurance": "Do you have medical insurance?"
   },
   "surveyDescription": {
-    "campusDescription": "If living on campus, please use your UW address including building and room number.",
+    "campusDescription": "If living on campus, please use your UW address including building and room number. \n\nRemember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",
+    "homeAddressDescription": "Remember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",
     "workAddressDescription": "Remember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team and will never contact your work.",
     "occupationDescription": "Enter the occupation that you spend most of your time at.",
     "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, a phlebotomist would collect some extra tubes of blood from you during your morning blood draw.",
@@ -233,7 +234,8 @@
   },
   "welcomeScreen": {
     "welcomeTo": "Welcome to the Seattle Flu Study",
-    "theGoal": "The flu and colds are common in children and adults, and can cause a runny nose, cough, or trouble breathing. We want to understand how people get sick with these germs and how they spread from person to person. Once we understand how the germs start and spread, we can have a better plan to prevent them from making people sick."
+    "theGoal": "The flu and colds are common in children and adults, and can cause a runny nose, cough, or trouble breathing. We want to understand how people get sick with these germs and how they spread from person to person. Once we understand how the germs start and spread, we can have a better plan to prevent them from making people sick.",
+    "participationRequirements": "To participate in this study, you must have experienced some symptoms of a cold or flu within the last week and provide your home address. Your home address will be used to understand how these viruses spread geographically. We will **not** share this information with any unauthorized third parties, and we will **not** send you anything in the mail."
   },
   "ageScreen": {
     "welcome": "Welcome",

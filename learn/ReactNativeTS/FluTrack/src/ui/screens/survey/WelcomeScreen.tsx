@@ -30,6 +30,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         <ContentContainer>
           <Title size="large" label={t("welcomeTo")} />
           <Description content={t("theGoal")} />
+          <Description content={t("participationRequirements")} />
           <Button
             enabled={true}
             primary={true}

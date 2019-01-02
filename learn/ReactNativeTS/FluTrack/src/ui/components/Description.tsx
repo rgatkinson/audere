@@ -12,27 +12,43 @@ export default class Description extends React.Component<Props> {
     return (
       <Text
         style={[
-          styles.description,
+          styles.container,
           this.props.center && styles.center,
           this.props.style,
         ]}
       >
-        {this.props.content}
+        {this.props.content.split("**").map(
+          (str, i) =>
+            i % 2 == 0 ? (
+              <Text key={i + str} style={styles.description}>
+                {str}
+              </Text>
+            ) : (
+              <Text key={i + str} style={styles.bold}>
+                {str}
+              </Text>
+            )
+        )}
       </Text>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  bold: {
+    fontFamily: "OpenSans-Bold",
+  },
+  container: {
+    alignSelf: "stretch",
+    fontSize: 21,
+    marginVertical: 20,
+    letterSpacing: -0.51,
+    lineHeight: 26,
+  },
   center: {
     textAlign: "center",
   },
   description: {
-    alignSelf: "stretch",
     fontFamily: "OpenSans-Regular",
-    fontSize: 21,
-    letterSpacing: -0.51,
-    lineHeight: 26,
-    marginVertical: 20,
   },
 });

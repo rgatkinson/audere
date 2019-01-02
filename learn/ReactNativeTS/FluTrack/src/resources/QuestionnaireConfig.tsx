@@ -189,14 +189,16 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "Address",
       nextQuestion: "ExpoDesc",
+      description: {
+        label: "homeAddressDescription",
+        center: false,
+      },
       title: "address",
       addressInput: {
         showLocationField: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withAddress" },
-        { key: "doNotKnow", primary: false, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
   },
@@ -208,15 +210,13 @@ export const questionnaire: SurveyQuestion[] = [
       title: "addressCampus",
       description: {
         label: "campusDescription",
-        center: true,
+        center: false,
       },
       addressInput: {
         showLocationField: false,
       },
       buttons: [
         { key: "done", primary: true, enabled: "withAddress" },
-        { key: "doNotKnow", primary: false, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
   },
@@ -484,7 +484,6 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withAddress" },
-        { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
   },
