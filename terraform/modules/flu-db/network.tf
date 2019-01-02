@@ -25,33 +25,33 @@ resource "aws_flow_log" "vpc_flow_log" {
   vpc_id          = "${aws_vpc.fludb.id}"
 }
 
-resource "aws_subnet" "fludb" {
-  availability_zone = "${var.availability_zone}"
-  cidr_block = "${local.subnet_db_primary_cidr}"
+resource "aws_subnet" "fludb_pii" {
+  availability_zone = "${var.pii_availability_zone}"
+  cidr_block = "${local.subnet_db_pii_cidr}"
   map_public_ip_on_launch = false
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "${local.base_name}"
+    Name = "${local.base_name}-pii"
   }
 }
 
-resource "aws_subnet" "fludb_secondary" {
-  availability_zone = "${var.backup_availability_zone}"
-  cidr_block = "${local.subnet_db_secondary_cidr}"
+resource "aws_subnet" "fludb_nonpii" {
+  availability_zone = "${var.availability_zone}"
+  cidr_block = "${local.subnet_db_nonpii_cidr}"
   map_public_ip_on_launch = false
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "${local.base_name}-secondary"
+    Name = "${local.base_name}-nonpii"
   }
 }
 
 resource "aws_db_subnet_group" "fludb" {
   name = "${local.base_name}"
   subnet_ids = [
-    "${aws_subnet.fludb.id}",
-    "${aws_subnet.fludb_secondary.id}",
+    "${aws_subnet.fludb_pii.id}",
+    "${aws_subnet.fludb_nonpii.id}",
   ]
   tags = {
     Name = "${local.base_name}"
@@ -78,7 +78,7 @@ resource "aws_internet_gateway" "flu_gw" {
   vpc_id = "${aws_vpc.fludb.id}"
 
   tags = {
-    Name = "provision-${local.base_name}"
+    Name = "flu-${var.environment}"
   }
 }
 
@@ -128,7 +128,7 @@ resource "aws_security_group_rule" "provision_egress" {
 }
 
 locals {
-  subnet_db_primary_cidr = "${cidrsubnet(var.db_cidr, 2, 0)}"
-  subnet_db_secondary_cidr = "${cidrsubnet(var.db_cidr, 2, 1)}"
+  subnet_db_pii_cidr = "${cidrsubnet(var.db_cidr, 2, 0)}"
+  subnet_db_nonpii_cidr = "${cidrsubnet(var.db_cidr, 2, 1)}"
   subnet_db_provision_cidr = "${cidrsubnet(var.db_cidr, 2, 2)}"
 }

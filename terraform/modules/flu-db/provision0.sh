@@ -11,7 +11,8 @@ function main() {
   install_updates
   generate_passwords
   write_credentials
-  setup_db
+  setup_db "${pii_db_host}"
+  setup_db "${nonpii_db_host}"
 }
 
 function generate_passwords() {
@@ -21,11 +22,12 @@ function generate_passwords() {
 }
 
 function setup_db() {
+  local host="$1"
   apt-get -y install postgresql-client-10
 
   PGPASSWORD="${db_setup_password}" \
   retry psql \
-    --host="${db_host}" \
+    --host="$host" \
     --username="${my_userid}" \
     --dbname=postgres \
     --no-password \
@@ -35,7 +37,7 @@ EOF
 
   PGPASSWORD="${db_setup_password}" \
   psql \
-    --host="${db_host}" \
+    --host="$host" \
     --username="${my_userid}" \
     --dbname=postgres \
     --no-password \
@@ -69,8 +71,14 @@ function write_db_creds() {
   local readonly db_user="$3"
   local readonly db_password="$4"
   mkdir -p "$dir"
-  echo "${db_host}:$db_port:$db_name:$db_user:$db_password" >"$dir/pgpass"
-  echo "DATABASE_URL=postgres://$db_user:$db_password@${db_host}:$db_port/$db_name" >"$dir/env"
+  cat >"$dir/pgpass" <<EOF
+${pii_db_host}:$db_port:$db_name:$db_user:$db_password
+${nonpii_db_host}:$db_port:$db_name:$db_user:$db_password
+EOF
+  cat >"$dir/env" <<EOF
+PII_DATABASE_URL=postgres://$db_user:$db_password@${pii_db_host}:$db_port/$db_name
+NONPII_DATABASE_URL=postgres://$db_user:$db_password@${nonpii_db_host}:$db_port/$db_name
+EOF
 }
 
 function write_vpc_cert() {

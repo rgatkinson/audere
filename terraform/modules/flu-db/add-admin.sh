@@ -5,6 +5,8 @@
 
 ${util_sh}
 
+readonly db_port="5432"
+
 function main() {
   install_updates
   load_existing_creds
@@ -12,7 +14,8 @@ function main() {
   add_randomness "${random_seed}"
   local new_password="$(new_password)"
   write_credentials "$new_password"
-  update_db "$new_password"
+  update_db "${pii_db_host}" "$new_password"
+  update_db "${nonpii_db_host}" "$new_password"
 }
 
 function load_existing_creds() {
@@ -33,11 +36,12 @@ function load_existing_creds() {
 }
 
 function update_db() {
-  local new_password="$1"
+  local host="$1"
+  local new_password="$2"
   apt-get -y install postgresql-client-10
 
   retry psql \
-    --host="${db_host}" \
+    --host="$host" \
     --username="${my_userid}" \
     --dbname=postgres \
     --no-password \
@@ -46,7 +50,7 @@ select 0;
 EOF
 
   psql \
-    --host="${db_host}" \
+    --host="$host" \
     --username="${my_userid}" \
     --dbname=postgres \
     --no-password \
@@ -63,8 +67,14 @@ function write_credentials() {
   parted_mkfs_mount "${new_device_letter}" "${new_userid}" "$creds"
 
   mkdir -p "$creds/db"
-  echo "${db_host}:5432:postgres:${new_userid}:$new_password" >"$creds/db/pgpass"
-  echo "DATABASE_URL=postgres://${new_userid}:$new_password@${db_host}:5432/postgres" >"$creds/db/env"
+  cat >"$dir/pgpass" <<EOF
+${pii_db_host}:$db_port:$db_name:$db_user:$db_password
+${nonpii_db_host}:$db_port:$db_name:$db_user:$db_password
+EOF
+  cat >"$dir/env" <<EOF
+PII_DATABASE_URL=postgres://$db_user:$db_password@${pii_db_host}:$db_port/$db_name
+NONPII_DATABASE_URL=postgres://$db_user:$db_password@${nonpii_db_host}:$db_port/$db_name
+EOF
   umount "$creds"
 }
 

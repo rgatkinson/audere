@@ -3,8 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-output "database_address" {
-  value = "${aws_db_instance.fludb.address}"
+output "pii_database_address" {
+  value = "${aws_db_instance.fludb_pii.address}"
+}
+
+output "nonpii_database_address" {
+  value = "${aws_db_instance.fludb_nonpii.address}"
 }
 
 output "api_creds_snapshot_id" {

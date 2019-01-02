@@ -82,6 +82,6 @@ variable "availability_zone" {
   default = "us-west-2a"
 }
 
-variable "backup_availability_zone" {
+variable "pii_availability_zone" {
   default = "us-west-2b"
 }

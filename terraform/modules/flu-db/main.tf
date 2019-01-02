@@ -6,16 +6,16 @@
 // --------------------------------------------------------------------------------
 // database
 
-resource "aws_db_instance" "fludb" {
+resource "aws_db_instance" "fludb_pii" {
   allocated_storage = 20
-  availability_zone = "${var.availability_zone}"
+  availability_zone = "${var.pii_availability_zone}"
   backup_retention_period = 35
   backup_window = "10:00-10:59"
   copy_tags_to_snapshot = true
   deletion_protection = false // TODO
   engine = "postgres"
   engine_version = "10.5"
-  identifier = "${local.base_name}"
+  identifier = "${local.base_name}-pii"
   instance_class = "db.t2.small"
   license_model = "postgresql-license"
   maintenance_window = "Sun:11:00-Sun:11:59"
@@ -31,7 +31,36 @@ resource "aws_db_instance" "fludb" {
   ]
 
   tags {
-    Name = "${local.base_name}"
+    Name = "${local.base_name}-pii"
+  }
+}
+
+resource "aws_db_instance" "fludb_nonpii" {
+  allocated_storage = 20
+  availability_zone = "${var.availability_zone}"
+  backup_retention_period = 35
+  backup_window = "10:00-10:59"
+  copy_tags_to_snapshot = true
+  deletion_protection = false // TODO
+  engine = "postgres"
+  engine_version = "10.5"
+  identifier = "${local.base_name}-nonpii"
+  instance_class = "db.t2.small"
+  license_model = "postgresql-license"
+  maintenance_window = "Sun:11:00-Sun:11:59"
+  parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
+  password = "${local.db_setup_password}"
+  publicly_accessible = false
+  skip_final_snapshot = true // TODO
+  storage_encrypted = true
+  db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
+  username = "${local.my_userid}"
+  vpc_security_group_ids = [
+    "${module.fludb_sg.server_id}",
+  ]
+
+  tags {
+    Name = "${local.base_name}-nonpii"
   }
 }
 
@@ -91,7 +120,8 @@ data "template_file" "provision0_sh" {
 
   vars {
     api_device_letter = "n"
-    db_host = "${aws_db_instance.fludb.address}"
+    pii_db_host = "${aws_db_instance.fludb_pii.address}"
+    nonpii_db_host = "${aws_db_instance.fludb_nonpii.address}"
     db_setup_password = "${local.db_setup_password}"
     environment = "${var.environment}"
     github_tar_bz2_base64 = "${local.github_tar_bz2_base64}"
@@ -145,7 +175,8 @@ data "template_file" "add_admin_sh" {
   template = "${file("${path.module}/add-admin.sh")}"
 
   vars {
-    db_host = "${aws_db_instance.fludb.address}"
+    pii_db_host = "${aws_db_instance.fludb_pii.address}"
+    nonpii_db_host = "${aws_db_instance.fludb_nonpii.address}"
     my_device_letter = "p"
     my_userid = "${local.my_userid}"
     new_device_letter = "n"
