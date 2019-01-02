@@ -13,6 +13,11 @@ resource "aws_vpc" "fludb" {
   }
 }
 
+// Block all traffic for default security group.
+resource "aws_default_security_group" "default" {
+  vpc_id = "${aws_vpc.fludb.id}"
+}
+
 resource "aws_flow_log" "vpc_flow_log" {
   iam_role_arn    = "${var.vpc_flow_log_role_arn}"
   log_destination = "${var.vpc_flow_log_arn}"
