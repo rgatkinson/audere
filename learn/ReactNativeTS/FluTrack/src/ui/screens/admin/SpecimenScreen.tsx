@@ -55,7 +55,7 @@ export default class SpecimentScreen extends React.Component<Props> {
   _onHelp = () => {
     Alert.alert(
       "Scanning Instructions",
-      "Hold the barcode about 8 inches away from the iPad until the text is in clear focus. An alert will pop up when the barcode is successfully scanned. If scanning isn't working, you can enter the barcode data manually.",
+      "Hold the barcode about 6 inches away from the iPad until the text is in clear focus. An alert will pop up when the barcode is successfully scanned. If scanning isn't working, you can enter the barcode data manually.",
       [
         {
           text: "OK",
