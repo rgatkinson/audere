@@ -22,6 +22,7 @@ const PATIENT_INFO = {
 const VISIT_INFO = {
   complete: true,
   samples: [],
+  giftcards: [],
   patient: PATIENT_INFO,
   consents: [],
   responses: [],
