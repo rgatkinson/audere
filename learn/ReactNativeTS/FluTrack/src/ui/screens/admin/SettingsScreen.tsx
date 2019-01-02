@@ -85,6 +85,16 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
     }
   };
 
+  _onGiftCardScan = () => {
+    if (this._hasValidConsent() && !this.props.form.completedSurvey) {
+      this.props.navigation.push("GiftCardType");
+    } else {
+      Alert.alert(
+        "There is no active consented participant. Please have a participant complete the survey first."
+      );
+    }
+  };
+
   render() {
     return (
       <ScreenContainer>
@@ -107,6 +117,10 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
         <EditSettingButton
           label="Specimen Scans"
           onPress={this._onSpecimenScans}
+        />
+        <EditSettingButton
+          label="Gift Card Scan"
+          onPress={this._onGiftCardScan}
         />
         <View style={styles.supportContainer}>
           <Description content="For technical support in using this app, contact Audere Support at support@auderenow.org." />

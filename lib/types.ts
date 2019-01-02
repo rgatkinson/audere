@@ -63,6 +63,7 @@ export interface VisitInfo {
   location?: string;
   administrator?: string;
   samples: SampleInfo[];
+  giftcards: GiftCardInfo[];
   patient: PatientInfo;
   consents: ConsentInfo[];
   responses: ResponseInfo[];
@@ -80,6 +81,13 @@ export interface SampleInfo {
   sample_type: string;
   // Value read from the test kit's QR code, or another unique identifier
   code: string;
+}
+
+// Information about gift cards given to participants
+export interface GiftCardInfo {
+    barcodeType: string;
+    code: string;
+    gitcardType: string;
 }
 
 // This is a subset of the FHIR 'Patient' resource

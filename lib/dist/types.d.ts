@@ -29,6 +29,7 @@ export interface VisitInfo {
     location?: string;
     administrator?: string;
     samples: SampleInfo[];
+    giftcards: GiftCardInfo[];
     patient: PatientInfo;
     consents: ConsentInfo[];
     responses: ResponseInfo[];
@@ -41,6 +42,11 @@ export interface GpsLocationInfo {
 export interface SampleInfo {
     sample_type: string;
     code: string;
+}
+export interface GiftCardInfo {
+    barcodeType: string;
+    code: string;
+    giftcardType: string;
 }
 export interface PatientInfo {
     name?: string;

@@ -278,7 +278,7 @@ class SurveyQuestion extends Component<
               center={true}
             />
             <Image
-              style={{ alignSelf: 'center', height: 330, width: 600 }}
+              style={{ alignSelf: "center", height: 330, width: 600 }}
               source={this.props.data.image.src}
             />
           </View>

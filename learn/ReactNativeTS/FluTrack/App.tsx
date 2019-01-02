@@ -39,6 +39,9 @@ import AdverseScreen from "./src/ui/screens/admin/AdverseScreen";
 import AdverseDetailsScreen from "./src/ui/screens/admin/AdverseDetailsScreen";
 import SpecimenScreen from "./src/ui/screens/admin/SpecimenScreen";
 import ManualBarcodeScreen from "./src/ui/screens/admin/ManualBarcodeScreen";
+import GiftCardScreen from "./src/ui/screens/admin/GiftCardScreen";
+import GiftCardTypeScreen from "./src/ui/screens/admin/GiftCardTypeScreen";
+import ManualGiftCardScreen from "./src/ui/screens/admin/ManualGiftCardScreen";
 
 const Home = createStackNavigator(
   {
@@ -91,7 +94,9 @@ const Admin = createStackNavigator(
     Adverse: AdverseScreen,
     AdverseDetails: AdverseDetailsScreen,
     Specimen: SpecimenScreen,
-    ManualBarcode: ManualBarcodeScreen,
+    GiftCardType: GiftCardTypeScreen,
+    GiftCard: GiftCardScreen,
+    ManualGiftCard: ManualGiftCardScreen,
   },
   {
     mode: "modal",

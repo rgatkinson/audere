@@ -1,6 +1,6 @@
 import uuidv4 from "uuid/v4";
 
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import { ConsentInfo, ConsentInfoSignerType, GiftCardInfo } from "audere-lib";
 
 export type FormAction =
   | { type: "START_FORM" }
@@ -13,6 +13,7 @@ export type FormAction =
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
+  | { type: "SET_GIFTCARDS"; giftcards: GiftCardInfo[] }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
@@ -75,6 +76,7 @@ export type FormState = {
   email?: string;
   responses: SurveyResponse[];
   samples?: Sample[];
+  giftcards?: GiftCardInfo[];
 };
 
 const initialState: FormState = {
@@ -135,6 +137,13 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       samples: action.samples,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_GIFTCARDS") {
+    return {
+      ...state,
+      giftcards: action.giftcards,
       timestamp: new Date().getTime(),
     };
   }
@@ -212,6 +221,13 @@ export function setSamples(samples: Sample[]): FormAction {
   return {
     type: "SET_SAMPLES",
     samples,
+  };
+}
+
+export function setGiftcards(giftcards: GiftCardInfo[]): FormAction {
+  return {
+    type: "SET_GIFTCARDS",
+    giftcards,
   };
 }
 

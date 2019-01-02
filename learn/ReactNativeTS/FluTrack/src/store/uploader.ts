@@ -43,6 +43,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
   const pouch: VisitInfo = {
     complete: state.form.completedSurvey,
     samples: [],
+    giftcards: [],
     patient: {
       telecom: [],
       address: [],
@@ -80,6 +81,10 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
         code: sample.code,
       });
     });
+  }
+
+  if (!!form.giftcards) {
+    pouch.giftcards = form.giftcards;
   }
 
   maybePushConsent(form, pouch.consents);

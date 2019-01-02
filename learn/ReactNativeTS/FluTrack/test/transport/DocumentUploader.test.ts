@@ -20,6 +20,7 @@ import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 const FAKE_VISIT_CONTENTS: VisitInfo = {
   complete: false,
   samples: [],
+  giftcards: [],
   patient: {
     name: "Some Fake Name",
     telecom: [],
