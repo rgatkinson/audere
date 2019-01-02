@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   Alert,
+  Image,
   Keyboard,
   View,
   StyleSheet,
@@ -269,6 +270,18 @@ class SurveyQuestion extends Component<
             center={this.props.data.description.center}
             style={{ marginVertical: 0 }}
           />
+        )}
+        {this.props.data.image && (
+          <View>
+            <Description
+              content={t("surveyDescription:" + this.props.data.image.label)}
+              center={true}
+            />
+            <Image
+              style={{ alignSelf: 'center', height: 330, width: 600 }}
+              source={this.props.data.image.src}
+            />
+          </View>
         )}
         {this.props.data.textInput && (
           <TextInput

@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+
 const birth = "birth";
 const comp = "comp";
 const expo = "expo";
@@ -15,6 +17,7 @@ export interface SurveyQuestionData {
   conditionalNext?: ConditionalNextConfig;
   id: string;
   dateInput?: DateInputConfig;
+  image?: ImageConfig;
   description?: DescriptionConfig;
   nextQuestion?: string | null;
   numberInput?: NumberInputConfig;
@@ -56,6 +59,11 @@ interface NumberSelectorConfig {
   max: number;
   placeholder: string;
   maxPlus: boolean;
+}
+
+interface ImageConfig {
+  label: string;
+  src: ImageSourcePropType;
 }
 
 interface DescriptionConfig {
@@ -225,6 +233,10 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "ExpoDesc",
       nextQuestion: "NearSickPeople",
+      image: {
+        label: "6feet",
+        src: require("../img/6ftDiagram.png"),
+      },
       description: {
         label: "expoToSickPeople",
         center: false,
