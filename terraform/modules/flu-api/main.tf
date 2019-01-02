@@ -169,6 +169,7 @@ resource "aws_elb" "flu_api_elb" {
 }
 
 resource "aws_launch_configuration" "flu_api_instance" {
+  iam_instance_profile = "${aws_iam_instance_profile.flu_api.name}"
   image_id = "${module.ami.ubuntu}"
   instance_type = "t2.micro"
   user_data = "${data.template_file.service_init_sh.rendered}"

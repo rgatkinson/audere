@@ -490,9 +490,9 @@ resource "aws_iam_group_policy_attachment" "route53_full_access" {
   policy_arn = "${aws_iam_policy.route53_full_access.arn}"
 }
 
-resource "aws_iam_group_policy_attachment" "ses_send_email" {
+resource "aws_iam_group_policy_attachment" "ses_manage" {
   group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.ses_send_email.arn}"
+  policy_arn = "${aws_iam_policy.ses_manage.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "iam_manage_own_mfa" {
@@ -588,13 +588,13 @@ data "aws_iam_policy_document" "route53_full_access" {
   }
 }
 
-// ses_send_email
-resource "aws_iam_policy" "ses_send_email" {
-  name   = "AudereSESSendEmail"
-  policy = "${data.aws_iam_policy_document.ses_send_email.json}"
+// ses_manage
+resource "aws_iam_policy" "ses_manage" {
+  name   = "AudereSESManageEmail"
+  policy = "${data.aws_iam_policy_document.ses_manage.json}"
 }
 
-data "aws_iam_policy_document" "ses_send_email" {
+data "aws_iam_policy_document" "ses_manage" {
   statement {
     actions = [
       "ses:SendEmail",
