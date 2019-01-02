@@ -5,11 +5,11 @@ import {
   LogDocument,
   VisitDocument,
   VisitCommonInfo,
-  VisitCoreInfo,
-  VisitIdentityInfo
+  VisitNonPIIInfo,
+  VisitPIIInfo
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
-import { VisitCore, VisitIdentity } from "../models/visit";
+import { VisitNonPII, VisitPII } from "../models/visit";
 import { Feedback } from "../models/feedback";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
@@ -45,7 +45,7 @@ export async function putDocument(req, res) {
         administrator: visitDocument.visit.administrator,
         events: visitDocument.visit.events
       };
-      const visitCore: VisitCoreInfo = {
+      const visitNonPII: VisitNonPIIInfo = {
         ...visitCommon,
         giftcards: visitDocument.visit.giftcards,
         samples: visitDocument.visit.samples,
@@ -53,7 +53,7 @@ export async function putDocument(req, res) {
           x => !IDENTITY_RESPONSE_KEYS.has(x.id)
         )
       };
-      const visitIdentity: VisitIdentityInfo = {
+      const visitPII: VisitPIIInfo = {
         ...visitCommon,
         gps_location: visitDocument.visit.gps_location,
         patient: visitDocument.visit.patient,
@@ -63,15 +63,15 @@ export async function putDocument(req, res) {
         )
       };
       await Promise.all([
-        VisitCore.upsert({
+        VisitNonPII.upsert({
           csruid,
           device: visitDocument.device,
-          visit: visitCore
+          visit: visitNonPII
         }),
-        VisitIdentity.upsert({
+        VisitPII.upsert({
           csruid,
           device: visitDocument.device,
-          visit: visitIdentity
+          visit: visitPII
         })
       ]);
       break;

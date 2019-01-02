@@ -30,8 +30,6 @@ export interface ProtocolDocumentBase {
 
 export enum DocumentType {
   Visit = 'VISIT',
-  VisitCore = 'VISIT_CORE',
-  VisitIdentity = 'VISIT_IDENTITY',
   Feedback = 'FEEDBACK',
   Log = 'LOG',
 }
@@ -59,39 +57,29 @@ export interface VisitDocument extends ProtocolDocumentBase {
   visit: VisitInfo;
 }
 
-export interface VisitCoreDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.VisitCore;
-  schemaId: 1;
-  visit: VisitCoreInfo;
-}
+export type VisitInfo = VisitNonPIIInfo & VisitPIIInfo;
 
-export interface VisitIdentityDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.VisitIdentity;
-  schemaId: 1;
-  visit: VisitIdentityInfo;
-}
-
-export type VisitInfo = VisitCoreInfo & VisitIdentityInfo;
-
-export interface VisitCoreInfo extends VisitCommonInfo {
-  samples: SampleInfo[];
-  giftcards: GiftCardInfo[];
-
-  // Filtered to include only non-identity information, like health data.
-  responses: ResponseInfo[];
-}
-
-// Defined here because it is a variant of VisitInfo
-export interface VisitIdentityInfo extends VisitCommonInfo {
+// Yes, I know, I know, "Personally-Identifiable-Information Info".
+// Unfortunately, it fits the pattern, and helps disambiguate.
+// Welcome to the department of redundancy department.
+export interface VisitPIIInfo extends VisitCommonInfo {
   gps_location?: GpsLocationInfo;
   patient: PatientInfo;
   consents: ConsentInfo[];
 
-  // Filtered to include only identity information, like name, email, and address.
+  // Filtered to include only PII, like name, email, and address.
   responses: ResponseInfo[];
 }
 
-// Common to Core and Identity visit info.
+export interface VisitNonPIIInfo extends VisitCommonInfo {
+  samples: SampleInfo[];
+  giftcards: GiftCardInfo[];
+
+  // Filtered to include only non-PII, like health data.
+  responses: ResponseInfo[];
+}
+
+// Common to PII and NonPII visit info.
 export interface VisitCommonInfo {
   complete: boolean;
   location?: string;

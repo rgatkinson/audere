@@ -6,8 +6,6 @@ export interface ProtocolDocumentBase {
 }
 export declare enum DocumentType {
     Visit = "VISIT",
-    VisitCore = "VISIT_CORE",
-    VisitIdentity = "VISIT_IDENTITY",
     Feedback = "FEEDBACK",
     Log = "LOG"
 }
@@ -25,26 +23,16 @@ export interface VisitDocument extends ProtocolDocumentBase {
     schemaId: 1;
     visit: VisitInfo;
 }
-export interface VisitCoreDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.VisitCore;
-    schemaId: 1;
-    visit: VisitCoreInfo;
-}
-export interface VisitIdentityDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.VisitIdentity;
-    schemaId: 1;
-    visit: VisitIdentityInfo;
-}
-export declare type VisitInfo = VisitCoreInfo & VisitIdentityInfo;
-export interface VisitCoreInfo extends VisitCommonInfo {
-    samples: SampleInfo[];
-    giftcards: GiftCardInfo[];
-    responses: ResponseInfo[];
-}
-export interface VisitIdentityInfo extends VisitCommonInfo {
+export declare type VisitInfo = VisitNonPIIInfo & VisitPIIInfo;
+export interface VisitPIIInfo extends VisitCommonInfo {
     gps_location?: GpsLocationInfo;
     patient: PatientInfo;
     consents: ConsentInfo[];
+    responses: ResponseInfo[];
+}
+export interface VisitNonPIIInfo extends VisitCommonInfo {
+    samples: SampleInfo[];
+    giftcards: GiftCardInfo[];
     responses: ResponseInfo[];
 }
 export interface VisitCommonInfo {

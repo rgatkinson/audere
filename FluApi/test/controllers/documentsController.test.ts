@@ -1,8 +1,20 @@
 import request from "supertest";
-import { DocumentType, VisitDocument, VisitCoreDocument, VisitIdentityDocument, VisitInfo, VisitCoreInfo, VisitIdentityInfo, VisitCommonInfo, EventInfoKind } from "audere-lib";
+import { DocumentType, VisitDocument, VisitInfo, VisitNonPIIInfo, VisitPIIInfo, VisitCommonInfo, EventInfoKind } from "audere-lib";
 import app from "../../src/app";
-import { VisitCore, VisitIdentity } from "../../src/models/visit";
+import { VisitNonPII, VisitPII } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
+
+// export interface VisitNonPIIDocument extends ProtocolDocumentBase {
+//   documentType: DocumentType.VisitNonPII;
+//   schemaId: 1;
+//   visit: VisitNonPIIInfo;
+// }
+
+// export interface VisitPIIDocument extends ProtocolDocumentBase {
+//   documentType: DocumentType.VisitPII;
+//   schemaId: 1;
+//   visit: VisitPIIInfo;
+// }
 
 const DOCUMENT_ID = "ABC123-_".repeat(8);
 const DEVICE = {
@@ -51,24 +63,24 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
     }
   ],
 };
-const VISIT_CORE_INFO: VisitCoreInfo = {
+const VISIT_NONPII: VisitNonPIIInfo = {
   ...VISIT_COMMON_INFO,
   samples: [ SAMPLE_INFO ],
   giftcards: [],
   responses: [ PHI_RESPONSE ],
 };
-const VISIT_IDENTITY_INFO: VisitIdentityInfo = {
+const VISIT_PII: VisitPIIInfo = {
   ...VISIT_COMMON_INFO,
   patient: PATIENT_INFO,
   consents: [],
   responses: [ PII_RESPONSE ],
 }
 const VISIT_INFO: VisitInfo = {
-  ...VISIT_CORE_INFO,
-  ...VISIT_IDENTITY_INFO,
+  ...VISIT_NONPII,
+  ...VISIT_PII,
   responses: [
-    ...VISIT_CORE_INFO.responses,
-    ...VISIT_IDENTITY_INFO.responses,
+    ...VISIT_NONPII.responses,
+    ...VISIT_PII.responses,
   ],
 };
 const DOCUMENT_CONTENTS: VisitDocument = {
@@ -78,19 +90,15 @@ const DOCUMENT_CONTENTS: VisitDocument = {
   device: DEVICE,
   visit: VISIT_INFO,
 };
-const CORE_DOCUMENT_CONTENTS: VisitCoreDocument = {
-  schemaId: 1,
+const NONPII_DOCUMENT_CONTENTS = {
   csruid: DOCUMENT_ID,
-  documentType: DocumentType.VisitCore,
   device: DEVICE,
-  visit: VISIT_CORE_INFO,
+  visit: VISIT_NONPII,
 };
-const IDENTITY_DOCUMENT_CONTENTS: VisitIdentityDocument = {
-  schemaId: 1,
+const PII_DOCUMENT_CONTENTS = {
   csruid: DOCUMENT_ID,
-  documentType: DocumentType.VisitIdentity,
   device: DEVICE,
-  visit: VISIT_IDENTITY_INFO,
+  visit: VISIT_PII,
 };
 
 describe("putDocument", () => {
@@ -122,7 +130,7 @@ describe("putDocument", () => {
     req.write(contentsBuffer);
     await req.expect(200);
 
-    const visit = await VisitCore.findOne({ where: { csruid: DOCUMENT_ID } });
+    const visit = await VisitNonPII.findOne({ where: { csruid: DOCUMENT_ID } });
     expect(visit.device).not.toEqual(contents.device);
     expect(visit.device).toEqual({ info: "���" });
 
@@ -135,21 +143,21 @@ describe("putDocument", () => {
       .send(DOCUMENT_CONTENTS)
       .expect(200);
 
-    const visitCore = await VisitCore.findOne({ where: { csruid: DOCUMENT_ID } });
-    expect(visitCore.csruid).toEqual(DOCUMENT_ID);
-    expect(visitCore.device).toEqual(DOCUMENT_CONTENTS.device);
-    expect(visitCore.visit).toEqual(VISIT_CORE_INFO);
-    await visitCore.destroy();
+    const visitNonPII = await VisitNonPII.findOne({ where: { csruid: DOCUMENT_ID } });
+    expect(visitNonPII.csruid).toEqual(DOCUMENT_ID);
+    expect(visitNonPII.device).toEqual(DOCUMENT_CONTENTS.device);
+    expect(visitNonPII.visit).toEqual(VISIT_NONPII);
+    await visitNonPII.destroy();
 
-    const visitIdentity = await VisitIdentity.findOne({ where: { csruid: DOCUMENT_ID } });
-    expect(visitIdentity.csruid).toEqual(DOCUMENT_ID);
-    expect(visitIdentity.visit).toEqual(VISIT_IDENTITY_INFO);
-    await visitIdentity.destroy();
+    const visitPII = await VisitPII.findOne({ where: { csruid: DOCUMENT_ID } });
+    expect(visitPII.csruid).toEqual(DOCUMENT_ID);
+    expect(visitPII.visit).toEqual(VISIT_PII);
+    await visitPII.destroy();
   });
 
-  it("updates existing documents in visits table in identity db", async () => {
-    await VisitCore.upsert(CORE_DOCUMENT_CONTENTS);
-    await VisitIdentity.upsert(IDENTITY_DOCUMENT_CONTENTS);
+  it("updates existing documents in visits table in PII db", async () => {
+    await VisitNonPII.upsert(NONPII_DOCUMENT_CONTENTS);
+    await VisitPII.upsert(PII_DOCUMENT_CONTENTS);
 
     const newPatient = { ...PATIENT_INFO, name: "New Fake Name" };
     const newProtocolContents: VisitDocument = {
@@ -159,32 +167,25 @@ describe("putDocument", () => {
         patient: newPatient,
       }
     };
-    const newIdentityContents: VisitIdentityDocument = {
-      ...IDENTITY_DOCUMENT_CONTENTS,
-      visit: {
-        ...VISIT_IDENTITY_INFO,
-        patient: newPatient,
-      }
-    };
 
     const response = await request(app)
       .put(`/api/documents/${DOCUMENT_ID}`)
       .send(newProtocolContents)
       .expect(200);
 
-    const newIdentityVisit = await VisitIdentity.findOne({
+    const newPIIVisit = await VisitPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    const newVisitDoc = newIdentityVisit.visit as VisitInfo;
+    const newVisitDoc = newPIIVisit.visit as VisitInfo;
     expect(newVisitDoc.patient.name).toEqual("New Fake Name");
-    expect(newVisitDoc).toEqual({...VISIT_IDENTITY_INFO, patient: newPatient});
-    await newIdentityVisit.destroy();
+    expect(newVisitDoc).toEqual({...VISIT_PII, patient: newPatient});
+    await newPIIVisit.destroy();
 
-    const newCoreVisit = await VisitCore.findOne({
+    const newNonPIIVisit = await VisitNonPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newCoreVisit.visit).toEqual(CORE_DOCUMENT_CONTENTS.visit);
-    await newCoreVisit.destroy();
+    expect(newNonPIIVisit.visit).toEqual(NONPII_DOCUMENT_CONTENTS.visit);
+    await newNonPIIVisit.destroy();
   });
 });
 describe("putDocumentWithKey", () => {
@@ -199,18 +200,18 @@ describe("putDocumentWithKey", () => {
       .send(DOCUMENT_CONTENTS)
       .expect(200);
 
-    const newVisitCore = await VisitCore.findOne({
+    const newVisitNonPII = await VisitNonPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitCore).not.toBeNull();
+    expect(newVisitNonPII).not.toBeNull();
 
-    const newVisitIdentity = await VisitIdentity.findOne({
+    const newVisitPII = await VisitPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitIdentity).not.toBeNull();
+    expect(newVisitPII).not.toBeNull();
 
-    await newVisitCore.destroy();
-    await newVisitIdentity.destroy();
+    await newVisitNonPII.destroy();
+    await newVisitPII.destroy();
     await accessKey.destroy();
   });
   it("rejects a docuent with a bogus key", async () => {
@@ -224,15 +225,15 @@ describe("putDocumentWithKey", () => {
       .send(DOCUMENT_CONTENTS)
       .expect(404);
 
-    const newVisitCore = await VisitCore.findOne({
+    const newVisitNonPII = await VisitNonPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitCore).toBeNull();
+    expect(newVisitNonPII).toBeNull();
 
-    const newVisitIdentity = await VisitIdentity.findOne({
+    const newVisitPII = await VisitPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitIdentity).toBeNull();
+    expect(newVisitPII).toBeNull();
 
     await accessKey.destroy();
   });
@@ -247,15 +248,15 @@ describe("putDocumentWithKey", () => {
       .send(DOCUMENT_CONTENTS)
       .expect(404);
 
-    const newVisitCore = await VisitCore.findOne({
+    const newVisitNonPII = await VisitNonPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitCore).toBeNull();
+    expect(newVisitNonPII).toBeNull();
 
-    const newVisitIdentity = await VisitIdentity.findOne({
+    const newVisitPII = await VisitPII.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newVisitIdentity).toBeNull();
+    expect(newVisitPII).toBeNull();
 
     await accessKey.destroy();
   });

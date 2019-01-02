@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { sequelizeCore } from "./";
+import { sequelizeNonPII } from "./";
 import { DeviceInfo } from "audere-lib";
 
 interface FeedbackAttributes {
@@ -16,7 +16,7 @@ interface FeedbackAttributes {
 type FeedbackInstance = Sequelize.Instance<FeedbackAttributes> &
   FeedbackAttributes;
 
-export const Feedback = sequelizeCore.define<
+export const Feedback = sequelizeNonPII.define<
   FeedbackInstance,
   FeedbackAttributes
 >(

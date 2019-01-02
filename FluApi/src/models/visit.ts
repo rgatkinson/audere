@@ -4,26 +4,32 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { sequelizeCore, sequelizeIdentity } from "./";
-import { VisitCoreInfo, VisitIdentityInfo } from "audere-lib";
+import { sequelizeNonPII, sequelizePII } from "./";
+import { VisitNonPIIInfo, VisitPIIInfo } from "audere-lib";
 
 // Visits are split across two databases.  One contains PII and the
 // other contains all the rest of the data.  The database schema is
 // identical, but we create two separate TypeScript types to help
 // keep things straight.
 
-interface VisitCoreAttributes {
+export enum VisitFilterType {
+  PII = "PII",
+  NonPII = "NON_PII"
+}
+
+interface VisitNonPIIAttributes {
   id?: string;
   csruid: string;
   device: object;
-  visit: VisitCoreInfo;
+  visit: VisitNonPIIInfo;
 }
-type VisitCoreInstance = Sequelize.Instance<VisitCoreAttributes> &
-  VisitCoreAttributes;
 
-export const VisitCore = sequelizeCore.define<
-  VisitCoreInstance,
-  VisitCoreAttributes
+type VisitNonPIIInstance = Sequelize.Instance<VisitNonPIIAttributes> &
+  VisitNonPIIAttributes;
+
+export const VisitNonPII = sequelizeNonPII.define<
+  VisitNonPIIInstance,
+  VisitNonPIIAttributes
 >("visit", {
   csruid: {
     allowNull: false,
@@ -40,18 +46,19 @@ export const VisitCore = sequelizeCore.define<
   }
 });
 
-interface VisitIdentityAttributes {
+interface VisitPIIAttributes {
   id?: string;
   csruid: string;
   device: object;
-  visit: VisitIdentityInfo;
+  visit: VisitPIIInfo;
 }
-type VisitIdentityInstance = Sequelize.Instance<VisitIdentityAttributes> &
-  VisitIdentityAttributes;
 
-export const VisitIdentity = sequelizeIdentity.define<
-  VisitIdentityInstance,
-  VisitIdentityAttributes
+type VisitPIIInstance = Sequelize.Instance<VisitPIIAttributes> &
+  VisitPIIAttributes;
+
+export const VisitPII = sequelizePII.define<
+  VisitPIIInstance,
+  VisitPIIAttributes
 >("visit", {
   csruid: {
     allowNull: false,

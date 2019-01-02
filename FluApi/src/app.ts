@@ -8,12 +8,12 @@ import Ouch from "ouch";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import * as DocumentsController from "./controllers/documentsController";
-import { sequelizeCore, sequelizeIdentity } from "./models";
+import { sequelizeNonPII, sequelizePII } from "./models";
 import { generateRandomKey } from "./util/crypto";
 import logger from "./util/logger";
 
-sequelizeCore.authenticate();
-sequelizeIdentity.authenticate();
+sequelizeNonPII.authenticate();
+sequelizePII.authenticate();
 const app = express();
 const buildInfo = require("../static/buildInfo.json");
 
