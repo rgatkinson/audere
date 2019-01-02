@@ -87,7 +87,7 @@ export interface SampleInfo {
 export interface GiftCardInfo {
     barcodeType: string;
     code: string;
-    gitcardType: string;
+    giftcardType: string;
 }
 
 // This is a subset of the FHIR 'Patient' resource
