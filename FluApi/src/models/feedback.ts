@@ -16,7 +16,10 @@ interface FeedbackAttributes {
 type FeedbackInstance = Sequelize.Instance<FeedbackAttributes> &
   FeedbackAttributes;
 
-export const Feedback = sequelizeCore.define<FeedbackInstance, FeedbackAttributes>(
+export const Feedback = sequelizeCore.define<
+  FeedbackInstance,
+  FeedbackAttributes
+>(
   "feedback",
   {
     subject: Sequelize.STRING,

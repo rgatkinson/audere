@@ -5,7 +5,12 @@
 
 import Sequelize from "sequelize";
 import { sequelizeCore, sequelizeIdentity } from "./";
-import { VisitCoreInfo, VisitIdentityInfo, } from "audere-lib";
+import { VisitCoreInfo, VisitIdentityInfo } from "audere-lib";
+
+// Visits are split across two databases.  One contains PII and the
+// other contains all the rest of the data.  The database schema is
+// identical, but we create two separate TypeScript types to help
+// keep things straight.
 
 interface VisitCoreAttributes {
   id?: string;
@@ -13,27 +18,27 @@ interface VisitCoreAttributes {
   device: object;
   visit: VisitCoreInfo;
 }
-type VisitCoreInstance = Sequelize.Instance<VisitCoreAttributes> & VisitCoreAttributes;
+type VisitCoreInstance = Sequelize.Instance<VisitCoreAttributes> &
+  VisitCoreAttributes;
 
-export const VisitCore = sequelizeCore.define<VisitCoreInstance, VisitCoreAttributes>(
-  "visit_core",
-  {
-    csruid: {
-      allowNull: false,
-      unique: true,
-      type: Sequelize.STRING
-    },
-    device: {
-      allowNull: false,
-      type: Sequelize.JSON
-    },
-    visit: {
-      allowNull: false,
-      type: Sequelize.JSON
-    }
+export const VisitCore = sequelizeCore.define<
+  VisitCoreInstance,
+  VisitCoreAttributes
+>("visit", {
+  csruid: {
+    allowNull: false,
+    unique: true,
+    type: Sequelize.STRING
+  },
+  device: {
+    allowNull: false,
+    type: Sequelize.JSON
+  },
+  visit: {
+    allowNull: false,
+    type: Sequelize.JSON
   }
-);
-
+});
 
 interface VisitIdentityAttributes {
   id?: string;
@@ -41,23 +46,24 @@ interface VisitIdentityAttributes {
   device: object;
   visit: VisitIdentityInfo;
 }
-type VisitIdentityInstance = Sequelize.Instance<VisitIdentityAttributes> & VisitIdentityAttributes;
+type VisitIdentityInstance = Sequelize.Instance<VisitIdentityAttributes> &
+  VisitIdentityAttributes;
 
-export const VisitIdentity = sequelizeIdentity.define<VisitIdentityInstance, VisitIdentityAttributes>(
-  "visit_identity",
-  {
-    csruid: {
-      allowNull: false,
-      unique: true,
-      type: Sequelize.STRING
-    },
-    device: {
-      allowNull: false,
-      type: Sequelize.JSON
-    },
-    visit: {
-      allowNull: false,
-      type: Sequelize.JSON
-    }
+export const VisitIdentity = sequelizeIdentity.define<
+  VisitIdentityInstance,
+  VisitIdentityAttributes
+>("visit", {
+  csruid: {
+    allowNull: false,
+    unique: true,
+    type: Sequelize.STRING
+  },
+  device: {
+    allowNull: false,
+    type: Sequelize.JSON
+  },
+  visit: {
+    allowNull: false,
+    type: Sequelize.JSON
   }
-);
+});

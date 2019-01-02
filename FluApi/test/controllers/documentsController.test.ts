@@ -177,13 +177,13 @@ describe("putDocument", () => {
     });
     const newVisitDoc = newIdentityVisit.visit as VisitInfo;
     expect(newVisitDoc.patient.name).toEqual("New Fake Name");
-    expect(newVisitDoc).toEqual(newIdentityContents);
+    expect(newVisitDoc).toEqual({...VISIT_IDENTITY_INFO, patient: newPatient});
     await newIdentityVisit.destroy();
 
     const newCoreVisit = await VisitCore.findOne({
       where: { csruid: DOCUMENT_ID }
     });
-    expect(newCoreVisit).toEqual(CORE_DOCUMENT_CONTENTS);
+    expect(newCoreVisit.visit).toEqual(CORE_DOCUMENT_CONTENTS.visit);
     await newCoreVisit.destroy();
   });
 });

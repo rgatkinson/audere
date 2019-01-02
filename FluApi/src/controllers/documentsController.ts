@@ -30,7 +30,7 @@ const IDENTITY_RESPONSE_KEYS = new Set([
   "BirthDate",
   "CampusBuilding",
   "SchoolName",
-  "WorkAddress",
+  "WorkAddress"
 ]);
 
 export async function putDocument(req, res) {
@@ -43,31 +43,35 @@ export async function putDocument(req, res) {
         complete: visitDocument.visit.complete,
         location: visitDocument.visit.location,
         administrator: visitDocument.visit.administrator,
-        events: visitDocument.visit.events,
+        events: visitDocument.visit.events
       };
       const visitCore: VisitCoreInfo = {
         ...visitCommon,
         giftcards: visitDocument.visit.giftcards,
         samples: visitDocument.visit.samples,
-        responses: responses.filter(x => !IDENTITY_RESPONSE_KEYS.has(x.id)),
+        responses: (responses || []).filter(
+          x => !IDENTITY_RESPONSE_KEYS.has(x.id)
+        )
       };
       const visitIdentity: VisitIdentityInfo = {
         ...visitCommon,
         gps_location: visitDocument.visit.gps_location,
         patient: visitDocument.visit.patient,
         consents: visitDocument.visit.consents,
-        responses: responses.filter(x => IDENTITY_RESPONSE_KEYS.has(x.id)),
+        responses: (responses || []).filter(x =>
+          IDENTITY_RESPONSE_KEYS.has(x.id)
+        )
       };
       await Promise.all([
         VisitCore.upsert({
           csruid,
           device: visitDocument.device,
-          visit: visitCore,
+          visit: visitCore
         }),
         VisitIdentity.upsert({
           csruid,
           device: visitDocument.device,
-          visit: visitIdentity,
+          visit: visitIdentity
         })
       ]);
       break;
