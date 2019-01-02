@@ -13,14 +13,6 @@ resource "aws_iam_role_policy_attachment" "flu_api_send_email" {
   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
 }
 
-# resource "aws_iam_policy_attachment" "ses_send_email" {
-#   name = "${local.base_name}-ses-send-email"
-#   roles = [
-#     "${aws_iam_role.flu_api_role.name}", // ? "flu_api_role"
-#   ]
-#   policy_arn = "${aws_iam_policy.ses_send_email.arn}"
-# }
-
 resource "aws_iam_role" "flu_api_role" {
   name = "${local.base_name}-role"
   assume_role_policy = "${data.aws_iam_policy_document.flu_api_role_policy.json}"
