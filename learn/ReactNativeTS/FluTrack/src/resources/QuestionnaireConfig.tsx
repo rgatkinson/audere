@@ -77,6 +77,7 @@ export interface OptionListConfig {
   numColumns?: number;
   withOther: boolean;
   defaultOptions?: string[];
+  otherPlaceholder?: string;
 }
 
 interface TextInputConfig {
@@ -620,6 +621,7 @@ export const questionnaire: SurveyQuestion[] = [
         multiSelect: true,
         numColumns: 3,
         withOther: true,
+        otherPlaceholder: 'building',
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
@@ -690,6 +692,7 @@ export const questionnaire: SurveyQuestion[] = [
         options: ["pharmacy", "clinic", "workplace", "school", "other"],
         multiSelect: false,
         withOther: true,
+        otherPlaceholder: "location",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
@@ -855,6 +858,7 @@ export const questionnaire: SurveyQuestion[] = [
         ],
         multiSelect: true,
         withOther: true,
+        otherPlaceholder: 'race',
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
@@ -896,6 +900,7 @@ export const questionnaire: SurveyQuestion[] = [
         ],
         multiSelect: true,
         withOther: true,
+        otherPlaceholder: "insurance",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },

@@ -24,6 +24,7 @@ interface Props {
   numColumns: number;
   withOther?: boolean;
   otherOption?: string | null;
+  otherPlaceholder?: string;
   onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
   fullWidth?: boolean;
@@ -77,7 +78,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         this.props.numColumns * 20) /
       this.props.numColumns;
     const totalHeight =
-      Math.ceil(this.props.data.length / this.props.numColumns) * 44;
+      Math.ceil(this.props.data.length / this.props.numColumns) * 46;
 
     return (
       <View style={styles.container}>
@@ -104,11 +105,12 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         {this.props.withOther &&
           !!this.props.data.find(option => option.key === "other") &&
           this.props.data.find(option => option.key === "other")!.selected && (
-            <View>
-              <Text content={t("pleaseSpecify")} />
+            <View style={styles.otherContainer}>
+              <Text style={{ marginBottom: 10 }} content={t("pleaseSpecify")} />
               <View style={styles.item}>
                 <TextInput
                   autoFocus={true}
+                  placeholder={this.props.otherPlaceholder}
                   style={styles.itemText}
                   returnKeyType="done"
                   value={
@@ -162,6 +164,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
 
 const styles = StyleSheet.create({
   container: {
+    alignSelf: 'center',
     marginVertical: 20,
   },
   item: {
@@ -176,6 +179,9 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 17,
     marginVertical: 0,
+  },
+  otherContainer: {
+    marginHorizontal: 10,
   },
   smallText: {
     fontSize: 14,

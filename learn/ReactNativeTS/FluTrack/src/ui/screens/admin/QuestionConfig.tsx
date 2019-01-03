@@ -30,6 +30,7 @@ export const PostCollectionQuestions = {
       options: ["bruisingAtSite", "infectionAtSite", "other"],
       multiSelect: true,
       withOther: true,
+      otherPlaceholder: "Adverse event",
     },
   },
   NasalSwabEvents: {
@@ -40,6 +41,7 @@ export const PostCollectionQuestions = {
       options: ["nosebleed", "other"],
       multiSelect: true,
       withOther: true,
+      otherPlaceholder: "Adverse event",
     },
   },
 };

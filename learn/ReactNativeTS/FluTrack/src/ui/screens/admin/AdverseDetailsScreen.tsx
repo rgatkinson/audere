@@ -162,6 +162,7 @@ class AdverseDetailsScreen extends React.Component<
                       OptionKeyToQuestion[key].optionList!.multiSelect
                     }
                     withOther={OptionKeyToQuestion[key].optionList!.withOther}
+                    otherPlaceholder={OptionKeyToQuestion[key].optionList!.otherPlaceholder}
                     numColumns={1}
                     otherOption={this._getOtherOption(key)}
                     onOtherChange={value => {

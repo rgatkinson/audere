@@ -106,6 +106,7 @@ export default class GiftCardTypeScreen extends React.Component<Props, State> {
           multiSelect={false}
           numColumns={1}
           withOther={true}
+          otherPlaceholder='Card type'
           onChange={options => this.setState({ options })}
           onOtherChange={other => this.setState({ other })}
         />

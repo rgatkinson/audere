@@ -203,6 +203,10 @@
     "selectAll": "Please select all that apply."
   },
   "surveyPlaceholder": {
+    "building": "Building",
+    "location": "Location",
+    "race": "Race",
+    "insurance": "Insurance",
     "selectDate": "Select date",
     "days": "Number of days",
     "bedAssignment": "Bed assignment",

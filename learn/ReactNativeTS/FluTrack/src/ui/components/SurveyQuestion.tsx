@@ -393,6 +393,10 @@ class SurveyQuestion extends Component<
             numColumns={this.props.data.optionList.numColumns || 1}
             withOther={this.props.data.optionList.withOther}
             otherOption={this._getValue("otherOption")}
+            otherPlaceholder={!!this.props.data.optionList!.otherPlaceholder
+              ? t("surveyPlaceholder:" + this.props.data.optionList!.otherPlaceholder)
+              : undefined
+            }
             onOtherChange={otherOption => this.setState({ otherOption })}
             onChange={options => this.props.updateAnswer({ options })}
           />
