@@ -170,6 +170,7 @@ class EnrolledScreen extends React.PureComponent<
             multiSelect={true}
             numColumns={1}
             onChange={options => this.setState({ options })}
+            inclusiveOption={EnrolledConfig.optionList!.inclusiveOption}
           />
           {EnrolledConfig.buttons.map(button => (
             <Button

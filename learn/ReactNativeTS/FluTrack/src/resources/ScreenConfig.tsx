@@ -76,6 +76,7 @@ export const EnrolledConfig: SurveyQuestionData = {
     ],
     withOther: false,
     defaultOptions: ["sendCopyOfMyConsent"],
+    inclusiveOption: "allOfTheAbove",
   },
   buttons: [
     { key: "done", primary: true, enabled: true },

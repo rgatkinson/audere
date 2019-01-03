@@ -25,6 +25,7 @@ interface Props {
   withOther?: boolean;
   otherOption?: string | null;
   exclusiveOption?: string;
+  inclusiveOption?: string;
   otherPlaceholder?: string;
   onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
@@ -62,6 +63,13 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           : this.props.data.slice(0);
 
       data = data.map(option => {
+        if (this.props.inclusiveOption === id) {
+          return {
+            key: option.key,
+            selected: true,
+          };
+        }
+
         if (
           this.props.exclusiveOption === option.key &&
           this.props.exclusiveOption !== id
@@ -71,6 +79,17 @@ class OptionList extends React.Component<Props & WithNamespaces> {
             selected: false,
           };
         }
+
+        if (
+          this.props.inclusiveOption === option.key &&
+          this.props.inclusiveOption !== id
+        ) {
+          return {
+            key: option.key,
+            selected: false,
+          };
+        }
+
         return {
           key: option.key,
           selected: option.key === id ? toggled : option.selected,

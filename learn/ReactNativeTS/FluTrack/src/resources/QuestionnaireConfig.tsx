@@ -79,6 +79,7 @@ export interface OptionListConfig {
   defaultOptions?: string[];
   otherPlaceholder?: string;
   exclusiveOption?: string;
+  inclusiveOption?: string;
 }
 
 interface TextInputConfig {
