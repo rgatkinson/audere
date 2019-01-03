@@ -164,7 +164,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginVertical: 20,
   },
   item: {

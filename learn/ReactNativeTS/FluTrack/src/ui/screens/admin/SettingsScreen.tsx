@@ -114,7 +114,10 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           onDismiss={() => this.setState({ feedbackVisible: false })}
         />
         <View style={styles.descriptionContainer}>
-          <Text content="These settings should be set by study administrators and staff only." />
+          <Text
+            center={true}
+            content="These settings should be set by study administrators and staff only."
+          />
         </View>
         <EditSettingButton
           label="Prior to Collection"
@@ -135,23 +138,26 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
         />
         <View style={styles.syncContainer}>
           <Text
+            center={true}
             content={`Surveys waiting to be synced: ${
               this.state.documentsAwaitingUpload == -1
                 ? "..."
                 : this.state.documentsAwaitingUpload
             }`}
-            style={styles.syncText}
           />
           <Button
             enabled={true}
             label="Refresh"
             primary={true}
-            style={{ width: 200 }}
+            style={{ width: 200, marginVertical: 0 }}
             onPress={() => this._loadNumDocs()}
           />
         </View>
         <View style={styles.supportContainer}>
-          <Text content="For technical support in using this app, contact Audere Support at support@auderenow.org." />
+          <Text
+            center={true}
+            content="For technical support in using this app, contact Audere Support at support@auderenow.org."
+          />
         </View>
       </ScreenContainer>
     );
@@ -175,14 +181,9 @@ const styles = StyleSheet.create({
   },
   syncContainer: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 40,
     padding: 15,
-  },
-  syncText: {
-    paddingTop: 10,
-    paddingRight: 50,
   },
 });
 
