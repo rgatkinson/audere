@@ -5,7 +5,7 @@ import { Action, completeSurvey, startForm } from "../../../store";
 import { AgeBucketConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 import ScreenContainer from "../../components/ScreenContainer";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -29,8 +29,8 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <ScreenContainer>
         <ContentContainer>
           <Title size="large" label={t("welcomeTo")} />
-          <Description content={t("theGoal")} />
-          <Description content={t("participationRequirements")} />
+          <Text content={t("theGoal")} />
+          <Text content={t("participationRequirements")} />
           <Button
             enabled={true}
             primary={true}

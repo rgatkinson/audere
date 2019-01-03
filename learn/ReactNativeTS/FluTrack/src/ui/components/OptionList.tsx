@@ -4,7 +4,6 @@ import {
   FlatList,
   LayoutAnimation,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -12,7 +11,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import Description from "./Description";
+import Text from "./Text";
 
 interface Option {
   key: string;
@@ -106,7 +105,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           !!this.props.data.find(option => option.key === "other") &&
           this.props.data.find(option => option.key === "other")!.selected && (
             <View>
-              <Description content={t("pleaseSpecify")} />
+              <Text content={t("pleaseSpecify")} />
               <View style={styles.item}>
                 <TextInput
                   autoFocus={true}
@@ -152,10 +151,9 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
         onPress={this._onPress}
       >
         <Text
+          content={this.props.t("surveyOption:" + this.props.id)}
           style={[styles.itemText, this.props.smallText && styles.smallText]}
-        >
-          {this.props.t("surveyOption:" + this.props.id)}
-        </Text>
+        />
         {this.props.selected && <Feather name="check" color="blue" size={20} />}
       </TouchableOpacity>
     );
@@ -177,6 +175,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 17,
+    marginVertical: 0,
   },
   smallText: {
     fontSize: 14,

@@ -24,10 +24,10 @@ import {
 import AddressInput from "./AddressInput";
 import Button from "./Button";
 import DateInput from "./DateInput";
-import Description from "./Description";
 import NumberInput from "./NumberInput";
 import NumberSelectorInput from "./NumberSelectorInput";
 import OptionList, { newSelectedOptionsList } from "./OptionList";
+import Text from "./Text";
 import TextInput from "./TextInput";
 import Title from "./Title";
 
@@ -263,7 +263,7 @@ class SurveyQuestion extends Component<
           />
         )}
         {this.props.data.description && (
-          <Description
+          <Text
             content={t(
               "surveyDescription:" + this.props.data.description.label
             )}
@@ -273,7 +273,7 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.image && (
           <View>
-            <Description
+            <Text
               content={t("surveyDescription:" + this.props.data.image.label)}
               center={true}
             />

@@ -3,14 +3,13 @@ import {
   ScrollView,
   StatusBar as SystemStatusBar,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Button from "./Button";
-import Description from "./Description";
 import StatusBar from "./StatusBar";
+import Text from "./Text";
 
 interface Props {
   canProceed: boolean;
@@ -40,15 +39,17 @@ class ConsentChrome extends React.Component<Props & WithNamespaces> {
         />
         <ScrollView contentContainerStyle={styles.contentContainer}>
           {!!this.props.description && (
-            <Description
+            <Text
               content={this.props.description}
               style={{ marginHorizontal: 20 }}
             />
           )}
-          <Text style={[styles.consentText, { textAlign: "center" }]}>
-            {this.props.header}
-          </Text>
-          <Text style={styles.consentText}>{this.props.terms}</Text>
+          <Text
+            center={true}
+            content={this.props.header}
+            style={styles.consentText}
+          />
+          <Text content={this.props.terms} style={styles.consentText} />
           {this.props.children}
           <Button
             enabled={this.props.canProceed}
@@ -70,10 +71,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   consentText: {
-    alignSelf: "stretch",
     backgroundColor: "white",
-    fontFamily: "OpenSans-Regular",
     fontSize: 16,
+    marginVertical: 0,
     padding: 16,
   },
 });

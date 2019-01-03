@@ -13,12 +13,12 @@ import { Option } from "../../../store";
 import { SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
 import OptionList, {
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 
 interface Props {
@@ -74,7 +74,7 @@ class SymptomsScreen extends React.PureComponent<
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
-          <Description
+          <Text
             content={t(
               "surveyDescription:" + SymptomsConfig.description!.label
             )}

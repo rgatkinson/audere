@@ -5,7 +5,7 @@ import { StoreState } from "../../../store";
 import { ConsentInfo } from "audere-lib";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
@@ -45,7 +45,7 @@ class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
                   : "",
             })}
           />
-          <Description
+          <Text
             content={t("paperConsent", {
               additional:
                 this.props.assent != null

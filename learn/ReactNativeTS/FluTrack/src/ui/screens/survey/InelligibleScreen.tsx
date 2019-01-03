@@ -1,15 +1,15 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, StoreState, completeSurvey, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 
 interface Props {
@@ -59,7 +59,7 @@ class InelligibleScreen extends React.PureComponent<
       <ScreenContainer>
         <ContentContainer>
           <Title label={t(InelligibleConfig.title)} />
-          <Description content={t(InelligibleConfig.description.label)} />
+          <Text content={t(InelligibleConfig.description.label)} />
           <EmailInput
             autoFocus={true}
             placeholder={t("emailAddress")}
@@ -74,7 +74,7 @@ class InelligibleScreen extends React.PureComponent<
               }
             }}
           />
-          <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
+          <Text content={t("disclaimer")} style={styles.disclaimer} />
           <Button
             primary={true}
             enabled={true}
@@ -89,11 +89,7 @@ class InelligibleScreen extends React.PureComponent<
 
 const styles = StyleSheet.create({
   disclaimer: {
-    fontFamily: "OpenSans-Regular",
     fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 26,
-    marginVertical: 20,
   },
 });
 

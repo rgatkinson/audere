@@ -1,16 +1,21 @@
 import React from "react";
-import { StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  Text as SystemText,
+  TextStyle,
+} from "react-native";
 
 interface Props {
-  content: string;
   center?: boolean;
-  style?: StyleProp<ViewStyle>;
+  content: string;
+  style?: StyleProp<TextStyle>;
 }
 
-export default class Description extends React.Component<Props> {
+export default class Text extends React.Component<Props> {
   render() {
     return (
-      <Text
+      <SystemText
         style={[
           styles.container,
           this.props.center && styles.center,
@@ -20,16 +25,16 @@ export default class Description extends React.Component<Props> {
         {this.props.content.split("**").map(
           (str, i) =>
             i % 2 == 0 ? (
-              <Text key={i + str} style={styles.description}>
+              <SystemText key={i + str} style={styles.regular}>
                 {str}
-              </Text>
+              </SystemText>
             ) : (
-              <Text key={i + str} style={styles.bold}>
+              <SystemText key={i + str} style={styles.bold}>
                 {str}
-              </Text>
+              </SystemText>
             )
         )}
-      </Text>
+      </SystemText>
     );
   }
 }
@@ -42,13 +47,11 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     fontSize: 21,
     marginVertical: 20,
-    letterSpacing: -0.51,
-    lineHeight: 26,
   },
   center: {
     textAlign: "center",
   },
-  description: {
+  regular: {
     fontFamily: "OpenSans-Regular",
   },
 });

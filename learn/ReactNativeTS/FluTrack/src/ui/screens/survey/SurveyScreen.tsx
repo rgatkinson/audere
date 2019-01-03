@@ -5,7 +5,6 @@ import {
   SectionList,
   StatusBar as SystemStatusBar,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
@@ -15,9 +14,9 @@ import {
   questionnaire,
   sectionDescriptions,
 } from "../../../resources/QuestionnaireConfig";
-import Description from "../../components/Description";
 import SurveyQuestion from "../../components/SurveyQuestion";
 import StatusBar from "../../components/StatusBar";
+import Text from "../../components/Text";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
@@ -172,14 +171,16 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
             <View>
               <View style={styles.sectionHeaderOuter}>
                 <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionHeaderText}>
-                    {t("sectionTitle:" + title)}
-                  </Text>
+                  <Text
+                    center={true}
+                    content={t("sectionTitle:" + title)}
+                    style={styles.sectionHeaderText}
+                  />
                 </View>
               </View>
               {sectionDescriptions.has(title) && (
                 <View style={styles.descContainer}>
-                  <Description
+                  <Text
                     content={t(
                       "sectionDescription:" + sectionDescriptions.get(title)!
                     )}
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   },
   sectionHeaderText: {
     fontSize: 24,
-    textAlign: "center",
+    marginVertical: 0,
   },
 });
 

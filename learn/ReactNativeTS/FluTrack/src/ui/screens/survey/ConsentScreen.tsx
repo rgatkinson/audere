@@ -21,8 +21,8 @@ import {
   EnrolledConfig,
 } from "../../../resources/ScreenConfig";
 import ConsentChrome from "../../components/ConsentChrome";
-import Description from "../../components/Description";
 import SignatureInput from "../../components/SignatureInput";
+import Text from "../../components/Text";
 import {
   getContactName,
   getContactPhone,
@@ -169,7 +169,7 @@ class ConsentScreen extends React.Component<
               onSubmit={this._onSubmit}
             />
           </View>
-          <Description
+          <Text
             content={t("whenSubjectUnable")}
             style={{ marginHorizontal: 20 }}
           />
@@ -199,7 +199,7 @@ class ConsentScreen extends React.Component<
               onSubmit={this._onSubmit}
             />
           </View>
-          <Description
+          <Text
             content={t("subjectAndParent")}
             style={{ marginHorizontal: 20 }}
           />

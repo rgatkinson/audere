@@ -3,7 +3,6 @@ import { StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Button from "./Button";
-import Description from "./Description";
 import SignatureBox from "./SignatureBox";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 

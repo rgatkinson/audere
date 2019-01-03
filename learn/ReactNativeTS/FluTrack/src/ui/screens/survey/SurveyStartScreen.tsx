@@ -2,9 +2,9 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
-import Title from "../../components/Title";
 import ScreenContainer from "../../components/ScreenContainer";
+import Title from "../../components/Title";
+import Text from "../../components/Text";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
@@ -18,7 +18,7 @@ class SurveyStartScreen extends React.Component<Props & WithNamespaces> {
       <ScreenContainer>
         <ContentContainer>
           <Title label={t("common:statusBar:studyQuestionnaire")} />
-          <Description content={t("youAreNowEnrolled")} />
+          <Text content={t("youAreNowEnrolled")} />
           <Button
             enabled={true}
             primary={true}

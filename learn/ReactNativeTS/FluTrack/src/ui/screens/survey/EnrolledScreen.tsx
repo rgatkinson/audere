@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
@@ -13,7 +13,6 @@ import { EnrolledConfig } from "../../../resources/ScreenConfig";
 import { Action, Option, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
 import EmailInput from "../../components/EmailInput";
 import OptionList, {
   emptyList,
@@ -21,6 +20,7 @@ import OptionList, {
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 
 interface Props {
@@ -150,7 +150,7 @@ class EnrolledScreen extends React.PureComponent<
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
-          <Description
+          <Text
             content={t(
               "surveyDescription:" + EnrolledConfig.description!.label
             )}
@@ -164,7 +164,7 @@ class EnrolledScreen extends React.PureComponent<
             value={this._getEmail()}
             onChange={text => this.setState({ email: text })}
           />
-          <Text style={styles.disclaimer}>{t("disclaimer")}</Text>
+          <Text content={t("disclaimer")} style={styles.disclaimer} />
           <OptionList
             data={this.state.options}
             multiSelect={true}
@@ -192,10 +192,7 @@ class EnrolledScreen extends React.PureComponent<
 
 const styles = StyleSheet.create({
   disclaimer: {
-    fontFamily: "OpenSans-Regular",
     fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 26,
     marginTop: 20,
   },
 });

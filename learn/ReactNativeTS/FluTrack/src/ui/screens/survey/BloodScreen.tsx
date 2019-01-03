@@ -9,9 +9,9 @@ import {
 } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
 import ScreenContainer from "../../components/ScreenContainer";
 import StatusBar from "../../components/StatusBar";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 
 interface Props {
@@ -54,7 +54,7 @@ class BloodScreen extends React.Component<
         />
         <ContentContainer>
           <Title label={t("surveyTitle:" + BloodConfig.title)} />
-          <Description
+          <Text
             content={t("surveyDescription:" + BloodConfig.description!.label)}
           />
           {BloodConfig.buttons.map(button => (

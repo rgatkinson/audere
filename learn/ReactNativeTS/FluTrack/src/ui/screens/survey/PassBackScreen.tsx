@@ -1,9 +1,9 @@
 import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import ContentContainer from "../../components/ContentContainer";
-import Description from "../../components/Description";
 import ScreenContainer from "../../components/ScreenContainer";
 import SimpleStatusBar from "../../components/SimpleStatusBar";
+import Text from "../../components/Text";
 import Title from "../../components/Title";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
@@ -19,7 +19,7 @@ class PassBackScreen extends React.PureComponent<Props & WithNamespaces> {
         <SimpleStatusBar title={t("complete")} />
         <ContentContainer>
           <Title label={t("pleaseReturn")} />
-          <Description content={t("theyWillAssist")} />
+          <Text content={t("theyWillAssist")} />
         </ContentContainer>
       </ScreenContainer>
     );

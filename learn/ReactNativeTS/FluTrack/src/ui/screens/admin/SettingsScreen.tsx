@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { FormState, StoreState } from "../../../store";
@@ -7,9 +7,9 @@ import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AgeBuckets, AgeBucketConfig } from "../../../resources/ScreenConfig";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import Description from "../../components/Description";
 import EditSettingButton from "../../components/EditSettingButton";
 import ScreenContainer from "../../components/ScreenContainer";
+import Text from "../../components/Text";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -103,13 +103,13 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           onDismiss={() => this.setState({ feedbackVisible: false })}
         />
         <View style={styles.descriptionContainer}>
-          <Description content="These settings should be set by study administrators and staff only." />
+          <Text content="These settings should be set by study administrators and staff only." />
         </View>
         <EditSettingButton
           label="Prior to Collection"
           onPress={this._onPrior}
         />
-        <Text style={styles.sectionHeaderText}>Post Collection</Text>
+        <Text content="Post Collection" style={styles.sectionHeaderText} />
         <EditSettingButton
           label="Adverse Events"
           onPress={this._onAdverseEvents}
@@ -123,7 +123,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           onPress={this._onGiftCardScan}
         />
         <View style={styles.supportContainer}>
-          <Description content="For technical support in using this app, contact Audere Support at support@auderenow.org." />
+          <Text content="For technical support in using this app, contact Audere Support at support@auderenow.org." />
         </View>
       </ScreenContainer>
     );
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     marginTop: 35,
     marginBottom: 7,
     marginLeft: 15,
-    fontSize: 24,
   },
   supportContainer: {
     marginTop: 50,
