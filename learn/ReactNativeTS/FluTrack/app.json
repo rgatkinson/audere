@@ -19,7 +19,8 @@
       "package": "org.auderenow.flutrack"
     },
     "assetBundlePatterns": [
-      "assets/**/*"
+      "assets/images/UWLogo.png",
+      "assets/images/6ftDiagram.png"
     ],
     "orientation": "portrait"
   }
