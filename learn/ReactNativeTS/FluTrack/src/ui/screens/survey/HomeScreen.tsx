@@ -69,7 +69,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
         <StatusBar barStyle="light-content" />
         <Image
           style={{ height: 30, width: 380 }}
-          source={require("../../../img/UWLogo.png")}
+          source={require("../../../../assets/images/UWLogo.png")}
         />
         <Text style={styles.title}>{t("seattleFluStudy")}</Text>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>

@@ -3,7 +3,7 @@
     "name": "FluTrack",
     "version": "0.1.2",
     "description": "App for Seattle Flu Study project",
-    "icon": "./src/img/app-icon.png",
+    "icon": "./assets/images/app-icon.png",
     "slug": "FluTrack",
     "sdkVersion": "31.0.0",
     "ios": {
@@ -18,6 +18,10 @@
     "android": {
       "package": "org.auderenow.flutrack"
     },
+    "assetBundlePatterns": [
+      "assets/images/*",
+      "assets/fonts/*"
+    ],
     "orientation": "portrait"
   }
 }
