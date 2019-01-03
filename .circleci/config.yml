@@ -22,11 +22,16 @@ defaults: &defaults
   docker:
     - image: circleci/node:10.13
       environment:
-        TEST_DATABASE_URL: postgresql://audere@localhost/circle_test
+        TEST_PII_DATABASE_URL: postgresql://audere@localhost/circle_test_pii
+        TEST_NONPII_DATABASE_URL: postgresql://audere@localhost/circle_test_nonpii
     - image: circleci/postgres:10.5-ram
       environment:
         POSTGRES_USER: audere
-        POSTGRES_DB: circle_test
+        POSTGRES_DB: circle_test_pii
+    - image: circleci/postgres:10.5-ram
+      environment:
+        POSTGRES_USER: audere
+        POSTGRES_DB: circle_test_nonpii
   working_directory: ~/repo
 
 version: 2
@@ -80,7 +85,10 @@ jobs:
           name: Server Tests
           command: |
             cd FluApi
-            echo DATABASE_URL=$TEST_DATABASE_URL > .env
+            (
+              echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
+              echo NONPII_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
+            ) > .env
             yarn setup
             yarn test
       - run:
