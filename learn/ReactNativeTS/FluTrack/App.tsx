@@ -97,6 +97,7 @@ const Admin = createStackNavigator(
     Specimen: SpecimenScreen,
     GiftCardType: GiftCardTypeScreen,
     GiftCard: GiftCardScreen,
+    ManualBarcode: ManualBarcodeScreen,
     ManualGiftCard: ManualGiftCardScreen,
   },
   {
