@@ -302,6 +302,7 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.textInput && (
           <TextInput
+            autoCorrect={this.props.data.textInput.autoCorrect}
             autoFocus={true}
             placeholder={t(
               "surveyPlaceholder:" + this.props.data.textInput!.placeholder

@@ -186,6 +186,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           <View>
             <Text style={styles.headerText}>{t("fullName")}</Text>
             <TextInput
+              autoCorrect={false}
               autoFocus={
                 this.props.editableNames && !this._getParticipantName()
               }
@@ -212,6 +213,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                 {t(this.props.signer + "FullName")}
               </Text>
               <TextInput
+                autoCorrect={false}
                 autoFocus={
                   this.props.editableNames &&
                   !!this._getParticipantName() &&

@@ -87,6 +87,7 @@ export default class SelectAdminScreen extends React.Component<Props> {
         <Text style={styles.sectionHeaderText}>Study Administrators</Text>
         <View style={styles.container}>
           <TextInput
+            autoCorrect={false}
             autoFocus={!(this.props.admins && this.props.admins.length > 0)}
             placeholder="Add administrator"
             returnKeyType="done"

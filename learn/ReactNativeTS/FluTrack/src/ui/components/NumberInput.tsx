@@ -20,6 +20,7 @@ export default class NumberInput extends React.Component<Props> {
   render() {
     return (
       <TextInput
+        autoCorrect={false}
         autoFocus={this.props.autoFocus}
         keyboardType="numbers-and-punctuation"
         placeholder={this.props.placeholder}

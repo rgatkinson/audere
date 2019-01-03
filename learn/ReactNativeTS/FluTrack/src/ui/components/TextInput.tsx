@@ -10,6 +10,7 @@ import {
 
 interface Props {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  autoCorrect?: boolean;
   autoFocus?: boolean;
   editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
@@ -28,6 +29,7 @@ export default class TextInput extends React.Component<Props> {
     return (
       <SystemTextInput
         autoCapitalize={this.props.autoCapitalize}
+        autoCorrect={this.props.autoCorrect}
         autoFocus={this.props.autoFocus}
         editable={this.props.editable}
         keyboardType={

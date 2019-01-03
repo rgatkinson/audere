@@ -49,6 +49,7 @@ export default class EmailInput extends React.Component<Props, State> {
       <View style={styles.container}>
         <TextInput
           autoCapitalize="none"
+          autoCorrect={false}
           autoFocus={this.props.autoFocus}
           keyboardType="email-address"
           placeholder={this.props.placeholder}

@@ -83,6 +83,7 @@ export interface OptionListConfig {
 }
 
 interface TextInputConfig {
+  autoCorrect?: boolean;
   placeholder: string;
 }
 
@@ -424,6 +425,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "WhenTravelled",
       title: "whereTravelled",
       textInput: {
+        autoCorrect: false,
         placeholder: "locations",
       },
       buttons: [
@@ -556,6 +558,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "NumPeople",
       title: "schoolName",
       textInput: {
+        autoCorrect: false,
         placeholder: "schoolName",
       },
       conditionalNext: {

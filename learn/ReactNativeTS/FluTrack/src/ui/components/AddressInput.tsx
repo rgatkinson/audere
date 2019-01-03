@@ -42,6 +42,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
       <View style={styles.container}>
         {this.props.showLocationField && (
           <TextInput
+            autoCorrect={false}
             autoFocus={this.props.autoFocus}
             placeholder={t("locationName")}
             returnKeyType="next"
@@ -81,6 +82,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           }}
         />
         <TextInput
+          autoCorrect={false}
           autoFocus={this.props.autoFocus && !this.props.showLocationField}
           placeholder={t("streetAddress")}
           ref={this.address}
@@ -95,6 +97,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           onSubmitEditing={() => this.city.current!.focus()}
         />
         <TextInput
+          autoCorrect={false}
           placeholder={t("city")}
           ref={this.city}
           returnKeyType="next"
@@ -125,6 +128,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             </TouchableOpacity>
           ) : (
             <TextInput
+              autoCorrect={false}
               placeholder={t("stateProvince")}
               ref={this.stateProvince}
               returnKeyType="next"
@@ -171,6 +175,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             />
           ) : (
             <TextInput
+              autoCorrect={false}
               placeholder={t("postalCode")}
               ref={this.postalCode}
               returnKeyType="next"

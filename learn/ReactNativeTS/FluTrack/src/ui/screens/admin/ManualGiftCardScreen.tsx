@@ -105,6 +105,7 @@ export default class ManualGiftCardScreen extends React.Component<Props> {
         />
         <View style={styles.inputContainer}>
           <TextInput
+            autoCorrect={false}
             autoFocus={true}
             placeholder="Enter gift card barcode"
             returnKeyType="next"
