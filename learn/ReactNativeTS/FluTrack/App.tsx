@@ -104,6 +104,11 @@ const Admin = createStackNavigator(
   }
 );
 
+const AdminDrawer = createDrawerNavigator({
+  Admin,
+  About: { screen: AboutScreen },
+});
+
 const tabBarVisible = (navigation: NavigationScreenProp<any, any>) => {
   const { routes } = navigation.state;
   return navigation.state.index === 0;
@@ -111,8 +116,8 @@ const tabBarVisible = (navigation: NavigationScreenProp<any, any>) => {
 
 const FluStudy = createBottomTabNavigator(
   {
-    Home,
-    Admin,
+    Home: Home,
+    Admin: AdminDrawer,
   },
   {
     navigationOptions: ({ navigation }) => ({
@@ -130,12 +135,7 @@ const FluStudy = createBottomTabNavigator(
   }
 );
 
-const Drawer = createDrawerNavigator({
-  FluStudy,
-  About: { screen: AboutScreen },
-});
-
-const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(Drawer));
+const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(FluStudy));
 
 export default class App extends React.Component {
   state = {
