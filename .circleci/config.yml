@@ -22,16 +22,13 @@ defaults: &defaults
   docker:
     - image: circleci/node:10.13
       environment:
-        TEST_PII_DATABASE_URL: postgresql://audere@localhost/circle_test_pii
-        TEST_NONPII_DATABASE_URL: postgresql://audere@localhost/circle_test_nonpii
+        TEST_DATABASE_URL:        postgresql://audere@localhost/test
+        TEST_PII_DATABASE_URL:    postgresql://audere@localhost/test_pii
+        TEST_NONPII_DATABASE_URL: postgresql://audere@localhost/test_nonpii
     - image: circleci/postgres:10.5-ram
       environment:
         POSTGRES_USER: audere
-        POSTGRES_DB: circle_test_pii
-    - image: circleci/postgres:10.5-ram
-      environment:
-        POSTGRES_USER: audere
-        POSTGRES_DB: circle_test_nonpii
+        POSTGRES_DB: test
   working_directory: ~/repo
 
 version: 2
@@ -81,6 +78,13 @@ jobs:
           command: |
             cd FluApi
             yarn install
+      - run:
+          name: Create Test Databases
+          command: |
+            psql "$TEST_DATABASE_URL" <<EOF
+              CREATE DATABASE test_pii;
+              CREATE DATABASE test_nonpii;
+            EOF
       - run:
           name: Server Tests
           command: |
