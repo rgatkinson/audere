@@ -205,6 +205,21 @@ export class DocumentUploader {
     return csruid;
   }
 
+  public async documentsAwaitingUpload(): Promise<number | null> {
+    const options = {
+      startkey: "documents/",
+    };
+
+    let items: any;
+    try {
+      items = await this.db.allDocs(options);
+    } catch (e) {
+      logger.debug(`documentsAwaitingUpload returning null because "${e}"`);
+      return null;
+    }
+    return items.rows.length;
+  }
+
   private async firstDocument(): Promise<PouchDoc | null> {
     const options = {
       startkey: "documents/",

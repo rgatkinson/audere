@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { FormState, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AgeBuckets, AgeBucketConfig } from "../../../resources/ScreenConfig";
+import { uploader } from "../../../store/uploader";
+import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
 import EditSettingButton from "../../components/EditSettingButton";
@@ -36,12 +38,21 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
 
   state = {
     feedbackVisible: false,
+    documentsAwaitingUpload: -1,
   };
+
+  async _loadNumDocs() {
+    const numDocs = await uploader.documentsAwaitingUpload();
+    if (numDocs != null) {
+      this.setState({ documentsAwaitingUpload: numDocs });
+    }
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({
       showFeedback: () => this.setState({ feedbackVisible: true }),
     });
+    this._loadNumDocs();
   }
 
   _onPrior = () => {
@@ -122,6 +133,23 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           label="Gift Card Scan"
           onPress={this._onGiftCardScan}
         />
+        <View style={styles.syncContainer}>
+          <Text
+            content={`Surveys waiting to be synced: ${
+              this.state.documentsAwaitingUpload == -1
+                ? "..."
+                : this.state.documentsAwaitingUpload
+            }`}
+            style={styles.syncText}
+          />
+          <Button
+            enabled={true}
+            label="Refresh"
+            primary={true}
+            style={{ width: 200 }}
+            onPress={() => this._loadNumDocs()}
+          />
+        </View>
         <View style={styles.supportContainer}>
           <Text content="For technical support in using this app, contact Audere Support at support@auderenow.org." />
         </View>
@@ -132,18 +160,29 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
 
 const styles = StyleSheet.create({
   descriptionContainer: {
+    marginBottom: 40,
     marginHorizontal: 15,
     marginTop: 25,
-    marginBottom: 40,
   },
   sectionHeaderText: {
-    marginTop: 35,
     marginBottom: 7,
     marginLeft: 15,
+    marginTop: 40,
   },
   supportContainer: {
-    marginTop: 50,
     marginHorizontal: 15,
+    marginTop: 50,
+  },
+  syncContainer: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    flexDirection: "row",
+    marginTop: 40,
+    padding: 15,
+  },
+  syncText: {
+    paddingTop: 10,
+    paddingRight: 50,
   },
 });
 

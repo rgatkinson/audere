@@ -30,6 +30,9 @@ class TypedDocumentUploader {
     this.uploader = new DocumentUploader(db, api);
   }
 
+  public async documentsAwaitingUpload(): Promise<number | null> {
+    return this.uploader.documentsAwaitingUpload();
+  }
   public saveVisit(localUid: string, visit: VisitInfo) {
     this.uploader.save(localUid, visit, DocumentType.Visit, 0);
   }

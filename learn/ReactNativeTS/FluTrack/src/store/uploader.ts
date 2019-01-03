@@ -31,7 +31,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.form != null) {
+    if (state.form != null && state.form.formId != null) {
       uploader.saveVisit(state.form.formId, redux_to_pouch(state));
     }
     return result;
