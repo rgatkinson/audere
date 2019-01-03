@@ -137,20 +137,24 @@ class SurveyQuestion extends Component<
     } else if (enabledStatus === "withNumber") {
       return Number.isInteger(parseInt(this._getValue("numberInput")));
     } else if (enabledStatus === "withAddress") {
-      const address = this._getValue("addressInput");
-      return (
-        !!address &&
-        !!address.address &&
-        !!address.city &&
-        !!address.zipcode &&
-        (!address.country ||
-          (!!address.country &&
-            (address.country === "United States" || !!address.state)))
-      );
+      return this._haveValidAddress();
     } else if (enabledStatus === "withDate") {
       return !!this.props.getAnswer("dateInput");
     }
     return !!enabledStatus;
+  };
+
+  _haveValidAddress = (): boolean => {
+    const address = this._getValue("addressInput");
+    return (
+      !!address &&
+      !!address.address &&
+      !!address.city &&
+      !!address.zipcode &&
+      (!address.country ||
+        (!!address.country &&
+          (address.country === "United States" || !!address.state)))
+    );
   };
 
   _getBirthDateDefaultYear() {
@@ -331,7 +335,9 @@ class SurveyQuestion extends Component<
             }
             onDone={() => {
               this._updateAddress();
-              this.props.onNext(this._getNextQuestion("done"));
+              if (this._haveValidAddress()) {
+                this.props.onNext(this._getNextQuestion("done"));
+              }
             }}
           />
         )}
