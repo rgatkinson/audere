@@ -62,16 +62,18 @@ EOF
 }
 
 function write_credentials() {
-  local new_password="$1"
+  local db_name="flu"
+  local db_user="${new_userid}"
+  local db_password="$1"
   local creds="/mnt/new-creds"
-  parted_mkfs_mount "${new_device_letter}" "${new_userid}" "$creds"
+  parted_mkfs_mount "${new_device_letter}" "$db_user" "$creds"
 
   mkdir -p "$creds/db"
-  cat >"$dir/pgpass" <<EOF
+  cat >"$creds/pgpass" <<EOF
 ${pii_db_host}:$db_port:$db_name:$db_user:$db_password
 ${nonpii_db_host}:$db_port:$db_name:$db_user:$db_password
 EOF
-  cat >"$dir/env" <<EOF
+  cat >"$creds/env" <<EOF
 PII_DATABASE_URL=postgres://$db_user:$db_password@${pii_db_host}:$db_port/$db_name
 NONPII_DATABASE_URL=postgres://$db_user:$db_password@${nonpii_db_host}:$db_port/$db_name
 EOF
