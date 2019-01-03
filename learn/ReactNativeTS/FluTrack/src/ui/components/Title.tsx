@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import Text from "./Text";
 
 interface Props {
   label: string;
@@ -10,14 +11,15 @@ export default class Title extends React.Component<Props> {
   render() {
     return (
       <Text
+        center={true}
+        content={this.props.label}
+        extraBold={true}
         style={[
           styles.title,
           this.props.size && this.props.size == "large" && styles.large,
           this.props.size && this.props.size == "small" && styles.small,
         ]}
-      >
-        {this.props.label}
-      </Text>
+      />
     );
   }
 }
@@ -34,13 +36,10 @@ const styles = StyleSheet.create({
     lineHeight: 83,
   },
   title: {
-    alignSelf: "stretch",
     color: "#4B2E83",
-    fontFamily: "OpenSans-Bold",
+    fontFamily: "OpenSans-SemiBold",
     fontSize: 49,
     letterSpacing: 0.24,
     lineHeight: 58,
-    marginVertical: 20,
-    textAlign: "center",
   },
 });

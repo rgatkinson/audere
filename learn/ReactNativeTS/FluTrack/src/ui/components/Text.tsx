@@ -9,6 +9,7 @@ import {
 interface Props {
   center?: boolean;
   content: string;
+  extraBold?: boolean;
   style?: StyleProp<TextStyle>;
 }
 
@@ -25,11 +26,12 @@ export default class Text extends React.Component<Props> {
         {this.props.content.split("**").map(
           (str, i) =>
             i % 2 == 0 ? (
-              <SystemText key={i + str} style={styles.regular}>
-                {str}
-              </SystemText>
+              <SystemText key={i + str}>{str}</SystemText>
             ) : (
-              <SystemText key={i + str} style={styles.bold}>
+              <SystemText
+                key={i + str}
+                style={this.props.extraBold ? styles.extraBold : styles.bold}
+              >
                 {str}
               </SystemText>
             )
@@ -45,13 +47,14 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
+    fontFamily: "OpenSans-Regular",
     fontSize: 21,
     marginVertical: 20,
   },
+  extraBold: {
+    fontFamily: "OpenSans-ExtraBold",
+  },
   center: {
     textAlign: "center",
-  },
-  regular: {
-    fontFamily: "OpenSans-Regular",
   },
 });
