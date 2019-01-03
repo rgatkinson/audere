@@ -248,6 +248,19 @@ class SurveyQuestion extends Component<
     }
   };
 
+  componentDidMount() {
+    if (this.props.data.textInput != null) {
+      if (this.props.getAnswer("textInput") != null) {
+        this.setState({ textInput: this.props.getAnswer("textInput") });
+      }
+    }
+    if (this.props.data.numberInput != null) {
+      if (this.props.getAnswer("numberInput") != null) {
+        this.setState({ numberInput: this.props.getAnswer("numberInput") });
+      }
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
