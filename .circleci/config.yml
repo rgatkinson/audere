@@ -81,6 +81,9 @@ jobs:
       - run:
           name: Create Test Databases
           command: |
+            sudo apt install postgresql-client
+            # Wait up to a minute for port 5432 to open
+            for i in $(seq 60); do (! nc -z localhost 5432) && sleep 1 || break; done
             psql "$TEST_DATABASE_URL" <<EOF
               CREATE DATABASE test_pii;
               CREATE DATABASE test_nonpii;
