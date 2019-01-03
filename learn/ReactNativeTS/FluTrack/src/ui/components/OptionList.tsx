@@ -24,6 +24,7 @@ interface Props {
   numColumns: number;
   withOther?: boolean;
   otherOption?: string | null;
+  exclusiveOption?: string;
   otherPlaceholder?: string;
   onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
@@ -55,16 +56,32 @@ class OptionList extends React.Component<Props & WithNamespaces> {
     if (!!dataItem) {
       const toggled = !dataItem.selected;
 
-      let data = this.props.multiSelect
-        ? this.props.data.slice(0)
-        : emptyList(this.props.data.map(option => option.key));
+      let data =
+        !this.props.multiSelect || this.props.exclusiveOption === id
+          ? emptyList(this.props.data.map(option => option.key))
+          : this.props.data.slice(0);
 
       data = data.map(option => {
+        if (
+          this.props.exclusiveOption === option.key &&
+          this.props.exclusiveOption !== id
+        ) {
+          return {
+            key: option.key,
+            selected: false,
+          };
+        }
         return {
           key: option.key,
           selected: option.key === id ? toggled : option.selected,
         };
       });
+
+      if (
+        this.props.exclusiveOption != null &&
+        this.props.exclusiveOption !== id
+      ) {
+      }
       this.props.onChange(data);
     }
   };

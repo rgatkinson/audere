@@ -78,6 +78,7 @@ export interface OptionListConfig {
   withOther: boolean;
   defaultOptions?: string[];
   otherPlaceholder?: string;
+  exclusiveOption?: string;
 }
 
 interface TextInputConfig {
@@ -406,6 +407,7 @@ export const questionnaire: SurveyQuestion[] = [
         ],
         multiSelect: true,
         withOther: false,
+        exclusiveOption: "withinWashingtonStateOnly",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
@@ -901,6 +903,7 @@ export const questionnaire: SurveyQuestion[] = [
         multiSelect: true,
         withOther: true,
         otherPlaceholder: "insurance",
+        exclusiveOption: "none",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },

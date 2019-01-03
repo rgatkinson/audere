@@ -391,6 +391,7 @@ class SurveyQuestion extends Component<
             )}
             multiSelect={this.props.data.optionList.multiSelect}
             numColumns={this.props.data.optionList.numColumns || 1}
+            exclusiveOption={this.props.data.optionList.exclusiveOption}
             withOther={this.props.data.optionList.withOther}
             otherOption={this._getValue("otherOption")}
             otherPlaceholder={
