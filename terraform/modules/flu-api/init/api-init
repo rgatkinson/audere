@@ -37,7 +37,7 @@ yarn build
 case "$mode" in
   migrate)
     echo "Running sequelize because '$mode'==migrate"
-    yarn sequelize "db:migrate"
+    yarn setup
     ;;
   service)
     echo "Running pm2 because '$mode'==service"
