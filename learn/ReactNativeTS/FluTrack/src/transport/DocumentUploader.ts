@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { SecureStore } from "expo";
 import { getLogger } from "./LogUtil";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
@@ -14,6 +15,7 @@ import {
   ProtocolDocument,
 } from "audere-lib";
 
+import { loadRandomBytes } from "../hacks";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { PouchDoc } from "./Types";
@@ -29,7 +31,9 @@ const RETRY_DELAY = 1 * MINUTE;
 // exported for testing
 export const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
 
-type Event = SaveEvent | UploadNextEvent;
+const POUCH_PASS_KEY = "FluTrack.PouchDbEncryptionPassword";
+
+type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
 type DocumentContents = VisitInfo | FeedbackInfo | LogInfo;
 
@@ -45,6 +49,10 @@ interface UploadNextEvent {
   type: "UploadNext";
 }
 
+interface DecryptDBEvent {
+  type: "DecryptDBEvent";
+}
+
 // TODO: collapse two pending saves of the same document?
 export class DocumentUploader {
   private readonly db: any;
@@ -56,10 +64,10 @@ export class DocumentUploader {
   constructor(db: any, api: AxiosInstance) {
     this.db = db;
     this.api = api;
-    this.pendingEvents = [];
+    this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.pump = new Pump(() => this.pumpEvents());
-    process.nextTick(() => this.uploadNext());
+    process.nextTick(() => this.pump.start());
   }
 
   public destroy(): void {
@@ -109,9 +117,34 @@ export class DocumentUploader {
           case "UploadNext":
             await this.handleUploadNext();
             break;
+          case "DecryptDBEvent":
+            await this.handleDecryptDB();
+            break;
         }
       }
     }
+  }
+
+  private async getEncryptionPassword(): Promise<string> {
+    let pouchPassword = await SecureStore.getItemAsync(POUCH_PASS_KEY);
+    if (pouchPassword) {
+      return pouchPassword;
+    }
+    const result = await this.check200(() => this.api.get("/randomBytes/32"));
+    if (!result) {
+      throw new Error(
+        "Failed to initialize PouchDB, could not fetch a random password"
+      );
+    }
+    pouchPassword = result.data.bytes.trim();
+    await SecureStore.setItemAsync(POUCH_PASS_KEY, pouchPassword);
+    return pouchPassword;
+  }
+
+  private async handleDecryptDB(): Promise<void> {
+    this.db.crypto(await this.getEncryptionPassword(), {
+      algorithm: "chacha20",
+    });
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
@@ -136,6 +169,7 @@ export class DocumentUploader {
         `Saving new '${key}':\n  ${JSON.stringify(save.document, null, 2)}`
       );
     }
+    await loadRandomBytes(this.api, 44);
     await this.db.put(pouch);
     logger.debug(`Saved ${key}`);
     this.uploadNext();
@@ -195,6 +229,7 @@ export class DocumentUploader {
       throw new Error("Unable to retrieve CSRUID");
     }
     const csruid = apiResult.data.id.trim();
+    await loadRandomBytes(this.api, 44);
     await this.db.put({
       _id: pouchId,
       csruid,
@@ -256,9 +291,11 @@ export class DocumentUploader {
       include_docs: true,
     });
     logger.debug("Pouch contents:");
-    items.rows.forEach((row: any) => {
-      logger.debug(`  ${row.doc._id}`);
-    });
+    if (items && items.rows) {
+      items.rows.forEach((row: any) => {
+        logger.debug(`  ${row.doc._id}`);
+      });
+    }
     logger.debug("End pouch contents");
   }
 

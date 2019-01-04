@@ -11,7 +11,7 @@ export async function generateRandomKey(length = 64): Promise<string> {
   return base64url(bytes).substring(0, length);
 }
 
-function generateRandomBytes(numBytes: number): Promise<Buffer> {
+export function generateRandomBytes(numBytes: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(numBytes, (err, buf) => {
       if (err) {

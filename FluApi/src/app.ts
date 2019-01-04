@@ -7,9 +7,10 @@ import express from "express";
 import Ouch from "ouch";
 import bodyParser from "body-parser";
 import helmet from "helmet";
+import base64url from "base64url";
 import * as DocumentsController from "./controllers/documentsController";
 import { sequelizeNonPII, sequelizePII } from "./models";
-import { generateRandomKey } from "./util/crypto";
+import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import logger from "./util/logger";
 
 sequelizeNonPII.authenticate();
@@ -38,6 +39,15 @@ app.get(
   "/api/documentId",
   wrap(async (req, res) => {
     res.json({ id: await generateRandomKey() });
+  })
+);
+
+app.get(
+  "/api/randomBytes/:numBytes",
+  wrap(async (req, res) => {
+    res.json({
+      bytes: base64url(await generateRandomBytes(parseInt(req.params.numBytes)))
+    });
   })
 );
 

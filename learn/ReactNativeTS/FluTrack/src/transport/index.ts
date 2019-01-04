@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import PouchDB from "pouchdb-react-native";
+import CryptoPouch from "crypto-pouch";
 import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
@@ -15,6 +16,8 @@ import { DocumentUploader } from "./DocumentUploader";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 const logger = getLogger("api");
+
+PouchDB.plugin(CryptoPouch);
 
 export function createUploader(): TypedDocumentUploader {
   const api = createAxios();

@@ -1,21 +1,31 @@
 import Axios, { AxiosInstance, AxiosResponse } from "axios";
 import PouchDB from "pouchdb";
+import CryptoPouch from "crypto-pouch";
 import {
   anyString,
   anything,
   capture,
   instance,
+  match,
   mock,
   spy,
   verify,
   when,
 } from "ts-mockito";
 import { DocumentType } from "audere-lib";
-import { DocumentUploader, CSRUID_PLACEHOLDER } from "../../src/transport/DocumentUploader";
+import {
+  DocumentUploader,
+  CSRUID_PLACEHOLDER,
+} from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
 import { VisitInfo } from "audere-lib";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
+
+const EMPTY_POUCH_CONTENTS = {
+  total_rows: 0,
+  rows: [],
+};
 
 const FAKE_VISIT_CONTENTS: VisitInfo = {
   complete: false,
@@ -40,7 +50,7 @@ const FAKE_POUCH_DOC: PouchDoc = {
     schemaId: 1,
     csruid: CSRUID_PLACEHOLDER,
     device: DEVICE_INFO,
-    visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS))
+    visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS)),
   },
 };
 
@@ -50,11 +60,16 @@ describe("DocumentUploader", () => {
     beforeEach(() => {
       const api = Axios.create();
       mockAxios = spy(api);
+      when(mockAxios.get(match("/randomBytes/.*"))).thenReturn(
+        axiosResponse({ bytes: "" })
+      );
+      PouchDB.plugin(CryptoPouch);
       mockPouchDB = mock(PouchDB);
       uploader = new DocumentUploader(instance(mockPouchDB), api);
     });
     it("adds visit info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
+      when(mockPouchDB.allDocs(anything())).thenReturn(EMPTY_POUCH_CONTENTS);
 
       uploader.save("fakeUID", FAKE_VISIT_CONTENTS, DocumentType.Visit, 0);
 
@@ -66,9 +81,11 @@ describe("DocumentUploader", () => {
     it("uploads a saved record to the api server", async () => {
       const contents = {
         total_rows: 1,
-        rows: [{
-          doc: FAKE_POUCH_DOC
-        }],
+        rows: [
+          {
+            doc: FAKE_POUCH_DOC,
+          },
+        ],
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
       when(mockPouchDB.allDocs(anything())).thenReturn(contents);
