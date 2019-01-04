@@ -593,7 +593,7 @@ export const questionnaire: SurveyQuestion[] = [
       },
       optionList: {
         options: [
-          "artLibaray",
+          "artLibrary",
           "bagley",
           "builtLib",
           "burke",
@@ -602,7 +602,7 @@ export const questionnaire: SurveyQuestion[] = [
           "healthSci",
           "hecEd",
           "hitchcock",
-          "huskeyStadium",
+          "huskyStadium",
           "hub",
           "ima",
           "lifeSciences",
