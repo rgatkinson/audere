@@ -235,7 +235,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "NearSickPeople",
       image: {
         label: "6feet",
-        src: require("../../assets/images/6ftDiagram.png"),
+        src: require("../img/6ftDiagram.png"),
       },
       description: {
         label: "expoToSickPeople",

@@ -1,13 +1,12 @@
 import "./src/hacks";
 import React from "react";
-import { ImageSourcePropType } from "react-native";
 import {
   createDrawerNavigator,
   createStackNavigator,
   createBottomTabNavigator,
   NavigationScreenProp,
 } from "react-navigation";
-import { AppLoading, Asset, Font } from "expo";
+import { AppLoading, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
@@ -144,20 +143,19 @@ export default class App extends React.Component {
     appReady: false,
   };
 
-  async _loadResourcesAsync() {
-    await Promise.all([
-      Asset.loadAsync([
-        require("./assets/images/UWLogo.png"),
-        require("./assets/images/6ftDiagram.png"),
-      ]),
-      Font.loadAsync({
-        "UniSansRegular": require("./assets/fonts/UniSansRegular.otf"),
-        "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
-        "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-        "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
-        "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
-      }),
-    ]);
+  componentWillMount() {
+    this._loadAssets();
+  }
+
+  async _loadAssets() {
+    await Font.loadAsync({
+      UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
+      "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
+      "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+      "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
+      "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
+    });
+    this.setState({ appReady: true });
   }
 
   render() {
@@ -170,11 +168,7 @@ export default class App extends React.Component {
         </Provider>
       </I18nextProvider>
     ) : (
-      <AppLoading
-        startAsync={this._loadResourcesAsync}
-        onError={console.warn}
-        onFinish={() => this.setState({ appReady: true })}
-      />
+      <AppLoading />
     );
   }
 }
