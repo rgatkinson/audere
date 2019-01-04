@@ -209,9 +209,7 @@ export const questionnaire: SurveyQuestion[] = [
       addressInput: {
         showLocationField: false,
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withAddress" },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
   {
@@ -227,9 +225,7 @@ export const questionnaire: SurveyQuestion[] = [
       addressInput: {
         showLocationField: false,
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withAddress" },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
   {
@@ -500,9 +496,7 @@ export const questionnaire: SurveyQuestion[] = [
       addressInput: {
         showLocationField: true,
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withAddress" },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
   {
@@ -627,7 +621,7 @@ export const questionnaire: SurveyQuestion[] = [
         multiSelect: true,
         numColumns: 3,
         withOther: true,
-        otherPlaceholder: 'building',
+        otherPlaceholder: "building",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
@@ -750,6 +744,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "KeptFrom",
       nextQuestion: "DoctorThisWeek",
       title: "keptFrom",
+      description: {
+        label: "selectAll",
+        center: true,
+      },
       optionList: {
         options: [
           "attendingClass",
@@ -864,7 +862,7 @@ export const questionnaire: SurveyQuestion[] = [
         ],
         multiSelect: true,
         withOther: true,
-        otherPlaceholder: 'race',
+        otherPlaceholder: "race",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
