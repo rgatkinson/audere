@@ -39,7 +39,7 @@ data "aws_acm_certificate" "auderenow_io" {
 data "template_file" "sequelize_migrate_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    commit = "master"
+    commit = "${var.commit}"
     domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
@@ -54,7 +54,7 @@ data "template_file" "sequelize_migrate_sh" {
 data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
-    commit = "master"
+    commit = "${var.commit}"
     domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
