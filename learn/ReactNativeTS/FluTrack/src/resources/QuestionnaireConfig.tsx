@@ -233,10 +233,6 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "ExpoDesc",
       nextQuestion: "NearSickPeople",
-      image: {
-        label: "6feet",
-        src: require("../img/6ftDiagram.png"),
-      },
       description: {
         label: "expoToSickPeople",
         center: false,
