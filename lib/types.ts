@@ -57,7 +57,7 @@ export interface VisitDocument extends ProtocolDocumentBase {
   visit: VisitInfo;
 }
 
-export type VisitInfo = VisitNonPIIInfo & VisitPIIInfo;
+export type VisitInfo = VisitPIIInfo & VisitNonPIIInfo;
 
 // Yes, I know, I know, "Personally-Identifiable-Information Info".
 // Unfortunately, it fits the pattern, and helps disambiguate.
@@ -69,6 +69,12 @@ export interface VisitPIIInfo extends VisitCommonInfo {
 
   // Filtered to include only PII, like name, email, and address.
   responses: ResponseInfo[];
+}
+
+// This is not part of the protocol, but represents anonymized state
+// for the purposes of analytics we save in the non-PII database.
+export interface VisitNonPIIDbInfo extends VisitNonPIIInfo {
+  consents: NonPIIConsentInfo[];
 }
 
 export interface VisitNonPIIInfo extends VisitCommonInfo {
@@ -146,13 +152,16 @@ export enum AddressInfoUse {
   Work = "work",
 }
 
-export interface ConsentInfo {
-    name: string;
-    terms: string;
-    signerType: ConsentInfoSignerType;
-    date: string; // date only
-    signature: string; // Base64-encoded PNG of the signature
-    relation?: string;
+export interface NonPIIConsentInfo {
+  terms: string;
+  signerType: ConsentInfoSignerType;
+  date: string; // date only
+  relation?: string;
+}
+
+export interface ConsentInfo extends NonPIIConsentInfo {
+  name: string;
+  signature: string; // Base64-encoded PNG of the signature
 }
 
 export enum ConsentInfoSignerType {

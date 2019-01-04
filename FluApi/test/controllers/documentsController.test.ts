@@ -1,20 +1,8 @@
 import request from "supertest";
-import { DocumentType, VisitDocument, VisitInfo, VisitNonPIIInfo, VisitPIIInfo, VisitCommonInfo, EventInfoKind } from "audere-lib";
+import { DocumentType, VisitDocument, VisitInfo, VisitNonPIIDbInfo, VisitPIIInfo, VisitCommonInfo, EventInfoKind } from "audere-lib";
 import app from "../../src/app";
 import { VisitNonPII, VisitPII } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
-
-// export interface VisitNonPIIDocument extends ProtocolDocumentBase {
-//   documentType: DocumentType.VisitNonPII;
-//   schemaId: 1;
-//   visit: VisitNonPIIInfo;
-// }
-
-// export interface VisitPIIDocument extends ProtocolDocumentBase {
-//   documentType: DocumentType.VisitPII;
-//   schemaId: 1;
-//   visit: VisitPIIInfo;
-// }
 
 const DOCUMENT_ID = "ABC123-_".repeat(8);
 const DEVICE = {
@@ -63,10 +51,11 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
     }
   ],
 };
-const VISIT_NONPII: VisitNonPIIInfo = {
+const VISIT_NONPII: VisitNonPIIDbInfo = {
   ...VISIT_COMMON_INFO,
   samples: [ SAMPLE_INFO ],
   giftcards: [],
+  consents: [],
   responses: [ PHI_RESPONSE ],
 };
 const VISIT_PII: VisitPIIInfo = {

@@ -23,12 +23,15 @@ export interface VisitDocument extends ProtocolDocumentBase {
     schemaId: 1;
     visit: VisitInfo;
 }
-export declare type VisitInfo = VisitNonPIIInfo & VisitPIIInfo;
+export declare type VisitInfo = VisitPIIInfo & VisitNonPIIInfo;
 export interface VisitPIIInfo extends VisitCommonInfo {
     gps_location?: GpsLocationInfo;
     patient: PatientInfo;
     consents: ConsentInfo[];
     responses: ResponseInfo[];
+}
+export interface VisitNonPIIDbInfo extends VisitNonPIIInfo {
+    consents: NonPIIConsentInfo[];
 }
 export interface VisitNonPIIInfo extends VisitCommonInfo {
     samples: SampleInfo[];
@@ -83,13 +86,15 @@ export declare enum AddressInfoUse {
     Home = "home",
     Work = "work"
 }
-export interface ConsentInfo {
-    name: string;
+export interface NonPIIConsentInfo {
     terms: string;
     signerType: ConsentInfoSignerType;
     date: string;
-    signature: string;
     relation?: string;
+}
+export interface ConsentInfo extends NonPIIConsentInfo {
+    name: string;
+    signature: string;
 }
 export declare enum ConsentInfoSignerType {
     Subject = "Subject",

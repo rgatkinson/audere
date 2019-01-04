@@ -5,8 +5,10 @@ import {
   LogDocument,
   VisitDocument,
   VisitCommonInfo,
-  VisitNonPIIInfo,
-  VisitPIIInfo
+  VisitNonPIIDbInfo,
+  VisitPIIInfo,
+  ConsentInfo,
+  NonPIIConsentInfo
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
 import { VisitNonPII, VisitPII } from "../models/visit";
@@ -28,8 +30,6 @@ const IDENTITY_RESPONSE_KEYS = new Set([
   "AddressCampus",
   "BedAssignment",
   "BirthDate",
-  "CampusBuilding",
-  "SchoolName",
   "WorkAddress"
 ]);
 
@@ -45,8 +45,9 @@ export async function putDocument(req, res) {
         administrator: visitDocument.visit.administrator,
         events: visitDocument.visit.events
       };
-      const visitNonPII: VisitNonPIIInfo = {
+      const visitNonPII: VisitNonPIIDbInfo = {
         ...visitCommon,
+        consents: deIdentifyConsents(visitDocument.visit.consents),
         giftcards: visitDocument.visit.giftcards,
         samples: visitDocument.visit.samples,
         responses: (responses || []).filter(
@@ -118,4 +119,17 @@ export async function putDocumentWithKey(req, res, next) {
   } catch (e) {
     next(e);
   }
+}
+
+function deIdentifyConsents(consents?: ConsentInfo[]): NonPIIConsentInfo[] {
+  return (consents == null) ? [] : consents.map(deIdentifyConsent);
+}
+
+function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
+  return {
+    terms: consent.terms,
+    signerType: consent.signerType,
+    date: consent.date,
+    ...(consent.relation == null ? {} : { relation: consent.relation }),
+  };
 }
