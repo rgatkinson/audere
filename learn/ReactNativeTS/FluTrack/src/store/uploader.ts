@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as form, Address, FormState, Option, Sample } from "./form";
+import { default as form, Address, FormState, Option, Sample, SurveyResponse } from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
@@ -96,27 +96,9 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     }
   }
 
-  const addressResponse = responses.find(
-    response => response.questionId === "Address"
-  );
-  if (!!addressResponse) {
-    maybePushAddress(
-      addressResponse!.answer!.addressInput,
-      AddressInfoUse.Home,
-      pouch.patient.address
-    );
-  }
-
-  const workAddressResponse = responses.find(
-    response => response.questionId === "WorkAddress"
-  );
-  if (!!workAddressResponse) {
-    maybePushAddress(
-      workAddressResponse!.answer!.addressInput,
-      AddressInfoUse.Work,
-      pouch.patient.address
-    );
-  }
+  maybePushAddressResponse(responses, "WorkAddress", AddressInfoUse.Work, pouch);
+  maybePushAddressResponse(responses, "Address", AddressInfoUse.Home, pouch);
+  maybePushAddressResponse(responses, "AddressCampus", AddressInfoUse.Home, pouch);
 
   const assignedSexResponse = responses.find(
     response => response.questionId === "AssignedSex"
@@ -266,6 +248,13 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   const bloodConsent = form.bloodConsent;
   if (bloodConsent != null) {
     consents.push(bloodConsent);
+  }
+}
+
+function maybePushAddressResponse(responses: SurveyResponse[], questionId: string, use: AddressInfoUse, pouch: VisitInfo): void {
+  const response = responses.find(r => r.questionId === questionId);
+  if (!!response) {
+    maybePushAddress(response!.answer!.addressInput, use, pouch.patient.address);
   }
 }
 
