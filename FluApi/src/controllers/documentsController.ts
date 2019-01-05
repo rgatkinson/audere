@@ -8,7 +8,9 @@ import {
   VisitNonPIIDbInfo,
   VisitPIIInfo,
   ConsentInfo,
-  NonPIIConsentInfo
+  NonPIIConsentInfo,
+  ResponseInfo,
+  ResponseItemInfo
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
 import { VisitNonPII, VisitPII } from "../models/visit";
@@ -24,14 +26,6 @@ const clientLogger = createLogger({
 
 const FEEDBACK_EMAIL = "feedback@auderenow.org";
 const FEEDBACK_SENDER_EMAIL = "app@auderenow.org";
-
-const IDENTITY_RESPONSE_KEYS = new Set([
-  "Address",
-  "AddressCampus",
-  "BedAssignment",
-  "BirthDate",
-  "WorkAddress"
-]);
 
 export async function putDocument(req, res) {
   switch (req.body.documentType) {
@@ -50,18 +44,14 @@ export async function putDocument(req, res) {
         consents: deIdentifyConsents(visitDocument.visit.consents),
         giftcards: visitDocument.visit.giftcards,
         samples: visitDocument.visit.samples,
-        responses: (responses || []).filter(
-          x => !IDENTITY_RESPONSE_KEYS.has(x.id)
-        )
+        responses: (responses || []).map(filterResponsePII(false)),
       };
       const visitPII: VisitPIIInfo = {
         ...visitCommon,
         gps_location: visitDocument.visit.gps_location,
         patient: visitDocument.visit.patient,
         consents: visitDocument.visit.consents,
-        responses: (responses || []).filter(x =>
-          IDENTITY_RESPONSE_KEYS.has(x.id)
-        )
+        responses: (responses || []).map(filterResponsePII(true)),
       };
       await Promise.all([
         VisitNonPII.upsert({
@@ -132,4 +122,27 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
     date: consent.date,
     ...(consent.relation == null ? {} : { relation: consent.relation }),
   };
+}
+
+const PII_RESPONSE_KEYS = new Set([
+  "Address",
+  "AddressCampus",
+  "BedAssignment",
+  "BirthDate",
+  "WorkAddress"
+]);
+
+function filterResponsePII(allowPII: boolean) {
+  function matchResponseItem(item: ResponseItemInfo): boolean {
+    return PII_RESPONSE_KEYS.has(item.id) === allowPII;
+  }
+
+  function mapResponse(response: ResponseInfo): ResponseInfo {
+    return {
+      id: response.id,
+      item: (response.item || []).filter(matchResponseItem),
+    }
+  }
+
+  return mapResponse;
 }

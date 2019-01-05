@@ -23,22 +23,17 @@ const SAMPLE_INFO = {
   sample_type: "SampleType",
   code: "Code",
 };
-const PHI_RESPONSE = {
+const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
-  item: [{
-    id: "CakeVeracity",
-    text: "Is the cake a lie?",
-    answer: [{ valueBoolean: true }]
-  }]
+  text: "Is the cake a lie?",
+  answer: [{ valueBoolean: true }]
 };
-const PII_RESPONSE = {
+const PII_RESPONSE_ITEM = {
   id: "BirthDate",
-  item: [{
-    id: "BirthDate",
-    text: "What is your birth date?",
-    answer: [{ valueString: "1900-01-01" }]
-  }]
+  text: "What is your birth date?",
+  answer: [{ valueString: "1900-01-01" }]
 };
+
 const VISIT_COMMON_INFO: VisitCommonInfo = {
   complete: true,
   location: "Location Name",
@@ -56,22 +51,29 @@ const VISIT_NONPII: VisitNonPIIDbInfo = {
   samples: [ SAMPLE_INFO ],
   giftcards: [],
   consents: [],
-  responses: [ PHI_RESPONSE ],
+  responses: [{
+    id: "Questionnaire",
+    item: [ NONPII_RESPONSE_ITEM ],
+  }],
 };
 const VISIT_PII: VisitPIIInfo = {
   ...VISIT_COMMON_INFO,
   patient: PATIENT_INFO,
   consents: [],
-  responses: [ PII_RESPONSE ],
+  responses: [{
+    id: "Questionnaire",
+    item: [ PII_RESPONSE_ITEM ],
+  }],
 }
 const VISIT_INFO: VisitInfo = {
   ...VISIT_NONPII,
   ...VISIT_PII,
-  responses: [
-    ...VISIT_NONPII.responses,
-    ...VISIT_PII.responses,
-  ],
+  responses: [{
+    id: "Questionnaire",
+    item: [ PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM ],
+  }],
 };
+
 const DOCUMENT_CONTENTS: VisitDocument = {
   schemaId: 1,
   csruid: DOCUMENT_ID,
