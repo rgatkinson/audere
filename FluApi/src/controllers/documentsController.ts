@@ -44,14 +44,14 @@ export async function putDocument(req, res) {
         consents: deIdentifyConsents(visitDocument.visit.consents),
         giftcards: visitDocument.visit.giftcards,
         samples: visitDocument.visit.samples,
-        responses: (responses || []).map(filterResponsePII(false)),
+        responses: (responses || []).map(filterResponsePII(false))
       };
       const visitPII: VisitPIIInfo = {
         ...visitCommon,
         gps_location: visitDocument.visit.gps_location,
         patient: visitDocument.visit.patient,
         consents: visitDocument.visit.consents,
-        responses: (responses || []).map(filterResponsePII(true)),
+        responses: (responses || []).map(filterResponsePII(true))
       };
       await Promise.all([
         VisitNonPII.upsert({
@@ -112,7 +112,7 @@ export async function putDocumentWithKey(req, res, next) {
 }
 
 function deIdentifyConsents(consents?: ConsentInfo[]): NonPIIConsentInfo[] {
-  return (consents == null) ? [] : consents.map(deIdentifyConsent);
+  return consents == null ? [] : consents.map(deIdentifyConsent);
 }
 
 function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
@@ -120,7 +120,7 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
     terms: consent.terms,
     signerType: consent.signerType,
     date: consent.date,
-    ...(consent.relation == null ? {} : { relation: consent.relation }),
+    ...(consent.relation == null ? {} : { relation: consent.relation })
   };
 }
 
@@ -140,8 +140,8 @@ function filterResponsePII(allowPII: boolean) {
   function mapResponse(response: ResponseInfo): ResponseInfo {
     return {
       id: response.id,
-      item: (response.item || []).filter(matchResponseItem),
-    }
+      item: (response.item || []).filter(matchResponseItem)
+    };
   }
 
   return mapResponse;
