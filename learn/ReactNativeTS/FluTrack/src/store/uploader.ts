@@ -4,7 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { default as form, Address, FormState, Option, Sample, SurveyResponse } from "./form";
+import {
+  default as form,
+  Address,
+  FormState,
+  Option,
+  Sample,
+  SurveyResponse,
+} from "./form";
 import { StoreState } from "./StoreState";
 import { createUploader } from "../transport";
 import { format } from "date-fns";
@@ -96,9 +103,19 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     }
   }
 
-  maybePushAddressResponse(responses, "WorkAddress", AddressInfoUse.Work, pouch);
+  maybePushAddressResponse(
+    responses,
+    "WorkAddress",
+    AddressInfoUse.Work,
+    pouch
+  );
   maybePushAddressResponse(responses, "Address", AddressInfoUse.Home, pouch);
-  maybePushAddressResponse(responses, "AddressCampus", AddressInfoUse.Home, pouch);
+  maybePushAddressResponse(
+    responses,
+    "AddressCampus",
+    AddressInfoUse.Home,
+    pouch
+  );
 
   const assignedSexResponse = responses.find(
     response => response.questionId === "AssignedSex"
@@ -251,10 +268,19 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   }
 }
 
-function maybePushAddressResponse(responses: SurveyResponse[], questionId: string, use: AddressInfoUse, pouch: VisitInfo): void {
+function maybePushAddressResponse(
+  responses: SurveyResponse[],
+  questionId: string,
+  use: AddressInfoUse,
+  pouch: VisitInfo
+): void {
   const response = responses.find(r => r.questionId === questionId);
   if (!!response) {
-    maybePushAddress(response!.answer!.addressInput, use, pouch.patient.address);
+    maybePushAddress(
+      response!.answer!.addressInput,
+      use,
+      pouch.patient.address
+    );
   }
 }
 

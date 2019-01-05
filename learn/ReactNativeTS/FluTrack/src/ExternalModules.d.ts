@@ -13,6 +13,6 @@ declare module "crypto-pouch";
 // pouch-crypto extension
 namespace PouchDB {
   interface Database {
-    crypto(password: string) : void;
+    crypto(password: string): void;
   }
 }
