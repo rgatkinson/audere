@@ -1,13 +1,29 @@
 #!/bin/bash
 set -euo pipefail
-set -x
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 # Runs a 'psql' command based on the .pgpass file
 DBID="$1"
+shift
 
-PGPASS="$(grep "^$DBID\." "$HOME/.pgpass")"
+if [[ ! -r "$HOME/.pgpass" ]]; then
+  echo 1>&2 "Could not read '$HOME/.pgpass'"
+  exit 1
+fi
+function try_pat() {
+  local line="$(grep "$1" "$HOME/.pgpass")"
+  if [[ -n "$line" && "$(echo -n "$line" | wc -l)" == 0 ]]; then
+    echo "$line"
+  else
+    false
+  fi
+}
+PGPASS="$(try_pat "^$DBID\." || try_pat "$DBID\." || try_pat "^$DBID" || try_pat "$DBID")" || {
+  echo "Could not find a unique line in ~/.pgpass that matches pattern '$DBID'"
+  exit 1
+}
+
 function pgpass() { echo "$PGPASS" | cut -d ":" -f "$1"; }
 
 DB_HOSTNAME="$(pgpass 1)"
@@ -16,4 +32,5 @@ DB_DATABASE="$(pgpass 3)"
 DB_USERNAME="$(pgpass 4)"
 DB_PASSWORD="$(pgpass 5)"
 
+set -x
 psql --host="$DB_HOSTNAME" --port="$DB_PORT" --username="$DB_USERNAME" $DB_DATABASE "$@"
