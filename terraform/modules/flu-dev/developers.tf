@@ -112,6 +112,7 @@ resource "aws_instance" "dev_machine" {
     "${module.dev_machine_sg.server_id}",
     "${aws_security_group.internet_egress.id}",
     "${var.fludev_ssh_client_sg_id}",
+    "${var.fludb_client_sg_id}",
   ]
 
   tags {
