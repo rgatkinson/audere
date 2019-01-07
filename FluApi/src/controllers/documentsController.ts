@@ -100,8 +100,8 @@ export async function putDocumentWithKey(req, res, next) {
   });
 
   if (!matchingKey) {
-    next();
     logger.warn(`Rejected document upload with key: ${req.params.key}`);
+    next();
     return;
   }
   try {

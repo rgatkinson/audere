@@ -139,11 +139,15 @@ jobs:
           command: |
             if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
               export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
+              export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
             else 
               export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
+              export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
             fi
             cd learn/ReactNativeTS/FluTrack
             echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+            echo "ACCESS_KEY_A=TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB" >> .env
+            echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
             more .env
       - run:
           name: Publish to Expo

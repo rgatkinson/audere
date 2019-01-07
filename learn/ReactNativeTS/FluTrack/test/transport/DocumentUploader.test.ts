@@ -102,7 +102,7 @@ describe("DocumentUploader", () => {
       );
       const [url, postData] = capture(mockAxios.put as any).last();
       expect(postData).toEqual(FAKE_POUCH_DOC.body);
-      expect(url).toEqual(`/documents/${FAKE_CSRUID}`);
+      expect(url).toMatch(new RegExp(`/documents/.*/${FAKE_CSRUID}`));
     });
   });
   describe("firstDocument", () => {

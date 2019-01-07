@@ -21,6 +21,7 @@ import { Pump } from "./Pump";
 import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
 import { summarize } from "./LogUtil";
+import { getDocumentUploadKey } from "./index";
 
 const logger = getLogger("transport");
 
@@ -57,6 +58,7 @@ interface DecryptDBEvent {
 export class DocumentUploader {
   private readonly db: any;
   private readonly api: AxiosInstance;
+  private readonly documentUploadKey: string;
   private pendingEvents: Event[];
   private readonly timer: Timer;
   private readonly pump: Pump;
@@ -64,6 +66,7 @@ export class DocumentUploader {
   constructor(db: any, api: AxiosInstance) {
     this.db = db;
     this.api = api;
+    this.documentUploadKey = getDocumentUploadKey();
     this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.pump = new Pump(() => this.pumpEvents());
@@ -196,7 +199,7 @@ export class DocumentUploader {
       if (body.csruid === CSRUID_PLACEHOLDER) {
         throw new Error("Expected body.csruid to be initialized by this point");
       }
-      const url = `/documents/${body.csruid}`;
+      const url = `/documents/${this.documentUploadKey}/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
       if (result == null) {

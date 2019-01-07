@@ -68,6 +68,8 @@
     "@types/i18next": "^11.9.3",
     "audere-lib": "link:../../../lib",
     "axios": "^0.18.0",
+    "base64url": "^3.0.1",
+    "buffer-xor": "^2.0.2",
     "babel-plugin-inline-dotenv": "^1.2.0",
     "base64url": "^3.0.1",
     "crypto-pouch": "^3.1.3",
