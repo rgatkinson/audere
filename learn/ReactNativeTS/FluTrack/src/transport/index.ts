@@ -7,8 +7,6 @@ import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
 import axios from "axios";
 import URL from "url-parse";
-import base64url from "base64url";
-import bufferXor from "buffer-xor";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
 import { DocumentType, VisitInfo } from "audere-lib";
@@ -93,15 +91,4 @@ export function getApiBaseUrl(): string {
   }
   console.log(`API server: '${api}'`);
   return api;
-}
-
-export function getDocumentUploadKey(): string {
-  const components = [
-    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
-    process.env.ACCESS_KEY_A || "",
-    process.env.ACCESS_KEY_B || "",
-  ];
-  const buffers = components.map(base64url.toBuffer);
-  const buffer = buffers.reduce(bufferXor, new Buffer(0));
-  return base64url(buffer);
 }
