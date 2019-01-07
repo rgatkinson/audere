@@ -93,9 +93,23 @@ const PII_DOCUMENT_CONTENTS = {
 };
 
 describe("putDocument", () => {
+  let accessKey;
+  beforeAll(async done => {
+    accessKey = await AccessKey.create({
+      key: "accesskey1",
+      valid: true
+    });
+    done();
+  });
+
+  afterAll(async done => {
+    await accessKey.destroy();
+    done();
+  });
+
   it("rejects malformed json", async () => {
     const response = await request(app)
-      .put(`/api/documents/${DOCUMENT_ID}`)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
       .send("{ bad json")
       .set("Content-Type", "application/json")
       .expect(400);
@@ -116,7 +130,7 @@ describe("putDocument", () => {
     contentsBuffer[21] = 0x80;
 
     const req = request(app)
-      .put(`/api/documents/${DOCUMENT_ID}`)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
       .set("Content-Type", "application/json");
     req.write(contentsBuffer);
     await req.expect(200);
@@ -130,7 +144,7 @@ describe("putDocument", () => {
 
   it("adds the document to the visits table in each db", async () => {
     const response = await request(app)
-      .put(`/api/documents/${DOCUMENT_ID}`)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
       .send(DOCUMENT_CONTENTS)
       .expect(200);
 
@@ -160,7 +174,7 @@ describe("putDocument", () => {
     };
 
     const response = await request(app)
-      .put(`/api/documents/${DOCUMENT_ID}`)
+      .put(`/api/documents/${accessKey.key}/${DOCUMENT_ID}`)
       .send(newProtocolContents)
       .expect(200);
 

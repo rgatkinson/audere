@@ -30,11 +30,6 @@ app.put(
   DocumentsController.putDocumentWithKey
 );
 
-app.put(
-  "/api/documents/:documentId([A-Za-z0-9-_]{0,})",
-  wrap(DocumentsController.putDocument)
-);
-
 app.get(
   "/api/documentId",
   wrap(async (req, res) => {
