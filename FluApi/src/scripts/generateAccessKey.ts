@@ -17,7 +17,7 @@ import { AccessKey } from "../models/accessKey";
 
 async function generateAccessKey() {
   const components = [
-    await generateRandomKey(),
+    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
     await generateRandomKey(),
     await generateRandomKey()
   ];
@@ -30,6 +30,10 @@ async function generateAccessKey() {
 }
 
 generateAccessKey().then(components => {
-  components.forEach(component => console.log(component));
+  console.log();
+  console.log("Copy the following lines to your .env file:");
+  console.log(`ACCESS_KEY_A=${components[1]}`);
+  console.log(`ACCESS_KEY_B=${components[2]}`);
+  console.log();
   process.exit();
 });
