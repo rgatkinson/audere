@@ -144,10 +144,7 @@ export const questionnaire: SurveyQuestion[] = [
         numColumns: 2,
         withOther: false,
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withOption" }],
     },
   },
   {
