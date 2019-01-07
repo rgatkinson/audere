@@ -190,7 +190,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
             const otherOption = response.answer.otherOption;
             response.answer.options.forEach((option: Option) => {
               if (option.selected) {
-                item.answer.push({ valueInteger: i });
+                item.answer.push({ valueIndex: i });
               }
               // ASSUME the "Other" choice is always keyed "other"
               if (!!otherOption && option.key.toLowerCase() === "other") {
@@ -208,7 +208,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
             const choiceArray = item.answerOptions;
             for (let i = 0; i < choiceArray.length; i++) {
               if (choiceArray[i].id === response.answer.selectedButtonKey) {
-                item.answer.push({ valueInteger: i });
+                item.answer.push({ valueIndex: i });
               }
             }
           }

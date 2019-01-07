@@ -124,6 +124,7 @@ export interface AnswerInfo {
     valueInteger?: number;
     valueString?: string;
     valueAddress?: AddressValueInfo;
+    valueIndex?: number;
     valueOther?: OtherValueInfo;
     valueDeclined?: boolean;
 }

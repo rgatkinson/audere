@@ -29,15 +29,12 @@ export interface ProtocolDocumentBase {
 }
 
 export enum DocumentType {
-  Visit = 'VISIT',
-  Feedback = 'FEEDBACK',
-  Log = 'LOG',
+  Visit = "VISIT",
+  Feedback = "FEEDBACK",
+  Log = "LOG"
 }
 
-export type ProtocolDocument =
-    FeedbackDocument
-  | LogDocument
-  | VisitDocument;
+export type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument;
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -108,9 +105,9 @@ export interface SampleInfo {
 
 // Information about gift cards given to participants
 export interface GiftCardInfo {
-    barcodeType: string;
-    code: string;
-    giftcardType: string;
+  barcodeType: string;
+  code: string;
+  giftcardType: string;
 }
 
 // This is a subset of the FHIR 'Patient' resource
@@ -129,7 +126,7 @@ export enum PatientInfoGender {
   Male = "male",
   Female = "female",
   Other = "other",
-  Unknown = "unknown",
+  Unknown = "unknown"
 }
 
 export interface TelecomInfo {
@@ -140,7 +137,7 @@ export interface TelecomInfo {
 export enum TelecomInfoSystem {
   Phone = "phone",
   SMS = "sms",
-  Email = "email",
+  Email = "email"
 }
 
 export interface AddressInfo extends AddressValueInfo {
@@ -149,7 +146,7 @@ export interface AddressInfo extends AddressValueInfo {
 
 export enum AddressInfoUse {
   Home = "home",
-  Work = "work",
+  Work = "work"
 }
 
 export interface NonPIIConsentInfo {
@@ -167,7 +164,7 @@ export interface ConsentInfo extends NonPIIConsentInfo {
 export enum ConsentInfoSignerType {
   Subject = "Subject",
   Parent = "Parent",
-  Representative = "Representative",
+  Representative = "Representative"
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
@@ -202,6 +199,9 @@ export interface AnswerInfo {
   valueInteger?: number;
   valueString?: string;
   valueAddress?: AddressValueInfo;
+
+  // Index in answerOptions of the selected choice
+  valueIndex?: number;
 
   // If the selected option also has a freeform text box, e.g
   // 'Other, please specify: _________'
@@ -238,7 +238,7 @@ export interface EventInfo {
 export enum EventInfoKind {
   Visit = "visit",
   Response = "response",
-  Sample = "sample",
+  Sample = "sample"
 }
 
 // ================================================================================
@@ -254,7 +254,6 @@ export interface FeedbackInfo {
   subject: string;
   body: string;
 }
-
 
 // ================================================================================
 // Log
