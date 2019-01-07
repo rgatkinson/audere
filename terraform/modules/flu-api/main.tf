@@ -132,6 +132,10 @@ resource "aws_autoscaling_group" "flu_api" {
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_elb" "flu_api_elb" {
