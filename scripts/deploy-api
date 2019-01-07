@@ -1,0 +1,42 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function usage() {
+  echo 1>&2 "$*"
+  echo 1>&2 "Usage:"
+  echo 1>&2 "  ${BASH_SOURCE[0]} <environment> [<git-revision>]"
+  echo 1>&2 ""
+  echo 1>&2 "where"
+  echo 1>&2 "  <environment> is one of 'staging' or 'prod'"
+  echo 1>&2 "  <git-revision> is a valid revision in the audere repo"
+  exit 1
+}
+
+case "$#" in
+  1)
+    readonly environment="$1"
+    readonly commit="$(cd "$SELF_DIR/.." && git rev-parse HEAD)"
+    ;;
+  2)
+    readonly environment="$1"
+    readonly commit="$1"
+    ;;
+  *) usage "Expected 1 or 2 arguments, got $#.";;
+esac
+
+case "$environment" in
+  "staging" | "prod") ;;
+  *) usage "Unexpected environment '$environment'";;
+esac
+
+if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
+  usage "Unrecognized commit '$commit'"
+fi
+
+cd "$AUDERE/terraform/flu/api-$environment"
+set -x
+terraform taint -module=flu_api aws_autoscaling_group.flu_api
+terraform apply -var "commit=$commit"
