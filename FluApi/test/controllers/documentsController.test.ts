@@ -1,5 +1,13 @@
 import request from "supertest";
-import { DocumentType, VisitDocument, VisitInfo, VisitNonPIIDbInfo, VisitPIIInfo, VisitCommonInfo, EventInfoKind } from "audere-lib";
+import {
+  DocumentType,
+  VisitDocument,
+  VisitInfo,
+  VisitNonPIIDbInfo,
+  VisitPIIInfo,
+  VisitCommonInfo,
+  EventInfoKind
+} from "audere-lib";
 import app from "../../src/app";
 import { VisitNonPII, VisitPII } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
@@ -21,7 +29,7 @@ const PATIENT_INFO = {
 };
 const SAMPLE_INFO = {
   sample_type: "SampleType",
-  code: "Code",
+  code: "Code"
 };
 const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
@@ -42,36 +50,42 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
     {
       kind: EventInfoKind.Visit,
       at: "2019-01-01T00:00:00Z",
-      until: "2019-01-01T01:00:00Z",
+      until: "2019-01-01T01:00:00Z"
     }
-  ],
+  ]
 };
 const VISIT_NONPII: VisitNonPIIDbInfo = {
   ...VISIT_COMMON_INFO,
-  samples: [ SAMPLE_INFO ],
+  samples: [SAMPLE_INFO],
   giftcards: [],
   consents: [],
-  responses: [{
-    id: "Questionnaire",
-    item: [ NONPII_RESPONSE_ITEM ],
-  }],
+  responses: [
+    {
+      id: "Questionnaire",
+      item: [NONPII_RESPONSE_ITEM]
+    }
+  ]
 };
 const VISIT_PII: VisitPIIInfo = {
   ...VISIT_COMMON_INFO,
   patient: PATIENT_INFO,
   consents: [],
-  responses: [{
-    id: "Questionnaire",
-    item: [ PII_RESPONSE_ITEM ],
-  }],
-}
+  responses: [
+    {
+      id: "Questionnaire",
+      item: [PII_RESPONSE_ITEM]
+    }
+  ]
+};
 const VISIT_INFO: VisitInfo = {
   ...VISIT_NONPII,
   ...VISIT_PII,
-  responses: [{
-    id: "Questionnaire",
-    item: [ PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM ],
-  }],
+  responses: [
+    {
+      id: "Questionnaire",
+      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM]
+    }
+  ]
 };
 
 const DOCUMENT_CONTENTS: VisitDocument = {
@@ -79,17 +93,17 @@ const DOCUMENT_CONTENTS: VisitDocument = {
   csruid: DOCUMENT_ID,
   documentType: DocumentType.Visit,
   device: DEVICE,
-  visit: VISIT_INFO,
+  visit: VISIT_INFO
 };
 const NONPII_DOCUMENT_CONTENTS = {
   csruid: DOCUMENT_ID,
   device: DEVICE,
-  visit: VISIT_NONPII,
+  visit: VISIT_NONPII
 };
 const PII_DOCUMENT_CONTENTS = {
   csruid: DOCUMENT_ID,
   device: DEVICE,
-  visit: VISIT_PII,
+  visit: VISIT_PII
 };
 
 describe("putDocument", () => {
@@ -148,7 +162,9 @@ describe("putDocument", () => {
       .send(DOCUMENT_CONTENTS)
       .expect(200);
 
-    const visitNonPII = await VisitNonPII.findOne({ where: { csruid: DOCUMENT_ID } });
+    const visitNonPII = await VisitNonPII.findOne({
+      where: { csruid: DOCUMENT_ID }
+    });
     expect(visitNonPII.csruid).toEqual(DOCUMENT_ID);
     expect(visitNonPII.device).toEqual(DOCUMENT_CONTENTS.device);
     expect(visitNonPII.visit).toEqual(VISIT_NONPII);
@@ -169,7 +185,7 @@ describe("putDocument", () => {
       ...DOCUMENT_CONTENTS,
       visit: {
         ...VISIT_INFO,
-        patient: newPatient,
+        patient: newPatient
       }
     };
 
@@ -183,7 +199,7 @@ describe("putDocument", () => {
     });
     const newVisitDoc = newPIIVisit.visit as VisitInfo;
     expect(newVisitDoc.patient.name).toEqual("New Fake Name");
-    expect(newVisitDoc).toEqual({...VISIT_PII, patient: newPatient});
+    expect(newVisitDoc).toEqual({ ...VISIT_PII, patient: newPatient });
     await newPIIVisit.destroy();
 
     const newNonPIIVisit = await VisitNonPII.findOne({
