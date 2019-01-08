@@ -8,7 +8,6 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { format } from "date-fns";
 import * as ExpoPixi from "expo-pixi";
 import Button from "./Button";
 import Modal from "./Modal";
@@ -180,7 +179,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           >
             <Text style={styles.headerText}>{t("todaysDate")}</Text>
             <Text style={styles.inputContainer}>
-              {format(new Date(), "MM/D/YYYY")}
+              {new Date().toLocaleDateString()}
             </Text>
           </View>
           <View>
