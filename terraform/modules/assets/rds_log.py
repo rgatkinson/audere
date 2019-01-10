@@ -93,6 +93,8 @@ def lambda_handler(event, context):
       ServerSideEncryption='aws:kms',
       Body=data_bytes
     )
+    print("Done")
+
 
 # def is404(response):
 #   return http_code(response) == 404
