@@ -3,7 +3,7 @@ import uuidv4 from "uuid/v4";
 import { ConsentInfo, ConsentInfoSignerType, GiftCardInfo } from "audere-lib";
 
 export type FormAction =
-  | { type: "START_FORM"; admin: string; location: string }
+  | { type: "START_FORM"; admin: string; location: string, isDemo: boolean }
   | { type: "COMPLETE_SURVEY" }
   | { type: "CLEAR_FORM" }
   | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
@@ -94,6 +94,7 @@ export default function reducer(state = initialState, action: FormAction) {
       admin: action.admin,
       location: action.location,
       formId: uuidv4(),
+      isDemo: action.isDemo,
       timestamp: new Date().getTime(),
     };
   }
@@ -161,11 +162,12 @@ export default function reducer(state = initialState, action: FormAction) {
   return state;
 }
 
-export function startForm(admin: string, location: string): FormAction {
+export function startForm(admin: string, location: string, isDemo: boolean): FormAction {
   return {
     type: "START_FORM",
     admin,
     location,
+    isDemo,
   };
 }
 

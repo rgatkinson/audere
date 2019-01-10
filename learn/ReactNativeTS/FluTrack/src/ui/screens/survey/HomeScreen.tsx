@@ -21,11 +21,13 @@ interface Props {
   admin: string;
   location: string;
   navigation: NavigationScreenProp<any, any>;
+  isDemo: boolean;
 }
 
 @connect((state: StoreState) => ({
   location: state.admin.location,
   admin: state.admin.administrator,
+  isDemo: state.admin.isDemo,
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
@@ -79,9 +81,15 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
             <Feather name="chevron-right" color="#007AFF" size={32} />
           </View>
         </TouchableOpacity>
+        <Text style={styles.subtitleGap}></Text>
         <Text style={styles.subtitle}>
           {t("clinician", { name: clinician })}
         </Text>
+        {(this.props.isDemo &&
+          <Text style={styles.subtitle}>
+            {"DEMO MODE - data not used in study"}
+          </Text>
+        )}
       </View>
     );
   }
@@ -119,11 +127,17 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     justifyContent: "space-between",
   },
+  subtitleGap: {
+    color: "#FFFFFF",
+    fontFamily: "OpenSans-Regular",
+    fontSize: 21,
+    paddingTop: 130,
+  },
   subtitle: {
     color: "#FFFFFF",
     fontFamily: "OpenSans-Regular",
     fontSize: 21,
-    paddingTop: 150,
+    paddingTop: 20,
   },
   title: {
     color: "#FFFFFF",

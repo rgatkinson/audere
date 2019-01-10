@@ -6,8 +6,11 @@ import {
   Action,
   Option,
   StoreState,
+  clearForm,
+  completeSurvey,
   setAdministrator,
   setBloodCollection,
+  setDemo,
 } from "../../../store";
 import BackButton from "../../components/BackButton";
 import EditSettingButton from "../../components/EditSettingButton";
@@ -18,9 +21,13 @@ import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
+const NORMAL_MODE_OPTION = "Normal";
+const DEMO_MODE_OPTION = "Demo Mode (data not used in study)";
+
 interface Props {
   bloodCollection: boolean;
   administrator: string;
+  isDemo: boolean;
   location: string;
   navigation: NavigationScreenProp<any, any>;
   screenProps: any;
@@ -34,6 +41,7 @@ function getTodaysDate(): string {
 @connect((state: StoreState) => ({
   administrator: state.admin.administrator,
   bloodCollection: state.admin.bloodCollection,
+  isDemo: state.admin.isDemo,
   location: state.admin.location,
 }))
 class PriorScreen extends React.Component<Props & WithNamespaces> {
@@ -78,6 +86,19 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
   _onSelectAdministrator = () => {
     this.props.navigation.push("SelectAdmin");
   };
+
+  _getDemoModeOptions(isDemo: boolean): Option[] {
+    return [
+      { key: NORMAL_MODE_OPTION, selected: !isDemo },
+      { key: DEMO_MODE_OPTION, selected: isDemo },
+    ];
+  }
+
+  _onSetDemo = (isDemo: boolean) => {
+    this.props.dispatch(completeSurvey());
+    this.props.dispatch(clearForm());
+    this.props.dispatch(setDemo(isDemo));
+  }
 
   render() {
     const { t } = this.props;
@@ -124,6 +145,17 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
           If blood sample collection is available at this site, then the option
           to contribute will be given to participants during enrollment.
         </Text>
+        <Text style={styles.sectionHeaderText}>Demo Mode</Text>
+        <OptionList
+          data={this._getDemoModeOptions(this.props.isDemo)}
+          numColumns={1}
+          fullWidth={true}
+          multiSelect={false}
+          backgroundColor="#fff"
+          onChange={data => {
+            this._onSetDemo(data.find(option => option.key === DEMO_MODE_OPTION)!.selected);
+          }}
+        />
       </ScreenContainer>
     );
   }

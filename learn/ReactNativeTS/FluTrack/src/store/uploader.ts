@@ -38,8 +38,10 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.form != null && state.form.formId != null) {
+    if (state.form != null && state.form.formId != null && !state.admin.isDemo) {
       uploader.saveVisit(state.form.formId, redux_to_pouch(state));
+    } else {
+      console.log("Skipping upload because of demo mode");
     }
     return result;
   };
