@@ -43,7 +43,7 @@ variable "home_size_gb" {
 }
 
 variable "instance_type" {
-  default = "t3.micro"
+  default = "t3.small"
 }
 
 variable "vpc_id" {
