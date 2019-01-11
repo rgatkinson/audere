@@ -4,12 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 # resource "aws_iam_instance_profile" "log_archiver" {
-#   name = "${var.base_name}-profile"
+#   name = "${local.base_name}-profile"
 #   role = "${aws_iam_role.log_archiver.name}"
 # }
 
 resource "aws_iam_role" "log_archiver" {
-  name = "${var.base_name}"
+  name = "${local.base_name}"
   assume_role_policy = "${data.aws_iam_policy_document.log_archiver_role_policy.json}"
 }
 
@@ -23,19 +23,46 @@ data "aws_iam_policy_document" "log_archiver_role_policy" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "log_archiver_write_s3" {
+// RDS Log Access
+
+resource "aws_iam_role_policy_attachment" "rds_logs_read" {
   role = "${aws_iam_role.log_archiver.name}"
-  policy_arn = "${aws_iam_policy.log_archiver_write_s3.arn}"
+  policy_arn = "${aws_iam_policy.rds_logs_read.arn}"
 }
 
-resource "aws_iam_policy" "log_archiver_write_s3" {
-  name = "${var.base_name}-log-archiver-write-s3"
-  policy = "${data.aws_iam_policy_document.log_archiver_write_s3.json}"
+resource "aws_iam_policy" "rds_logs_read" {
+  name = "${local.base_name}-rds-logs-read"
+  policy = "${data.aws_iam_policy_document.rds_logs_read.json}"
 }
 
-data "aws_iam_policy_document" "log_archiver_write_s3" {
+data "aws_iam_policy_document" "rds_logs_read" {
   statement = {
-    actions   = ["s3:PutObject"]
-    resources = ["${var.db_logs_arn}"]
+    actions   = [
+      "rds:DescribeDBLogFiles",
+      "rds:DownloadDBLogFilePortion",
+    ]
+    resources = ["${data.aws_db_instance.db.arn}"]
+  }
+}
+
+// S3 Access
+
+resource "aws_iam_role_policy_attachment" "s3_write" {
+  role = "${aws_iam_role.log_archiver.name}"
+  policy_arn = "${aws_iam_policy.s3_write.arn}"
+}
+
+resource "aws_iam_policy" "s3_write" {
+  name = "${local.base_name}-s3-write"
+  policy = "${data.aws_iam_policy_document.s3_write.json}"
+}
+
+data "aws_iam_policy_document" "s3_write" {
+  statement = {
+    actions   = [
+      "s3:ListBucket",
+      "s3:PutObject",
+    ]
+    resources = ["${var.log_bucket_arn}"]
   }
 }

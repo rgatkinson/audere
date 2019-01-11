@@ -74,8 +74,8 @@ resource "aws_s3_bucket_policy" "cloudtrail-s3" {
 // --------------------------------------------------------------------------------
 // Database logs for RDS instances
 
-resource "aws_s3_bucket" "audere_database_logs" {
-  bucket        = "audere-database-logs"
+resource "aws_s3_bucket" "database_log_archive" {
+  bucket        = "audere-database-log-archive"
   force_destroy = true
 }
 

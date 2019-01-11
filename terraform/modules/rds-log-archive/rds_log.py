@@ -4,19 +4,20 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
+import os
 import boto3
 import json
 from botocore.exceptions import ClientError
 from os.path import join as pjoin
 
-def lambda_handler(event, context):
-  region = '${availability_zone}'
-  rds_name = '${db_name}'
-  s3_bucket = '${s3_bucket}'
-  s3_prefix = '${s3_prefix}'
-
+def archive_rds_logs(event, context):
+  region = os.environ['REGION']
+  rds_name = os.environ['RDS_NAME']
+  s3_bucket = os.environ['S3_BUCKET']
+  s3_prefix = os.environ['S3_PREFIX']
   rds = boto3.client('rds', region_name=region)
   s3 = boto3.client('s3', region_name=region)
+
   print(f"Checking access on s3 bucket '{s3_bucket}'")
   s3.head_bucket(Bucket=s3_bucket)
 

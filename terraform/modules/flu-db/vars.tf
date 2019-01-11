@@ -42,6 +42,11 @@ variable "db_cidr" {
   type = "string"
 }
 
+variable "log_archive_bucket_arn" {
+  description = "Name of S3 bucket where db logs are archived"
+  type = "string"
+}
+
 variable "vpc_cidr" {
   description = "CIDR for VPC containing all subnets for this environment."
   type = "string"

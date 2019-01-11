@@ -35,6 +35,15 @@ resource "aws_db_instance" "fludb_pii" {
   }
 }
 
+# module "fludb_pii_log_archive" {
+#   source = "${path.module}/../rds-log-archive"
+
+#   bucket_arn = "${var.log_archive_bucket_arn}"
+#   db_name = "${aws_db_instance.fludb_pii.name}"
+#   security_group_ids = ["${module.fludb_sg.client_id}"]
+#   subnet_id = "${aws_subnet.fludb_pii.id}"
+# }
+
 resource "aws_db_instance" "fludb_nonpii" {
   allocated_storage = 20
   availability_zone = "${var.availability_zone}"
@@ -63,6 +72,15 @@ resource "aws_db_instance" "fludb_nonpii" {
     Name = "${local.base_name}-nonpii"
   }
 }
+
+# module "fludb_nonpii_log_archive" {
+#   source = "${path.module}/../rds-log-archive"
+
+#   bucket_arn = "${var.log_archive_bucket_arn}"
+#   db_name = "${aws_db_instance.fludb_nonpii.name}"
+#   security_group_ids = ["${module.fludb_sg.client_id}"]
+#   subnet_id = "${aws_subnet.fludb_nonpii.id}"
+# }
 
 resource "aws_db_parameter_group" "fludb_parameters" {
   name = "${local.base_name}-parameters"
