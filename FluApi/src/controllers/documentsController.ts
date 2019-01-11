@@ -34,6 +34,7 @@ export async function putDocument(req, res) {
       const visitDocument = req.body as VisitDocument;
       const responses = visitDocument.visit.responses;
       const visitCommon: VisitCommonInfo = {
+        isDemo: !!visitDocument.visit.isDemo,
         complete: visitDocument.visit.complete,
         location: visitDocument.visit.location,
         administrator: visitDocument.visit.administrator,

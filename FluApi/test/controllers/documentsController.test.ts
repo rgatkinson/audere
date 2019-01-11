@@ -43,6 +43,7 @@ const PII_RESPONSE_ITEM = {
 };
 
 const VISIT_COMMON_INFO: VisitCommonInfo = {
+  isDemo: false,
   complete: true,
   location: "Location Name",
   administrator: "Administrator Name",
