@@ -10,3 +10,7 @@ output "vpc_flow_log_arn" {
 output "vpc_flow_log_role_arn" {
   value = "${aws_iam_role.vpc_flow_log_role.arn}"
 }
+
+output "audere_database_logs_arn" {
+  value = "${aws_s3_bucket.audere_database_logs.arn}"
+}

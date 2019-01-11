@@ -4,31 +4,16 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
-# This was inspired by https://github.com/ryanholland/rdslogs_to_s3/blob/master/rds_mysql_to_s3.py
-# which has the following copyright message:
-#
-# # Copyright 2015 Ryan Holland
-# #
-# # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
-# #
-# # You may obtain a copy of the License at
-# #
-# #   http://www.apache.org/licenses/LICENSE-2.0
-# #
-# # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
-# # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# # See the License for the specific language governing permissions and limitations under the License.
-
 import boto3
 import json
 from botocore.exceptions import ClientError
 from os.path import join as pjoin
 
 def lambda_handler(event, context):
-  region = event['Region']
-  rds_name = event['RDSName']
-  s3_bucket = event['S3Bucket']
-  s3_prefix = event['S3Prefix']
+  region = '${availability_zone}'
+  rds_name = '${db_name}'
+  s3_bucket = '${s3_bucket}'
+  s3_prefix = '${s3_prefix}'
 
   rds = boto3.client('rds', region_name=region)
   s3 = boto3.client('s3', region_name=region)
