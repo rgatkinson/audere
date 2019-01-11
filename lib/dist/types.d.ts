@@ -40,6 +40,7 @@ export interface VisitNonPIIInfo extends VisitCommonInfo {
 }
 export interface VisitCommonInfo {
     complete: boolean;
+    isDemo?: boolean;
     location?: string;
     administrator?: string;
     events: EventInfo[];

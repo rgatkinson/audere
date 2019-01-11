@@ -85,6 +85,7 @@ export interface VisitNonPIIInfo extends VisitCommonInfo {
 // Common to PII and NonPII visit info.
 export interface VisitCommonInfo {
   complete: boolean;
+  isDemo?: boolean;
   location?: string;
   administrator?: string;
   events: EventInfo[];

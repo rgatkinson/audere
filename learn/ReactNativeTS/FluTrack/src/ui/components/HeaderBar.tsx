@@ -4,12 +4,18 @@ import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import FeedbackModal from "./FeedbackModal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
+import { StoreState } from "../../store";
 
 interface Props {
   completedSurvey?: boolean;
+  isDemo?: boolean;
   navigation: NavigationScreenProp<any, any>;
 }
 
+@connect((state: StoreState) => ({
+  isDemo: state.admin.isDemo,
+}))
 class HeaderBar extends React.Component<Props & WithNamespaces> {
   state = {
     feedbackVisible: false,
@@ -58,6 +64,7 @@ class HeaderBar extends React.Component<Props & WithNamespaces> {
               {t(this.props.completedSurvey ? "returnToHome" : "exitStudy")}
             </Text>
           </TouchableOpacity>
+          {this.props.isDemo && <Text style={styles.title}>DEMO MODE</Text>}
           <TouchableOpacity
             onPress={() => this.setState({ feedbackVisible: true })}
           >

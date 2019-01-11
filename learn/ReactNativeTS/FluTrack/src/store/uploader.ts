@@ -38,10 +38,8 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.form != null && state.form.formId != null && !state.admin.isDemo) {
+    if (state.form != null && state.form.formId != null) {
       uploader.saveVisit(state.form.formId, redux_to_pouch(state));
-    } else {
-      console.log("Skipping upload because of demo mode");
     }
     return result;
   };
@@ -50,6 +48,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
 // Exported so we can write unit tests for this
 export function redux_to_pouch(state: StoreState): VisitInfo {
   const pouch: VisitInfo = {
+    isDemo: !!state.admin.isDemo,
     complete: state.form.completedSurvey,
     samples: [],
     giftcards: [],
