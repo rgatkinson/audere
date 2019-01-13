@@ -15,6 +15,7 @@ variable "db_name" {
 
 variable "security_group_ids" {
   description = "IDs of the security groups the archiver should use"
+  type = "list"
   default = []
 }
 

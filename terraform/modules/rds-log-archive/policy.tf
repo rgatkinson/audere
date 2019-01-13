@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "rds_logs_read" {
       "rds:DescribeDBLogFiles",
       "rds:DownloadDBLogFilePortion",
     ]
-    resources = ["${data.aws_db_instance.db.arn}"]
+    resources = ["${data.aws_db_instance.db.db_instance_arn}"]
   }
 }
 
@@ -63,6 +63,6 @@ data "aws_iam_policy_document" "s3_write" {
       "s3:ListBucket",
       "s3:PutObject",
     ]
-    resources = ["${var.log_bucket_arn}"]
+    resources = ["${var.bucket_arn}"]
   }
 }

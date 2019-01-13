@@ -9,22 +9,22 @@ resource "aws_lambda_function" "log_archiver" {
   handler = "archive_rds_logs"
   // dead_letter_config
   role = "${aws_iam_role.log_archiver.arn}"
-  description = "Archive logs from '${var.db_name}' to '${var.log_bucket_arn}' under '${local.basename}/'"
+  description = "Archive logs from '${local.db_name}' to '${var.bucket_arn}' under '${local.base_name}/'"
   memory_size = 256
-  runtime = "python3.7"
+  runtime = "python3.6"
   timeout = 30
   source_code_hash = "${base64sha256(file("${local.log_archiver_py_path}"))}"
 
   vpc_config {
-    subnet_ids = ["${var.db_subnet_id}"]
-    security_group_ids = "${var.db_security_group_ids}"
+    subnet_ids = ["${var.subnet_id}"]
+    security_group_ids = ["${var.security_group_ids}"]
   }
 
   environment {
     variables {
       REGION = "${local.region}"
-      RDS_NAME = "${var.db_name}"
-      S3_BUCKET = "${var.log_bucket_arn}"
+      RDS_NAME = "${local.db_name}"
+      S3_BUCKET = "${var.bucket_arn}"
       S3_PREFIX = "${local.base_name}/"
     }
   }
@@ -35,15 +35,16 @@ resource "aws_lambda_function" "log_archiver" {
 }
 
 data "aws_availability_zone" "db" {
-  name = "${data.aws_db_instance.current.availability_zone}"
+  name = "${data.aws_db_instance.db.availability_zone}"
 }
 
 data "aws_db_instance" "db" {
-  db_instance_identifier = "${var.db_name}"
+  db_instance_identifier = "${local.db_name}"
 }
 
 locals {
-  base_name = "${var.db_name}-log-archiver"
+  db_name = "${var.db_name}"
+  base_name = "${local.db_name}-log-archiver"
   log_archiver_py_path = "${path.module}/rds_log.py"
   region = "${data.aws_availability_zone.db.region}"
 }
