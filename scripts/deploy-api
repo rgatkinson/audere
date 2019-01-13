@@ -22,7 +22,7 @@ case "$#" in
     ;;
   2)
     readonly environment="$1"
-    readonly commit="$1"
+    readonly commit="$2"
     ;;
   *) usage "Expected 1 or 2 arguments, got $#.";;
 esac
@@ -36,7 +36,7 @@ if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
   usage "Unrecognized commit '$commit'"
 fi
 
-cd "$AUDERE/terraform/flu/api-$environment"
+cd "$SELF_DIR/../terraform/flu/api-$environment"
 set -x
 terraform taint -module=flu_api aws_autoscaling_group.flu_api
 terraform apply -var "commit=$commit"
