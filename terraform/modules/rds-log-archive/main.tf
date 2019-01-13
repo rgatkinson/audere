@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 resource "aws_lambda_function" "log_archiver" {
-  filename = "${local.log_archiver_py_path}"
+  filename = "${local.log_archiver_zip_path}"
   function_name = "${local.base_name}"
   handler = "archive_rds_logs"
   // dead_letter_config
@@ -42,9 +42,16 @@ data "aws_db_instance" "db" {
   db_instance_identifier = "${local.db_name}"
 }
 
+data "archive_file" "rds_log_py" {
+  type = "zip"
+  source_file = "${local.log_archiver_py_path}"
+  output_path = "${path.module}/rds_log_py.zip"
+}
+
 locals {
   db_name = "${var.db_name}"
   base_name = "${local.db_name}-log-archiver"
   log_archiver_py_path = "${path.module}/rds_log.py"
+  log_archiver_zip_path = "${data.archive_file.rds_log_py.output_path}"
   region = "${data.aws_availability_zone.db.region}"
 }
