@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { LogLevel } from "audere-lib";
 import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
 import axios from "axios";
@@ -37,17 +38,31 @@ class TypedDocumentUploader {
     return this.uploader.documentsAwaitingUpload();
   }
   public saveVisit(localUid: string, visit: VisitInfo) {
-    this.uploader.save(localUid, visit, DocumentType.Visit, 0);
+    this.uploader.save(localUid, visit, DocumentType.Visit, 1);
   }
   public saveFeedback(subject: string, body: string) {
-    this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 1);
+    this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);
   }
   public saveLog(logentry: string) {
     // TODO(ram): Batch these saves
     if (!this.logId) {
       this.logId = uuidv4();
     }
-    this.uploader.save(this.logId, { logentry }, DocumentType.Log, 2);
+    this.uploader.save(
+      this.logId,
+      { logentry, level: LogLevel.Info },
+      DocumentType.Log,
+      3
+    );
+  }
+  public saveCrashLog(logentry: string) {
+    logger.info("Saving crash log");
+    this.uploader.save(
+      uuidv4(),
+      { logentry, level: LogLevel.Fatal },
+      DocumentType.Log,
+      0
+    );
   }
 }
 

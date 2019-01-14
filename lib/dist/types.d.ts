@@ -165,6 +165,13 @@ export interface LogDocument extends ProtocolDocumentBase {
     schemaId: 1;
     log: LogInfo;
 }
+export declare enum LogLevel {
+    Info = 1,
+    Warn = 2,
+    Error = 3,
+    Fatal = 4
+}
 export interface LogInfo {
     logentry: string;
+    level: LogLevel;
 }

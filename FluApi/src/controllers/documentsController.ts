@@ -15,6 +15,7 @@ import {
 import { AccessKey } from "../models/accessKey";
 import { VisitNonPII, VisitPII } from "../models/visit";
 import { Feedback } from "../models/feedback";
+import { ClientLog } from "../models/clientLog";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 
@@ -86,8 +87,14 @@ export async function putDocument(req, res) {
       });
       break;
     case DocumentType.Log:
-      const log = req.body as LogDocument;
+      const document = req.body as LogDocument;
+      const log = document.log;
       clientLogger.info(JSON.stringify(log));
+      await ClientLog.create({
+        log: log.logentry,
+        level: log.level,
+        device: document.device
+      });
       break;
     default:
       throw new Error("Invalid document type");

@@ -14,6 +14,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
 import { Feather } from '@expo/vector-icons';
 import i18n from "./src/i18n";
+import {
+  setupErrorHandler,
+  reportPreviousCrash,
+  uploadingErrorHandler,
+  ErrorProps,
+} from "./src/crashReporter";
 
 import HomeScreen from "./src/ui/screens/survey/HomeScreen";
 import WelcomeScreen from "./src/ui/screens/survey/WelcomeScreen";
@@ -138,13 +144,28 @@ const FluStudy = createBottomTabNavigator(
 
 const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(FluStudy));
 
-export default class App extends React.Component {
+type AppProps = {
+  exp?: {
+    errorRecovery: ErrorProps;
+  };
+};
+
+export default class App extends React.Component<AppProps> {
   state = {
     appReady: false,
   };
 
   componentWillMount() {
     this._loadAssets();
+    if (this.props.exp) {
+      reportPreviousCrash(this.props.exp.errorRecovery);
+    }
+    setupErrorHandler();
+  }
+
+  componentDidCatch(error: Error) {
+    uploadingErrorHandler(error, true);
+    console.error(error);
   }
 
   async _loadAssets() {

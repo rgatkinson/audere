@@ -265,7 +265,15 @@ export interface LogDocument extends ProtocolDocumentBase {
   log: LogInfo;
 }
 
+export enum LogLevel {
+  Info = 1,
+  Warn = 2,
+  Error = 3,
+  Fatal = 4,
+}
+
 export interface LogInfo {
   // TODO (ram): batch
   logentry: string;
+  level: LogLevel;
 }
