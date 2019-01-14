@@ -1,4 +1,5 @@
 "use strict";
+const excel = require("node-excel-export");
 
 const Client = require("pg-native");
 const client = new Client();
@@ -57,30 +58,32 @@ export function getMetrics(
 
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
+  const demoClause =
+    "(id > 351 and (visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE))";
 
   function getSurveyStatsQuery(byField: string): string {
     return `
     WITH t AS (
       SELECT t1.grouping, t1.formstarts, t2.eligible, t1.consented, t2.completed, t1.specimenscanned, t1.giftcards, t2.adverseevents, t1.questionsanswered, t2.declinedresponses
       FROM (
-        SELECT visit->>'${byField}' AS grouping, 
-                COUNT(*) AS formstarts, 
-                SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented, 
-                SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned, 
-                SUM(json_array_length(visit->'giftcards')) AS giftcards,
-                SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered 
+        SELECT COALESCE(visit->>'${byField}','') AS grouping, 
+               COUNT(*) AS formstarts, 
+               SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented, 
+               SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned, 
+               SUM(json_array_length(visit->'giftcards')) AS giftcards,
+               SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered 
         FROM visits 
-        WHERE ${dateClause} AND visit->>'location' IS NOT NULL
+        WHERE ${dateClause} AND ${demoClause} AND visit->>'location' IS NOT NULL
         GROUP BY grouping
         ORDER BY grouping) t1
       LEFT JOIN (
-        SELECT visit->>'${byField}' AS grouping,
+        SELECT COALESCE(visit->>'${byField}','') AS grouping,
                SUM(CASE WHEN items->>'id'='MedicalInsurance' THEN 1 END) AS completed,
                SUM(CASE WHEN items->>'id'='WhichProcedures' THEN 1 END) AS adverseevents,
-               SUM(CASE WHEN (items->'answer'->0)::jsonb ? 'valueDeclined' THEN 1 END) as declinedresponses,
-               SUM(CASE WHEN (items->>'id'='Symptoms' AND json_array_length(items->'answer') >= 2) THEN 1 END) as eligible
+               SUM(CASE WHEN (items->'answer'->0)::jsonb ? 'valueDeclined' THEN 1 END) AS declinedresponses,
+               SUM(CASE WHEN (items->>'id'='Symptoms' AND json_array_length(items->'answer') >= 2) THEN 1 END) AS eligible
         FROM visits v, json_array_elements(v.visit->'responses'->0->'item') items 
-        WHERE ${dateClause}
+        WHERE ${dateClause} AND ${demoClause}
         GROUP BY grouping) t2
       ON (t1.grouping = t2.grouping)
     ) SELECT * FROM t UNION ALL 
@@ -108,7 +111,7 @@ export function getMetrics(
            COUNT(*), 
            ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
     FROM visits 
-    WHERE ${dateClause} AND json_array_length(visit->'responses'->0->'item') > 0 
+    WHERE ${dateClause} AND ${demoClause} AND json_array_length(visit->'responses'->0->'item') > 0 
     GROUP BY lastquestion 
     ORDER BY percent DESC;`;
   const lastQuestionData = filterLastQuestionData(
@@ -122,19 +125,22 @@ export function getMetrics(
            giftcards->>'giftcardType' AS type,
            visit->>'administrator' AS administrator
     FROM visits v, json_array_elements(v.visit->'giftcards') giftcards 
-    WHERE ${dateClause}
+    WHERE ${dateClause} AND ${demoClause}
     ORDER BY date, location, type, code, administrator;`;
   const giftCardData = client.querySync(giftCardQuery);
 
   const studyIdQuery = `
     SELECT visit->>'location' AS location, 
-           "createdAt" as starttime, 
-           csruid as studyid,
+           "createdAt" AS starttime, 
+           csruid AS studyid,
            visit->>'administrator' AS administrator
     FROM visits
-    WHERE ${dateClause} AND visit->'consents'->0->'terms' IS NOT NULL
+    WHERE ${dateClause} AND ${demoClause} AND visit->'consents'->0->'terms' IS NOT NULL
     ORDER BY location, starttime;`;
-  const studyIdData = client.querySync(studyIdQuery);
+  const studyIdData = client.querySync(studyIdQuery).map(study => ({
+    ...study,
+    studyid: study.studyid.substring(0, 21)
+  }));
 
   const feedbackQuery = `
     SELECT COUNT(*) 
@@ -150,6 +156,59 @@ export function getMetrics(
     studyIdData,
     feedbackData
   ];
+}
+
+export function getDataSummary(
+  startDate: string,
+  endDate: string
+): [object, object, object] {
+  const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+  if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
+    throw new Error("Dates must be specified as yyyy-MM-dd");
+  }
+
+  const offset = getStudyTimezoneOffset();
+  const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
+  const demoClause =
+    "(id > 351 and (visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE))";
+
+  const piiClient = new Client();
+  const piiConString = process.env.PII_DATABASE_URL;
+  piiClient.connectSync(piiConString);
+
+  const ageQuery = `
+    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS bucket, 
+           COUNT(*) AS n 
+    FROM visits v, 
+         json_array_elements(v.visit->'responses'->0->'item') items, 
+         json_array_elements(items->'answer') answers 
+    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='AgeBucket' 
+    GROUP BY bucket 
+    ORDER BY n DESC, bucket;`;
+  const ageData = client.querySync(ageQuery);
+
+  const symptomsQuery = `
+    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS symptom, 
+           COUNT(*) AS n 
+    FROM visits v, 
+         json_array_elements(v.visit->'responses'->0->'item') items, 
+         json_array_elements(items->'answer') answers 
+    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='Symptoms' 
+    GROUP BY symptom 
+    ORDER BY n DESC, symptom;`;
+  const symptomsData = client.querySync(symptomsQuery);
+
+  const zipcodeQuery = `
+    SELECT addresses->>'postalCode' AS zipcode, 
+           COUNT(*) AS n
+    FROM visits v, 
+         json_array_elements(v.visit->'patient'->'address') addresses 
+    WHERE ${dateClause} AND ${demoClause} 
+    GROUP BY zipcode 
+    ORDER BY n DESC, zipcode;`;
+  const zipcodeData = piiClient.querySync(zipcodeQuery);
+
+  return [ageData, symptomsData, zipcodeData];
 }
 
 function filterLastQuestionData(lastQuestionData): object {
@@ -180,8 +239,6 @@ function filterLastQuestionData(lastQuestionData): object {
 }
 
 export function getExcelReport(startDate: string, endDate: string) {
-  const excel = require("node-excel-export");
-
   const [
     surveyStatsData,
     surveyStatsByAdminData,
@@ -355,7 +412,7 @@ export function getExcelReport(startDate: string, endDate: string) {
     studyid: {
       displayName: "Study ID",
       headerStyle: styles.columnHeader,
-      width: 500
+      width: 250
     },
     administrator: {
       displayName: "Administrator",
@@ -438,6 +495,123 @@ export function getExcelReport(startDate: string, endDate: string) {
       heading: studyIdHeading,
       specification: studyIdSpec,
       data: studyIdData
+    }
+  ]);
+
+  return report;
+}
+
+export function getExcelDataSummary(startDate: string, endDate: string) {
+  const [ageData, symptomsData, zipcodeData] = getDataSummary(
+    startDate,
+    endDate
+  );
+
+  const styles = {
+    default: {},
+    title: {
+      font: { sz: 14 }
+    },
+    columnHeader: {
+      fill: { fgColor: { rgb: "FF4b2e83" } },
+      font: { color: { rgb: "FFFFFFFF" }, underline: true }
+    }
+  };
+
+  const defaultCell = {
+    headerStyle: styles.columnHeader,
+    width: 70,
+    cellStyle: function(value, row) {
+      return { alignment: { horizontal: "right" } };
+    }
+  };
+
+  const ageSpec = {
+    bucket: {
+      displayName: "Age Bucket",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    n: {
+      displayName: "Count",
+      ...defaultCell
+    }
+  };
+
+  const symptomsSpec = {
+    symptom: {
+      displayName: "Symptom",
+      headerStyle: styles.columnHeader,
+      width: 180
+    },
+    n: {
+      displayName: "Count",
+      ...defaultCell
+    }
+  };
+
+  const zipcodeSpec = {
+    zipcode: {
+      displayName: "Zip code",
+      headerStyle: styles.columnHeader,
+      width: 70
+    },
+    n: {
+      displayName: "Count",
+      ...defaultCell
+    }
+  };
+
+  const dateRangeHeading = {
+    value: "Data from " + startDate + " to " + endDate,
+    style: styles.title
+  };
+  const generatedHeading = {
+    value: "Report generated " + toStudyDateString(new Date()),
+    style: styles.default
+  };
+  const ageHeading = [
+    [{ value: "Age Distribution", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading]
+  ];
+  const symptomsHeading = [
+    [{ value: "Symptoms Distribution", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading]
+  ];
+  const zipcodeHeading = [
+    [{ value: "Zip Code Distribution", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading]
+  ];
+
+  const merges = [
+    { start: { row: 1, column: 1 }, end: { row: 1, column: 7 } },
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 7 } }
+  ];
+
+  const report = excel.buildExport([
+    {
+      name: "Age",
+      merges: merges,
+      heading: ageHeading,
+      specification: ageSpec,
+      data: ageData
+    },
+    {
+      name: "Symptoms",
+      merges: merges,
+      heading: symptomsHeading,
+      specification: symptomsSpec,
+      data: symptomsData
+    },
+    {
+      name: "Zip Codes",
+      merges: merges,
+      heading: zipcodeHeading,
+      specification: zipcodeSpec,
+      data: zipcodeData
     }
   ]);
 

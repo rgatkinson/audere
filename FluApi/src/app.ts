@@ -20,6 +20,7 @@ import { useOuch, createApp, wrap } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import {
   getMetrics,
+  getExcelDataSummary,
   getLastMonday,
   getThisSunday,
   getExcelReport
@@ -119,7 +120,25 @@ export async function createPublicApp(config: AppConfig) {
     const startDate = req.query.startDate || getLastMonday();
     const endDate = req.query.endDate || getThisSunday();
     const excelFile = getExcelReport(startDate, endDate);
-    const downloadedFilename = "SFSMetrics" + startDate + "_" + endDate + ".xlsx";
+    const downloadedFilename =
+      "sfs-" + startDate + (startDate === endDate ? "" : "_" + endDate) + ".xlsx";
+    res.setHeader("Content-Type", "application/vnd.openxmlformats");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=" + downloadedFilename
+    );
+    res.end(excelFile, "binary");
+  });
+
+  publicApp.get("/saveDataSummary", (req, res) => {
+    const startDate = req.query.startDate || getLastMonday();
+    const endDate = req.query.endDate || getThisSunday();
+    const excelFile = getExcelDataSummary(startDate, endDate);
+    const downloadedFilename =
+      "sfsData-" +
+      startDate +
+      (startDate === endDate ? "" : "_" + endDate) +
+      ".xlsx";
     res.setHeader("Content-Type", "application/vnd.openxmlformats");
     res.setHeader(
       "Content-Disposition",

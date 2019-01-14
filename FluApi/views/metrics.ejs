@@ -6,20 +6,23 @@
     <link rel="icon" type="image/x-icon" href="favicon-32x32.png" />
   </head>
   <body>
-      <form action="/metrics" method="get">
-        <table id="date-form">
-          <tr>
-            <td>Show data from</td>
-            <td>
-              <input name="startDate" type="text" value="<%= startDate %>" />
-            </td>
-            <td>to</td>
-            <td><input name="endDate" type="text" value="<%= endDate %>" /></td>
-            <td><button type="submit">Go</button></td>
-          </tr>
-        </table>
-      </form>
-      <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download as Excel</a>
+    <form action="/metrics" method="get">
+      <table id="date-form">
+        <tr>
+          <td>Show data from</td>
+          <td>
+            <input name="startDate" type="text" value="<%= startDate %>" />
+          </td>
+          <td>to</td>
+          <td><input name="endDate" type="text" value="<%= endDate %>" /></td>
+          <td><button type="submit">Go</button></td>
+        </tr>
+      </table>
+    </form>
+    <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a> 
+    <br />
+    <br />
+    <a href="/saveDataSummary?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel data summary report</a>
     <br />
     <br />
     <h1>SFS Survey Stats</h1>
