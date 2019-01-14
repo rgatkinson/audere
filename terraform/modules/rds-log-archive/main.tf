@@ -15,10 +15,10 @@ resource "aws_lambda_function" "log_archiver" {
   timeout = 30
   source_code_hash = "${base64sha256(file("${local.log_archiver_py_path}"))}"
 
-  vpc_config {
-    subnet_ids = ["${var.subnet_id}"]
-    security_group_ids = ["${var.security_group_ids}"]
-  }
+  # vpc_config {
+  #   subnet_ids = ["${var.subnet_id}"]
+  #   security_group_ids = ["${var.security_group_ids}"]
+  # }
 
   environment {
     variables {
