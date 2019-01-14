@@ -42,7 +42,7 @@ variable "db_cidr" {
   type = "string"
 }
 
-variable "log_archive_bucket_arn" {
+variable "log_archive_bucket_name" {
   description = "Name of S3 bucket where db logs are archived"
   type = "string"
 }

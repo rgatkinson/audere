@@ -61,8 +61,47 @@ data "aws_iam_policy_document" "s3_write" {
   statement = {
     actions   = [
       "s3:ListBucket",
+      "s3:GetBucketAcl",
+    ]
+    resources = ["${data.aws_s3_bucket.archive.arn}"]
+  }
+
+  statement = {
+    actions   = [
       "s3:PutObject",
     ]
-    resources = ["${var.bucket_arn}"]
+    resources = ["${data.aws_s3_bucket.archive.arn}/*"]
   }
+}
+
+// CloudTrail logging
+
+resource "aws_iam_role_policy_attachment" "lambda_cloudtrail" {
+  role = "${aws_iam_role.log_archiver.name}"
+  policy_arn = "${aws_iam_policy.lambda_cloudtrail.arn}"
+}
+
+resource "aws_iam_policy" "lambda_cloudtrail" {
+  name = "${local.base_name}-lambda-cloudtrail"
+  policy = "${data.aws_iam_policy_document.lambda_cloudtrail.json}"
+}
+
+data "aws_iam_policy_document" "lambda_cloudtrail" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+// Data
+
+data "aws_s3_bucket" "archive" {
+  bucket = "${var.bucket_name}"
 }

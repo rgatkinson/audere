@@ -79,6 +79,48 @@ resource "aws_s3_bucket" "database_log_archive" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_policy" "database_log_archive" {
+  bucket = "${aws_s3_bucket.database_log_archive.id}"
+  policy = "${data.aws_iam_policy_document.allow_lambda_database_log_archiver.json}"
+}
+
+data "aws_iam_policy_document" "allow_lambda_database_log_archiver" {
+  statement {
+    actions   = [
+      "s3:ListBucket",
+      "s3:GetBucketAcl",
+    ]
+    resources = [
+      "${aws_s3_bucket.database_log_archive.arn}",
+      "${aws_s3_bucket.database_log_archive.arn}/*",
+    ]
+
+    principals {
+      type = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+
+  statement {
+    actions = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.database_log_archive.arn}/*"]
+
+    principals {
+      type = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+
+      values = [
+        "bucket-owner-full-control",
+      ]
+    }
+  }
+}
+
 // --------------------------------------------------------------------------------
 // Initial Network Configs with flow logs
 
