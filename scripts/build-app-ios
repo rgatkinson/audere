@@ -49,7 +49,7 @@ fi
 if [[ "${COMMIT:-}" == "" ]]; then
   REVISION=""
 else 
-  REVISION="\"revision\": \"$COMMIT\","
+  REVISION="\"revision\":\"$COMMIT\","
 fi
 
 set -x
