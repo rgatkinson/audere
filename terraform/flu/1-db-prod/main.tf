@@ -9,6 +9,7 @@ module "flu_db" {
   admins = "${var.admins}"
   db_cidr = "${module.vpc_cidr.prod_db_cidr}"
   environment = "prod"
+  log_archive_bucket_name = "${data.terraform_remote_state.global.database_log_archive_bucket_name}"
   mode = "${var.mode}"
   vpc_cidr = "${module.vpc_cidr.vpc_prod_cidr}"
   vpc_flow_log_arn = "${data.terraform_remote_state.global.vpc_flow_log_arn}"

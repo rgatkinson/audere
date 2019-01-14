@@ -32,7 +32,7 @@ resource "aws_lambda_function" "log_archiver" {
 resource "aws_cloudwatch_event_rule" "log_archiver_trigger" {
   name = "${local.base_name}-log-archiver-trigger"
   description = "Fires on interval to run log archiver lambda"
-  schedule_expression = "rate(5 hours)"
+  schedule_expression = "rate(8 hours)"
 }
 
 resource "aws_cloudwatch_event_target" "log_archiver" {
