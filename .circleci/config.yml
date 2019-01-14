@@ -22,14 +22,29 @@ defaults: &defaults
   docker:
     - image: circleci/node:10.13
       environment:
-        TEST_DATABASE_URL:        postgresql://audere@localhost/test
-        TEST_PII_DATABASE_URL:    postgresql://audere@localhost/test_pii
+        TEST_DATABASE_URL: postgresql://audere@localhost/test
+        TEST_PII_DATABASE_URL: postgresql://audere@localhost/test_pii
         TEST_NONPII_DATABASE_URL: postgresql://audere@localhost/test_nonpii
     - image: circleci/postgres:10.5-ram
       environment:
         POSTGRES_USER: audere
         POSTGRES_DB: test
   working_directory: ~/repo
+
+setenv: &setenv
+  command: |
+    if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+      export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
+      export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
+    else 
+      export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
+      export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
+    fi
+    cd learn/ReactNativeTS/FluTrack
+    echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+    echo "ACCESS_KEY_A=TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB" >> .env
+    echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
+    more .env
 
 version: 2
 jobs:
@@ -134,21 +149,7 @@ jobs:
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
-      - run:
-          name: Set .env for target environment
-          command: |
-            if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-              export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
-              export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
-            else 
-              export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
-              export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
-            fi
-            cd learn/ReactNativeTS/FluTrack
-            echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
-            echo "ACCESS_KEY_A=TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB" >> .env
-            echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
-            more .env
+      - run: *setenv
       - run:
           name: Publish to Expo
           command: |
@@ -185,11 +186,6 @@ jobs:
             if [ -z "$EXPO_RELEASE_CHANNEL" ]; then 
               echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
             fi
-            if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-              echo 'export REACT_NATIVE_API_SERVER="$PROD_SERVER"' >> $BASH_ENV 
-            else 
-              echo 'export REACT_NATIVE_API_SERVER="$STAGING_SERVER"' >> $BASH_ENV
-            fi
       - run:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
@@ -213,12 +209,7 @@ jobs:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
-      - run:
-          name: Set .env for target environment
-          command: |
-            cd learn/ReactNativeTS/FluTrack
-            echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
-            more .env
+      - run: *setenv
       - run:
           name: Build iOS
           command: |
