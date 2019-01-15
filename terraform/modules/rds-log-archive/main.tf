@@ -12,7 +12,7 @@ resource "aws_lambda_function" "log_archiver" {
   description = "Archive logs from '${local.db_name}' to '${var.bucket_name}' under '${local.base_name}/'"
   memory_size = 256
   runtime = "python3.6"
-  timeout = 30
+  timeout = 600
   source_code_hash = "${base64sha256(file("${local.log_archiver_py_path}"))}"
 
   environment {
