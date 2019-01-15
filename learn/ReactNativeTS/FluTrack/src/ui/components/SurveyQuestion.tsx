@@ -312,7 +312,10 @@ class SurveyQuestion extends Component<
             value={this._getValue("textInput")}
             onChangeText={textInput => this.setState({ textInput })}
             onSubmitEditing={() => {
-              this.props.updateAnswer({ textInput: this.state.textInput, selectedButtonKey: "done"  });
+              this.props.updateAnswer({
+                textInput: this.state.textInput,
+                selectedButtonKey: "done",
+              });
               this.props.onNext(this._getNextQuestion("done"));
             }}
           />
@@ -384,7 +387,10 @@ class SurveyQuestion extends Component<
               }
             }}
             onSubmitEditing={() => {
-              this.props.updateAnswer({ numberInput: this.state.numberInput, selectedButtonKey: "done" });
+              this.props.updateAnswer({
+                numberInput: this.state.numberInput,
+                selectedButtonKey: "done",
+              });
               this.props.onNext(this._getNextQuestion("done"));
             }}
           />
@@ -399,7 +405,10 @@ class SurveyQuestion extends Component<
               "surveyPlaceholder:" + this.props.data.numberSelector!.placeholder
             )}
             onNumChange={(num: number) => {
-              this.props.updateAnswer({ numberInput: num, selectedButtonKey: "done" });
+              this.props.updateAnswer({
+                numberInput: num,
+                selectedButtonKey: "done",
+              });
               this.props.onNext(this._getNextQuestion("done"));
             }}
           />

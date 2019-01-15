@@ -98,7 +98,7 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
     this.props.dispatch(completeSurvey());
     this.props.dispatch(clearForm());
     this.props.dispatch(setDemo(isDemo));
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -153,7 +153,9 @@ class PriorScreen extends React.Component<Props & WithNamespaces> {
           multiSelect={false}
           backgroundColor="#fff"
           onChange={data => {
-            this._onSetDemo(data.find(option => option.key === DEMO_MODE_OPTION)!.selected);
+            this._onSetDemo(
+              data.find(option => option.key === DEMO_MODE_OPTION)!.selected
+            );
           }}
         />
       </ScreenContainer>

@@ -32,6 +32,7 @@ interface Props {
 interface State {
   email?: string;
   options: Option[];
+  valid: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -41,40 +42,45 @@ class EnrolledScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps,
   State
 > {
-  state: State = {
-    options: [],
-  };
-
-  emailInput = React.createRef<EmailInput>();
-
-  static getDerivedStateFromProps(
-    props: Props & ReduxWriterProps,
-    state: State
-  ) {
-    if (state.options.length === 0) {
-      const storedAnswer = props.getAnswer("options");
-      if (storedAnswer == null) {
-        const list = emptyList(EnrolledConfig.optionList!.options);
-        const options = list.map(option => {
-          if (
-            !!EnrolledConfig.optionList!.defaultOptions!.find(
-              key => key === option.key
-            )
-          ) {
-            return {
-              key: option.key,
-              selected: true,
-            };
-          }
-          return option;
-        });
-        return { options };
-      } else {
-        return { options: storedAnswer };
-      }
+  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
+    super(props);
+    const storedAnswer = props.getAnswer("options");
+    if (storedAnswer == null) {
+      const list = emptyList(EnrolledConfig.optionList!.options);
+      const options = list.map(option => {
+        if (
+          !!EnrolledConfig.optionList!.defaultOptions!.find(
+            key => key === option.key
+          )
+        ) {
+          return {
+            key: option.key,
+            selected: true,
+          };
+        }
+        return option;
+      });
+      this.state = { options, email: props.email, valid: !!props.email };
+    } else {
+      this.state = {
+        options: storedAnswer,
+        email: props.email,
+        valid: !!props.email,
+      };
     }
-    return null;
   }
+
+  _validEmail = () => {
+    return (
+      !!this.state.email &&
+      this.state.valid &&
+      !!this.state.options &&
+      this.state.options.reduce(
+        (result: boolean, option: Option) => result || option.selected,
+        false
+      )
+    );
+  };
 
   _onDone = (buttonKey: string) => {
     if (!!this.state.email) {
@@ -105,25 +111,6 @@ class EnrolledScreen extends React.PureComponent<
         false
       )
     );
-  };
-
-  _validEmail = () => {
-    return (
-      !!this._getEmail() &&
-      (this.emailInput.current == null ||
-        this.emailInput.current!.isValid(this._getEmail())) &&
-      !!this.state.options &&
-      this.state.options.reduce(
-        (result: boolean, option: Option) => result || option.selected,
-        false
-      )
-    );
-  };
-
-  _getEmail = (): string => {
-    return typeof this.state.email !== "undefined"
-      ? this.state.email
-      : this.props.email;
   };
 
   _canProceed = (): boolean => {
@@ -158,11 +145,11 @@ class EnrolledScreen extends React.PureComponent<
           <EmailInput
             autoFocus={true}
             placeholder={t("emailAddress")}
-            ref={this.emailInput}
             returnKeyType="next"
             validationError={t("validationError")}
-            value={this._getEmail()}
-            onChange={text => this.setState({ email: text })}
+            value={this.state.email}
+            onChange={(email, valid) => this.setState({ email, valid })}
+            onSubmit={valid => this.setState({ valid })}
           />
           <Text content={t("disclaimer")} style={styles.disclaimer} />
           <OptionList

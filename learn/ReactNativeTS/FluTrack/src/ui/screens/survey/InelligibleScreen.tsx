@@ -28,6 +28,7 @@ const InelligibleConfig = {
 
 interface State {
   email?: string;
+  valid: boolean;
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
@@ -35,23 +36,18 @@ class InelligibleScreen extends React.PureComponent<
   Props & WithNamespaces,
   State
 > {
-  state: State = {};
-
-  emailInput = React.createRef<EmailInput>();
-
   _onDone = () => {
-    if (!!this.state.email && this.emailInput.current!.isValid()) {
+    if (!!this.state.email && this.state.valid) {
       this.props.dispatch(setEmail(this.state.email));
     }
     this.props.dispatch(completeSurvey());
     this.props.navigation.popToTop();
   };
 
-  _getEmail = (): string => {
-    return typeof this.state.email !== "undefined"
-      ? this.state.email
-      : this.props.email;
-  };
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = { email: props.email, valid: !!props.email };
+  }
 
   render() {
     const { t } = this.props;
@@ -63,13 +59,13 @@ class InelligibleScreen extends React.PureComponent<
           <EmailInput
             autoFocus={true}
             placeholder={t("emailAddress")}
-            ref={this.emailInput}
             returnKeyType="done"
             validationError={t("validationError")}
-            value={this._getEmail()}
-            onChange={text => this.setState({ email: text })}
-            onSubmit={() => {
-              if (this.emailInput.current!.isValid()) {
+            value={this.state.email}
+            onChange={(email, valid) => this.setState({ email, valid })}
+            onSubmit={valid => {
+              this.setState({ valid });
+              if (valid) {
                 this._onDone();
               }
             }}

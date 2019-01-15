@@ -26,7 +26,9 @@ interface Props {
 class WelcomeScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
     this.props.dispatch(completeSurvey());
-    this.props.dispatch(startForm(this.props.admin, this.props.location, this.props.isDemo));
+    this.props.dispatch(
+      startForm(this.props.admin, this.props.location, this.props.isDemo)
+    );
     this.props.navigation.push("Age", { data: AgeBucketConfig });
   };
 

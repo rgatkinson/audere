@@ -1,45 +1,30 @@
 import React from "react";
-import {
-  Keyboard,
-  ReturnKeyTypeOptions,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ReturnKeyTypeOptions, StyleSheet, Text, View } from "react-native";
+import KeyboardListener from "react-native-keyboard-listener";
 import TextInput from "./TextInput";
 
 interface Props extends React.Props<EmailInput> {
-  autoFocus?: boolean;
+  autoFocus: boolean;
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
   validationError: string;
   value?: string;
-  onChange(text: string): void;
-  onSubmit?(): void;
+  onChange(email: string, valid: boolean): void;
+  onSubmit?(valid: boolean): void;
 }
 
 interface State {
-  submitted: boolean;
+  email?: string;
+  keyboardOpen: boolean;
 }
 
 export default class EmailInput extends React.Component<Props, State> {
-  state = {
-    submitted: false,
-  };
-
-  keyboardDidHideListener: any;
-
-  componentDidMount() {
-    this.keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        this.setState({ submitted: true });
-      }
-    );
-  }
-
-  componentWillUnmount() {
-    this.keyboardDidHideListener.remove();
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      email: props.value,
+      keyboardOpen: props.autoFocus,
+    };
   }
 
   textInput = React.createRef<TextInput>();
@@ -47,6 +32,14 @@ export default class EmailInput extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
+        <KeyboardListener
+          onWillShow={() => {
+            this.setState({ keyboardOpen: true });
+          }}
+          onWillHide={() => {
+            this.setState({ keyboardOpen: false });
+          }}
+        />
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -55,19 +48,19 @@ export default class EmailInput extends React.Component<Props, State> {
           placeholder={this.props.placeholder}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
-          value={this.props.value}
+          value={this.state.email}
           onChangeText={(text: string) => {
-            this.props.onChange(text);
+            this.setState({ email: text });
+            this.props.onChange(text, this._isValid());
           }}
           onSubmitEditing={() => {
-            this.setState({ submitted: true });
             if (this.props.onSubmit != null) {
-              this.props.onSubmit();
+              this.props.onSubmit(this._isValid());
             }
           }}
         />
         <Text style={styles.errorText}>
-          {this.state.submitted && !this.isValid()
+          {!!this.state.email && !this._isValid() && !this.state.keyboardOpen
             ? this.props.validationError
             : ""}
         </Text>
@@ -79,9 +72,11 @@ export default class EmailInput extends React.Component<Props, State> {
     this.textInput.current!.focus();
   }
 
-  isValid = (value: string | undefined = this.props.value): boolean => {
+  _isValid = (): boolean => {
     const validationPattern = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
-    return value != null && validationPattern.test(value!);
+    return (
+      this.state.email != null && validationPattern.test(this.state.email!)
+    );
   };
 }
 

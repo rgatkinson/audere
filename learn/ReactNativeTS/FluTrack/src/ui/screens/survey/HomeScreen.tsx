@@ -81,11 +81,11 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
             <Feather name="chevron-right" color="#007AFF" size={32} />
           </View>
         </TouchableOpacity>
-        <Text style={styles.subtitleGap}></Text>
+        <Text style={styles.subtitleGap} />
         <Text style={styles.subtitle}>
           {t("clinician", { name: clinician })}
         </Text>
-        {(this.props.isDemo &&
+        {this.props.isDemo && (
           <Text style={styles.subtitle}>
             {"DEMO MODE - data not used in study"}
           </Text>

@@ -4,6 +4,7 @@ declare module "redux-persist-transform-immutable";
 declare module "react-native-simple-radio-button";
 declare module "react-native-check-box";
 declare module "react-native-datepicker";
+declare module "react-native-keyboard-listener";
 declare module "react-redux";
 declare module "expo";
 declare module "i18next";
