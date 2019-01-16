@@ -16,6 +16,20 @@ function install_updates() {
       -o Dpkg::Options::="--force-confdef" \
       -o Dpkg::Options::="--force-confold" \
       --allow-change-held-packages
+    apt-get -y install unattended-upgrades
+    umask 022
+    cat >/etc/apt/apt.conf.d/50auto-upgrades <<"EOF"
+Unattended-Upgrade::Allowed-Origins {
+        "${distro_id}:${distro_codename}";
+        "${distro_id}:${distro_codename}-security";
+        "${distro_id}ESM:${distro_codename}";
+};
+Unattended-Upgrade::Package-Blacklist {
+};
+Unattended-Upgrade::DevRelease "false";
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Automatic-Reboot-Time "10:00";
+EOF
   )
 }
 
