@@ -395,6 +395,12 @@ function isProbablyLogInfo(contents: any): contents is LogInfo {
 }
 
 function getDocumentUploadKey(): string {
+  if (!process.env.ACCESS_KEY_A || !process.env.ACCESS_KEY_B) {
+    logger.warn(
+      "Both ACCESS_KEY_A and ACCESS_KEY_B should be defined in your .env file. " +
+        "Copy .env.example to .env if you have not yet done so."
+    );
+  }
   const components = [
     "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
     process.env.ACCESS_KEY_A || "",
