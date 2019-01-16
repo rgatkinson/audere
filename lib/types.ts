@@ -165,7 +165,8 @@ export interface ConsentInfo extends NonPIIConsentInfo {
 export enum ConsentInfoSignerType {
   Subject = "Subject",
   Parent = "Parent",
-  Representative = "Representative"
+  Representative = "Representative",
+  Researcher = "Researcher"
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource

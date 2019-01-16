@@ -28,11 +28,7 @@ class BloodScreen extends React.Component<
 
   _proceed = (key: string) => {
     if (key === "yes") {
-      this.props.navigation.push("BloodConsent", {
-        reconsent: this.props.navigation.getParam("reconsent"),
-      });
-    } else if (this.props.navigation.getParam("reconsent")) {
-      this.props.navigation.push("Survey");
+      this.props.navigation.push("BloodConsent");
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }

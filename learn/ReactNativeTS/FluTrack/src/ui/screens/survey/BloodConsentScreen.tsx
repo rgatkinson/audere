@@ -14,7 +14,7 @@ import SignatureInput from "../../components/SignatureInput";
 
 interface Props {
   bloodConsent?: ConsentInfo;
-  consent: ConsentInfo;
+  consent?: ConsentInfo;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   name: string;
@@ -49,11 +49,7 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
   };
 
   _proceed = () => {
-    if (this.props.navigation.getParam("reconsent")) {
-      this.props.navigation.push("Survey");
-    } else {
-      this.props.navigation.push("Enrolled", { data: EnrolledConfig });
-    }
+    this.props.navigation.push("Enrolled", { data: EnrolledConfig });
   };
 
   render() {
@@ -73,9 +69,15 @@ class BloodConsentScreen extends React.Component<Props & WithNamespaces> {
           consent={this.props.bloodConsent}
           editableNames={false}
           participantName={this.props.name}
-          relation={this.props.consent.relation}
-          signerType={this.props.consent.signerType}
-          signerName={this.props.consent.name}
+          relation={
+            this.props.consent ? this.props.consent.relation : undefined
+          }
+          signerType={
+            this.props.consent
+              ? this.props.consent.signerType
+              : ConsentInfoSignerType.Subject
+          }
+          signerName={this.props.consent ? this.props.consent.name : undefined}
           onSubmit={this._onSubmit}
         />
       </ConsentChrome>

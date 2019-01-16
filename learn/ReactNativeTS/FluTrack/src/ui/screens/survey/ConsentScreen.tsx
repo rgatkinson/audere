@@ -19,6 +19,7 @@ import {
   BloodConfig,
   ConsentConfig,
   EnrolledConfig,
+  HipaaConfig,
 } from "../../../resources/ScreenConfig";
 import ConsentChrome from "../../components/ConsentChrome";
 import SignatureInput from "../../components/SignatureInput";
@@ -32,11 +33,11 @@ interface Props {
   bloodCollection: boolean;
   consent?: ConsentInfo;
   parentConsent?: ConsentInfo;
-  dispatch(action: Action): void;
-  navigation: NavigationScreenProp<any, any>;
-  name: string;
   location: string;
   locationType: string;
+  name: string;
+  navigation: NavigationScreenProp<any, any>;
+  dispatch(action: Action): void;
 }
 
 @connect((state: StoreState) => ({
@@ -52,15 +53,10 @@ class ConsentScreen extends React.Component<
 > {
   _getConsentTerms = () => {
     const { t } = this.props;
-    return !!this.props.locationType && this.props.locationType == "childcare"
-      ? t("daycareFormText", {
-          name: getContactName(this.props.location),
-          phone: getContactPhone(this.props.location),
-        })
-      : t("consentFormText", {
-          name: getContactName(this.props.location),
-          phone: getContactPhone(this.props.location),
-        });
+    return t("consentFormText", {
+      name: getContactName(this.props.location),
+      phone: getContactPhone(this.props.location),
+    });
   };
 
   _onSubmit = (
@@ -107,20 +103,21 @@ class ConsentScreen extends React.Component<
   };
 
   _proceed = () => {
+    const { locationType } = this.props;
     if (
+      locationType == "hospital" ||
+      locationType == "childrensHospital" ||
+      locationType == "childrensClinic" ||
+      locationType == "childcare"
+    ) {
+      this.props.navigation.push("Hipaa");
+    } else if (
       this._getAgeBucket() === AgeBuckets.Over18 &&
       this.props.bloodCollection
     ) {
-      this.props.navigation.push("Blood", {
-        data: BloodConfig,
-        reconsent: this.props.navigation.getParam("reconsent"),
-      });
+      this.props.navigation.push("Blood", { data: BloodConfig });
     } else if (this._getAgeBucket() === AgeBuckets.Child) {
-      this.props.navigation.push("Assent", {
-        reconsent: this.props.navigation.getParam("reconsent"),
-      });
-    } else if (this.props.navigation.getParam("reconsent")) {
-      this.props.navigation.push("Survey");
+      this.props.navigation.push("Assent");
     } else {
       this.props.navigation.push("Enrolled", { data: EnrolledConfig });
     }

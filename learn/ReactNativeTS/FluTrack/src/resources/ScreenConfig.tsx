@@ -60,6 +60,16 @@ export const ConsentConfig: SurveyQuestionData = {
   },
 };
 
+export const HipaaConfig: SurveyQuestionData = {
+  buttons: [],
+  id: "HipaaConsent",
+  title: "hipaaConsent",
+  description: {
+    label: "hipaaThankYouAssisting",
+  },
+};
+
+
 export const EnrolledConfig: SurveyQuestionData = {
   id: "Enrolled",
   title: "enrolledTitle",

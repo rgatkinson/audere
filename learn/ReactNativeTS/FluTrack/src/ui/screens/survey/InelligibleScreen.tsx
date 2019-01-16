@@ -28,7 +28,6 @@ const InelligibleConfig = {
 
 interface State {
   email?: string;
-  valid: boolean;
 }
 
 @connect((state: StoreState) => ({ email: state.form!.email }))
@@ -37,7 +36,7 @@ class InelligibleScreen extends React.PureComponent<
   State
 > {
   _onDone = () => {
-    if (!!this.state.email && this.state.valid) {
+    if (!!this.state.email) {
       this.props.dispatch(setEmail(this.state.email));
     }
     this.props.dispatch(completeSurvey());
@@ -46,7 +45,7 @@ class InelligibleScreen extends React.PureComponent<
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.state = { email: props.email, valid: !!props.email };
+    this.state = { email: props.email };
   }
 
   render() {
@@ -62,12 +61,9 @@ class InelligibleScreen extends React.PureComponent<
             returnKeyType="done"
             validationError={t("validationError")}
             value={this.state.email}
-            onChange={(email, valid) => this.setState({ email, valid })}
+            onChange={(email, valid) => this.setState({ email })}
             onSubmit={valid => {
-              this.setState({ valid });
-              if (valid) {
-                this._onDone();
-              }
+              this._onDone();
             }}
           />
           <Text content={t("disclaimer")} style={styles.disclaimer} />

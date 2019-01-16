@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store";
+import { Action, StoreState } from "../../../store";
 import {
   questionnaire,
   sectionDescriptions,
@@ -22,6 +22,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   locationType: string;
+  dispatch(action: Action): void;
 }
 
 @connect((state: StoreState) => ({
@@ -198,6 +199,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
               <SurveyQuestion
                 active={activeSection && lastItem}
                 data={item}
+                dispatch={this.props.dispatch}
                 navigation={this.props.navigation}
                 locationType={this.props.locationType}
                 onActivate={() => this._activateQuestion(section.title, index)}

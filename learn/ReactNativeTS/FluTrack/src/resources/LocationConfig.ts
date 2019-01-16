@@ -1,4 +1,12 @@
-export type locationType = "hospital" | "collegeCampus" | "homelessShelter";
+export type locationType =
+  | "hospital"
+  | "collegeCampus"
+  | "homelessShelter"
+  | "childrensHospital"
+  | "childrensClinic"
+  | "clinic"
+  | "childcare"
+  | "port";
 
 export function getLocationType(locationKey: string) {
   return COLLECTION_LOCATIONS[locationKey].type;
@@ -23,6 +31,11 @@ export const COLLECTION_LOCATIONS: {
 } = {
   Harborview: {
     type: "hospital",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  ChildrensHospital: {
+    type: "childrensHospital",
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
@@ -53,6 +66,26 @@ export const COLLECTION_LOCATIONS: {
   },
   DESC: {
     type: "homelessShelter",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  PioneerSquare: {
+    type: "clinic",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  HutchKids: {
+    type: "childcare",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  UWDaycare: {
+    type: "childcare",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  SeaTacInternational: {
+    type: "port",
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },

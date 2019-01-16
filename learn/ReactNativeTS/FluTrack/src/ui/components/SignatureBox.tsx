@@ -138,7 +138,10 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
   _getModalHeight = (signer: ConsentInfoSignerType): number => {
     if (signer === ConsentInfoSignerType.Subject) {
       return 425;
-    } else if (signer === ConsentInfoSignerType.Parent) {
+    } else if (
+      signer === ConsentInfoSignerType.Parent ||
+      signer === ConsentInfoSignerType.Researcher
+    ) {
       return 525;
     } else {
       return 625;

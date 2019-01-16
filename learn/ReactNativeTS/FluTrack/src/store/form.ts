@@ -6,10 +6,13 @@ export type FormAction =
   | { type: "START_FORM"; admin: string; location: string; isDemo: boolean }
   | { type: "COMPLETE_SURVEY" }
   | { type: "CLEAR_FORM" }
+  | { type: "CLEAR_CONSENTS" }
   | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_ASSENT"; consent: ConsentInfo }
   | { type: "SET_BLOOD_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_HIPAA_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_HIPAA_RESEARCHER_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
@@ -68,6 +71,8 @@ export type FormState = {
   admin?: string;
   assent?: ConsentInfo;
   bloodConsent?: ConsentInfo;
+  hipaaConsent?: ConsentInfo;
+  hipaaResearcherConsent?: ConsentInfo;
   completedSurvey: boolean;
   consent?: ConsentInfo;
   location?: string;
@@ -104,6 +109,15 @@ export default function reducer(state = initialState, action: FormAction) {
   if (action.type === "CLEAR_FORM") {
     return initialState;
   }
+  if (action.type === "CLEAR_CONSENTS") {
+    let newState = Object.assign({}, state);
+    delete newState.assent;
+    delete newState.bloodConsent;
+    delete newState.consent;
+    delete newState.hipaaConsent;
+    delete newState.parentConsent;
+    return newState;
+  }
   if (action.type === "SET_NAME") {
     return { ...state, name: action.name, timestamp: new Date().getTime() };
   }
@@ -135,6 +149,20 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       bloodConsent: action.consent,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_HIPAA_CONSENT") {
+    return {
+      ...state,
+      hipaaConsent: action.consent,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_HIPAA_RESEARCHER_CONSENT") {
+    return {
+      ...state,
+      hipaaResearcherConsent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
@@ -178,6 +206,12 @@ export function startForm(
 export function clearForm(): FormAction {
   return {
     type: "CLEAR_FORM",
+  };
+}
+
+export function clearConsents(): FormAction {
+  return {
+    type: "CLEAR_CONSENTS",
   };
 }
 
@@ -225,6 +259,20 @@ export function setParentConsent(consent: ConsentInfo): FormAction {
 export function setBloodConsent(consent: ConsentInfo): FormAction {
   return {
     type: "SET_BLOOD_CONSENT",
+    consent,
+  };
+}
+
+export function setHipaaConsent(consent: ConsentInfo): FormAction {
+  return {
+    type: "SET_HIPAA_CONSENT",
+    consent,
+  };
+}
+
+export function setHipaaResearcherConsent(consent: ConsentInfo): FormAction {
+  return {
+    type: "SET_HIPAA_RESEARCHER_CONSENT",
     consent,
   };
 }

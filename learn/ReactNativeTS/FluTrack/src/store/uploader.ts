@@ -267,6 +267,11 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   if (bloodConsent != null) {
     consents.push(bloodConsent);
   }
+
+  const hipaaConsent = form.hipaaConsent;
+  if (hipaaConsent != null) {
+    consents.push(hipaaConsent);
+  }
 }
 
 function maybePushAddressResponse(

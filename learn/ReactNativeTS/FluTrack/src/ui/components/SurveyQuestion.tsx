@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Action, Address, Option } from "../../store/index";
+import { Action, Address, Option, clearConsents } from "../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import {
   ButtonConfig,
@@ -36,6 +36,7 @@ export interface SurveyQuestionProps {
   data: SurveyQuestionData;
   navigation: NavigationScreenProp<any, any>;
   locationType: string;
+  dispatch(action: Action): void;
   onActivate(): void;
   onNext(nextQuestion: string | null): void;
 }
@@ -217,6 +218,7 @@ class SurveyQuestion extends Component<
             { selectedButtonKey: newAgeBucket },
             AgeBucketConfig
           );
+          this.props.dispatch(clearConsents());
           this.props.navigation.push("Consent", {
             data: ConsentConfig,
             reconsent: true,

@@ -100,7 +100,8 @@ export interface ConsentInfo extends NonPIIConsentInfo {
 export declare enum ConsentInfoSignerType {
     Subject = "Subject",
     Parent = "Parent",
-    Representative = "Representative"
+    Representative = "Representative",
+    Researcher = "Researcher"
 }
 export interface ResponseInfo {
     id: string;
