@@ -76,55 +76,46 @@ class HipaaConsentScreen extends React.Component<
     }
   };
 
-  render() {
-    const { t } = this.props;
-    return (
-      <ConsentChrome
-        canProceed={
-          !!this.props.hipaaConsent && !!this.props.hipaaResearcherConsent
+  renderSignatures() {
+    const participantSig = (
+      <SignatureInput
+        consent={this.props.hipaaConsent}
+        editableNames={false}
+        participantName={this.props.name}
+        relation={this.props.consent ? this.props.consent.relation : undefined}
+        signerType={
+          this.props.consent
+            ? this.props.consent.signerType
+            : ConsentInfoSignerType.Subject
         }
-        progressNumber="90%"
-        navigation={this.props.navigation}
-        title={t(HipaaConfig.title)}
-        proceed={this._proceed}
-        header={this._getHeader()}
-        terms={this._getTerms()}
-      >
+        signerName={this.props.consent ? this.props.consent.name : undefined}
+        onSubmit={(
+          participantName: string,
+          signerType: ConsentInfoSignerType,
+          signerName: string,
+          signature: string,
+          relation?: string
+        ) => {
+          this.props.dispatch(
+            setHipaaConsent({
+              name: signerName,
+              terms: this._getHeader() + "\n" + this._getTerms(),
+              signerType,
+              date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+              signature,
+              relation,
+            })
+          );
+        }}
+      />
+    );
+
+    if (this.props.locationType == "hospital") {
+      return participantSig;
+    } else {
+      return (
         <View style={styles.signatureContainer}>
-          <SignatureInput
-            consent={this.props.hipaaConsent}
-            editableNames={false}
-            participantName={this.props.name}
-            relation={
-              this.props.consent ? this.props.consent.relation : undefined
-            }
-            signerType={
-              this.props.consent
-                ? this.props.consent.signerType
-                : ConsentInfoSignerType.Subject
-            }
-            signerName={
-              this.props.consent ? this.props.consent.name : undefined
-            }
-            onSubmit={(
-              participantName: string,
-              signerType: ConsentInfoSignerType,
-              signerName: string,
-              signature: string,
-              relation?: string
-            ) => {
-              this.props.dispatch(
-                setHipaaConsent({
-                  name: signerName,
-                  terms: this._getHeader() + "\n" + this._getTerms(),
-                  signerType,
-                  date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-                  signature,
-                  relation,
-                })
-              );
-            }}
-          />
+          {participantSig}
           <SignatureInput
             consent={this.props.hipaaResearcherConsent}
             editableNames={true}
@@ -150,6 +141,26 @@ class HipaaConsentScreen extends React.Component<
             }}
           />
         </View>
+      );
+    }
+  }
+
+  render() {
+    const { t, locationType } = this.props;
+    return (
+      <ConsentChrome
+        canProceed={
+          !!this.props.hipaaConsent &&
+          (locationType == "hospital" || !!this.props.hipaaResearcherConsent)
+        }
+        progressNumber="70%"
+        navigation={this.props.navigation}
+        title={t(HipaaConfig.title)}
+        proceed={this._proceed}
+        header={this._getHeader()}
+        terms={this._getTerms()}
+      >
+        {this.renderSignatures()}
       </ConsentChrome>
     );
   }
