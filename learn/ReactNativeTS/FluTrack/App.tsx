@@ -6,7 +6,6 @@ import {
   createBottomTabNavigator,
   NavigationScreenProp,
 } from "react-navigation";
-import Images from "assets/images";
 import { AppLoading, Asset, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor } from "./src/store/";
@@ -174,8 +173,8 @@ export default class App extends React.Component<AppProps> {
   async _loadAssets() {
     await Promise.all([
       Asset.loadAsync([
-        Images.bus,
-        Images.uwLogo,
+        require("./src/img/UWLogo.png"),
+        require("./src/img/6ftDiagram.png"),
         require('./src/img/app-icon.png'),
       ]),
       Font.loadAsync({

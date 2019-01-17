@@ -51,9 +51,9 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
       });
     });
     NetInfo.addEventListener("connectionChange", connectionInfo => {
-      // @ts-ignore
       this.setState({
         connected:
+          // @ts-ignore
           connectionInfo.type === "wifi" || connectionInfo.type === "cell",
       });
     });
