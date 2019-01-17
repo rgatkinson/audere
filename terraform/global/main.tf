@@ -684,12 +684,6 @@ data "aws_iam_policy_document" "iam_manage_own_mfa" {
     ]
 
     resources = ["*"]
-
-    condition = {
-      test     = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values   = ["${local.mfa_condition_value}"]
-    }
   }
 
   statement {
@@ -719,12 +713,6 @@ data "aws_iam_policy_document" "iam_manage_own_mfa" {
     resources = [
       "arn:aws:iam::*:user/$${aws:username}",
     ]
-
-    condition = {
-      test     = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values   = ["${local.mfa_condition_value}"]
-    }
   }
 
   statement {
@@ -742,12 +730,6 @@ data "aws_iam_policy_document" "iam_manage_own_mfa" {
       "arn:aws:iam::*:mfa/$${aws:username}",
       "arn:aws:iam::*:user/$${aws:username}",
     ]
-
-    condition = {
-      test     = "${local.mfa_condition_test}"
-      variable = "${local.mfa_condition_variable}"
-      values   = ["${local.mfa_condition_value}"]
-    }
   }
 
   statement {
