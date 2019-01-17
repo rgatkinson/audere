@@ -173,7 +173,7 @@
     "howManyDrinks": "On average, how many alcoholic drinks do you consume per week? (1 drink = 1 beer, 1 glass of wine, or 1.5 fl oz/1 shot of hard alcohol)",
     "arrivedFrom": "Where have you arrived from?",
     "travelledLastMonth": "Where have you traveled in the last month?",
-    "whereTravelled": "What state(s) or countries have you traveled to in the past month?",
+    "whereTravelled": "What state(s) or countries have you traveled to in the past month? (use a comma to separate values if more than one)",
     "whenTravelled": "Was this travel in the past 7 days?",
     "majorityOfTime": "Over the past 7 days and when you are awake, where have you spent the majority of your time?",
     "occupation": "What is your primary occupation?",
