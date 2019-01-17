@@ -5,9 +5,13 @@
 
 output "ssh_keys" {
   value = "${map(
-    "mmarucheck", "${file("${path.module}/../../../dev/ssh-keys/2018-mmarucheck.pub")}",
-    "mpomarole", "${file("${path.module}/../../../dev/ssh-keys/2018-mpomarole.pub")}",
-    "ram", "${file("${path.module}/../../../dev/ssh-keys/2018-ram.pub")}",
-    "terri", "${file("${path.module}/../../../dev/ssh-keys/2018-terri.pub")}",
+    "billy", "${file("${local.keydir}/billy.pub")}",
+    "mmarucheck", "${file("${local.keydir}/mmarucheck.pub")}",
+    "ram", "${file("${local.keydir}/ram.pub")}",
+    "terri", "${file("${local.keydir}/terri.pub")}",
   )}"
+}
+
+locals {
+  keydir = "${path.module}/../../../dev/ssh-keys"
 }
