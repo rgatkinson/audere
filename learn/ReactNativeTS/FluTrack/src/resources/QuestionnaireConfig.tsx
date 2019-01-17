@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import Images from "assets/images";
 
 const birth = "birth";
 const comp = "comp";
@@ -229,6 +230,10 @@ export const questionnaire: SurveyQuestion[] = [
     section: expo,
     data: {
       id: "ExpoDesc",
+      image: {
+        label: "6feet",
+        src: Images.bus,
+      },
       nextQuestion: "NearSickPeople",
       description: {
         label: "expoToSickPeople",

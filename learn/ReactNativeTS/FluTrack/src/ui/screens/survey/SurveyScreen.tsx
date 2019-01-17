@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  NetInfo,
   KeyboardAvoidingView,
   LayoutAnimation,
   SectionList,
@@ -33,6 +34,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
   list = React.createRef<SectionList>();
 
   state = {
+    connected: false,
     questions: [
       {
         title: questionnaire[0].section,
@@ -40,6 +42,22 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
       },
     ],
   };
+
+  async componentDidMount() {
+    NetInfo.getConnectionInfo().then(connectionInfo => {
+      this.setState({
+        connected:
+          connectionInfo.type === "wifi" || connectionInfo.type === "cell",
+      });
+    });
+    NetInfo.addEventListener("connectionChange", connectionInfo => {
+      // @ts-ignore
+      this.setState({
+        connected:
+          connectionInfo.type === "wifi" || connectionInfo.type === "cell",
+      });
+    });
+  }
 
   _activateQuestion = (sectionTitle: string, questionIndex: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -198,6 +216,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
             return (
               <SurveyQuestion
                 active={activeSection && lastItem}
+                connected={this.state.connected}
                 data={item}
                 dispatch={this.props.dispatch}
                 navigation={this.props.navigation}

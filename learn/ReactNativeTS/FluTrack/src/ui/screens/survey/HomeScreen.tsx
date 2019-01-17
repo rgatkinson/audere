@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Images from "assets/images";
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
@@ -69,10 +70,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <Image
-          style={{ height: 30, width: 380 }}
-          source={require("../../../img/UWLogo.png")}
-        />
+        <Image style={{ height: 30, width: 380 }} source={Images.uwLogo} />
         <Text style={styles.title}>{t("seattleFluStudy")}</Text>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>
           <Text style={styles.buttonHeader}>{t("welcome")}</Text>

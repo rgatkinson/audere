@@ -6,7 +6,8 @@ import {
   createBottomTabNavigator,
   NavigationScreenProp,
 } from "react-navigation";
-import { AppLoading, Font } from "expo";
+import Images from "assets/images";
+import { AppLoading, Asset, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
@@ -171,13 +172,21 @@ export default class App extends React.Component<AppProps> {
   }
 
   async _loadAssets() {
-    await Font.loadAsync({
-      UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
-      "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
-      "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-      "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
-      "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
-    });
+    await Promise.all([
+      Asset.loadAsync([
+        Images.bus,
+        Images.uwLogo,
+        require('./src/img/app-icon.png'),
+      ]),
+      Font.loadAsync({
+        UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
+        "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
+        "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+        "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
+        "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
+      }),
+    ]);
+
     this.setState({ appReady: true });
   }
 
