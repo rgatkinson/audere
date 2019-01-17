@@ -35,13 +35,13 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
     stateOpen: false,
   };
 
-  // TODO: validate on submit
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
         {this.props.showLocationField && (
           <TextInput
+            autoCapitalize="words"
             autoCorrect={false}
             autoFocus={this.props.autoFocus}
             placeholder={t("locationName")}
@@ -82,6 +82,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           }}
         />
         <TextInput
+          autoCapitalize="words"
           autoCorrect={false}
           autoFocus={this.props.autoFocus && !this.props.showLocationField}
           placeholder={t("streetAddress")}
@@ -97,6 +98,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           onSubmitEditing={() => this.city.current!.focus()}
         />
         <TextInput
+          autoCapitalize="words"
           autoCorrect={false}
           placeholder={t("city")}
           ref={this.city}
@@ -128,6 +130,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             </TouchableOpacity>
           ) : (
             <TextInput
+              autoCapitalize="words"
               autoCorrect={false}
               placeholder={t("stateProvince")}
               ref={this.stateProvince}
