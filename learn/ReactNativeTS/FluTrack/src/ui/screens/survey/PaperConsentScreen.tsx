@@ -14,12 +14,14 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 interface Props {
   assent?: ConsentInfo;
   bloodConsent?: ConsentInfo;
+  hipaaConsent?: ConsentInfo;
   navigation: NavigationScreenProp<any, any>;
 }
 
 @connect((state: StoreState) => ({
   assent: state.form.assent,
   bloodConsent: state.form.bloodConsent,
+  hipaaConsent: state.form.hipaaConsent,
 }))
 class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -37,23 +39,15 @@ class PaperConsentScreen extends React.Component<Props & WithNamespaces> {
           }}
         />
         <ContentContainer>
-          <Title
-            label={t("getACopy", {
-              plural:
-                this.props.assent != null || this.props.bloodConsent != null
-                  ? "s"
-                  : "",
-            })}
-          />
+          <Title label={t("getACopy")} />
+          <Text content={t("paperConsent")} />
           <Text
-            content={t("paperConsent", {
-              additional:
-                this.props.assent != null
-                  ? t("assent")
-                  : this.props.bloodConsent != null
-                    ? t("subStudy")
-                    : "",
-            })}
+            content={
+              `\u2022 ${t("mainConsent")}` +
+              (!!this.props.assent ? `\n\u2022 ${t("assent")}` : "") +
+              (!!this.props.hipaaConsent ? `\n\u2022 ${t("hipaa")}` : "") +
+              (!!this.props.bloodConsent ? `\n\u2022 ${t("subStudy")}` : "")
+            }
           />
           <Button
             enabled={true}
