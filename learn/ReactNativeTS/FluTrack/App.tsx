@@ -7,6 +7,7 @@ import {
   NavigationScreenProp,
 } from "react-navigation";
 import { AppLoading, Asset, Font } from "expo";
+Asset;
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";

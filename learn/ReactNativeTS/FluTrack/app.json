@@ -19,7 +19,8 @@
       "package": "org.auderenow.flutrack"
     },
     "assetBundlePatterns": [
-      "src/img/*"
+      "src/img/*",
+      "assets/fonts/*"
     ],
     "orientation": "portrait"
   }
