@@ -47,11 +47,9 @@ function new_password() {
 
 function add_developer() {
   local u="$1"
-  if [[ ! -d "/home/$u"]]; then
-    adduser --gecos "$u" --disabled-password "$u"
-    write_sshkey "$u"
-    echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
-  }
+  adduser --gecos "$u" --disabled-password "$u"
+  write_sshkey "$u"
+  echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
 }
 
 function write_sshkey() {
@@ -65,18 +63,17 @@ function write_sshkey() {
 }
 
 function parted_mkfs_mount() {
-  local dev="$(device_by_letter "$1")"
-  local label="$2"
-  local dir="$3"
-  1>&2 retry parted "$dev" mklabel gpt
-  1>&2 retry parted -a opt "$dev" mkpart primary ext4 0% 100%
-  local part="$(wait_for_device "$dev"1 "$dev"p1)"
-  # Sometimes Linux does not assign a uuid if we don't give some time here
-  #sleep 10
-  1>&2 retry mkfs.ext4 -L "$label" "$part"
-  local uuid=$(uuidgen)
-  1>&2 retry tune2fs -U "$uuid" "$part"
-  #local uuid="$(partition_uuid "$part")"
+  local dev="$(device_by_letter "$1")" label="$2" dir="$3" part uuid
+  if part="$(wait_for_device "$dev"1 "$dev"p1)"; then
+    uuid=$(partition_uuid "$part")
+  else
+    1>&2 retry parted "$dev" mklabel gpt
+    1>&2 retry parted -a opt "$dev" mkpart primary ext4 0% 100%
+    part="$(wait_for_device "$dev"1 "$dev"p1)"
+    1>&2 retry mkfs.ext4 -L "$label" "$part"
+    uuid=$(uuidgen)
+    1>&2 retry tune2fs -U "$uuid" "$part"
+  fi
   printf "UUID=%s\t%s\text4\tdefaults,nofail\t0\t2\n" "$uuid" "$dir" >>/etc/fstab
   mkdir -p "$dir"
   mount -a
@@ -86,7 +83,7 @@ function parted_mkfs_mount() {
 }
 
 function wait_for_device() {
-  for i in {1..120}; do
+  for i in {1..20}; do
     for dev in "$@"; do [[ -b "$dev" ]] && echo "$dev" && return 0; done
     sleep 1
   done
