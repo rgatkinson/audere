@@ -156,6 +156,7 @@ jobs:
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)"
             cd learn/ReactNativeTS/FluTrack
+            expo logout
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
             export EXPO_APPNAME=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['name'])"`
