@@ -122,8 +122,8 @@ export const questionnaire: SurveyQuestion[] = [
       id: "WhereLive",
       conditionalNext: {
         options: new Map([
-          ["house", "Bedrooms"],
-          ["apartment", "Bedrooms"],
+          ["house", "PeopleInHousehold"],
+          ["apartment", "PeopleInHousehold"],
           ["shelter", "BedAssignment"],
         ]),
         location: new Map([["collegeCampus", "AddressCampus"]]),
@@ -145,6 +145,24 @@ export const questionnaire: SurveyQuestion[] = [
         withOther: false,
       },
       buttons: [{ key: "done", primary: true, enabled: "withOption" }],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "PeopleInHousehold",
+      nextQuestion: "Bedrooms",
+      title: "peopleInHousehold",
+      numberSelector: {
+        min: 0,
+        max: 8,
+        maxPlus: true,
+        placeholder: "numPeople",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withNumber" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
     },
   },
   {
@@ -417,6 +435,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "WhereTravelled",
       nextQuestion: "WhenTravelled",
       title: "whereTravelled",
+      description: {
+        label: "comma",
+        center: true,
+      },
       textInput: {
         autoCorrect: false,
         placeholder: "locations",
@@ -530,6 +552,8 @@ export const questionnaire: SurveyQuestion[] = [
           "highSchool",
           "college",
           "tradeSchool",
+          "childcareCenter",
+          "preschool",
           "other",
         ],
         multiSelect: true,
@@ -567,6 +591,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "Major",
       nextQuestion: "CampusBuilding",
       title: "major",
+      description: {
+        label: "comma",
+        center: true,
+      },
       textInput: {
         placeholder: "Major",
       },
@@ -796,8 +824,12 @@ export const questionnaire: SurveyQuestion[] = [
       id: "MedConditions",
       nextQuestion: "AssignedSex",
       title: "medConditions",
+      description: {
+        label: "selectAll",
+        center: true,
+      },
       optionList: {
-        options: ["asthma", "copd"],
+        options: ["asthma", "copd", "chronicBronchitis", "cancer", "diabetes"],
         multiSelect: true,
         withOther: false,
       },
@@ -892,17 +924,15 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: null,
       optionList: {
         options: [
-          "none",
-          "medicaid",
-          "employerPlan",
+          "noInsurance",
           "privateInsurance",
-          "medicare",
+          "government",
           "other",
         ],
         multiSelect: true,
         withOther: true,
         otherPlaceholder: "insurance",
-        exclusiveOption: "none",
+        exclusiveOption: "noInsurance",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
