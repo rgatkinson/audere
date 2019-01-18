@@ -26,6 +26,7 @@ module "flu_api" {
   api_cidr = "${module.vpc_cidr.prod_api_cidr}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
+  devs = "${var.devs}"
   environment = "prod"
   fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
   fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
