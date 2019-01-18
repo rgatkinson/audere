@@ -481,7 +481,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HouseholdSmoke",
       nextQuestion: "RecentTravel",
       conditionalNext: {
-        location: new Map([["collegeCampus", "DrinkAlcohol"]]),
+        location: new Map([
+          ["collegeCampus", "DrinkAlcohol"],
+          ["homelessShelter", "ShelterDrinkAlcohol"],
+        ]),
       },
       title: "householdSmoke",
       buttons: [
@@ -489,6 +492,101 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "no", primary: true, enabled: true },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "na", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ShelterDrinkAlcohol",
+      nextQuestion: "ShelterOtherDrugs",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "ShelterHowManyDrinks"]]),
+      },
+      title: "shelterDrinkAlcohol",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ShelterHowManyDrinks",
+      nextQuestion: "ShelterOtherDrugs",
+      title: "shelterHowManyDrinks",
+      optionList: {
+        options: [
+          "onceMonthLess",
+          "2to4month",
+          "2to3week",
+          "4orMoreWeek",
+        ],
+        multiSelect: false,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ShelterOtherDrugs",
+      nextQuestion: "RecentTravel",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "ShelterWhatDrugs"]]),
+      },
+      title: "shelterOtherDrugs",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ShelterWhatDrugs",
+      nextQuestion: "ShelterInject",
+      title: "shelterWhatDrugs",
+      optionList: {
+        options: [
+          "heroin",
+          "meth",
+          "morphine",
+          "opioids",
+          "cocaine",
+          "tranquilizers",
+          "ecstasy",
+          "other",
+        ],
+        multiSelect: true,
+        withOther: true,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ShelterInject",
+      nextQuestion: "RecentTravel",
+      title: "shelterInject",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
