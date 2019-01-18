@@ -23,6 +23,7 @@ import {
 } from "../../resources/ScreenConfig";
 import AddressInput from "./AddressInput";
 import Button from "./Button";
+import CountrySelectorInput from "./CountrySelectorInput";
 import DateInput from "./DateInput";
 import NumberInput from "./NumberInput";
 import NumberSelectorInput from "./NumberSelectorInput";
@@ -99,6 +100,16 @@ class SurveyQuestion extends Component<
         ) {
           return this.props.data.conditionalNext!.buttonKeys!.get(
             selectedButtonKey
+          )!;
+        }
+        if (
+          !!this.props.data.conditionalNext!.text &&
+          this.props.data.conditionalNext!.text!.has(
+            this.props.getAnswer("textInput")
+          )
+        ) {
+          return this.props.data.conditionalNext!.text!.get(
+            this.props.getAnswer("textInput")
           )!;
         }
       }
@@ -431,6 +442,22 @@ class SurveyQuestion extends Component<
                 });
                 this.props.onNext(this._getNextQuestion("done"));
               }
+            }}
+          />
+        )}
+        {this.props.data.countrySelector && (
+          <CountrySelectorInput
+            country={this.props.getAnswer("textInput")}
+            placeholder={t(
+              "surveyPlaceholder:" +
+                this.props.data.countrySelector!.placeholder
+            )}
+            onCountryChange={(country: string) => {
+              this.props.updateAnswer({
+                textInput: country,
+                selectedButtonKey: "done",
+              });
+              this.props.onNext(this._getNextQuestion("done"));
             }}
           />
         )}

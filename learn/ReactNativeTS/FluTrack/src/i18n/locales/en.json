@@ -208,6 +208,8 @@
     "pregnant": "Are you currently pregnant?",
     "race": "How would you describe your race?",
     "hispanicLatino": "Are you Hispanic or Latino?",
+    "whereBorn": "What country were you born in?",
+    "timeUS": "How long have you been living in the United States?",
     "medInsurance": "We would like to know about your medical insurance."
   },
   "surveyDescription": {
@@ -230,6 +232,7 @@
     "race": "Race",
     "insurance": "Insurance",
     "selectDate": "Select date",
+    "selectCountry": "Select country",
     "days": "Number of days",
     "selectNumber": "Select number",
     "bedAssignment": "Bed assignment",
@@ -388,6 +391,11 @@
     "nativeHawaiian": "Native Hawaiian or Other Pacific Islander",
     "blackOrAfricanAmerican": "Black or African American",
     "white": "White",
+    "lessThan1": "Less than 1 year",
+    "1to5": "1 - 5 years",
+    "6to10": "6 - 10 years",
+    "11to15": "11 - 15 years",
+    "moreThan15": "More than 15 years",
     "noInsurance": "I do not have medical insurance",
     "privateInsurance": "I have private medical insurance (from my employer or I bought it myself)",
     "government": "I have government insurance (Medicare, Medicaid)",

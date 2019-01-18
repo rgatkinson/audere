@@ -22,6 +22,7 @@ export interface SurveyQuestionData {
   nextQuestion?: string | null;
   numberInput?: NumberInputConfig;
   numberSelector?: NumberSelectorConfig;
+  countrySelector?: CountrySelectorConfig;
   optionList?: OptionListConfig;
   textInput?: TextInputConfig;
   title?: string;
@@ -43,6 +44,7 @@ interface ConditionalNextConfig {
   buttonKeys?: Map<string, string>;
   location?: Map<string, string>;
   options?: Map<string, string>;
+  text?: Map<string, string>;
 }
 
 interface DateInputConfig {
@@ -59,6 +61,10 @@ interface NumberSelectorConfig {
   max: number;
   placeholder: string;
   maxPlus: boolean;
+}
+
+interface CountrySelectorConfig {
+  placeholder: string;
 }
 
 interface ImageConfig {
@@ -1126,10 +1132,54 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "HispanicLatino",
       nextQuestion: "MedicalInsurance",
+      conditionalNext: {
+        location: new Map([["homelessShelter", "WhereBorn"]]),
+      },
       title: "hispanicLatino",
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "WhereBorn",
+      nextQuestion: "TimeUS",
+      conditionalNext: {
+        text: new Map([["United States", "MedicalInsurance"]]),
+      },
+      title: "whereBorn",
+      countrySelector: {
+        placeholder: "selectCountry",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "TimeUS",
+      nextQuestion: "MedicalInsurance",
+      title: "timeUS",
+      optionList: {
+        options: [
+          "lessThan1",
+          "1to5",
+          "6to10",
+          "11to15",
+          "moreThan15",
+        ],
+        multiSelect: false,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
