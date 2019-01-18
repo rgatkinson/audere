@@ -3,15 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-output "ssh_keys" {
-  value = "${map(
-    "billy", "${file("${local.keydir}/billy.pub")}",
-    "mmarucheck", "${file("${local.keydir}/mmarucheck.pub")}",
-    "ram", "${file("${local.keydir}/ram.pub")}",
-    "terri", "${file("${local.keydir}/terri.pub")}",
-  )}"
+output "ssh_key_map" {
+  value = "${local.ssh_key_map}"
 }
 
-locals {
-  keydir = "${path.module}/../../../dev/ssh-keys"
+output "ssh_key_json" {
+  value = "${local.ssh_key_json}"
 }

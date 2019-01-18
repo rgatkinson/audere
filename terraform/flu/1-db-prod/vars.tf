@@ -12,8 +12,5 @@ variable "mode" {
 
 variable "admins" {
   description = "List of admin userids."
-  default = [
-    "mmarucheck",
-    "ram",
-  ]
+  type = "list"
 }

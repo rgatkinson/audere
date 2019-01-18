@@ -19,12 +19,14 @@ function main() {
 }
 
 function add_developer_accounts() {
-  add_developer ram <<EOF
-${ram_ssh_public_key}
-EOF
+  for u in $(echo_ssh_keys | jq -r 'keys[]'); do
+    echo_ssh_keys | jq -r ".$u" | add_developer "$u"
+  done
+}
 
-  add_developer mmarucheck <<EOF
-${mmarucheck_ssh_public_key}
+function echo_ssh_keys() {
+  cat <<'EOF'
+${ssh_public_key_map}
 EOF
 }
 

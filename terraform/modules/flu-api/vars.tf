@@ -43,6 +43,11 @@ variable "fludev_ssh_server_sg_id" {
   description = "Id of server security group to enable ssh access"
 }
 
+variable "devs" {
+  description = "Userids of developers who should have ssh access to frontend machines"
+  type = "list"
+}
+
 
 variable "availability_zone" {
   default = "us-west-2a"

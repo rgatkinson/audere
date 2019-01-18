@@ -47,9 +47,11 @@ function new_password() {
 
 function add_developer() {
   local u="$1"
-  adduser --gecos "$u" --disabled-password "$u"
-  write_sshkey "$u"
-  echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
+  if [[ ! -d "/home/$u"]]; then
+    adduser --gecos "$u" --disabled-password "$u"
+    write_sshkey "$u"
+    echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
+  }
 }
 
 function write_sshkey() {

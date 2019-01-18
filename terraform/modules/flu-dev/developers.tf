@@ -69,7 +69,7 @@ data "template_file" "provision_bastion_sh" {
   template = "${file("${path.module}/provision-bastion.sh")}"
   vars {
     bastion_port = "${local.bastion_port}"
-    ssh_public_key_map = "${jsonencode(module.devs.ssh_keys)}"
+    ssh_public_key_map = "${module.devs.ssh_key_json}"
     util_sh = "${file("${path.module}/../assets/util.sh")}"
   }
 }
@@ -131,7 +131,7 @@ data "template_file" "provision_dev_sh" {
   vars {
     util_sh = "${file("${path.module}/../assets/util.sh")}"
     home_volume_letter = "${local.home_volume_letter}"
-    ssh_public_key = "${lookup(module.devs.ssh_keys, var.devs[count.index])}"
+    ssh_public_key = "${lookup(module.devs.ssh_key_map, var.devs[count.index])}"
     userid = "${var.devs[count.index]}"
   }
 }
@@ -203,6 +203,8 @@ module "ami" {
 
 module "devs" {
   source = "../devs"
+
+  userids = "${var.devs}"
 }
 
 data "aws_route53_zone" "auderenow_io" {

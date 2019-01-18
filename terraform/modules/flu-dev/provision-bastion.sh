@@ -20,10 +20,6 @@ function add_users() {
     adduser --gecos "$u" --disabled-password "$u"
     echo_ssh_keys | jq -r ".$u" | write_sshkey "$u"
   done
-
-  adduser --gecos "rightparen" --disabled-password "rightparen"
-  echo_ssh_keys | jq -r ".mmarucheck" | write_sshkey "rightparen"
-  echo "rightparen ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-rightparen"
 }
 
 function echo_ssh_keys() {

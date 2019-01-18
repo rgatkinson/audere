@@ -20,10 +20,6 @@ locals {
   // TODO: archive_file can create a .zip
   init_tar_bz2_base64_filename = "${path.module}/../../../local/flu-api-staging-init.tar.bz2.base64"
   init_tar_bz2_base64 = "${file("${local.init_tar_bz2_base64_filename}")}"
-
-  ssh_public_key_directory = "${path.module}/../../../dev/ssh-keys"
-  ram_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-ram.pub")}"
-  mmarucheck_ssh_public_key = "${file("${local.ssh_public_key_directory}/2018-mmarucheck.pub")}"
 }
 
 module "ami" {
@@ -42,10 +38,9 @@ data "template_file" "sequelize_migrate_sh" {
     commit = "${var.commit}"
     domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
     mode = "migrate"
-    ram_ssh_public_key = "${local.ram_ssh_public_key}"
     service_url = "${local.service_url}"
+    ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
     util_sh = "${local.util_sh}"
   }
@@ -57,10 +52,9 @@ data "template_file" "service_init_sh" {
     commit = "${var.commit}"
     domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    mmarucheck_ssh_public_key = "${local.mmarucheck_ssh_public_key}"
     mode = "service"
-    ram_ssh_public_key = "${local.ram_ssh_public_key}"
     service_url = "${local.service_url}"
+    ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
     util_sh = "${local.util_sh}"
   }
@@ -196,4 +190,9 @@ resource "aws_launch_configuration" "flu_api_instance" {
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
+}
+
+module "devs" {
+  source = "../devs"
+  userids = "${var.devs}"
 }
