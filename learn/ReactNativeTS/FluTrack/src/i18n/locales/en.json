@@ -228,6 +228,7 @@
   },
   "surveyPlaceholder": {
     "building": "Building",
+    "shelter": "Shelter",
     "location": "Location",
     "race": "Race",
     "insurance": "Insurance",

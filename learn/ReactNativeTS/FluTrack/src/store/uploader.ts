@@ -118,6 +118,48 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     pouch
   );
 
+  const whichShelterResponse = responses.find(
+    response => response.questionId === "WhichShelter"
+  );
+  if (
+    !!whichShelterResponse &&
+    !!whichShelterResponse.answer &&
+    !!whichShelterResponse.answer.options &&
+    whichShelterResponse.answer.selectedButtonKey === "done"
+  ) {
+    let shelter = null;
+    whichShelterResponse.answer.options.forEach((option: Option) => {
+      if (option.selected) {
+        shelter = option.key;
+      }
+    });
+    if (shelter == "stMartins") {
+      maybePushAddress(
+        {
+          address: "1561 Alaskan Way S",
+          city: "Seattle",
+          state: "WA",
+          zipcode: "98134",
+          country: "United States",
+        },
+        AddressInfoUse.Home,
+        pouch.patient.address
+      );
+    } else if (shelter == "pioneerSquare") {
+      maybePushAddress(
+        {
+          address: "517 3rd Ave",
+          city: "Seattle",
+          state: "WA",
+          zipcode: "98104",
+          country: "United States",
+        },
+        AddressInfoUse.Home,
+        pouch.patient.address
+      );
+    }
+  }
+
   const assignedSexResponse = responses.find(
     response => response.questionId === "AssignedSex"
   );

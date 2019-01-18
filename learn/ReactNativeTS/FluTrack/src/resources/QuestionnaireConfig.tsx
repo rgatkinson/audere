@@ -267,10 +267,12 @@ export const questionnaire: SurveyQuestion[] = [
       optionList: {
         options: ["pioneerSquare", "stMartins", "other"],
         multiSelect: false,
-        withOther: false,
+        withOther: true,
+        otherPlaceholder: "shelter",
       },
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
+        { key: "none", primary: false, enabled: true },
       ],
     },
   },
