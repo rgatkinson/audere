@@ -165,6 +165,7 @@ jobs:
 
   publish_to_expo_staging:
     environment:
+      EXPO_DEBUG: true
       EXPO_RELEASE_CHANNEL: v0-staging
       <<: *const
     <<: *publish
