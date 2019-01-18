@@ -34,6 +34,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
   list = React.createRef<SectionList>();
 
   state = {
+    adding: false,
     connected: false,
     questions: [
       {
@@ -88,27 +89,33 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
   };
 
   _addData = (nextQuestion: string | null) => {
-    const item = questionnaire.find(
-      question => question.data.id === nextQuestion
-    );
-    if (nextQuestion === null || !item) {
-      this.props.navigation.push("PassBack");
-      return;
+    if (!this.state.adding) {
+      this.setState({ adding: true });
+      const item = questionnaire.find(
+        question => question.data.id === nextQuestion
+      );
+      if (nextQuestion === null || !item) {
+        this.props.navigation.push("PassBack");
+        return;
+      }
+
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+      let questions = [...this.state.questions];
+      const sectionIndex = questions.findIndex(
+        obj => obj.title === item.section
+      );
+      const sectionExists = sectionIndex > -1;
+      const sectionData = sectionExists ? questions[sectionIndex].data : [];
+      questions[sectionExists ? sectionIndex : questions.length] = {
+        title: item!.section,
+        data: [...sectionData, item!.data],
+      };
+      this.setState({
+        questions,
+      });
+      this.setState({ adding: false });
     }
-
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
-    let questions = [...this.state.questions];
-    const sectionIndex = questions.findIndex(obj => obj.title === item.section);
-    const sectionExists = sectionIndex > -1;
-    const sectionData = sectionExists ? questions[sectionIndex].data : [];
-    questions[sectionExists ? sectionIndex : questions.length] = {
-      title: item!.section,
-      data: [...sectionData, item!.data],
-    };
-    this.setState({
-      questions,
-    });
   };
 
   _removeData = () => {

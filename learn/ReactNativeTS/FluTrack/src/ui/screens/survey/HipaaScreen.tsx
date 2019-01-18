@@ -104,7 +104,7 @@ class HipaaConsentScreen extends React.Component<
               date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
               signature,
               relation,
-              valueDateTime: (new Date()).toISOString(),
+              valueDateTime: new Date().toISOString(),
             })
           );
         }}
@@ -137,7 +137,7 @@ class HipaaConsentScreen extends React.Component<
                   date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
                   signature,
                   relation,
-                  valueDateTime: (new Date()).toISOString(),
+                  valueDateTime: new Date().toISOString(),
                 })
               );
             }}

@@ -138,6 +138,16 @@ class SurveyQuestion extends Component<
       return !!this._getValue("textInput");
     } else if (enabledStatus === "withNumber") {
       return Number.isInteger(parseInt(this._getValue("numberInput")));
+    } else if (enabledStatus === "withNumberAndOption") {
+      const options = this.props.getAnswer("options");
+      return (
+        !!options &&
+        options.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        ) &&
+        Number.isInteger(parseInt(this._getValue("numberInput")))
+      );
     } else if (enabledStatus === "withAddress") {
       return this._haveValidAddress();
     } else if (enabledStatus === "withDate") {
@@ -316,11 +326,13 @@ class SurveyQuestion extends Component<
             value={this._getValue("textInput")}
             onChangeText={textInput => this.setState({ textInput })}
             onSubmitEditing={() => {
-              this.props.updateAnswer({
-                textInput: this.state.textInput,
-                selectedButtonKey: "done",
-              });
-              this.props.onNext(this._getNextQuestion("done"));
+              if (!!this.state.textInput) {
+                this.props.updateAnswer({
+                  textInput: this.state.textInput,
+                  selectedButtonKey: "done",
+                });
+                this.props.onNext(this._getNextQuestion("done"));
+              }
             }}
           />
         )}
@@ -411,9 +423,14 @@ class SurveyQuestion extends Component<
             onNumChange={(num: number) => {
               this.props.updateAnswer({
                 numberInput: num,
-                selectedButtonKey: "done",
               });
-              this.props.onNext(this._getNextQuestion("done"));
+
+              if (this.props.data.buttons[0].enabled === "withNumber") {
+                this.props.updateAnswer({
+                  selectedButtonKey: "done",
+                });
+                this.props.onNext(this._getNextQuestion("done"));
+              }
             }}
           />
         )}

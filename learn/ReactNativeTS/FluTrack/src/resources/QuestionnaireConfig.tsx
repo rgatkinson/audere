@@ -95,6 +95,7 @@ export type EnabledOption =
   | "withText"
   | "withAddress"
   | "withNumber"
+  | "withNumberAndOption"
   | "withDate";
 
 export interface SurveyQuestion {
@@ -124,7 +125,7 @@ export const questionnaire: SurveyQuestion[] = [
         options: new Map([
           ["house", "PeopleInHousehold"],
           ["apartment", "PeopleInHousehold"],
-          ["shelter", "BedAssignment"],
+          ["shelter", "HowLongHomeless"],
         ]),
         location: new Map([["collegeCampus", "AddressCampus"]]),
       },
@@ -194,11 +195,134 @@ export const questionnaire: SurveyQuestion[] = [
   {
     section: comp,
     data: {
-      id: "BedAssignment",
+      id: "HowLongHomeless",
+      nextQuestion: "OtherShelters",
+      title: "howLongHomeless",
+      description: {
+        label: "homelessDesc",
+        center: true,
+      },
+      optionList: {
+        options: ["6monthsLess", "7to12months", "13to24months", "over24months"],
+        multiSelect: false,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "OtherShelters",
+      nextQuestion: "WhichShelter",
+      title: "otherShelters",
+      description: {
+        label: "selectAll",
+        center: true,
+      },
+      optionList: {
+        options: [
+          "pikeMarket",
+          "lazarusDay",
+          "gospelMissionMensShelter",
+          "gospelMissionCapHill",
+          "marysPlace",
+          "breadOfLife",
+          "seattleLibrary",
+          "other",
+        ],
+        multiSelect: true,
+        withOther: true,
+        numColumns: 2,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "WhichShelter",
       nextQuestion: "Address",
       conditionalNext: {
-        location: new Map([["collegeCampus", "AddressCampus"]]),
+        options: new Map([
+          ["pioneerSquare", "HowLongShelter"],
+          ["stMartins", "HowLongShelter"],
+        ]),
       },
+      title: "whichShelter",
+      optionList: {
+        options: ["pioneerSquare", "stMartins", "other"],
+        multiSelect: false,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "HowLongShelter",
+      nextQuestion: "HowManyNights",
+      title: "howLongShelter",
+      numberSelector: {
+        min: 0,
+        max: 30,
+        maxPlus: true,
+        placeholder: "selectNumber",
+      },
+      optionList: {
+        options: ["days", "weeks", "months", "years"],
+        multiSelect: false,
+        numColumns: 2,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withNumberAndOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "HowManyNights",
+      nextQuestion: "BedAssignment",
+      title: "howManyNights",
+      numberSelector: {
+        min: 0,
+        max: 30,
+        maxPlus: true,
+        placeholder: "selectNumber",
+      },
+      optionList: {
+        options: ["days", "weeks", "months", "years"],
+        multiSelect: false,
+        numColumns: 2,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withNumberAndOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "BedAssignment",
+      nextQuestion: "ExpoDesc",
       title: "bedAssignment",
       numberInput: {
         placeholder: "bedAssignment",

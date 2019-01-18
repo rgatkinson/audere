@@ -142,7 +142,10 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           !!this.props.data.find(option => option.key === "other") &&
           this.props.data.find(option => option.key === "other")!.selected && (
             <View style={styles.otherContainer}>
-              <Text style={{ marginBottom: 10 }} content={t("pleaseSpecify")} />
+              <Text
+                style={{ marginBottom: 10, fontSize: 18 }}
+                content={t("pleaseSpecify")}
+              />
               <View style={styles.item}>
                 <TextInput
                   autoFocus={true}
