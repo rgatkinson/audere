@@ -18,10 +18,6 @@
     "android": {
       "package": "org.auderenow.flutrack"
     },
-    "assetBundlePatterns": [
-      "src/img/UWLogo.png",
-      "src/img/6ftDiagram.png"
-    ],
     "orientation": "portrait"
   }
 }

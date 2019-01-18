@@ -155,6 +155,7 @@ export interface NonPIIConsentInfo {
   signerType: ConsentInfoSignerType;
   date: string; // date only
   relation?: string;
+  valueDateTime?: string; // FHIR:dateTime
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {
