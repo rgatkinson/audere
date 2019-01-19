@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import { AgeBuckets } from "./ScreenConfig";
 
 const birth = "birth";
 const comp = "comp";
@@ -45,6 +46,7 @@ interface ConditionalNextConfig {
   location?: Map<string, string>;
   options?: Map<string, string>;
   text?: Map<string, string>;
+  age?: Map<string, string>;
 }
 
 interface DateInputConfig {
@@ -426,7 +428,12 @@ export const questionnaire: SurveyQuestion[] = [
     section: expo,
     data: {
       id: "NearChildren",
-      nextQuestion: "HaveChildren",
+      nextQuestion: "ChildrenNearChildren",
+      conditionalNext: {
+        age: new Map([
+          [AgeBuckets.Over18, "HaveChildren"],
+        ]),
+      },
       title: "contactWithChildren",
       optionList: {
         options: ["1child", "2to5children", "moreThan5children", "none"],
@@ -448,6 +455,10 @@ export const questionnaire: SurveyQuestion[] = [
       title: "haveChildren",
       conditionalNext: {
         buttonKeys: new Map([["yes", "ChildrenNearChildren"]]),
+        age: new Map([
+          [AgeBuckets.Child, "HouseholdSmoke"],
+          [AgeBuckets.Under7, "HouseholdSmoke"],
+        ]),
       },
       buttons: [
         { key: "yes", primary: true, enabled: true },
@@ -461,6 +472,12 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "ChildrenNearChildren",
       nextQuestion: "Smoke",
+      conditionalNext: {
+        age: new Map([
+          [AgeBuckets.Child, "HouseholdSmoke"],
+          [AgeBuckets.Under7, "HouseholdSmoke"],
+        ]),
+      },
       title: "childrenWithChildren",
       buttons: [
         { key: "yes", primary: true, enabled: true },

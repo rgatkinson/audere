@@ -112,6 +112,15 @@ class SurveyQuestion extends Component<
             this.props.getAnswer("textInput")
           )!;
         }
+        if (!!this.props.data.conditionalNext!.age) {
+          const ageBucket = this.props.getAnswer(
+            "selectedButtonKey",
+            AgeBucketConfig.id
+          );
+          if (this.props.data.conditionalNext!.age!.has(ageBucket)) {
+            return this.props.data.conditionalNext!.age!.get(ageBucket)!;
+          }
+        }
       }
     }
     return nextQuestion || null;
