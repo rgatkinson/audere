@@ -492,6 +492,11 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "Smoke",
       nextQuestion: "HouseholdSmoke",
+      conditionalNext: {
+        location: new Map([
+          ["homelessShelter", "ShelterDrinkAlcohol"],
+        ]),
+      },
       title: "smokeOrVape",
       buttons: [
         { key: "yes", primary: true, enabled: true },
@@ -508,7 +513,9 @@ export const questionnaire: SurveyQuestion[] = [
       conditionalNext: {
         location: new Map([
           ["collegeCampus", "DrinkAlcohol"],
-          ["homelessShelter", "ShelterDrinkAlcohol"],
+          ["childrensClinic", "ChildrensRecentTravel"],
+          ["childrensHospital", "ChildrensRecentTravel"],
+          ["childcare", "ChildrensRecentTravel"],
         ]),
       },
       title: "householdSmoke",
@@ -705,6 +712,55 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ChildrensRecentTravel",
+      nextQuestion: "TimeSpent",
+      conditionalNext: {
+        options: new Map([
+          ["toAnotherUSState", "ChildrensWhereTravelled"],
+          ["toAnotherCountry", "ChildrensWhereTravelled"],
+        ]),
+      },
+      title: "childrensTravelledLastMonth",
+      optionList: {
+        options: [
+          "withinWashingtonStateOnly",
+          "toAnotherUSState",
+          "toAnotherCountry",
+        ],
+        multiSelect: true,
+        withOther: false,
+        exclusiveOption: "withinWashingtonStateOnly",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ChildrensWhereTravelled",
+      nextQuestion: "WhenTravelled",
+      title: "childrensWhereTravelled",
+      description: {
+        label: "comma",
+        center: true,
+      },
+      textInput: {
+        autoCorrect: false,
+        placeholder: "locations",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },

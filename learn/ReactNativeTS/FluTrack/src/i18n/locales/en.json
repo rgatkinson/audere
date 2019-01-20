@@ -185,6 +185,8 @@
     "arrivedFrom": "Where have you arrived from?",
     "travelledLastMonth": "Where have you traveled in the last month?",
     "whereTravelled": "What state(s) or countries have you traveled to in the past month?",
+    "childrensTravelledLastMonth": "Where have you or anyone in your household traveled in the last month?",
+    "childrensWhereTravelled": "What state(s) or countries have you or anyone in your household traveled to in the past month?",
     "whenTravelled": "Was this travel in the past 7 days?",
     "majorityOfTime": "Over the past 7 days and when you are awake, where have you spent the majority of your time?",
     "occupation": "What is your primary occupation?",
