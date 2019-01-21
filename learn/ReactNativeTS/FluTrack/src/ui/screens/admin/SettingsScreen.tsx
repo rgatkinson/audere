@@ -129,7 +129,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           onPress={this._onAdverseEvents}
         />
         <EditSettingButton
-          label="Specimen Scans"
+          label="Specimen Scan"
           onPress={this._onSpecimenScans}
         />
         <EditSettingButton
