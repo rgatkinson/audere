@@ -34,7 +34,7 @@ export const COLLECTION_LOCATIONS: {
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
-  ChildrensHospital: {
+  ChildrensHospitalSeattle: {
     type: "childrensHospital",
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
