@@ -215,7 +215,7 @@
     "medInsurance": "We would like to know about your medical insurance."
   },
   "surveyDescription": {
-    "homelessDesc": "We consider homelessness to be living without permanent housing (which may include staying with friends, in a hotel, shelter, church, on the streets, in a car, or in any other unstable or non-permanent situation.",
+    "homelessDesc": "We consider homelessness to be living without permanent housing (which may include staying with friends, in a hotel, shelter, church, on the streets, in a car, or in any other unstable or non-permanent situation).",
     "campusDescription": "If living on campus, please use your UW address including building and room number. \n\nRemember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",
     "homeAddressDescription": "Remember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",
     "workAddressDescription": "Remember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team and will never contact your work.",
@@ -358,7 +358,7 @@
     "highSchool": "High school",
     "college": "College/university",
     "tradeSchool": "Trade school",
-    "childcareCenter": "Childcare Center",
+    "childcareCenter": "Childcare center",
     "preschool": "Preschool",
     "artLibrary": "Art Library",
     "bagley": "Bagley Hall",
@@ -433,7 +433,7 @@
     "performingWell": "Performing well on an exam or school assignment",
     "asthma": "Asthma or reactive airway disease",
     "copd": "COPD/emphysema",
-    "chronicBronchitis": "Chronic Bronchitis",
+    "chronicBronchitis": "Chronic bronchitis",
     "cancer": "Cancer",
     "diabetes": "Diabetes"
   },
