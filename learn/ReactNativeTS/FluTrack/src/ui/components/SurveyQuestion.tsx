@@ -34,7 +34,6 @@ import Title from "./Title";
 
 export interface SurveyQuestionProps {
   active: boolean;
-  connected: boolean;
   data: SurveyQuestionData;
   navigation: NavigationScreenProp<any, any>;
   locationType: string;
@@ -322,19 +321,18 @@ class SurveyQuestion extends Component<
             style={{ marginVertical: 0 }}
           />
         )}
-        {this.props.data.image &&
-          this.props.connected && (
-            <View>
-              <Text
-                content={t("surveyDescription:" + this.props.data.image.label)}
-                center={true}
-              />
-              <Image
-                style={{ alignSelf: "center", height: 330, width: 600 }}
-                source={this.props.data.image.src}
-              />
-            </View>
-          )}
+        {this.props.data.image && (
+          <View>
+            <Text
+              content={t("surveyDescription:" + this.props.data.image.label)}
+              center={true}
+            />
+            <Image
+              style={{ alignSelf: "center", height: 330, width: 600 }}
+              source={this.props.data.image.src}
+            />
+          </View>
+        )}
         {this.props.data.textInput && (
           <TextInput
             autoCorrect={this.props.data.textInput.autoCorrect}

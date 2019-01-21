@@ -41,13 +41,6 @@
   "prettier": {
     "trailingComma": "es5"
   },
-  "packagerOpts": {
-    "assetExts": [
-      "ttf",
-      "otf",
-      "png"
-    ]
-  },
   "jest": {
     "preset": "jest-expo",
     "setupTestFrameworkScriptFile": "./src/setupJest",
@@ -92,14 +85,14 @@
     "pouchdb-react-native": "^6.4.1",
     "react": "16.5.0",
     "react-i18next": "^8.1.0",
-    "react-native": "^0.57.7",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.1.tar.gz",
     "react-native-check-box": "^2.1.3",
     "react-native-datepicker": "^1.7.2",
     "react-native-keyboard-aware-scroll-view": "^0.7.4",
     "react-native-keyboard-listener": "^1.1.0",
     "react-native-modal": "^7.0.0",
     "react-native-simple-radio-button": "^2.7.3",
-    "react-navigation": "^2.17.0",
+    "react-navigation": "^2.18.2",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
     "redux-persist": "^5.10.0",

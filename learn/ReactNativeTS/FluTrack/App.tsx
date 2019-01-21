@@ -6,14 +6,13 @@ import {
   createBottomTabNavigator,
   NavigationScreenProp,
 } from "react-navigation";
-import { AppLoading, Asset, Font } from "expo";
-Asset;
+import { AppLoading, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import i18n from "./src/i18n";
 import {
   setupErrorHandler,
@@ -136,9 +135,7 @@ const FluStudy = createBottomTabNavigator(
         const { routeName } = navigation.state;
         const iconName = routeName === "Home" ? "home" : "settings";
 
-        return (
-          <Feather name={iconName} color={tintColor!} size={20} />
-        );
+        return <Feather name={iconName} color={tintColor!} size={20} />;
       },
       tabBarLabel: i18n.t("common:tab:" + navigation.state.routeName),
     }),
@@ -173,11 +170,6 @@ export default class App extends React.Component<AppProps> {
 
   async _loadAssets() {
     await Promise.all([
-      Asset.loadAsync([
-        require("./src/img/UWLogo.png"),
-        require("./src/img/6ftDiagram.png"),
-        require('./src/img/app-icon.png'),
-      ]),
       Font.loadAsync({
         UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
         "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
