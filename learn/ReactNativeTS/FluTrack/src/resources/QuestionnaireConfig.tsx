@@ -822,7 +822,7 @@ export const questionnaire: SurveyQuestion[] = [
       },
       title: "hoursWorked",
       numberSelector: {
-        min: 0,
+        min: 1,
         max: 15,
         maxPlus: true,
         placeholder: "numHours",
