@@ -155,7 +155,7 @@ export interface NonPIIConsentInfo {
   signerType: ConsentInfoSignerType;
   date: string; // date only
   relation?: string;
-  valueDateTime?: string; // FHIR:dateTime
+  localTime?: string; // FHIR:time
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {
@@ -271,7 +271,7 @@ export enum LogLevel {
   Info = 1,
   Warn = 2,
   Error = 3,
-  Fatal = 4,
+  Fatal = 4
 }
 
 export interface LogInfo {

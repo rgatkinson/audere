@@ -92,7 +92,7 @@ export interface NonPIIConsentInfo {
     signerType: ConsentInfoSignerType;
     date: string;
     relation?: string;
-    valueDateTime?: string;
+    localTime?: string;
 }
 export interface ConsentInfo extends NonPIIConsentInfo {
     name: string;
