@@ -63,10 +63,10 @@
     "comments": "Comments..."
   },
   "headerBar": {
-    "exitSurvey": "Exit Survey?",
-    "returningWillDiscard": "Returning to Home will discard all responses.",
+    "exitSurvey": "Exit without finishing?",
+    "returningWillDiscard": "Your survey is not complete. Exiting at this point will require you to start at the beginning if you wish to continue.",
     "cancel": "Cancel",
-    "continue": "Continue",
+    "exit": "Exit",
     "returnToHome": "Return to Home",
     "exitStudy": "Exit Study",
     "welcome": "Welcome"
