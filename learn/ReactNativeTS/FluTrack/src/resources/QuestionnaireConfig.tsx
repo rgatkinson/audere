@@ -163,7 +163,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "Bedrooms",
       title: "peopleInHousehold",
       numberSelector: {
-        min: 0,
+        min: 1,
         max: 8,
         maxPlus: true,
         placeholder: "numPeople",
@@ -383,7 +383,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "ExpoDesc",
       image: {
         label: "6feet",
-        src: require('../img/6ftDiagram.png'),
+        src: require("../img/6ftDiagram.png"),
       },
       nextQuestion: "NearSickPeople",
       description: {
@@ -430,9 +430,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "NearChildren",
       nextQuestion: "ChildrenNearChildren",
       conditionalNext: {
-        age: new Map([
-          [AgeBuckets.Over18, "HaveChildren"],
-        ]),
+        age: new Map([[AgeBuckets.Over18, "HaveChildren"]]),
       },
       title: "contactWithChildren",
       optionList: {
@@ -493,9 +491,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "Smoke",
       nextQuestion: "HouseholdSmoke",
       conditionalNext: {
-        location: new Map([
-          ["homelessShelter", "ShelterDrinkAlcohol"],
-        ]),
+        location: new Map([["homelessShelter", "ShelterDrinkAlcohol"]]),
       },
       title: "smokeOrVape",
       buttons: [
@@ -551,12 +547,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "ShelterOtherDrugs",
       title: "shelterHowManyDrinks",
       optionList: {
-        options: [
-          "onceMonthLess",
-          "2to4month",
-          "2to3week",
-          "4orMoreWeek",
-        ],
+        options: ["onceMonthLess", "2to4month", "2to3week", "4orMoreWeek"],
         multiSelect: false,
         withOther: false,
       },
@@ -1243,13 +1234,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "MedicalInsurance",
       title: "timeUS",
       optionList: {
-        options: [
-          "lessThan1",
-          "1to5",
-          "6to10",
-          "11to15",
-          "moreThan15",
-        ],
+        options: ["lessThan1", "1to5", "6to10", "11to15", "moreThan15"],
         multiSelect: false,
         withOther: false,
       },
@@ -1270,12 +1255,7 @@ export const questionnaire: SurveyQuestion[] = [
       },
       nextQuestion: null,
       optionList: {
-        options: [
-          "noInsurance",
-          "privateInsurance",
-          "government",
-          "other",
-        ],
+        options: ["noInsurance", "privateInsurance", "government", "other"],
         multiSelect: true,
         withOther: true,
         otherPlaceholder: "insurance",
