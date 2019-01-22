@@ -70,7 +70,7 @@ export const COLLECTION_LOCATIONS: {
     contactPhone: "(206) 897-5318",
   },
   PioneerSquare: {
-    type: "clinic",
+    type: "homelessShelter",
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
