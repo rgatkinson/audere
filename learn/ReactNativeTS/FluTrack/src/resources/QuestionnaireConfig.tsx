@@ -133,7 +133,7 @@ export const questionnaire: SurveyQuestion[] = [
         options: new Map([
           ["house", "PeopleInHousehold"],
           ["apartment", "PeopleInHousehold"],
-          ["shelter", "HowLongHomeless"],
+          ["shelter", "WhichShelter"],
         ]),
         location: new Map([["collegeCampus", "AddressCampus"]]),
       },
@@ -203,8 +203,48 @@ export const questionnaire: SurveyQuestion[] = [
   {
     section: comp,
     data: {
+      id: "WhichShelter",
+      nextQuestion: "AddressOtherShelter",
+      conditionalNext: {
+        options: new Map([
+          ["pioneerSquare", "HowLongHomeless"],
+          ["stMartins", "HowLongHomeless"],
+        ]),
+      },
+      title: "whichShelter",
+      optionList: {
+        options: ["pioneerSquare", "stMartins", "other"],
+        multiSelect: false,
+        withOther: true,
+        otherPlaceholder: "shelter",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "none", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "AddressOtherShelter",
+      nextQuestion: "HowLongHomeless",
+      description: {
+        label: "homeAddressDescription",
+        center: false,
+      },
+      title: "address",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
+    },
+  },
+  {
+    section: comp,
+    data: {
       id: "HowLongHomeless",
-      nextQuestion: "OtherShelters",
+      nextQuestion: "HowLongShelter",
       title: "howLongHomeless",
       description: {
         label: "homelessDesc",
@@ -219,62 +259,6 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "done", primary: true, enabled: "withOption" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: comp,
-    data: {
-      id: "OtherShelters",
-      nextQuestion: "WhichShelter",
-      title: "otherShelters",
-      description: {
-        label: "selectAll",
-        center: true,
-      },
-      optionList: {
-        options: [
-          "pikeMarket",
-          "lazarusDay",
-          "gospelMissionMensShelter",
-          "gospelMissionCapHill",
-          "marysPlace",
-          "breadOfLife",
-          "seattleLibrary",
-          "other",
-        ],
-        multiSelect: true,
-        withOther: true,
-        numColumns: 2,
-      },
-      buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
-        { key: "doNotKnow", primary: false, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: comp,
-    data: {
-      id: "WhichShelter",
-      nextQuestion: "Address",
-      conditionalNext: {
-        options: new Map([
-          ["pioneerSquare", "HowLongShelter"],
-          ["stMartins", "HowLongShelter"],
-        ]),
-      },
-      title: "whichShelter",
-      optionList: {
-        options: ["pioneerSquare", "stMartins", "other"],
-        multiSelect: false,
-        withOther: true,
-        otherPlaceholder: "shelter",
-      },
-      buttons: [
-        { key: "done", primary: true, enabled: "withOption" },
-        { key: "none", primary: false, enabled: true },
       ],
     },
   },
@@ -332,7 +316,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: comp,
     data: {
       id: "BedAssignment",
-      nextQuestion: "ExpoDesc",
+      nextQuestion: "OtherShelters",
       title: "bedAssignment",
       numberInput: {
         placeholder: "bedAssignment",
@@ -341,6 +325,38 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "done", primary: true, enabled: "withNumber" },
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "none", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: comp,
+    data: {
+      id: "OtherShelters",
+      nextQuestion: "ExpoDesc",
+      title: "otherShelters",
+      description: {
+        label: "selectAll",
+        center: true,
+      },
+      optionList: {
+        options: [
+          "pikeMarket",
+          "lazarusDay",
+          "gospelMissionMensShelter",
+          "gospelMissionCapHill",
+          "marysPlace",
+          "breadOfLife",
+          "seattleLibrary",
+          "other",
+        ],
+        multiSelect: true,
+        withOther: true,
+        numColumns: 2,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -980,7 +996,6 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
         { key: "doNotKnow", primary: false, enabled: true },
-        { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
   },
