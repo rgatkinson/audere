@@ -866,7 +866,7 @@ export const questionnaire: SurveyQuestion[] = [
           "preschool",
           "other",
         ],
-        multiSelect: true,
+        multiSelect: false,
         numColumns: 2,
         withOther: false,
       },
