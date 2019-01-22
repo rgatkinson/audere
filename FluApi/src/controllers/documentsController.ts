@@ -135,6 +135,7 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
 const PII_RESPONSE_KEYS = new Set([
   "Address",
   "AddressCampus",
+  "AddressOtherShelter",
   "BedAssignment",
   "BirthDate",
   "WorkAddress"
