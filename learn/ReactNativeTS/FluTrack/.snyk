@@ -5,7 +5,7 @@ ignore:
   SNYK-JS-ISMOBILEJS-72624:
     - expo-pixi > pixi.js > ismobilejs:
         reason: No patch yet on expo-pixi
-        expires: '2019-01-11T15:32:40.055Z'
+        expires: '2019-02-22T15:32:40.055Z'
   SNYK-JS-MERGE-72553:
     - react-native > metro > jest-haste-map > sane > exec-sh > merge:
         reason: No patch yet.
