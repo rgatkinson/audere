@@ -63,6 +63,7 @@
     "comments": "Comments..."
   },
   "headerBar": {
+    "continue": "Continue",
     "exitSurvey": "Exit without finishing?",
     "returningWillDiscard": "Your survey is not complete. Exiting at this point will require you to start at the beginning if you wish to continue.",
     "cancel": "Cancel",

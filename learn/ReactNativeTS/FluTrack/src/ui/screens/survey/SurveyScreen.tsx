@@ -67,7 +67,7 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
     }
     this.list.current
       .getScrollResponder()
-      .scrollTo({ x: 0, y: 0, animated: false });
+      .scrollTo({ x: 0, y: 0, animated: true });
   };
 
   _addData = (nextQuestion: string | null) => {
@@ -99,9 +99,13 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
     this.setState({
       questions,
     });
+    this.list.current
+      .getScrollResponder()
+      .scrollTo({ x: 0, y: 0, animated: true });
   };
 
   _removeData = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const currentSectionIndex = this.state.questions.length - 1;
     const currentSectionItemIndex =
       this.state.questions[currentSectionIndex].data.length - 1;
@@ -125,6 +129,9 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
         ],
       });
     }
+    this.list.current
+      .getScrollResponder()
+      .scrollTo({ x: 0, y: 0, animated: true });
   };
 
   _back = () => {
@@ -214,6 +221,9 @@ class SurveyScreen extends React.Component<Props & WithNamespaces> {
                 onNext={(nextQuestion: string) => this._addData(nextQuestion)}
               />
             );
+          }}
+          getItemLayout={(data, index) => {
+            return { length: 0, offset: 0, index };
           }}
         />
       </KeyboardAvoidingView>
