@@ -469,10 +469,6 @@ export const questionnaire: SurveyQuestion[] = [
       title: "haveChildren",
       conditionalNext: {
         buttonKeys: new Map([["yes", "ChildrenNearChildren"]]),
-        age: new Map([
-          [AgeBuckets.Child, "HouseholdSmoke"],
-          [AgeBuckets.Under7, "HouseholdSmoke"],
-        ]),
       },
       buttons: [
         { key: "yes", primary: true, enabled: true },
@@ -523,8 +519,11 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HouseholdSmoke",
       nextQuestion: "RecentTravel",
       conditionalNext: {
+        age: new Map([
+          [AgeBuckets.Teen, "DrinkAlcohol"],
+          [AgeBuckets.Over18, "DrinkAlcohol"],
+        ]),
         location: new Map([
-          ["collegeCampus", "DrinkAlcohol"],
           ["childrensClinic", "ChildrensRecentTravel"],
           ["childrensHospital", "ChildrensRecentTravel"],
           ["childcare", "ChildrensRecentTravel"],
@@ -637,6 +636,11 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "RecentTravel",
       conditionalNext: {
         buttonKeys: new Map([["yes", "HowManyDrinks"]]),
+        location: new Map([
+          ["childrensClinic", "ChildrensRecentTravel"],
+          ["childrensHospital", "ChildrensRecentTravel"],
+          ["childcare", "ChildrensRecentTravel"],
+        ]),
       },
       title: "drinkAlcohol",
       buttons: [
@@ -652,6 +656,13 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HowManyDrinks",
       nextQuestion: "RecentTravel",
       title: "howManyDrinks",
+      conditionalNext: {
+        location: new Map([
+          ["childrensClinic", "ChildrensRecentTravel"],
+          ["childrensHospital", "ChildrensRecentTravel"],
+          ["childcare", "ChildrensRecentTravel"],
+        ]),
+      },
       numberInput: {
         placeholder: "drinks",
       },
@@ -1154,10 +1165,14 @@ export const questionnaire: SurveyQuestion[] = [
     section: demo,
     data: {
       id: "AssignedSex",
+      nextQuestion: "Race",
       conditionalNext: {
+        age: new Map([
+          [AgeBuckets.Child, "Race"],
+          [AgeBuckets.Under7, "Race"],
+        ]),
         buttonKeys: new Map([["female", "Pregnant"]]),
       },
-      nextQuestion: "Race",
       title: "assignedSex",
       buttons: [
         { key: "male", primary: true, enabled: true },
