@@ -39,6 +39,11 @@ export const COLLECTION_LOCATIONS: {
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
+  ChildrensHospitalBellevue: {
+    type: "childrensHospital",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
   HUB: {
     type: "collegeCampus",
     contactName: "Dr. Helen Y. Chu",
@@ -71,6 +76,16 @@ export const COLLECTION_LOCATIONS: {
   },
   PioneerSquare: {
     type: "homelessShelter",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  UWSeaMar: {
+    type: "clinic",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
+  ChildrensSeaMar: {
+    type: "childrensClinic",
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
