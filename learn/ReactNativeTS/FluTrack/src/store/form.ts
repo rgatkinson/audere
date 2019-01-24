@@ -107,14 +107,14 @@ export default function reducer(state = initialState, action: FormAction) {
       location: action.location,
       formId: uuidv4(),
       isDemo: action.isDemo,
-      events: pushEvent(initialState, EventInfoKind.Visit, "startedForm"),
+      events: pushEvent(initialState, EventInfoKind.Visit, "StartedForm"),
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "COMPLETE_SURVEY") {
     return {
       ...state,
-      events: pushEvent(state, EventInfoKind.Visit, "completedForm"),
+      events: pushEvent(state, EventInfoKind.Visit, "CompletedForm"),
       completedSurvey: true,
     };
   }
@@ -182,7 +182,7 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       samples: action.samples,
-      events: pushEvent(state, EventInfoKind.Sample, "scanned"),
+      events: pushEvent(state, EventInfoKind.Sample, "Scanned"),
       timestamp: new Date().getTime(),
     };
   }
@@ -190,7 +190,7 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       giftcards: action.giftcards,
-      events: pushEvent(state, EventInfoKind.Visit, "giftcardScanned"),
+      events: pushEvent(state, EventInfoKind.Visit, "GiftcardScanned"),
       timestamp: new Date().getTime(),
     };
   }

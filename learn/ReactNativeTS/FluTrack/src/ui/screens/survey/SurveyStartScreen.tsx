@@ -18,7 +18,7 @@ interface Props {
 @connect()
 class SurveyStartScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
-    this.props.dispatch(appendEvent(EventInfoKind.Visit, "enrolled"));
+    this.props.dispatch(appendEvent(EventInfoKind.Visit, "Enrolled"));
   }
   render() {
     const { t } = this.props;

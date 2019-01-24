@@ -19,7 +19,7 @@ interface Props {
 class PassBackScreen extends React.PureComponent<Props & WithNamespaces> {
   componentDidMount() {
     this.props.dispatch(
-      appendEvent(EventInfoKind.Visit, "completedQuestionnaire")
+      appendEvent(EventInfoKind.Visit, "CompletedQuestionnaire")
     );
   }
   render() {
