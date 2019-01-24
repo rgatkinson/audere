@@ -69,9 +69,11 @@ export default class SelectAdminScreen extends React.Component<Props> {
 
   _addName = () => {
     if (!!this.state.name) {
-      this.props.dispatch(setAdministrator(this.state.name!));
+      // @ts-ignore
+      const name = this.state.name.trim();
+      this.props.dispatch(setAdministrator(name));
       const admins = !!this.props.admins ? this.props.admins.slice(0) : [];
-      admins.push(this.state.name!);
+      admins.push(name);
       this.props.dispatch(setAdmins(admins));
       this.setState({ name: null });
     }
