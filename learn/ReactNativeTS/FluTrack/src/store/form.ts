@@ -22,7 +22,7 @@ export type FormAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
   | { type: "SET_GIFTCARDS"; giftcards: GiftCardInfo[] }
-  | { type: "SET_EVENTS"; events: EventInfo[] }
+  | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
@@ -107,24 +107,16 @@ export default function reducer(state = initialState, action: FormAction) {
       location: action.location,
       formId: uuidv4(),
       isDemo: action.isDemo,
-      events: [
-        {
-          kind: EventInfoKind.Visit,
-          at: new Date().toISOString(),
-          refId: "STARTED_FORM",
-        },
-      ],
+      events: pushEvent(initialState, EventInfoKind.Visit, "startedForm"),
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "COMPLETE_SURVEY") {
-    let events = !!state.events ? state.events.slice(0) : [];
-    events.push({
-      kind: EventInfoKind.Visit,
-      at: new Date().toISOString(),
-      refId: "COMPLETED_FORM",
-    });
-    return { ...state, events: events, completedSurvey: true };
+    return {
+      ...state,
+      events: pushEvent(state, EventInfoKind.Visit, "completedForm"),
+      completedSurvey: true,
+    };
   }
   if (action.type === "CLEAR_FORM") {
     return initialState;
@@ -187,37 +179,25 @@ export default function reducer(state = initialState, action: FormAction) {
     };
   }
   if (action.type === "SET_SAMPLES") {
-    let events = !!state.events ? state.events.slice(0) : [];
-    events.push({
-      kind: EventInfoKind.Sample,
-      at: new Date().toISOString(),
-      refId: "SCANNED",
-    });
     return {
       ...state,
       samples: action.samples,
-      events: events,
+      events: pushEvent(state, EventInfoKind.Sample, "scanned"),
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "SET_GIFTCARDS") {
-    let events = !!state.events ? state.events.slice(0) : [];
-    events.push({
-      kind: EventInfoKind.Visit,
-      at: new Date().toISOString(),
-      refId: "GIFTCARD_SCANNED",
-    });
     return {
       ...state,
       giftcards: action.giftcards,
-      events: events,
+      events: pushEvent(state, EventInfoKind.Visit, "giftcardScanned"),
       timestamp: new Date().getTime(),
     };
   }
-  if (action.type === "SET_EVENTS") {
+  if (action.type === "APPEND_EVENT") {
     return {
       ...state,
-      events: action.events,
+      events: pushEvent(state, action.kind, action.refId),
       timestamp: new Date().getTime(),
     };
   }
@@ -332,10 +312,11 @@ export function setGiftcards(giftcards: GiftCardInfo[]): FormAction {
   };
 }
 
-export function setEvents(events: EventInfo[]): FormAction {
+export function appendEvent(kind: EventInfoKind, refId: string): FormAction {
   return {
-    type: "SET_EVENTS",
-    events,
+    type: "APPEND_EVENT",
+    kind,
+    refId,
   };
 }
 
@@ -344,4 +325,14 @@ export function setResponses(responses: SurveyResponse[]): FormAction {
     type: "SET_RESPONSES",
     responses,
   };
+}
+
+function pushEvent(state: FormState, kind: EventInfoKind, refId: string) {
+  let newEvents = !!state.events ? state.events.slice(0) : [];
+  newEvents.push({
+    kind,
+    at: new Date().toISOString(),
+    refId,
+  });
+  return newEvents;
 }
