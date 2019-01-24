@@ -91,6 +91,10 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     pouch.giftcards = form.giftcards;
   }
 
+  if (!!form.events) {
+    pouch.events = form.events;
+  }
+
   maybePushConsent(form, pouch.consents);
   const responses = form.responses;
 

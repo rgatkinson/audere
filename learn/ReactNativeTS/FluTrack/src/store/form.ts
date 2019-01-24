@@ -1,6 +1,12 @@
 import uuidv4 from "uuid/v4";
 
-import { ConsentInfo, ConsentInfoSignerType, GiftCardInfo } from "audere-lib";
+import {
+  ConsentInfo,
+  GiftCardInfo,
+  EventInfo,
+  EventInfoKind,
+} from "audere-lib";
+import { ENETRESET } from "constants";
 
 export type FormAction =
   | { type: "START_FORM"; admin: string; location: string; isDemo: boolean }
@@ -17,6 +23,7 @@ export type FormAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SAMPLES"; samples: Sample[] }
   | { type: "SET_GIFTCARDS"; giftcards: GiftCardInfo[] }
+  | { type: "SET_EVENTS"; events: EventInfo[] }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
@@ -83,6 +90,7 @@ export type FormState = {
   email?: string;
   responses: SurveyResponse[];
   samples?: Sample[];
+  events?: EventInfo[];
   giftcards?: GiftCardInfo[];
 };
 
@@ -100,11 +108,24 @@ export default function reducer(state = initialState, action: FormAction) {
       location: action.location,
       formId: uuidv4(),
       isDemo: action.isDemo,
+      events: [
+        {
+          kind: EventInfoKind.Visit,
+          at: new Date().toISOString(),
+          refId: "STARTED_FORM",
+        },
+      ],
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "COMPLETE_SURVEY") {
-    return { ...state, completedSurvey: true };
+    let events = !!state.events ? state.events.slice(0) : [];
+    events.push({
+      kind: EventInfoKind.Visit,
+      at: new Date().toISOString(),
+      refId: "COMPLETED_FORM",
+    });
+    return { ...state, events: events, completedSurvey: true };
   }
   if (action.type === "CLEAR_FORM") {
     return initialState;
@@ -167,16 +188,37 @@ export default function reducer(state = initialState, action: FormAction) {
     };
   }
   if (action.type === "SET_SAMPLES") {
+    let events = !!state.events ? state.events.slice(0) : [];
+    events.push({
+      kind: EventInfoKind.Sample,
+      at: new Date().toISOString(),
+      refId: "SCANNED",
+    });
     return {
       ...state,
       samples: action.samples,
+      events: events,
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "SET_GIFTCARDS") {
+    let events = !!state.events ? state.events.slice(0) : [];
+    events.push({
+      kind: EventInfoKind.Visit,
+      at: new Date().toISOString(),
+      refId: "GIFTCARD_SCANNED",
+    });
     return {
       ...state,
       giftcards: action.giftcards,
+      events: events,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_EVENTS") {
+    return {
+      ...state,
+      events: action.events,
       timestamp: new Date().getTime(),
     };
   }
@@ -288,6 +330,13 @@ export function setGiftcards(giftcards: GiftCardInfo[]): FormAction {
   return {
     type: "SET_GIFTCARDS",
     giftcards,
+  };
+}
+
+export function setEvents(events: EventInfo[]): FormAction {
+  return {
+    type: "SET_EVENTS",
+    events,
   };
 }
 
