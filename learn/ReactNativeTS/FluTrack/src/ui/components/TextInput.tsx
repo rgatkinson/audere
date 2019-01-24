@@ -15,6 +15,7 @@ interface Props {
   editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
   placeholder: string;
+  placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string | null;
@@ -36,6 +37,7 @@ export default class TextInput extends React.Component<Props> {
           !!this.props.keyboardType ? this.props.keyboardType : "default"
         }
         placeholder={this.props.placeholder}
+        placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         style={[styles.textInput, this.props.style && this.props.style]}

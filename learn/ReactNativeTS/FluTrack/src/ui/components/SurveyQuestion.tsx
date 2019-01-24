@@ -395,7 +395,6 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.addressInput && (
           <AddressInput
-            autoFocus={true}
             showLocationField={this.props.data.addressInput!.showLocationField}
             value={this._getValue("addressInput")}
             onChange={(addressInput: Address) =>

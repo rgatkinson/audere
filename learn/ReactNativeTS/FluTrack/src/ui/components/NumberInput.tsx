@@ -5,6 +5,7 @@ import TextInput from "./TextInput";
 interface Props {
   autoFocus?: boolean;
   placeholder: string;
+  placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string;
@@ -12,11 +13,27 @@ interface Props {
   onSubmitEditing(): void;
 }
 
-export default class NumberInput extends React.Component<Props> {
+interface State {
+  text?: string;
+}
+
+export default class NumberInput extends React.Component<Props, State> {
   textInput = React.createRef<TextInput>();
 
-  // TODO: accept a min max and validate that input value is valid
-  // TODO: accept a required prop and show error if required and not entered
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      text: props.value,
+    };
+  }
+
+  onChangeText = (text: string) => {
+    const numbers = "0123456789";
+    const newText = text.replace(/[^0-9]/g, "");
+    this.setState({ text: newText });
+    this.props.onChangeText(newText);
+  };
+
   render() {
     return (
       <TextInput
@@ -24,11 +41,12 @@ export default class NumberInput extends React.Component<Props> {
         autoFocus={this.props.autoFocus}
         keyboardType="numbers-and-punctuation"
         placeholder={this.props.placeholder}
+        placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         style={this.props.style}
-        value={this.props.value}
-        onChangeText={this.props.onChangeText}
+        value={this.state.text}
+        onChangeText={this.onChangeText}
         onSubmitEditing={this.props.onSubmitEditing}
       />
     );
