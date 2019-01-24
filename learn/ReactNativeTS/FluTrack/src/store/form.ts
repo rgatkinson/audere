@@ -182,7 +182,7 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       samples: action.samples,
-      events: pushEvent(state, EventInfoKind.Sample, "Scanned"),
+      events: pushEvent(state, EventInfoKind.Sample, "SpecimenScanned"),
       timestamp: new Date().getTime(),
     };
   }
