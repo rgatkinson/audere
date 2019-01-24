@@ -6,7 +6,6 @@ import {
   EventInfo,
   EventInfoKind,
 } from "audere-lib";
-import { ENETRESET } from "constants";
 
 export type FormAction =
   | { type: "START_FORM"; admin: string; location: string; isDemo: boolean }
