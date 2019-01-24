@@ -59,6 +59,7 @@
     "country": "Country"
   },
   "feedbackModal": {
+    "thankYou": "Thank you for your feedback",
     "provideFeedback": "Provide Feedback",
     "subject": "Subject",
     "comments": "Comments..."
