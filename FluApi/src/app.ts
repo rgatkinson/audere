@@ -101,7 +101,6 @@ export async function createPublicApp(config: AppConfig) {
       surveyStatsData,
       surveyStatsByAdminData,
       lastQuestionData,
-      giftCardData,
       studyIdData,
       feedbackData
     ] = getMetrics(startDate, endDate);
@@ -109,7 +108,6 @@ export async function createPublicApp(config: AppConfig) {
       surveyStatsData: surveyStatsData,
       surveyStatsByAdminData: surveyStatsByAdminData,
       lastQuestionData: lastQuestionData,
-      giftCardData: giftCardData,
       feedbackData: feedbackData,
       startDate: startDate,
       endDate: endDate

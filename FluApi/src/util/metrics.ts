@@ -1,4 +1,5 @@
 "use strict";
+import { EventInfo } from "audere-lib/snifflesProtocol";
 const excel = require("node-excel-export");
 
 const Client = require("pg-native");
@@ -50,7 +51,7 @@ function getTimezoneAbbrev(): string {
 export function getMetrics(
   startDate: string,
   endDate: string
-): [object, object, object, object, object, object] {
+): [object, object, object, object, object] {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -64,20 +65,19 @@ export function getMetrics(
   function getSurveyStatsQuery(byField: string): string {
     return `
     WITH t AS (
-      SELECT t1.grouping, t1.formstarts, t2.eligible, t1.consented, t2.completed, t1.specimenscanned, t1.giftcards, t2.adverseevents, t1.questionsanswered, t2.declinedresponses
+      SELECT t1.grouping, t1.formstarts, t2.eligible, t1.consented, t2.completed, t1.specimenscanned, t3.giftcards, t2.adverseevents, t1.questionsanswered, t2.declinedresponses
       FROM (
-        SELECT COALESCE(visit->>'${byField}','') AS grouping, 
+        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
                COUNT(*) AS formstarts, 
                SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented, 
                SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned, 
-               SUM(json_array_length(visit->'giftcards')) AS giftcards,
                SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered 
         FROM visits 
         WHERE ${dateClause} AND ${demoClause} AND visit->>'location' IS NOT NULL
         GROUP BY grouping
         ORDER BY grouping) t1
       LEFT JOIN (
-        SELECT COALESCE(visit->>'${byField}','') AS grouping,
+        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping,
                SUM(CASE WHEN items->>'id'='MedicalInsurance' THEN 1 END) AS completed,
                SUM(CASE WHEN items->>'id'='WhichProcedures' THEN 1 END) AS adverseevents,
                SUM(CASE WHEN (items->'answer'->0)::jsonb ? 'valueDeclined' THEN 1 END) AS declinedresponses,
@@ -86,6 +86,18 @@ export function getMetrics(
         WHERE ${dateClause} AND ${demoClause}
         GROUP BY grouping) t2
       ON (t1.grouping = t2.grouping)
+      LEFT JOIN (
+        SELECT grouping, 
+               COUNT(*) AS giftcards 
+        FROM (
+          SELECT DISTINCT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
+                 csruid, 
+                 json_array_elements(visit->'giftcards')->>'code' AS code 
+          FROM visits
+          WHERE ${dateClause} AND ${demoClause}
+        ) sub 
+        GROUP BY grouping) t3
+      ON (t1.grouping = t3.grouping)
     ) SELECT * FROM t UNION ALL 
       SELECT 'Total', 
              SUM(formstarts), 
@@ -118,25 +130,46 @@ export function getMetrics(
     client.querySync(lastQuestionQuery)
   );
 
-  const giftCardQuery = `
-    SELECT visit->>'location' AS location, 
-           visit->'consents'->0->>'date' AS date, 
-           giftcards->>'code' AS code, 
-           giftcards->>'giftcardType' AS type,
-           visit->>'administrator' AS administrator
-    FROM visits v, json_array_elements(v.visit->'giftcards') giftcards 
-    WHERE ${dateClause} AND ${demoClause}
-    ORDER BY date, location, type, code, administrator;`;
-  const giftCardData = client.querySync(giftCardQuery);
-
   const studyIdQuery = `
-    SELECT visit->>'location' AS location, 
-           "createdAt" AS starttime, 
+    SELECT t1.*, t2.giftcardcode, t2.giftcardtype FROM (
+    SELECT id AS dbid,
+           visit->>'location' AS location, 
+           device->>'deviceName' AS devicename,
+           "createdAt" AS createdat, 
+           visit->'consents'->0->>'date' AS consentdate, 
+           (CASE WHEN visit->'samples'->0->>'sample_type' = 'manualBarcodeEntry' 
+             THEN CONCAT (visit->'samples'->0->>'code', '*')
+             ELSE visit->'samples'->0->>'code' END) AS specimencode, 
            csruid AS studyid,
-           visit->>'administrator' AS administrator
+           TRIM(visit->>'administrator') AS administrator,
+           COALESCE(visit->'events'->0->>'at', '') AS appstarttime,
+           visit->'events' AS events
     FROM visits
-    WHERE ${dateClause} AND ${demoClause} AND visit->'consents'->0->'terms' IS NOT NULL
-    ORDER BY location, starttime;`;
+    WHERE ${dateClause} AND ${demoClause}) t1
+    LEFT JOIN (
+      SELECT 
+        csruid AS studyid, 
+        string_agg(code, ',') AS giftcardcode,
+        string_agg(type, ',') AS giftcardtype
+      FROM (
+        SELECT DISTINCT 
+          csruid, 
+          (CASE WHEN barcodeType = 'manualGiftCardEntry' THEN CONCAT(code, '*') ELSE code END) AS code, 
+          type 
+        FROM (
+          SELECT 
+            csruid, 
+            json_array_elements(visit->'giftcards')->>'code' AS code,
+            json_array_elements(visit->'giftcards')->>'barcodeType' AS barcodeType,
+            json_array_elements(visit->'giftcards')->>'giftcardType' AS type
+          FROM visits 
+          WHERE ${dateClause} AND ${demoClause}
+        ) innermost
+      ) sub
+      GROUP BY studyid
+    ) t2 
+    ON t1.studyid = t2.studyid
+    ORDER BY t1.location, t1.appstarttime, t1.createdat;`;
   const studyIdData = client.querySync(studyIdQuery).map(study => ({
     ...study,
     studyid: study.studyid.substring(0, 21)
@@ -152,7 +185,6 @@ export function getMetrics(
     surveyStatsData,
     surveyStatsByAdminData,
     lastQuestionData,
-    giftCardData,
     studyIdData,
     feedbackData
   ];
@@ -243,12 +275,14 @@ export function getExcelReport(startDate: string, endDate: string) {
     surveyStatsData,
     surveyStatsByAdminData,
     lastQuestionData,
-    giftCardData,
     studyIdData,
     feedbackData
   ] = getMetrics(startDate, endDate);
 
   const styles = {
+    small: {
+      font: { sz: 11 }
+    },
     default: {},
     title: {
       font: { sz: 14 }
@@ -367,42 +401,52 @@ export function getExcelReport(startDate: string, endDate: string) {
     }
   };
 
-  const giftCardSpec = {
-    date: {
-      displayName: "Date",
-      headerStyle: styles.columnHeader,
-      width: 100
-    },
-    location: {
-      displayName: "Location",
-      headerStyle: styles.columnHeader,
-      width: 150
-    },
-    administrator: {
-      displayName: "Administrator",
-      headerStyle: styles.columnHeader,
-      width: 100
-    },
-    code: {
-      displayName: "Code",
-      headerStyle: styles.columnHeader,
-      width: 150
-    },
-    type: {
-      displayName: "Type",
-      headerStyle: styles.columnHeader,
-      width: 100
-    }
-  };
-
   const studyIdSpec = {
     location: {
       displayName: "Location",
       headerStyle: styles.columnHeader,
       width: 150
     },
-    starttime: {
-      displayName: "Start Time (" + getTimezoneAbbrev() + ")",
+    appstarttime: {
+      displayName: "App Start Time (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    },
+    devicename: {
+      displayName: "iPad Name",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    administrator: {
+      displayName: "Administrator",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    consentdate: {
+      displayName: "Consent Date",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    giftcardcode: {
+      displayName: "Giftcard Code",
+      headerStyle: styles.columnHeader,
+      width: 150
+    },
+    giftcardtype: {
+      displayName: "Giftcard Type",
+      headerStyle: styles.columnHeader,
+      width: 80
+    },
+    specimencode: {
+      displayName: "Specimen Code",
+      headerStyle: styles.columnHeader,
+      width: 80
+    },
+    createdat: {
+      displayName: "Data Received (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
       cellFormat: function(value, row) {
         return toStudyDateString(value);
@@ -412,12 +456,33 @@ export function getExcelReport(startDate: string, endDate: string) {
     studyid: {
       displayName: "Study ID",
       headerStyle: styles.columnHeader,
-      width: 250
+      width: 170
     },
-    administrator: {
-      displayName: "Administrator",
+    dbid: {
+      displayName: "DB ID",
+      ...defaultCell
+    },
+    events: {
+      displayName: "App Event Times (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
-      width: 100
+      cellFormat: function(value: EventInfo[], row) {
+        let result = "";
+        for (const event of value) {
+          result +=
+            // omit year to save space
+            toStudyDateString(new Date(event.at)).substring(5) +
+            " " +
+            event.refId +
+            ", ";
+        }
+        return result.length > 0
+          ? result.substring(0, result.length - 2)
+          : result;
+      },
+      cellStyle: function(value, row) {
+        return styles.small;
+      },
+      width: 200
     }
   };
 
@@ -444,20 +509,111 @@ export function getExcelReport(startDate: string, endDate: string) {
     [dateRangeHeading],
     [generatedHeading]
   ];
-  const giftCardHeading = [
-    [{ value: "Gift Cards Issued", style: styles.title }],
-    [dateRangeHeading],
-    [generatedHeading]
-  ];
   const studyIdHeading = [
-    [{ value: "Study IDs for Consented Participants", style: styles.title }],
+    [{ value: "Study IDs, Barcodes, Timestamps, etc.", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
+    [
+      {
+        value: "Sorted by Location, then App Start Time.",
+        style: styles.default
+      }
+    ]
+  ];
+  const helpHeading = [
+    [{ value: "Explanation of Metrics Columns", style: styles.title }],
+    ['"By Location/Administrator" sheet columns'],
+    [
+      "Started",
+      null,
+      "How many started, i.e. clicked Get Started from Welcome page"
+    ],
+    [
+      "Eligible",
+      null,
+      "How many eligible to participate (reported >= 2 symptoms)"
+    ],
+    ["Consented", null, "How many signed at least one consent form"],
+    [
+      "Completed",
+      null,
+      "How many completed the questionnaire, i.e. got to the MedicalInsurance q"
+    ],
+    ["Specimen Scanned", null, "How many had a specimen scanned"],
+    [
+      "Gift Cards",
+      null,
+      "How many gift cards were scanned, not counting duplicate code for same person"
+    ],
+    ["Adverse Events", null, "How many had adverse events recorded"],
+    ["Total Responses", null, "Total number of questions answered"],
+    [
+      "PNTS Responses",
+      null,
+      'Number of questions answered "Prefer Not To Say"'
+    ],
+    [""],
+    ['"Details" sheet columns'],
+    [
+      "App Start Time",
+      null,
+      "Time on iPad of clicking Get Started from Welcome page"
+    ],
+    ["iPad Name", null, "Name of iPad set in iPad Settings"],
+    ["Administrator", null, 'Name of study administrator aka "clinician"'],
+    [
+      "Consent Date",
+      null,
+      "Date on iPad when the user signed the consent form"
+    ],
+    ["Giftcard Code", null, "Gift card barcode; * means manually entered"],
+    ["Giftcard Type", null, "Amazon, Target, etc."],
+    ["Specimen Code", null, "Specimen barcode; * means manually entered"],
+    [
+      "Data Received",
+      null,
+      "Time on server when it started to receive this survey's data"
+    ],
+    [
+      "Study ID",
+      null,
+      "Unique ID for associating this survey with other specimens (longitudinal usage)"
+    ],
+    ["DB ID", null, "Internal ID for Audere use"],
+    ["App Event Times", null, "Timestamps for app events"],
+    [
+      null,
+      null,
+      "  StartedForm: When the user clicked Get Started from Welcome page"
+    ],
+    [
+      null,
+      null,
+      '  Enrolled: When the "You are now enrolled in the Seattle Flu Study. Please'
+    ],
+    [null, null, '     answer the following questions..." screen appeared'],
+    [
+      null,
+      null,
+      '  CompletedQuestionnaire: When the "Questionnaire Complete!" screen appeared'
+    ],
+    [null, null, "  SpecimenScanned: When a specimen barcode was saved"],
+    [null, null, "  GiftcardScanned: When a gift card barcode was saved"],
+    [
+      null,
+      null,
+      "  CompletedForm: When this record became internally marked as final, closed to updates"
+    ]
   ];
 
   const merges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 9 } },
-    { start: { row: 2, column: 1 }, end: { row: 2, column: 9 } }
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 9 } },
+    { start: { row: 3, column: 1 }, end: { row: 3, column: 9 } }
+  ];
+  const helpMerges = [
+    { start: { row: 1, column: 1 }, end: { row: 1, column: 13 } },
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 13 } }
   ];
 
   const report = excel.buildExport([
@@ -483,18 +639,18 @@ export function getExcelReport(startDate: string, endDate: string) {
       data: lastQuestionData
     },
     {
-      name: "Gift Cards",
-      merges: merges,
-      heading: giftCardHeading,
-      specification: giftCardSpec,
-      data: giftCardData
-    },
-    {
-      name: "Study ID",
+      name: "Details",
       merges: merges,
       heading: studyIdHeading,
       specification: studyIdSpec,
       data: studyIdData
+    },
+    {
+      name: "Help",
+      merges: helpMerges,
+      heading: helpHeading,
+      specification: {},
+      data: []
     }
   ]);
 
@@ -581,7 +737,12 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
     [generatedHeading]
   ];
   const zipcodeHeading = [
-    [{ value: "Zip Code Distribution", style: styles.title }],
+    [
+      {
+        value: "Zip Code Distribution (home + work addresses)",
+        style: styles.title
+      }
+    ],
     [dateRangeHeading],
     [generatedHeading]
   ];
