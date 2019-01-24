@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "FluTrack",
+    "version": "0.1.6",
+    "description": "App for Seattle Flu Study project",
+    "icon": "./src/img/app-icon.png",
+    "slug": "FluTrack",
+    "sdkVersion": "31.0.0",
+    "ios": {
+      "bundleIdentifier": "org.auderenow.flutrack",
+      "buildNumber": "9",
+      "supportsTablet": true,
+      "isTabletOnly": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "publishBundlePath": "ios/flutrack/Supporting/shell-app.bundle",
+      "publishManifestPath": "ios/flutrack/Supporting/shell-app-manifest.json"
+    },
+    "android": {
+      "package": "org.auderenow.flutrack",
+      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
+    },
+    "assetBundlePatterns": [
+      "src/img/*"
+    ],
+    "orientation": "portrait",
+    "isDetached": true,
+    "detach": {
+      "iosExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/ios-v2.9.0-sdk31.0.0-250a3991-b623-4f9c-b07f-0b9ed7e8c4c9.tar.gz",
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.9.2-sdk31.0.0-d1776f37-d524-4fee-872d-6807b0fd83ff.tar.gz"
+    },
+    "scheme": "expdcd6f73fcd53486284683e2a09a2d545"
+  }
+}
