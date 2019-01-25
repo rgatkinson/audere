@@ -100,7 +100,7 @@ export function getApiBaseUrl(): string {
     IS_NODE_ENV_DEVELOPMENT &&
     process.env.REACT_NATIVE_USE_LOCAL_SERVER
   ) {
-    api = `http://${new URL(Constants.linkingUri).hostname}:3000/api`;
+    api = `http://${new URL(Constants.manifest.bundleUrl).hostname}:3000/api`;
   } else {
     api = "https://api.staging.auderenow.io/api";
   }
