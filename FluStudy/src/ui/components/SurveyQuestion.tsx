@@ -72,15 +72,19 @@ class SurveyQuestion extends Component<
         }
       } else {
         // First check options
-        if (!!this.props.data.conditionalNext!.options &&
-            !!this.props.getAnswer("options")) {
+        if (
+          !!this.props.data.conditionalNext!.options &&
+          !!this.props.getAnswer("options")
+        ) {
           let nextOption = null;
           this.props.getAnswer("options").forEach((option: Option) => {
             if (
               option.selected &&
               this.props.data.conditionalNext!.options!.has(option.key)
             ) {
-              nextOption = this.props.data.conditionalNext!.options!.get(option.key)!;
+              nextOption = this.props.data.conditionalNext!.options!.get(
+                option.key
+              )!;
             }
           });
           if (nextOption != null) {
@@ -391,7 +395,6 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.addressInput && (
           <AddressInput
-            autoFocus={true}
             showLocationField={this.props.data.addressInput!.showLocationField}
             value={this._getValue("addressInput")}
             onChange={(addressInput: Address) =>

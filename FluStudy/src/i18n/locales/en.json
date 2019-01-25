@@ -48,6 +48,7 @@
     "december": "December"
   },
   "addressInput": {
+    "required": " (required)",
     "locationName": "Location name or neighborhood",
     "streetAddress": "Street address",
     "city": "City",
@@ -58,6 +59,7 @@
     "country": "Country"
   },
   "feedbackModal": {
+    "thankYou": "Thank you for your feedback",
     "provideFeedback": "Provide Feedback",
     "subject": "Subject",
     "comments": "Comments..."
@@ -82,6 +84,7 @@
     "continue": "Continue"
   },
   "signatureBox": {
+    "required": " (required)",
     "relationToParticipant": "Relationship of representative to participant",
     "fullName": "Full name of participant",
     "relation": "Relation",

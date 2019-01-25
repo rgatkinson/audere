@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -45,7 +46,14 @@ class FeedbackModal extends React.Component<Props & WithNamespaces, State> {
             (this.state.comments || "").trim()
           );
           this.setState({ subject: undefined, comments: undefined });
-          this.props.onDismiss();
+          Alert.alert(t("thankYou"), "", [
+            {
+              text: t("headerBar:continue"),
+              onPress: () => {
+                this.props.onDismiss();
+              },
+            },
+          ]);
         }}
       >
         <View style={{ flex: 1 }}>

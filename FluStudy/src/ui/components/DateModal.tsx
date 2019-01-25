@@ -67,6 +67,14 @@ class DateModal extends React.Component<Props & WithNamespaces> {
                   this._getDate().getFullYear(),
                   months.indexOf(month)
                 );
+                const now = new Date();
+                if (
+                  this._getDate().getFullYear() == now.getFullYear() &&
+                  now.getMonth() < newDate.getMonth()
+                ) {
+                  // Don't allow a month in the future
+                  newDate.setFullYear(now.getFullYear() - 1);
+                }
                 this.setState({ selectedDate: true, date: newDate });
               }}
             >

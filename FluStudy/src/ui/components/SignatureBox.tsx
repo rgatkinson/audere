@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import * as ExpoPixi from "expo-pixi";
+import KeyboardListener from "react-native-keyboard-listener";
 import Button from "./Button";
 import Modal from "./Modal";
 import TextInput from "./TextInput";
@@ -39,6 +40,7 @@ interface SnapshotImage {
 
 interface State {
   image?: SnapshotImage;
+  keyboardOpen?: boolean;
   participantName?: string;
   signerName?: string;
   relation?: string;
@@ -177,6 +179,14 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
         }}
       >
         <View style={styles.container}>
+          <KeyboardListener
+            onWillShow={() => {
+              this.setState({ keyboardOpen: true });
+            }}
+            onWillHide={() => {
+              this.setState({ keyboardOpen: false });
+            }}
+          />
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -194,7 +204,10 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                 this.props.editableNames && !this._getParticipantName()
               }
               editable={this.props.editableNames}
-              placeholder={t("name")}
+              placeholder={
+                t("name") + (this.state.keyboardOpen ? "" : t("required"))
+              }
+              placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
               returnKeyType={this._canSave() ? "done" : "next"}
               style={styles.inputContainer}
               value={this._getParticipantName()}
@@ -224,7 +237,12 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                   !this._getSignerName()
                 }
                 editable={this.props.editableNames}
-                placeholder={t("name")}
+                placeholder={
+                  t("name") + (this.state.keyboardOpen ? "" : t("required"))
+                }
+                placeholderTextColor={
+                  this.state.keyboardOpen ? undefined : "red"
+                }
                 ref={this.secondInput}
                 returnKeyType={this._canSave() ? "done" : "next"}
                 style={styles.inputContainer}
@@ -254,7 +272,12 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
                   !this._getRelation()
                 }
                 editable={this.props.editableNames}
-                placeholder={t("relation")}
+                placeholder={
+                  t("relation") + (this.state.keyboardOpen ? "" : t("required"))
+                }
+                placeholderTextColor={
+                  this.state.keyboardOpen ? undefined : "red"
+                }
                 ref={this.thirdInput}
                 returnKeyType={this._canSave() ? "done" : "next"}
                 style={styles.inputContainer}
