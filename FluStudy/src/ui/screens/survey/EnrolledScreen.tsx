@@ -10,6 +10,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { EnrolledConfig } from "../../../resources/ScreenConfig";
+import { ButtonConfig } from "../../../resources/QuestionnaireConfig";
 import { Action, Option, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -121,6 +122,23 @@ class EnrolledScreen extends React.PureComponent<
     );
   };
 
+  _getButton = (button: ButtonConfig): JSX.Element => {
+    const { t } = this.props;
+    return (
+      <Button
+        checked={this.props.getAnswer("selectedButtonKey") === button.key}
+        enabled={button.key === "done" ? this._validEmail() : true}
+        key={button.key}
+        label={t("surveyButton:" + button.key)}
+        primary={button.primary}
+        onPress={() => {
+          this.props.updateAnswer({ selectedButtonKey: button.key });
+          this._onDone(button.key);
+        }}
+      />
+    );
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -152,6 +170,7 @@ class EnrolledScreen extends React.PureComponent<
             onSubmit={valid => this.setState({ valid })}
           />
           <Text content={t("disclaimer")} style={styles.disclaimer} />
+          {this._getButton(EnrolledConfig.buttons[1])}
           <OptionList
             data={this.state.options}
             multiSelect={true}
@@ -159,19 +178,7 @@ class EnrolledScreen extends React.PureComponent<
             onChange={options => this.setState({ options })}
             inclusiveOption={EnrolledConfig.optionList!.inclusiveOption}
           />
-          {EnrolledConfig.buttons.map(button => (
-            <Button
-              checked={this.props.getAnswer("selectedButtonKey") === button.key}
-              enabled={button.key === "done" ? this._validEmail() : true}
-              key={button.key}
-              label={t("surveyButton:" + button.key)}
-              primary={button.primary}
-              onPress={() => {
-                this.props.updateAnswer({ selectedButtonKey: button.key });
-                this._onDone(button.key);
-              }}
-            />
-          ))}
+          {this._getButton(EnrolledConfig.buttons[0])}
         </ContentContainer>
       </ScreenContainer>
     );
