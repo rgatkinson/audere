@@ -290,6 +290,7 @@
     "validationError": "* Please provide a valid email address"
   },
   "surveyOption": {
+    "doNotEmailMe": "Please do not email me",
     "sendCopyOfMyConsent": "Send me a copy of my consent",
     "askAboutMyIllness": "To ask me questions about my illness/cold",
     "learnAboutStudy": "To learn more about this study and related topics",
@@ -413,7 +414,8 @@
     "nasalSwab": "Nasal swab",
     "yes": "Yes",
     "no": "No",
-    "Harborview": "Hospital - Harborview",
+    "Harborview": "Hospital - Harborview Inpatients",
+    "HarborviewLobby": "Hospital - Harborview Lobby",
     "HUB": "College Campus - UW HUB",
     "UWHallHealth": "College Campus - UW Hall Health",
     "HealthSciencesRotunda": "College Campus - Health Sciences Rotunda",
@@ -463,7 +465,6 @@
     "under7": "Younger than 7",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
-    "doNotEmailMe": "Please do not email me",
     "none": "None"
   },
   "countries": {

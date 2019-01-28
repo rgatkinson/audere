@@ -3,6 +3,7 @@ import {
   Dimensions,
   FlatList,
   LayoutAnimation,
+  StyleProp,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -26,6 +27,7 @@ interface Props {
   otherOption?: string | null;
   exclusiveOption?: string;
   inclusiveOption?: string;
+  style?: StyleProp<ViewStyle>;
   otherPlaceholder?: string;
   onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
@@ -63,7 +65,10 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           : this.props.data.slice(0);
 
       data = data.map(option => {
-        if (this.props.inclusiveOption === id) {
+        if (
+          this.props.inclusiveOption === id &&
+          this.props.exclusiveOption !== option.key
+        ) {
           return {
             key: option.key,
             selected: true,
@@ -117,7 +122,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
       Math.ceil(this.props.data.length / this.props.numColumns) * 46;
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.style && this.props.style]}>
         <View style={{ height: totalHeight }}>
           <FlatList
             data={this.props.data}

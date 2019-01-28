@@ -48,6 +48,7 @@ export default class EmailInput extends React.Component<Props, State> {
           placeholder={this.props.placeholder}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
+          style={styles.input}
           value={this.state.email}
           onChangeText={(text: string) => {
             this.setState({ email: text });
@@ -89,5 +90,8 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans-Regular",
     fontSize: 15,
     height: 21,
+  },
+  input: {
+    marginVertical: 10,
   },
 });

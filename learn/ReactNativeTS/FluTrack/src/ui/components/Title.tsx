@@ -1,10 +1,11 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Text from "./Text";
 
 interface Props {
   label: string;
   size?: "large" | "small";
+  style?: StyleProp<ViewStyle>;
 }
 
 export default class Title extends React.Component<Props> {
@@ -18,6 +19,7 @@ export default class Title extends React.Component<Props> {
           styles.title,
           this.props.size && this.props.size == "large" && styles.large,
           this.props.size && this.props.size == "small" && styles.small,
+          this.props.style && this.props.style,
         ]}
       />
     );

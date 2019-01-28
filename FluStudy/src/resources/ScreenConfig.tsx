@@ -83,14 +83,15 @@ export const EnrolledConfig: SurveyQuestionData = {
       "askAboutMyIllness",
       "learnAboutStudy",
       "allOfTheAbove",
+      "doNotEmailMe",
     ],
     withOther: false,
     defaultOptions: ["sendCopyOfMyConsent"],
     inclusiveOption: "allOfTheAbove",
+    exclusiveOption: "doNotEmailMe",
   },
   buttons: [
     { key: "done", primary: true, enabled: true },
-    { key: "doNotEmailMe", primary: false, enabled: true },
   ],
 };
 
