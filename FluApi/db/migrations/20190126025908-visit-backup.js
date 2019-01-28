@@ -11,7 +11,6 @@ module.exports = {
       },
       csruid: {
         allowNull: false,
-        unique: true,
         type: Sequelize.STRING
       },
       visit: {
