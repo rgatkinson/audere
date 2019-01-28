@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "setup": "yarn run build && sequelize db:migrate --config ./build/src/util/piiDbConfig.js && sequelize db:migrate --config ./build/src/util/nonPiiDbConfig.js",
+    "migration:generate": "sequelize migration:generate",
+    "migration:undo": "sequelize db:migrate:undo --config ./build/src/util/piiDbConfig.js && sequelize db:migrate:undo --config ./build/src/util/nonPiiDbConfig.js",
     "build": "../scripts/generate-build-info && tsc && cp -R static build/",
     "start": "NODE_ENV=development concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "yarn run build && NODE_ENV=production node .",
@@ -44,9 +46,11 @@
     "@types/node": "^10.11.0",
     "@types/sequelize": "^4.27.28",
     "@types/supertest": "^2.0.6",
+    "@types/yargs": "^12.0.7",
     "chai": "^4.1.2",
     "concurrently": "^4.0.1",
     "jest": "^23.6.0",
+    "lodash": "^4.17.11",
     "nodemon": "^1.18.7",
     "prettier": "^1.14.3",
     "sequelize-cli": "^4.1.1",
@@ -55,7 +59,8 @@
     "supertest": "^3.3.0",
     "ts-jest": "^23.10.1",
     "ts-node": "^7.0.1",
-    "typescript": "^3.0.3"
+    "typescript": "^3.0.3",
+    "yargs": "^12.0.5"
   },
   "jest": {
     "globals": {

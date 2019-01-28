@@ -3,9 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Sequelize from "sequelize";
+import sequelize, { Model, Sequelize } from "sequelize";
 import { sequelizeNonPII, sequelizePII } from "./";
-import { VisitNonPIIInfo, VisitPIIInfo } from "audere-lib";
+import { DeviceInfo, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib";
+
+export enum VisitTableType {
+  CURRENT = "visit",
+  BACKUP = "visit_backup",
+}
 
 // Visits are split across two databases.  One contains PII and the
 // other contains all the rest of the data.  The database schema is
@@ -17,60 +22,45 @@ export enum VisitFilterType {
   NonPII = "NON_PII"
 }
 
-interface VisitNonPIIAttributes {
+export const VisitNonPII = defineSqlVisit<VisitNonPIIInfo>(sequelizeNonPII);
+export type VisitNonPIIInstance = VisitInstance<VisitNonPIIInfo>;
+export type VisitNonPIIAttributes = VisitAttributes<VisitNonPIIInfo>;
+
+export const VisitPII = defineSqlVisit<VisitPIIInfo>(sequelizePII);
+export type VisitPIIInstance = VisitInstance<VisitPIIInfo>;
+export type VisitPIIAttributes = VisitAttributes<VisitPIIInfo>;
+
+export interface VisitAttributes<Visit> {
   id?: string;
   csruid: string;
-  device: object;
-  visit: VisitNonPIIInfo;
+  device: DeviceInfo;
+  visit: Visit;
 }
 
-type VisitNonPIIInstance = Sequelize.Instance<VisitNonPIIAttributes> &
-  VisitNonPIIAttributes;
+export type VisitInstance<Visit> =
+  sequelize.Instance<VisitAttributes<Visit>> & VisitAttributes<Visit>;
 
-export const VisitNonPII = sequelizeNonPII.define<
-  VisitNonPIIInstance,
-  VisitNonPIIAttributes
->("visit", {
-  csruid: {
-    allowNull: false,
-    unique: true,
-    type: Sequelize.STRING
-  },
-  device: {
-    allowNull: false,
-    type: Sequelize.JSON
-  },
-  visit: {
-    allowNull: false,
-    type: Sequelize.JSON
-  }
-});
+export type VisitModel<T> = Model<VisitInstance<T>, VisitAttributes<T>>;
 
-interface VisitPIIAttributes {
-  id?: string;
-  csruid: string;
-  device: object;
-  visit: VisitPIIInfo;
+export function defineSqlVisit<Visit>(sql: Sequelize, tableType = VisitTableType.CURRENT): Model<VisitInstance<Visit>, VisitAttributes<Visit>> {
+  // The sequelize type definition makes define return Model<any,any>, so cast to recover type info.
+  return <VisitModel<Visit>><any>sql.define<VisitInstance<Visit>, VisitAttributes<Visit>>(
+    tableType,
+    {
+      csruid: {
+        allowNull: false,
+        ...(tableType === "visit" ? { unique: true } : {}),
+        type: sequelize.STRING,
+      },
+      device: {
+        allowNull: false,
+        type: sequelize.JSON,
+      },
+      visit: {
+        allowNull: false,
+        type: sequelize.JSON,
+      }
+    },
+    {}
+  );
 }
-
-type VisitPIIInstance = Sequelize.Instance<VisitPIIAttributes> &
-  VisitPIIAttributes;
-
-export const VisitPII = sequelizePII.define<
-  VisitPIIInstance,
-  VisitPIIAttributes
->("visit", {
-  csruid: {
-    allowNull: false,
-    unique: true,
-    type: Sequelize.STRING
-  },
-  device: {
-    allowNull: false,
-    type: Sequelize.JSON
-  },
-  visit: {
-    allowNull: false,
-    type: Sequelize.JSON
-  }
-});
