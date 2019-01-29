@@ -154,7 +154,7 @@ export default class GiftCardScreen extends React.Component<Props> {
           <View>
             <Text style={styles.headerText}>Camera Permission Required</Text>
             <Text style={styles.bodyText}>
-              Grant permission in this iPad's Settings app under FluTrack.
+              Grant permission in this iPad's Settings app under Flu@home.
             </Text>
           </View>
         )}

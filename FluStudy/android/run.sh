@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./gradlew ${1:-installDevMinSdkDevKernelDebug} --stacktrace && adb shell am start -n org.auderenow.flutrack/host.exp.exponent.MainActivity
+./gradlew ${1:-installDevMinSdkDevKernelDebug} --stacktrace && adb shell am start -n org.auderenow.fluathome/host.exp.exponent.MainActivity

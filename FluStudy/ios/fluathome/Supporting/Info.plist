@@ -5,19 +5,19 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>FluTrack</string>
+	<string>Flu@home</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.auderenow.flutrack</string>
+	<string>org.auderenow.fluathome</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>FluTrack</string>
+	<string>FluAtHome</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.6</string>
+	<string>0.2.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -31,12 +31,12 @@
 			<string>OAuthRedirect</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>org.auderenow.flutrack</string>
+				<string>org.auderenow.fluathome</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>1</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -61,23 +61,23 @@
 		<true/>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allow FluTrack to access your calendar</string>
+	<string>Allow Flu@home to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow FluTrack to use your camera</string>
+	<string>Allow Flu@home to use your camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Allow FluTrack to access your contacts</string>
+	<string>Allow Flu@home to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow FluTrack to use your location</string>
+	<string>Allow Flu@home to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow FluTrack to access your microphone</string>
+	<string>Allow Flu@home to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow FluTrack to access your device's accelerometer</string>
+	<string>Allow Flu@home to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give FluTrack permission to save photos</string>
+	<string>Give Flu@home permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give FluTrack permission to access your photos</string>
+	<string>Give Flu@home permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Allow FluTrack to access your reminders</string>
+	<string>Allow Flu@home to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

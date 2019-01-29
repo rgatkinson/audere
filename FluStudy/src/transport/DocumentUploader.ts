@@ -33,7 +33,7 @@ const RETRY_DELAY = 1 * MINUTE;
 // exported for testing
 export const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
 
-const POUCH_PASS_KEY = "FluTrack.PouchDbEncryptionPassword";
+const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 

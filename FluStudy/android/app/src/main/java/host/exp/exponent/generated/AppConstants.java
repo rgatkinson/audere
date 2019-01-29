@@ -12,7 +12,7 @@ import host.exp.exponent.Constants;
 public class AppConstants {
 
   public static final String VERSION_NAME = "2.9.2";
-  public static String INITIAL_URL = "exp://exp.host/@ram_audere/FluTrack";
+  public static String INITIAL_URL = "exp://exp.host/@ram_audere/FluAtHome";
   public static final boolean IS_DETACHED = true;
   public static final String SHELL_APP_SCHEME = "expdcd6f73fcd53486284683e2a09a2d545";
   public static final String RELEASE_CHANNEL = "default";

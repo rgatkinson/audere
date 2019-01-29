@@ -1,6 +1,6 @@
 {
-  "name": "FluTrack",
-  "version": "0.1.6",
+  "name": "FluAtHome",
+  "version": "0.2.0",
   "private": true,
   "devDependencies": {
     "@types/axios": "^0.14.0",

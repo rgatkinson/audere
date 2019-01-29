@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B56386401DB9693800A0598C"
-               BuildableName = "flutrack.app"
-               BlueprintName = "flutrack"
-               ReferencedContainer = "container:flutrack.xcodeproj">
+               BuildableName = "fluathome.app"
+               BlueprintName = "fluathome"
+               ReferencedContainer = "container:fluathome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B56386401DB9693800A0598C"
-            BuildableName = "flutrack.app"
-            BlueprintName = "flutrack"
-            ReferencedContainer = "container:flutrack.xcodeproj">
+            BuildableName = "fluathome.app"
+            BlueprintName = "fluathome"
+            ReferencedContainer = "container:fluathome.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B56386401DB9693800A0598C"
-            BuildableName = "flutrack.app"
-            BlueprintName = "flutrack"
-            ReferencedContainer = "container:flutrack.xcodeproj">
+            BuildableName = "fluathome.app"
+            BlueprintName = "fluathome"
+            ReferencedContainer = "container:fluathome.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <EnvironmentVariables>
@@ -82,9 +82,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B56386401DB9693800A0598C"
-            BuildableName = "flutrack.app"
-            BlueprintName = "flutrack"
-            ReferencedContainer = "container:flutrack.xcodeproj">
+            BuildableName = "fluathome.app"
+            BlueprintName = "fluathome"
+            ReferencedContainer = "container:fluathome.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
