@@ -18,7 +18,7 @@ import {
 } from "../../resources/QuestionnaireConfig";
 import {
   AgeBuckets,
-  AgeBucketConfig,
+  AgeConfig,
   ConsentConfig,
 } from "../../resources/ScreenConfig";
 import AddressInput from "./AddressInput";
@@ -96,7 +96,7 @@ class SurveyQuestion extends Component<
         if (!!this.props.data.conditionalNext!.age) {
           const ageBucket = this.props.getAnswer(
             "selectedButtonKey",
-            AgeBucketConfig.id
+            AgeConfig.id
           );
           if (this.props.data.conditionalNext!.age!.has(ageBucket)) {
             return this.props.data.conditionalNext!.age!.get(ageBucket)!;
@@ -207,10 +207,7 @@ class SurveyQuestion extends Component<
   _getBirthDateDefaultYear() {
     const date = new Date();
     const year = date.getFullYear();
-    const ageBucket = this.props.getAnswer(
-      "selectedButtonKey",
-      AgeBucketConfig.id
-    );
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Over18) {
       date.setFullYear(year - 35);
     } else if (ageBucket === AgeBuckets.Teen) {
@@ -241,10 +238,7 @@ class SurveyQuestion extends Component<
   }
 
   _reconsentNeeded(date: Date) {
-    const ageBucket = this.props.getAnswer(
-      "selectedButtonKey",
-      AgeBucketConfig.id
-    );
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     const currentBucket = this._getAdjustedAgeBucket(date);
     return ageBucket !== currentBucket;
   }
@@ -262,7 +256,7 @@ class SurveyQuestion extends Component<
         onPress: () => {
           this.props.updateAnswer(
             { selectedButtonKey: newAgeBucket },
-            AgeBucketConfig
+            AgeConfig
           );
           this.props.dispatch(clearConsents());
           this.props.navigation.push("Consent", {

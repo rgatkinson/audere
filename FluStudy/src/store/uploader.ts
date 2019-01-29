@@ -49,7 +49,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
 export function redux_to_pouch(state: StoreState): VisitInfo {
   const pouch: VisitInfo = {
     isDemo: !!state.admin.isDemo,
-    complete: state.form.completedSurvey,
+    complete: false,
     samples: [],
     giftcards: [],
     patient: {
@@ -62,12 +62,6 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
   };
 
   const form = state.form;
-  if (form.admin != null) {
-    pouch.administrator = form.admin;
-  }
-  if (form.location != null) {
-    pouch.location = form.location;
-  }
   if (!!form.name) {
     pouch.patient.name = form.name;
   }

@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   container: {
-    marginVertical: 20,
+    marginVertical: 10,
     width: 343,
   },
   text: {

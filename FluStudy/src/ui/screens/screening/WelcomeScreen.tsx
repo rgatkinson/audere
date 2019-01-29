@@ -1,8 +1,8 @@
 import React from "react";
+import { Dimensions, Image } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, completeSurvey, startForm, StoreState } from "../../../store";
-import { AgeBucketConfig } from "../../../resources/ScreenConfig";
+import { Action, startForm, StoreState } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Text from "../../components/Text";
@@ -11,25 +11,18 @@ import ScreenContainer from "../../components/ScreenContainer";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
-  admin: string;
   dispatch(action: Action): void;
   isDemo: boolean;
-  location: string;
   navigation: NavigationScreenProp<any, any>;
 }
 
 @connect((state: StoreState) => ({
-  admin: state.admin.administrator,
   isDemo: !!state.admin.isDemo,
-  location: state.admin.location,
 }))
 class WelcomeScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    this.props.dispatch(completeSurvey());
-    this.props.dispatch(
-      startForm(this.props.admin, this.props.location, this.props.isDemo)
-    );
-    this.props.navigation.push("Age", { data: AgeBucketConfig });
+    this.props.dispatch(startForm(this.props.isDemo));
+    this.props.navigation.push("Why");
   };
 
   render() {
@@ -37,13 +30,16 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Title size="large" label={t("welcomeTo")} />
-          <Text content={t("theGoal")} />
-          <Text content={t("participationRequirements")} />
+          <Image
+            style={{ height: 120, width: Dimensions.get("window").width }}
+            source={require("../../../img/logo.png")}
+          />
+          <Title size="small" label={t("welcome")} />
+          <Text content={t("description")} />
           <Button
             enabled={true}
             primary={true}
-            label={t("common:button:getStarted")}
+            label={t("common:button:next")}
             onPress={this._onNext}
           />
         </ContentContainer>

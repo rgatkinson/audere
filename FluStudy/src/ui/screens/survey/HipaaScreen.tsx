@@ -14,7 +14,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import {
   AgeBuckets,
-  AgeBucketConfig,
+  AgeConfig,
   BloodConfig,
   HipaaConfig,
   EnrolledConfig,
@@ -63,10 +63,7 @@ class HipaaConsentScreen extends React.Component<
   };
 
   _proceed = () => {
-    const ageBucket = this.props.getAnswer(
-      "selectedButtonKey",
-      AgeBucketConfig.id
-    );
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Over18 && this.props.bloodCollection) {
       this.props.navigation.push("Blood", { data: BloodConfig });
     } else if (ageBucket === AgeBuckets.Child) {

@@ -8,8 +8,7 @@ import {
 } from "audere-lib";
 
 export type FormAction =
-  | { type: "START_FORM"; admin: string; location: string; isDemo: boolean }
-  | { type: "COMPLETE_SURVEY" }
+  | { type: "START_FORM"; isDemo: boolean }
   | { type: "CLEAR_FORM" }
   | { type: "CLEAR_CONSENTS" }
   | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
@@ -74,14 +73,11 @@ export interface SurveyResponse {
 }
 
 export type FormState = {
-  admin?: string;
   assent?: ConsentInfo;
   bloodConsent?: ConsentInfo;
   hipaaConsent?: ConsentInfo;
   hipaaResearcherConsent?: ConsentInfo;
-  completedSurvey: boolean;
   consent?: ConsentInfo;
-  location?: string;
   parentConsent?: ConsentInfo;
   formId?: string;
   timestamp?: number;
@@ -94,7 +90,6 @@ export type FormState = {
 };
 
 const initialState: FormState = {
-  completedSurvey: false,
   responses: [],
 };
 
@@ -103,19 +98,10 @@ export default function reducer(state = initialState, action: FormAction) {
     // Resets all form data
     return {
       ...initialState,
-      admin: action.admin,
-      location: action.location,
       formId: uuidv4(),
       isDemo: action.isDemo,
       events: pushEvent(initialState, EventInfoKind.Visit, "StartedForm"),
       timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "COMPLETE_SURVEY") {
-    return {
-      ...state,
-      events: pushEvent(state, EventInfoKind.Visit, "CompletedForm"),
-      completedSurvey: true,
     };
   }
   if (action.type === "CLEAR_FORM") {
@@ -211,15 +197,9 @@ export default function reducer(state = initialState, action: FormAction) {
   return state;
 }
 
-export function startForm(
-  admin: string,
-  location: string,
-  isDemo: boolean
-): FormAction {
+export function startForm(isDemo: boolean): FormAction {
   return {
     type: "START_FORM",
-    admin,
-    location,
     isDemo,
   };
 }
@@ -233,12 +213,6 @@ export function clearForm(): FormAction {
 export function clearConsents(): FormAction {
   return {
     type: "CLEAR_CONSENTS",
-  };
-}
-
-export function completeSurvey(): FormAction {
-  return {
-    type: "COMPLETE_SURVEY",
   };
 }
 

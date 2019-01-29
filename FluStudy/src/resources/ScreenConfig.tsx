@@ -3,20 +3,20 @@ import { SurveyQuestionData } from "./QuestionnaireConfig";
 export const AgeBuckets: {
   [key: string]: string;
 } = {
-  Over18: "18orOver",
-  Teen: "13to17",
-  Child: "7to12",
-  Under7: "under7",
+  Senior: "65andOlder",
+  MiddleAge: "49to64",
+  YoungAdult: "18to49",
+  Under18: "under18",
 };
 
-export const AgeBucketConfig: SurveyQuestionData = {
-  id: "AgeBucket",
+export const AgeConfig: SurveyQuestionData = {
+  id: "Age",
   title: "ageTitle",
   buttons: [
-    { key: AgeBuckets.Over18, primary: false, enabled: true },
-    { key: AgeBuckets.Teen, primary: false, enabled: true },
-    { key: AgeBuckets.Child, primary: false, enabled: true },
-    { key: AgeBuckets.Under7, primary: false, enabled: true },
+    { key: AgeBuckets.Senior, primary: false, enabled: true },
+    { key: AgeBuckets.MiddleAge, primary: false, enabled: true },
+    { key: AgeBuckets.YoungAdult, primary: false, enabled: true },
+    { key: AgeBuckets.Under18, primary: false, enabled: true },
   ],
 };
 
@@ -105,22 +105,16 @@ export const SymptomsConfig: SurveyQuestionData = {
     multiSelect: true,
     options: [
       "feelingFeverish",
-      "headaches",
+      "chillsOrSweats",
       "cough",
-      "diarrhea",
-      "soreThroat",
-      "nauseaOrVomiting",
-      "runnyOrStuffyNose",
-      "rash",
       "fatigue",
       "muscleOrBodyAches",
-      "increasedTroubleBreathing",
-      "earPainOrDischarge",
+      "noneOfTheAbove"
     ],
     withOther: false,
+    exclusiveOption: "noneOfTheAbove",
   },
   buttons: [
-    { key: "done", primary: true, enabled: true },
-    { key: "noneOfTheAbove", primary: false, enabled: true },
+    { key: "next", primary: true, enabled: true },
   ],
 };

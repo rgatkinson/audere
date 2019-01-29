@@ -6,6 +6,7 @@
       "cancel": "Cancel",
       "submit": "Submit",
       "done": "Done",
+      "next": "Next",
       "getStarted": "Get Started",
       "ok": "Ok"
     },
@@ -17,7 +18,11 @@
       "enrollment": "Enrollment",
       "studyQuestionnaire": "Study Questionnaire",
       "complete": "Complete"
-    }
+    },
+  },
+  "navigationBar": {
+    "back": "Back",
+    "next": "Next"
   },
   "feedbackButton": {
     "provideFeedback": "Provide Feedback"
@@ -155,8 +160,8 @@
     "demoSection": "Next, we are going to ask you some questions about yourself."
   },
   "surveyTitle": {
-    "ageTitle": "What is the age of the participant?",
-    "symptomTitle": "What symptoms have you experienced in the last week?",
+    "ageTitle": "How old are you?",
+    "symptomTitle": "Describe your symptoms",
     "bloodTitle": "Would you like to take part in a blood collection?",
     "consent": "Consent",
     "enrolledTitle": "We would like to email you.",
@@ -274,9 +279,16 @@
     "noBloodButtonSubtext": "I do not want any blood collected from me."
   },
   "welcomeScreen": {
-    "welcomeTo": "Welcome to the Seattle Flu Study",
-    "theGoal": "The flu and colds are common in children and adults, and can cause a runny nose, cough, or trouble breathing. We want to understand how people get sick with these germs and how they spread from person to person. Once we understand how the germs start and spread, we can have a better plan to prevent them from making people sick.",
-    "participationRequirements": "To participate in this study, you must have experienced some symptoms of a cold or flu within the last week and provide your home address. Your home address will be used to understand how these viruses spread geographically. We will **not** share this information with any unauthorized third parties, and we will **not** send you anything in the mail."
+    "welcome": "Welcome",
+    "description": "We know you aren't feeling well right now. Thank  you for participating even when you're ill."
+  },
+  "whyScreen": {
+    "why": "Why this study?",
+    "description": "The goal of this program is to understand if people (like you) can test themselves at home for the flu using a new test. This helps people know if they should stay home to prevent spreading the flu to others."
+  },
+  "whatScreen": {
+    "what": "What do I need to do?",
+    "description": "We need to ask a few questions about you and the symptoms you're feeling. In addition, you will need to provide your home or mailing address so we can send the flu test kit to you."
   },
   "ageScreen": {
     "welcome": "Welcome",
@@ -296,17 +308,10 @@
     "learnAboutStudy": "To learn more about this study and related topics",
     "allOfTheAbove": "All of the above",
     "feelingFeverish": "Feeling feverish",
-    "headaches": "Headaches",
+    "chillsOrSweats": "Feeling chills or sweats",
     "cough": "Cough",
-    "diarrhea": "Diarrhea",
-    "soreThroat": "Sore throat",
-    "nauseaOrVomiting": "Nausea or vomiting",
-    "runnyOrStuffyNose": "Runny or stuffy nose",
-    "rash": "Rash",
-    "fatigue": "Fatigue (tiredness)",
+    "fatigue": "Feeling tired or more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
-    "increasedTroubleBreathing": "Increased trouble with breathing",
-    "earPainOrDischarge": "Ear pain or ear discharge",
     "house": "House/Condo/Townhouse",
     "shelter": "Shelter",
     "apartment": "Apartment",
@@ -447,6 +452,7 @@
   },
   "surveyButton": {
     "done": "Done",
+    "next": "Next",
     "preferNotToSay": "Prefer Not to Say",
     "na": "Not Applicable",
     "yes": "Yes",
@@ -459,6 +465,10 @@
     "yesLot": "Yes, a lot",
     "yesLittle": "Yes, a little",
     "noneOfTheAbove": "None of the above",
+    "65andOlder": "65 and older",
+    "49to64": "49 to 64",
+    "18to49": "18 to 49",
+    "under18": "Under 18",
     "18orOver": "18 or older",
     "13to17": "13 to 17",
     "7to12": "7 to 12",

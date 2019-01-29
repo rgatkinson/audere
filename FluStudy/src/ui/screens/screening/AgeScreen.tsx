@@ -2,14 +2,12 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
-import {
-  AgeBucketConfig,
-  SymptomsConfig,
-} from "../../../resources/ScreenConfig";
+import { AgeConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
+import NavigationBar from "../../components/NavigationBar";
 import ScreenContainer from "../../components/ScreenContainer";
-import StatusBar from "../../components/StatusBar";
+import Step from "../../components/Step";
 import Title from "../../components/Title";
 
 interface Props {
@@ -27,17 +25,15 @@ class AgeScreen extends React.Component<
     const { t } = this.props;
     return (
       <ScreenContainer>
-        <StatusBar
+        <NavigationBar
           canProceed={!!this.props.getAnswer("selectedButtonKey")}
-          progressNumber="20%"
-          progressLabel={t("common:statusBar:enrollment")}
-          title={t("welcome")}
-          onBack={() => this.props.navigation.pop()}
-          onForward={this._onDone}
+          navigation={this.props.navigation}
+          onNext={this._onDone}
         />
         <ContentContainer>
-          <Title label={t("surveyTitle:" + AgeBucketConfig.title)} />
-          {AgeBucketConfig.buttons.map(button => (
+          <Step step={1} totalSteps={5} />
+          <Title label={t("surveyTitle:" + AgeConfig.title)} size="small" />
+          {AgeConfig.buttons.map(button => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={true}

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  AppState,
   Alert,
   Image,
   StatusBar,
@@ -15,7 +14,6 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import _ from "lodash";
 import { StoreState } from "../../../store";
-import { completeFormIfExpired } from "../../../util/formTimeout";
 import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
 
 interface Props {
@@ -35,18 +33,6 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
     super(props);
     this._onStart = _.debounce(this._onStart, 1000);
   }
-
-  componentDidMount() {
-    AppState.addEventListener("change", this._handleAppStateChange);
-  }
-
-  componentWillUnMount() {
-    AppState.removeEventListener("change", this._handleAppStateChange);
-  }
-
-  _handleAppStateChange = (nextAppState: string) => {
-    completeFormIfExpired(this.props.navigation);
-  };
 
   _onStart = () => {
     const { t } = this.props;

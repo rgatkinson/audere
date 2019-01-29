@@ -112,7 +112,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    const marginHorizontal = this.props.fullWidth ? 0 : 50;
+    const marginHorizontal = this.props.fullWidth ? 0 : 10;
     const itemWidth =
       (Dimensions.get("window").width -
         2 * marginHorizontal -
@@ -209,7 +209,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   item: {
     alignSelf: "stretch",
@@ -217,15 +217,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginHorizontal: 10,
-    padding: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
   },
   itemText: {
     fontSize: 17,
     marginVertical: 0,
   },
   otherContainer: {
-    marginHorizontal: 10,
+    marginHorizontal: 5,
   },
   smallText: {
     fontSize: 14,

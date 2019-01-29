@@ -13,11 +13,12 @@ import { Option } from "../../../store";
 import { SymptomsConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
+import NavigationBar from "../../components/NavigationBar";
 import OptionList, {
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import StatusBar from "../../components/StatusBar";
+import Step from "../../components/Step";
 import Text from "../../components/Text";
 import Title from "../../components/Title";
 
@@ -29,9 +30,10 @@ interface Props {
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onDone = (selectedButtonKey: string) => {
+  _onDone = () => {
     const { t } = this.props;
-    if (this._numSymptoms() > 1 && selectedButtonKey === "done") {
+    this.props.updateAnswer({ selectedButtonKey: "next" });
+    if (this._numSymptoms() > 1) {
       this.props.navigation.push("Consent");
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
@@ -49,12 +51,24 @@ class SymptomsScreen extends React.PureComponent<
     }
   };
 
+  _haveOption = () => {
+    const symptoms: Option[] = this.props.getAnswer("options");
+    return symptoms
+      ? symptoms.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        )
+      : false;
+  };
+
   _numSymptoms = () => {
     const symptoms: Option[] = this.props.getAnswer("options");
     return symptoms
       ? symptoms.reduce(
           (count: number, option: Option) =>
-            option.selected ? count + 1 : count,
+            option.selected && option.key !== "noneOfTheAbove"
+              ? count + 1
+              : count,
           0
         )
       : 0;
@@ -64,16 +78,17 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <ScreenContainer>
-        <StatusBar
-          canProceed={this._numSymptoms() > 0}
-          progressNumber="40%"
-          progressLabel={t("common:statusBar:enrollment")}
-          title={t("symptoms")}
-          onBack={() => this.props.navigation.pop()}
-          onForward={this._onDone}
+        <NavigationBar
+          canProceed={this._haveOption()}
+          navigation={this.props.navigation}
+          onNext={this._onDone}
         />
         <ContentContainer>
-          <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
+          <Step step={2} totalSteps={5} />
+          <Title
+            label={t("surveyTitle:" + SymptomsConfig.title)}
+            size="small"
+          />
           <Text
             content={t(
               "surveyDescription:" + SymptomsConfig.description!.label
@@ -86,24 +101,18 @@ class SymptomsScreen extends React.PureComponent<
               this.props.getAnswer("options")
             )}
             multiSelect={true}
-            numColumns={2}
+            numColumns={1}
+            exclusiveOption="noneOfTheAbove"
             onChange={symptoms =>
               this.props.updateAnswer({ options: symptoms })
             }
           />
-          {SymptomsConfig.buttons.map(button => (
-            <Button
-              checked={this.props.getAnswer("selectedButtonKey") === button.key}
-              enabled={button.key === "done" ? this._numSymptoms() > 0 : true}
-              key={button.key}
-              label={t("surveyButton:" + button.key)}
-              onPress={() => {
-                this.props.updateAnswer({ selectedButtonKey: button.key });
-                this._onDone(button.key);
-              }}
-              primary={button.primary}
-            />
-          ))}
+          <Button
+            enabled={this._haveOption()}
+            label={t("surveyButton:next")}
+            onPress={this._onDone}
+            primary={true}
+          />
         </ContentContainer>
       </ScreenContainer>
     );

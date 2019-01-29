@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     fontFamily: "OpenSans-Regular",
     fontSize: 21,
-    marginVertical: 20,
+    marginVertical: 10,
   },
   extraBold: {
     fontFamily: "OpenSans-ExtraBold",

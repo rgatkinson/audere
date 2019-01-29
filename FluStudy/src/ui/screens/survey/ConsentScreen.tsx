@@ -15,7 +15,7 @@ import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
 import { NavigationScreenProp } from "react-navigation";
 import {
   AgeBuckets,
-  AgeBucketConfig,
+  AgeConfig,
   BloodConfig,
   ConsentConfig,
   EnrolledConfig,
@@ -99,7 +99,7 @@ class ConsentScreen extends React.Component<
     if (this.props.navigation.getParam("reconsent")) {
       return this.props.navigation.getParam("newAgeBucket");
     }
-    return this.props.getAnswer("selectedButtonKey", AgeBucketConfig.id);
+    return this.props.getAnswer("selectedButtonKey", AgeConfig.id);
   };
 
   _proceed = () => {
