@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Flu@Home",
+    "name": "FluAtHome",
     "version": "0.2.0",
     "description": "App for Seattle Flu Study project",
     "icon": "./src/img/app-icon.png",
