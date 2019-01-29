@@ -60,19 +60,29 @@ jobs:
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
-          name: App Yarn Install
+          name: FluTrack Yarn Install
           command: |
             cd learn/ReactNativeTS/FluTrack
             yarn install
-            echo `ls node_modules`
+            ls node_modules
+      - run:
+          name: Flu@Home Yarn Install
+          command: |
+            cd FluStudy
+            yarn install
       - run:
           name: Generate Build Info
           command: |
             scripts/generate-build-info
       - run:
-          name: App Tests
+          name: FluTrack Tests
           command: |
             cd learn/ReactNativeTS/FluTrack
+            yarn test
+      - run:
+          name: Flu@Home Tests
+          command: |
+            cd FluStudy
             yarn test
       - run:
           name: Snyk App Scan
