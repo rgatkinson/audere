@@ -7,18 +7,18 @@ import Sequelize, {Model} from "sequelize";
 import { defineSqlVisit, VisitAttributes, VisitInstance, VisitTableType } from "../../src/models/visit";
 import _ from "lodash";
 
-import { DeviceInfo } from "audere-lib";
+import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib";
 
-import { idtxt, ScriptLogger } from "./logger";
+import { idtxt, ScriptLogger } from "./script_logger";
 
 const Op = Sequelize.Op;
 
 type VisitModel<T> = Model<VisitInstance<T>, VisitAttributes<T>>;
 
-export class VisitUpdater<T extends object> {
+export abstract class VisitUpdater<T extends object & {isDemo?: boolean}> {
   private readonly data: VisitModel<T>;
   private readonly backup: VisitModel<T>;
-  private readonly log: ScriptLogger;
+  protected readonly log: ScriptLogger;
   private readonly label: string;
 
   constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger, label: string) {
@@ -28,26 +28,42 @@ export class VisitUpdater<T extends object> {
     this.label = label;
   }
 
+  async cleanupForTesting(...csruids: string[]): Promise<void> {
+    const actions = [];
+    for (let csruid of csruids) {
+      const where = { where: { csruid }};
+      actions.push(this.data.destroy(where));
+      actions.push(this.backup.destroy(where));
+    }
+    await Promise.all(actions);
+  }
+
+  abstract async setDemo(current: VisitInstance<T>, isDemo: boolean): Promise<boolean>;
+
   async load(key: string): Promise<VisitInstance<T>> {
-    return this._load(key, this.data);
-  }
-
-  async loadBackup(key: string): Promise<VisitInstance<T>> {
-    return this._load(key, this.backup);
-  }
-
-  async _load(key: string, model: VisitModel<T>): Promise<VisitInstance<T>> {
-    this.log.info(`Loading ${this.label} row for key '${idtxt(key)}'.`);
-    const rows = /^[0-9]+$/.test(key)
-      ? await model.findAll({ where: { id: key }})
-      : await model.findAll({ where: { csruid: { [Op.like]: `${key}%` }}});
+    this.log.info(`VisitUpdater.load ${this.label} for key '${idtxt(key)}'.`);
+    const rows = looksLikeRowId(key)
+      ? await this.data.findAll({ where: { id: key }})
+      : await this.data.findAll({ where: { csruid: { [Op.like]: `${key}%` }}});
     return this.expectOneMatch(key, rows);
+  }
+
+  async loadBackup(rowId: string): Promise<VisitInstance<T>> {
+    this.log.info(`VisitUpdater.loadBackup ${this.label} for rowId '${rowId}'.`);
+    expectRowId(rowId);
+    const rows = await this.backup.findAll({ where: { id: rowId }});
+    return this.expectOneMatch(rowId, rows);
+  }
+
+  async loadBackups(csruid: string): Promise<VisitInstance<T>[]> {
+    this.log.info(`VisitUpdater.loadBackups ${this.label} for csruid '${idtxt(csruid)}'.`);
+    expectCSRUID(csruid);
+    return await this.backup.findAll({ where: {csruid: { [Op.like]: `${csruid}%` }}});
   }
 
   async updateVisit(current: VisitInstance<T>, update: T): Promise<boolean> {
     const { csruid, device } = current;
-    return this.update(current, { csruid, device, visit: update }
-    );
+    return this.update(current, { csruid, device, visit: update });
   }
 
   async updateDevice(current: VisitInstance<T>, update: DeviceInfo): Promise<boolean> {
@@ -63,8 +79,14 @@ export class VisitUpdater<T extends object> {
       this.log.info(`Skipping no-op update to ${this.label} row '${idtxt(current.csruid)}'.`);
       return false;
     }
+
     this.log.info(`Backup up ${this.label} row '${idtxt(current.csruid)}'.`);
-    await this.backup.create(current);
+    await this.backup.create({
+      csruid: current.csruid,
+      device: current.device,
+      visit: current.visit,
+    });
+
     this.log.info(`Writing modified ${this.label} row '${idtxt(current.csruid)}'.`);
     await this.data.upsert(update);
     return true;
@@ -76,4 +98,42 @@ export class VisitUpdater<T extends object> {
     }
     return items[0];
   }
+}
+
+export class VisitNonPIIUpdater extends VisitUpdater<VisitNonPIIDbInfo> {
+  constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger) {
+    super(sequelize, log, "non-PII");
+  }
+
+  async setDemo(current: VisitInstance<VisitNonPIIDbInfo>, isDemo: boolean): Promise<boolean> {
+    this.log.info(`setDemo(${isDemo})`);
+    return this.updateVisit(current, { ...current.visit, isDemo });
+  }
+}
+
+export class VisitPIIUpdater extends VisitUpdater<VisitPIIInfo> {
+  constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger) {
+    super(sequelize, log, "PII");
+  }
+
+  async setDemo(current: VisitInstance<VisitPIIInfo>, isDemo: boolean): Promise<boolean> {
+    this.log.info(`setDemo(${isDemo})`);
+    return this.updateVisit(current, { ...current.visit, isDemo });
+  }
+}
+
+function expectRowId(rowId: string): void {
+  if (!looksLikeRowId(rowId)) {
+    throw new Error(`Expected numberic rowId, got '${rowId}'.`);
+  }
+}
+
+function expectCSRUID(csruid: string): void {
+  if (looksLikeRowId(csruid)) {
+    throw new Error(`Expected non-numberic csruid, got '${csruid}'.`);
+  }
+}
+
+function looksLikeRowId(key: string): boolean {
+  return /^[0-9]+$/.test(key);
 }

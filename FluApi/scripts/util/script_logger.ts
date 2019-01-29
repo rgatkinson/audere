@@ -3,9 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+type WriteFn = (s: string) => void;
+
 export class ScriptLogger {
-  _verbose = false;
   _closed = false;
+  _verbose = false;
+  _write: WriteFn;
+
+  constructor(write: WriteFn) {
+    this._write = write;
+  }
 
   setVerbose(value: boolean): void {
     this._verbose = value;
@@ -17,7 +24,7 @@ export class ScriptLogger {
   }
 
   error(s: string): void {
-    console.error(s);
+    this._write(s);
   }
 
   info(s: string): void {
@@ -25,7 +32,7 @@ export class ScriptLogger {
       throw new Error(`BUG (missing await?) - operation after Logger close: '${s}'`);
     }
     if (this._verbose) {
-      console.log(s);
+      this._write(s);
     }
   }
 }

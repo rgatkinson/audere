@@ -9,18 +9,16 @@ import Sequelize from "sequelize";
 import yargs from "yargs";
 import _ from "lodash";
 
-import { VisitNonPIIInfo, VisitPIIInfo } from "audere-lib";
+import { ScriptLogger } from "./util/script_logger";
+import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 
-import { ScriptLogger } from "./util/logger";
-import { VisitUpdater } from "./util/visit_updater";
+const log = new ScriptLogger(console.log);
 
-const log = new ScriptLogger();
+const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, { logging: false });
+const updaterNonPII = new VisitNonPIIUpdater(sequelizeNonPII, log);
 
-const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL);
-const updaterNonPII = new VisitUpdater<VisitNonPIIInfo>(sequelizeNonPII, log, "non-PII");
-
-const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL);
-const updaterPII = new VisitUpdater<VisitPIIInfo>(sequelizePII, log, "PII");
+const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, { logging: false });
+const updaterPII = new VisitPIIUpdater(sequelizePII, log);
 
 (
   yargs
@@ -88,6 +86,8 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
   const csruid = dataNP.csruid;
   const dataP = await updaterPII.load(csruid);
 
-  await updaterNonPII.updateVisit(dataNP, { ...dataNP.visit, isDemo });
-  await updaterPII.updateVisit(dataP, { ...dataP.visit, isDemo });
+  await Promise.all([
+    updaterNonPII.setDemo(dataNP, isDemo),
+    updaterPII.setDemo(dataP, isDemo),
+  ]);
 }
