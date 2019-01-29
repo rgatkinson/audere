@@ -3,8 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-const crypto = require('crypto');
-
+import crypto from "crypto";
 import {
   DocumentType,
   VisitDocument,
@@ -23,21 +22,25 @@ const DEVICE = {
   idiomText: "handset",
   platform: "iOS"
 };
+
 export const PATIENT_INFO = {
   name: "Fake Name",
   birthDate: "1900-01-01",
   telecom: [],
   address: []
 };
+
 const SAMPLE_INFO = {
   sample_type: "SampleType",
   code: "Code"
 };
+
 const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
   text: "Is the cake a lie?",
   answer: [{ valueBoolean: true }]
 };
+
 const PII_RESPONSE_ITEM = {
   id: "BirthDate",
   text: "What is your birth date?",
@@ -110,7 +113,8 @@ export function documentContentsPII(csruid: string) {
 }
 
 export function makeCSRUID(seed: string): string {
-  const hash = crypto.createHash("sha512");
+  // SHA256 as hex string happens to be 64 characters long
+  const hash = crypto.createHash("sha256");
   hash.update(seed);
-  return hash.digest("utf8").substring(0, 64);
+  return hash.digest("hex").toString();
 }

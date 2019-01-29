@@ -31,7 +31,7 @@ describe("putDocument", () => {
 
   it("rejects malformed json", async () => {
     const csruid = makeCSRUID("rejects malformed json");
-    const response = await request(app)
+    await request(app)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send("{ bad json")
       .set("Content-Type", "application/json")
@@ -62,13 +62,15 @@ describe("putDocument", () => {
     const visit = await VisitNonPII.findOne({ where: { csruid } });
     expect(visit.device).not.toEqual(contents.device);
     expect(visit.device).toEqual({ info: "���" });
-
     await visit.destroy();
+
+    await VisitPII.destroy({ where: { csruid }});
   });
 
   it("adds the document to the visits table in each db", async () => {
     const csruid = makeCSRUID("adds the document to the visits table in each db");
     const contentsPost = documentContentsPost(csruid);
+
     await request(app)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
