@@ -389,7 +389,6 @@ class SurveyQuestion extends Component<
         )}
         {this.props.data.addressInput && (
           <AddressInput
-            showLocationField={this.props.data.addressInput!.showLocationField}
             value={this._getValue("addressInput")}
             onChange={(addressInput: Address) =>
               this.setState({ addressInput })

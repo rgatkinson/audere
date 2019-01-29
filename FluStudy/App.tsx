@@ -1,5 +1,12 @@
 import "./src/hacks";
 import React from "react";
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings([
+  'Class EXHomeModule',
+  'Class EXTest',
+  'Class EXDisabledDevMenu',
+  'Class EXDisabledRedBox',
+]);
 import {
   createStackNavigator,
   NavigationScreenProp,
@@ -23,17 +30,13 @@ import WhyScreen from "./src/ui/screens/screening/WhyScreen";
 import WhatScreen from "./src/ui/screens/screening/WhatScreen";
 import AgeScreen from "./src/ui/screens/screening/AgeScreen";
 import SymptomsScreen from "./src/ui/screens/screening/SymptomsScreen";
-import BloodScreen from "./src/ui/screens/survey/BloodScreen";
-import ConsentScreen from "./src/ui/screens/survey/ConsentScreen";
-import HipaaScreen from "./src/ui/screens/survey/HipaaScreen";
-import AssentScreen from "./src/ui/screens/survey/AssentScreen";
-import BloodConsentScreen from "./src/ui/screens/survey/BloodConsentScreen";
-import EnrolledScreen from "./src/ui/screens/survey/EnrolledScreen";
-import InelligibleScreen from "./src/ui/screens/survey/InelligibleScreen";
-import PaperConsentScreen from "./src/ui/screens/survey/PaperConsentScreen";
-import SurveyStartScreen from "./src/ui/screens/survey/SurveyStartScreen";
-import SurveyScreen from "./src/ui/screens/survey/SurveyScreen";
-import PassBackScreen from "./src/ui/screens/survey/PassBackScreen";
+import IneligibleScreen from "./src/ui/screens/screening/IneligibleScreen";
+import ConsentScreen from "./src/ui/screens/screening/ConsentScreen";
+import AddressScreen from "./src/ui/screens/screening/AddressScreen";
+import ConfirmationScreen from "./src/ui/screens/screening/ConfirmationScreen";
+import PushNotificationsScreen from "./src/ui/screens/screening/PushNotificationsScreen";
+import InstructionsScreen from "./src/ui/screens/screening/InstructionsScreen";
+import ExtraInfoScreen from "./src/ui/screens/screening/ExtraInfoScreen";
 
 const Home = createStackNavigator(
   {
@@ -42,17 +45,13 @@ const Home = createStackNavigator(
     What: WhatScreen,
     Age: AgeScreen,
     Symptoms: SymptomsScreen,
-    Blood: BloodScreen,
+    Ineligible: IneligibleScreen,
     Consent: ConsentScreen,
-    Hipaa: HipaaScreen,
-    Assent: AssentScreen,
-    BloodConsent: BloodConsentScreen,
-    Inelligible: InelligibleScreen,
-    Enrolled: EnrolledScreen,
-    PaperConsent: PaperConsentScreen,
-    SurveyStart: SurveyStartScreen,
-    Survey: SurveyScreen,
-    PassBack: PassBackScreen,
+    Address: AddressScreen,
+    Confirmation: ConfirmationScreen,
+    PushNotifications: PushNotificationsScreen,
+    Instructions: InstructionsScreen,
+    ExtraInfo: ExtraInfoScreen,
   },
   {
     headerMode: "float",

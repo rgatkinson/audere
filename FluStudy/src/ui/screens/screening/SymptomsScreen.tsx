@@ -34,7 +34,14 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     this.props.updateAnswer({ selectedButtonKey: "next" });
     if (this._numSymptoms() > 1) {
-      this.props.navigation.push("Consent");
+      Alert.alert(t("thankYou"), t("nextStep"), [
+        {
+          text: t("headerBar:continue"),
+          onPress: () => {
+            this.props.navigation.push("Consent");
+          },
+        },
+      ]);
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
         {
@@ -44,7 +51,7 @@ class SymptomsScreen extends React.PureComponent<
         {
           text: t("headerBar:continue"),
           onPress: () => {
-            this.props.navigation.push("Inelligible");
+            this.props.navigation.push("Ineligible");
           },
         },
       ]);
