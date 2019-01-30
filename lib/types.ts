@@ -31,10 +31,15 @@ export interface ProtocolDocumentBase {
 export enum DocumentType {
   Visit = "VISIT",
   Feedback = "FEEDBACK",
-  Log = "LOG"
+  Log = "LOG", // only used for crash logs
+  LogBatch = "LOG_BATCH"
 }
 
-export type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument;
+export type ProtocolDocument =
+  | FeedbackDocument
+  | LogDocument
+  | VisitDocument
+  | LogBatchDocument;
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -261,7 +266,7 @@ export interface FeedbackInfo {
 }
 
 // ================================================================================
-// Log
+// Log - deprecated except for crash logs
 
 export interface LogDocument extends ProtocolDocumentBase {
   documentType: DocumentType.Log;
@@ -277,7 +282,33 @@ export enum LogLevel {
 }
 
 export interface LogInfo {
-  // TODO (ram): batch
   logentry: string;
   level: LogLevel;
+}
+
+// ================================================================================
+// LogBatch
+
+export interface LogBatchDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.LogBatch;
+  schemaId: 1;
+  batch: LogBatchInfo;
+}
+
+export interface LogBatchInfo {
+  records: LogRecordInfo[];
+}
+
+export interface LogRecordInfo {
+  timestamp: string;
+  level: LogRecordLevel;
+  text: string;
+}
+
+export enum LogRecordLevel {
+  Debug = "DEBUG",
+  Info = "INFO",
+  Warn = "WARN",
+  Error = "ERROR",
+  Fatal = "FATAL"
 }

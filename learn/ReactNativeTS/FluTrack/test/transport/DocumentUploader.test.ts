@@ -21,6 +21,7 @@ import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
 import { VisitInfo } from "audere-lib";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
+import { ArrayLogger } from "../../src/transport/LogUtil";
 
 const EMPTY_POUCH_CONTENTS = {
   total_rows: 0,
@@ -54,6 +55,8 @@ const FAKE_POUCH_DOC: PouchDoc = {
   },
 };
 
+const logger = new ArrayLogger();
+
 describe("DocumentUploader", () => {
   describe("save", () => {
     let uploader: DocumentUploader, mockAxios: AxiosInstance, mockPouchDB: any;
@@ -65,7 +68,7 @@ describe("DocumentUploader", () => {
       );
       PouchDB.plugin(CryptoPouch);
       mockPouchDB = mock(PouchDB);
-      uploader = new DocumentUploader(instance(mockPouchDB), api);
+      uploader = new DocumentUploader(instance(mockPouchDB), api, logger);
     });
     it("adds visit info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
@@ -114,7 +117,7 @@ describe("DocumentUploader", () => {
       db.destroy({}, done);
     });
     it("returns documents in priority order", async () => {
-      const uploader = new DocumentUploader(db, Axios.create());
+      const uploader = new DocumentUploader(db, Axios.create(), logger);
       const docB = await db.put({
         _id: "documents/1/1",
         body: { data: "b" },

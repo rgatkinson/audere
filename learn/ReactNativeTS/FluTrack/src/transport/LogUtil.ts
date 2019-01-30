@@ -4,32 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 export interface Logger {
-  trace(s: string): void;
   debug(s: string): void;
   info(s: string): void;
   warn(s: string): void;
   error(s: string): void;
   fatal(s: string): void;
-}
-
-// Short-term workaround to issues using "log4js" in an RN context
-export function getLogger(name?: string): Logger {
-  if (name != null) {
-    return makeLogger(s => console.log(`${name}: ${s}`));
-  } else {
-    return makeLogger(s => console.log(s));
-  }
-}
-
-function makeLogger(write: (s: string) => void): Logger {
-  return {
-    trace: write,
-    debug: write,
-    info: write,
-    warn: write,
-    error: write,
-    fatal: write,
-  };
 }
 
 export function summarize(obj: object): string {
@@ -41,4 +20,14 @@ export function summarize(obj: object): string {
     const suffix = json.substr(json.length - 18);
     return `${prefix}...${suffix}`;
   }
+}
+
+export class ArrayLogger implements Logger {
+  public readonly records: string[] = [];
+
+  debug(s: string): void { this.records.push(s); }
+  info(s: string): void { this.records.push(s); }
+  warn(s: string): void { this.records.push(s); }
+  error(s: string): void { this.records.push(s); }
+  fatal(s: string): void { this.records.push(s); }
 }

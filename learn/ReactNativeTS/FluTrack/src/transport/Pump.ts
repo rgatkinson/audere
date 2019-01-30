@@ -3,16 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { getLogger } from "./LogUtil";
-
-const logger = getLogger("transport");
+import { Logger } from "./LogUtil";
 
 export class Pump {
   private readonly handler: () => Promise<void>;
+  private readonly logger: Logger;
   private isRunning = false;
 
-  public constructor(handler: () => Promise<void>) {
+  public constructor(handler: () => Promise<void>, logger: Logger) {
     this.handler = handler;
+    this.logger = logger;
   }
 
   // This needs process.nextTick because a reentrant start() request will
@@ -29,7 +29,7 @@ export class Pump {
 
   private runSafely = () => {
     this.run().catch(error =>
-      logger.error(`Pump completed with error: ${error}:\n${error.stack}`)
+      this.logger.error(`${error}\nWhile running Pump, callstack:\n${error.stack}`)
     );
   };
 

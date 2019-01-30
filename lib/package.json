@@ -4,9 +4,12 @@
   "main": "dist/types.js",
   "types": "dist/types.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "prettier --list-different '*.ts'",
+    "lint-fix": "prettier --write '*.ts'"
   },
   "devDependencies": {
+    "prettier": "^1.16.1",
     "typescript": "^3.0.3"
   }
 }

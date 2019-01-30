@@ -11,52 +11,53 @@ import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
 import { DocumentType, VisitInfo } from "audere-lib";
-import { AxiosInstance } from "axios";
-import { getLogger } from "./LogUtil";
 import { DocumentUploader } from "./DocumentUploader";
+import { LazyUploader, LogBatcher } from "./LogBatcher";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
-const logger = getLogger("api");
 
 PouchDB.plugin(CryptoPouch);
 
-export function createUploader(): TypedDocumentUploader {
-  const api = createAxios();
-  const db = new PouchDB("clientDB");
-  return new TypedDocumentUploader(db, api);
+interface Transport {
+  uploader: TypedDocumentUploader;
+  logger: LogBatcher;
+}
+
+export function createTransport(): Transport {
+  const db = new PouchDB("clientDB", { auto_compaction: true });
+  const lazyUploader = new LazyUploader();
+  const logger = new LogBatcher(lazyUploader, 3, <any>db);
+  const api = createAxios(logger);
+  const uploader = new DocumentUploader(db, api, logger);
+
+  lazyUploader.bind(uploader);
+
+  return {
+    uploader: new TypedDocumentUploader(uploader),
+    logger,
+  };
 }
 
 class TypedDocumentUploader {
   private readonly uploader: DocumentUploader;
-  private logId?: string;
 
-  constructor(db: any, api: AxiosInstance) {
-    this.uploader = new DocumentUploader(db, api);
+  constructor(uploader: DocumentUploader) {
+    this.uploader = uploader;
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
     return this.uploader.documentsAwaitingUpload();
   }
+
   public saveVisit(localUid: string, visit: VisitInfo) {
     this.uploader.save(localUid, visit, DocumentType.Visit, 1);
   }
+
   public saveFeedback(subject: string, body: string) {
     this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);
   }
-  public saveLog(logentry: string) {
-    // TODO(ram): Batch these saves
-    if (!this.logId) {
-      this.logId = uuidv4();
-    }
-    this.uploader.save(
-      this.logId,
-      { logentry, level: LogLevel.Info },
-      DocumentType.Log,
-      3
-    );
-  }
+
   public saveCrashLog(logentry: string) {
-    logger.info("Saving crash log");
     this.uploader.save(
       uuidv4(),
       { logentry, level: LogLevel.Fatal },
@@ -66,7 +67,7 @@ class TypedDocumentUploader {
   }
 }
 
-function createAxios() {
+function createAxios(logger: LogBatcher) {
   const api = axios.create({
     baseURL: getApiBaseUrl(),
     xsrfCookieName: "csrftoken",
@@ -74,14 +75,14 @@ function createAxios() {
   });
 
   if (IS_NODE_ENV_DEVELOPMENT) {
-    const REQUEST_FIELDS = ["method", "baseURL", "url", "data"];
+    const REQUEST_FIELDS = ["method", "baseURL", "url"];
     api.interceptors.request.use(request => {
-      logger.debug(
+      logger.info(
         `HTTP request:\n${JSON.stringify(request, REQUEST_FIELDS, 2)}`
       );
       return request;
     });
-    const RESPONSE_FIELDS = ["status", "headers", "data"];
+    const RESPONSE_FIELDS = ["status", "headers"];
     api.interceptors.response.use(response => {
       logger.debug(
         `HTTP response: "${JSON.stringify(response, RESPONSE_FIELDS, 2)}"`

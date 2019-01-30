@@ -13,7 +13,7 @@ import {
   SurveyResponse,
 } from "./form";
 import { StoreState } from "./StoreState";
-import { createUploader } from "../transport";
+import { createTransport } from "../transport";
 import { format } from "date-fns";
 import {
   AddressInfo,
@@ -29,11 +29,10 @@ import {
 } from "audere-lib";
 import { isNotNull } from "../util/check";
 
+export const { uploader, logger } = createTransport();
+
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
-
-export const uploader = createUploader();
-
 export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);

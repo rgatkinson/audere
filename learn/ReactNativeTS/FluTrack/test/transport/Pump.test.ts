@@ -5,6 +5,9 @@
 
 import { Pump } from "../../src/transport/Pump";
 import { ticks } from "../util";
+import { ArrayLogger } from "../../src/transport/LogUtil";
+
+const logger = new ArrayLogger();
 
 describe("Pump", () => {
   it("invokes the handler", async () => {
@@ -12,7 +15,7 @@ describe("Pump", () => {
     const pumpRan = new Promise(resolve => (markAsRan = resolve));
     const pump = new Pump(async () => {
       markAsRan();
-    });
+    }, logger);
     pump.start();
     await pumpRan;
   });
@@ -23,7 +26,7 @@ describe("Pump", () => {
       runs += 1;
       // never resolve
       return new Promise(() => {});
-    });
+    }, logger);
 
     pump.start();
     await ticks(2);
@@ -38,7 +41,7 @@ describe("Pump", () => {
     let runs = 0;
     const pump = new Pump(async () => {
       runs += 1;
-    });
+    }, logger);
 
     pump.start();
     await ticks(2);
