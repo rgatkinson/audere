@@ -37,7 +37,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.form != null && state.form.formId != null) {
+    if (state.form != null) {
       uploader.saveVisit(state.form.formId, redux_to_pouch(state));
     }
     return result;
@@ -191,10 +191,10 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
       }
 
       if (!!response.buttonLabels) {
-        // Consider all buttons besides "done" and "preferNotToSay" to be
+        // Consider all buttons besides "done", "next", and "preferNotToSay" to be
         // multiple choice options
         response.buttonLabels.forEach(({ key, label }) => {
-          if (key !== "preferNotToSay" && key !== "done") {
+          if (key !== "preferNotToSay" && key !== "done" && key !== "next") {
             answerOptions.push({
               id: key,
               text: label,
@@ -214,6 +214,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
           if (
             !!response.answer.options &&
             (response.answer.selectedButtonKey === "done" ||
+              response.answer.selectedButtonKey === "next" ||
               !response.answer.selectedButtonKey)
           ) {
             // Actual multiple choice; find indices of all true values
