@@ -31,7 +31,6 @@ interface Props {
   otherPlaceholder?: string;
   onChange(data: Option[]): void;
   onOtherChange?(value: string): void;
-  fullWidth?: boolean;
   backgroundColor?: string;
 }
 
@@ -112,14 +111,14 @@ class OptionList extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    const marginHorizontal = this.props.fullWidth ? 0 : 10;
+    const marginHorizontal = 10;
     const itemWidth =
       (Dimensions.get("window").width -
         2 * marginHorizontal -
         this.props.numColumns * 20) /
       this.props.numColumns;
     const totalHeight =
-      Math.ceil(this.props.data.length / this.props.numColumns) * 46;
+      Math.ceil(this.props.data.length / this.props.numColumns) * 42;
 
     return (
       <View style={[styles.container, this.props.style && this.props.style]}>
@@ -134,9 +133,6 @@ class OptionList extends React.Component<Props & WithNamespaces> {
                 id={item.key}
                 selected={item.selected}
                 width={itemWidth}
-                smallText={
-                  this.props.data.length > 12 && this.props.numColumns > 1
-                }
                 backgroundColor={this.props.backgroundColor}
                 onPressItem={this._onPressItem}
               />
@@ -175,7 +171,6 @@ interface ItemProps {
   id: string;
   selected: boolean;
   width: number;
-  smallText?: boolean;
   backgroundColor?: string;
   onPressItem(id: string): void;
 }
@@ -198,7 +193,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
       >
         <Text
           content={this.props.t("surveyOption:" + this.props.id)}
-          style={[styles.itemText, this.props.smallText && styles.smallText]}
+          style={styles.itemText}
         />
         {this.props.selected && <Feather name="check" color="blue" size={20} />}
       </TouchableOpacity>
@@ -209,7 +204,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
-    marginVertical: 10,
+    marginVertical: 20,
   },
   item: {
     alignSelf: "stretch",
@@ -217,18 +212,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 5,
-    paddingVertical: 10,
+    marginHorizontal: 10,
+    padding: 10,
   },
   itemText: {
-    fontSize: 17,
+    fontSize: 14,
     marginVertical: 0,
   },
   otherContainer: {
-    marginHorizontal: 5,
-  },
-  smallText: {
-    fontSize: 14,
+    marginHorizontal: 10,
   },
 });
 

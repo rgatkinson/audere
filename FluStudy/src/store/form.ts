@@ -1,46 +1,35 @@
 import uuidv4 from "uuid/v4";
 
-import {
-  ConsentInfo,
-  GiftCardInfo,
-  EventInfo,
-  EventInfoKind,
-} from "audere-lib";
+import { ConsentInfo, EventInfo, EventInfoKind } from "audere-lib";
 
 export type FormAction =
-  | { type: "START_FORM"; isDemo: boolean }
-  | { type: "CLEAR_FORM" }
-  | { type: "CLEAR_CONSENTS" }
-  | { type: "SET_PARENT_CONSENT"; consent: ConsentInfo }
+  | { type: "START_FORM" }
   | { type: "SET_CONSENT"; consent: ConsentInfo }
-  | { type: "SET_ASSENT"; consent: ConsentInfo }
-  | { type: "SET_BLOOD_CONSENT"; consent: ConsentInfo }
-  | { type: "SET_HIPAA_CONSENT"; consent: ConsentInfo }
-  | { type: "SET_HIPAA_RESEARCHER_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
-  | { type: "SET_SAMPLES"; samples: Sample[] }
-  | { type: "SET_GIFTCARDS"; giftcards: GiftCardInfo[] }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
-  location?: string;
   address?: string;
   city?: string;
   state?: string;
   zipcode?: string;
-  country?: string;
-}
-
-export interface Sample {
-  sampleType: string;
-  code: string;
 }
 
 export interface Option {
   key: string;
   selected: boolean;
+}
+
+export interface ButtonLabel {
+  key: string;
+  label: string;
+}
+
+export interface OptionLabel {
+  key: string;
+  label: string;
 }
 
 export interface SurveyAnswer {
@@ -54,16 +43,6 @@ export interface SurveyAnswer {
   [key: string]: Address | Date | Option[] | string | number | undefined;
 }
 
-export interface ButtonLabel {
-  key: string;
-  label: string;
-}
-
-export interface OptionLabel {
-  key: string;
-  label: string;
-}
-
 export interface SurveyResponse {
   answer?: SurveyAnswer;
   buttonLabels?: ButtonLabel[];
@@ -73,24 +52,17 @@ export interface SurveyResponse {
 }
 
 export type FormState = {
-  assent?: ConsentInfo;
-  bloodConsent?: ConsentInfo;
-  hipaaConsent?: ConsentInfo;
-  hipaaResearcherConsent?: ConsentInfo;
   consent?: ConsentInfo;
-  parentConsent?: ConsentInfo;
-  formId?: string;
-  timestamp?: number;
-  name?: string;
   email?: string;
   responses: SurveyResponse[];
-  samples?: Sample[];
-  events?: EventInfo[];
-  giftcards?: GiftCardInfo[];
+  events: EventInfo[];
+  name?: string;
+  timestamp?: number;
 };
 
 const initialState: FormState = {
   responses: [],
+  events: [],
 };
 
 export default function reducer(state = initialState, action: FormAction) {
@@ -98,23 +70,9 @@ export default function reducer(state = initialState, action: FormAction) {
     // Resets all form data
     return {
       ...initialState,
-      formId: uuidv4(),
-      isDemo: action.isDemo,
       events: pushEvent(initialState, EventInfoKind.Visit, "StartedForm"),
       timestamp: new Date().getTime(),
     };
-  }
-  if (action.type === "CLEAR_FORM") {
-    return initialState;
-  }
-  if (action.type === "CLEAR_CONSENTS") {
-    let newState = Object.assign({}, state);
-    delete newState.assent;
-    delete newState.bloodConsent;
-    delete newState.consent;
-    delete newState.hipaaConsent;
-    delete newState.parentConsent;
-    return newState;
   }
   if (action.type === "SET_NAME") {
     return { ...state, name: action.name, timestamp: new Date().getTime() };
@@ -126,57 +84,6 @@ export default function reducer(state = initialState, action: FormAction) {
     return {
       ...state,
       consent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_ASSENT") {
-    return {
-      ...state,
-      assent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_PARENT_CONSENT") {
-    return {
-      ...state,
-      parentConsent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_BLOOD_CONSENT") {
-    return {
-      ...state,
-      bloodConsent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_HIPAA_CONSENT") {
-    return {
-      ...state,
-      hipaaConsent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_HIPAA_RESEARCHER_CONSENT") {
-    return {
-      ...state,
-      hipaaResearcherConsent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_SAMPLES") {
-    return {
-      ...state,
-      samples: action.samples,
-      events: pushEvent(state, EventInfoKind.Sample, "SpecimenScanned"),
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_GIFTCARDS") {
-    return {
-      ...state,
-      giftcards: action.giftcards,
-      events: pushEvent(state, EventInfoKind.Visit, "GiftcardScanned"),
       timestamp: new Date().getTime(),
     };
   }
@@ -194,25 +101,13 @@ export default function reducer(state = initialState, action: FormAction) {
       timestamp: new Date().getTime(),
     };
   }
+
   return state;
 }
 
-export function startForm(isDemo: boolean): FormAction {
+export function startForm(): FormAction {
   return {
     type: "START_FORM",
-    isDemo,
-  };
-}
-
-export function clearForm(): FormAction {
-  return {
-    type: "CLEAR_FORM",
-  };
-}
-
-export function clearConsents(): FormAction {
-  return {
-    type: "CLEAR_CONSENTS",
   };
 }
 
@@ -237,55 +132,6 @@ export function setConsent(consent: ConsentInfo): FormAction {
   };
 }
 
-export function setAssent(consent: ConsentInfo): FormAction {
-  return {
-    type: "SET_ASSENT",
-    consent,
-  };
-}
-
-export function setParentConsent(consent: ConsentInfo): FormAction {
-  return {
-    type: "SET_PARENT_CONSENT",
-    consent,
-  };
-}
-
-export function setBloodConsent(consent: ConsentInfo): FormAction {
-  return {
-    type: "SET_BLOOD_CONSENT",
-    consent,
-  };
-}
-
-export function setHipaaConsent(consent: ConsentInfo): FormAction {
-  return {
-    type: "SET_HIPAA_CONSENT",
-    consent,
-  };
-}
-
-export function setHipaaResearcherConsent(consent: ConsentInfo): FormAction {
-  return {
-    type: "SET_HIPAA_RESEARCHER_CONSENT",
-    consent,
-  };
-}
-
-export function setSamples(samples: Sample[]): FormAction {
-  return {
-    type: "SET_SAMPLES",
-    samples,
-  };
-}
-
-export function setGiftcards(giftcards: GiftCardInfo[]): FormAction {
-  return {
-    type: "SET_GIFTCARDS",
-    giftcards,
-  };
-}
-
 export function appendEvent(kind: EventInfoKind, refId: string): FormAction {
   return {
     type: "APPEND_EVENT",
@@ -302,7 +148,7 @@ export function setResponses(responses: SurveyResponse[]): FormAction {
 }
 
 function pushEvent(state: FormState, kind: EventInfoKind, refId: string) {
-  let newEvents = !!state.events ? state.events.slice(0) : [];
+  let newEvents = state.events.slice(0);
   newEvents.push({
     kind,
     at: new Date().toISOString(),

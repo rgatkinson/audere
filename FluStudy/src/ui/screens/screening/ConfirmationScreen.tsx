@@ -32,7 +32,11 @@ class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
             style={{ height: 120, width: Dimensions.get("window").width }}
             source={require("../../../img/logo.png")}
           />
-          <Title size="small" label={t("confirmed")} />
+          <Image
+            style={{ height: 150, width: 200 }}
+            source={require("../../../img/confirmation.png")}
+          />
+          <Title label={t("confirmed")} />
           <Text content={t("description")} />
           <Button
             enabled={true}

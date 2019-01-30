@@ -32,7 +32,11 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
             style={{ height: 120, width: Dimensions.get("window").width }}
             source={require("../../../img/logo.png")}
           />
-          <Title size="small" label={t("instructions")} />
+          <Image
+            style={{ height: 150, width: 150 }}
+            source={require("../../../img/instructions.png")}
+          />
+          <Title label={t("instructions")} />
           <Text content={t("description")} />
           <Button
             enabled={true}

@@ -17,7 +17,7 @@ import {
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionProps } from "../ui/components/SurveyQuestion";
+import { SurveyQuestionProps } from "../resources/ResponseTypes";
 import {
   ButtonConfig,
   EnabledOption,

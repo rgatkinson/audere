@@ -9,7 +9,6 @@ import {
   Address,
   FormState,
   Option,
-  Sample,
   SurveyResponse,
 } from "./form";
 import { StoreState } from "./StoreState";
@@ -50,8 +49,8 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
   const pouch: VisitInfo = {
     isDemo: !!state.admin.isDemo,
     complete: false,
-    samples: [],
     giftcards: [],
+    samples: [],
     patient: {
       telecom: [],
       address: [],
@@ -70,19 +69,6 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
       system: TelecomInfoSystem.Email,
       value: form.email,
     });
-  }
-
-  if (!!form.samples) {
-    form.samples.forEach((sample: Sample) => {
-      pouch.samples.push({
-        sample_type: sample.sampleType,
-        code: sample.code,
-      });
-    });
-  }
-
-  if (!!form.giftcards) {
-    pouch.giftcards = form.giftcards;
   }
 
   if (!!form.events) {
@@ -144,7 +130,6 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
           city: "Seattle",
           state: "WA",
           zipcode: "98134",
-          country: "United States",
         },
         AddressInfoUse.Home,
         pouch.patient.address
@@ -156,7 +141,6 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
           city: "Seattle",
           state: "WA",
           zipcode: "98104",
-          country: "United States",
         },
         AddressInfoUse.Home,
         pouch.patient.address
@@ -298,31 +282,6 @@ function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
   if (consent != null) {
     consents.push(consent);
   }
-
-  const assent = form.assent;
-  if (assent != null) {
-    consents.push(assent);
-  }
-
-  const parentConsent = form.parentConsent;
-  if (parentConsent != null) {
-    consents.push(parentConsent);
-  }
-
-  const bloodConsent = form.bloodConsent;
-  if (bloodConsent != null) {
-    consents.push(bloodConsent);
-  }
-
-  const hipaaConsent = form.hipaaConsent;
-  if (hipaaConsent != null) {
-    consents.push(hipaaConsent);
-  }
-
-  const hipaaResearcherConsent = form.hipaaResearcherConsent;
-  if (hipaaResearcherConsent != null) {
-    consents.push(hipaaResearcherConsent);
-  }
 }
 
 function maybePushAddressResponse(
@@ -362,10 +321,8 @@ function addressValueInfo(
     const city = addressInput.city || "";
     const state = addressInput.state || "";
     const zipcode = addressInput.zipcode || "";
-    const country = addressInput.country || "";
-    const line: string[] = [addressInput.location, addressInput.address].filter(
-      isNotNull
-    );
+    const country = "";
+    const line: string[] = [addressInput.address].filter(isNotNull);
     return {
       line,
       city,

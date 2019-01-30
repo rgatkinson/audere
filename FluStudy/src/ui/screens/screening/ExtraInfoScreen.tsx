@@ -3,6 +3,7 @@ import { Dimensions, Image } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
+import Links from "../../components/Links";
 import NavigationBar from "../../components/NavigationBar";
 import Text from "../../components/Text";
 import Title from "../../components/Title";
@@ -32,10 +33,12 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
             style={{ height: 120, width: Dimensions.get("window").width }}
             source={require("../../../img/logo.png")}
           />
-          <Title size="small" label={t("extraInfo")} />
-          <Text content={t("shareLink")} />
-          <Text content={t("learnLink")} />
-          <Text content={t("medLink")} />
+          <Image
+            style={{ height: 150, width: 150 }}
+            source={require("../../../img/extraInfo.png")}
+          />
+          <Title label={t("extraInfo")} />
+          <Links />
           <Button
             enabled={true}
             primary={true}

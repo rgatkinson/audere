@@ -304,10 +304,8 @@
   "ineligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "At this time your symptoms do not meet the criteria for continuation. If your symptoms change, you can open this app again on a different day.",
-    "shareLink": "Send this to a friend who's not feeling well",
-    "learnLink": "Learn more about this flu study",
-    "medLink": "Find a nearby clinic or physician",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would"
+    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would",
+    "returnHome": "Return Home"
   },
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",
@@ -323,10 +321,12 @@
   },
   "extraInfoScreen": {
     "extraInfo": "Interested in sharing this or learning more?",
+    "close": "Close Flu@home"
+  },
+  "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
-    "medLink": "Find a nearby clinic or physician",
-    "close": "Close Flu@home"
+    "medLink": "Find a nearby clinic or physician"
   },
   "enrolledScreen": {
     "contactInfo": "Contact Info",

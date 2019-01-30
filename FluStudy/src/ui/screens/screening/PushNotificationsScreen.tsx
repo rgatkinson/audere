@@ -15,6 +15,7 @@ interface Props {
 
 class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
+    // TODO save response
     this.props.navigation.push("Instructions");
   };
 
@@ -32,7 +33,11 @@ class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
             style={{ height: 120, width: Dimensions.get("window").width }}
             source={require("../../../img/logo.png")}
           />
-          <Title size="small" label={t("pushNotifications")} />
+          <Image
+            style={{ height: 150, width: 150 }}
+            source={require("../../../img/pushNotifications.png")}
+          />
+          <Title label={t("pushNotifications")} />
           <Text content={t("description")} />
           <Button
             enabled={true}

@@ -59,7 +59,7 @@ class AddressScreen extends React.Component<
         />
         <ContentContainer>
           <Step step={5} totalSteps={5} />
-          <Title label={t("address")} size="small" />
+          <Title label={t("address")} />
           <Text content={t("description")} />
           <AddressInput
             value={this.state.address}

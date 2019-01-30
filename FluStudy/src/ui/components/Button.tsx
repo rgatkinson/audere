@@ -17,7 +17,6 @@ interface Props {
   primary: boolean;
   label: string;
   style?: StyleProp<ViewStyle>;
-  subtext?: string;
   onPress?(event: GestureResponderEvent): void;
 }
 
@@ -34,10 +33,6 @@ export default class Button extends React.Component<Props> {
   };
 
   render() {
-    const subtext = this.props.subtext ? (
-      <Text style={styles.subtext}>{this.props.subtext}</Text>
-    ) : null;
-
     return (
       <View
         style={[
@@ -70,7 +65,6 @@ export default class Button extends React.Component<Props> {
             {this.props.label}
           </Text>
         </TouchableOpacity>
-        {subtext}
       </View>
     );
   }
@@ -79,11 +73,11 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderColor: "#4B2E83",
-    borderRadius: 8,
+    borderColor: "#9fa1a5",
+    borderRadius: 4,
     borderWidth: 2,
     flexDirection: "row",
-    height: 50,
+    height: 40,
     justifyContent: "center",
   },
   check: {
@@ -91,7 +85,7 @@ const styles = StyleSheet.create({
   },
   container: {
     marginVertical: 10,
-    width: 343,
+    width: 300,
   },
   text: {
     fontFamily: "OpenSans-SemiBold",
@@ -101,19 +95,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: "#4B2E83",
+    backgroundColor: "#9fa1a5",
   },
   primaryButtonText: {
     color: "#FFFFFF",
   },
   secondaryButtonText: {
-    color: "#4B2E83",
-  },
-  subtext: {
-    fontFamily: "OpenSans-Regular",
-    fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 26,
-    marginTop: 10,
+    color: "#404347",
   },
 });

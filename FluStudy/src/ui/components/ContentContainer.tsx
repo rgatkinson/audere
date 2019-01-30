@@ -12,6 +12,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 15,
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 20,
   },
 });

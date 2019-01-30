@@ -3,6 +3,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AgeConfig, SymptomsConfig } from "../../../resources/ScreenConfig";
+import { ButtonConfig } from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import NavigationBar from "../../components/NavigationBar";
@@ -32,8 +33,8 @@ class AgeScreen extends React.Component<
         />
         <ContentContainer>
           <Step step={1} totalSteps={5} />
-          <Title label={t("surveyTitle:" + AgeConfig.title)} size="small" />
-          {AgeConfig.buttons.map(button => (
+          <Title label={t("surveyTitle:" + AgeConfig.title)} />
+          {AgeConfig.buttons.map((button: ButtonConfig) => (
             <Button
               checked={this.props.getAnswer("selectedButtonKey") === button.key}
               enabled={true}

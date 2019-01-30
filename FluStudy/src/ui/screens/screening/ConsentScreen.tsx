@@ -8,7 +8,6 @@ import { View, ScrollView, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { Option } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -26,9 +25,7 @@ interface Props {
 }
 
 @connect()
-class ConsentScreen extends React.PureComponent<
-  Props & WithNamespaces & ReduxWriterProps
-> {
+class ConsentScreen extends React.PureComponent<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
@@ -39,7 +36,7 @@ class ConsentScreen extends React.PureComponent<
           onNext={() => {}}
         />
         <Step step={3} totalSteps={5} />
-        <Title label={t("consent")} size="small" />
+        <Title label={t("consent")} />
         <Text content={t("description")} center={true} />
         <View style={{ flex: 1 }}>
           <ScrollView>
@@ -73,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default reduxWriter(withNamespaces("consentScreen")(ConsentScreen));
+export default withNamespaces("consentScreen")(ConsentScreen);

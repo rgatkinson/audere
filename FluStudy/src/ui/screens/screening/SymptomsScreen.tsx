@@ -31,8 +31,8 @@ class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onDone = () => {
-    const { t } = this.props;
     this.props.updateAnswer({ selectedButtonKey: "next" });
+    const { t } = this.props;
     if (this._numSymptoms() > 1) {
       Alert.alert(t("thankYou"), t("nextStep"), [
         {
@@ -92,10 +92,7 @@ class SymptomsScreen extends React.PureComponent<
         />
         <ContentContainer>
           <Step step={2} totalSteps={5} />
-          <Title
-            label={t("surveyTitle:" + SymptomsConfig.title)}
-            size="small"
-          />
+          <Title label={t("surveyTitle:" + SymptomsConfig.title)} />
           <Text
             content={t(
               "surveyDescription:" + SymptomsConfig.description!.label
