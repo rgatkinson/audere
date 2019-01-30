@@ -5,14 +5,11 @@
 
 import Sequelize from "sequelize";
 import "../util/config";
-// import sequelizeLogger from "sequelize-log-syntax-colors";
 
 export const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-  //logging: (str: string) => console.log(sequelizeLogger(str))
   logging: false,
 });
 
 export const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-  //logging: (str: string) => console.log(sequelizeLogger(str))
   logging: false,
 });

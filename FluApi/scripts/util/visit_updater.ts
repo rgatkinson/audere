@@ -80,7 +80,7 @@ export abstract class VisitUpdater<T extends object & {isDemo?: boolean}> {
       return false;
     }
 
-    this.log.info(`Backup up ${this.label} row '${idtxt(current.csruid)}'.`);
+    this.log.info(`Backing up ${this.label} row '${idtxt(current.csruid)}'.`);
     await this.backup.create({
       csruid: current.csruid,
       device: current.device,
