@@ -1,5 +1,4 @@
 import React from "react";
-import { Dimensions, Image } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import InfoScreen from "../../components/InfoScreen";
@@ -15,9 +14,10 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <InfoScreen
-        buttonText={t("returnHome")}
+        buttonLabel={t("returnHome")}
         imageSrc={require("../../../img/ineligible.png")}
         navBar={false}
+        navigation={this.props.navigation}
         title={t("ineligible")}
         desc={t("description")}
         onNext={() => this.props.navigation.popToTop()}

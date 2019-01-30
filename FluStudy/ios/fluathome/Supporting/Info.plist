@@ -57,6 +57,10 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSExceptionDomains</key>
+		<dict/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
@@ -71,7 +75,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Flu@home to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Flu@home to access your device's accelerometer</string>
+	<string>Allow Flu@home to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Flu@home permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>

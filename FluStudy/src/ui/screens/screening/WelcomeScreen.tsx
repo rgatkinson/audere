@@ -23,6 +23,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <InfoScreen
         imageSrc={require("../../../img/welcome.png")}
         navBar={false}
+        navigation={this.props.navigation}
         title={t("welcome")}
         desc={t("description")}
         onNext={this._onNext}

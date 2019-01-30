@@ -19,6 +19,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <InfoScreen
         imageSrc={require("../../../img/what.png")}
         navBar={false}
+        navigation={this.props.navigation}
         title={t("what")}
         desc={t("description")}
         onNext={this._onNext}

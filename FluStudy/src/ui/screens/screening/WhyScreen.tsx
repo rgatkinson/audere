@@ -19,6 +19,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageSrc={require("../../../img/why.png")}
         navBar={false}
+        navigation={this.props.navigation}
         title={t("why")}
         onNext={this._onNext}
       />

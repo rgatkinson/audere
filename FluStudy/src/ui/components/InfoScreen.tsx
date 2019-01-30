@@ -7,15 +7,18 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { NavigationScreenProp } from "react-navigation";
 import Button from "./Button";
+import NavigationBar from "./NavigationBar";
 import Text from "./Text";
 import Title from "./Title";
 
 interface Props {
-  buttonText?: string;
+  buttonLabel?: string;
   children?: any;
   imageSrc: ImageSourcePropType;
   navBar: boolean;
+  navigation: NavigationScreenProp<any, any>;
   title: string;
   desc?: string;
   onNext(): void;
@@ -26,6 +29,13 @@ class InfoScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
+        {this.props.navBar && (
+          <NavigationBar
+            canProceed={true}
+            navigation={this.props.navigation}
+            onNext={this.props.onNext}
+          />
+        )}
         <View style={styles.innerContainer}>
           <Image
             style={{ height: 120, width: Dimensions.get("window").width }}
@@ -44,8 +54,8 @@ class InfoScreen extends React.Component<Props & WithNamespaces> {
             enabled={true}
             primary={true}
             label={
-              this.props.buttonText != null
-                ? this.props.buttonText
+              this.props.buttonLabel != null
+                ? this.props.buttonLabel
                 : t("common:button:next")
             }
             onPress={this.props.onNext}
