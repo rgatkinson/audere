@@ -80,7 +80,11 @@ export class LogBatcher implements Logger {
 
       try {
         if (needsUpload && (uploader != null)) {
-          uploader.save(uuidv4(), { records }, DocumentType.LogBatch, this.priority);
+          const batch = {
+            timestamp: new Date().toISOString(),
+            records,
+          }
+          uploader.save(uuidv4(), batch, DocumentType.LogBatch, this.priority);
           // uploader is now responsible for this state
           this.buffer.splice(0);
           await this.db.put(this.emptyState());

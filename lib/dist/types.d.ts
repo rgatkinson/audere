@@ -186,6 +186,7 @@ export interface LogBatchDocument extends ProtocolDocumentBase {
     batch: LogBatchInfo;
 }
 export interface LogBatchInfo {
+    timestamp: string;
     records: LogRecordInfo[];
 }
 export interface LogRecordInfo {

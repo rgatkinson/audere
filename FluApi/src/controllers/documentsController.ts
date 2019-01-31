@@ -96,6 +96,11 @@ export async function putDocument(req, res) {
         device: document.device
       });
       break;
+
+    case DocumentType.LogBatch:
+
+      break;
+
     default:
       throw new Error("Invalid document type");
   }

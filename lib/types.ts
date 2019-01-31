@@ -296,6 +296,7 @@ export interface LogBatchDocument extends ProtocolDocumentBase {
 }
 
 export interface LogBatchInfo {
+  timestamp: string;
   records: LogRecordInfo[];
 }
 
