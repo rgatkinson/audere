@@ -1,6 +1,6 @@
 import "./src/hacks";
 import React from "react";
-import { YellowBox } from 'react-native';
+import { StatusBar, YellowBox } from 'react-native';
 YellowBox.ignoreWarnings([
   'Class EXHomeModule',
   'Class EXTest',
@@ -107,6 +107,7 @@ export default class App extends React.Component<AppProps> {
   render() {
     return this.state.appReady ? (
       <I18nextProvider i18n={i18n}>
+        <StatusBar barStyle="dark-content" />
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <ReloadAppOnLanguageChange />
