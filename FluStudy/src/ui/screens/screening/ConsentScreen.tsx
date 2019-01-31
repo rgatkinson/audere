@@ -9,6 +9,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Option } from "../../../store";
+import { AddressConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import NavigationBar from "../../components/NavigationBar";
@@ -51,7 +52,7 @@ class ConsentScreen extends React.PureComponent<Props & WithNamespaces> {
               primary={true}
               label={t("accept")}
               onPress={() => {
-                this.props.navigation.push("Address");
+                this.props.navigation.push("Address", { data: AddressConfig });
               }}
             />
           </ScrollView>

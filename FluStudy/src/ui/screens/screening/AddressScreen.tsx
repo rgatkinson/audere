@@ -3,6 +3,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { Address } from "../../../store/index";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { AddressConfig } from "../../../resources/ScreenConfig";
 import AddressInput from "../../components/AddressInput";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -33,7 +34,9 @@ class AddressScreen extends React.Component<
   }
 
   _onDone = () => {
-    // TODO: Save address
+    this.props.updateAnswer({
+      addressInput: this.state.address,
+    });
     this.props.navigation.push("Confirmation");
   };
 
@@ -59,8 +62,10 @@ class AddressScreen extends React.Component<
         />
         <ContentContainer>
           <Step step={5} totalSteps={5} />
-          <Title label={t("address")} />
-          <Text content={t("description")} />
+          <Title label={t("surveyTitle:" + AddressConfig.title)} />
+          <Text
+            content={t("surveyDescription:" + AddressConfig.description!.label)}
+          />
           <AddressInput
             value={this.state.address}
             onChange={(address: Address) => this.setState({ address })}
@@ -82,4 +87,4 @@ class AddressScreen extends React.Component<
   }
 }
 
-export default reduxWriter(withNamespaces("addressScreen")(AddressScreen));
+export default reduxWriter(withNamespaces()(AddressScreen));

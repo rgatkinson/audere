@@ -43,7 +43,7 @@ class InfoScreen extends React.Component<Props & WithNamespaces> {
           />
           <View style={styles.content}>
             <Image
-              style={{ height: 150, width: 150 }}
+              style={{ height: 150, width: 200 }}
               source={this.props.imageSrc}
             />
             <Title label={this.props.title} />

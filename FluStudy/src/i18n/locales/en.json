@@ -102,10 +102,6 @@
     "todaysDate": "Date",
     "pleaseSign": "Please sign in the signature box using your fingertip or Apple Pencil."
   },
-  "addressScreen": {
-    "address": "Your mailing address",
-    "description": "Please provide a mailing address so we may mail a flu test for you to run at home."
-  },
   "consentScreen": {
     "consent": "Consent Form",
     "description": "Please read and e-sign the consent form by scrolling to the bottom and accepting the signature",
@@ -164,6 +160,7 @@
     "demoSection": "Next, we are going to ask you some questions about yourself."
   },
   "surveyTitle": {
+    "address": "Your mailing address",
     "ageTitle": "How old are you?",
     "symptomTitle": "Describe your symptoms",
     "bloodTitle": "Would you like to take part in a blood collection?",
@@ -228,6 +225,7 @@
     "medInsurance": "We would like to know about your medical insurance."
   },
   "surveyDescription": {
+    "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
     "homelessDesc": "We consider homelessness to be living without permanent housing (which may include staying with friends, in a hotel, shelter, church, on the streets, in a car, or in any other unstable or non-permanent situation).",
     "campusDescription": "If living on campus, please use your UW address including building and room number. \n\nRemember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",
     "homeAddressDescription": "Remember: This information is helpful for us to better understand how colds and the flu spread using a map. We will not share this information with anyone outside of the research team.",

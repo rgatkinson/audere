@@ -9,6 +9,17 @@ export const AgeBuckets: {
   Under18: "under18",
 };
 
+export const AddressConfig: SurveyQuestionData = {
+  id: "Address",
+  title: "address",
+  description: {
+    label: "addressDesc",
+  },
+  buttons: [
+    { key: "next", primary: true, enabled: true },
+  ],
+};
+
 export const AgeConfig: SurveyQuestionData = {
   id: "Age",
   title: "ageTitle",
@@ -20,37 +31,6 @@ export const AgeConfig: SurveyQuestionData = {
   ],
 };
 
-export const BloodConfig: SurveyQuestionData = {
-  id: "BloodScreen",
-  title: "bloodTitle",
-  description: {
-    label: "bloodDescription",
-  },
-  buttons: [
-    {
-      enabled: true,
-      key: "yes",
-      primary: true,
-      subtextKey: "yesBloodButtonSubtext",
-    },
-    {
-      enabled: true,
-      key: "no",
-      primary: true,
-      subtextKey: "noBloodButtonSubtext",
-    },
-  ],
-};
-
-export const BloodConsentConfig: SurveyQuestionData = {
-  buttons: [],
-  id: "BloodConsent",
-  title: "bloodConsent",
-  description: {
-    label: "bloodThankYouAssisting",
-  },
-};
-
 export const ConsentConfig: SurveyQuestionData = {
   buttons: [],
   id: "Consent",
@@ -58,41 +38,6 @@ export const ConsentConfig: SurveyQuestionData = {
   description: {
     label: "thankYouAssisting",
   },
-};
-
-export const HipaaConfig: SurveyQuestionData = {
-  buttons: [],
-  id: "HipaaConsent",
-  title: "hipaaConsent",
-  description: {
-    label: "hipaaThankYouAssisting",
-  },
-};
-
-
-export const EnrolledConfig: SurveyQuestionData = {
-  id: "Enrolled",
-  title: "enrolledTitle",
-  description: {
-    label: "enrolledDescription",
-  },
-  optionList: {
-    multiSelect: true,
-    options: [
-      "sendCopyOfMyConsent",
-      "askAboutMyIllness",
-      "learnAboutStudy",
-      "allOfTheAbove",
-      "doNotEmailMe",
-    ],
-    withOther: false,
-    defaultOptions: ["sendCopyOfMyConsent"],
-    inclusiveOption: "allOfTheAbove",
-    exclusiveOption: "doNotEmailMe",
-  },
-  buttons: [
-    { key: "done", primary: true, enabled: true },
-  ],
 };
 
 export const SymptomsConfig: SurveyQuestionData = {
