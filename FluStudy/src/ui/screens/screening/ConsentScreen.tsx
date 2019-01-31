@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Text as SystemText, View, ScrollView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Text as SystemText, View, ScrollView, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
@@ -57,6 +57,7 @@ class ConsentScreen extends React.PureComponent<
     super(props);
     this.state = {
       email: props.email,
+      keyboardOpen: true,
       name: props.name,
       validEmail: !!props.email,
     };
@@ -91,7 +92,7 @@ class ConsentScreen extends React.PureComponent<
   render() {
     const { t } = this.props;
     return (
-      <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <KeyboardListener
           onWillShow={() => {
             this.setState({ keyboardOpen: true });
@@ -191,7 +192,7 @@ class ConsentScreen extends React.PureComponent<
             </View>
           </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
