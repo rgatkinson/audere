@@ -319,12 +319,16 @@ function addressValueInfo(
   addressInput: Address | undefined | null
 ): AddressValueInfo | null {
   if (addressInput != null) {
+    const name = addressInput.name || "";
     const city = addressInput.city || "";
     const state = addressInput.state || "";
     const zipcode = addressInput.zipcode || "";
     const country = "";
-    const line: string[] = [addressInput.address].filter(isNotNull);
+    const line: string[] = [addressInput.address, addressInput.address2].filter(
+      isNotNull
+    );
     return {
+      name,
       line,
       city,
       state,

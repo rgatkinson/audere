@@ -55,6 +55,7 @@
     "december": "December"
   },
   "addressInput": {
+    "name": "Name",
     "required": " (required)",
     "locationName": "Location name or neighborhood",
     "streetAddress": "Street address",

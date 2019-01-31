@@ -11,7 +11,9 @@ export type FormAction =
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export interface Address {
+  name?: string;
   address?: string;
+  address2?: string;
   city?: string;
   state?: string;
   zipcode?: string;

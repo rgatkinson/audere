@@ -44,6 +44,24 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
+          autoFocus={false}
+          placeholder={
+            t("name") + (this.state.keyboardOpen ? "" : t("required"))
+          }
+          placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+          returnKeyType="next"
+          style={styles.textInput}
+          value={this.props.value ? this.props.value!.name : undefined}
+          onChangeText={(text: string) => {
+            const address = this.props.value || {};
+            address.name = text;
+            this.props.onChange(address);
+          }}
+          onSubmitEditing={() => {}}
+        />
+        <TextInput
+          autoCapitalize="words"
+          autoCorrect={false}
           autoFocus={true}
           placeholder={
             t("streetAddress") + (this.state.keyboardOpen ? "" : t("required"))
@@ -132,7 +150,6 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginVertical: 20,
-    marginHorizontal: 30,
   },
   pickerContainer: {
     borderBottomColor: "#bbb",

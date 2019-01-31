@@ -215,6 +215,7 @@ export interface AnswerInfo {
 }
 
 export interface AddressValueInfo {
+  name?: string;
   line: string[];
   city: string;
   state: string;

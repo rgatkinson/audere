@@ -132,6 +132,7 @@ export interface AnswerInfo {
     valueDeclined?: boolean;
 }
 export interface AddressValueInfo {
+    name?: string;
     line: string[];
     city: string;
     state: string;

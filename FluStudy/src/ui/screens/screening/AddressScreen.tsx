@@ -1,7 +1,8 @@
 import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
-import { Address } from "../../../store/index";
+import { connect } from "react-redux";
+import { Address, StoreState, SurveyResponse } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AddressConfig } from "../../../resources/ScreenConfig";
 import AddressInput from "../../components/AddressInput";
@@ -14,23 +15,43 @@ import Text from "../../components/Text";
 import Title from "../../components/Title";
 
 interface Props {
+  name: string;
   navigation: NavigationScreenProp<any, any>;
+  responses: SurveyResponse[];
 }
 
 interface State {
   address?: Address;
 }
 
+@connect((state: StoreState) => ({
+  name: state.form.name,
+  responses: state.form.responses,
+}))
 class AddressScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps,
   State
 > {
   constructor(props: Props & WithNamespaces & ReduxWriterProps) {
     super(props);
-    // TODO initialize address with answer if one already stored
-    this.state = {
-      address: {},
-    };
+    const addressResponse = props.responses.find(
+      response => response.questionId === AddressConfig.id
+    );
+    if (
+      addressResponse != null &&
+      addressResponse.answer != null &&
+      addressResponse.answer.addressInput != null
+    ) {
+      this.state = {
+        address: addressResponse.answer.addressInput,
+      };
+    } else {
+      this.state = {
+        address: {
+          name: props.name,
+        },
+      };
+    }
   }
 
   _onDone = () => {
@@ -44,6 +65,7 @@ class AddressScreen extends React.Component<
     const address = this.state.address;
     return (
       !!address &&
+      !!address.name &&
       !!address.address &&
       !!address.city &&
       !!address.state &&
