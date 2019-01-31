@@ -85,7 +85,8 @@ export interface AddressInfo extends AddressValueInfo {
 }
 export declare enum AddressInfoUse {
     Home = "home",
-    Work = "work"
+    Work = "work",
+    Temp = "temp"
 }
 export interface NonPIIConsentInfo {
     terms: string;

@@ -127,6 +127,18 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     AddressInfoUse.Home,
     pouch
   );
+  maybePushAddressResponse(
+    responses,
+    "AddressCountryResidence",
+    AddressInfoUse.Home,
+    pouch
+  );
+  maybePushAddressResponse(
+    responses,
+    "AddressNextWeek",
+    AddressInfoUse.Temp,
+    pouch
+  );
 
   const whichShelterResponse = responses.find(
     response => response.questionId === "WhichShelter"

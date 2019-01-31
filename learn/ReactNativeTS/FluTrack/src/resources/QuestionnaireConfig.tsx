@@ -6,6 +6,8 @@ const comp = "comp";
 const expo = "expo";
 const hist = "hist";
 const demo = "demo";
+const travel = "travel";
+const geography = "geography";
 
 export const sectionDescriptions = new Map<string, string>([
   [hist, "histSection"],
@@ -116,6 +118,9 @@ export const questionnaire: SurveyQuestion[] = [
     section: birth,
     data: {
       id: "BirthDate",
+      conditionalNext: {
+        location: new Map([["port", "FluShot"]]),
+      },
       nextQuestion: "WhereLive",
       title: "birth",
       dateInput: {
@@ -382,7 +387,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "AddressCampus",
       nextQuestion: "ExpoDesc",
-      title: "addressCampus",
+      title: "address",
       description: {
         label: "campusDescription",
         center: false,
@@ -1014,6 +1019,9 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "VaccineDate",
+      conditionalNext: {
+        location: new Map([["port", "DaysSick"]]),
+      },
       nextQuestion: "VaccineLocation",
       title: "vacDate",
       dateInput: {
@@ -1050,6 +1058,9 @@ export const questionnaire: SurveyQuestion[] = [
     section: hist,
     data: {
       id: "DaysSick",
+      conditionalNext: {
+        location: new Map([["port", "AssignedSex"]]),
+      },
       nextQuestion: "DailyInterference",
       title: "daysSick",
       numberSelector: {
@@ -1167,10 +1178,8 @@ export const questionnaire: SurveyQuestion[] = [
       id: "AssignedSex",
       nextQuestion: "Race",
       conditionalNext: {
-        age: new Map([
-          [AgeBuckets.Child, "Race"],
-          [AgeBuckets.Under7, "Race"],
-        ]),
+        location: new Map([["port", "Race"]]),
+        age: new Map([[AgeBuckets.Child, "Race"], [AgeBuckets.Under7, "Race"]]),
         buttonKeys: new Map([["female", "Pregnant"]]),
       },
       title: "assignedSex",
@@ -1229,7 +1238,10 @@ export const questionnaire: SurveyQuestion[] = [
       id: "HispanicLatino",
       nextQuestion: "MedicalInsurance",
       conditionalNext: {
-        location: new Map([["homelessShelter", "WhereBorn"]]),
+        location: new Map([
+          ["homelessShelter", "WhereBorn"],
+          ["port", "CountriesVisited"],
+        ]),
       },
       title: "hispanicLatino",
       buttons: [
@@ -1296,6 +1308,88 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "doNotKnow", primary: false, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "CountriesVisited",
+      nextQuestion: "AirlineFlightNum",
+      title: "countriesVisited",
+      description: {
+        label: "comma",
+        center: true,
+      },
+      textInput: {
+        autoCorrect: false,
+        placeholder: "countries",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "AirlineFlightNum",
+      nextQuestion: "AddressCountryResidence",
+      title: "airlineFlightNum",
+      description: {
+        label: "airlineFlightNumDescription",
+        center: true,
+      },
+      textInput: {
+        autoCorrect: false,
+        placeholder: "airlineFlightNum",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  /*
+  {
+    section: geography,
+    data: {
+      id: "CountryResidence",
+      nextQuestion: "AddressCountryResidence",
+      title: "countryResidence",
+      countrySelector: {
+        placeholder: "selectCountry",
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withText" }],
+    },
+  },
+  */
+  {
+    section: geography,
+    data: {
+      id: "AddressCountryResidence",
+      nextQuestion: "AddressNextWeek",
+      description: {
+        label: "addressCountryResidenceDescription",
+        center: false,
+      },
+      title: "addressCountryResidence",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
+    },
+  },
+  {
+    section: geography,
+    data: {
+      id: "AddressNextWeek",
+      nextQuestion: null,
+      title: "addressNextWeek",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
 ];

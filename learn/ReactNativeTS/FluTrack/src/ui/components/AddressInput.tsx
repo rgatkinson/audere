@@ -211,6 +211,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
                 t("postalCode") + (this.state.keyboardOpen ? "" : t("required"))
               }
               placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+              keyboardType="numbers-and-punctuation"
               ref={this.postalCode}
               returnKeyType="next"
               style={[styles.zipcode, styles.textInput]}

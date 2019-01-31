@@ -147,7 +147,8 @@ export interface AddressInfo extends AddressValueInfo {
 
 export enum AddressInfoUse {
   Home = "home",
-  Work = "work"
+  Work = "work",
+  Temp = "temp"
 }
 
 export interface NonPIIConsentInfo {
