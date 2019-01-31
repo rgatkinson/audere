@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  GestureResponderEvent,
   StyleProp,
   StyleSheet,
   Text,
@@ -9,7 +8,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import _ from "lodash";
 
 interface Props {
   checked?: boolean;
@@ -18,21 +16,10 @@ interface Props {
   label: string;
   style?: StyleProp<ViewStyle>;
   subtext?: string;
-  onPress?(event: GestureResponderEvent): void;
+  onPress: any;
 }
 
 export default class Button extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-    this.handlePress = _.debounce(this.handlePress, 1000);
-  }
-
-  handlePress = (event: GestureResponderEvent) => {
-    this.props.enabled &&
-      this.props.onPress != null &&
-      this.props.onPress(event);
-  };
-
   render() {
     const subtext = this.props.subtext ? (
       <Text style={styles.subtext}>{this.props.subtext}</Text>
@@ -49,7 +36,7 @@ export default class Button extends React.Component<Props> {
         <TouchableOpacity
           disabled={!this.props.enabled}
           style={[styles.button, this.props.primary && styles.primaryButton]}
-          onPress={this.handlePress}
+          onPress={this.props.enabled ? this.props.onPress : null}
         >
           {this.props.checked && (
             <Feather

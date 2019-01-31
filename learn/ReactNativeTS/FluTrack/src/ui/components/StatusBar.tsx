@@ -2,7 +2,6 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import _ from "lodash";
 
 interface Props {
   canProceed: boolean;
@@ -14,12 +13,6 @@ interface Props {
 }
 
 class StatusBar extends React.Component<Props & WithNamespaces> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._back = _.debounce(this._back, 1000);
-    this._forward = _.debounce(this._forward, 1000);
-  }
-
   _back = () => {
     this.props.onBack();
   };
