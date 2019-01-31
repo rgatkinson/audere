@@ -36,13 +36,21 @@ export interface OptionLabel {
 
 export interface SurveyAnswer {
   addressInput?: Address;
+  booleanInput?: boolean;
   dateInput?: Date;
   options?: Option[];
   otherOption?: string;
   numberInput?: number;
   selectedButtonKey?: string;
   textInput?: string;
-  [key: string]: Address | Date | Option[] | string | number | undefined;
+  [key: string]:
+    | Address
+    | Date
+    | Option[]
+    | boolean
+    | string
+    | number
+    | undefined;
 }
 
 export interface SurveyResponse {

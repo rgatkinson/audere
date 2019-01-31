@@ -104,6 +104,8 @@
     "pleaseSign": "Please sign in the signature box using your fingertip or Apple Pencil."
   },
   "consentScreen": {
+    "emailAddress": "Email address",
+    "validationError": "* Please provide a valid email address",
     "required": " (required)",
     "name": "Please enter your full name",
     "eSignature": "Your e-signature:",
@@ -170,6 +172,7 @@
   "surveyTitle": {
     "address": "Your mailing address",
     "ageTitle": "How old are you?",
+    "consentEmail": "Email me the consent language",
     "symptomTitle": "Describe your symptoms",
     "bloodTitle": "Would you like to take part in a blood collection?",
     "consent": "Consent",

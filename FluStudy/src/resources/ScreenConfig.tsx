@@ -34,10 +34,7 @@ export const AgeConfig: SurveyQuestionData = {
 export const ConsentConfig: SurveyQuestionData = {
   buttons: [],
   id: "Consent",
-  title: "consent",
-  description: {
-    label: "thankYouAssisting",
-  },
+  title: "consentEmail",
 };
 
 export const SymptomsConfig: SurveyQuestionData = {

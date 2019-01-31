@@ -9,12 +9,21 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { format } from "date-fns";
+import CheckBox from "react-native-check-box";
 import KeyboardListener from "react-native-keyboard-listener";
-import { Action, StoreState, setConsent, setName } from "../../../store";
 import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
-import { AddressConfig } from "../../../resources/ScreenConfig";
+import {
+  Action,
+  StoreState,
+  setConsent,
+  setEmail,
+  setName,
+} from "../../../store";
+import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
+import { AddressConfig, ConsentConfig } from "../../../resources/ScreenConfig";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
+import EmailInput from "../../components/EmailInput";
 import NavigationBar from "../../components/NavigationBar";
 import ScreenContainer from "../../components/ScreenContainer";
 import Step from "../../components/Step";
@@ -23,43 +32,60 @@ import TextInput from "../../components/TextInput";
 import Title from "../../components/Title";
 
 interface Props {
+  email?: string;
   name?: string;
   navigation: NavigationScreenProp<any, any>;
   dispatch(action: Action): void;
 }
 
 interface State {
+  email?: string;
   keyboardOpen?: boolean;
   name?: string;
+  validEmail: boolean;
 }
 
 @connect((state: StoreState) => ({
+  email: state.form.email,
   name: state.form.name,
 }))
-class ConsentScreen extends React.PureComponent<Props & WithNamespaces, State> {
-  constructor(props: Props & WithNamespaces) {
+class ConsentScreen extends React.PureComponent<
+  Props & WithNamespaces & ReduxWriterProps,
+  State
+> {
+  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
     super(props);
     this.state = {
+      email: props.email,
       name: props.name,
+      validEmail: !!props.email,
     };
   }
 
+  _canProceed = (): boolean => {
+    return (
+      !!this.state.name &&
+      (!this.props.getAnswer("booleanInput") ||
+        (!!this.state.email && this.state.validEmail))
+    );
+  };
+
   _onNext = () => {
     const { t } = this.props;
-    const name = this.state.name;
-    if (name != null) {
-      this.props.dispatch(setName(name));
-      this.props.dispatch(
-        setConsent({
-          name: name,
-          terms: t("consentFormHeader") + "\n" + t("consentFormText"),
-          signerType: ConsentInfoSignerType.Subject,
-          date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-          signature: "",
-        })
-      );
-      this.props.navigation.push("Address", { data: AddressConfig });
+    this.props.dispatch(setName(this.props.name!));
+    this.props.dispatch(
+      setConsent({
+        name: this.props.name!,
+        terms: t("consentFormHeader") + "\n" + t("consentFormText"),
+        signerType: ConsentInfoSignerType.Subject,
+        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
+        signature: "",
+      })
+    );
+    if (this.props.getAnswer("booleanInput")) {
+      this.props.dispatch(setEmail(this.state.email!));
     }
+    this.props.navigation.push("Address", { data: AddressConfig });
   };
 
   render() {
@@ -75,9 +101,9 @@ class ConsentScreen extends React.PureComponent<Props & WithNamespaces, State> {
           }}
         />
         <NavigationBar
-          canProceed={false}
+          canProceed={this._canProceed()}
           navigation={this.props.navigation}
-          onNext={() => {}}
+          onNext={this._onNext}
         />
         <Step step={3} totalSteps={5} />
         <View style={{ padding: 8 }}>
@@ -123,6 +149,31 @@ class ConsentScreen extends React.PureComponent<Props & WithNamespaces, State> {
                 </SystemText>
               </SystemText>
               <Text content={t("disclaimer")} />
+              <CheckBox
+                isChecked={!!this.props.getAnswer("booleanInput")}
+                rightTextView={
+                  <Text content={t("surveyTitle:" + ConsentConfig.title)} />
+                }
+                style={{ alignSelf: "flex-start" }}
+                onClick={() => {
+                  this.props.updateAnswer({
+                    booleanInput: !this.props.getAnswer("booleanInput"),
+                  });
+                }}
+              />
+              {!!this.props.getAnswer("booleanInput") && (
+                <EmailInput
+                  autoFocus={true}
+                  placeholder={t("emailAddress")}
+                  returnKeyType="next"
+                  validationError={t("validationError")}
+                  value={this.state.email}
+                  onChange={(email, validEmail) =>
+                    this.setState({ email, validEmail })
+                  }
+                  onSubmit={validEmail => this.setState({ validEmail })}
+                />
+              )}
               <Button
                 enabled={true}
                 primary={true}
@@ -132,7 +183,7 @@ class ConsentScreen extends React.PureComponent<Props & WithNamespaces, State> {
                 }}
               />
               <Button
-                enabled={true}
+                enabled={this._canProceed()}
                 primary={true}
                 label={t("accept")}
                 onPress={this._onNext}
@@ -175,4 +226,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("consentScreen")(ConsentScreen);
+export default reduxWriter(withNamespaces("consentScreen")(ConsentScreen));

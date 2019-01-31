@@ -268,6 +268,10 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
         if (response.answer.textInput) {
           item.answer.push({ valueString: response.answer.textInput });
         }
+
+        if (response.answer.booleanInput != null) {
+          item.answer.push({ valueBoolean: response.answer.booleanInput });
+        }
       }
 
       items.push(item);
