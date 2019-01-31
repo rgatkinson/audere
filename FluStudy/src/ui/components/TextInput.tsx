@@ -60,9 +60,8 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    fontSize: 20,
-    height: 30,
-    marginVertical: 20,
-    paddingHorizontal: 16,
+    fontSize: 16,
+    marginVertical: 10,
+    padding: 4,
   },
 });

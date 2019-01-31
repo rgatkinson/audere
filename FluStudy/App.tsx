@@ -97,6 +97,7 @@ export default class App extends React.Component<AppProps> {
         "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
         "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
         "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
+        "DancingScript-Regular": require("./assets/fonts/DancingScript-Regular.otf"),
       }),
     ]);
 
