@@ -33,6 +33,7 @@ export interface SurveyQuestionData {
 
 interface AddressInputConfig {
   showLocationField: boolean;
+  countryValueFrom?: string; // Question key whose textInput answer should be used as country
 }
 
 export interface ButtonConfig {
@@ -1387,6 +1388,7 @@ export const questionnaire: SurveyQuestion[] = [
       title: "addressCountryResidence",
       addressInput: {
         showLocationField: false,
+        countryValueFrom: "CountryResidence",
       },
       buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
