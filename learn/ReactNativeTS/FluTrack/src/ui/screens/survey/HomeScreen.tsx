@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import _ from "lodash";
 import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
 import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
@@ -31,11 +30,6 @@ interface Props {
   isDemo: state.admin.isDemo,
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._onStart = _.debounce(this._onStart, 1000);
-  }
-
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
   }
