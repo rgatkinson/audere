@@ -182,9 +182,14 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     }
   }
 
-  const assignedSexResponse = responses.find(
+  let assignedSexResponse = responses.find(
     response => response.questionId === "AssignedSex"
   );
+  if (!assignedSexResponse) {
+    assignedSexResponse = responses.find(
+      response => response.questionId === "AssignedSexAirport"
+    );
+  }
   if (!!assignedSexResponse) {
     let buttonKey = assignedSexResponse!.answer!.selectedButtonKey;
     switch (buttonKey) {

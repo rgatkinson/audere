@@ -1059,7 +1059,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "DaysSick",
       conditionalNext: {
-        location: new Map([["port", "AssignedSex"]]),
+        location: new Map([["port", "AssignedSexAirport"]]),
       },
       nextQuestion: "DailyInterference",
       title: "daysSick",
@@ -1182,6 +1182,19 @@ export const questionnaire: SurveyQuestion[] = [
         age: new Map([[AgeBuckets.Child, "Race"], [AgeBuckets.Under7, "Race"]]),
         buttonKeys: new Map([["female", "Pregnant"]]),
       },
+      title: "assignedSex",
+      buttons: [
+        { key: "male", primary: true, enabled: true },
+        { key: "female", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "AssignedSexAirport",
+      nextQuestion: "Race",
       title: "assignedSex",
       buttons: [
         { key: "male", primary: true, enabled: true },
