@@ -1334,7 +1334,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: travel,
     data: {
       id: "AirlineFlightNum",
-      nextQuestion: "AddressCountryResidence",
+      nextQuestion: "CountryResidence",
       title: "airlineFlightNum",
       description: {
         label: "airlineFlightNumDescription",
@@ -1350,7 +1350,6 @@ export const questionnaire: SurveyQuestion[] = [
       ],
     },
   },
-  /*
   {
     section: geography,
     data: {
@@ -1363,7 +1362,6 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [{ key: "done", primary: true, enabled: "withText" }],
     },
   },
-  */
   {
     section: geography,
     data: {
@@ -1389,7 +1387,10 @@ export const questionnaire: SurveyQuestion[] = [
       addressInput: {
         showLocationField: false,
       },
-      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
+      buttons: [
+        { key: "done", primary: true, enabled: "withAddress" },
+        { key: "sameAsResidence", primary: false, enabled: true },
+      ],
     },
   },
 ];

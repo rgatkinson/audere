@@ -475,7 +475,8 @@
     "under7": "Younger than 7",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
-    "none": "None"
+    "none": "None",
+    "sameAsResidence": "Same As Residence Address"
   },
   "countries": {
     "Afghanistan": "Afghanistan",
