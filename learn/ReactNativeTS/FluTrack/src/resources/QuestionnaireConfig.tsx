@@ -1405,6 +1405,7 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "done", primary: true, enabled: "withAddress" },
         { key: "sameAsResidence", primary: false, enabled: true },
+        { key: "doNotKnow", primary: false, enabled: true },
       ],
     },
   },
