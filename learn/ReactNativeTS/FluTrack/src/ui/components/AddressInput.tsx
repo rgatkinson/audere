@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import KeyboardListener from "react-native-keyboard-listener";
 import CountryModal from "./CountryModal";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
@@ -12,6 +13,12 @@ interface Props {
   value?: Address | null;
   onChange(value: Address): void;
   onDone(): void;
+}
+
+interface State {
+  countryOpen: boolean;
+  keyboardOpen: boolean;
+  stateOpen: boolean;
 }
 
 class AddressInput extends React.Component<Props & WithNamespaces> {
@@ -32,12 +39,21 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   state = {
     countryOpen: false,
     stateOpen: false,
+    keyboardOpen: true,
   };
 
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
+        <KeyboardListener
+          onWillShow={() => {
+            this.setState({ keyboardOpen: true });
+          }}
+          onWillHide={() => {
+            this.setState({ keyboardOpen: false });
+          }}
+        />
         {this.props.showLocationField && (
           <TextInput
             autoCapitalize="words"
@@ -84,7 +100,12 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={!this.props.showLocationField}
-          placeholder={t("streetAddress")}
+          placeholder={
+            t("streetAddress") +
+            (this.state.keyboardOpen || !this._isUSAddress()
+              ? ""
+              : t("required"))
+          }
           ref={this.address}
           returnKeyType="next"
           style={styles.textInput}
@@ -99,7 +120,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          placeholder={t("city")}
+          placeholder={
+            t("city") + (this.state.keyboardOpen ? "" : t("required"))
+          }
           ref={this.city}
           returnKeyType="next"
           style={styles.textInput}
@@ -131,7 +154,10 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             <TextInput
               autoCapitalize="words"
               autoCorrect={false}
-              placeholder={t("stateProvince")}
+              placeholder={
+                t("stateProvince") +
+                (this.state.keyboardOpen ? "" : t("required"))
+              }
               ref={this.stateProvince}
               returnKeyType="next"
               style={[{ flex: 1 }, styles.textInput]}
@@ -163,7 +189,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           />
           {this._isUSAddress() ? (
             <NumberInput
-              placeholder={t("zipcode")}
+              placeholder={
+                t("zipcode") + (this.state.keyboardOpen ? "" : t("required"))
+              }
               ref={this.zipcode}
               returnKeyType="next"
               style={[styles.zipcode, styles.textInput]}
@@ -178,7 +206,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           ) : (
             <TextInput
               autoCorrect={false}
-              placeholder={t("postalCode")}
+              placeholder={
+                t("postalCode") + (this.state.keyboardOpen ? "" : t("required"))
+              }
               keyboardType="numbers-and-punctuation"
               ref={this.postalCode}
               returnKeyType="next"

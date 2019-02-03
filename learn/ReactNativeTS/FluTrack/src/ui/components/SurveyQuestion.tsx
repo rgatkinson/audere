@@ -195,7 +195,8 @@ class SurveyQuestion extends Component<
     const address = this._getValue("addressInput");
     return (
       !!address &&
-      !!address.address &&
+      ((!!address.country && address.country !== "United States") ||
+        !!address.address) && // Street address not required for non-US addresses
       !!address.city &&
       !!address.zipcode &&
       (!address.country ||
