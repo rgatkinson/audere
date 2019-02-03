@@ -10,12 +10,14 @@ import {
   ConsentInfo,
   NonPIIConsentInfo,
   ResponseInfo,
-  ResponseItemInfo
+  ResponseItemInfo,
+  LogBatchDocument
 } from "audere-lib";
 import { AccessKey } from "../models/accessKey";
 import { VisitNonPII, VisitPII } from "../models/visit";
 import { Feedback } from "../models/feedback";
 import { ClientLog } from "../models/clientLog";
+import { ClientLogBatch } from "../models/clientLogBatch";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 
@@ -68,6 +70,7 @@ export async function putDocument(req, res) {
         })
       ]);
       break;
+
     case DocumentType.Feedback:
       const feedbackDocument = req.body as FeedbackDocument;
       await sendEmail({
@@ -86,7 +89,8 @@ export async function putDocument(req, res) {
         device: feedbackDocument.device
       });
       break;
-    case DocumentType.Log:
+
+    case DocumentType.Log: {
       const document = req.body as LogDocument;
       const log = document.log;
       clientLogger.info(JSON.stringify(log));
@@ -96,10 +100,16 @@ export async function putDocument(req, res) {
         device: document.device
       });
       break;
+    }
 
-    case DocumentType.LogBatch:
-
+    case DocumentType.LogBatch: {
+      const doc = req.body as LogBatchDocument;
+      const csruid = doc.csruid;
+      const device = doc.device;
+      const batch = doc.batch;
+      await ClientLogBatch.upsert({ csruid, device, batch });
       break;
+    }
 
     default:
       throw new Error("Invalid document type");

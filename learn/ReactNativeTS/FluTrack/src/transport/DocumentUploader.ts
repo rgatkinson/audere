@@ -66,11 +66,11 @@ export class DocumentUploader {
   constructor(db: any, api: AxiosInstance, logger: Logger) {
     this.db = db;
     this.api = api;
+    this.logger = logger;
     this.documentUploadKey = this.getDocumentUploadKey();
     this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.pump = new Pump(() => this.pumpEvents(), logger);
-    this.logger = logger;
     process.nextTick(() => this.pump.start());
   }
 
@@ -287,16 +287,15 @@ export class DocumentUploader {
   }
 
   private async logPouchKeys(): Promise<void> {
-    const items = await this.db.allDocs({
-      include_docs: true,
-    });
-    this.logger.debug("Pouch contents:");
+    const items = await this.db.allDocs({ include_docs: true });
     if (items && items.rows) {
-      items.rows.forEach((row: any) => {
-        this.logger.debug(`  ${row.doc._id}`);
-      });
+      const total = items.rows.length;
+      const docs = items.rows.filter((row: any) => row.doc._id.startsWith("documents/")).length;
+      const csruids = items.rows.filter((row: any) => row.doc._id.startsWith("csruid/documents/")).length;
+      this.logger.debug(`Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`);
+    } else {
+      this.logger.debug("Pouch contents: no items found");
     }
-    this.logger.debug("End pouch contents");
   }
 
   private async check200(
@@ -327,7 +326,7 @@ export class DocumentUploader {
     const buffer = buffers.reduce(bufferXor, new Buffer(0));
     return base64url(buffer);
   }
-  }
+}
 
 // To be used as `await idleness()`.
 function idleness(): Promise<void> {

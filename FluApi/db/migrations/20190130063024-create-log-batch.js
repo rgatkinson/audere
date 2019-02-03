@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("sniffles_batched_client_logs", {
+    return queryInterface.createTable("sniffles_client_log_batches", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -34,6 +34,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("sniffles_batched_client_logs");
+    return queryInterface.dropTable("sniffles_client_log_batches");
   }
 };

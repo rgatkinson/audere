@@ -9,16 +9,15 @@ import { DocumentUploader } from "./DocumentUploader";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
 
-// TODO: use uuid here to instant upload.  Though it uses N^2 bandwidth..
-// TODO: deal with circularity
-
-const PER_RECORD_EXTRA = 40;
-const BATCH_SIZE_THRESHOLD = 2 * 1024 * 1024;
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const BATCH_TIME_THRESHOLD = 20 * MINUTE;
-
-const POUCH_DB_KEY = "PendingLogRecords";
+const DEFAULT_OPTIONS = {
+  guessRecordOverheadInChars: 40,
+  targetBatchSizeInChars: 1024 * 1024,
+  targetBatchIntervalInMs: 20 * 1000,
+  maxLineLength: 300,
+  lineTruncateTail: 50,
+  pouchDbKey: "PendingLogRecords",
+  echoToConsole: process.env.NODE_ENV === "development",
+}
 
 export class LogBatcher implements Logger {
   private readonly uploader: LazyUploader;
@@ -26,16 +25,20 @@ export class LogBatcher implements Logger {
   private readonly db: any;
   private readonly buffer: LogRecordInfo[];
   private readonly pump: Pump;
+  private readonly config: typeof DEFAULT_OPTIONS;
 
   constructor(
     uploader: LazyUploader,
     priority: number,
-    db: LogStore
+    db: LogStore,
+    options: ConfigOptions = {},
   ) {
     this.uploader = uploader;
     this.priority = priority;
     this.db = db;
     this.buffer = [];
+    this.config = { ...DEFAULT_OPTIONS, ...options };
+
     this.pump = new Pump(() => this.pumpState(), this);
   }
 
@@ -61,22 +64,41 @@ export class LogBatcher implements Logger {
 
   public write(level: LogRecordLevel, text: string): void {
     const timestamp = new Date().toISOString();
-    this.writeRecord({ timestamp, level, text });
+    this.writeRecord({ timestamp, level, text: this.truncate(text) });
   }
 
   public writeRecord(record: LogRecordInfo): void {
+    this.echo(`${record.timestamp} [${record.level}]: ${record.text}`);
     this.buffer.push(record);
     this.pump.start();
   }
 
+  private echo(text: string) {
+    if (this.config.echoToConsole) {
+      console.log(text);
+    }
+  }
+
   private async pumpState(): Promise<void> {
-    while (this.buffer.length > 0) {
+    const adding = this.buffer.splice(0);
+    if (adding.length > 0) {
       const state = await this.loadPending();
-      const size = state.size + this.buffer.reduce((acc, x) => acc + guessSize(x), 0);
-      const records = state.records.concat(this.buffer);
+      const size = state.size + this.buffer.reduce((acc, x) => acc + this.guessSize(x), 0);
+      const records = ((state == null) ? [] : state.records).concat(adding);
       const durationMs = (Date.now() - new Date(records[0].timestamp).getTime());
       const uploader = this.uploader.get();
-      const needsUpload = ((size > BATCH_SIZE_THRESHOLD) || (durationMs > BATCH_TIME_THRESHOLD));
+      const needsUpload = (
+        (size > this.config.targetBatchSizeInChars) ||
+        (durationMs > this.config.targetBatchIntervalInMs)
+      );
+
+      this.echo(
+        `LogBatcher:` +
+        ` needsUpload=${needsUpload}` +
+        `, adding ${adding.length}+${state.records.length}=${records.length}` +
+        `, size=${size}` +
+        `, dur=${durationMs}ms`
+      );
 
       try {
         if (needsUpload && (uploader != null)) {
@@ -84,25 +106,25 @@ export class LogBatcher implements Logger {
             timestamp: new Date().toISOString(),
             records,
           }
+          this.echo(`LogBatcher: sending ${records.length} records to DocumentUploader`);
           uploader.save(uuidv4(), batch, DocumentType.LogBatch, this.priority);
-          // uploader is now responsible for this state
-          this.buffer.splice(0);
-          await this.db.put(this.emptyState());
+          this.echo(`LogBatcher: clearing Pouch state`);
+          await this.db.put({ ...state, ...this.emptyState()});
+          this.echo(`LogBatcher: cleared Pouch state`);
         } else {
+          this.echo(`LogBatcher: writing ${records.length} records to PouchDB`);
           await this.db.put({ ...state, size, records });
-          // PouchDB is now responsible for this state
-          this.buffer.splice(0);
         }
       } catch (e) {
         // Hope that the crash log handler can upload a bit of the log state.
-        throw new Error(`${e}\nWhile writing log batch:\n${summarize(records)}`);
+        throw new Error(`=====\n${e}\nWhile writing log batch:\n${this.summarize(records)}\n=====`);
       }
     }
   }
 
   private async loadPending(): Promise<PendingLogState> {
     try {
-      return await this.db.get(POUCH_DB_KEY);
+      return await this.db.get(this.config.pouchDbKey);
     } catch (e) {
       return this.emptyState();
     }
@@ -110,23 +132,40 @@ export class LogBatcher implements Logger {
 
   private emptyState(): PendingLogState {
     return {
-      _id: POUCH_DB_KEY,
+      _id: this.config.pouchDbKey,
       schemaId: 1,
       size: 0,
       records: [],
     };
   }
-}
 
-function guessSize(record: LogRecordInfo): number {
-  return record.timestamp.length + record.level.length + record.text.length + PER_RECORD_EXTRA
-}
+  private guessSize(record: LogRecordInfo): number {
+    return (
+      record.timestamp.length +
+      record.level.length +
+      record.text.length +
+      this.config.guessRecordOverheadInChars
+    );
+  }
 
-function summarize(records: LogRecordInfo[]): string {
-  return records.slice(-40).reduce(
-    (acc, x) => acc + `${x.timestamp}: [${x.level}] ${x.text}\n`,
-    ""
-  )
+  private truncate(text: string): string {
+    const max = this.config.maxLineLength;
+    if (text.length < max) {
+      return text;
+    } else {
+      const ellipses = " ... ";
+      const tail = this.config.lineTruncateTail;
+      const head = max - (tail + ellipses.length);
+      return text.substring(0, head) + ellipses + text.substring(text.length - tail);
+    }
+  }
+
+  private summarize(records: LogRecordInfo[]): string {
+    return records.slice(-40).reduce(
+      (acc, x) => acc + `${x.timestamp}: [${x.level}] ${x.text}\n`,
+      ""
+    )
+  }
 }
 
 // Uploader emits logs, so this is circular.  Lazify our usage of DocumentUploader.
@@ -156,4 +195,13 @@ interface PendingLogState1 {
 interface LogStore {
   get(key: string): Promise<PendingLogState>;
   put(state: PendingLogState): Promise<void>;
+}
+
+interface ConfigOptions {
+  guessRecordOverheadInChars?: number;
+  targetBatchSizeInChars?: number;
+  targetBatchIntervalInMs?: number;
+  maxLineLength?: number;
+  lineTruncateTail?: number;
+  pouchDbKey?: string;
 }
