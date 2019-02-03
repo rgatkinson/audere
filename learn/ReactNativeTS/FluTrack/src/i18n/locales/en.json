@@ -218,7 +218,7 @@
     "whereBorn": "What country were you born in?",
     "timeUS": "How long have you been living in the United States?",
     "medInsurance": "We would like to know about your medical insurance.",
-    "countriesVisited": "Which countries have you visited in the past 14 days? Please include layovers and your country of residence if you were there in the past 14 days.",
+    "countriesVisited": "In the past 14 days, what countries have you been in?",
     "airlineFlightNum": "What was your airline and flight number to Seattle?",
     "countryResidence": "What is your country of residence?",
     "addressCountryResidence": "In your country of residence, where do you live?",
@@ -237,6 +237,7 @@
     "expoToSickPeople": "These questions are about being **in contact** with people who seemed to have a cold. **In contact** means being within 6 feet of them for at least 2 minutes. For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
     "top3": "Select your top 3.",
     "selectAll": "Please select all that apply.",
+    "countriesVisitedDescription": "This may include your country of residence and countries you were in even if you did not leave the airport. Use a comma to separate values if more than one.",
     "airlineFlightNumDescription": "Note: This is the same information that you provided on your Customs Declaration.",
     "addressCountryResidenceDescription": "Remember, your address will be used to understand how viruses spread geographically. We will not share this information with any unauthorized third parties, and we will not send you anything in the mail."
   },
@@ -271,7 +272,8 @@
     "subStudy": "Optional sub-study consent"
   },
   "surveyStartScreen": {
-    "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. Please answer the following questions about your house, your medical history, and other information about yourself."
+    "youAreNowEnrolled": "You are now enrolled in the Seattle Flu Study. ",
+    "pleaseAnswerFollowing": "Please answer the following questions about your house, your medical history, and other information about yourself."
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",

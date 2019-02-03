@@ -1331,7 +1331,7 @@ export const questionnaire: SurveyQuestion[] = [
       nextQuestion: "AirlineFlightNum",
       title: "countriesVisited",
       description: {
-        label: "comma",
+        label: "countriesVisitedDescription",
         center: true,
       },
       textInput: {
