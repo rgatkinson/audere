@@ -125,6 +125,7 @@
   "homeScreen": {
     "studyLocationRequiredAlertTitle": "Study Location Required",
     "studyLocationRequiredAlertBody": "Please have a study administrator select the current collection location, available on the Admin tab within 'Prior to Collection'.",
+    "currentLang": "Current language:",
     "seattleFluStudy": "SEATTLE FLU STUDY",
     "welcome": "Welcome",
     "learnMore": "Learn more about this research and how to participate.",
@@ -480,6 +481,10 @@
     "doNotEmailMe": "Please do not email me",
     "none": "None",
     "sameAsResidence": "Same As Residential Address"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español"
   },
   "countries": {
     "Afghanistan": "Afghanistan",

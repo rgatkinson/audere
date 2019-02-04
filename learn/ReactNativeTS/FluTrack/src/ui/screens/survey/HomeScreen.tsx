@@ -5,7 +5,7 @@ import {
   Image,
   StatusBar,
   StyleSheet,
-  Text,
+  Text as SystemText,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -16,6 +16,8 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
 import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
+import LanguageModal from "../../components/LanguageModal";
+import Text from "../../components/Text";
 
 interface Props {
   admin: string;
@@ -24,12 +26,25 @@ interface Props {
   isDemo: boolean;
 }
 
+interface State {
+  language: string;
+  languageOpen: boolean;
+}
+
 @connect((state: StoreState) => ({
   location: state.admin.location,
   admin: state.admin.administrator,
   isDemo: state.admin.isDemo,
 }))
-class HomeScreen extends React.Component<Props & WithNamespaces> {
+class HomeScreen extends React.Component<Props & WithNamespaces, State> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = {
+      language: "en",
+      languageOpen: false,
+    };
+  }
+
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
   }
@@ -64,31 +79,58 @@ class HomeScreen extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, i18n } = this.props;
     const clinician = !!this.props.admin ? this.props.admin : t("unknown");
     return (
       <View style={styles.container}>
+        <View style={styles.languageSwitcher}>
+          <TouchableOpacity
+            style={styles.picker}
+            onPress={() => this.setState({ languageOpen: true })}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <Text content={t("currentLang")} style={styles.languageText} />
+              <SystemText style={styles.pickerText}>
+                {t("languages:" + this.state.language)}
+              </SystemText>
+            </View>
+            <Feather
+              style={styles.languageIcon}
+              name="chevron-down"
+              color="black"
+              size={16}
+            />
+          </TouchableOpacity>
+          <LanguageModal
+            language={this.state.language}
+            visible={this.state.languageOpen}
+            onDismiss={(language: string) => {
+              i18n.changeLanguage(language);
+              this.setState({ languageOpen: false, language });
+            }}
+          />
+        </View>
         <StatusBar barStyle="light-content" />
         <Image
           style={{ height: 30, width: 380 }}
           source={require("../../../img/UWLogo.png")}
         />
-        <Text style={styles.title}>{t("seattleFluStudy")}</Text>
+        <SystemText style={styles.title}>{t("seattleFluStudy")}</SystemText>
         <TouchableOpacity style={styles.button} onPress={this._onStart}>
-          <Text style={styles.buttonHeader}>{t("welcome")}</Text>
+          <SystemText style={styles.buttonHeader}>{t("welcome")}</SystemText>
           <View style={styles.textContainer}>
-            <Text style={styles.buttonText}>{t("learnMore")}</Text>
+            <SystemText style={styles.buttonText}>{t("learnMore")}</SystemText>
             <Feather name="chevron-right" color="#007AFF" size={32} />
           </View>
         </TouchableOpacity>
-        <Text style={styles.subtitleGap} />
-        <Text style={styles.subtitle}>
+        <SystemText style={styles.subtitleGap} />
+        <SystemText style={styles.subtitle}>
           {t("clinician", { name: clinician })}
-        </Text>
+        </SystemText>
         {this.props.isDemo && (
-          <Text style={styles.subtitle}>
+          <SystemText style={styles.subtitle}>
             {"DEMO MODE - data not used in study"}
-          </Text>
+          </SystemText>
         )}
       </View>
     );
@@ -119,6 +161,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#4B2E83",
     flex: 1,
+  },
+  languageSwitcher: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    backgroundColor: "#85754D",
+    marginBottom: 150,
+    height: 120,
     justifyContent: "center",
   },
   textContainer: {
@@ -147,6 +196,29 @@ const styles = StyleSheet.create({
     lineHeight: 62,
     paddingBottom: 61,
     paddingTop: 43,
+  },
+  picker: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    paddingHorizontal: 10,
+    width: 534,
+  },
+  languageIcon: {
+    margin: 10,
+  },
+  languageText: {
+    fontFamily: "OpenSans-Bold",
+    fontSize: 17,
+    marginVertical: 5,
+  },
+  pickerText: {
+    fontSize: 17,
+    marginVertical: 5,
+    marginLeft: 10,
+    paddingTop: 2,
   },
 });
 
