@@ -12,7 +12,7 @@ import { Logger } from "./LogUtil";
 const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
   targetBatchSizeInChars: 1024 * 1024,
-  targetBatchIntervalInMs: 20 * 1000,
+  targetBatchIntervalInMs: 5 * 60 * 1000,
   maxLineLength: 300,
   lineTruncateTail: 50,
   pouchDbKey: "PendingLogRecords",
