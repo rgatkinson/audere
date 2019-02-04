@@ -4,8 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import uuidv4 from "uuid/v4";
-import { DocumentType, LogRecordInfo, LogRecordLevel } from "audere-lib";
-import { DocumentUploader } from "./DocumentUploader";
+import { DocumentType, LogRecordInfo, LogRecordLevel, LogBatchInfo } from "audere-lib";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
 
@@ -17,27 +16,22 @@ const DEFAULT_OPTIONS = {
   lineTruncateTail: 50,
   pouchDbKey: "PendingLogRecords",
   echoToConsole: process.env.NODE_ENV === "development",
+  uploadPriority: 3,
 }
 
 export class LogBatcher implements Logger {
   private readonly uploader: LazyUploader;
-  private readonly priority: number;
   private readonly db: any;
   private readonly buffer: LogRecordInfo[];
   private readonly pump: Pump;
   private readonly config: typeof DEFAULT_OPTIONS;
 
-  constructor(
-    uploader: LazyUploader,
-    priority: number,
-    db: LogStore,
-    options: ConfigOptions = {},
-  ) {
+  constructor(uploader: LazyUploader, db: LogStore, options: ConfigOptions = {}) {
     this.uploader = uploader;
-    this.priority = priority;
     this.db = db;
     this.buffer = [];
     this.config = { ...DEFAULT_OPTIONS, ...options };
+    this.echo(`Config = ${JSON.stringify(this.config)}`);
 
     this.pump = new Pump(() => this.pumpState(), this);
   }
@@ -83,7 +77,7 @@ export class LogBatcher implements Logger {
     const adding = this.buffer.splice(0);
     if (adding.length > 0) {
       const state = await this.loadPending();
-      const size = state.size + this.buffer.reduce((acc, x) => acc + this.guessSize(x), 0);
+      const size = state.size + adding.reduce((acc, x) => acc + this.guessSize(x), 0);
       const records = ((state == null) ? [] : state.records).concat(adding);
       const durationMs = (Date.now() - new Date(records[0].timestamp).getTime());
       const uploader = this.uploader.get();
@@ -107,7 +101,7 @@ export class LogBatcher implements Logger {
             records,
           }
           this.echo(`LogBatcher: sending ${records.length} records to DocumentUploader`);
-          uploader.save(uuidv4(), batch, DocumentType.LogBatch, this.priority);
+          uploader.save(uuidv4(), batch, DocumentType.LogBatch, this.config.uploadPriority);
           this.echo(`LogBatcher: clearing Pouch state`);
           await this.db.put({ ...state, ...this.emptyState()});
           this.echo(`LogBatcher: cleared Pouch state`);
@@ -171,19 +165,28 @@ export class LogBatcher implements Logger {
 // Uploader emits logs, so this is circular.  Lazify our usage of DocumentUploader.
 // Factoring out 'bind' here avoids making it available to users of LogBatcher.
 export class LazyUploader {
-  private uploader: DocumentUploader | null = null;
+  private uploader: Uploader | null = null;
 
-  public bind(uploader: DocumentUploader): void {
+  public bind(uploader: Uploader): void {
     if (this.uploader != null) {
       throw new Error("LazyUploader: uploader already set");
     }
     this.uploader = uploader;
   }
 
-  public get(): DocumentUploader | null { return this.uploader; }
+  public get(): Uploader | null { return this.uploader; }
 }
 
-type PendingLogState = PendingLogState1;
+export interface Uploader {
+  save(
+    localUid: string,
+    document: LogBatchInfo,
+    documentType: DocumentType,
+    priority: number
+  ): void;
+}
+
+export type PendingLogState = PendingLogState1;
 
 interface PendingLogState1 {
   _id: string;
@@ -192,16 +195,18 @@ interface PendingLogState1 {
   records: LogRecordInfo[];
 }
 
-interface LogStore {
+export interface LogStore {
   get(key: string): Promise<PendingLogState>;
   put(state: PendingLogState): Promise<void>;
 }
 
-interface ConfigOptions {
+export interface ConfigOptions {
   guessRecordOverheadInChars?: number;
   targetBatchSizeInChars?: number;
   targetBatchIntervalInMs?: number;
   maxLineLength?: number;
   lineTruncateTail?: number;
   pouchDbKey?: string;
+  echoToConsole?: boolean,
+  uploadPriority?: number;
 }

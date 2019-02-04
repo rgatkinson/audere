@@ -26,7 +26,7 @@ interface Transport {
 export function createTransport(): Transport {
   const db = new PouchDB("clientDB", { auto_compaction: true });
   const lazyUploader = new LazyUploader();
-  const logger = new LogBatcher(lazyUploader, 3, <any>db);
+  const logger = new LogBatcher(lazyUploader, <any>db, { uploadPriority: 3 });
   const api = createAxios(logger);
   const uploader = new DocumentUploader(db, api, logger);
 
@@ -75,14 +75,14 @@ function createAxios(logger: LogBatcher) {
   });
 
   if (IS_NODE_ENV_DEVELOPMENT) {
-    const REQUEST_FIELDS = ["method", "baseURL", "url"];
+    const REQUEST_FIELDS = ["method", "baseURL", "url", "data"];
     api.interceptors.request.use(request => {
       logger.info(
         `HTTP request:\n${JSON.stringify(request, REQUEST_FIELDS, 2)}`
       );
       return request;
     });
-    const RESPONSE_FIELDS = ["status", "headers"];
+    const RESPONSE_FIELDS = ["status", "headers", "data"];
     api.interceptors.response.use(response => {
       logger.debug(
         `HTTP response: "${JSON.stringify(response, RESPONSE_FIELDS, 2)}"`
