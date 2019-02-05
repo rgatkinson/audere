@@ -1,17 +1,22 @@
 #!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
 set -euo pipefail
-set -x
 umask 077
 SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+. "$SELF_DIR/util.sh"
 
 function usage() {
-  echo 1>&2 "$*"
-  echo 1>&2 "Usage:"
-  echo 1>&2 "  ${BASH_SOURCE[0]} <environment> [<git-revision>]"
-  echo 1>&2 ""
-  echo 1>&2 "where"
-  echo 1>&2 "  <environment> is one of 'staging' or 'prod'"
-  echo 1>&2 "  <git-revision> is a valid revision in the audere repo"
+  echo2 "$*"
+  echo2 "Usage:"
+  echo2 "  ${BASH_SOURCE[0]} <environment> [<git-revision>]"
+  echo2 ""
+  echo2 "where"
+  echo2 "  <environment> is one of 'staging' or 'prod'"
+  echo2 "  <git-revision> is a valid revision in the audere repo"
   exit 1
 }
 
@@ -36,7 +41,19 @@ if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
   usage "Unrecognized commit '$commit'"
 fi
 
-cd "$SELF_DIR/../terraform/flu/api-$environment"
+API_DIR="$(cd "$SELF_DIR/../terraform/flu/api-$environment" && pwd)"
+
 set -x
+cd "$API_DIR"
 terraform taint -module=flu_api aws_autoscaling_group.flu_api
+terraform apply -var "commit=$commit" -var "migrate=true"
+set +x
+
+MIGRATE_NAME="flu-${environment}-api-migrate"
+echo "Looking up 'vmid $MIGRATE_NAME'.."
+MIGRATE_ID="$(aws-instance-id $MIGRATE_NAME)"
+echo "  ..got '$MIGRATE_ID'"
+aws-wait-for-instance-state "$MIGRATE_ID" stopped
+
+set -x
 terraform apply -var "commit=$commit"
