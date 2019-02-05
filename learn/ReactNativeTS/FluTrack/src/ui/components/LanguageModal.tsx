@@ -13,7 +13,10 @@ interface State {
   language: string;
 }
 
-const languages = ["en", "es"];
+export const languages: { [index: string]: string } = {
+  en: "English",
+  es: "Español",
+};
 
 class LanguageModal extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
@@ -40,12 +43,8 @@ class LanguageModal extends React.Component<Props & WithNamespaces, State> {
             style={{ height: 50, width: 300 }}
             onValueChange={(language: string) => this.setState({ language })}
           >
-            {languages.map((language: string) => (
-              <Picker.Item
-                label={t(language)}
-                value={language}
-                key={language}
-              />
+            {Object.keys(languages).map(code => (
+              <Picker.Item label={languages[code]} value={code} key={code} />
             ))}
           </Picker>
         </View>
