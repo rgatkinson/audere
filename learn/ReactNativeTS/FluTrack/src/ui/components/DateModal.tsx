@@ -2,6 +2,7 @@ import React from "react";
 import { DatePickerIOS, Picker, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Modal from "./Modal";
+import i18n from "../../i18n";
 
 interface Props {
   date: Date;
@@ -36,7 +37,7 @@ class DateModal extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, i18n } = this.props;
     return (
       <Modal
         height={280}
@@ -52,6 +53,7 @@ class DateModal extends React.Component<Props & WithNamespaces> {
             maximumDate={new Date()}
             minimumDate={new Date(1900, 0, 1)}
             mode="date"
+            locale={i18n.language}
             onDateChange={date => {
               this.setState({ selectedDate: true, date });
             }}
