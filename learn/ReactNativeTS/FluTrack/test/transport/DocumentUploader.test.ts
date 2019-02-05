@@ -23,10 +23,9 @@ import {
   CSRUID_PLACEHOLDER,
 } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
-import { axiosResponse, nextCall } from "../util";
+import { ArrayLogger, axiosResponse, nextCall } from "../util";
 import { VisitInfo } from "audere-lib";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
-import { ArrayLogger } from "../../src/transport/LogUtil";
 
 const EMPTY_POUCH_CONTENTS = {
   total_rows: 0,

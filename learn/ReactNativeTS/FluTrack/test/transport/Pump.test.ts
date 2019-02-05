@@ -4,8 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Pump } from "../../src/transport/Pump";
-import { ticks } from "../util";
-import { ArrayLogger } from "../../src/transport/LogUtil";
+import { ArrayLogger, ticks } from "../util";
 
 const logger = new ArrayLogger();
 
