@@ -165,8 +165,7 @@ const styles = StyleSheet.create({
   languageSwitcher: {
     alignItems: "center",
     alignSelf: "stretch",
-    backgroundColor: "#85754D",
-    marginBottom: 150,
+    marginBottom: 70,
     height: 120,
     justifyContent: "center",
   },
@@ -180,7 +179,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "OpenSans-Regular",
     fontSize: 21,
-    paddingTop: 130,
+    paddingTop: 110,
   },
   subtitle: {
     color: "#FFFFFF",
