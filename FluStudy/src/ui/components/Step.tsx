@@ -23,9 +23,10 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
+    color: "#333",
     fontFamily: "OpenSans-Regular",
-    fontSize: 21,
-    marginVertical: 10,
+    fontSize: 16,
+    marginVertical: 0,
     textAlign: "center",
   },
 });

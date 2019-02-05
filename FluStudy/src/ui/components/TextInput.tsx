@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderBottomColor: "#bbb",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    fontSize: 16,
+    fontSize: 14,
     marginVertical: 10,
     padding: 4,
   },

@@ -34,8 +34,7 @@
     "ios": "expo start --ios",
     "test": "jest",
     "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
-    "lint-fix": "prettier --write *.{j,t} src/**/**/**/*.ts{,x}",
-    "lint-fix-again": "prettier --write *.{j,t} src/**/**/*.ts{,x}",
+    "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}",
     "typecheck": "tsc --noEmit"
   },
   "prettier": {

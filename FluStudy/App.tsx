@@ -1,16 +1,13 @@
 import "./src/hacks";
 import React from "react";
-import { StatusBar, YellowBox } from 'react-native';
+import { StatusBar, YellowBox } from "react-native";
 YellowBox.ignoreWarnings([
-  'Class EXHomeModule',
-  'Class EXTest',
-  'Class EXDisabledDevMenu',
-  'Class EXDisabledRedBox',
+  "Class EXHomeModule",
+  "Class EXTest",
+  "Class EXDisabledDevMenu",
+  "Class EXDisabledRedBox",
 ]);
-import {
-  createStackNavigator,
-  NavigationScreenProp,
-} from "react-navigation";
+import { createStackNavigator, NavigationScreenProp } from "react-navigation";
 import { AppLoading, Font } from "expo";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
@@ -24,34 +21,35 @@ import {
   uploadingErrorHandler,
   ErrorProps,
 } from "./src/crashReporter";
-
-import WelcomeScreen from "./src/ui/screens/screening/WelcomeScreen";
-import WhyScreen from "./src/ui/screens/screening/WhyScreen";
-import WhatScreen from "./src/ui/screens/screening/WhatScreen";
-import AgeScreen from "./src/ui/screens/screening/AgeScreen";
-import SymptomsScreen from "./src/ui/screens/screening/SymptomsScreen";
-import IneligibleScreen from "./src/ui/screens/screening/IneligibleScreen";
-import ConsentScreen from "./src/ui/screens/screening/ConsentScreen";
-import AddressScreen from "./src/ui/screens/screening/AddressScreen";
-import ConfirmationScreen from "./src/ui/screens/screening/ConfirmationScreen";
-import PushNotificationsScreen from "./src/ui/screens/screening/PushNotificationsScreen";
-import InstructionsScreen from "./src/ui/screens/screening/InstructionsScreen";
-import ExtraInfoScreen from "./src/ui/screens/screening/ExtraInfoScreen";
+import {
+  Welcome,
+  Why,
+  What,
+  Age,
+  Symptoms,
+  Address,
+  Ineligible,
+  Confirmation,
+  PushNotifications,
+  Instructions,
+  ExtraInfo,
+} from "./src/ui/Screens";
+import ConsentScreen from "./src/ui/ConsentScreen";
 
 const Home = createStackNavigator(
   {
-    Welcome: WelcomeScreen,
-    Why: WhyScreen,
-    What: WhatScreen,
-    Age: AgeScreen,
-    Symptoms: SymptomsScreen,
-    Ineligible: IneligibleScreen,
+    Welcome,
+    Why,
+    What,
+    Age,
+    Symptoms,
+    Ineligible,
     Consent: ConsentScreen,
-    Address: AddressScreen,
-    Confirmation: ConfirmationScreen,
-    PushNotifications: PushNotificationsScreen,
-    Instructions: InstructionsScreen,
-    ExtraInfo: ExtraInfoScreen,
+    Address,
+    Confirmation,
+    PushNotifications,
+    Instructions,
+    ExtraInfo,
   },
   {
     headerMode: "float",

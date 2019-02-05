@@ -1167,10 +1167,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "AssignedSex",
       nextQuestion: "Race",
       conditionalNext: {
-        age: new Map([
-          [AgeBuckets.Child, "Race"],
-          [AgeBuckets.Under7, "Race"],
-        ]),
+        age: new Map([[AgeBuckets.Child, "Race"], [AgeBuckets.Under7, "Race"]]),
         buttonKeys: new Map([["female", "Pregnant"]]),
       },
       title: "assignedSex",

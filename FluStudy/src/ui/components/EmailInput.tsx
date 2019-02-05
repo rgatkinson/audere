@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     fontFamily: "OpenSans-Regular",
-    fontSize: 15,
     height: 21,
   },
   input: {

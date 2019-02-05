@@ -1,7 +1,5 @@
 import { NavigationScreenProp } from "react-navigation";
-import {
-  SurveyQuestionData,
-} from "./QuestionnaireConfig";
+import { SurveyQuestionData } from "./QuestionnaireConfig";
 import { Action } from "../store/index";
 
 export interface SurveyQuestionProps {
@@ -12,4 +10,4 @@ export interface SurveyQuestionProps {
   dispatch(action: Action): void;
   onActivate(): void;
   onNext(nextQuestion: string | null): void;
-};
+}

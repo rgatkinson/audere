@@ -15,9 +15,7 @@ export const AddressConfig: SurveyQuestionData = {
   description: {
     label: "addressDesc",
   },
-  buttons: [
-    { key: "next", primary: true, enabled: true },
-  ],
+  buttons: [{ key: "next", primary: true, enabled: true }],
 };
 
 export const AgeConfig: SurveyQuestionData = {
@@ -51,12 +49,10 @@ export const SymptomsConfig: SurveyQuestionData = {
       "cough",
       "fatigue",
       "muscleOrBodyAches",
-      "noneOfTheAbove"
+      "noneOfTheAbove",
     ],
     withOther: false,
     exclusiveOption: "noneOfTheAbove",
   },
-  buttons: [
-    { key: "next", primary: true, enabled: true },
-  ],
+  buttons: [{ key: "next", primary: true, enabled: true }],
 };

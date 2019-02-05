@@ -10,7 +10,6 @@ interface Props {
   center?: boolean;
   content: string;
   extraBold?: boolean;
-  small?: boolean;
   style?: StyleProp<TextStyle>;
 }
 
@@ -22,7 +21,6 @@ export default class Text extends React.Component<Props> {
           styles.container,
           this.props.center && styles.center,
           this.props.style,
-          this.props.small && styles.smallText,
         ]}
       >
         {this.props.content.split("**").map(
@@ -49,12 +47,10 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
+    color: "#333",
     fontFamily: "OpenSans-Regular",
-    fontSize: 15,
-    marginVertical: 10,
-  },
-  smallText: {
-    fontSize: 12,
+    fontSize: 14,
+    marginVertical: 5,
   },
   extraBold: {
     fontFamily: "OpenSans-ExtraBold",

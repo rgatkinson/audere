@@ -14,6 +14,7 @@ import _ from "lodash";
 interface Props {
   checked?: boolean;
   enabled: boolean;
+  fontSize?: number;
   primary: boolean;
   label: string;
   style?: StyleProp<ViewStyle>;
@@ -57,9 +58,8 @@ export default class Button extends React.Component<Props> {
           <Text
             style={[
               styles.text,
-              this.props.primary
-                ? styles.primaryButtonText
-                : styles.secondaryButtonText,
+              this.props.primary && styles.primaryButtonText,
+              !!this.props.fontSize && { fontSize: this.props.fontSize },
             ]}
           >
             {this.props.label}
@@ -73,7 +73,7 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderColor: "#9fa1a5",
+    borderColor: "#333",
     borderRadius: 4,
     borderWidth: 2,
     flexDirection: "row",
@@ -84,23 +84,18 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   container: {
-    marginVertical: 10,
+    marginVertical: 6,
     width: 300,
   },
   text: {
     fontFamily: "OpenSans-SemiBold",
-    fontSize: 17,
-    letterSpacing: -0.41,
-    lineHeight: 22,
+    fontSize: 20,
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: "#9fa1a5",
+    backgroundColor: "#333",
   },
   primaryButtonText: {
     color: "#FFFFFF",
-  },
-  secondaryButtonText: {
-    color: "#404347",
   },
 });

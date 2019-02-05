@@ -22,8 +22,8 @@ export default class Title extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   title: {
-    color: "#404347",
+    color: "#666",
     fontFamily: "OpenSans-SemiBold",
-    fontSize: 25,
+    fontSize: 24,
   },
 });

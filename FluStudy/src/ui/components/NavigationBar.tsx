@@ -44,7 +44,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             content={t("next")}
           />
           <Feather
-            color={this.props.canProceed ? "#007AFF" : "gray"}
+            color={this.props.canProceed ? "#007AFF" : "#bbb"}
             name="chevron-right"
             size={30}
             style={{ paddingTop: 5 }}
@@ -60,9 +60,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   actionText: {
-    fontFamily: "System",
-    fontSize: 17,
     color: "#007AFF",
+    fontFamily: "System",
+    fontSize: 16,
+    marginVertical: 10,
   },
   container: {
     backgroundColor: "#EEEEEE",
@@ -75,12 +76,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   inactiveText: {
-    color: "gray",
+    color: "#bbb",
   },
   title: {
     fontFamily: "System",
     fontSize: 17,
     fontWeight: "bold",
+    marginVertical: 10,
   },
 });
 
