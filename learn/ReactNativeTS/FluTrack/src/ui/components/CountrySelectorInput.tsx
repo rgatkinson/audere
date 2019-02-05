@@ -23,9 +23,7 @@ class CountrySelectorInput extends React.Component<Props & WithNamespaces> {
           onPress={() => this.setState({ open: true })}
         >
           {this.props.country != null ? (
-            <Text style={styles.text}>
-              {t("countries:" + this.props.country)}
-            </Text>
+            <Text style={styles.text}>{t(this.props.country)}</Text>
           ) : (
             <Text style={styles.text}>{this.props.placeholder}</Text>
           )}
@@ -64,4 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces()<Props>(CountrySelectorInput);
+export default withNamespaces("countries")<Props>(CountrySelectorInput);
