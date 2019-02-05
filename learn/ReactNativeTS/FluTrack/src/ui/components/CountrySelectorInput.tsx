@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import CountryModal from "./CountryModal";
 
 interface Props {
@@ -8,12 +9,13 @@ interface Props {
   onCountryChange(country?: string): void;
 }
 
-export default class CountrySelectorInput extends React.Component<Props> {
+class CountrySelectorInput extends React.Component<Props & WithNamespaces> {
   state = {
     open: false,
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -21,7 +23,9 @@ export default class CountrySelectorInput extends React.Component<Props> {
           onPress={() => this.setState({ open: true })}
         >
           {this.props.country != null ? (
-            <Text style={styles.text}>{this.props.country}</Text>
+            <Text style={styles.text}>
+              {t("countries:" + this.props.country)}
+            </Text>
           ) : (
             <Text style={styles.text}>{this.props.placeholder}</Text>
           )}
@@ -59,3 +63,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+
+export default withNamespaces()<Props>(CountrySelectorInput);

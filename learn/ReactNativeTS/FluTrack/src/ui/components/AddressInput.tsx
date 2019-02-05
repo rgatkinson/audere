@@ -76,9 +76,12 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           onPress={() => this.setState({ countryOpen: true })}
         >
           <Text style={styles.text}>
-            {this.props.value && this.props.value.country
-              ? this.props.value.country
-              : "United States"}
+            {t(
+              "countries:" +
+                (this.props.value && this.props.value.country
+                  ? this.props.value.country
+                  : "United States")
+            )}
           </Text>
         </TouchableOpacity>
         <CountryModal
