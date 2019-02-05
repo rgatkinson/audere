@@ -248,7 +248,7 @@ interface AddressState {
   name: state.form.name,
   responses: state.form.responses,
 }))
-class AddressScreen extends React.Component<
+class AddressInputScreen extends React.Component<
   AddressProps & WithNamespaces & ReduxWriterProps,
   AddressState
 > {
@@ -321,7 +321,7 @@ class AddressScreen extends React.Component<
     );
   }
 }
-const Address = reduxWriter(withNamespaces()(AddressScreen));
+const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
 
 class IneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -468,7 +468,7 @@ export {
   What,
   Age,
   Symptoms,
-  Address,
+  AddressScreen,
   Ineligible,
   Confirmation,
   PushNotifications,

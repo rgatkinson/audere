@@ -95,7 +95,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             this.props.onChange(address);
           }}
           onSubmitEditing={() => {
-            this.zipcode.current!.focus();
+            this.setState({ stateOpen: true });
           }}
         />
         <View style={{ flexDirection: "row" }}>
