@@ -17,19 +17,33 @@ class DateInput extends React.Component<Props & WithNamespaces> {
     open: false,
   };
 
-  //https://github.com/date-fns/date-fns/issues/489
-  formatDate(date: Date): string {
+  formatDate(date: Date, language: string): string {
+    //No built-in library for locale-sensitive month+year, specify patterns here
+    const locales: {
+      [index: string]: { locale: any; monthFormat: string };
+    } = {
+      en: { locale: require("date-fns/locale/en"), monthFormat: "MMMM YYYY" },
+      es: {
+        locale: require("date-fns/locale/es"),
+        monthFormat: "MMMM [de] YYYY",
+      },
+    };
+    //https://github.com/date-fns/date-fns/issues/489
     const [year, month, day] = date
       .toISOString()
       .substr(0, 10)
       .split("-");
-    return format(
-      new Date(+year, +month - 1, +day),
-      this.props.mode === "month" ? "MMMM YYYY" : "MMMM D, YYYY"
-    );
+    const realDate = new Date(+year, +month - 1, +day);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return this.props.mode === "month"
+      ? format(realDate, locales[language].monthFormat, {
+          locale: locales[language].locale,
+        })
+      : date.toLocaleDateString(language, options);
   }
 
   render() {
+    const { i18n } = this.props;
     const newDate = new Date();
     if (!!this.props.defaultYear) {
       newDate.setFullYear(this.props.defaultYear);
@@ -42,7 +56,9 @@ class DateInput extends React.Component<Props & WithNamespaces> {
           onPress={() => this.setState({ open: true })}
         >
           {this.props.date ? (
-            <Text style={styles.text}>{this.formatDate(this.props.date)}</Text>
+            <Text style={styles.text}>
+              {this.formatDate(this.props.date, i18n.language)}
+            </Text>
           ) : (
             <Text style={styles.text}>{this.props.placeholder}</Text>
           )}

@@ -11,6 +11,7 @@ const languageDetector = {
   cacheUserLanguage: () => {},
 };
 i18n.use(languageDetector).init({
+  lng: "en",
   fallbackLng: "en",
   resources: {
     en: enStrings,

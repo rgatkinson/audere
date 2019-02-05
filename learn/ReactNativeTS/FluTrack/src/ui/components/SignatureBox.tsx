@@ -162,7 +162,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, i18n } = this.props;
     return (
       <Modal
         height={this._getModalHeight(this.props.signer)}
@@ -192,7 +192,7 @@ class SignatureBox extends React.Component<Props & WithNamespaces, State> {
           >
             <Text style={styles.headerText}>{t("todaysDate")}</Text>
             <Text style={styles.inputContainer}>
-              {new Date().toLocaleDateString()}
+              {new Date().toLocaleDateString(i18n.language)}
             </Text>
           </View>
           <View>

@@ -2,7 +2,6 @@ import React from "react";
 import { DatePickerIOS, Picker, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Modal from "./Modal";
-import i18n from "../../i18n";
 
 interface Props {
   date: Date;
@@ -62,20 +61,24 @@ class DateModal extends React.Component<Props & WithNamespaces> {
         ) : (
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={months[this._getDate().getMonth()]}
+              selectedValue={months[this._getDate().getUTCMonth()]}
               style={{ height: 50, width: 250 }}
               onValueChange={month => {
                 const newDate = new Date(
-                  this._getDate().getFullYear(),
-                  months.indexOf(month)
+                  Date.UTC(
+                    this._getDate().getUTCFullYear(),
+                    months.indexOf(month)
+                  )
                 );
                 const now = new Date();
+                console.log(now.getUTCMonth());
+                console.log(newDate.getUTCMonth());
                 if (
-                  this._getDate().getFullYear() == now.getFullYear() &&
-                  now.getMonth() < newDate.getMonth()
+                  this._getDate().getUTCFullYear() == now.getUTCFullYear() &&
+                  now.getUTCMonth() < newDate.getUTCMonth()
                 ) {
                   // Don't allow a month in the future
-                  newDate.setFullYear(now.getFullYear() - 1);
+                  newDate.setUTCFullYear(now.getUTCFullYear() - 1);
                 }
                 this.setState({ selectedDate: true, date: newDate });
               }}
@@ -85,15 +88,17 @@ class DateModal extends React.Component<Props & WithNamespaces> {
               ))}
             </Picker>
             <Picker
-              selectedValue={this._getDate().getFullYear()}
+              selectedValue={this._getDate().getUTCFullYear()}
               style={{ height: 50, width: 100 }}
               onValueChange={year => {
-                const newDate = new Date(year, this._getDate().getMonth());
+                const newDate = new Date(
+                  Date.UTC(year, this._getDate().getUTCMonth())
+                );
                 this.setState({ selectedDate: true, date: newDate });
               }}
             >
               {[...Array(2).keys()].reverse().map(index => {
-                const year = new Date().getFullYear() - index;
+                const year = new Date().getUTCFullYear() - index;
                 return (
                   <Picker.Item label={"" + year} value={year} key={year} />
                 );
