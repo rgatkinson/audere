@@ -4,17 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { Option } from "../../../store";
 import BackButton from "../../components/BackButton";
 import FeedbackButton from "../../components/FeedbackButton";
 import FeedbackModal from "../../components/FeedbackModal";
-import OptionList, {
-  newSelectedOptionsList,
-} from "../../components/OptionList";
+import OptionList from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
 
 interface Props {
@@ -66,7 +63,7 @@ export default class GiftCardTypeScreen extends React.Component<Props, State> {
         selected: false,
       },
       {
-        key: "other",
+        key: "Other",
         selected: false,
       },
     ],
@@ -85,7 +82,7 @@ export default class GiftCardTypeScreen extends React.Component<Props, State> {
       return null;
     }
     const selectedOption = selected[0].key;
-    if (selectedOption === "other") {
+    if (selectedOption === "Other") {
       return this.state.other;
     }
     return selectedOption;

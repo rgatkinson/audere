@@ -7,7 +7,7 @@ export const PostCollectionQuestions = {
     title:
       "Were there any adverse events experienced from the last collection?",
     optionList: {
-      options: ["yes", "no"],
+      options: ["Yes", "No"],
       multiSelect: false,
       withOther: false,
     },
@@ -17,7 +17,7 @@ export const PostCollectionQuestions = {
     id: "WhichProcedures",
     title: "Which procedures had adverse events?",
     optionList: {
-      options: ["bloodDraw", "nasalSwab"],
+      options: ["Blood draw", "Nasal swab"],
       multiSelect: true,
       withOther: false,
     },
@@ -27,7 +27,7 @@ export const PostCollectionQuestions = {
     id: "BloodDrawEvents",
     title: "For blood draw, what were the adverse events?",
     optionList: {
-      options: ["bruisingAtSite", "infectionAtSite", "other"],
+      options: ["Bruising at site", "Infection at site", "Other"],
       multiSelect: true,
       withOther: true,
       otherPlaceholder: "Adverse event",
@@ -38,7 +38,7 @@ export const PostCollectionQuestions = {
     id: "NasalSwabEvents",
     title: "For nasal swab, what were the adverse events?",
     optionList: {
-      options: ["nosebleed", "other"],
+      options: ["Nosebleed", "Other"],
       multiSelect: true,
       withOther: true,
       otherPlaceholder: "Adverse event",
@@ -47,6 +47,6 @@ export const PostCollectionQuestions = {
 };
 
 export const OptionKeyToQuestion: { [key: string]: SurveyQuestionData } = {
-  bloodDraw: PostCollectionQuestions.BloodDrawEvents,
-  nasalSwab: PostCollectionQuestions.NasalSwabEvents,
+  "Blood draw": PostCollectionQuestions.BloodDrawEvents,
+  "Nasal swab": PostCollectionQuestions.NasalSwabEvents,
 };

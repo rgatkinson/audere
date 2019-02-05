@@ -4,11 +4,10 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { withNamespaces, WithNamespaces } from "react-i18next";
-import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, Alert } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Option, StoreState, SurveyResponse } from "../../../store";
+import { Option, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { PostCollectionQuestions } from "./QuestionConfig";
 import BackButton from "../../components/BackButton";
@@ -18,7 +17,6 @@ import OptionList, {
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 import Button from "../../components/Button";
 
 interface Props {
@@ -33,9 +31,7 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
 @connect((state: StoreState) => ({
   name: state.form.name,
 }))
-class AdverseScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
+class AdverseScreen extends React.Component<Props & ReduxWriterProps> {
   static navigationOptions = ({
     navigation,
   }: {
@@ -90,7 +86,7 @@ class AdverseScreen extends React.Component<
   };
 
   _onNext = () => {
-    if (this._adverseEventsOccurred("yes")) {
+    if (this._adverseEventsOccurred("Yes")) {
       this.props.navigation.push("AdverseDetails");
     } else {
       Alert.alert(
@@ -135,7 +131,7 @@ class AdverseScreen extends React.Component<
             this.props.updateAnswer({ options }, WereThereAdverse)
           }
         />
-        {this._adverseEventsOccurred("yes") && (
+        {this._adverseEventsOccurred("Yes") && (
           <View>
             <Text style={styles.sectionHeaderText}>
               {WhichProcedures.title}
@@ -158,8 +154,8 @@ class AdverseScreen extends React.Component<
         <View style={styles.buttonContainer}>
           <Button
             enabled={
-              this._adverseEventsOccurred("no") ||
-              (this._adverseEventsOccurred("yes") &&
+              this._adverseEventsOccurred("No") ||
+              (this._adverseEventsOccurred("Yes") &&
                 this._adverseProceduresSelected())
             }
             key="next"
@@ -186,4 +182,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default reduxWriter(withNamespaces()(AdverseScreen));
+export default reduxWriter(AdverseScreen);

@@ -144,8 +144,11 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           />
         </View>
         {this.props.withOther &&
-          !!this.props.data.find(option => option.key === "other") &&
-          this.props.data.find(option => option.key === "other")!.selected && (
+          !!this.props.data.find(
+            option => option.key.toLowerCase() === "other"
+          ) &&
+          this.props.data.find(option => option.key.toLowerCase() === "other")!
+            .selected && (
             <View style={styles.otherContainer}>
               <Text
                 style={{ marginBottom: 10, fontSize: 18 }}

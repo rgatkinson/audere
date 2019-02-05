@@ -4,9 +4,8 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { withNamespaces, WithNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
-import { Text, StyleSheet, View, Alert, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, Alert } from "react-native";
 import { connect } from "react-redux";
 import { Option, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
@@ -19,7 +18,6 @@ import OptionList, {
   newSelectedOptionsList,
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
-import { OptionListConfig } from "../../../resources/QuestionnaireConfig";
 
 interface Props {
   name: string;
@@ -38,7 +36,7 @@ const WhichProcedures = PostCollectionQuestions.WhichProcedures;
   name: state.form.name,
 }))
 class AdverseDetailsScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps,
+  Props & ReduxWriterProps,
   State
 > {
   static navigationOptions = ({
@@ -209,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default reduxWriter(withNamespaces()(AdverseDetailsScreen));
+export default reduxWriter(AdverseDetailsScreen);
