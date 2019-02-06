@@ -32,10 +32,16 @@ export enum DocumentType {
   Screening = "SCREENING",
   Survey = "Survey",
   Feedback = "FEEDBACK",
-  Log = "LOG"
+  Log = "LOG",
+  LogBatch = "LOG_BATCH"
 }
 
-export type ProtocolDocument = ScreeningDocument | SurveyDocument | FeedbackDocument | LogDocument;
+export type ProtocolDocument =
+  | ScreeningDocument
+  | SurveyDocument
+  | FeedbackDocument
+  | LogDocument
+  | LogBatchDocument;
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -99,9 +105,9 @@ export interface SurveyNonPIIDbInfo extends SurveyNonPIIInfo {
   consents: NonPIIConsentInfo[];
 }
 
-export interface SurveyNonPIIInfo  extends CommonInfo {
+export interface SurveyNonPIIInfo extends CommonInfo {
   samples: SampleInfo[];
-  
+
   // Filtered to include only non-PII, like health data.
   responses: ResponseInfo[];
 }
@@ -289,4 +295,32 @@ export interface LogInfo {
   // TODO (ram): batch
   logentry: string;
   level: LogLevel;
+}
+
+// ================================================================================
+// LogBatch
+
+export interface LogBatchDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.LogBatch;
+  schemaId: 1;
+  batch: LogBatchInfo;
+}
+
+export interface LogBatchInfo {
+  timestamp: string;
+  records: LogRecordInfo[];
+}
+
+export interface LogRecordInfo {
+  timestamp: string;
+  level: LogRecordLevel;
+  text: string;
+}
+
+export enum LogRecordLevel {
+  Debug = "DEBUG",
+  Info = "INFO",
+  Warn = "WARN",
+  Error = "ERROR",
+  Fatal = "FATAL"
 }

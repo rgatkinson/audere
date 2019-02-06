@@ -1,8 +1,6 @@
 import { AxiosInstance } from "axios";
 import base64url from "base64url";
-import { getLogger } from "./transport/LogUtil";
-
-const logger = getLogger("hacks");
+import { Logger } from "./transport/LogUtil";
 
 // See https://github.com/facebook/react-native/issues/9599
 const scope: any = global;
@@ -14,8 +12,10 @@ if (scope && typeof scope.self === "undefined") {
 // bytes from the api server and serve them up from global.crypto.getRandomValues()
 let randomBytes: Buffer;
 let nextRandomByteIndex = 0;
+let lastLogger: Logger | null;
 
-export async function loadRandomBytes(api: AxiosInstance, numBytes: number) {
+export async function loadRandomBytes(api: AxiosInstance, numBytes: number, logger: Logger) {
+  lastLogger = logger;
   let result;
   try {
     result = await api.get(`/randomBytes/${numBytes}`);
@@ -43,10 +43,13 @@ scope.crypto = {
       nextRandomByteIndex++;
     }
     if (i < array.length) {
-      logger.error(
-        `Not enough random bytes loaded, requested ${array.length - i} more. ` +
-          `Falling back to pseudorandom bytes`
-      );
+      const logger = lastLogger;
+      if (logger != null) {
+        logger.error(
+          `Not enough random bytes loaded, requested ${array.length - i} more. ` +
+            `Falling back to pseudorandom bytes`
+        );
+        }
     }
     while (i < array.length) {
       array[i] = Math.floor(Math.random() * 256);

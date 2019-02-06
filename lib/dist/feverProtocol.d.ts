@@ -8,9 +8,10 @@ export declare enum DocumentType {
     Screening = "SCREENING",
     Survey = "Survey",
     Feedback = "FEEDBACK",
-    Log = "LOG"
+    Log = "LOG",
+    LogBatch = "LOG_BATCH"
 }
-export declare type ProtocolDocument = ScreeningDocument | SurveyDocument | FeedbackDocument | LogDocument;
+export declare type ProtocolDocument = ScreeningDocument | SurveyDocument | FeedbackDocument | LogDocument | LogBatchDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -184,4 +185,25 @@ export declare enum LogLevel {
 export interface LogInfo {
     logentry: string;
     level: LogLevel;
+}
+export interface LogBatchDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.LogBatch;
+    schemaId: 1;
+    batch: LogBatchInfo;
+}
+export interface LogBatchInfo {
+    timestamp: string;
+    records: LogRecordInfo[];
+}
+export interface LogRecordInfo {
+    timestamp: string;
+    level: LogRecordLevel;
+    text: string;
+}
+export declare enum LogRecordLevel {
+    Debug = "DEBUG",
+    Info = "INFO",
+    Warn = "WARN",
+    Error = "ERROR",
+    Fatal = "FATAL"
 }

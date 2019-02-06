@@ -1,3 +1,8 @@
+// Copyright (c) 2018, 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import Axios, { AxiosInstance, AxiosResponse } from "axios";
 import PouchDB from "pouchdb";
 import CryptoPouch from "crypto-pouch";
@@ -18,7 +23,7 @@ import {
   CSRUID_PLACEHOLDER,
 } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
-import { axiosResponse, nextCall } from "../util";
+import { ArrayLogger, axiosResponse, nextCall } from "../util";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 
 const EMPTY_POUCH_CONTENTS = {
@@ -51,6 +56,8 @@ const FAKE_POUCH_DOC: PouchDoc = {
   },
 };
 
+const LOGGER = new ArrayLogger();
+
 describe("DocumentUploader", () => {
   describe("save", () => {
     let uploader: DocumentUploader, mockAxios: AxiosInstance, mockPouchDB: any;
@@ -62,7 +69,7 @@ describe("DocumentUploader", () => {
       );
       PouchDB.plugin(CryptoPouch);
       mockPouchDB = mock(PouchDB);
-      uploader = new DocumentUploader(instance(mockPouchDB), api);
+      uploader = new DocumentUploader(instance(mockPouchDB), api, LOGGER);
     });
     it("adds screening info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
@@ -111,7 +118,7 @@ describe("DocumentUploader", () => {
       db.destroy({}, done);
     });
     it("returns documents in priority order", async () => {
-      const uploader = new DocumentUploader(db, Axios.create());
+      const uploader = new DocumentUploader(db, Axios.create(), LOGGER);
       const docB = await db.put({
         _id: "documents/1/1",
         body: { data: "b" },

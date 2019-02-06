@@ -6,11 +6,11 @@
 import base64url from "base64url";
 import bufferXor from "buffer-xor";
 import { SecureStore } from "expo";
-import { getLogger } from "./LogUtil";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
 import {
   DocumentType,
+  LogBatchInfo,
   ScreeningInfo,
   SurveyInfo,
   FeedbackInfo,
@@ -22,9 +22,7 @@ import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
-import { summarize } from "./LogUtil";
-
-const logger = getLogger("transport");
+import { Logger, summarize } from "./LogUtil";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -37,7 +35,7 @@ const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = ScreeningInfo | FeedbackInfo | LogInfo;
+type DocumentContents = ScreeningInfo | SurveyInfo | FeedbackInfo | LogInfo | LogBatchInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -63,19 +61,17 @@ export class DocumentUploader {
   private pendingEvents: Event[];
   private readonly timer: Timer;
   private readonly pump: Pump;
+  private readonly logger: Logger;
 
-  constructor(db: any, api: AxiosInstance) {
+  constructor(db: any, api: AxiosInstance, logger: Logger) {
     this.db = db;
     this.api = api;
-    this.documentUploadKey = getDocumentUploadKey();
+    this.logger = logger;
+    this.documentUploadKey = this.getDocumentUploadKey();
     this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
-    this.pump = new Pump(() => this.pumpEvents());
+    this.pump = new Pump(() => this.pumpEvents(), logger);
     process.nextTick(() => this.pump.start());
-  }
-
-  public destroy(): void {
-    this.db.destroy();
   }
 
   public save(
@@ -98,14 +94,14 @@ export class DocumentUploader {
   }
 
   private fireEvent(event: Event): void {
-    logger.info(`fireEvent "${summarize(event)}"`);
+    this.logger.info(`fireEvent "${summarize(event)}"`);
     this.pendingEvents.push(event);
     this.pump.start();
   }
 
   private async pumpEvents(): Promise<void> {
     if (this.pendingEvents.length === 0) {
-      logger.info("pumpEvents: no pending events found");
+      this.logger.info("pumpEvents: no pending events found");
     }
     while (this.pendingEvents.length > 0) {
       const running = this.pendingEvents;
@@ -113,7 +109,7 @@ export class DocumentUploader {
       for (let i = 0; i < running.length; i++) {
         await idleness();
         const event = running[i];
-        logger.info(`pumpEvents: running[${i}]: ${summarize(event)}`);
+        this.logger.info(`pumpEvents: running[${i}]: ${summarize(event)}`);
         switch (event.type) {
           case "Save":
             await this.handleSave(event);
@@ -157,7 +153,7 @@ export class DocumentUploader {
     try {
       pouch = await this.db.get(key);
       pouch.body = protocolDocument(save);
-      logger.debug(
+      this.logger.debug(
         `Updating existing '${key}':\n  ${JSON.stringify(
           save.document,
           null,
@@ -169,21 +165,21 @@ export class DocumentUploader {
         _id: key,
         body: protocolDocument(save),
       };
-      logger.debug(
+      this.logger.debug(
         `Saving new '${key}':\n  ${JSON.stringify(save.document, null, 2)}`
       );
     }
-    await loadRandomBytes(this.api, 44);
+    await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put(pouch);
-    logger.debug(`Saved ${key}`);
+    this.logger.debug(`Saved ${key}`);
     this.uploadNext();
   }
 
   private async handleUploadNext(): Promise<void> {
-    logger.debug("handleUploadNext begins");
+    this.logger.debug("handleUploadNext begins");
     let pouch = await this.firstDocument();
     if (pouch == null) {
-      logger.debug("Done uploading for now.");
+      this.logger.debug("Done uploading for now.");
       // No pending documents--done until next save().
       this.timer.cancel();
       return;
@@ -209,13 +205,13 @@ export class DocumentUploader {
     }
 
     // TODO: don't delete when the device is not shared.
-    logger.debug(`Removing ${pouch._id}`);
+    this.logger.debug(`Removing ${pouch._id}`);
     const obsolete = await this.db.get(pouch._id);
     if (obsolete != null) {
       await this.db.remove(obsolete);
-      logger.debug(`Removed ${obsolete._id}`);
+      this.logger.debug(`Removed ${obsolete._id}`);
     } else {
-      logger.warn(`Could not retrieve ${pouch._id} when trying to remove`);
+      this.logger.warn(`Could not retrieve ${pouch._id} when trying to remove`);
     }
     await idleness();
 
@@ -233,7 +229,7 @@ export class DocumentUploader {
       throw new Error("Unable to retrieve CSRUID");
     }
     const csruid = apiResult.data.id.trim();
-    await loadRandomBytes(this.api, 44);
+    await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put({
       _id: pouchId,
       csruid,
@@ -253,7 +249,9 @@ export class DocumentUploader {
     try {
       items = await this.db.allDocs(options);
     } catch (e) {
-      logger.debug(`documentsAwaitingUpload returning null because "${e}"`);
+      this.logger.debug(
+        `documentsAwaitingUpload returning null because "${e}"`
+      );
       return null;
     }
     return items.rows.length;
@@ -272,18 +270,20 @@ export class DocumentUploader {
     try {
       items = await this.db.allDocs(options);
     } catch (e) {
-      logger.debug(`firstDocument returning null because "${e}"`);
+      this.logger.debug(`firstDocument returning null because "${e}"`);
       return null;
     }
 
     if (items.rows.length < 1) {
-      logger.debug("firstDocument returning null because 0 rows");
+      this.logger.debug("firstDocument returning null because 0 rows");
       return null;
     }
 
     const item = items.rows[0].doc;
     if (item._id == null || !item._id.startsWith("documents/")) {
-      logger.debug(`firstDocument returning null because _id='${item._id}'`);
+      this.logger.debug(
+        `firstDocument returning null because _id='${item._id}'`
+      );
       return null;
     }
 
@@ -291,16 +291,21 @@ export class DocumentUploader {
   }
 
   private async logPouchKeys(): Promise<void> {
-    const items = await this.db.allDocs({
-      include_docs: true,
-    });
-    logger.debug("Pouch contents:");
+    const items = await this.db.allDocs({ include_docs: true });
     if (items && items.rows) {
-      items.rows.forEach((row: any) => {
-        logger.debug(`  ${row.doc._id}`);
-      });
+      const total = items.rows.length;
+      const docs = items.rows.filter((row: any) =>
+        row.doc._id.startsWith("documents/")
+      ).length;
+      const csruids = items.rows.filter((row: any) =>
+        row.doc._id.startsWith("csruid/documents/")
+      ).length;
+      this.logger.debug(
+        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+      );
+    } else {
+      this.logger.debug("Pouch contents: no items found");
     }
-    logger.debug("End pouch contents");
   }
 
   private async check200(
@@ -314,7 +319,24 @@ export class DocumentUploader {
     } catch (e) {}
     return null;
   }
-}
+
+  private getDocumentUploadKey(): string {
+    if (!process.env.ACCESS_KEY_A || !process.env.ACCESS_KEY_B) {
+      this.logger.warn(
+        "Both ACCESS_KEY_A and ACCESS_KEY_B should be defined in your .env file. " +
+          "Copy .env.example to .env if you have not yet done so."
+      );
+    }
+    const components = [
+      "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
+      process.env.ACCESS_KEY_A || "",
+      process.env.ACCESS_KEY_B || "",
+    ];
+    const buffers = components.map(base64url.toBuffer);
+    const buffer = buffers.reduce(bufferXor, new Buffer(0));
+    return base64url(buffer);
+  }
+  }
 
 // To be used as `await idleness()`.
 function idleness(): Promise<void> {
@@ -358,6 +380,15 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         csruid: CSRUID_PLACEHOLDER,
         log: asLogInfo(save.document),
       };
+
+    case DocumentType.LogBatch:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        device: DEVICE_INFO,
+        csruid: CSRUID_PLACEHOLDER,
+        batch: asLogBatchInfo(save.document),
+      };
   }
 }
 
@@ -370,11 +401,11 @@ function asScreeningInfo(contents: DocumentContents): ScreeningInfo {
 
 function isProbablyScreeningInfo(contents: any): contents is ScreeningInfo {
   return (
-    typeof contents.complete === "boolean" &&
-    typeof contents.patient === "object" &&
-    typeof contents.consents === "object" &&
-    typeof contents.responses === "object" &&
-    typeof contents.events === "object"
+    isBool(contents.complete) &&
+    isObj(contents.patient) &&
+    isObj(contents.consents) &&
+    isObj(contents.responses) &&
+    isObj(contents.events)
   );
 }
 
@@ -387,12 +418,12 @@ function asSurveyInfo(contents: DocumentContents): SurveyInfo {
 
 function isProbablySurveyInfo(contents: any): contents is SurveyInfo {
   return (
-    typeof contents.complete === "boolean" &&
-    typeof contents.samples === "object" &&
-    typeof contents.patient === "object" &&
-    typeof contents.consents === "object" &&
-    typeof contents.responses === "object" &&
-    typeof contents.events === "object"
+    isBool(contents.complete) &&
+    isObj(contents.samples) &&
+    isObj(contents.patient) &&
+    isObj(contents.consents) &&
+    isObj(contents.responses) &&
+    isObj(contents.events)
   );
 }
 
@@ -404,9 +435,7 @@ function asFeedbackInfo(contents: DocumentContents): FeedbackInfo {
 }
 
 function isProbablyFeedbackInfo(contents: any): contents is FeedbackInfo {
-  return (
-    typeof contents.subject === "string" && typeof contents.body === "string"
-  );
+  return isStr(contents.subject) && isStr(contents.body);
 }
 
 function asLogInfo(contents: DocumentContents): LogInfo {
@@ -417,22 +446,41 @@ function asLogInfo(contents: DocumentContents): LogInfo {
 }
 
 function isProbablyLogInfo(contents: any): contents is LogInfo {
-  return typeof contents.logentry === "string";
+  return isStr(contents.logentry);
 }
 
-function getDocumentUploadKey(): string {
-  if (!process.env.ACCESS_KEY_A || !process.env.ACCESS_KEY_B) {
-    logger.warn(
-      "Both ACCESS_KEY_A and ACCESS_KEY_B should be defined in your .env file. " +
-        "Copy .env.example to .env if you have not yet done so."
-    );
+function asLogBatchInfo(contents: DocumentContents): LogBatchInfo {
+  if (isProbablyLogBatchInfo(contents)) {
+    return contents;
   }
-  const components = [
-    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
-    process.env.ACCESS_KEY_A || "",
-    process.env.ACCESS_KEY_B || "",
-  ];
-  const buffers = components.map(base64url.toBuffer);
-  const buffer = buffers.reduce(bufferXor, new Buffer(0));
-  return base64url(buffer);
+  throw new Error(`Expected LogBatchInfo, got ${contents}`);
+}
+
+function isProbablyLogBatchInfo(contents: any): contents is LogBatchInfo {
+  return (
+    isArr(contents.records) &&
+    contents.records.every(
+      (item: any) =>
+        isObj(item) &&
+        isStr(item.timestamp) &&
+        isStr(item.level) &&
+        isStr(item.text)
+    )
+  );
+}
+
+function isArr(x: any) {
+  return isObj(x) && isFn(x.every);
+}
+function isObj(x: any) {
+  return typeof x === "object";
+}
+function isStr(x: any) {
+  return typeof x === "string";
+}
+function isFn(x: any) {
+  return typeof x === "function";
+}
+function isBool(x: any) {
+  return typeof x === "boolean";
 }
