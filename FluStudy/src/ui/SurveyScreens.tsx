@@ -117,6 +117,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
+        alignTop={true}
         buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description")}

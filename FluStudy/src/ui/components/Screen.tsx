@@ -15,11 +15,13 @@ import Text from "./Text";
 import Title from "./Title";
 
 interface Props {
+  alignTop?: boolean;
   buttonLabel?: string;
   canProceed: boolean;
   centerDesc?: boolean;
   children?: any;
   desc?: string;
+  footer?: any;
   imageSrc?: ImageSourcePropType;
   logo?: boolean;
   navBar: boolean;
@@ -42,14 +44,15 @@ class Screen extends React.Component<Props & WithNamespaces> {
             onNext={this.props.onNext}
           />
         )}
+        {this.props.logo && (
+          <Image
+            style={{ height: 120, width: Dimensions.get("window").width }}
+            source={require("../../img/logo.png")}
+          />
+        )}
         <View style={styles.innerContainer}>
-          {this.props.logo && (
-            <Image
-              style={{ height: 120, width: Dimensions.get("window").width }}
-              source={require("../../img/logo.png")}
-            />
-          )}
-          <View style={styles.content}>
+          {!this.props.alignTop && <View />}
+          <View style={styles.contentContainer}>
             {!!this.props.step && (
               <Step step={this.props.step} totalSteps={4} />
             )}
@@ -68,18 +71,21 @@ class Screen extends React.Component<Props & WithNamespaces> {
             )}
             {this.props.children}
           </View>
-          {!this.props.skipButton && (
-            <Button
-              enabled={this.props.canProceed}
-              primary={true}
-              label={
-                this.props.buttonLabel != null
-                  ? this.props.buttonLabel
-                  : t("common:button:next")
-              }
-              onPress={this.props.onNext}
-            />
-          )}
+          <View style={styles.footerContainer}>
+            {this.props.footer}
+            {!this.props.skipButton && (
+              <Button
+                enabled={this.props.canProceed}
+                primary={true}
+                label={
+                  this.props.buttonLabel != null
+                    ? this.props.buttonLabel
+                    : t("common:button:next")
+                }
+                onPress={this.props.onNext}
+              />
+            )}
+          </View>
         </View>
       </View>
     );
@@ -91,8 +97,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
   },
-  content: {
+  contentContainer: {
     alignItems: "center",
+  },
+  footerContainer: {
+    alignItems: "center",
+    alignSelf: "stretch",
   },
   innerContainer: {
     alignItems: "center",

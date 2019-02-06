@@ -28,6 +28,7 @@ import { ButtonConfig } from "../resources/QuestionnaireConfig";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import AddressInput from "./components/AddressInput";
 import Button from "./components/Button";
+import ButtonRow from "./components/ButtonRow";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
 import OptionList, { newSelectedOptionsList } from "./components/OptionList";
@@ -114,6 +115,7 @@ class AgeScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
+        alignTop={true}
         canProceed={!!this.props.getAnswer("selectedButtonKey")}
         logo={false}
         navBar={true}
@@ -208,6 +210,7 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <Screen
+        alignTop={true}
         canProceed={this._haveOption()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description!.label)}
@@ -240,6 +243,17 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         canProceed={false}
+        footer={
+          <Button
+            enabled={true}
+            primary={true}
+            label={t("back")}
+            style={{ marginVertical: 10 }}
+            onPress={() => {
+              this.props.navigation.push("Consent", { data: ConsentConfig });
+            }}
+          />
+        }
         imageSrc={require("../img/ineligible.png")}
         logo={true}
         navBar={true}
@@ -248,17 +262,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
         title={t("ineligible")}
         desc={t("description")}
         onNext={() => {}}
-      >
-        <Button
-          enabled={true}
-          primary={true}
-          label={t("back")}
-          style={{ marginVertical: 10 }}
-          onPress={() => {
-            this.props.navigation.push("Consent", { data: ConsentConfig });
-          }}
-        />
-      </Screen>
+      />
     );
   }
 }
@@ -329,6 +333,7 @@ class AddressInputScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
+        alignTop={true}
         buttonLabel={t("common:button:submit")}
         canProceed={this._haveValidAddress()}
         centerDesc={true}
@@ -361,6 +366,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         canProceed={false}
+        footer={<Text content={t("disclaimer")} style={{ fontSize: 12 }} />}
         imageSrc={require("../img/ineligible.png")}
         logo={true}
         navBar={false}
@@ -371,7 +377,6 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         onNext={() => this.props.navigation.popToTop()}
       >
         <Links />
-        <Text content={t("disclaimer")} style={{ fontSize: 12 }} />
       </Screen>
     );
   }
@@ -404,39 +409,36 @@ const Confirmation = withNamespaces("confirmationScreen")<Props>(
 );
 
 class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
-  _onYes = () => {
-    // TODO want to only set onNext in nav bar to onYes if they push yes...
-    // TODO save response
-    this.props.navigation.push("Instructions");
-  };
-
-  _onNo = () => {
-    // TODO save response
-    this.props.navigation.push("Instructions");
-  };
-
   render() {
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("common:button:yes")}
-        canProceed={true}
+        canProceed={false}
         desc={t("description")}
+        footer={
+          <ButtonRow
+            firstLabel={t("common:button:no")}
+            firstOnPress={() => {
+              // TODO save response
+              this.props.navigation.push("Instructions");
+            }}
+            secondEnabled={true}
+            secondLabel={t("common:button:yes")}
+            secondOnPress={() => {
+              // TODO want to only set onNext in nav bar to onYes if they push yes...
+              // TODO save response
+              this.props.navigation.push("Instructions");
+            }}
+          />
+        }
         imageSrc={require("../img/pushNotifications.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("pushNotifications")}
-        onNext={this._onYes}
-      >
-        <Button
-          enabled={true}
-          primary={true}
-          label={t("common:button:no")}
-          style={{ marginVertical: 10 }}
-          onPress={this._onNo}
-        />
-      </Screen>
+        onNext={() => {}}
+      />
     );
   }
 }
@@ -480,7 +482,7 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("extraInfo")}
         onNext={() => {
-          this.props.navigation.push("Welcome");
+          this.props.navigation.push("Splash");
         }}
       >
         <Links />

@@ -9,7 +9,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import _ from "lodash";
 
 interface Props {
   checked?: boolean;
@@ -22,11 +21,6 @@ interface Props {
 }
 
 export default class Button extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-    this.handlePress = _.debounce(this.handlePress, 1000);
-  }
-
   handlePress = (event: GestureResponderEvent) => {
     this.props.enabled &&
       this.props.onPress != null &&

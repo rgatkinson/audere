@@ -21,7 +21,7 @@ import { ConsentInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import { Action, StoreState, setConsent, setEmail, setName } from "../store";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import { AddressConfig, ConsentConfig } from "../resources/ScreenConfig";
-import Button from "./components/Button";
+import ButtonRow from "./components/ButtonRow";
 import EmailInput from "./components/EmailInput";
 import Screen from "./components/Screen";
 import Text from "./components/Text";
@@ -98,6 +98,7 @@ class ConsentScreen extends React.PureComponent<
           }}
         />
         <Screen
+          alignTop={true}
           canProceed={this._canProceed()}
           centerDesc={true}
           desc={t("description")}
@@ -176,27 +177,16 @@ class ConsentScreen extends React.PureComponent<
                   />
                 )}
               </View>
-              <View style={styles.buttonContainer}>
-                <Button
-                  enabled={true}
-                  fontSize={17}
-                  label={t("noThanks")}
-                  primary={true}
-                  style={styles.button}
-                  onPress={() => {
-                    // TODO save name and email if available
-                    this.props.navigation.push("ConsentIneligible");
-                  }}
-                />
-                <Button
-                  enabled={this._canProceed()}
-                  fontSize={17}
-                  label={t("accept")}
-                  primary={true}
-                  style={styles.button}
-                  onPress={this._onNext}
-                />
-              </View>
+              <ButtonRow
+                firstLabel={t("noThanks")}
+                firstOnPress={() => {
+                  // TODO save name and email if available
+                  this.props.navigation.push("ConsentIneligible");
+                }}
+                secondEnabled={this._canProceed()}
+                secondLabel={t("accept")}
+                secondOnPress={this._onNext}
+              />
             </ScrollView>
           </View>
         </Screen>
@@ -206,14 +196,6 @@ class ConsentScreen extends React.PureComponent<
 }
 
 const styles = StyleSheet.create({
-  button: {
-    width: 165,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    flex: 1,
-    justifyContent: "space-between",
-  },
   smallText: {
     fontSize: 12,
   },
