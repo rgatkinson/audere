@@ -283,6 +283,8 @@
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
+    "noThanks": "No, thanks",
+    "viewConsent": "View Consent",
     "thankYou": "Thank You",
     "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and accept the e-signature at the end to continue",
     "areYouSure": "Are you sure?",
@@ -315,11 +317,15 @@
     "numYears": "Number of years",
     "numMonths": "Number of months"
   },
-  "ineligibleScreen": {
+  "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "At this time your symptoms do not meet the criteria for continuation. If your symptoms change, you can open this app again on a different day.",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would",
-    "returnHome": "Return Home"
+    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would"
+  },
+  "consentIneligibleScreen": {
+    "ineligible": "Thanks for your interest",
+    "description": "We're sorry, but we need a signed consent form from you in order to participate in the study. If you wish to change your mind, click the 'Back to Consent' button below",
+    "back": "Back to Consent"
   },
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",

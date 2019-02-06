@@ -153,7 +153,13 @@ class SymptomsScreen extends React.PureComponent<
     if (this._numSymptoms() > 1) {
       Alert.alert(t("thankYou"), t("nextStep"), [
         {
-          text: t("headerBar:continue"),
+          text: t("noThanks"),
+          onPress: () => {
+            this.props.navigation.push("ConsentIneligible");
+          },
+        },
+        {
+          text: t("viewConsent"),
           onPress: () => {
             this.props.navigation.push("Consent", { data: ConsentConfig });
           },
@@ -168,7 +174,7 @@ class SymptomsScreen extends React.PureComponent<
         {
           text: t("headerBar:continue"),
           onPress: () => {
-            this.props.navigation.push("Ineligible");
+            this.props.navigation.push("SymptomsIneligible");
           },
         },
       ]);
@@ -227,6 +233,38 @@ class SymptomsScreen extends React.PureComponent<
   }
 }
 const Symptoms = reduxWriter(withNamespaces("symptomsScreen")(SymptomsScreen));
+
+class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        imageSrc={require("../img/ineligible.png")}
+        logo={true}
+        navBar={true}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+        desc={t("description")}
+        onNext={() => {}}
+      >
+        <Button
+          enabled={true}
+          primary={true}
+          label={t("back")}
+          style={{ marginVertical: 10 }}
+          onPress={() => {
+            this.props.navigation.push("Consent", { data: ConsentConfig });
+          }}
+        />
+      </Screen>
+    );
+  }
+}
+const ConsentIneligible = withNamespaces("consentIneligibleScreen")<Props>(
+  ConsentIneligibleScreen
+);
 
 interface AddressProps {
   name: string;
@@ -317,17 +355,17 @@ class AddressInputScreen extends React.Component<
 }
 const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
 
-class IneligibleScreen extends React.Component<Props & WithNamespaces> {
+class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("returnHome")}
-        canProceed={true}
+        canProceed={false}
         imageSrc={require("../img/ineligible.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("ineligible")}
         desc={t("description")}
         onNext={() => this.props.navigation.popToTop()}
@@ -338,7 +376,9 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Ineligible = withNamespaces("ineligibleScreen")<Props>(IneligibleScreen);
+const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")<Props>(
+  SymptomsIneligibleScreen
+);
 
 class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -457,7 +497,8 @@ export {
   Age,
   Symptoms,
   AddressScreen,
-  Ineligible,
+  SymptomsIneligible,
+  ConsentIneligible,
   Confirmation,
   PushNotifications,
   Instructions,

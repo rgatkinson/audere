@@ -184,7 +184,8 @@ class ConsentScreen extends React.PureComponent<
                   primary={true}
                   style={styles.button}
                   onPress={() => {
-                    this.props.navigation.popToTop();
+                    // TODO save name and email if available
+                    this.props.navigation.push("ConsentIneligible");
                   }}
                 />
                 <Button
