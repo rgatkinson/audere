@@ -106,6 +106,24 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
     }
   };
 
+  _getParticipantInfo = () => {
+    if (this._hasValidConsent() && !this.props.form.completedSurvey) {
+      const numSpecimens = !!this.props.form.samples
+        ? this.props.form.samples.length
+        : 0;
+      const numGiftCards = !!this.props.form.giftcards
+        ? this.props.form.giftcards.length
+        : 0;
+      const specimensPlural = numSpecimens == 1 ? "" : "s";
+      const giftCardsPlural = numGiftCards == 1 ? "" : "s";
+      return ` (${
+        this.props.form.name
+      }: ${numSpecimens} specimen${specimensPlural}, ${numGiftCards} gift card${giftCardsPlural})`;
+    } else {
+      return "";
+    }
+  };
+
   render() {
     return (
       <ScreenContainer>
@@ -123,7 +141,10 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
           label="Prior to Collection"
           onPress={this._onPrior}
         />
-        <Text content="Post Collection" style={styles.sectionHeaderText} />
+        <Text
+          content={"Post Collection" + this._getParticipantInfo()}
+          style={styles.sectionHeaderText}
+        />
         <EditSettingButton
           label="Adverse Events"
           onPress={this._onAdverseEvents}
