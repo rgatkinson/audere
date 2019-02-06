@@ -40,11 +40,6 @@ interface Props {
 
 @connect()
 class WelcomeScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.dispatch(startForm());
-    this.props.navigation.push("Why");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -56,7 +51,10 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("welcome")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.dispatch(startForm());
+          this.props.navigation.push("Why");
+        }}
       />
     );
   }
@@ -64,10 +62,6 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
 const Welcome = withNamespaces("welcomeScreen")<Props>(WelcomeScreen);
 
 class WhyScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("What");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -79,7 +73,9 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("why")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("What");
+        }}
       />
     );
   }
@@ -87,10 +83,6 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
 const Why = withNamespaces("whyScreen")<Props>(WhyScreen);
 
 class WhatScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Age", { data: AgeConfig });
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -102,7 +94,9 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("what")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("Age", { data: AgeConfig });
+        }}
       />
     );
   }
@@ -112,7 +106,7 @@ const What = withNamespaces("whatScreen")<Props>(WhatScreen);
 class AgeScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onDone = () => {
+  _onNext = () => {
     this.props.navigation.push("Symptoms", { data: SymptomsConfig });
   };
 
@@ -127,7 +121,7 @@ class AgeScreen extends React.Component<
         skipButton={true}
         step={1}
         title={t("surveyTitle:" + AgeConfig.title)}
-        onNext={this._onDone}
+        onNext={this._onNext}
       >
         {AgeConfig.buttons.map((button: ButtonConfig) => (
           <Button
@@ -139,7 +133,7 @@ class AgeScreen extends React.Component<
             style={{ marginVertical: 15 }}
             onPress={() => {
               this.props.updateAnswer({ selectedButtonKey: button.key });
-              this._onDone();
+              this._onNext();
             }}
           />
         ))}
@@ -153,7 +147,7 @@ const Age = reduxWriter(withNamespaces("ageScreen")(AgeScreen));
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onDone = () => {
+  _onNext = () => {
     this.props.updateAnswer({ selectedButtonKey: "next" });
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
@@ -216,7 +210,7 @@ class SymptomsScreen extends React.PureComponent<
         navigation={this.props.navigation}
         step={2}
         title={t("surveyTitle:" + SymptomsConfig.title)}
-        onNext={this._onDone}
+        onNext={this._onNext}
       >
         <OptionList
           data={newSelectedOptionsList(
@@ -274,7 +268,7 @@ class AddressInputScreen extends React.Component<
     }
   }
 
-  _onDone = () => {
+  _onNext = () => {
     this.props.updateAnswer({
       addressInput: this.state.address,
     });
@@ -306,14 +300,14 @@ class AddressInputScreen extends React.Component<
         navigation={this.props.navigation}
         step={5}
         title={t("surveyTitle:" + AddressConfig.title)}
-        onNext={this._onDone}
+        onNext={this._onNext}
       >
         <AddressInput
           value={this.state.address}
           onChange={(address: Address) => this.setState({ address })}
           onDone={() => {
             if (this._haveValidAddress()) {
-              this._onDone();
+              this._onNext();
             }
           }}
         />
@@ -347,10 +341,6 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
 const Ineligible = withNamespaces("ineligibleScreen")<Props>(IneligibleScreen);
 
 class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("PushNotifications");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -362,7 +352,9 @@ class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
         navBar={true}
         navigation={this.props.navigation}
         title={t("confirmed")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("PushNotifications");
+        }}
       />
     );
   }
@@ -413,10 +405,6 @@ const PushNotifications = withNamespaces("pushNotificationsScreen")<Props>(
 );
 
 class InstructionsScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ExtraInfo");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -428,7 +416,9 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
         navBar={true}
         navigation={this.props.navigation}
         title={t("instructions")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("ExtraInfo");
+        }}
       />
     );
   }
@@ -438,10 +428,6 @@ const Instructions = withNamespaces("instructionsScreen")<Props>(
 );
 
 class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Welcome");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -453,7 +439,9 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
         navBar={true}
         navigation={this.props.navigation}
         title={t("extraInfo")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("Welcome");
+        }}
       >
         <Links />
       </Screen>

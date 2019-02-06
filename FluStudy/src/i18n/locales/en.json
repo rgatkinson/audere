@@ -293,6 +293,11 @@
     "yesBloodButtonSubtext": "I would like to join the extra part of the study. I understand I will have my blood collected.",
     "noBloodButtonSubtext": "I do not want any blood collected from me."
   },
+  "splashScreen": {
+    "welcome": "Welcome to flu@home!",
+    "getStarted": "Get Started",
+    "haveKit": "I have my kit"
+  },
   "welcomeScreen": {
     "welcome": "Welcome",
     "description": "We know you aren't feeling well right now. Thank  you for participating even when you're ill."
@@ -331,6 +336,37 @@
   "extraInfoScreen": {
     "extraInfo": "Interested in sharing this or learning more?",
     "close": "Close Flu@home"
+  },
+  "welcomeBackScreen": {
+    "welcomeBack": "Welcome Back",
+    "description": "Sorry, we know you are feeling bad and appreciate your participation. Before we get started, get comfortable. The full test will take about 20 minutes to complete"
+  },
+  "whatsNextScreen": {
+    "whatsNext": "What's Next?",
+    "description": "We need you to do the test and return it by mail to complete the study and receive your gift card. Please do your best to answer the questions and follow the instructions. The test itself is just a simple nose swab."
+  },
+  "beforeScreen": {
+    "beforeYouBegin": "Before you Begin",
+    "washStep": "Please wash your hands with soap and water before proceeding with the test.",
+    "waterStep": "Please get yourself some water and use the restroom first. It is important you stay beside the kit until everything is done.",
+    "flatStep": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
+  },
+  "scanInstructionsScreen": {
+    "scanQrCode": "Scan the QR Code",
+    "description": "To begin, we'd like you to scan the QR code found on the side of your box. To do that, we'll need access to your phone's camera.",
+    "okScan": "Ok! Let's Scan"
+  },
+  "scanScreen": {
+    "enterManually": "Tap here to enter manually"
+  },
+  "scanConfirmationScreen": {
+    "codeSent": "Your code was sent!",
+    "description": "Thank you. Your QR code was successfully submitted and will help ensure your samples are accurately tracked and measured.",
+    "continue": "Continue"
+  },
+  "manualEntryScreen": {
+    "enterKit": "Enter your kit's barcode",
+    "continue": "Continue"
   },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",

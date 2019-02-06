@@ -33,11 +33,23 @@ import {
   PushNotifications,
   Instructions,
   ExtraInfo,
-} from "./src/ui/Screens";
+} from "./src/ui/ScreeningScreens";
+import {
+  WelcomeBack,
+  WhatsNext,
+  Before,
+  ScanInstructions,
+  Scan,
+  ScanConfirmation,
+  ManualEntry,
+  TestOne,
+} from "./src/ui/SurveyScreens";
+import SplashScreen from "./src/ui/SplashScreen";
 import ConsentScreen from "./src/ui/ConsentScreen";
 
 const Home = createStackNavigator(
   {
+    SplashScreen,
     Welcome,
     Why,
     What,
@@ -50,6 +62,14 @@ const Home = createStackNavigator(
     PushNotifications,
     Instructions,
     ExtraInfo,
+    WelcomeBack,
+    WhatsNext,
+    Before,
+    ScanInstructions,
+    Scan,
+    ScanConfirmation,
+    ManualEntry,
+    TestOne,
   },
   {
     headerMode: "float",

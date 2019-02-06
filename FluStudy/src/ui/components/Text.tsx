@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     fontFamily: "OpenSans-Bold",
   },
   container: {
-    alignSelf: "stretch",
     color: "#333",
     fontFamily: "OpenSans-Regular",
     fontSize: 14,
