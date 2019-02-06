@@ -16,7 +16,8 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
 import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
-import LanguageModal, { languages } from "../../components/LanguageModal";
+import LanguageModal from "../../components/LanguageModal";
+import { LocaleConfig } from "../../../i18n/LocaleConfig";
 import Text from "../../components/Text";
 
 interface Props {
@@ -91,7 +92,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces, State> {
             <View style={{ flexDirection: "row" }}>
               <Text content={t("currentLang")} style={styles.languageText} />
               <SystemText style={styles.pickerText}>
-                {languages[this.state.language]}
+                {LocaleConfig[this.state.language].languageName}
               </SystemText>
             </View>
             <Feather

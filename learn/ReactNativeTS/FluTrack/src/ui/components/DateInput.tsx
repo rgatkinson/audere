@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { format } from "date-fns";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import DateModal from "./DateModal";
+import { LocaleConfig } from "../../i18n/LocaleConfig";
 
 interface Props {
   date: Date | null;
@@ -18,16 +19,6 @@ class DateInput extends React.Component<Props & WithNamespaces> {
   };
 
   formatDate(date: Date, language: string): string {
-    //No built-in library for locale-sensitive month+year, specify patterns here
-    const locales: {
-      [index: string]: { locale: any; monthFormat: string };
-    } = {
-      en: { locale: require("date-fns/locale/en"), monthFormat: "MMMM YYYY" },
-      es: {
-        locale: require("date-fns/locale/es"),
-        monthFormat: "MMMM [de] YYYY",
-      },
-    };
     //https://github.com/date-fns/date-fns/issues/489
     const [year, month, day] = date
       .toISOString()
@@ -36,8 +27,8 @@ class DateInput extends React.Component<Props & WithNamespaces> {
     const realDate = new Date(+year, +month - 1, +day);
     const options = { year: "numeric", month: "long", day: "numeric" };
     return this.props.mode === "month"
-      ? format(realDate, locales[language].monthFormat, {
-          locale: locales[language].locale,
+      ? format(realDate, LocaleConfig[language].monthFormat, {
+          locale: LocaleConfig[language].dateLocale,
         })
       : date.toLocaleDateString(language, options);
   }

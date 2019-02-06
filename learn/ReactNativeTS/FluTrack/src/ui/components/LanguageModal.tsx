@@ -1,6 +1,7 @@
 import React from "react";
 import { Picker, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { LocaleConfig } from "../../i18n/LocaleConfig";
 import Modal from "./Modal";
 
 interface Props {
@@ -12,11 +13,6 @@ interface Props {
 interface State {
   language: string;
 }
-
-export const languages: { [index: string]: string } = {
-  en: "English",
-  es: "Español",
-};
 
 class LanguageModal extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
@@ -43,8 +39,12 @@ class LanguageModal extends React.Component<Props & WithNamespaces, State> {
             style={{ height: 50, width: 300 }}
             onValueChange={(language: string) => this.setState({ language })}
           >
-            {Object.keys(languages).map(code => (
-              <Picker.Item label={languages[code]} value={code} key={code} />
+            {Object.keys(LocaleConfig).map(code => (
+              <Picker.Item
+                label={LocaleConfig[code].languageName}
+                value={code}
+                key={code}
+              />
             ))}
           </Picker>
         </View>
