@@ -35,7 +35,12 @@ const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = ScreeningInfo | SurveyInfo | FeedbackInfo | LogInfo | LogBatchInfo;
+type DocumentContents =
+  | ScreeningInfo
+  | SurveyInfo
+  | FeedbackInfo
+  | LogInfo
+  | LogBatchInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -301,7 +306,9 @@ export class DocumentUploader {
         row.doc._id.startsWith("csruid/documents/")
       ).length;
       this.logger.debug(
-        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+        `Pouch contents: ` +
+          `${total} entries, of which ${docs} docs and ${csruids} csruids` +
+          items.rows.map((row: any) => `\n  ${row.doc._id}`)
       );
     } else {
       this.logger.debug("Pouch contents: no items found");
@@ -336,7 +343,7 @@ export class DocumentUploader {
     const buffer = buffers.reduce(bufferXor, new Buffer(0));
     return base64url(buffer);
   }
-  }
+}
 
 // To be used as `await idleness()`.
 function idleness(): Promise<void> {

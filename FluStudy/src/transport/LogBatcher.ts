@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
   targetBatchSizeInChars: 1024 * 1024,
   targetBatchIntervalInMs: 5 * 60 * 1000,
-  maxLineLength: 300,
+  maxLineLength: envAsNumber(process.env.LOG_RECORD_LIMIT, 300),
   lineTruncateTail: 50,
   pouchDbKey: "PendingLogRecords",
   echoToConsole: process.env.NODE_ENV === "development",
@@ -183,6 +183,17 @@ export class LogBatcher implements Logger {
       .slice(-40)
       .reduce((acc, x) => acc + `${x.timestamp}: [${x.level}] ${x.text}\n`, "");
   }
+}
+
+function envAsNumber(env: string | undefined, defaultValue: number): number {
+  if (env == null) {
+    return defaultValue;
+  }
+  const casted = +env;
+  if (isNaN(casted)) {
+    return defaultValue;
+  }
+  return casted;
 }
 
 // Uploader emits logs, so this is circular.  Lazify our usage of DocumentUploader.

@@ -14,7 +14,11 @@ let randomBytes: Buffer;
 let nextRandomByteIndex = 0;
 let lastLogger: Logger | null;
 
-export async function loadRandomBytes(api: AxiosInstance, numBytes: number, logger: Logger) {
+export async function loadRandomBytes(
+  api: AxiosInstance,
+  numBytes: number,
+  logger: Logger
+) {
   lastLogger = logger;
   let result;
   try {
@@ -46,10 +50,10 @@ scope.crypto = {
       const logger = lastLogger;
       if (logger != null) {
         logger.error(
-          `Not enough random bytes loaded, requested ${array.length - i} more. ` +
-            `Falling back to pseudorandom bytes`
+          `Not enough random bytes loaded, requested ${array.length -
+            i} more. ` + `Falling back to pseudorandom bytes`
         );
-        }
+      }
     }
     while (i < array.length) {
       array[i] = Math.floor(Math.random() * 256);
