@@ -8,7 +8,10 @@ import {
   setHipaaConsent,
   setHipaaResearcherConsent,
 } from "../../../store";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import {
+  ConsentInfo,
+  ConsentInfoSignerType,
+} from "audere-lib/snifflesProtocol";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";

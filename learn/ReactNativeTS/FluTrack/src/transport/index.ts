@@ -3,14 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { LogLevel } from "audere-lib";
 import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
 import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import { DocumentType, VisitInfo } from "audere-lib";
+import { DocumentType, LogLevel, VisitInfo } from "audere-lib/snifflesProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, LogBatcher } from "./LogBatcher";
 

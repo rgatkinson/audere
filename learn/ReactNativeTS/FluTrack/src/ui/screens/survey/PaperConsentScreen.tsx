@@ -2,7 +2,7 @@ import React from "react";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
-import { ConsentInfo } from "audere-lib";
+import { ConsentInfo } from "audere-lib/snifflesProtocol";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
 import Text from "../../components/Text";

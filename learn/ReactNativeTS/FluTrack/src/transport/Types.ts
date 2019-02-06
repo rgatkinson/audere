@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, ProtocolDocument } from "audere-lib";
+import { DocumentType, ProtocolDocument } from "audere-lib/snifflesProtocol";
 import { DeviceInfo } from "./DeviceInfo";
 
 // Wrapper document saved in PouchDB.

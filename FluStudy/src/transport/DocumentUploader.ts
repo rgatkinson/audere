@@ -11,12 +11,12 @@ import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
 import {
   DocumentType,
-  VisitInfo,
+  ScreeningInfo,
+  SurveyInfo,
   FeedbackInfo,
   LogInfo,
   ProtocolDocument,
-} from "audere-lib";
-
+} from "audere-lib/feverProtocol";
 import { loadRandomBytes } from "../hacks";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
@@ -37,7 +37,7 @@ const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = VisitInfo | FeedbackInfo | LogInfo;
+type DocumentContents = ScreeningInfo | FeedbackInfo | LogInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -323,13 +323,22 @@ function idleness(): Promise<void> {
 
 function protocolDocument(save: SaveEvent): ProtocolDocument {
   switch (save.documentType) {
-    case DocumentType.Visit:
+    case DocumentType.Screening:
       return {
         documentType: save.documentType,
         schemaId: 1,
         csruid: CSRUID_PLACEHOLDER,
         device: DEVICE_INFO,
-        visit: asVisitInfo(save.document),
+        screen: asScreeningInfo(save.document),
+      };
+
+    case DocumentType.Survey:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        csruid: CSRUID_PLACEHOLDER,
+        device: DEVICE_INFO,
+        survey: asSurveyInfo(save.document),
       };
 
     case DocumentType.Feedback:
@@ -352,14 +361,31 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
   }
 }
 
-function asVisitInfo(contents: DocumentContents): VisitInfo {
-  if (isProbablyVisitInfo(contents)) {
+function asScreeningInfo(contents: DocumentContents): ScreeningInfo {
+  if (isProbablyScreeningInfo(contents)) {
     return contents;
   }
-  throw new Error(`Expected VisitInfo, got ${contents}`);
+  throw new Error(`Expected ScreeningInfo, got ${contents}`);
 }
 
-function isProbablyVisitInfo(contents: any): contents is VisitInfo {
+function isProbablyScreeningInfo(contents: any): contents is ScreeningInfo {
+  return (
+    typeof contents.complete === "boolean" &&
+    typeof contents.patient === "object" &&
+    typeof contents.consents === "object" &&
+    typeof contents.responses === "object" &&
+    typeof contents.events === "object"
+  );
+}
+
+function asSurveyInfo(contents: DocumentContents): SurveyInfo {
+  if (isProbablySurveyInfo(contents)) {
+    return contents;
+  }
+  throw new Error(`Expected FeedbackInfo, got ${contents}`);
+}
+
+function isProbablySurveyInfo(contents: any): contents is SurveyInfo {
   return (
     typeof contents.complete === "boolean" &&
     typeof contents.samples === "object" &&

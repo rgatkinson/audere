@@ -8,7 +8,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import { Action, StoreState, setGiftcards } from "../../../store";
-import { GiftCardInfo } from "audere-lib";
+import { GiftCardInfo } from "audere-lib/snifflesProtocol";
 import BackButton from "../../components/BackButton";
 import Button from "../../components/Button";
 import FeedbackButton from "../../components/FeedbackButton";

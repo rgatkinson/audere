@@ -7,7 +7,7 @@ import Text from "../../components/Text";
 import Title from "../../components/Title";
 import { connect } from "react-redux";
 import { Action, appendEvent } from "../../../store";
-import { EventInfoKind } from "audere-lib";
+import { EventInfoKind } from "audere-lib/snifflesProtocol";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {

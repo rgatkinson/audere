@@ -2,7 +2,10 @@ import React from "react";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action, StoreState, setBloodConsent } from "../../../store";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import {
+  ConsentInfo,
+  ConsentInfoSignerType,
+} from "audere-lib/snifflesProtocol";
 import { NavigationScreenProp } from "react-navigation";
 import { format } from "date-fns";
 import {

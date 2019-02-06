@@ -4,7 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import uuidv4 from "uuid/v4";
-import { DocumentType, LogRecordInfo, LogRecordLevel, LogBatchInfo } from "audere-lib";
+import {
+  DocumentType,
+  LogRecordInfo,
+  LogRecordLevel,
+  LogBatchInfo,
+} from "audere-lib/snifflesProtocol";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
 
@@ -17,7 +22,7 @@ const DEFAULT_OPTIONS = {
   pouchDbKey: "PendingLogRecords",
   echoToConsole: process.env.NODE_ENV === "development",
   uploadPriority: 3,
-}
+};
 
 export class LogBatcher implements Logger {
   private readonly uploader: LazyUploader;
@@ -26,7 +31,11 @@ export class LogBatcher implements Logger {
   private readonly pump: Pump;
   private readonly config: typeof DEFAULT_OPTIONS;
 
-  constructor(uploader: LazyUploader, db: LogStore, options: ConfigOptions = {}) {
+  constructor(
+    uploader: LazyUploader,
+    db: LogStore,
+    options: ConfigOptions = {}
+  ) {
     this.uploader = uploader;
     this.db = db;
     this.buffer = [];
@@ -77,33 +86,42 @@ export class LogBatcher implements Logger {
     const adding = this.buffer.splice(0);
     if (adding.length > 0) {
       const state = await this.loadPending();
-      const size = state.size + adding.reduce((acc, x) => acc + this.guessSize(x), 0);
-      const records = ((state == null) ? [] : state.records).concat(adding);
-      const durationMs = (Date.now() - new Date(records[0].timestamp).getTime());
+      const size =
+        state.size + adding.reduce((acc, x) => acc + this.guessSize(x), 0);
+      const records = (state == null ? [] : state.records).concat(adding);
+      const durationMs = Date.now() - new Date(records[0].timestamp).getTime();
       const uploader = this.uploader.get();
-      const needsUpload = (
-        (size > this.config.targetBatchSizeInChars) ||
-        (durationMs > this.config.targetBatchIntervalInMs)
-      );
+      const needsUpload =
+        size > this.config.targetBatchSizeInChars ||
+        durationMs > this.config.targetBatchIntervalInMs;
 
       this.echo(
         `LogBatcher:` +
-        ` needsUpload=${needsUpload}` +
-        `, adding ${adding.length}+${state.records.length}=${records.length}` +
-        `, size=${size}` +
-        `, dur=${durationMs}ms`
+          ` needsUpload=${needsUpload}` +
+          `, adding ${adding.length}+${state.records.length}=${
+            records.length
+          }` +
+          `, size=${size}` +
+          `, dur=${durationMs}ms`
       );
 
       try {
-        if (needsUpload && (uploader != null)) {
+        if (needsUpload && uploader != null) {
           const batch = {
             timestamp: new Date().toISOString(),
             records,
-          }
-          this.echo(`LogBatcher: sending ${records.length} records to DocumentUploader`);
-          uploader.save(uuidv4(), batch, DocumentType.LogBatch, this.config.uploadPriority);
+          };
+          this.echo(
+            `LogBatcher: sending ${records.length} records to DocumentUploader`
+          );
+          uploader.save(
+            uuidv4(),
+            batch,
+            DocumentType.LogBatch,
+            this.config.uploadPriority
+          );
           this.echo(`LogBatcher: clearing Pouch state`);
-          await this.db.put({ ...state, ...this.emptyState()});
+          await this.db.put({ ...state, ...this.emptyState() });
           this.echo(`LogBatcher: cleared Pouch state`);
         } else {
           this.echo(`LogBatcher: writing ${records.length} records to PouchDB`);
@@ -111,7 +129,11 @@ export class LogBatcher implements Logger {
         }
       } catch (e) {
         // Hope that the crash log handler can upload a bit of the log state.
-        throw new Error(`=====\n${e}\nWhile writing log batch:\n${this.summarize(records)}\n=====`);
+        throw new Error(
+          `=====\n${e}\nWhile writing log batch:\n${this.summarize(
+            records
+          )}\n=====`
+        );
       }
     }
   }
@@ -150,15 +172,16 @@ export class LogBatcher implements Logger {
       const ellipses = " ... ";
       const tail = this.config.lineTruncateTail;
       const head = max - (tail + ellipses.length);
-      return text.substring(0, head) + ellipses + text.substring(text.length - tail);
+      return (
+        text.substring(0, head) + ellipses + text.substring(text.length - tail)
+      );
     }
   }
 
   private summarize(records: LogRecordInfo[]): string {
-    return records.slice(-40).reduce(
-      (acc, x) => acc + `${x.timestamp}: [${x.level}] ${x.text}\n`,
-      ""
-    )
+    return records
+      .slice(-40)
+      .reduce((acc, x) => acc + `${x.timestamp}: [${x.level}] ${x.text}\n`, "");
   }
 }
 
@@ -174,7 +197,9 @@ export class LazyUploader {
     this.uploader = uploader;
   }
 
-  public get(): Uploader | null { return this.uploader; }
+  public get(): Uploader | null {
+    return this.uploader;
+  }
 }
 
 export interface Uploader {
@@ -207,6 +232,6 @@ export interface ConfigOptions {
   maxLineLength?: number;
   lineTruncateTail?: number;
   pouchDbKey?: string;
-  echoToConsole?: boolean,
+  echoToConsole?: boolean;
   uploadPriority?: number;
 }

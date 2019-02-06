@@ -5,7 +5,7 @@
 
 import sequelize from "sequelize";
 import { sequelizeNonPII } from "./";
-import { DeviceInfo, LogBatchInfo } from "audere-lib";
+import { DeviceInfo, LogBatchInfo } from "audere-lib/snifflesProtocol";
 
 export interface LogBatchAttributes {
   id?: string;

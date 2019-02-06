@@ -1,6 +1,10 @@
 import uuidv4 from "uuid/v4";
 
-import { ConsentInfo, EventInfo, EventInfoKind } from "audere-lib";
+import {
+  ConsentInfo,
+  EventInfo,
+  EventInfoKind,
+} from "audere-lib/feverProtocol";
 
 export type FormAction =
   | { type: "START_FORM" }
@@ -80,7 +84,7 @@ export default function reducer(state = initialState, action: FormAction) {
     // Resets all form data
     return {
       ...initialState,
-      events: pushEvent(initialState, EventInfoKind.Visit, "StartedForm"),
+      events: pushEvent(initialState, EventInfoKind.Screening, "StartedForm"),
       timestamp: new Date().getTime(),
     };
   }

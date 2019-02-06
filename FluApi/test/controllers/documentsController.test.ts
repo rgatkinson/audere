@@ -8,7 +8,7 @@ import {
   DocumentType,
   VisitDocument,
   VisitInfo,
-} from "audere-lib";
+} from "audere-lib/snifflesProtocol";
 import app from "../../src/app";
 import { VisitNonPII, VisitPII } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";

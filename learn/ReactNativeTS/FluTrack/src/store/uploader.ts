@@ -26,7 +26,7 @@ import {
   ResponseItemInfo,
   TelecomInfoSystem,
   VisitInfo,
-} from "audere-lib";
+} from "audere-lib/snifflesProtocol";
 import { isNotNull } from "../util/check";
 
 export const { uploader, logger } = createTransport();

@@ -11,7 +11,10 @@ import {
   setName,
 } from "../../../store";
 import { format } from "date-fns";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import {
+  ConsentInfo,
+  ConsentInfoSignerType,
+} from "audere-lib/snifflesProtocol";
 import { NavigationScreenProp } from "react-navigation";
 import {
   AgeBuckets,

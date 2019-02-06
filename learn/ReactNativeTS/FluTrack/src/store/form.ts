@@ -5,7 +5,7 @@ import {
   GiftCardInfo,
   EventInfo,
   EventInfoKind,
-} from "audere-lib";
+} from "audere-lib/snifflesProtocol";
 
 export type FormAction =
   | { type: "START_FORM"; admin: string; location: string; isDemo: boolean }

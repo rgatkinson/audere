@@ -1,8 +1,8 @@
 {
   "name": "audere-lib",
   "version": "0.1.0",
-  "main": "dist/types.js",
-  "types": "dist/types.d.ts",
+  "main": "dist/*.js",
+  "types": "dist/*.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "prettier --list-different '*.ts'",

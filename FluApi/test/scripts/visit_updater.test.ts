@@ -12,7 +12,7 @@ import { makeCSRUID, documentContentsPost, documentContentsNonPII, documentConte
 
 import { VisitUpdater, VisitNonPIIUpdater, VisitPIIUpdater } from "../../scripts/util/visit_updater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
-import { VisitDocument } from "audere-lib";
+import { VisitDocument } from "audere-lib/snifflesProtocol";
 
 describe("VisitUpdater", () => {
   let accessKey;

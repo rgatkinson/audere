@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, LogBatchInfo, LogRecordInfo, LogRecordLevel } from "audere-lib";
+import { DocumentType, LogBatchInfo, LogRecordInfo, LogRecordLevel } from "audere-lib/snifflesProtocol";
 import { LazyUploader, LogBatcher, ConfigOptions, PendingLogState } from "../../src/transport/LogBatcher";
 import { ticks } from "../util";
 

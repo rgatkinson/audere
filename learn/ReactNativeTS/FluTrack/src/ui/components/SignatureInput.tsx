@@ -4,7 +4,10 @@ import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Button from "./Button";
 import SignatureBox from "./SignatureBox";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import {
+  ConsentInfo,
+  ConsentInfoSignerType,
+} from "audere-lib/snifflesProtocol";
 
 interface Props {
   consent?: ConsentInfo;

@@ -13,7 +13,7 @@ import KeyboardListener from "react-native-keyboard-listener";
 import Button from "./Button";
 import Modal from "./Modal";
 import TextInput from "./TextInput";
-import { ConsentInfoSignerType } from "audere-lib";
+import { ConsentInfoSignerType } from "audere-lib/snifflesProtocol";
 
 interface Props {
   editableNames: boolean;

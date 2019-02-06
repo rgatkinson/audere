@@ -24,8 +24,8 @@ import {
   QuestionAnswerOption,
   ResponseItemInfo,
   TelecomInfoSystem,
-  VisitInfo,
-} from "audere-lib";
+  ScreeningInfo,
+} from "audere-lib/feverProtocol";
 import { isNotNull } from "../util/check";
 
 // This is similar to the logger example at
@@ -38,19 +38,17 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     const result = next(action);
     const state = getState();
     if (state.form != null) {
-      uploader.saveVisit(state.form.formId, redux_to_pouch(state));
+      uploader.saveScreening(state.form.formId, redux_to_pouch(state));
     }
     return result;
   };
 }
 
 // Exported so we can write unit tests for this
-export function redux_to_pouch(state: StoreState): VisitInfo {
-  const pouch: VisitInfo = {
+export function redux_to_pouch(state: StoreState): ScreeningInfo {
+  const pouch: ScreeningInfo = {
     isDemo: !!state.admin.isDemo,
     complete: false,
-    giftcards: [],
-    samples: [],
     patient: {
       telecom: [],
       address: [],
@@ -293,7 +291,7 @@ function maybePushAddressResponse(
   responses: SurveyResponse[],
   questionId: string,
   use: AddressInfoUse,
-  pouch: VisitInfo
+  pouch: ScreeningInfo
 ): void {
   const response = responses.find(r => r.questionId === questionId);
   if (!!response) {

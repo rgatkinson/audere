@@ -12,7 +12,7 @@ import {
   ResponseInfo,
   ResponseItemInfo,
   LogBatchDocument
-} from "audere-lib";
+} from "audere-lib/snifflesProtocol";
 import { AccessKey } from "../models/accessKey";
 import { VisitNonPII, VisitPII } from "../models/visit";
 import { Feedback } from "../models/feedback";

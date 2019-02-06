@@ -7,7 +7,7 @@ import Sequelize, {Model} from "sequelize";
 import { defineSqlVisit, VisitAttributes, VisitInstance, VisitTableType } from "../../src/models/visit";
 import _ from "lodash";
 
-import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib";
+import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
 
 import { idtxt, ScriptLogger } from "./script_logger";
 

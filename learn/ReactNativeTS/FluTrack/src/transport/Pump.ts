@@ -29,7 +29,9 @@ export class Pump {
 
   private runSafely = () => {
     this.run().catch(error =>
-      this.logger.error(`${error}\nWhile running Pump, callstack:\n${error.stack}`)
+      this.logger.error(
+        `${error}\nWhile running Pump, callstack:\n${error.stack}`
+      )
     );
   };
 

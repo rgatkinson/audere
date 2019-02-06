@@ -5,7 +5,7 @@
 
 import sequelize, { Model, Sequelize } from "sequelize";
 import { sequelizeNonPII, sequelizePII } from "./";
-import { DeviceInfo, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib";
+import { DeviceInfo, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
 
 export enum VisitTableType {
   CURRENT = "visit",

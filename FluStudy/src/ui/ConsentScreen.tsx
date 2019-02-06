@@ -17,7 +17,7 @@ import { connect } from "react-redux";
 import { format } from "date-fns";
 import CheckBox from "react-native-check-box";
 import KeyboardListener from "react-native-keyboard-listener";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib";
+import { ConsentInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import { Action, StoreState, setConsent, setEmail, setName } from "../store";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import { AddressConfig, ConsentConfig } from "../resources/ScreenConfig";

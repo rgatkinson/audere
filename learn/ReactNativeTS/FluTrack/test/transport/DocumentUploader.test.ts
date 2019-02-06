@@ -17,14 +17,13 @@ import {
   verify,
   when,
 } from "ts-mockito";
-import { DocumentType } from "audere-lib";
+import { DocumentType, VisitInfo } from "audere-lib/snifflesProtocol";
 import {
   DocumentUploader,
   CSRUID_PLACEHOLDER,
 } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
-import { VisitInfo } from "audere-lib";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 
 const EMPTY_POUCH_CONTENTS = {

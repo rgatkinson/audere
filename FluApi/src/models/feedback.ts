@@ -5,7 +5,7 @@
 
 import Sequelize from "sequelize";
 import { sequelizeNonPII } from "./";
-import { DeviceInfo } from "audere-lib";
+import { DeviceInfo } from "audere-lib/snifflesProtocol";
 
 interface FeedbackAttributes {
   id?: string;

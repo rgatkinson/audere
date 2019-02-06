@@ -15,8 +15,7 @@ import {
   FeedbackInfo,
   LogInfo,
   ProtocolDocument,
-} from "audere-lib";
-
+} from "audere-lib/snifflesProtocol";
 import { loadRandomBytes } from "../hacks";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
@@ -249,7 +248,9 @@ export class DocumentUploader {
     try {
       items = await this.db.allDocs(options);
     } catch (e) {
-      this.logger.debug(`documentsAwaitingUpload returning null because "${e}"`);
+      this.logger.debug(
+        `documentsAwaitingUpload returning null because "${e}"`
+      );
       return null;
     }
     return items.rows.length;
@@ -279,7 +280,9 @@ export class DocumentUploader {
 
     const item = items.rows[0].doc;
     if (item._id == null || !item._id.startsWith("documents/")) {
-      this.logger.debug(`firstDocument returning null because _id='${item._id}'`);
+      this.logger.debug(
+        `firstDocument returning null because _id='${item._id}'`
+      );
       return null;
     }
 
@@ -290,9 +293,15 @@ export class DocumentUploader {
     const items = await this.db.allDocs({ include_docs: true });
     if (items && items.rows) {
       const total = items.rows.length;
-      const docs = items.rows.filter((row: any) => row.doc._id.startsWith("documents/")).length;
-      const csruids = items.rows.filter((row: any) => row.doc._id.startsWith("csruid/documents/")).length;
-      this.logger.debug(`Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`);
+      const docs = items.rows.filter((row: any) =>
+        row.doc._id.startsWith("documents/")
+      ).length;
+      const csruids = items.rows.filter((row: any) =>
+        row.doc._id.startsWith("csruid/documents/")
+      ).length;
+      this.logger.debug(
+        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+      );
     } else {
       this.logger.debug("Pouch contents: no items found");
     }
@@ -423,16 +432,25 @@ function asLogBatchInfo(contents: DocumentContents): LogBatchInfo {
 function isProbablyLogBatchInfo(contents: any): contents is LogBatchInfo {
   return (
     isArr(contents.records) &&
-    contents.records.every((item: any) => (
-      isObj(item) &&
-      isStr(item.timestamp) &&
-      isStr(item.level) &&
-      isStr(item.text)
-    ))
+    contents.records.every(
+      (item: any) =>
+        isObj(item) &&
+        isStr(item.timestamp) &&
+        isStr(item.level) &&
+        isStr(item.text)
+    )
   );
 }
 
-function isArr(x: any) { return isObj(x) && isFn(x.every); }
-function isObj(x: any) { return typeof x === "object"; }
-function isStr(x: any) { return typeof x === "string"; }
-function isFn(x: any) { return typeof x === "function"; }
+function isArr(x: any) {
+  return isObj(x) && isFn(x.every);
+}
+function isObj(x: any) {
+  return typeof x === "object";
+}
+function isStr(x: any) {
+  return typeof x === "string";
+}
+function isFn(x: any) {
+  return typeof x === "function";
+}

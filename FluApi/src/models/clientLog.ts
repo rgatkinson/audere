@@ -5,7 +5,7 @@
 
 import Sequelize from "sequelize";
 import { sequelizeNonPII } from "./";
-import { DeviceInfo, LogLevel } from "audere-lib";
+import { DeviceInfo, LogLevel } from "audere-lib/snifflesProtocol";
 
 interface ClientLogAttributes {
   id?: string;

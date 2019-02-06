@@ -3,14 +3,17 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { LogLevel } from "audere-lib";
 import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
 import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import { DocumentType, VisitInfo } from "audere-lib";
+import {
+  DocumentType,
+  LogLevel,
+  ScreeningInfo,
+} from "audere-lib/feverProtocol";
 import { AxiosInstance } from "axios";
 import { getLogger } from "./LogUtil";
 import { DocumentUploader } from "./DocumentUploader";
@@ -37,8 +40,8 @@ class TypedDocumentUploader {
   public async documentsAwaitingUpload(): Promise<number | null> {
     return this.uploader.documentsAwaitingUpload();
   }
-  public saveVisit(localUid: string, visit: VisitInfo) {
-    this.uploader.save(localUid, visit, DocumentType.Visit, 1);
+  public saveScreening(localUid: string, screening: ScreeningInfo) {
+    this.uploader.save(localUid, screening, DocumentType.Screening, 1);
   }
   public saveFeedback(subject: string, body: string) {
     this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);

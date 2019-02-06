@@ -12,14 +12,13 @@ import {
   verify,
   when,
 } from "ts-mockito";
-import { DocumentType } from "audere-lib";
+import { DocumentType, ScreeningInfo } from "audere-lib/feverProtocol";
 import {
   DocumentUploader,
   CSRUID_PLACEHOLDER,
 } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { axiosResponse, nextCall } from "../util";
-import { VisitInfo } from "audere-lib";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 
 const EMPTY_POUCH_CONTENTS = {
@@ -27,10 +26,8 @@ const EMPTY_POUCH_CONTENTS = {
   rows: [],
 };
 
-const FAKE_VISIT_CONTENTS: VisitInfo = {
+const FAKE_SCREENING_CONTENTS: ScreeningInfo = {
   complete: false,
-  samples: [],
-  giftcards: [],
   patient: {
     name: "Some Fake Name",
     telecom: [],
@@ -46,11 +43,11 @@ const FAKE_CSRUID = "abc123";
 const FAKE_POUCH_DOC: PouchDoc = {
   _id: "documents/random_id",
   body: {
-    documentType: DocumentType.Visit,
+    documentType: DocumentType.Screening,
     schemaId: 1,
     csruid: CSRUID_PLACEHOLDER,
     device: DEVICE_INFO,
-    visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS)),
+    screen: JSON.parse(JSON.stringify(FAKE_SCREENING_CONTENTS)),
   },
 };
 
@@ -67,16 +64,16 @@ describe("DocumentUploader", () => {
       mockPouchDB = mock(PouchDB);
       uploader = new DocumentUploader(instance(mockPouchDB), api);
     });
-    it("adds visit info to the pouchDB record", async () => {
+    it("adds screening info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
       when(mockPouchDB.allDocs(anything())).thenReturn(EMPTY_POUCH_CONTENTS);
 
-      uploader.save("fakeUID", FAKE_VISIT_CONTENTS, DocumentType.Visit, 0);
+      uploader.save("fakeUID", FAKE_SCREENING_CONTENTS, DocumentType.Screening, 0);
 
       await nextCall(mockPouchDB, "put", [anything()]);
       const newRecord = capture(mockPouchDB.put).last()[0] as any;
-      expect(newRecord.body.documentType).toEqual(DocumentType.Visit);
-      expect(newRecord.body.visit).toEqual(FAKE_VISIT_CONTENTS);
+      expect(newRecord.body.documentType).toEqual(DocumentType.Screening);
+      expect(newRecord.body.screen).toEqual(FAKE_SCREENING_CONTENTS);
     });
     it("uploads a saved record to the api server", async () => {
       const contents = {
@@ -89,7 +86,7 @@ describe("DocumentUploader", () => {
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
       when(mockPouchDB.allDocs(anything())).thenReturn(contents);
-      uploader.save("fakeUID", FAKE_VISIT_CONTENTS, DocumentType.Visit, 0);
+      uploader.save("fakeUID", FAKE_SCREENING_CONTENTS, DocumentType.Screening, 0);
 
       when(mockAxios.get("/documentId")).thenReturn(
         axiosResponse({ id: FAKE_CSRUID })

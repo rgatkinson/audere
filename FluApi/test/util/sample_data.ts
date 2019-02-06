@@ -12,7 +12,7 @@ import {
   VisitPIIInfo,
   VisitCommonInfo,
   EventInfoKind
-} from "audere-lib";
+} from "audere-lib/snifflesProtocol";
 
 const DEVICE = {
   installation: "uuid",
