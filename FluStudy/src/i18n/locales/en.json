@@ -320,7 +320,7 @@
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "At this time your symptoms do not meet the criteria for continuation. If your symptoms change, you can open this app again on a different day.",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would"
+    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
   },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
@@ -363,7 +363,7 @@
     "okScan": "Ok! Let's Scan"
   },
   "scanScreen": {
-    "enterManually": "Tap here to enter manually"
+    "enterManually": "Tap to enter manually"
   },
   "scanConfirmationScreen": {
     "codeSent": "Your code was sent!",
@@ -377,7 +377,9 @@
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
-    "medLink": "Find a nearby clinic or physician"
+    "medLink": "Find a nearby clinic or physician",
+    "whatIsQrCode": "Help! What's a QR code?",
+    "howToScan": "How to scan with your camera"
   },
   "enrolledScreen": {
     "contactInfo": "Contact Info",

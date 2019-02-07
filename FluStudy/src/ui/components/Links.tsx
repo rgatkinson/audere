@@ -1,25 +1,41 @@
 import React from "react";
-import { StyleProp, StyleSheet, TextStyle } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 
-interface Props {}
+interface Props {
+  links: string[];
+}
 
 class Links extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <Text
-        style={styles.bold}
-        content={t("shareLink") + "\n" + t("learnLink") + "\n" + t("medLink")}
-      />
+      <View style={styles.container}>
+        {this.props.links.map(linkText => (
+          <TouchableOpacity
+            key={linkText}
+            onPress={() => {
+              Alert.alert("Hello :)", "Waiting on content for:\n" + linkText, [
+                { text: "Ok", onPress: () => {} },
+              ]);
+            }}
+          >
+            <Text content={linkText} style={styles.linkStyle} />
+          </TouchableOpacity>
+        ))}
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  bold: {
-    fontFamily: "OpenSans-Bold",
+  container: {
+    alignSelf: "stretch",
+    marginVertical: 15,
+  },
+  linkStyle: {
+    color: "#007AFF",
   },
 });
 

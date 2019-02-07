@@ -105,11 +105,11 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
 const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
-  // TODO update links
   render() {
     const { t } = this.props;
     return (
       <Screen
+        alignTop={true}
         buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description")}
@@ -126,7 +126,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
           }
         }}
       >
-        <Links />
+        <Links links={[t("links:whatIsQrCode"), t("links:howToScan")]} />
         <Image
           style={{ height: 216, width: 300 }}
           source={require("../img/qrCode.png")}

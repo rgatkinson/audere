@@ -356,7 +356,12 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         canProceed={false}
-        footer={<Text content={t("disclaimer")} style={{ fontSize: 12 }} />}
+        footer={
+          <Text
+            content={t("disclaimer")}
+            style={{ alignSelf: "stretch", color: "#666" }}
+          />
+        }
         imageSrc={require("../img/ineligible.png")}
         logo={true}
         navBar={false}
@@ -366,7 +371,13 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         onNext={() => this.props.navigation.popToTop()}
       >
-        <Links />
+        <Links
+          links={[
+            t("links:shareLink"),
+            t("links:learnLink"),
+            t("links:medLink"),
+          ]}
+        />
       </Screen>
     );
   }
@@ -475,7 +486,13 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Splash");
         }}
       >
-        <Links />
+        <Links
+          links={[
+            t("links:shareLink"),
+            t("links:learnLink"),
+            t("links:medLink"),
+          ]}
+        />
       </Screen>
     );
   }
