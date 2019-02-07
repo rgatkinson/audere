@@ -10,7 +10,6 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { EnrolledConfig } from "../../../resources/ScreenConfig";
-import { ButtonConfig } from "../../../resources/QuestionnaireConfig";
 import { Action, Option, StoreState, setEmail } from "../../../store";
 import Button from "../../components/Button";
 import ContentContainer from "../../components/ContentContainer";
@@ -71,14 +70,11 @@ class EnrolledScreen extends React.PureComponent<
     }
   }
 
-  _canProceed = () => {
-    return this._validEmail() || this._dontEmail();
-  };
-
   _validEmail = () => {
     return (
       !!this.state.email &&
       this.state.valid &&
+      !!this.state.options &&
       this.state.options.reduce(
         (result: boolean, option: Option) => result || option.selected,
         false
@@ -86,25 +82,20 @@ class EnrolledScreen extends React.PureComponent<
     );
   };
 
-  _onDone = () => {
+  _onDone = (buttonKey: string) => {
     if (!!this.state.email) {
       this.props.dispatch(setEmail(this.state.email));
     }
-    this.props.updateAnswer({ selectedButtonKey: "done" });
     this.props.updateAnswer({ options: this.state.options });
-    if (this._receiveConsent()) {
+    this._proceed(buttonKey);
+  };
+
+  _proceed = (buttonKey: string) => {
+    if (buttonKey === "done" && this._receiveConsent()) {
       this.props.navigation.push("SurveyStart");
     } else {
       this.props.navigation.push("PaperConsent");
     }
-  };
-
-  _dontEmail = () => {
-    return this.state.options.reduce(
-      (result: boolean, option: Option) =>
-        result || (option.selected && option.key === "doNotEmailMe"),
-      false
-    );
   };
 
   _receiveConsent = () => {
@@ -122,6 +113,14 @@ class EnrolledScreen extends React.PureComponent<
     );
   };
 
+  _canProceed = (): boolean => {
+    const selectedButtonKey = this.props.getAnswer("selectedButtonKey");
+    return (
+      !!selectedButtonKey &&
+      (selectedButtonKey !== "done" || this._validEmail())
+    );
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -132,19 +131,16 @@ class EnrolledScreen extends React.PureComponent<
           progressLabel={t("common:statusBar:enrollment")}
           title={t("contactInfo")}
           onBack={() => this.props.navigation.pop()}
-          onForward={this._onDone}
+          onForward={() => {
+            this._proceed(this.props.getAnswer("selectedButtonKey"));
+          }}
         />
         <ContentContainer>
-          <Title
-            label={t("surveyTitle:" + EnrolledConfig.title)}
-            size="small"
-            style={styles.title}
-          />
+          <Title label={t("surveyTitle:" + EnrolledConfig.title)} />
           <Text
             content={t(
               "surveyDescription:" + EnrolledConfig.description!.label
             )}
-            style={styles.desc}
           />
           <EmailInput
             autoFocus={true}
@@ -161,17 +157,19 @@ class EnrolledScreen extends React.PureComponent<
             multiSelect={true}
             numColumns={1}
             onChange={options => this.setState({ options })}
-            style={styles.optionList}
             inclusiveOption={EnrolledConfig.optionList!.inclusiveOption}
-            exclusiveOption={EnrolledConfig.optionList!.exclusiveOption}
           />
           {EnrolledConfig.buttons.map(button => (
             <Button
-              enabled={this._canProceed()}
+              checked={this.props.getAnswer("selectedButtonKey") === button.key}
+              enabled={button.key === "done" ? this._validEmail() : true}
               key={button.key}
               label={t("surveyButton:" + button.key)}
               primary={button.primary}
-              onPress={this._onDone}
+              onPress={() => {
+                this.props.updateAnswer({ selectedButtonKey: button.key });
+                this._onDone(button.key);
+              }}
             />
           ))}
         </ContentContainer>
@@ -181,19 +179,9 @@ class EnrolledScreen extends React.PureComponent<
 }
 
 const styles = StyleSheet.create({
-  desc: {
-    marginBottom: 10,
-  },
   disclaimer: {
     fontSize: 17,
-    marginVertical: 10,
-  },
-  title: {
-    marginTop: 10,
-    marginBottom: 0,
-  },
-  optionList: {
-    marginTop: 0,
+    marginTop: 20,
   },
 });
 

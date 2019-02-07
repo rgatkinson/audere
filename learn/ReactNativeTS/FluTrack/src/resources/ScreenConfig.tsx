@@ -69,7 +69,6 @@ export const HipaaConfig: SurveyQuestionData = {
   },
 };
 
-
 export const EnrolledConfig: SurveyQuestionData = {
   id: "Enrolled",
   title: "enrolledTitle",
@@ -83,15 +82,14 @@ export const EnrolledConfig: SurveyQuestionData = {
       "askAboutMyIllness",
       "learnAboutStudy",
       "allOfTheAbove",
-      "doNotEmailMe",
     ],
     withOther: false,
     defaultOptions: ["sendCopyOfMyConsent"],
     inclusiveOption: "allOfTheAbove",
-    exclusiveOption: "doNotEmailMe",
   },
   buttons: [
     { key: "done", primary: true, enabled: true },
+    { key: "doNotEmailMe", primary: false, enabled: true },
   ],
 };
 

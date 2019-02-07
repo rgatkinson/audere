@@ -302,7 +302,6 @@
     "validationError": "* Please provide a valid email address"
   },
   "surveyOption": {
-    "doNotEmailMe": "Please do not email me",
     "sendCopyOfMyConsent": "Send me a copy of my consent",
     "askAboutMyIllness": "To ask me questions about my illness/cold",
     "learnAboutStudy": "To learn more about this study and related topics",
@@ -478,6 +477,7 @@
     "under7": "Younger than 7",
     "submit": "Submit",
     "clearSignature": "Clear Signature",
+    "doNotEmailMe": "Please do not email me",
     "none": "None",
     "sameAsResidence": "Same As Residential Address"
   },
