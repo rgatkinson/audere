@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Alert,
   Dimensions,
   Image,
   StyleSheet,
@@ -11,12 +10,10 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Action } from "../store";
-import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import Button from "./components/Button";
 import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
-import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 import { BarCodeScanner, Permissions } from "expo";

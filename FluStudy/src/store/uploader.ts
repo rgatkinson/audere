@@ -4,13 +4,9 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import {
-  default as form,
-  Address,
-  FormState,
-  Option,
-  SurveyResponse,
-} from "./form";
+import { Address, Option, SurveyResponse } from "./types";
+import { ScreeningState } from "./screening";
+import { SurveyState } from "./survey";
 import { StoreState } from "./StoreState";
 import { createTransport } from "../transport";
 import { format } from "date-fns";
@@ -20,11 +16,15 @@ import {
   AddressValueInfo,
   ConsentInfo,
   ConsentInfoSignerType,
+  PatientInfo,
   PatientInfoGender,
   QuestionAnswerOption,
+  ResponseInfo,
   ResponseItemInfo,
-  TelecomInfoSystem,
+  SampleInfo,
   ScreeningInfo,
+  SurveyInfo,
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { isNotNull } from "../util/check";
 
@@ -37,18 +37,24 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.form != null) {
-      uploader.saveScreening(state.form.formId, redux_to_pouch(state));
+    if (state.screening != null) {
+      uploader.saveScreening(
+        state.screening.id,
+        screening_redux_to_pouch(state)
+      );
+    }
+    if (state.survey != null) {
+      uploader.saveSurvey(state.survey.id, survey_redux_to_pouch(state));
     }
     return result;
   };
 }
 
 // Exported so we can write unit tests for this
-export function redux_to_pouch(state: StoreState): ScreeningInfo {
+export function screening_redux_to_pouch(state: StoreState): ScreeningInfo {
   const pouch: ScreeningInfo = {
-    isDemo: !!state.admin.isDemo,
-    complete: false,
+    isDemo: state.meta.isDemo,
+    complete: state.screening.complete,
     patient: {
       telecom: [],
       address: [],
@@ -58,117 +64,149 @@ export function redux_to_pouch(state: StoreState): ScreeningInfo {
     events: [],
   };
 
-  const form = state.form;
-  if (!!form.name) {
-    pouch.patient.name = form.name;
+  const screening = state.screening;
+  if (!!screening.name) {
+    pouch.patient.name = screening.name;
   }
-  if (!!form.email) {
+  if (!!screening.email) {
     pouch.patient.telecom.push({
       system: TelecomInfoSystem.Email,
-      value: form.email,
+      value: screening.email,
     });
   }
 
-  if (!!form.events) {
-    pouch.events = form.events;
+  if (!!screening.events) {
+    pouch.events = screening.events;
   }
 
-  maybePushConsent(form, pouch.consents);
-  const responses = form.responses;
+  maybePushConsent(screening, pouch.consents);
 
-  const birthDateResponse = responses.find(
-    response => response.questionId === "BirthDate"
-  );
-  if (!!birthDateResponse) {
-    const birthDate = birthDateResponse!.answer!.dateInput;
-    if (!!birthDate) {
-      pouch.patient.birthDate = birthDate.toISOString().substring(0, 10); // FHIR:date
-    }
-  }
+  const responses = screening.responses;
 
   maybePushAddressResponse(
     responses,
-    "WorkAddress",
-    AddressInfoUse.Work,
-    pouch
-  );
-  maybePushAddressResponse(responses, "Address", AddressInfoUse.Home, pouch);
-  maybePushAddressResponse(
-    responses,
-    "AddressCampus",
+    "Address",
     AddressInfoUse.Home,
-    pouch
-  );
-  maybePushAddressResponse(
-    responses,
-    "AddressOtherShelter",
-    AddressInfoUse.Home,
-    pouch
+    pouch.patient
   );
 
-  const whichShelterResponse = responses.find(
-    response => response.questionId === "WhichShelter"
-  );
-  if (
-    !!whichShelterResponse &&
-    !!whichShelterResponse.answer &&
-    !!whichShelterResponse.answer.options &&
-    whichShelterResponse.answer.selectedButtonKey === "done"
-  ) {
-    let shelter = null;
-    whichShelterResponse.answer.options.forEach((option: Option) => {
-      if (option.selected) {
-        shelter = option.key;
-      }
+  // Set all surveyResponses into pouch.responses
+  pushResponses("ScreeningQuestions", responses, pouch.responses);
+  return pouch;
+}
+
+// Exported so we can write unit tests for this
+export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
+  const pouch: SurveyInfo = {
+    isDemo: state.meta.isDemo,
+    complete: state.survey.complete,
+    samples: [],
+    patient: {
+      telecom: [],
+      address: [],
+    },
+    consents: [],
+    responses: [],
+    events: [],
+  };
+
+  const survey = state.survey;
+  if (!!survey.email) {
+    pouch.patient.telecom.push({
+      system: TelecomInfoSystem.Email,
+      value: survey.email,
     });
-    if (shelter == "stMartins") {
-      maybePushAddress(
-        {
-          address: "1561 Alaskan Way S",
-          city: "Seattle",
-          state: "WA",
-          zipcode: "98134",
-        },
-        AddressInfoUse.Home,
-        pouch.patient.address
-      );
-    } else if (shelter == "pioneerSquare") {
-      maybePushAddress(
-        {
-          address: "517 3rd Ave",
-          city: "Seattle",
-          state: "WA",
-          zipcode: "98104",
-        },
-        AddressInfoUse.Home,
-        pouch.patient.address
-      );
-    }
   }
 
-  const assignedSexResponse = responses.find(
-    response => response.questionId === "AssignedSex"
+  if (!!survey.events) {
+    pouch.events = survey.events;
+  }
+
+  const responses = survey.responses;
+
+  maybePushAddressResponse(
+    responses,
+    "Address",
+    AddressInfoUse.Home,
+    pouch.patient
   );
-  if (!!assignedSexResponse) {
-    let buttonKey = assignedSexResponse!.answer!.selectedButtonKey;
-    switch (buttonKey) {
-      case "male":
-        pouch.patient.gender = PatientInfoGender.Male;
-        break;
-      case "female":
-        pouch.patient.gender = PatientInfoGender.Female;
-        break;
-      case "other":
-        pouch.patient.gender = PatientInfoGender.Other;
-        break;
-      default:
-        // Prefer not to say
-        pouch.patient.gender = PatientInfoGender.Unknown;
-        break;
-    }
+
+  if (!!survey.samples) {
+    survey.samples.forEach((sample: SampleInfo) => {
+      pouch.samples.push({
+        sample_type: sample.sample_type,
+        code: sample.code,
+      });
+    });
   }
 
   // Set all surveyResponses into pouch.responses
+  pushResponses("SurveyQuestions", responses, pouch.responses);
+  return pouch;
+}
+
+function maybePushConsent(screening: ScreeningState, consents: ConsentInfo[]) {
+  const consent = screening.consent;
+  if (consent != null) {
+    consents.push(consent);
+  }
+}
+
+function maybePushAddressResponse(
+  responses: SurveyResponse[],
+  questionId: string,
+  use: AddressInfoUse,
+  patient: PatientInfo
+): void {
+  const response = responses.find(r => r.questionId === questionId);
+  if (!!response) {
+    maybePushAddress(response!.answer!.addressInput, use, patient.address);
+  }
+}
+
+function maybePushAddress(
+  addressInput: Address | undefined | null,
+  use: AddressInfoUse,
+  addresses: AddressInfo[]
+): void {
+  const info = addressValueInfo(addressInput);
+  if (info != null) {
+    addresses.push({
+      use,
+      ...info,
+    });
+  }
+}
+
+function addressValueInfo(
+  addressInput: Address | undefined | null
+): AddressValueInfo | null {
+  if (addressInput != null) {
+    const name = addressInput.name || "";
+    const city = addressInput.city || "";
+    const state = addressInput.state || "";
+    const zipcode = addressInput.zipcode || "";
+    const country = "";
+    const line: string[] = [addressInput.address, addressInput.address2].filter(
+      isNotNull
+    );
+    return {
+      name,
+      line,
+      city,
+      state,
+      postalCode: zipcode,
+      country,
+    };
+  }
+  return null;
+}
+
+function pushResponses(
+  responseId: string,
+  responses: SurveyResponse[],
+  pouchResponses: ResponseInfo[]
+): void {
   let items: ResponseItemInfo[] = [];
   responses.forEach(response => {
     let item: ResponseItemInfo = {
@@ -275,68 +313,5 @@ export function redux_to_pouch(state: StoreState): ScreeningInfo {
       items.push(item);
     }
   });
-  pouch.responses.push({ id: "Questionnaire", item: items });
-
-  return pouch;
-}
-
-function maybePushConsent(form: FormState, consents: ConsentInfo[]) {
-  const consent = form.consent;
-  if (consent != null) {
-    consents.push(consent);
-  }
-}
-
-function maybePushAddressResponse(
-  responses: SurveyResponse[],
-  questionId: string,
-  use: AddressInfoUse,
-  pouch: ScreeningInfo
-): void {
-  const response = responses.find(r => r.questionId === questionId);
-  if (!!response) {
-    maybePushAddress(
-      response!.answer!.addressInput,
-      use,
-      pouch.patient.address
-    );
-  }
-}
-
-function maybePushAddress(
-  addressInput: Address | undefined | null,
-  use: AddressInfoUse,
-  addresses: AddressInfo[]
-): void {
-  const info = addressValueInfo(addressInput);
-  if (info != null) {
-    addresses.push({
-      use,
-      ...info,
-    });
-  }
-}
-
-function addressValueInfo(
-  addressInput: Address | undefined | null
-): AddressValueInfo | null {
-  if (addressInput != null) {
-    const name = addressInput.name || "";
-    const city = addressInput.city || "";
-    const state = addressInput.state || "";
-    const zipcode = addressInput.zipcode || "";
-    const country = "";
-    const line: string[] = [addressInput.address, addressInput.address2].filter(
-      isNotNull
-    );
-    return {
-      name,
-      line,
-      city,
-      state,
-      postalCode: zipcode,
-      country,
-    };
-  }
-  return null;
+  pouchResponses.push({ id: responseId, item: items });
 }

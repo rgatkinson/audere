@@ -42,8 +42,8 @@ interface State {
 }
 
 @connect((state: StoreState) => ({
-  email: state.form.email,
-  name: state.form.name,
+  email: state.screening.email,
+  name: state.screening.name,
 }))
 class ConsentScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps,

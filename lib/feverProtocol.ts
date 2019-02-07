@@ -30,7 +30,7 @@ export interface ProtocolDocumentBase {
 
 export enum DocumentType {
   Screening = "SCREENING",
-  Survey = "Survey",
+  Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Log = "LOG",
   LogBatch = "LOG_BATCH"
@@ -258,6 +258,7 @@ export enum EventInfoKind {
   Response = "response",
   Sample = "sample",
   Screening = "screening",
+  Survey = "survey",
   AppNav = "appNav"
 }
 

@@ -1,90 +1,49 @@
 import uuidv4 from "uuid/v4";
-
 import {
   ConsentInfo,
   EventInfo,
   EventInfoKind,
 } from "audere-lib/feverProtocol";
 
-export type FormAction =
-  | { type: "START_FORM" }
+import { SurveyResponse } from "./types";
+
+export type ScreeningAction =
+  | { type: "START_SCREENING" }
+  | { type: "SET_COMPLETE"; complete: boolean }
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
-export interface Address {
-  name?: string;
-  address?: string;
-  address2?: string;
-  city?: string;
-  state?: string;
-  zipcode?: string;
-}
-
-export interface Option {
-  key: string;
-  selected: boolean;
-}
-
-export interface ButtonLabel {
-  key: string;
-  label: string;
-}
-
-export interface OptionLabel {
-  key: string;
-  label: string;
-}
-
-export interface SurveyAnswer {
-  addressInput?: Address;
-  booleanInput?: boolean;
-  dateInput?: Date;
-  options?: Option[];
-  otherOption?: string;
-  numberInput?: number;
-  selectedButtonKey?: string;
-  textInput?: string;
-  [key: string]:
-    | Address
-    | Date
-    | Option[]
-    | boolean
-    | string
-    | number
-    | undefined;
-}
-
-export interface SurveyResponse {
-  answer?: SurveyAnswer;
-  buttonLabels?: ButtonLabel[];
-  optionLabels?: OptionLabel[];
-  questionId: string;
-  questionText: string;
-}
-
-export type FormState = {
+export type ScreeningState = {
+  complete: boolean;
   consent?: ConsentInfo;
   email?: string;
-  responses: SurveyResponse[];
   events: EventInfo[];
+  id?: string;
   name?: string;
+  responses: SurveyResponse[];
   timestamp?: number;
 };
 
-const initialState: FormState = {
-  responses: [],
+const initialState: ScreeningState = {
+  complete: false,
   events: [],
+  responses: [],
 };
 
-export default function reducer(state = initialState, action: FormAction) {
-  if (action.type === "START_FORM") {
-    // Resets all form data
+export default function reducer(state = initialState, action: ScreeningAction) {
+  if (action.type === "START_SCREENING") {
+    // Resets all screening data
     return {
       ...initialState,
-      events: pushEvent(initialState, EventInfoKind.Screening, "StartedForm"),
+      events: pushEvent(
+        initialState,
+        EventInfoKind.Screening,
+        "StartedScreening"
+      ),
+      id: uuidv4(),
       timestamp: new Date().getTime(),
     };
   }
@@ -116,37 +75,48 @@ export default function reducer(state = initialState, action: FormAction) {
     };
   }
 
+  if (action.type === "SET_COMPLETE") {
+    return {
+      ...state,
+      complete: action.complete,
+      timestamp: new Date().getTime(),
+    };
+  }
+
   return state;
 }
 
-export function startForm(): FormAction {
+export function startScreening(): ScreeningAction {
   return {
-    type: "START_FORM",
+    type: "START_SCREENING",
   };
 }
 
-export function setName(name: string): FormAction {
+export function setName(name: string): ScreeningAction {
   return {
     type: "SET_NAME",
     name,
   };
 }
 
-export function setEmail(email: string): FormAction {
+export function setEmail(email: string): ScreeningAction {
   return {
     type: "SET_EMAIL",
     email,
   };
 }
 
-export function setConsent(consent: ConsentInfo): FormAction {
+export function setConsent(consent: ConsentInfo): ScreeningAction {
   return {
     type: "SET_CONSENT",
     consent,
   };
 }
 
-export function appendEvent(kind: EventInfoKind, refId: string): FormAction {
+export function appendScreeningEvent(
+  kind: EventInfoKind,
+  refId: string
+): ScreeningAction {
   return {
     type: "APPEND_EVENT",
     kind,
@@ -154,14 +124,23 @@ export function appendEvent(kind: EventInfoKind, refId: string): FormAction {
   };
 }
 
-export function setResponses(responses: SurveyResponse[]): FormAction {
+export function setScreeningResponses(
+  responses: SurveyResponse[]
+): ScreeningAction {
   return {
     type: "SET_RESPONSES",
     responses,
   };
 }
 
-function pushEvent(state: FormState, kind: EventInfoKind, refId: string) {
+export function setScreeningComplete(complete: boolean): ScreeningAction {
+  return {
+    type: "SET_COMPLETE",
+    complete,
+  };
+}
+
+function pushEvent(state: ScreeningState, kind: EventInfoKind, refId: string) {
   let newEvents = state.events.slice(0);
   newEvents.push({
     kind,

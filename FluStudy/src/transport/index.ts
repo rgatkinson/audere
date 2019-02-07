@@ -13,6 +13,7 @@ import {
   DocumentType,
   LogLevel,
   ScreeningInfo,
+  SurveyInfo,
 } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, LogBatcher } from "./LogBatcher";
@@ -53,6 +54,9 @@ class TypedDocumentUploader {
   }
   public saveScreening(localUid: string, screening: ScreeningInfo) {
     this.uploader.save(localUid, screening, DocumentType.Screening, 1);
+  }
+  public saveSurvey(localUid: string, survey: SurveyInfo) {
+    this.uploader.save(localUid, survey, DocumentType.Survey, 1);
   }
   public saveFeedback(subject: string, body: string) {
     this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);

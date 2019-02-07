@@ -6,7 +6,7 @@ export interface ProtocolDocumentBase {
 }
 export declare enum DocumentType {
     Screening = "SCREENING",
-    Survey = "Survey",
+    Survey = "SURVEY",
     Feedback = "FEEDBACK",
     Log = "LOG",
     LogBatch = "LOG_BATCH"
@@ -160,6 +160,7 @@ export declare enum EventInfoKind {
     Response = "response",
     Sample = "sample",
     Screening = "screening",
+    Survey = "survey",
     AppNav = "appNav"
 }
 export interface FeedbackDocument extends ProtocolDocumentBase {

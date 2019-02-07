@@ -5,13 +5,22 @@ import immutableTransform from "redux-persist-transform-immutable";
 
 import { uploaderMiddleware } from "./uploader";
 
-import { default as form, FormState, FormAction } from "./form";
-export * from "./form";
+export * from "./types";
 
-import { default as admin, AdminState, AdminAction } from "./admin";
-export * from "./admin";
+import { default as meta, MetaState, MetaAction } from "./meta";
+export * from "./meta";
 
-export type Action = FormAction | AdminAction;
+import {
+  default as screening,
+  ScreeningState,
+  ScreeningAction,
+} from "./screening";
+export * from "./screening";
+
+import { default as survey, SurveyState, SurveyAction } from "./survey";
+export * from "./survey";
+
+export type Action = MetaAction | ScreeningAction | SurveyAction;
 
 export { StoreState } from "./StoreState";
 
@@ -22,8 +31,9 @@ const persistConfig = {
 };
 
 const reducer = combineReducers({
-  form,
-  admin,
+  meta,
+  screening,
+  survey,
 });
 
 export const store = createStore(

@@ -12,23 +12,20 @@ import {
   StoreState,
   SurveyAnswer,
   SurveyResponse,
-  setResponses,
 } from "./index";
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionProps } from "../resources/ResponseTypes";
-import {
-  ButtonConfig,
-  EnabledOption,
-  SurveyQuestionData,
-} from "../resources/QuestionnaireConfig";
+import { i18n, WithNamespaces, withNamespaces } from "react-i18next";
+import { SurveyQuestionData } from "../resources/ScreenConfig";
 
 interface InnerProps {
+  data?: SurveyQuestionData;
   dispatch(action: Action): void;
-  navigation?: NavigationScreenProp<any, any>;
+  navigation: NavigationScreenProp<any, any>;
   responses: SurveyResponse[];
   t(key: string): string;
+  tReady: boolean;
+  i18n: i18n;
 }
 
 export interface ReduxWriterProps {
@@ -46,10 +43,10 @@ export default function reduxWriter<P extends ReduxWriterProps>(
   WrappedComponent: React.ComponentType<P>
 ) {
   class ReduxWriter extends React.Component<
-    SurveyQuestionProps & InnerProps & OuterProps<P>,
+    InnerProps & OuterProps<P> & WithNamespaces,
     State
   > {
-    constructor(props: SurveyQuestionProps & InnerProps & OuterProps<P>) {
+    constructor(props: InnerProps & OuterProps<P>) {
       super(props);
       this.state = {
         data:
@@ -60,15 +57,13 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     }
 
     componentDidMount() {
-      if (!!this.state.data) {
-        const responses = this.props.responses.slice(0);
-        const response = responses.find(
-          response => response.questionId === this.state.data.id
-        );
-        if (response == null) {
-          responses.push(this._initializeResponse(this.state.data));
-          this.props.dispatch(setResponses(responses));
-        }
+      const responses = this.props.responses.slice(0);
+      const response = responses.find(
+        response => response.questionId === this.state.data.id
+      );
+      if (response == null) {
+        responses.push(this._initializeResponse());
+        this.props.dispatch(this.state.data.updateFunction(responses));
       }
     }
 
@@ -122,7 +117,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
         responses.push(response);
       }
       response.answer = { ...response.answer, ...update };
-      this.props.dispatch(setResponses(responses));
+      this.props.dispatch(this.state.data.updateFunction(responses));
     };
 
     _getAnswer = (key: string, id: string = this.state.data.id): any => {
@@ -150,15 +145,22 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     }
   }
 
-  const mapStateToProps = function(state: StoreState) {
+  const mapStateToProps = function(
+    state: StoreState,
+    ownProps: InnerProps & OuterProps<P>
+  ) {
+    const data =
+      !!ownProps.navigation && !!ownProps.navigation.getParam("data")
+        ? ownProps.navigation.getParam("data")
+        : ownProps.data;
+
     return {
-      responses: state.form.responses,
+      // @ts-ignore
+      responses: state[data.responseType].responses,
     };
   };
 
-  const Enhanced = withNamespaces()<SurveyQuestionProps>(
-    connect(mapStateToProps)(ReduxWriter)
-  );
+  const Enhanced = withNamespaces()(connect(mapStateToProps)(ReduxWriter));
 
   // @ts-ignore
   Enhanced.navigationOptions = WrappedComponent.navigationOptions;

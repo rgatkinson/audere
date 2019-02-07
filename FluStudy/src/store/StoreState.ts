@@ -3,10 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { default as form, FormState, FormAction } from "./form";
-import { default as admin, AdminState, AdminAction } from "./admin";
+import { default as meta, MetaState, MetaAction } from "./meta";
+import {
+  default as screening,
+  ScreeningState,
+  ScreeningAction,
+} from "./screening";
+import { default as survey, SurveyState, SurveyAction } from "./survey";
 
 export interface StoreState {
-  form: FormState;
-  admin: AdminState;
+  meta: MetaState;
+  screening: ScreeningState;
+  survey: SurveyState;
 }

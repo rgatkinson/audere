@@ -14,17 +14,17 @@ import {
   Action,
   Address,
   Option,
-  startForm,
+  startScreening,
   StoreState,
   SurveyResponse,
 } from "../store";
 import {
   AddressConfig,
   AgeConfig,
+  ButtonConfig,
   ConsentConfig,
   SymptomsConfig,
 } from "../resources/ScreenConfig";
-import { ButtonConfig } from "../resources/QuestionnaireConfig";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import AddressInput from "./components/AddressInput";
 import Button from "./components/Button";
@@ -53,7 +53,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("welcome")}
         onNext={() => {
-          this.props.dispatch(startForm());
+          this.props.dispatch(startScreening());
           this.props.navigation.push("Why");
         }}
       />
@@ -145,7 +145,6 @@ class AgeScreen extends React.Component<
 }
 const Age = reduxWriter(withNamespaces("ageScreen")(AgeScreen));
 
-@connect()
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -281,8 +280,7 @@ interface AddressState {
 }
 
 @connect((state: StoreState) => ({
-  name: state.form.name,
-  responses: state.form.responses,
+  name: state.screening.name,
 }))
 class AddressInputScreen extends React.Component<
   AddressProps & WithNamespaces & ReduxWriterProps,
@@ -290,16 +288,10 @@ class AddressInputScreen extends React.Component<
 > {
   constructor(props: AddressProps & WithNamespaces & ReduxWriterProps) {
     super(props);
-    const addressResponse = props.responses.find(
-      response => response.questionId === AddressConfig.id
-    );
-    if (
-      addressResponse != null &&
-      addressResponse.answer != null &&
-      addressResponse.answer.addressInput != null
-    ) {
+    const addressInput = this.props.getAnswer("addressInput");
+    if (addressInput != null) {
       this.state = {
-        address: addressResponse.answer.addressInput,
+        address: addressInput,
       };
     } else {
       this.state = {
