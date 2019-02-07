@@ -3,6 +3,8 @@ import {
   ConsentInfo,
   EventInfo,
   EventInfoKind,
+  PushNotificationState,
+  PushRegistrationError,
 } from "audere-lib/feverProtocol";
 
 import { SurveyResponse } from "./types";
@@ -13,6 +15,7 @@ export type ScreeningAction =
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
+  | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
@@ -23,6 +26,7 @@ export type ScreeningState = {
   events: EventInfo[];
   id?: string;
   name?: string;
+  pushState: PushNotificationState;
   responses: SurveyResponse[];
   timestamp?: number;
 };
@@ -31,6 +35,9 @@ const initialState: ScreeningState = {
   complete: false,
   events: [],
   responses: [],
+  pushState: {
+    showedSystemPrompt: false,
+  },
 };
 
 export default function reducer(state = initialState, action: ScreeningAction) {
@@ -57,6 +64,13 @@ export default function reducer(state = initialState, action: ScreeningAction) {
     return {
       ...state,
       consent: action.consent,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_PUSH_STATE") {
+    return {
+      ...state,
+      pushState: action.pushState,
       timestamp: new Date().getTime(),
     };
   }
@@ -110,6 +124,15 @@ export function setConsent(consent: ConsentInfo): ScreeningAction {
   return {
     type: "SET_CONSENT",
     consent,
+  };
+}
+
+export function setPushNotificationState(
+  pushState: PushNotificationState
+): ScreeningAction {
+  return {
+    type: "SET_PUSH_STATE",
+    pushState,
   };
 }
 

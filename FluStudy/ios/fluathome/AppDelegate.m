@@ -3,6 +3,7 @@
 #import "AppDelegate.h"
 #import "ExpoKit.h"
 #import "EXViewController.h"
+#import "RCTPushNotificationManager.h"
 
 @interface AppDelegate ()
 
@@ -39,29 +40,31 @@
 
 #pragma mark - Notifications
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
+// Required to register for notifications
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
-    [[ExpoKit sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
+    [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
 }
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
+// Required for the register event.
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
+    [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+// Required for the notification event. You must call the completion handler after handling the remote notification.
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:notification];
+    [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(nonnull UILocalNotification *)notification
+// Required for the registrationError event.
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    [[ExpoKit sharedInstance] application:application didReceiveLocalNotification:notification];
+    [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
+// Required for the localNotification event.
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
-    [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
+    [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
 
 @end

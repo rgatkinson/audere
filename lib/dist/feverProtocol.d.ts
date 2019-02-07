@@ -60,6 +60,17 @@ export interface GpsLocationInfo {
     latitude: string;
     longitude: string;
 }
+export interface PushNotificationState {
+    showedSystemPrompt: boolean;
+    softResponse?: boolean;
+    token?: string;
+    registrationError?: PushRegistrationError;
+}
+export interface PushRegistrationError {
+    message: string;
+    code: number;
+    details: string;
+}
 export interface SampleInfo {
     sample_type: string;
     code: string;

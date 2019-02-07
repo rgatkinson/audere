@@ -1,0 +1,23 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
+
+if grep -q HEADER_SEARCH_PATH "$FILE";
+then
+ echo "No need to update"
+else
+echo "Updating"
+match='LIBRARY_SEARCH_PATHS'
+insert='HEADER_SEARCH_PATHS = (\
+					"\\"$(SRCROOT)\/..\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/\\"\/**",\
+					"\\"$(SRCROOT)\/..\/..\/ReactCommon\/yoga\\"",\
+				);\
+				'
+FILEBAK="$FILE.bak"
+sed -i.bak "s/$match/$insert$match/" $FILE && rm $FILEBAK
+fi

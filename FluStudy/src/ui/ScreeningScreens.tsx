@@ -2,6 +2,7 @@ import React from "react";
 import {
   Alert,
   KeyboardAvoidingView,
+  PushNotificationIOS,
   Text as SystemText,
   View,
   ScrollView,
@@ -11,9 +12,14 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
+  PushNotificationState,
+  PushRegistrationError,
+} from "audere-lib/feverProtocol";
+import {
   Action,
   Address,
   Option,
+  setPushNotificationState,
   startScreening,
   StoreState,
   SurveyResponse,
@@ -386,8 +392,19 @@ const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")<Props>(
   SymptomsIneligibleScreen
 );
 
-class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
+interface PushProps {
+  pushState: PushNotificationState;
+}
+
+@connect((state: StoreState) => ({
+  pushState: state.screening.pushState,
+}))
+class ConfirmationScreen extends React.Component<
+  Props & PushProps & WithNamespaces
+> {
   render() {
+    console.log('confirmation, push state:');
+    console.log(this.props.pushState);
     const { t } = this.props;
     return (
       <Screen
@@ -399,18 +416,60 @@ class ConfirmationScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("confirmed")}
         onNext={() => {
-          this.props.navigation.push("PushNotifications");
+          if (this.props.pushState.showedSystemPrompt) {
+            this.props.navigation.push("Instructions");
+          } else {
+            this.props.navigation.push("PushNotifications");
+          }
         }}
       />
     );
   }
 }
-const Confirmation = withNamespaces("confirmationScreen")<Props>(
+const Confirmation = withNamespaces("confirmationScreen")<Props & PushProps>(
   ConfirmationScreen
 );
 
-class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
+@connect((state: StoreState) => ({
+  pushState: state.screening.pushState,
+}))
+class PushNotificationsScreen extends React.Component<
+  Props & PushProps & WithNamespaces
+> {
+  _registrationEvent = (token: string) => {
+    const newPushState = { ...this.props.pushState, token };
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this.props.navigation.push("Instructions");
+  };
+
+  _registrationErrorEvent = (result: PushRegistrationError) => {
+    const newPushState = { ...this.props.pushState, registrationError: result };
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this.props.navigation.push("Instructions");
+  };
+
+  componentWillMount() {
+    PushNotificationIOS.addEventListener("register", this._registrationEvent);
+    PushNotificationIOS.addEventListener(
+      "registrationError",
+      this._registrationErrorEvent
+    );
+  }
+
+  componentWillUnmount() {
+    PushNotificationIOS.removeEventListener(
+      "register",
+      this._registrationEvent
+    );
+    PushNotificationIOS.removeEventListener(
+      "registrationError",
+      this._registrationErrorEvent
+    );
+  }
+
   render() {
+    console.log('push screen render');
+    console.log(this.props.pushState);
     const { t } = this.props;
     return (
       <Screen
@@ -420,15 +479,27 @@ class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
           <ButtonRow
             firstLabel={t("common:button:no")}
             firstOnPress={() => {
-              // TODO save response
+              const newPushState = {
+                ...this.props.pushState,
+                softResponse: false,
+              };
+              this.props.dispatch(setPushNotificationState(newPushState));
               this.props.navigation.push("Instructions");
             }}
             secondEnabled={true}
             secondLabel={t("common:button:yes")}
             secondOnPress={() => {
-              // TODO want to only set onNext in nav bar to onYes if they push yes...
-              // TODO save response
-              this.props.navigation.push("Instructions");
+              if (this.props.pushState.showedSystemPrompt) {
+                this.props.navigation.push("Instructions");
+              } else {
+                const newPushState = {
+                  ...this.props.pushState,
+                  softResponse: true,
+                  showedSystemPrompt: true,
+                };
+                this.props.dispatch(setPushNotificationState(newPushState));
+                PushNotificationIOS.requestPermissions();
+              }
             }}
           />
         }
@@ -443,9 +514,9 @@ class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const PushNotifications = withNamespaces("pushNotificationsScreen")<Props>(
-  PushNotificationsScreen
-);
+const PushNotifications = withNamespaces("pushNotificationsScreen")<
+  Props & PushProps
+>(PushNotificationsScreen);
 
 class InstructionsScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -483,7 +554,7 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("extraInfo")}
         onNext={() => {
-          this.props.navigation.push("Splash");
+          this.props.navigation.push("SplashScreen");
         }}
       >
         <Links

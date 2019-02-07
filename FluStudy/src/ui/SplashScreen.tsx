@@ -4,12 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "../store";
 import Button from "./components/Button";
+import Screen from "./components/Screen";
 import Title from "./components/Title";
 
 interface Props {
@@ -22,34 +23,40 @@ class SplashScreen extends React.PureComponent<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View style={styles.container}>
-        <Title label={t("welcome")} />
-        <Button
-          enabled={true}
-          primary={true}
-          label={t("getStarted")}
+      <Screen
+        alignTop={true}
+        buttonLabel={t("haveKit")}
+        canProceed={true}
+        logo={true}
+        navBar={false}
+        navigation={this.props.navigation}
+        title={t("welcome")}
+        onNext={() => {
+          this.props.navigation.push("WelcomeBack");
+        }}
+      >
+        <TouchableOpacity
+          style={styles.mainButton}
           onPress={() => {
             this.props.navigation.push("Welcome");
           }}
-        />
-        <Button
-          enabled={true}
-          primary={true}
-          label={t("haveKit")}
-          onPress={() => {
-            this.props.navigation.push("WelcomeBack");
-          }}
-        />
-      </View>
+        >
+          <Title label={t("getStarted")} />
+        </TouchableOpacity>
+      </Screen>
     );
   }
 }
-
 const styles = StyleSheet.create({
-  container: {
+  mainButton: {
+    borderColor: "#333",
+    borderRadius: 8,
+    borderWidth: 2,
+    width: 300,
+    height: 100,
     alignItems: "center",
-    flex: 1,
-    justifyContent: "space-around",
+    justifyContent: "center",
+    marginTop: 50,
   },
 });
 

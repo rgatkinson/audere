@@ -117,6 +117,19 @@ export interface GpsLocationInfo {
   longitude: string;
 }
 
+export interface PushNotificationState {
+  showedSystemPrompt: boolean;
+  softResponse?: boolean;
+  token?: string;
+  registrationError?: PushRegistrationError,
+}
+
+export interface PushRegistrationError {
+  message: string,
+  code: number,
+  details: string,
+}
+
 // Information about swabs or other physical samples collected during visit
 export interface SampleInfo {
   // Possible values TBD
