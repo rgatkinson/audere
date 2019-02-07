@@ -17,6 +17,7 @@ import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
 import Text from "./components/Text";
+import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 import { BarCodeScanner, Permissions } from "expo";
 
@@ -27,11 +28,6 @@ interface Props {
 
 @connect()
 class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    // TODO: start screening form
-    this.props.navigation.push("WhatsNext");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -43,7 +39,10 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("welcomeBack")}
-        onNext={this._onNext}
+        onNext={() => {
+          // TODO: start survey form
+          this.props.navigation.push("WhatsNext");
+        }}
       />
     );
   }
@@ -53,10 +52,6 @@ const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
 );
 
 class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Before");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -68,7 +63,9 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("whatsNext")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("Before");
+        }}
       />
     );
   }
@@ -76,10 +73,6 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
 const WhatsNext = withNamespaces("whatsNextScreen")<Props>(WhatsNextScreen);
 
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ScanInstructions");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -89,7 +82,9 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
         navBar={false}
         navigation={this.props.navigation}
         title={t("beforeYouBegin")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("ScanInstructions");
+        }}
       >
         <View>
           <ImageText
@@ -117,7 +112,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description")}
@@ -227,10 +221,32 @@ const ScanConfirmation = withNamespaces("scanConfirmationScreen")<Props>(
 );
 
 class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
-  // TODO: barcode entry fields
-  // TODO: save barcodes
-  _haveBarcodes = () => {
-    return true;
+  state = {
+    barcode1: null,
+    barcode2: null,
+  };
+
+  confirmInput = React.createRef<TextInput>();
+
+  _validBarcodes = () => {
+    return !!this.state.barcode1 && this.state.barcode1 === this.state.barcode2;
+  };
+
+  _onSave = () => {
+    if (this._validBarcodes()) {
+      // TODO: save barcodes
+      /*
+      const samples = !!this.props.samples
+        ? this.props.samples.slice(0)
+        : [];
+      samples.push({
+        sampleType: "manualBarcodeEntry",
+        code: this.state.barcode1!,
+      });
+      this.props.dispatch(setSamples(samples));
+      */
+      this.props.navigation.push("TestOne");
+    }
   };
 
   render() {
@@ -238,15 +254,38 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         buttonLabel={t("continue")}
-        canProceed={this._haveBarcodes()}
-        logo={false}
+        canProceed={this._validBarcodes()}
+        logo={true}
         navBar={true}
         navigation={this.props.navigation}
         title={t("enterKit")}
-        onNext={() => {
-          this.props.navigation.push("TestOne");
-        }}
-      />
+        onNext={this._onSave}
+      >
+        <View style={{ width: 200 }}>
+          <TextInput
+            autoCorrect={false}
+            autoFocus={true}
+            placeholder="Enter barcode data"
+            returnKeyType="next"
+            value={this.state.barcode1}
+            onChangeText={(text: string) => {
+              this.setState({ barcode1: text });
+            }}
+            onSubmitEditing={() => this.confirmInput.current!.focus()}
+          />
+          <TextInput
+            autoCorrect={false}
+            placeholder="Confirm barcode data"
+            ref={this.confirmInput}
+            returnKeyType="done"
+            value={this.state.barcode2}
+            onChangeText={(text: string) => {
+              this.setState({ barcode2: text });
+            }}
+            onSubmitEditing={this._onSave}
+          />
+        </View>
+      </Screen>
     );
   }
 }
