@@ -9,7 +9,8 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Action } from "../store";
+import { SampleInfo } from "audere-lib/feverProtocol";
+import { Action, setSamples, startSurvey, StoreState } from "../store";
 import Button from "./components/Button";
 import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
@@ -37,7 +38,7 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("welcomeBack")}
         onNext={() => {
-          // TODO: start survey form
+          this.props.dispatch(startSurvey());
           this.props.navigation.push("WhatsNext");
         }}
       />
@@ -138,7 +139,14 @@ const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
   ScanInstructionsScreen
 );
 
-class ScanScreen extends React.Component<Props & WithNamespaces> {
+interface SampleProps {
+  samples: SampleInfo[];
+}
+
+@connect((state: StoreState) => ({
+  samples: state.survey.samples,
+}))
+class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
   state = {
     activeScan: false,
   };
@@ -153,7 +161,14 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
           onBarCodeScanned={({ type, data }: { type: any; data: string }) => {
             if (!this.state.activeScan) {
               this.setState({ activeScan: true });
-              // TODO save barcode
+              const samples = !!this.props.samples
+                ? this.props.samples.slice(0)
+                : [];
+              samples.push({
+                sample_type: type,
+                code: data,
+              });
+              this.props.dispatch(setSamples(samples));
               this.props.navigation.push("ScanConfirmation");
             }
           }}
@@ -192,7 +207,7 @@ const scanStyles = StyleSheet.create({
     width: Dimensions.get("window").width,
   },
 });
-const Scan = withNamespaces("scanScreen")<Props>(ScanScreen);
+const Scan = withNamespaces("scanScreen")<Props & SampleProps>(ScanScreen);
 
 class ScanConfirmationScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -217,7 +232,12 @@ const ScanConfirmation = withNamespaces("scanConfirmationScreen")<Props>(
   ScanConfirmationScreen
 );
 
-class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
+@connect((state: StoreState) => ({
+  samples: state.survey.samples,
+}))
+class ManualEntryScreen extends React.Component<
+  Props & SampleProps & WithNamespaces
+> {
   state = {
     barcode1: null,
     barcode2: null,
@@ -231,17 +251,12 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
 
   _onSave = () => {
     if (this._validBarcodes()) {
-      // TODO: save barcodes
-      /*
-      const samples = !!this.props.samples
-        ? this.props.samples.slice(0)
-        : [];
+      const samples = !!this.props.samples ? this.props.samples.slice(0) : [];
       samples.push({
-        sampleType: "manualBarcodeEntry",
+        sample_type: "manualEntry",
         code: this.state.barcode1!,
       });
       this.props.dispatch(setSamples(samples));
-      */
       this.props.navigation.push("TestOne");
     }
   };
@@ -286,7 +301,7 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const ManualEntry = withNamespaces("manualEntryScreen")<Props>(
+const ManualEntry = withNamespaces("manualEntryScreen")<Props & SampleProps>(
   ManualEntryScreen
 );
 

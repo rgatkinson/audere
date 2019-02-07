@@ -271,8 +271,6 @@ const ConsentIneligible = withNamespaces("consentIneligibleScreen")<Props>(
 
 interface AddressProps {
   name: string;
-  navigation: NavigationScreenProp<any, any>;
-  responses: SurveyResponse[];
 }
 
 interface AddressState {
@@ -283,10 +281,10 @@ interface AddressState {
   name: state.screening.name,
 }))
 class AddressInputScreen extends React.Component<
-  AddressProps & WithNamespaces & ReduxWriterProps,
+  Props & AddressProps & WithNamespaces & ReduxWriterProps,
   AddressState
 > {
-  constructor(props: AddressProps & WithNamespaces & ReduxWriterProps) {
+  constructor(props: Props & AddressProps & WithNamespaces & ReduxWriterProps) {
     super(props);
     const addressInput = this.props.getAnswer("addressInput");
     if (addressInput != null) {
