@@ -8,38 +8,6 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return Promise.all(
-      queryInterface.createTable("fever_screenings", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        screenings: jsonColumn()
-      }),
-      queryInterface.createTable("fever_screenings_backups", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        screenings: jsonColumn()
-      }),
-      queryInterface.createTable("fever_surveys", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        surveys: jsonColumn()
-      }),
-      queryInterface.createTable("fever_surveys_backups", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        surveys: jsonColumn()
-      }),
       queryInterface.createTable("fever_access_keys", {
         id: idColumn(),
         createdAt: dateColumn(),
@@ -62,20 +30,43 @@ module.exports = {
         csruid: unique(stringColumn()),
         device: jsonColumn(),
         surveys: jsonColumn()
-      })
+      }),
+      queryInterface.createTable("fever_feedback", {
+        id: idColumn(),
+        createdAt: dateColumn(),
+        updatedAt: dateColumn(),
+        device: jsonColumn(),
+        subject: stringColumn(),
+        body: stringColumn()
+      }),
+      queryInterface.createTable("fever_current_surveys", {
+        id: idColumn(),
+        createdAt: dateColumn(),
+        updatedAt: dateColumn(),
+        csruid: unique(stringColumn()),
+        device: jsonColumn(),
+        surveys: jsonColumn()
+      }),
+      queryInterface.createTable("fever_backup_surveys", {
+        id: idColumn(),
+        createdAt: dateColumn(),
+        updatedAt: dateColumn(),
+        csruid: unique(stringColumn()),
+        device: jsonColumn(),
+        surveys: jsonColumn()
+      }),
     );
   },
 
   down: (queryInterface, Sequelize) => {
     return Promise.all(
       [
-        "fever_screenings",
-        "fever_screenings_backups",
-        "fever_surveys",
-        "fever_surveys_backups",
         "fever_access_keys",
         "fever_client_logs",
-        "fever_client_log_batches"
+        "fever_client_log_batches",
+        "fever_feedback",
+        "fever_current_surveys",
+        "fever_backup_surveys",
       ].map(queryInterface.dropTable)
     );
   }

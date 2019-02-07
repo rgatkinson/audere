@@ -1,7 +1,7 @@
 export type MetaAction = { type: "SET_DEMO"; isDemo: boolean };
 
 export type MetaState = {
-  isDemo?: boolean;
+  isDemo: boolean;
 };
 
 const initialState: MetaState = {

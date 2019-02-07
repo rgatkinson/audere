@@ -7,19 +7,14 @@ import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { Address, Option, SurveyResponse } from "./types";
 import { SurveyState, StoreState } from "./index";
 import { createTransport } from "../transport";
-import { format } from "date-fns";
 import {
-  AddressInfo,
   AddressInfoUse,
   AddressValueInfo,
   ConsentInfo,
-  ConsentInfoSignerType,
   PatientInfo,
-  PatientInfoGender,
   QuestionAnswerOption,
   ResponseInfo,
   ResponseItemInfo,
-  SampleInfo,
   SurveyInfo,
   TelecomInfoSystem,
 } from "audere-lib/feverProtocol";

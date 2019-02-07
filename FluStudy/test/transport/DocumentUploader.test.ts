@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Axios, { AxiosInstance, AxiosResponse } from "axios";
+import Axios, { AxiosInstance } from "axios";
 import PouchDB from "pouchdb";
 import CryptoPouch from "crypto-pouch";
 import {
@@ -32,6 +32,7 @@ const EMPTY_POUCH_CONTENTS = {
 };
 
 const FAKE_SURVEY_CONTENTS: SurveyInfo = {
+  isDemo: false,
   patient: {
     name: "Some Fake Name",
     telecom: [],
