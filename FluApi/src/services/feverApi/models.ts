@@ -3,18 +3,28 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Sequelize, { Model, Sequelize as Sql, DefineModelAttributes } from "sequelize";
+import Sequelize, {
+  Model,
+  Sequelize as Sql,
+  DefineModelAttributes
+} from "sequelize";
 import "../util/config";
-import { DeviceInfo, LogLevel, LogBatchInfo, PIIInfo, SurveyNonPIIDbInfo } from "audere-lib/feverProtocol";
+import {
+  DeviceInfo,
+  LogLevel,
+  LogBatchInfo,
+  PIIInfo,
+  SurveyNonPIIDbInfo
+} from "audere-lib/feverProtocol";
 
 // ---------------------------------------------------------------
 
 export const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-  logging: false,
+  logging: false
 });
 
 export const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-  logging: false,
+  logging: false
 });
 
 // ---------------------------------------------------------------
@@ -63,7 +73,7 @@ export const ClientLogBatch = defineNonPII<LogBatchAttributes>(
   {
     csruid: unique(stringColumn()),
     device: jsonColumn(),
-    batch: jsonColumn(),
+    batch: jsonColumn()
   }
 );
 
@@ -75,14 +85,11 @@ interface FeedbackAttributes {
   body: string;
   device: DeviceInfo;
 }
-export const Feedback = defineNonPII<FeedbackAttributes>(
-  "fever_feedback",
-  {
-    subject: stringColumn(),
-    body: stringColumn(),
-    device: jsonColumn(),
-  }
-);
+export const Feedback = defineNonPII<FeedbackAttributes>("fever_feedback", {
+  subject: stringColumn(),
+  body: stringColumn(),
+  device: jsonColumn()
+});
 
 // ---------------------------------------------------------------
 
@@ -96,19 +103,25 @@ export const SurveyNonPII = defineSurvey<SurveyNonPIIDbInfo>(sequelizeNonPII);
 export const SurveyPII = defineSurvey<PIIInfo>(sequelizePII);
 
 // Make these internals public to support editing/backup
-export function defineSurvey<Info>(sql: Sql, editableType = EditableTableType.CURRENT): SurveyModel<Info> {
+export function defineSurvey<Info>(
+  sql: Sql,
+  editableType = EditableTableType.CURRENT
+): SurveyModel<Info> {
   return defineSql<SurveyAttributes<Info>>(
     sql,
     `fever_${editableType}_surveys`,
     {
       csruid: stringColumn(),
       device: jsonColumn(),
-      survey: jsonColumn(),
+      survey: jsonColumn()
     }
   );
 }
 export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
-export type SurveyModel<Info> = Model<SurveyInstance<Info>, SurveyAttributes<Info>>;
+export type SurveyModel<Info> = Model<
+  SurveyInstance<Info>,
+  SurveyAttributes<Info>
+>;
 
 // ---------------------------------------------------------------
 
@@ -126,7 +139,7 @@ export enum PersonalInfoType {
 // if a fixup has been applied.
 export enum EditableTableType {
   CURRENT = "current",
-  BACKUP = "backup",
+  BACKUP = "backup"
 }
 
 // ---------------------------------------------------------------
@@ -137,9 +150,15 @@ type Inst<Attr> = Sequelize.Instance<Attr> & Attr;
 function defineNonPII<Attr>(name, attr: DefineModelAttributes<Attr>) {
   return defineSql(sequelizeNonPII, name, attr);
 }
-function defineSql<Attr>(sql: Sql, name: string, attr: DefineModelAttributes<Attr>): Model<Inst<Attr>, Attr> {
+function defineSql<Attr>(
+  sql: Sql,
+  name: string,
+  attr: DefineModelAttributes<Attr>
+): Model<Inst<Attr>, Attr> {
   // The sequelize type definition makes define return Model<any,any>, so cast to recover type info.
-  return <Model<Inst<Attr>, Attr>><any>sql.define<Inst<Attr>, Attr>(name, attr, freezeTableName());
+  return <Model<Inst<Attr>, Attr>>(
+    (<any>sql.define<Inst<Attr>, Attr>(name, attr, freezeTableName()))
+  );
 }
 
 function freezeTableName() {

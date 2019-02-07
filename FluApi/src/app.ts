@@ -10,6 +10,7 @@ import helmet from "helmet";
 import base64url from "base64url";
 import * as DocumentsController from "./controllers/documentsController";
 import * as ExportController from "./controllers/hutchUploadController";
+import { putFeverDocument } from "./services/feverApi/endpoint";
 import { sequelizeNonPII, sequelizePII } from "./models";
 import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import logger from "./util/logger";
@@ -32,6 +33,11 @@ publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 publicApp.put(
   "/api/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
   DocumentsController.putDocumentWithKey
+);
+
+publicApp.put(
+  "/api/fever/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
+  putFeverDocument
 );
 
 publicApp.get(
