@@ -89,6 +89,7 @@ describe("DocumentUploader", () => {
         total_rows: 1,
         rows: [
           {
+            id: FAKE_POUCH_DOC._id,
             doc: FAKE_POUCH_DOC,
           },
         ],

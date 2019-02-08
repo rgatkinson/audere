@@ -298,16 +298,16 @@ export class DocumentUploader {
     if (items && items.rows) {
       const total = items.rows.length;
       const docs = items.rows.filter((row: any) =>
-        row.doc._id.startsWith("documents/")
+        row.id.startsWith("documents/")
       ).length;
       const csruids = items.rows.filter((row: any) =>
-        row.doc._id.startsWith("csruid/documents/")
+        row.id.startsWith("csruid/documents/")
       ).length;
       if (IS_NODE_ENV_DEVELOPMENT) {
         this.logger.debug(
           `Pouch contents: ` +
             `${total} entries, of which ${docs} docs and ${csruids} csruids` +
-            items.rows.map((row: any) => `\n  ${row.doc._id}`)
+            items.rows.map((row: any) => `\n  ${row.id}`)
         );
       } else {
         this.logger.debug(
