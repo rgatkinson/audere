@@ -25,17 +25,14 @@ interface Props {
   location: string;
   navigation: NavigationScreenProp<any, any>;
   isDemo: boolean;
+  onStateChange: (navigation: NavigationScreenProp<any, any>) => void;
 }
 
-interface State {
-  language: string;
-  languageOpen: boolean;
-}
-
-@connect((state: StoreState) => ({
+@connect((state: StoreState, dispatch: Function) => ({
   location: state.admin.location,
   admin: state.admin.administrator,
   isDemo: state.admin.isDemo,
+  onStateChange: completeFormIfExpired.bind(state, dispatch),
 }))
 class HomeScreen extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
@@ -55,7 +52,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces, State> {
   }
 
   _handleAppStateChange = (nextAppState: string) => {
-    completeFormIfExpired(this.props.navigation);
+    this.props.onStateChange(this.props.navigation);
   };
 
   _onStart = () => {
