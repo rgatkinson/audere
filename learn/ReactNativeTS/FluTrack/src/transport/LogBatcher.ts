@@ -15,7 +15,7 @@ import { Logger } from "./LogUtil";
 
 const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
-  targetBatchSizeInChars: 1024 * 1024,
+  targetBatchSizeInChars: 64 * 1024,
   targetBatchIntervalInMs: 5 * 60 * 1000,
   maxLineLength: envAsNumber(process.env.LOG_RECORD_LIMIT, 256),
   lineTruncateTail: 50,

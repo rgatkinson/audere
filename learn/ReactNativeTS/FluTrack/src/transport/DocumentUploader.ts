@@ -32,6 +32,8 @@ export const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
 
 const POUCH_PASS_KEY = "FluTrack.PouchDbEncryptionPassword";
 
+const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
+
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
 type DocumentContents = VisitInfo | FeedbackInfo | LogInfo | LogBatchInfo;
@@ -240,6 +242,8 @@ export class DocumentUploader {
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
+    this.uploadNext();
+
     const options = {
       startkey: "documents/",
     };
@@ -290,7 +294,7 @@ export class DocumentUploader {
   }
 
   private async logPouchKeys(): Promise<void> {
-    const items = await this.db.allDocs({ include_docs: true });
+    const items = await this.db.allDocs({ include_docs: false });
     if (items && items.rows) {
       const total = items.rows.length;
       const docs = items.rows.filter((row: any) =>
@@ -299,11 +303,17 @@ export class DocumentUploader {
       const csruids = items.rows.filter((row: any) =>
         row.doc._id.startsWith("csruid/documents/")
       ).length;
-      this.logger.debug(
-        `Pouch contents: ` +
-          `${total} entries, of which ${docs} docs and ${csruids} csruids` +
-          items.rows.map((row: any) => `\n  ${row.doc._id}`)
-      );
+      if (IS_NODE_ENV_DEVELOPMENT) {
+        this.logger.debug(
+          `Pouch contents: ` +
+            `${total} entries, of which ${docs} docs and ${csruids} csruids` +
+            items.rows.map((row: any) => `\n  ${row.doc._id}`)
+        );
+      } else {
+        this.logger.debug(
+          `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+        );
+      }
     } else {
       this.logger.debug("Pouch contents: no items found");
     }

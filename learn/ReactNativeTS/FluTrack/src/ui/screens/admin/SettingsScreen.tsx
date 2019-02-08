@@ -160,11 +160,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
         <View style={styles.syncContainer}>
           <Text
             center={true}
-            content={`Surveys waiting to be synced: ${
-              this.state.documentsAwaitingUpload == -1
-                ? "..."
-                : this.state.documentsAwaitingUpload
-            }`}
+            content={this.state.documentsAwaitingUpload === 0 ? "Sync Complete" : "Syncing..."}
           />
           <Button
             enabled={true}

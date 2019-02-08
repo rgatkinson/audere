@@ -12,14 +12,12 @@ if (scope && typeof scope.self === "undefined") {
 // bytes from the api server and serve them up from global.crypto.getRandomValues()
 let randomBytes: Buffer;
 let nextRandomByteIndex = 0;
-let lastLogger: Logger | null;
 
 export async function loadRandomBytes(
   api: AxiosInstance,
   numBytes: number,
   logger: Logger
 ) {
-  lastLogger = logger;
   let result;
   try {
     result = await api.get(`/randomBytes/${numBytes}`);
@@ -30,8 +28,6 @@ export async function loadRandomBytes(
   if (result.status === 200) {
     randomBytes = base64url.toBuffer(result.data.bytes);
     nextRandomByteIndex = 0;
-  } else {
-    logger.error("Unable to load more secure random bytes.");
   }
 }
 
@@ -45,15 +41,6 @@ scope.crypto = {
       array[i] = randomBytes.readUInt8(nextRandomByteIndex);
       i++;
       nextRandomByteIndex++;
-    }
-    if (i < array.length) {
-      const logger = lastLogger;
-      if (logger != null) {
-        logger.error(
-          `Not enough random bytes loaded, requested ${array.length -
-            i} more. ` + `Falling back to pseudorandom bytes`
-        );
-      }
     }
     while (i < array.length) {
       array[i] = Math.floor(Math.random() * 256);
