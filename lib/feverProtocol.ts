@@ -89,6 +89,7 @@ export interface CommonInfo {
   complete: boolean;
   isDemo?: boolean;
   events: EventInfo[];
+  pushNotificationState?: PushNotificationState;
 }
 
 export interface SurveyDocument extends ProtocolDocumentBase {

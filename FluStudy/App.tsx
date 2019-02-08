@@ -9,7 +9,11 @@ YellowBox.ignoreWarnings([
   "Class EXDisabledDevMenu",
   "Class EXDisabledRedBox",
 ]);
-import { createStackNavigator, NavigationScreenProp } from "react-navigation";
+import {
+  createDrawerNavigator,
+  createStackNavigator,
+  NavigationScreenProp,
+} from "react-navigation";
 import { AppLoading, Font } from "expo";
 import { getStore, getPersistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
@@ -49,6 +53,7 @@ import {
 } from "./src/ui/SurveyScreens";
 import SplashScreen from "./src/ui/SplashScreen";
 import ConsentScreen from "./src/ui/ConsentScreen";
+import AboutScreen from "./src/ui/AboutScreen";
 
 const Home = createStackNavigator(
   {
@@ -85,7 +90,12 @@ const Home = createStackNavigator(
   }
 );
 
-const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(Home));
+const Drawer = createDrawerNavigator({
+  Home,
+  About: { screen: AboutScreen },
+});
+
+const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(Drawer));
 
 type AppProps = {
   exp?: {

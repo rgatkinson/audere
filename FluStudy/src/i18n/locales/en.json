@@ -300,6 +300,10 @@
     "getStarted": "Get Started",
     "haveKit": "I have my kit"
   },
+  "aboutScreen": {
+    "title": "flu@home",
+    "demoMode": "Demo Mode:"
+  },
   "welcomeScreen": {
     "welcome": "Welcome",
     "description": "We know you aren't feeling well right now. Thank  you for participating even when you're ill."
