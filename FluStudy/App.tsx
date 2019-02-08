@@ -136,7 +136,7 @@ export default class App extends React.Component<AppProps> {
       <I18nextProvider i18n={i18n}>
         <StatusBar barStyle="dark-content" />
         <Provider store={this.store}>
-          <PersistGate loading={null} persistor={this.persistor}>
+          <PersistGate loading={null} persistor={this.persistor!}>
             <ReloadAppOnLanguageChange />
           </PersistGate>
         </Provider>

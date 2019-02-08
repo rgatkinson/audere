@@ -92,6 +92,10 @@ export function screening_redux_to_pouch(state: StoreState): ScreeningInfo {
 
   // Set all surveyResponses into pouch.responses
   pushResponses("ScreeningQuestions", responses, pouch.responses);
+
+  if (!!screening.pushState) {
+    pouch.pushNotificationState = screening.pushState;
+  }
   return pouch;
 }
 

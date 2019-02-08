@@ -254,9 +254,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             primary={true}
             label={t("back")}
             style={{ marginVertical: 10 }}
-            onPress={() => {
-              this.props.navigation.push("Consent", { data: ConsentConfig });
-            }}
+            onPress={() => this.props.navigation.pop()}
           />
         }
         imageSrc={require("../img/ineligible.png")}
@@ -403,8 +401,6 @@ class ConfirmationScreen extends React.Component<
   Props & PushProps & WithNamespaces
 > {
   render() {
-    console.log('confirmation, push state:');
-    console.log(this.props.pushState);
     const { t } = this.props;
     return (
       <Screen
@@ -468,8 +464,6 @@ class PushNotificationsScreen extends React.Component<
   }
 
   render() {
-    console.log('push screen render');
-    console.log(this.props.pushState);
     const { t } = this.props;
     return (
       <Screen
