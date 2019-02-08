@@ -130,7 +130,7 @@ export class DocumentUploader {
     }
   }
 
-  private async getEncryptionPassword(): Promise<string> {
+  public async getEncryptionPassword(): Promise<string> {
     let pouchPassword = await SecureStore.getItemAsync(POUCH_PASS_KEY);
     if (pouchPassword) {
       return pouchPassword;
