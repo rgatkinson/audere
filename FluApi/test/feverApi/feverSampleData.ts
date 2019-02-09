@@ -10,9 +10,6 @@ import {
   EventInfoKind,
   CommonInfo,
   PIIInfo,
-  ScreeningDocument,
-  ScreeningInfo,
-  ScreeningNonPIIDbInfo,
   SurveyDocument,
   SurveyInfo,
   SurveyNonPIIDbInfo,
@@ -53,7 +50,10 @@ const PII_RESPONSE_ITEM = {
 
 const COMMON_INFO: CommonInfo = {
   isDemo: false,
-  complete: true,
+  workflow: {
+    screeningComplete: true,
+    surveyComplete: false,
+  },
   events: [
     {
       kind: EventInfoKind.Sample,
@@ -73,46 +73,6 @@ export const PII: PIIInfo = {
     }
   ]
 };
-
-export const SCREENING_NONPII: ScreeningNonPIIDbInfo = {
-  ...COMMON_INFO,
-  consents: [],
-  responses: [
-    {
-      id: "Questionnaire",
-      item: [NONPII_RESPONSE_ITEM]
-    }
-  ]
-};
-export const SCREENING_INFO: ScreeningInfo = {
-  ...SCREENING_NONPII,
-  ...PII,
-  responses: [
-    {
-      id: "Questionnaire",
-      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM]
-    }
-  ]
-};
-
-export function screeningPost(csruid: string): ScreeningDocument {
-  return {
-    schemaId: 1,
-    csruid,
-    documentType: DocumentType.Screening,
-    device: DEVICE,
-    screen: SCREENING_INFO,
-  }
-}
-
-export function screeningNonPIIInDb(csruid: string) {
-  return { csruid, device: DEVICE, screen: SCREENING_NONPII };
-}
-
-export function screeningPIIInDb(csruid: string) {
-  return { csruid, device: DEVICE, screen: PII };
-}
-
 
 export const SURVEY_NONPII: SurveyNonPIIDbInfo = {
   ...COMMON_INFO,
@@ -147,11 +107,11 @@ export function surveyPost(csruid: string): SurveyDocument {
 }
 
 export function surveyNonPIIInDb(csruid: string) {
-  return { csruid, device: DEVICE, screen: SURVEY_NONPII };
+  return { csruid, device: DEVICE, survey: SURVEY_NONPII };
 }
 
 export function surveyPIIInDb(csruid: string) {
-  return { csruid, device: DEVICE, screen: PII };
+  return { csruid, device: DEVICE, survey: PII };
 }
 
 

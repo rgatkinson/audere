@@ -58,7 +58,7 @@ export async function putFeverDocument(req, res, next) {
 export async function putDocument(req, res) {
   switch (req.body.documentType) {
     case DocumentType.Survey:
-      await putSurvey(req.params.documentId, req.body as SurveyDocument);
+      await putSurvey(req.body as SurveyDocument);
       break;
     case DocumentType.Feedback:
       await sendAndPutFeedback(req.body as FeedbackDocument);
@@ -75,11 +75,8 @@ export async function putDocument(req, res) {
   res.json({ Status: "SUCCESS" });
 }
 
-async function putSurvey(
-  csruid: string,
-  document: SurveyDocument
-): Promise<void> {
-  const device = document.device;
+async function putSurvey(document: SurveyDocument): Promise<void> {
+  const { csruid, device } = document;
   const {
     isDemo,
     events,

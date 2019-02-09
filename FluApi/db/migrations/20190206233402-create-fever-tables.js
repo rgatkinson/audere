@@ -7,55 +7,51 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return Promise.all(
-      queryInterface.createTable("fever_access_keys", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        key: stringColumn(),
-        valid: booleanColumn()
+
+    // Every table includes these columns
+    function basicTable(name, columns) {
+      return queryInterface.createTable(name, {
+        id: identity(column(Sequelize.INTEGER)),
+        createdAt: column(Sequelize.DATE),
+        updatedAt: column(Sequelize.DATE),
+        ...columns,
+      });
+    }
+
+    // Upload tables add these columns
+    function uploadTable(name, columns) {
+      return basicTable(name, {
+        csruid: unique(column(Sequelize.STRING)),
+        device: column(Sequelize.JSON),
+        ...columns,
+      });
+    }
+
+    return Promise.all([
+      basicTable("fever_access_keys", {
+        key: column(Sequelize.STRING),
+        valid: column(Sequelize.BOOLEAN)
       }),
-      queryInterface.createTable("fever_client_logs", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        device: jsonColumn(),
-        level: integerColumn(),
-        log: stringColumn()
+      basicTable("fever_client_logs", {
+        device: column(Sequelize.JSON),
+        level: column(Sequelize.INTEGER),
+        log: column(Sequelize.STRING)
       }),
-      queryInterface.createTable("fever_client_log_batches", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        surveys: jsonColumn()
+      uploadTable("fever_client_log_batches", {
+        batch: column(Sequelize.JSON)
       }),
-      queryInterface.createTable("fever_feedback", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        device: jsonColumn(),
-        subject: stringColumn(),
-        body: stringColumn()
+      basicTable("fever_feedback", {
+        device: column(Sequelize.JSON),
+        subject: column(Sequelize.STRING),
+        body: column(Sequelize.STRING)
       }),
-      queryInterface.createTable("fever_current_surveys", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        surveys: jsonColumn()
+      uploadTable("fever_current_surveys", {
+        survey: column(Sequelize.JSON)
       }),
-      queryInterface.createTable("fever_backup_surveys", {
-        id: idColumn(),
-        createdAt: dateColumn(),
-        updatedAt: dateColumn(),
-        csruid: unique(stringColumn()),
-        device: jsonColumn(),
-        surveys: jsonColumn()
+      uploadTable("fever_backup_surveys", {
+        survey: column(Sequelize.JSON)
       }),
-    );
+    ]);
   },
 
   down: (queryInterface, Sequelize) => {
@@ -67,37 +63,30 @@ module.exports = {
         "fever_feedback",
         "fever_current_surveys",
         "fever_backup_surveys",
-      ].map(queryInterface.dropTable)
+      ].map(name => queryInterface.dropTable(name))
     );
   }
 };
 
-function unique(column) {
-  return { ...column, unique: true };
-}
-function stringColumn() {
-  return column(Sequelize.STRING);
-}
-function booleanColumn() {
-  return column(Sequelize.BOOLEAN);
-}
-function jsonColumn() {
-  return column(Sequelize.JSON);
-}
-function integerColumn() {
-  return column(Sequelize.INTEGER);
-}
-function dateColumn() {
-  return column(Sequelize.DATE);
-}
-function column(type) {
-  return { allowNull: false, type };
-}
-function idColumn() {
+function identity(column) {
   return {
-    allowNull: false,
+    ...column,
     autoIncrement: true,
     primaryKey: true,
-    type: Sequelize.INTEGER
+  };
+}
+
+function unique(column) {
+  return {
+    ...column,
+    unique: true
+  };
+}
+
+// All columns disallow null
+function column(type) {
+  return {
+    allowNull: false,
+    type
   };
 }

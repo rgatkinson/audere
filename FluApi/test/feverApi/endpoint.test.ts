@@ -4,23 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import {
-  DocumentType,
-  ScreeningDocument,
-  ScreeningInfo,
-  SurveyDocument,
-  SurveyInfo
-} from "audere-lib/feverProtocol";
-import app from "../../src/app";
-import { AccessKey, ScreeningNonPII, ScreeningPII, SurveyNonPII, SurveyPII } from "../../src/services/feverApi/models";
+import { DocumentType, SurveyDocument, SurveyInfo } from "audere-lib/feverProtocol";
+import { publicApp } from "../../src/app";
+import { AccessKey, SurveyNonPII, SurveyPII } from "../../src/services/feverApi/models";
 import {
   PATIENT_INFO,
   PII,
-  SCREENING_INFO,
-  SCREENING_NONPII,
-  screeningPost,
-  screeningNonPIIInDb,
-  screeningPIIInDb,
   SURVEY_INFO,
   SURVEY_NONPII,
   surveyPost,
@@ -46,7 +35,7 @@ describe("putFeverDocument", () => {
 
   it("rejects malformed json", async () => {
     const csruid = makeCSRUID("rejects malformed json");
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send("{ bad json")
       .set("Content-Type", "application/json")
@@ -59,9 +48,9 @@ describe("putFeverDocument", () => {
     );
     const contents = {
       device: { info: "☢" },
-      documentType: DocumentType.Screening,
+      documentType: DocumentType.Survey,
       csruid,
-      screen: { data: "fakeScreeningData" }
+      survey: SURVEY_INFO,
     };
     const contentsBuffer = Buffer.from(JSON.stringify(contents));
 
@@ -70,81 +59,81 @@ describe("putFeverDocument", () => {
     contentsBuffer[20] = 0xa0;
     contentsBuffer[21] = 0x80;
 
-    const req = request(app)
+    const req = request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .set("Content-Type", "application/json");
     req.write(contentsBuffer);
     await req.expect(200);
 
-    const dbNonPII = await ScreeningNonPII.findOne({ where: { csruid } });
+    const dbNonPII = await SurveyNonPII.findOne({ where: { csruid } });
     expect(dbNonPII.device).not.toEqual(contents.device);
     expect(dbNonPII.device).toEqual({ info: "���" });
     await dbNonPII.destroy();
 
-    await ScreeningPII.destroy({ where: { csruid } });
+    await SurveyPII.destroy({ where: { csruid } });
   });
 
-  it("adds the document to the screening table in each db", async () => {
+  it("adds the document to the survey table in each db", async () => {
     const csruid = makeCSRUID(
-      "adds the document to the screening table in each db"
+      "adds the document to the survey table in each db"
     );
-    const contentsPost = screeningPost(csruid);
+    const contentsPost = surveyPost(csruid);
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
 
-    const dbNonPII = await ScreeningNonPII.findOne({
+    const dbNonPII = await SurveyNonPII.findOne({
       where: { csruid }
     });
     expect(dbNonPII.csruid).toEqual(csruid);
     expect(dbNonPII.device).toEqual(contentsPost.device);
-    expect(dbNonPII.screen).toEqual(SCREENING_NONPII);
+    expect(dbNonPII.survey).toEqual(SURVEY_NONPII);
     await dbNonPII.destroy();
 
-    const dbPII = await ScreeningPII.findOne({ where: { csruid } });
+    const dbPII = await SurveyPII.findOne({ where: { csruid } });
     expect(dbPII.csruid).toEqual(csruid);
-    expect(dbPII.screen).toEqual(PII);
+    expect(dbPII.survey).toEqual(PII);
     await dbPII.destroy();
   });
 
-  it("updates existing documents in screening table in PII db", async () => {
+  it("updates existing documents in survey table in PII db", async () => {
     const csruid = makeCSRUID(
-      "updates existing documents in screening table in PII db"
+      "updates existing documents in survey table in PII db"
     );
-    const screenNonPII = screeningNonPIIInDb(csruid);
-    const contentsPII = screeningPIIInDb(csruid);
+    const where = { where: { csruid }};
+    const contentsPost = surveyPost(csruid);
 
-    await ScreeningNonPII.upsert(screenNonPII);
-    await ScreeningPII.upsert(contentsPII);
+    await request(publicApp)
+      .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
+      .send(contentsPost)
+      .expect(200);
+    const originalScreen = (await SurveyPII.findOne(where)).survey as SurveyInfo;
+    expect(originalScreen.patient.name).toEqual(PATIENT_INFO.name);
+    expect(originalScreen).toEqual(PII);
 
     const newPatient = { ...PATIENT_INFO, name: "New Fake Name" };
-    const newProtocolContents: ScreeningDocument = {
-      ...screeningPost(csruid),
-      screen: {
-        ...SCREENING_INFO,
+    const newProtocolContents: SurveyDocument = {
+      ...contentsPost,
+      survey: {
+        ...SURVEY_INFO,
         patient: newPatient
       }
     };
-
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(newProtocolContents)
       .expect(200);
 
-    const dbPII = await ScreeningPII.findOne({
-      where: { csruid }
-    });
-    const newDoc = dbPII.screen as ScreeningInfo;
+    const dbPII = await SurveyPII.findOne(where);
+    const newDoc = dbPII.survey as SurveyInfo;
     expect(newDoc.patient.name).toEqual("New Fake Name");
     expect(newDoc).toEqual({ ...PII, patient: newPatient });
     await dbPII.destroy();
 
-    const dbNonPII = await ScreeningNonPII.findOne({
-      where: { csruid }
-    });
-    expect(dbNonPII.screen).toEqual(screenNonPII.screen);
+    const dbNonPII = await SurveyNonPII.findOne(where);
+    expect(dbNonPII.survey).toEqual(surveyNonPIIInDb(csruid).survey);
     await dbNonPII.destroy();
   });
 });
@@ -158,43 +147,29 @@ describe("putDocumentWithKey", () => {
       valid: true
     });
 
-    await request(app)
-      .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
-      .send(screeningPost(csruid))
-      .expect(200);
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(surveyPost(csruid))
       .expect(200);
 
-    const screenNonPII = await ScreeningNonPII.findOne(where);
-    const screenPII = await ScreeningPII.findOne(where);
     const surveyNonPII = await SurveyNonPII.findOne(where);
     const surveyPII = await SurveyPII.findOne(where);
 
-    expect(screenNonPII).not.toBeNull();
-    expect(screenPII).not.toBeNull();
     expect(surveyNonPII).not.toBeNull();
     expect(surveyPII).not.toBeNull();
 
-    await destroy(screenNonPII, screenPII, surveyNonPII, surveyPII, accessKey);
+    await destroy(surveyNonPII, surveyPII, surveyNonPII, surveyPII, accessKey);
   });
 
   it("rejects a docuent with a bogus key", async () => {
     const csruid = makeCSRUID("rejects a docuent with a bogus key");
     const where = { where: { csruid }};
 
-    await request(app)
-      .put(`/api/fever/documents/notaccesskey2/${csruid}`)
-      .send(screeningPost(csruid))
-      .expect(404);
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/notaccesskey2/${csruid}`)
       .send(surveyPost(csruid))
       .expect(404);
 
-    expect(await ScreeningNonPII.findOne(where)).toBeNull();
-    expect(await ScreeningPII.findOne(where)).toBeNull();
     expect(await SurveyNonPII.findOne(where)).toBeNull();
     expect(await SurveyPII.findOne(where)).toBeNull();
   });
@@ -209,17 +184,11 @@ describe("putDocumentWithKey", () => {
       valid: false
     });
 
-    await request(app)
-      .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
-      .send(screeningPost(csruid))
-      .expect(404);
-    await request(app)
+    await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(surveyPost(csruid))
       .expect(404);
 
-    expect(await ScreeningNonPII.findOne(where)).toBeNull();
-    expect(await ScreeningPII.findOne(where)).toBeNull();
     expect(await SurveyNonPII.findOne(where)).toBeNull();
     expect(await SurveyPII.findOne(where)).toBeNull();
 
