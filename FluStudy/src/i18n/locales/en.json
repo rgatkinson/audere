@@ -362,12 +362,16 @@
     "flatStep": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "scanInstructionsScreen": {
-    "scanQrCode": "Scan the QR Code",
-    "description": "To begin, we'd like you to scan the QR code found on the side of your box. To do that, we'll need access to your phone's camera.",
-    "okScan": "Ok! Let's Scan"
+    "scanQrCode": "Scan the bar code",
+    "description": "First, we'd like you to scan the bar code found on the inside cover of your box. To do that, we'll need to access your phone's camera.",
+    "okScan": "Ok! Let's Scan",
+    "tips": "Tips:",
+    "holdCamera": "Hold the camera so the bar code is in the middle of the camera",
+    "lighting": "If it's too dark, please adjust your lighting",
+    "inputManually": "Input bar code manually"
   },
   "scanScreen": {
-    "enterManually": "Tap to enter manually"
+    "enterManually": "Input bar code manually"
   },
   "scanConfirmationScreen": {
     "codeSent": "Your code was sent!",
@@ -381,9 +385,7 @@
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
-    "medLink": "Find a nearby clinic or physician",
-    "whatIsQrCode": "Help! What's a QR code?",
-    "howToScan": "How to scan with your camera"
+    "medLink": "Find a nearby clinic or physician"
   },
   "enrolledScreen": {
     "contactInfo": "Contact Info",

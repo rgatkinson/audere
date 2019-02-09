@@ -1,10 +1,16 @@
 import React from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 
+export interface LinkData {
+  label: string;
+  onPress(): any;
+}
+
 interface Props {
-  links: string[];
+  center?: boolean;
+  links: LinkData[];
 }
 
 class Links extends React.Component<Props & WithNamespaces> {
@@ -12,16 +18,13 @@ class Links extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        {this.props.links.map(linkText => (
-          <TouchableOpacity
-            key={linkText}
-            onPress={() => {
-              Alert.alert("Hello :)", "Waiting on content for:\n" + linkText, [
-                { text: "Ok", onPress: () => {} },
-              ]);
-            }}
-          >
-            <Text content={linkText} style={styles.linkStyle} />
+        {this.props.links.map(link => (
+          <TouchableOpacity key={link.label} onPress={link.onPress}>
+            <Text
+              center={this.props.center}
+              content={link.label}
+              style={styles.linkStyle}
+            />
           </TouchableOpacity>
         ))}
       </View>

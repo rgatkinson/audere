@@ -11,10 +11,12 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SampleInfo } from "audere-lib/feverProtocol";
 import { Action, setSamples, startSurvey, StoreState } from "../store";
+import BorderView from "./components/BorderView";
 import Button from "./components/Button";
 import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
+import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 import { BarCodeScanner, Permissions } from "expo";
@@ -113,6 +115,19 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description")}
+        footer={
+          <Links
+            center={true}
+            links={[
+              {
+                label: t("inputManually"),
+                onPress: () => {
+                  this.props.navigation.push("ManualEntry");
+                },
+              },
+            ]}
+          />
+        }
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -126,11 +141,17 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
           }
         }}
       >
-        <Links links={[t("links:whatIsQrCode"), t("links:howToScan")]} />
-        <Image
-          style={{ height: 216, width: 300 }}
-          source={require("../img/qrCode.png")}
-        />
+        <BorderView>
+          <Image
+            style={{ height: 180, width: 250 }}
+            source={require("../img/barcodeBox.png")}
+          />
+        </BorderView>
+        <View>
+          <Text bold={true} content={t("tips")} />
+          <Text content={t("holdCamera")} />
+          <Text content={t("lighting")} />
+        </View>
       </Screen>
     );
   }
@@ -151,7 +172,13 @@ class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
     activeScan: false,
   };
 
-  // TODO: timeout to trigger entering manually
+  componentDidMount() {
+    // Timeout after 30 seconds
+    setTimeout(() => {
+      this.props.navigation.push("ManualEntry");
+    }, 30000);
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -173,14 +200,15 @@ class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
             }
           }}
         />
-        <View style={scanStyles.instructionContainer}>
+        <View style={scanStyles.overlayContainer}>
+          <View style={scanStyles.targetBox} />
           <TouchableOpacity
-            style={scanStyles.instructions}
+            style={scanStyles.overlay}
             onPress={() => {
               this.props.navigation.push("ManualEntry");
             }}
           >
-            <Title label={t("enterManually")} />
+            <Text content={t("enterManually")} style={scanStyles.overlayText} />
           </TouchableOpacity>
         </View>
       </View>
@@ -188,23 +216,32 @@ class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
   }
 }
 const scanStyles = StyleSheet.create({
-  instructions: {
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 6,
-    height: 75,
-    justifyContent: "center",
-    width: 300,
-    opacity: 0.5,
+  overlayText: {
+    color: "white",
+    textDecorationLine: "underline",
   },
-  instructionContainer: {
+  overlay: {
     alignItems: "center",
-    height: 125,
+    height: 50,
+    justifyContent: "center",
+    marginTop: 50,
+    width: 300,
+  },
+  overlayContainer: {
+    alignItems: "center",
+    height: Dimensions.get("window").height,
     left: 0,
     justifyContent: "center",
     position: "absolute",
     top: 0,
     width: Dimensions.get("window").width,
+  },
+  targetBox: {
+    borderColor: "#F5A623",
+    borderRadius: 2,
+    borderWidth: 4,
+    height: 250,
+    width: 250,
   },
 });
 const Scan = withNamespaces("scanScreen")<Props & SampleProps>(ScanScreen);

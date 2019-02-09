@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 interface Props {
+  bold?: boolean;
   center?: boolean;
   content: string;
   extraBold?: boolean;
@@ -20,6 +21,7 @@ export default class Text extends React.Component<Props> {
         style={[
           styles.container,
           this.props.center && styles.center,
+          this.props.bold && styles.bold,
           this.props.style,
         ]}
       >

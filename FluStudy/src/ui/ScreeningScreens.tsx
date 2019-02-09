@@ -360,6 +360,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         canProceed={false}
+        desc={t("description")}
         footer={
           <Text
             content={t("disclaimer")}
@@ -372,14 +373,34 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
-        desc={t("description")}
         onNext={() => this.props.navigation.popToTop()}
       >
         <Links
           links={[
-            t("links:shareLink"),
-            t("links:learnLink"),
-            t("links:medLink"),
+            {
+              label: t("links:shareLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:learnLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:medLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
           ]}
         />
       </Screen>
@@ -553,9 +574,30 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
       >
         <Links
           links={[
-            t("links:shareLink"),
-            t("links:learnLink"),
-            t("links:medLink"),
+            {
+              label: t("links:shareLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:learnLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:medLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
           ]}
         />
       </Screen>

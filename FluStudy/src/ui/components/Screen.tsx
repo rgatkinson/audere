@@ -72,7 +72,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
             {this.props.children}
           </View>
           <View style={styles.footerContainer}>
-            {this.props.footer}
             {!this.props.skipButton && (
               <Button
                 enabled={this.props.canProceed}
@@ -85,6 +84,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 onPress={this.props.onNext}
               />
             )}
+            {this.props.footer}
           </View>
         </View>
       </View>
