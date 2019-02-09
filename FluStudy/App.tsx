@@ -50,7 +50,7 @@ import {
   ScanConfirmation,
   ManualEntry,
   ManualConfirmation,
-  TestOne,
+  TestInstructions,
 } from "./src/ui/SurveyScreens";
 import SplashScreen from "./src/ui/SplashScreen";
 import ConsentScreen from "./src/ui/ConsentScreen";
@@ -80,7 +80,7 @@ const Home = createStackNavigator(
     ScanConfirmation,
     ManualEntry,
     ManualConfirmation,
-    TestOne,
+    TestInstructions,
   },
   {
     headerMode: "float",

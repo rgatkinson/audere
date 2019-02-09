@@ -12,6 +12,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SampleInfo } from "audere-lib/feverProtocol";
 import { Action, setKitBarcode, startSurvey, StoreState } from "../store";
 import BorderView from "./components/BorderView";
+import BulletPoint from "./components/BulletPoint";
 import Button from "./components/Button";
 import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
@@ -252,7 +253,7 @@ class ScanConfirmationScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("continue")}
+        buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={require("../img/phoneBarcode.png")}
         logo={false}
@@ -260,7 +261,7 @@ class ScanConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
-          this.props.navigation.push("TestOne");
+          this.props.navigation.push("TestInstructions");
         }}
       >
         <BorderView>
@@ -289,7 +290,7 @@ class ManualConfirmationScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("continue")}
+        buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={require("../img/phoneBarcode.png")}
         logo={false}
@@ -297,7 +298,7 @@ class ManualConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
-          this.props.navigation.push("TestOne");
+          this.props.navigation.push("TestInstructions");
         }}
       >
         <BorderView>
@@ -345,7 +346,7 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("continue")}
+        buttonLabel={t("common:button:continue")}
         canProceed={this._validBarcodes()}
         logo={true}
         navBar={true}
@@ -385,26 +386,40 @@ const ManualEntry = withNamespaces("manualEntryScreen")<Props>(
   ManualEntryScreen
 );
 
-class TestOneScreen extends React.Component<Props & WithNamespaces> {
-  // TODO content
+class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Title label="Test One" />
-        <Button
-          enabled={true}
-          label="Next"
-          primary={true}
-          onPress={() => {
-            // this.props.navigation.push("Scan");
-          }}
-        />
-      </View>
+      <Screen
+        alignTop={true}
+        buttonLabel={t("common:button:continue")}
+        canProceed={true}
+        desc={t("description")}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("SplashScreen");
+        }}
+      >
+        <View style={{ margin: 10 }}>
+          <BulletPoint content={t("step1")} />
+          <BulletPoint content={t("step2")} />
+          <BulletPoint content={t("step3")} />
+          <BulletPoint content={t("step4")} />
+          <BulletPoint content={t("step5")} />
+          <BulletPoint content={t("step6")} />
+          <BulletPoint content={t("step7")} />
+          <BulletPoint content={t("step8")} />
+          <BulletPoint content={t("step9")} />
+        </View>
+      </Screen>
     );
   }
 }
-const TestOne = withNamespaces("testOneScreen")<Props>(TestOneScreen);
+const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
+  TestInstructionsScreen
+);
 
 export {
   WelcomeBack,
@@ -415,5 +430,5 @@ export {
   ScanConfirmation,
   ManualEntry,
   ManualConfirmation,
-  TestOne,
+  TestInstructions,
 };

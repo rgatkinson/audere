@@ -175,11 +175,11 @@ class SymptomsScreen extends React.PureComponent<
     } else {
       Alert.alert(t("areYouSure"), t("minSymptoms"), [
         {
-          text: t("headerBar:cancel"),
+          text: t("common:button:cancel"),
           onPress: () => {},
         },
         {
-          text: t("headerBar:continue"),
+          text: t("common:button:continue"),
           onPress: () => {
             this.props.navigation.push("SymptomsIneligible");
           },
