@@ -51,10 +51,12 @@ import {
   ManualEntry,
   ManualConfirmation,
   TestInstructions,
+  Components,
+  Swab,
 } from "./src/ui/SurveyScreens";
-import SplashScreen from "./src/ui/SplashScreen";
-import ConsentScreen from "./src/ui/ConsentScreen";
 import AboutScreen from "./src/ui/AboutScreen";
+import ConsentScreen from "./src/ui/ConsentScreen";
+import SplashScreen from "./src/ui/SplashScreen";
 
 const Home = createStackNavigator(
   {
@@ -81,6 +83,8 @@ const Home = createStackNavigator(
     ManualEntry,
     ManualConfirmation,
     TestInstructions,
+    Components,
+    Swab,
   },
   {
     headerMode: "float",

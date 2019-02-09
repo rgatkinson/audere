@@ -2,6 +2,7 @@ import React from "react";
 import {
   Dimensions,
   Image,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -14,6 +15,7 @@ import { Action, setKitBarcode, startSurvey, StoreState } from "../store";
 import BorderView from "./components/BorderView";
 import BulletPoint from "./components/BulletPoint";
 import Button from "./components/Button";
+import ImageGrid from "./components/ImageGrid";
 import ImageText from "./components/ImageText";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
@@ -399,7 +401,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("SplashScreen");
+          this.props.navigation.push("Components");
         }}
       >
         <View style={{ margin: 10 }}>
@@ -421,6 +423,102 @@ const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
   TestInstructionsScreen
 );
 
+class ComponentsScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        alignTop={true}
+        buttonLabel={t("common:button:continue")}
+        canProceed={true}
+        desc={t("description")}
+        navBar={true}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("Swab");
+        }}
+      >
+        <View style={{ alignSelf: "stretch", flex: 1, marginTop: 15 }}>
+          <ScrollView contentContainerStyle={{ alignItems: "center" }}>
+            <ImageGrid
+              columns={2}
+              items={[
+                {
+                  imageSrc: require("../img/kit.png"),
+                  label: t("kit"),
+                },
+                {
+                  imageSrc: require("../img/card.png"),
+                  label: "card",
+                },
+                {
+                  imageSrc: require("../img/sampleTube.png"),
+                  label: "sampleTube",
+                },
+                {
+                  imageSrc: require("../img/ampoule.png"),
+                  label: "ampoule",
+                },
+                {
+                  imageSrc: require("../img/swab.png"),
+                  label: "swab",
+                },
+                {
+                  imageSrc: require("../img/bag.png"),
+                  label: "bag",
+                },
+              ]}
+            />
+            <Button
+              enabled={true}
+              primary={true}
+              label={t("common:button:continue")}
+              style={{ marginVertical: 10 }}
+              onPress={() => this.props.navigation.push("Swab")}
+            />
+            <Links
+              center={true}
+              links={[
+                {
+                  label: t("help"),
+                  onPress: () => {
+                    // TODO kit help
+                    // this.props.navigation.push();
+                  },
+                },
+              ]}
+            />
+          </ScrollView>
+        </View>
+      </Screen>
+    );
+  }
+}
+const Components = withNamespaces("componentsScreen")<Props>(ComponentsScreen);
+
+class SwabScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        imageSrc={require("../img/swabBox.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("SplashScreen");
+        }}
+      />
+    );
+  }
+}
+const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
+
 export {
   WelcomeBack,
   WhatsNext,
@@ -431,4 +529,6 @@ export {
   ManualEntry,
   ManualConfirmation,
   TestInstructions,
+  Components,
+  Swab,
 };

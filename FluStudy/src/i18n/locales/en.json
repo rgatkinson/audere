@@ -179,6 +179,21 @@
     "step8": "Take a picture of the test strip",
     "step9": "Put the vial and test strip in bags and back in the box"
   },
+  "componentsScreen": {
+    "title": "Remove and identify provided kit components",
+    "description": "First, let's make sure your kit is complete. It should contain the following items:",
+    "help": "Help! My kit is not complete",
+    "kit": "Kit Box w/ bar code",
+    "card": "Quick Start Card",
+    "sampleTube": "Sample tube containing pellet and stopper",
+    "ampoule": "Ampoule with Saline",
+    "swab": "Nasal Swab",
+    "bag": "Delivery bag"
+  },
+  "swabScreen": {
+    "title": "Perform the nose swab",
+    "description": "This is the part that you're probably nervous about, but don't fret. All you have to do is a light swab inside the very tip of your nose. Horror stories about medieval-like devices are greatly exaggerated."
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
