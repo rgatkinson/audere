@@ -54,7 +54,7 @@ export interface SurveyNonPIIDbInfo extends SurveyNonPIIInfo {
     consents: NonPIIConsentInfo[];
 }
 export interface SurveyNonPIIInfo extends CommonInfo {
-    samples: SampleInfo[];
+    kitBarcode?: SampleInfo;
     responses: ResponseInfo[];
 }
 export interface GpsLocationInfo {

@@ -10,7 +10,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SampleInfo } from "audere-lib/feverProtocol";
-import { Action, setSamples, startSurvey, StoreState } from "../store";
+import { Action, setKitBarcode, startSurvey, StoreState } from "../store";
 import BorderView from "./components/BorderView";
 import Button from "./components/Button";
 import ImageText from "./components/ImageText";
@@ -160,14 +160,8 @@ const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
   ScanInstructionsScreen
 );
 
-interface SampleProps {
-  samples: SampleInfo[];
-}
-
-@connect((state: StoreState) => ({
-  samples: state.survey.samples,
-}))
-class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
+@connect()
+class ScanScreen extends React.Component<Props & WithNamespaces> {
   state = {
     activeScan: false,
   };
@@ -188,14 +182,12 @@ class ScanScreen extends React.Component<Props & SampleProps & WithNamespaces> {
           onBarCodeScanned={({ type, data }: { type: any; data: string }) => {
             if (!this.state.activeScan) {
               this.setState({ activeScan: true });
-              const samples = !!this.props.samples
-                ? this.props.samples.slice(0)
-                : [];
-              samples.push({
-                sample_type: type,
-                code: data,
-              });
-              this.props.dispatch(setSamples(samples));
+              this.props.dispatch(
+                setKitBarcode({
+                  sample_type: type,
+                  code: data,
+                })
+              );
               this.props.navigation.push("ScanConfirmation");
             }
           }}
@@ -244,16 +236,25 @@ const scanStyles = StyleSheet.create({
     width: 250,
   },
 });
-const Scan = withNamespaces("scanScreen")<Props & SampleProps>(ScanScreen);
+const Scan = withNamespaces("scanScreen")<Props>(ScanScreen);
 
-class ScanConfirmationScreen extends React.Component<Props & WithNamespaces> {
+interface BarcodeProps {
+  kitBarcode: SampleInfo;
+}
+
+@connect((state: StoreState) => ({
+  kitBarcode: state.survey.kitBarcode,
+}))
+class ScanConfirmationScreen extends React.Component<
+  Props & BarcodeProps & WithNamespaces
+> {
   render() {
     const { t } = this.props;
     return (
       <Screen
         buttonLabel={t("continue")}
         canProceed={true}
-        desc={t("description")}
+        imageSrc={require("../img/phoneBarcode.png")}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -261,20 +262,62 @@ class ScanConfirmationScreen extends React.Component<Props & WithNamespaces> {
         onNext={() => {
           this.props.navigation.push("TestOne");
         }}
-      />
+      >
+        <BorderView>
+          <Text
+            center={true}
+            content={t("yourCode") + this.props.kitBarcode.code}
+          />
+        </BorderView>
+        <Text content={t("description")} />
+        <Text content={t("nextStep")} />
+      </Screen>
     );
   }
 }
-const ScanConfirmation = withNamespaces("scanConfirmationScreen")<Props>(
-  ScanConfirmationScreen
-);
+const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
+  Props & BarcodeProps
+>(ScanConfirmationScreen);
 
 @connect((state: StoreState) => ({
-  samples: state.survey.samples,
+  kitBarcode: state.survey.kitBarcode,
 }))
-class ManualEntryScreen extends React.Component<
-  Props & SampleProps & WithNamespaces
+class ManualConfirmationScreen extends React.Component<
+  Props & BarcodeProps & WithNamespaces
 > {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        buttonLabel={t("continue")}
+        canProceed={true}
+        imageSrc={require("../img/phoneBarcode.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("codeSent")}
+        onNext={() => {
+          this.props.navigation.push("TestOne");
+        }}
+      >
+        <BorderView>
+          <Text
+            center={true}
+            content={t("yourCode") + this.props.kitBarcode.code}
+          />
+        </BorderView>
+        <Text content={t("description")} />
+        <Text content={t("nextStep")} />
+      </Screen>
+    );
+  }
+}
+const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
+  Props & BarcodeProps
+>(ScanConfirmationScreen);
+
+@connect()
+class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
   state = {
     barcode1: null,
     barcode2: null,
@@ -288,13 +331,13 @@ class ManualEntryScreen extends React.Component<
 
   _onSave = () => {
     if (this._validBarcodes()) {
-      const samples = !!this.props.samples ? this.props.samples.slice(0) : [];
-      samples.push({
-        sample_type: "manualEntry",
-        code: this.state.barcode1!,
-      });
-      this.props.dispatch(setSamples(samples));
-      this.props.navigation.push("TestOne");
+      this.props.dispatch(
+        setKitBarcode({
+          sample_type: "manualEntry",
+          code: this.state.barcode1!,
+        })
+      );
+      this.props.navigation.push("ManualConfirmation");
     }
   };
 
@@ -338,7 +381,7 @@ class ManualEntryScreen extends React.Component<
     );
   }
 }
-const ManualEntry = withNamespaces("manualEntryScreen")<Props & SampleProps>(
+const ManualEntry = withNamespaces("manualEntryScreen")<Props>(
   ManualEntryScreen
 );
 
@@ -371,5 +414,6 @@ export {
   Scan,
   ScanConfirmation,
   ManualEntry,
+  ManualConfirmation,
   TestOne,
 };

@@ -374,12 +374,21 @@
     "enterManually": "Input bar code manually"
   },
   "scanConfirmationScreen": {
-    "codeSent": "Your code was sent!",
-    "description": "Thank you. Your QR code was successfully submitted and will help ensure your samples are accurately tracked and measured.",
+    "codeSent": "Your code was scanned!",
+    "yourCode": "Your code: ",
+    "description": "Thank you. Your bar code was successfully scanned. This will help us know the kit came from you when you return it to us.",
+    "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms.",
     "continue": "Continue"
   },
   "manualEntryScreen": {
     "enterKit": "Enter your kit's barcode",
+    "continue": "Continue"
+  },
+  "manualConfirmationScreen": {
+    "codeSent": "Your code has been input!",
+    "yourCode": "Your code: ",
+    "description": "Thank you. Your bar code was successfully entered. This will help us know the kit came from you when you return it to us.",
+    "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms.",
     "continue": "Continue"
   },
   "links": {

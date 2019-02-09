@@ -6,7 +6,7 @@ export type SurveyAction =
   | { type: "START_SURVEY" }
   | { type: "SET_COMPLETE"; complete: boolean }
   | { type: "SET_EMAIL"; email: string }
-  | { type: "SET_SAMPLES"; samples: SampleInfo[] }
+  | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
@@ -16,7 +16,7 @@ export type SurveyState = {
   events: EventInfo[];
   id?: string;
   responses: SurveyResponse[];
-  samples?: SampleInfo[];
+  kitBarcode?: SampleInfo;
   timestamp?: number;
 };
 
@@ -46,10 +46,10 @@ export default function reducer(state = initialState, action: SurveyAction) {
       timestamp: new Date().getTime(),
     };
   }
-  if (action.type === "SET_SAMPLES") {
+  if (action.type === "SET_KIT_BARCODE") {
     return {
       ...state,
-      samples: action.samples,
+      kitBarcode: action.kitBarcode,
       timestamp: new Date().getTime(),
     };
   }
@@ -102,10 +102,10 @@ export function setSurveyResponses(responses: SurveyResponse[]): SurveyAction {
   };
 }
 
-export function setSamples(samples: SampleInfo[]): SurveyAction {
+export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   return {
-    type: "SET_SAMPLES",
-    samples,
+    type: "SET_KIT_BARCODE",
+    kitBarcode,
   };
 }
 

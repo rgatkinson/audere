@@ -49,6 +49,7 @@ import {
   Scan,
   ScanConfirmation,
   ManualEntry,
+  ManualConfirmation,
   TestOne,
 } from "./src/ui/SurveyScreens";
 import SplashScreen from "./src/ui/SplashScreen";
@@ -78,6 +79,7 @@ const Home = createStackNavigator(
     Scan,
     ScanConfirmation,
     ManualEntry,
+    ManualConfirmation,
     TestOne,
   },
   {

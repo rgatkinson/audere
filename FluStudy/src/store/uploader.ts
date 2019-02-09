@@ -104,7 +104,6 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     complete: state.survey.complete,
-    samples: [],
     patient: {
       telecom: [],
       address: [],
@@ -135,13 +134,8 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
     pouch.patient
   );
 
-  if (!!survey.samples) {
-    survey.samples.forEach((sample: SampleInfo) => {
-      pouch.samples.push({
-        sample_type: sample.sample_type,
-        code: sample.code,
-      });
-    });
+  if (!!survey.kitBarcode) {
+    pouch.kitBarcode = survey.kitBarcode;
   }
 
   // Set all surveyResponses into pouch.responses
