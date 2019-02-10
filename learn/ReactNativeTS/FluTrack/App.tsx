@@ -1,7 +1,5 @@
 import "./src/hacks";
 import React from "react";
-import { Store } from "redux";
-import { Persistor } from "redux-persist";
 import {
   createDrawerNavigator,
   createStackNavigator,
@@ -10,7 +8,7 @@ import {
 } from "react-navigation";
 import { AppLoading, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
-import { getStore, getPersistor } from "./src/store/";
+import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
@@ -170,9 +168,6 @@ export default class App extends React.Component<AppProps> {
     console.error(error);
   }
 
-  store?: Store;
-  persistor?: Persistor;
-
   async _loadAssets() {
     await Promise.all([
       Font.loadAsync({
@@ -182,8 +177,6 @@ export default class App extends React.Component<AppProps> {
         "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
         "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
       }),
-      getStore().then(store => (this.store = store)),
-      getPersistor().then(persistor => (this.persistor = persistor)),
     ]);
 
     this.setState({ appReady: true });
@@ -192,8 +185,8 @@ export default class App extends React.Component<AppProps> {
   render() {
     return this.state.appReady ? (
       <I18nextProvider i18n={i18n}>
-        <Provider store={this.store!}>
-          <PersistGate loading={null} persistor={this.persistor!}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
             <ReloadAppOnLanguageChange />
           </PersistGate>
         </Provider>
