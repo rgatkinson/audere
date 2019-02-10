@@ -1,16 +1,17 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import KeyboardListener from "react-native-keyboard-listener";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
+import Text from "./Text";
 import TextInput from "./TextInput";
+import { BORDER_COLOR, GUTTER, INPUT_HEIGHT, LINK_COLOR } from "../styles";
 
 interface Props {
   value?: Address | null;
   onChange(value: Address): void;
-  onDone(): void;
 }
 
 interface State {
@@ -20,6 +21,7 @@ interface State {
 
 class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
+  address2 = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
   stateProvince = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
@@ -44,7 +46,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          autoFocus={false}
+          autoFocus={true}
           placeholder={
             t("name") + (this.state.keyboardOpen ? "" : t("required"))
           }
@@ -57,12 +59,12 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.name = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => {}}
+          onSubmitEditing={() => this.address.current!.focus()}
         />
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          autoFocus={true}
+          autoFocus={false}
           placeholder={
             t("streetAddress") + (this.state.keyboardOpen ? "" : t("required"))
           }
@@ -74,6 +76,22 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           onChangeText={(text: string) => {
             const address = this.props.value || {};
             address.address = text;
+            this.props.onChange(address);
+          }}
+          onSubmitEditing={() => this.address2.current!.focus()}
+        />
+        <TextInput
+          autoCapitalize="words"
+          autoCorrect={false}
+          autoFocus={false}
+          placeholder={t("streetAddress")}
+          ref={this.address2}
+          returnKeyType="next"
+          style={styles.textInput}
+          value={this.props.value ? this.props.value!.address2 : undefined}
+          onChangeText={(text: string) => {
+            const address = this.props.value || {};
+            address.address2 = text;
             this.props.onChange(address);
           }}
           onSubmitEditing={() => this.city.current!.focus()}
@@ -103,11 +121,14 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             style={styles.pickerContainer}
             onPress={() => this.setState({ stateOpen: true })}
           >
-            <Text style={styles.text}>
-              {this.props.value && this.props.value.state
-                ? this.props.value.state
-                : t("state")}
-            </Text>
+            <Text
+              content={
+                this.props.value && this.props.value.state
+                  ? this.props.value.state
+                  : t("state")
+              }
+              style={styles.text}
+            />
           </TouchableOpacity>
           <StateModal
             state={
@@ -138,7 +159,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               address.zipcode = text;
               this.props.onChange(address);
             }}
-            onSubmitEditing={this.props.onDone}
+            onSubmitEditing={() => {}}
           />
         </View>
       </View>
@@ -149,28 +170,26 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginVertical: 20,
+    marginBottom: GUTTER,
   },
   pickerContainer: {
-    borderBottomColor: "#bbb",
+    borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flex: 1,
-    height: 34,
+    height: INPUT_HEIGHT,
     justifyContent: "center",
-    paddingHorizontal: 4,
+    padding: GUTTER / 4,
   },
   text: {
-    paddingTop: 2,
-    color: "#007AFF",
-    height: 20,
+    color: LINK_COLOR,
+    marginVertical: 0,
   },
   textInput: {
-    height: 34,
-    marginVertical: 0,
+    height: INPUT_HEIGHT,
   },
   zipcode: {
     flex: 1,
-    borderLeftColor: "#bbb",
+    borderLeftColor: BORDER_COLOR,
     borderLeftWidth: StyleSheet.hairlineWidth,
   },
 });

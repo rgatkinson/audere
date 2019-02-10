@@ -1,6 +1,12 @@
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Text from "./Text";
+import {
+  EXTRA_LARGE_TEXT,
+  FONT_SEMI_BOLD,
+  GUTTER,
+  SECONDARY_COLOR,
+} from "../styles";
 
 interface Props {
   label: string;
@@ -22,8 +28,9 @@ export default class Title extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   title: {
-    color: "#666",
-    fontFamily: "OpenSans-SemiBold",
-    fontSize: 24,
+    color: SECONDARY_COLOR,
+    fontFamily: FONT_SEMI_BOLD,
+    fontSize: EXTRA_LARGE_TEXT,
+    marginVertical: GUTTER / 2,
   },
 });

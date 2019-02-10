@@ -23,6 +23,7 @@ import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 import { BarCodeScanner, Permissions } from "expo";
+import { GUTTER } from "./styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -89,20 +90,21 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("ScanInstructions");
         }}
       >
-        <View>
-          <ImageText
-            imageSrc={require("../img/soap.png")}
-            text={t("washStep")}
-          />
-          <ImageText
-            imageSrc={require("../img/water.png")}
-            text={t("waterStep")}
-          />
-          <ImageText
-            imageSrc={require("../img/cat.png")}
-            text={t("flatStep")}
-          />
-        </View>
+        <ImageText
+          imageSrc={require("../img/soap.png")}
+          imageWidth={100}
+          text={t("washStep")}
+        />
+        <ImageText
+          imageSrc={require("../img/water.png")}
+          imageWidth={100}
+          text={t("waterStep")}
+        />
+        <ImageText
+          imageSrc={require("../img/cat.png")}
+          imageWidth={100}
+          text={t("flatStep")}
+        />
       </Screen>
     );
   }
@@ -110,38 +112,51 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
 const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  async _onNext() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.props.navigation.push("Scan");
+    } else {
+      this.props.navigation.push("WhyCamera");
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
-        buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description")}
         footer={
-          <Links
-            center={true}
-            links={[
-              {
-                label: t("inputManually"),
-                onPress: () => {
-                  this.props.navigation.push("ManualEntry");
+          <View style={{ alignSelf: "stretch" }}>
+            <Button
+              enabled={true}
+              label={t("okScan")}
+              primary={true}
+              onPress={async () => {
+                await this._onNext();
+              }}
+            />
+            <Links
+              center={true}
+              links={[
+                {
+                  label: t("inputManually"),
+                  onPress: () => {
+                    this.props.navigation.push("ManualEntry");
+                  },
                 },
-              },
-            ]}
-          />
+              ]}
+            />
+          </View>
         }
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("scanQrCode")}
         onNext={async () => {
-          const { status } = await Permissions.askAsync(Permissions.CAMERA);
-          if (status === "granted") {
-            this.props.navigation.push("Scan");
-          } else {
-            this.props.navigation.push("WhyCamera");
-          }
+          await this._onNext();
         }}
       >
         <BorderView>
@@ -150,11 +165,13 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
             source={require("../img/barcodeBox.png")}
           />
         </BorderView>
-        <View>
-          <Text bold={true} content={t("tips")} />
-          <Text content={t("holdCamera")} />
-          <Text content={t("lighting")} />
-        </View>
+        <Text
+          bold={true}
+          content={t("tips")}
+          style={{ marginBottom: GUTTER / 2 }}
+        />
+        <Text content={t("holdCamera")} style={{ marginBottom: GUTTER / 2 }} />
+        <Text content={t("lighting")} style={{ marginBottom: GUTTER }} />
       </Screen>
     );
   }
@@ -167,13 +184,26 @@ const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
 class ScanScreen extends React.Component<Props & WithNamespaces> {
   state = {
     activeScan: false,
+    timer: null,
   };
 
   componentDidMount() {
     // Timeout after 30 seconds
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       this.props.navigation.push("ManualEntry");
     }, 30000);
+    this.setState({ timer });
+  }
+
+  componentWillUnmount() {
+    this._clearTimer();
+  }
+
+  _clearTimer() {
+    if (this.state.timer != null) {
+      clearTimeout(this.state.timer!);
+      this.setState({ timer: null });
+    }
   }
 
   render() {
@@ -191,6 +221,7 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
                   code: data,
                 })
               );
+              this._clearTimer();
               this.props.navigation.push("ScanConfirmation");
             }
           }}
@@ -200,10 +231,15 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
           <TouchableOpacity
             style={scanStyles.overlay}
             onPress={() => {
+              this._clearTimer();
               this.props.navigation.push("ManualEntry");
             }}
           >
-            <Text content={t("enterManually")} style={scanStyles.overlayText} />
+            <Text
+              center={true}
+              content={t("enterManually")}
+              style={scanStyles.overlayText}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -272,7 +308,7 @@ class ScanConfirmationScreen extends React.Component<
             content={t("yourCode") + this.props.kitBarcode.code}
           />
         </BorderView>
-        <Text content={t("description")} />
+        <Text content={t("description")} style={{ marginVertical: GUTTER }} />
         <Text content={t("nextStep")} />
       </Screen>
     );
@@ -306,10 +342,10 @@ class ManualConfirmationScreen extends React.Component<
         <BorderView>
           <Text
             center={true}
-            content={t("yourCode") + this.props.kitBarcode.code}
+            content={"**" + t("yourCode") + "**" + this.props.kitBarcode.code}
           />
         </BorderView>
-        <Text content={t("description")} />
+        <Text content={t("description")} style={{ marginVertical: GUTTER }} />
         <Text content={t("nextStep")} />
       </Screen>
     );
@@ -356,30 +392,29 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
         title={t("enterKit")}
         onNext={this._onSave}
       >
-        <View style={{ width: 200 }}>
-          <TextInput
-            autoCorrect={false}
-            autoFocus={true}
-            placeholder="Enter barcode data"
-            returnKeyType="next"
-            value={this.state.barcode1}
-            onChangeText={(text: string) => {
-              this.setState({ barcode1: text });
-            }}
-            onSubmitEditing={() => this.confirmInput.current!.focus()}
-          />
-          <TextInput
-            autoCorrect={false}
-            placeholder="Confirm barcode data"
-            ref={this.confirmInput}
-            returnKeyType="done"
-            value={this.state.barcode2}
-            onChangeText={(text: string) => {
-              this.setState({ barcode2: text });
-            }}
-            onSubmitEditing={this._onSave}
-          />
-        </View>
+        <TextInput
+          autoCorrect={false}
+          autoFocus={true}
+          placeholder="Enter barcode data"
+          returnKeyType="next"
+          style={{ marginVertical: GUTTER }}
+          value={this.state.barcode1}
+          onChangeText={(text: string) => {
+            this.setState({ barcode1: text });
+          }}
+          onSubmitEditing={() => this.confirmInput.current!.focus()}
+        />
+        <TextInput
+          autoCorrect={false}
+          placeholder="Confirm barcode data"
+          ref={this.confirmInput}
+          returnKeyType="done"
+          value={this.state.barcode2}
+          onChangeText={(text: string) => {
+            this.setState({ barcode2: text });
+          }}
+          onSubmitEditing={this._onSave}
+        />
       </Screen>
     );
   }
@@ -389,32 +424,39 @@ const ManualEntry = withNamespaces("manualEntryScreen")<Props>(
 );
 
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Components");
+  };
+
   render() {
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
         navBar={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Components");
-        }}
+        onNext={this._onNext}
       >
-        <View style={{ margin: 10 }}>
-          <BulletPoint content={t("step1")} />
-          <BulletPoint content={t("step2")} />
-          <BulletPoint content={t("step3")} />
-          <BulletPoint content={t("step4")} />
-          <BulletPoint content={t("step5")} />
-          <BulletPoint content={t("step6")} />
-          <BulletPoint content={t("step7")} />
-          <BulletPoint content={t("step8")} />
-          <BulletPoint content={t("step9")} />
-        </View>
+        <BulletPoint content={t("step1")} />
+        <BulletPoint content={t("step2")} />
+        <BulletPoint content={t("step3")} />
+        <BulletPoint content={t("step4")} />
+        <BulletPoint content={t("step5")} />
+        <BulletPoint content={t("step6")} />
+        <BulletPoint content={t("step7")} />
+        <BulletPoint content={t("step8")} />
+        <BulletPoint content={t("step9")} />
+        <Button
+          enabled={true}
+          label={t("common:button:continue")}
+          primary={true}
+          style={{ marginVertical: GUTTER }}
+          onPress={this._onNext}
+        />
       </Screen>
     );
   }
@@ -428,7 +470,6 @@ class ComponentsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
@@ -440,58 +481,53 @@ class ComponentsScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Swab");
         }}
       >
-        <View style={{ alignSelf: "stretch", flex: 1, marginTop: 15 }}>
-          <ScrollView contentContainerStyle={{ alignItems: "center" }}>
-            <ImageGrid
-              columns={2}
-              items={[
-                {
-                  imageSrc: require("../img/kit.png"),
-                  label: t("kit"),
-                },
-                {
-                  imageSrc: require("../img/card.png"),
-                  label: "card",
-                },
-                {
-                  imageSrc: require("../img/sampleTube.png"),
-                  label: "sampleTube",
-                },
-                {
-                  imageSrc: require("../img/ampoule.png"),
-                  label: "ampoule",
-                },
-                {
-                  imageSrc: require("../img/swab.png"),
-                  label: "swab",
-                },
-                {
-                  imageSrc: require("../img/bag.png"),
-                  label: "bag",
-                },
-              ]}
-            />
-            <Button
-              enabled={true}
-              primary={true}
-              label={t("common:button:continue")}
-              style={{ marginVertical: 10 }}
-              onPress={() => this.props.navigation.push("Swab")}
-            />
-            <Links
-              center={true}
-              links={[
-                {
-                  label: t("help"),
-                  onPress: () => {
-                    // TODO kit help
-                    // this.props.navigation.push();
-                  },
-                },
-              ]}
-            />
-          </ScrollView>
-        </View>
+        <ImageGrid
+          columns={2}
+          items={[
+            {
+              imageSrc: require("../img/kit.png"),
+              label: t("kit"),
+            },
+            {
+              imageSrc: require("../img/card.png"),
+              label: t("card"),
+            },
+            {
+              imageSrc: require("../img/sampleTube.png"),
+              label: t("sampleTube"),
+            },
+            {
+              imageSrc: require("../img/ampoule.png"),
+              label: t("ampoule"),
+            },
+            {
+              imageSrc: require("../img/swab.png"),
+              label: t("swab"),
+            },
+            {
+              imageSrc: require("../img/bag.png"),
+              label: t("bag"),
+            },
+          ]}
+        />
+        <Button
+          enabled={true}
+          primary={true}
+          label={t("common:button:continue")}
+          onPress={() => this.props.navigation.push("Swab")}
+        />
+        <Links
+          center={true}
+          links={[
+            {
+              label: t("help"),
+              onPress: () => {
+                // TODO kit help
+                // this.props.navigation.push();
+              },
+            },
+          ]}
+        />
       </Screen>
     );
   }

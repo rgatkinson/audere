@@ -1,6 +1,8 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import Button from "./Button";
+import { REGULAR_TEXT } from "../styles";
+import Grid from "./Grid";
 
 interface Props {
   firstLabel: string;
@@ -13,35 +15,27 @@ interface Props {
 export default class ButtonRow extends React.Component<Props> {
   render() {
     return (
-      <View style={styles.container}>
-        <Button
-          enabled={true}
-          fontSize={17}
-          label={this.props.firstLabel}
-          primary={true}
-          style={styles.button}
-          onPress={this.props.firstOnPress}
-        />
-        <Button
-          enabled={this.props.secondEnabled}
-          fontSize={17}
-          label={this.props.secondLabel}
-          primary={true}
-          style={styles.button}
-          onPress={this.props.secondOnPress}
-        />
-      </View>
+      <Grid
+        columns={2}
+        items={[
+          <Button
+            enabled={true}
+            fontSize={REGULAR_TEXT}
+            label={this.props.firstLabel}
+            primary={true}
+            onPress={this.props.firstOnPress}
+          />,
+          <Button
+            enabled={this.props.secondEnabled}
+            fontSize={REGULAR_TEXT}
+            label={this.props.secondLabel}
+            primary={true}
+            onPress={this.props.secondOnPress}
+          />,
+        ]}
+        keyExtractor={(button, i) => "button" + i}
+        renderItem={(item, width) => item}
+      />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  button: {
-    width: 165,
-  },
-  container: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});

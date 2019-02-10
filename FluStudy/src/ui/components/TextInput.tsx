@@ -7,6 +7,13 @@ import {
   TextInput as SystemTextInput,
   TextStyle,
 } from "react-native";
+import {
+  BORDER_COLOR,
+  FONT_NORMAL,
+  GUTTER,
+  PRIMARY_COLOR,
+  REGULAR_TEXT,
+} from "../styles";
 
 interface Props {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
@@ -58,10 +65,11 @@ export default class TextInput extends React.Component<Props> {
 const styles = StyleSheet.create({
   textInput: {
     alignSelf: "stretch",
-    borderBottomColor: "#bbb",
+    color: PRIMARY_COLOR,
+    borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    fontSize: 14,
-    marginVertical: 10,
-    padding: 4,
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT,
+    padding: GUTTER / 4,
   },
 });

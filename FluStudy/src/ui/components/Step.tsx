@@ -1,32 +1,38 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
+import Text from "./Text";
+import { FONT_NORMAL, GUTTER, PRIMARY_COLOR, REGULAR_TEXT } from "../styles";
 
 interface Props {
   step: number;
   totalSteps: number;
 }
 
-export default class Step extends React.Component<Props> {
+class Step extends React.Component<Props & WithNamespaces> {
   render() {
+    const { t } = this.props;
     return (
-      <Text style={styles.container}>
-        <Text style={styles.bold}>Step {this.props.step}</Text> of{" "}
-        {this.props.totalSteps}
-      </Text>
+      <Text
+        content={t("step", {
+          step: this.props.step,
+          total: this.props.totalSteps,
+        })}
+        style={styles.container}
+      />
     );
   }
 }
 
 const styles = StyleSheet.create({
-  bold: {
-    fontFamily: "OpenSans-Bold",
-  },
   container: {
     alignSelf: "stretch",
-    color: "#333",
-    fontFamily: "OpenSans-Regular",
-    fontSize: 16,
-    marginVertical: 0,
+    color: PRIMARY_COLOR,
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT,
+    marginTop: GUTTER / 2,
     textAlign: "center",
   },
 });
+
+export default withNamespaces("step")<Props>(Step);

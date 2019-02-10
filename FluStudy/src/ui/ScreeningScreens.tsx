@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  PushNotificationIOS,
-  Text as SystemText,
-  View,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import { Alert, PushNotificationIOS, View, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -39,6 +31,7 @@ import Screen from "./components/Screen";
 import Links from "./components/Links";
 import OptionList, { newSelectedOptionsList } from "./components/OptionList";
 import Text from "./components/Text";
+import { GUTTER, SECONDARY_COLOR } from "./styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -121,7 +114,6 @@ class AgeScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         canProceed={!!this.props.getAnswer("selectedButtonKey")}
         logo={false}
         navBar={true}
@@ -138,7 +130,7 @@ class AgeScreen extends React.Component<
             key={button.key}
             label={t("surveyButton:" + button.key)}
             primary={button.primary}
-            style={{ marginVertical: 15 }}
+            style={{ marginVertical: GUTTER }}
             onPress={() => {
               this.props.updateAnswer({ selectedButtonKey: button.key });
               this._onNext();
@@ -215,7 +207,6 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         canProceed={this._haveOption()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description!.label)}
@@ -253,7 +244,6 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             enabled={true}
             primary={true}
             label={t("back")}
-            style={{ marginVertical: 10 }}
             onPress={() => this.props.navigation.pop()}
           />
         }
@@ -277,42 +267,18 @@ interface AddressProps {
   name: string;
 }
 
-interface AddressState {
-  address?: Address;
-}
-
-@connect((state: StoreState) => ({
-  name: state.screening.name,
-}))
+@connect()
 class AddressInputScreen extends React.Component<
-  Props & AddressProps & WithNamespaces & ReduxWriterProps,
-  AddressState
+  Props & AddressProps & WithNamespaces & ReduxWriterProps
 > {
-  constructor(props: Props & AddressProps & WithNamespaces & ReduxWriterProps) {
-    super(props);
-    const addressInput = this.props.getAnswer("addressInput");
-    if (addressInput != null) {
-      this.state = {
-        address: addressInput,
-      };
-    } else {
-      this.state = {
-        address: {
-          name: props.name,
-        },
-      };
-    }
-  }
-
   _onNext = () => {
-    this.props.updateAnswer({
-      addressInput: this.state.address,
-    });
-    this.props.navigation.push("Confirmation");
+    if (this._haveValidAddress) {
+      this.props.navigation.push("Confirmation");
+    }
   };
 
   _haveValidAddress = (): boolean => {
-    const address = this.state.address;
+    const address = this.props.getAnswer("addressInput");
     return (
       !!address &&
       !!address.name &&
@@ -327,7 +293,6 @@ class AddressInputScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         buttonLabel={t("common:button:submit")}
         canProceed={this._haveValidAddress()}
         centerDesc={true}
@@ -335,18 +300,15 @@ class AddressInputScreen extends React.Component<
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
-        step={5}
+        step={4}
         title={t("surveyTitle:" + AddressConfig.title)}
         onNext={this._onNext}
       >
         <AddressInput
-          value={this.state.address}
-          onChange={(address: Address) => this.setState({ address })}
-          onDone={() => {
-            if (this._haveValidAddress()) {
-              this._onNext();
-            }
-          }}
+          value={this.props.getAnswer("addressInput")}
+          onChange={(address: Address) =>
+            this.props.updateAnswer({ addressInput: address })
+          }
         />
       </Screen>
     );
@@ -361,12 +323,6 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={false}
         desc={t("description")}
-        footer={
-          <Text
-            content={t("disclaimer")}
-            style={{ alignSelf: "stretch", color: "#666" }}
-          />
-        }
         imageSrc={require("../img/ineligible.png")}
         logo={true}
         navBar={false}
@@ -402,6 +358,14 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
               },
             },
           ]}
+        />
+        <Text
+          content={t("disclaimer")}
+          style={{
+            alignSelf: "stretch",
+            color: SECONDARY_COLOR,
+            marginBottom: GUTTER,
+          }}
         />
       </Screen>
     );

@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../store";
 import Screen from "./components/Screen";
 import Title from "./components/Title";
+import { GUTTER, STATUS_BAR_HEIGHT } from "./styles";
 
 interface Props {
   demoMode: boolean;
@@ -25,7 +26,7 @@ class AboutScreen extends React.PureComponent<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View>
+      <View style={{ marginTop: STATUS_BAR_HEIGHT }}>
         <Image
           style={{ height: 120, width: Dimensions.get("window").width }}
           source={require("../img/logo.png")}
@@ -34,7 +35,6 @@ class AboutScreen extends React.PureComponent<Props & WithNamespaces> {
           <View style={styles.rowContainer}>
             <Title label={t("demoMode")} />
             <Switch
-              style={styles.switchStyle}
               value={this.props.demoMode}
               onValueChange={value => this.props.dispatch(setDemo(value))}
             />
@@ -47,16 +47,12 @@ class AboutScreen extends React.PureComponent<Props & WithNamespaces> {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
+    margin: GUTTER,
   },
   rowContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    height: 50,
-  },
-  switchStyle: {
-    margin: 20,
   },
 });
 

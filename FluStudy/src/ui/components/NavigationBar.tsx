@@ -4,6 +4,17 @@ import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
+import {
+  BORDER_COLOR,
+  DISABLED_COLOR,
+  GUTTER,
+  LINK_COLOR,
+  NAV_BAR_HEIGHT,
+  STATUS_BAR_COLOR,
+  STATUS_BAR_HEIGHT,
+  SYSTEM_FONT,
+  SYSTEM_TEXT,
+} from "../styles";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -22,12 +33,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             this.props.navigation.pop();
           }}
         >
-          <Feather
-            color="#007AFF"
-            name="chevron-left"
-            size={30}
-            style={{ paddingTop: 5 }}
-          />
+          <Feather color={LINK_COLOR} name="chevron-left" size={30} />
           <Text style={styles.actionText} content={t("back")} />
         </TouchableOpacity>
         <Text style={styles.title} center={true} content="FLU@HOME" />
@@ -44,10 +50,9 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             content={t("next")}
           />
           <Feather
-            color={this.props.canProceed ? "#007AFF" : "#bbb"}
+            color={this.props.canProceed ? LINK_COLOR : DISABLED_COLOR}
             name="chevron-right"
             size={30}
-            style={{ paddingTop: 5 }}
           />
         </TouchableOpacity>
       </View>
@@ -57,32 +62,34 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
 
 const styles = StyleSheet.create({
   actionContainer: {
+    alignItems: "center",
     flexDirection: "row",
   },
   actionText: {
-    color: "#007AFF",
-    fontFamily: "System",
-    fontSize: 16,
-    marginVertical: 10,
+    alignSelf: "center",
+    color: LINK_COLOR,
+    fontFamily: SYSTEM_FONT,
+    fontSize: SYSTEM_TEXT,
   },
   container: {
-    backgroundColor: "#EEEEEE",
-    borderBottomColor: "#bbb",
+    alignItems: "center",
+    backgroundColor: STATUS_BAR_COLOR,
+    borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
-    height: 60,
+    height: NAV_BAR_HEIGHT,
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingHorizontal: 8,
+    paddingTop: STATUS_BAR_HEIGHT,
+    paddingHorizontal: GUTTER / 2,
   },
   inactiveText: {
-    color: "#bbb",
+    color: DISABLED_COLOR,
   },
   title: {
-    fontFamily: "System",
-    fontSize: 17,
+    alignSelf: "center",
+    fontFamily: SYSTEM_FONT,
+    fontSize: SYSTEM_TEXT,
     fontWeight: "bold",
-    marginVertical: 10,
   },
 });
 

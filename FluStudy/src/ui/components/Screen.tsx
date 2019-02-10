@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   ImageSourcePropType,
+  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
@@ -13,9 +14,9 @@ import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
+import { GUTTER, LOGO_HEIGHT, STATUS_BAR_HEIGHT } from "../styles";
 
 interface Props {
-  alignTop?: boolean;
   buttonLabel?: string;
   canProceed: boolean;
   centerDesc?: boolean;
@@ -36,7 +37,12 @@ class Screen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          !this.props.navBar && { paddingTop: STATUS_BAR_HEIGHT },
+        ]}
+      >
         {this.props.navBar && (
           <NavigationBar
             canProceed={this.props.canProceed}
@@ -44,48 +50,57 @@ class Screen extends React.Component<Props & WithNamespaces> {
             onNext={this.props.onNext}
           />
         )}
-        {this.props.logo && (
-          <Image
-            style={{ height: 120, width: Dimensions.get("window").width }}
-            source={require("../../img/logo.png")}
-          />
-        )}
-        <View style={styles.innerContainer}>
-          {!this.props.alignTop && <View />}
-          <View style={styles.contentContainer}>
-            {!!this.props.step && (
-              <Step step={this.props.step} totalSteps={4} />
-            )}
-            {!!this.props.imageSrc && (
+        <View style={styles.scrollContainer}>
+          <ScrollView>
+            {this.props.logo && (
               <Image
-                style={{ height: 150, width: 200 }}
-                source={this.props.imageSrc}
+                style={{
+                  height: LOGO_HEIGHT,
+                  width: Dimensions.get("window").width,
+                }}
+                source={require("../../img/logo.png")}
               />
             )}
-            <Title label={this.props.title} />
-            {!!this.props.desc && (
-              <Text
-                content={this.props.desc}
-                center={!!this.props.centerDesc}
-              />
-            )}
-            {this.props.children}
-          </View>
-          <View style={styles.footerContainer}>
-            {!this.props.skipButton && (
-              <Button
-                enabled={this.props.canProceed}
-                primary={true}
-                label={
-                  this.props.buttonLabel != null
-                    ? this.props.buttonLabel
-                    : t("common:button:next")
-                }
-                onPress={this.props.onNext}
-              />
-            )}
-            {this.props.footer}
-          </View>
+            <View style={styles.innerContainer}>
+              {!!this.props.step && (
+                <Step step={this.props.step} totalSteps={4} />
+              )}
+              {!!this.props.imageSrc && (
+                <Image
+                  style={{
+                    height: 150,
+                    width: 200,
+                    marginVertical: GUTTER / 2,
+                  }}
+                  source={this.props.imageSrc}
+                />
+              )}
+              <Title label={this.props.title} />
+              {!!this.props.desc && (
+                <Text
+                  content={this.props.desc}
+                  center={!!this.props.centerDesc}
+                  style={{ marginBottom: GUTTER }}
+                />
+              )}
+              {this.props.children}
+            </View>
+          </ScrollView>
+        </View>
+        <View style={styles.footerContainer}>
+          {!this.props.skipButton && (
+            <Button
+              enabled={this.props.canProceed}
+              label={
+                this.props.buttonLabel != null
+                  ? this.props.buttonLabel
+                  : t("common:button:next")
+              }
+              primary={true}
+              onPress={this.props.onNext}
+            />
+          )}
+          {this.props.footer}
         </View>
       </View>
     );
@@ -94,21 +109,24 @@ class Screen extends React.Component<Props & WithNamespaces> {
 
 const styles = StyleSheet.create({
   container: {
+    alignSelf: "stretch",
     backgroundColor: "white",
     flex: 1,
-  },
-  contentContainer: {
-    alignItems: "center",
   },
   footerContainer: {
     alignItems: "center",
     alignSelf: "stretch",
+    marginHorizontal: GUTTER,
   },
   innerContainer: {
     alignItems: "center",
     flex: 1,
     justifyContent: "space-between",
-    margin: 15,
+    marginHorizontal: GUTTER,
+  },
+  scrollContainer: {
+    alignSelf: "stretch",
+    flex: 1,
   },
 });
 

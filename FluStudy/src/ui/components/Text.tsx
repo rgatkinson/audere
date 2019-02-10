@@ -5,6 +5,14 @@ import {
   Text as SystemText,
   TextStyle,
 } from "react-native";
+import {
+  FONT_BOLD,
+  FONT_EXTRA_BOLD,
+  FONT_NORMAL,
+  GUTTER,
+  PRIMARY_COLOR,
+  REGULAR_TEXT,
+} from "../styles";
 
 interface Props {
   bold?: boolean;
@@ -45,16 +53,16 @@ export default class Text extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   bold: {
-    fontFamily: "OpenSans-Bold",
+    fontFamily: FONT_BOLD,
   },
   container: {
-    color: "#333",
-    fontFamily: "OpenSans-Regular",
-    fontSize: 14,
-    marginVertical: 5,
+    alignSelf: "stretch",
+    color: PRIMARY_COLOR,
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT,
   },
   extraBold: {
-    fontFamily: "OpenSans-ExtraBold",
+    fontFamily: FONT_EXTRA_BOLD,
   },
   center: {
     textAlign: "center",

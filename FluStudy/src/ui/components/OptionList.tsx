@@ -1,18 +1,16 @@
 import React from "react";
-import {
-  Dimensions,
-  FlatList,
-  LayoutAnimation,
-  StyleProp,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import Grid from "./Grid";
 import Text from "./Text";
+import {
+  BORDER_COLOR,
+  GUTTER,
+  INPUT_HEIGHT,
+  LINK_COLOR,
+  SMALL_TEXT,
+} from "../styles";
 
 interface Option {
   key: string;
@@ -23,15 +21,9 @@ interface Props {
   data: Option[];
   multiSelect: boolean;
   numColumns: number;
-  withOther?: boolean;
-  otherOption?: string | null;
   exclusiveOption?: string;
   inclusiveOption?: string;
-  style?: StyleProp<ViewStyle>;
-  otherPlaceholder?: string;
   onChange(data: Option[]): void;
-  onOtherChange?(value: string): void;
-  backgroundColor?: string;
 }
 
 export const emptyList = (data: string[]) => {
@@ -111,57 +103,20 @@ class OptionList extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    const marginHorizontal = 10;
-    const itemWidth =
-      (Dimensions.get("window").width -
-        2 * marginHorizontal -
-        this.props.numColumns * 20) /
-      this.props.numColumns;
-    const totalHeight =
-      Math.ceil(this.props.data.length / this.props.numColumns) * 42;
-
     return (
-      <View style={[styles.container, this.props.style && this.props.style]}>
-        <View style={{ height: totalHeight }}>
-          <FlatList
-            data={this.props.data}
-            numColumns={this.props.numColumns}
-            scrollEnabled={false}
-            keyExtractor={item => item.key}
-            renderItem={({ item }) => (
-              <TranslatedListItem
-                id={item.key}
-                selected={item.selected}
-                width={itemWidth}
-                backgroundColor={this.props.backgroundColor}
-                onPressItem={this._onPressItem}
-              />
-            )}
+      <Grid
+        columns={this.props.numColumns}
+        items={this.props.data}
+        keyExtractor={item => item.key}
+        renderItem={(item, width) => (
+          <TranslatedListItem
+            id={item.key}
+            selected={item.selected}
+            width={width}
+            onPressItem={this._onPressItem}
           />
-        </View>
-        {this.props.withOther &&
-          !!this.props.data.find(option => option.key === "other") &&
-          this.props.data.find(option => option.key === "other")!.selected && (
-            <View style={styles.otherContainer}>
-              <Text
-                style={{ marginBottom: 10, fontSize: 18 }}
-                content={t("pleaseSpecify")}
-              />
-              <View style={styles.item}>
-                <TextInput
-                  autoFocus={true}
-                  placeholder={this.props.otherPlaceholder}
-                  style={styles.itemText}
-                  returnKeyType="done"
-                  value={
-                    this.props.otherOption ? this.props.otherOption : undefined
-                  }
-                  onChangeText={this.props.onOtherChange}
-                />
-              </View>
-            </View>
-          )}
-      </View>
+        )}
+      />
     );
   }
 }
@@ -171,56 +126,47 @@ interface ItemProps {
   id: string;
   selected: boolean;
   width: number;
-  backgroundColor?: string;
   onPressItem(id: string): void;
 }
 
 class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   _onPress = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.props.onPressItem(this.props.id);
   };
 
   render() {
     return (
       <TouchableOpacity
-        style={[
-          styles.item,
-          { width: this.props.width },
-          { backgroundColor: this.props.backgroundColor },
-        ]}
+        style={[styles.item, { width: this.props.width }]}
         onPress={this._onPress}
       >
         <Text
           content={this.props.t("surveyOption:" + this.props.id)}
-          style={styles.itemText}
+          style={[styles.itemText, { width: this.props.width - 20 - GUTTER }]}
         />
-        {this.props.selected && <Feather name="check" color="blue" size={20} />}
+        {this.props.selected && (
+          <Feather name="check" color={LINK_COLOR} size={20} />
+        )}
       </TouchableOpacity>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignSelf: "center",
-    marginVertical: 20,
-  },
   item: {
+    alignItems: "flex-end",
     alignSelf: "stretch",
-    borderBottomColor: "#bbb",
+    borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
+    flexGrow: 1,
+    height: INPUT_HEIGHT,
     justifyContent: "space-between",
-    marginHorizontal: 10,
-    padding: 10,
+    padding: GUTTER / 2,
   },
   itemText: {
-    fontSize: 14,
-    marginVertical: 0,
-  },
-  otherContainer: {
-    marginHorizontal: 10,
+    alignSelf: "flex-end",
+    fontSize: SMALL_TEXT,
   },
 });
 

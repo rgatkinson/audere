@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
+import { GUTTER, LINK_COLOR } from "../styles";
 
 export interface LinkData {
   label: string;
@@ -35,10 +36,11 @@ class Links extends React.Component<Props & WithNamespaces> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginVertical: 15,
+    marginBottom: GUTTER,
   },
   linkStyle: {
-    color: "#007AFF",
+    color: LINK_COLOR,
+    marginBottom: GUTTER / 2,
   },
 });
 

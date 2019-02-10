@@ -4,32 +4,24 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  KeyboardAvoidingView,
-  Text as SystemText,
-  View,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import { KeyboardAvoidingView, View, StyleSheet } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { format } from "date-fns";
+import ButtonRow from "./components/ButtonRow";
 import CheckBox from "react-native-check-box";
 import KeyboardListener from "react-native-keyboard-listener";
-import { ConsentInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import { Action, StoreState, setConsent, setEmail, setName } from "../store";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import { AddressConfig, ConsentConfig } from "../resources/ScreenConfig";
-import ButtonRow from "./components/ButtonRow";
 import EmailInput from "./components/EmailInput";
 import Screen from "./components/Screen";
 import Text from "./components/Text";
-import TextInput from "./components/TextInput";
+import { BORDER_COLOR, ERROR_COLOR, GUTTER, SMALL_TEXT } from "./styles";
 
 interface Props {
   email?: string;
-  name?: string;
   navigation: NavigationScreenProp<any, any>;
   dispatch(action: Action): void;
 }
@@ -37,13 +29,11 @@ interface Props {
 interface State {
   email?: string;
   keyboardOpen?: boolean;
-  name?: string;
   validEmail: boolean;
 }
 
 @connect((state: StoreState) => ({
   email: state.screening.email,
-  name: state.screening.name,
 }))
 class ConsentScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps,
@@ -54,31 +44,19 @@ class ConsentScreen extends React.PureComponent<
     this.state = {
       email: props.email,
       keyboardOpen: true,
-      name: props.name,
       validEmail: !!props.email,
     };
   }
 
   _canProceed = (): boolean => {
     return (
-      !!this.state.name &&
-      (!this.props.getAnswer("booleanInput") ||
-        (!!this.state.email && this.state.validEmail))
+      !this.props.getAnswer("booleanInput") ||
+      (!!this.state.email && this.state.validEmail)
     );
   };
 
   _onNext = () => {
     const { t } = this.props;
-    this.props.dispatch(setName(this.state.name!));
-    this.props.dispatch(
-      setConsent({
-        name: this.state.name!,
-        terms: t("consentFormHeader") + "\n" + t("consentFormText"),
-        signerType: ConsentInfoSignerType.Subject,
-        date: format(new Date(), "YYYY-MM-DD"), // FHIR:date
-        signature: "",
-      })
-    );
     if (this.props.getAnswer("booleanInput")) {
       this.props.dispatch(setEmail(this.state.email!));
     }
@@ -88,7 +66,7 @@ class ConsentScreen extends React.PureComponent<
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <KeyboardListener
           onWillShow={() => {
             this.setState({ keyboardOpen: true });
@@ -98,11 +76,7 @@ class ConsentScreen extends React.PureComponent<
           }}
         />
         <Screen
-          alignTop={true}
           canProceed={this._canProceed()}
-          centerDesc={true}
-          desc={t("description")}
-          logo={false}
           navBar={true}
           navigation={this.props.navigation}
           skipButton={true}
@@ -110,85 +84,49 @@ class ConsentScreen extends React.PureComponent<
           title={t("consent")}
           onNext={this._onNext}
         >
-          <View style={styles.scrollContainer}>
-            <ScrollView>
+          <Text
+            center={true}
+            content={t("consentFormHeader")}
+            style={styles.smallText}
+          />
+          <Text content={t("consentFormText")} style={styles.smallText} />
+          <CheckBox
+            isChecked={!!this.props.getAnswer("booleanInput")}
+            rightTextView={
               <Text
-                center={true}
-                content={t("consentFormHeader")}
-                style={styles.smallText}
+                content={t("surveyTitle:" + ConsentConfig.title)}
+                style={{ paddingLeft: GUTTER / 4 }}
               />
-              <Text content={t("consentFormText")} style={styles.smallText} />
-              <View style={styles.control}>
-                <Text
-                  content={
-                    t("todaysDate") + ": " + new Date().toLocaleDateString()
-                  }
-                />
-                <TextInput
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  placeholder={
-                    t("name") + (this.state.keyboardOpen ? "" : t("required"))
-                  }
-                  placeholderTextColor={
-                    this.state.keyboardOpen ? undefined : "red"
-                  }
-                  returnKeyType={"next"}
-                  value={this.state.name}
-                  onChangeText={name => this.setState({ name })}
-                  onSubmitEditing={() => {}}
-                />
-                <SystemText style={styles.signatureBox}>
-                  <Text content={t("eSignature") + "\n\n"} />
-                  <SystemText
-                    style={
-                      !!this.state.name
-                        ? styles.signature
-                        : styles.sigPlaceholder
-                    }
-                  >
-                    {!!this.state.name ? this.state.name : t("sigPlaceholder")}
-                  </SystemText>
-                </SystemText>
-                <Text content={t("disclaimer")} style={styles.smallText} />
-                <CheckBox
-                  isChecked={!!this.props.getAnswer("booleanInput")}
-                  rightTextView={
-                    <Text content={t("surveyTitle:" + ConsentConfig.title)} />
-                  }
-                  style={{ alignSelf: "flex-start" }}
-                  onClick={() => {
-                    this.props.updateAnswer({
-                      booleanInput: !this.props.getAnswer("booleanInput"),
-                    });
-                  }}
-                />
-                {!!this.props.getAnswer("booleanInput") && (
-                  <EmailInput
-                    autoFocus={true}
-                    placeholder={t("emailAddress")}
-                    returnKeyType="next"
-                    validationError={t("validationError")}
-                    value={this.state.email}
-                    onChange={(email, validEmail) =>
-                      this.setState({ email, validEmail })
-                    }
-                    onSubmit={validEmail => this.setState({ validEmail })}
-                  />
-                )}
-              </View>
-              <ButtonRow
-                firstLabel={t("noThanks")}
-                firstOnPress={() => {
-                  // TODO save name and email if available
-                  this.props.navigation.push("ConsentIneligible");
-                }}
-                secondEnabled={this._canProceed()}
-                secondLabel={t("accept")}
-                secondOnPress={this._onNext}
-              />
-            </ScrollView>
-          </View>
+            }
+            style={{ alignSelf: "stretch", marginVertical: GUTTER }}
+            onClick={() => {
+              this.props.updateAnswer({
+                booleanInput: !this.props.getAnswer("booleanInput"),
+              });
+            }}
+          />
+          {!!this.props.getAnswer("booleanInput") && (
+            <EmailInput
+              autoFocus={true}
+              placeholder={t("emailAddress")}
+              returnKeyType="next"
+              validationError={t("validationError")}
+              value={this.state.email}
+              onChange={(email, validEmail) =>
+                this.setState({ email, validEmail })
+              }
+              onSubmit={validEmail => this.setState({ validEmail })}
+            />
+          )}
+          <ButtonRow
+            firstLabel={t("noThanks")}
+            firstOnPress={() => {
+              this.props.navigation.push("ConsentIneligible");
+            }}
+            secondEnabled={this._canProceed()}
+            secondLabel={t("accept")}
+            secondOnPress={this._onNext}
+          />
         </Screen>
       </KeyboardAvoidingView>
     );
@@ -196,35 +134,11 @@ class ConsentScreen extends React.PureComponent<
 }
 
 const styles = StyleSheet.create({
-  smallText: {
-    fontSize: 12,
-  },
-  control: {
-    alignItems: "center",
-  },
-  scrollContainer: {
-    borderTopColor: "#bbb",
-    borderTopWidth: StyleSheet.hairlineWidth,
+  container: {
     flex: 1,
-    marginTop: 10,
-    paddingTop: 10,
   },
-  signatureBox: {
-    alignSelf: "stretch",
-    backgroundColor: "white",
-    borderColor: "#d6d7da",
-    borderRadius: 2,
-    borderWidth: 2,
-    height: 100,
-    overflow: "hidden",
-    padding: 10,
-  },
-  sigPlaceholder: {
-    fontStyle: "italic",
-  },
-  signature: {
-    fontFamily: "DancingScript-Regular",
-    fontSize: 24,
+  smallText: {
+    fontSize: SMALL_TEXT,
   },
 });
 

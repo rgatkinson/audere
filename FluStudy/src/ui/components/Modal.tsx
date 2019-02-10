@@ -2,6 +2,13 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AnimatedModal from "react-native-modal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import {
+  GUTTER,
+  LINK_COLOR,
+  STATUS_BAR_COLOR,
+  SYSTEM_FONT,
+  SYSTEM_TEXT,
+} from "../styles";
 
 const IOS_MODAL_ANIMATION = {
   from: { opacity: 0, scale: 1.2 },
@@ -17,7 +24,7 @@ interface Props {
   title?: string;
   visible: boolean;
   onDismiss(): void;
-  onSubmit?(): void;
+  onSubmit(): void;
 }
 
 class Modal extends React.Component<Props & WithNamespaces> {
@@ -52,17 +59,13 @@ class Modal extends React.Component<Props & WithNamespaces> {
               {this.props.title ? (
                 <Text style={styles.title}>{this.props.title}</Text>
               ) : null}
-              {this.props.onSubmit ? (
-                <TouchableOpacity onPress={this.props.onSubmit}>
-                  <Text style={[styles.actionText, { textAlign: "right" }]}>
-                    {this.props.submitText
-                      ? this.props.submitText
-                      : t("common:button:submit")}
-                  </Text>
-                </TouchableOpacity>
-              ) : (
-                <View style={{ width: 100 }} />
-              )}
+              <TouchableOpacity onPress={this.props.onSubmit}>
+                <Text style={[styles.actionText, { textAlign: "right" }]}>
+                  {this.props.submitText
+                    ? this.props.submitText
+                    : t("common:button:submit")}
+                </Text>
+              </TouchableOpacity>
             </View>
             {this.props.children}
           </View>
@@ -74,12 +77,9 @@ class Modal extends React.Component<Props & WithNamespaces> {
 
 const styles = StyleSheet.create({
   actionText: {
-    fontFamily: "System",
-    fontSize: 17,
-    color: "#007AFF",
-    lineHeight: 22,
-    letterSpacing: -0.41,
-    width: 100,
+    fontFamily: SYSTEM_FONT,
+    fontSize: SYSTEM_TEXT,
+    color: LINK_COLOR,
   },
   blur: {
     backgroundColor: "white",
@@ -92,12 +92,12 @@ const styles = StyleSheet.create({
     right: 0,
   },
   header: {
-    backgroundColor: "#F8F8F8",
+    backgroundColor: STATUS_BAR_COLOR,
     alignItems: "center",
     opacity: 82,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: GUTTER,
     height: 44,
   },
   modal: {
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontFamily: "System",
-    fontSize: 17,
+    fontFamily: SYSTEM_FONT,
+    fontSize: SYSTEM_TEXT,
     fontWeight: "bold",
   },
 });

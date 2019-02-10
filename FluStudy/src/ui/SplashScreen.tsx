@@ -4,14 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action } from "../store";
 import Button from "./components/Button";
 import Screen from "./components/Screen";
-import Title from "./components/Title";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -24,7 +23,6 @@ class SplashScreen extends React.PureComponent<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        alignTop={true}
         buttonLabel={t("haveKit")}
         canProceed={true}
         logo={true}
@@ -35,29 +33,18 @@ class SplashScreen extends React.PureComponent<Props & WithNamespaces> {
           this.props.navigation.push("WelcomeBack");
         }}
       >
-        <TouchableOpacity
-          style={styles.mainButton}
+        <Button
+          enabled={true}
+          label={t("getStarted")}
+          primary={false}
+          style={{ height: 75, marginTop: 125 }}
           onPress={() => {
             this.props.navigation.push("Welcome");
           }}
-        >
-          <Title label={t("getStarted")} />
-        </TouchableOpacity>
+        />
       </Screen>
     );
   }
 }
-const styles = StyleSheet.create({
-  mainButton: {
-    borderColor: "#333",
-    borderRadius: 8,
-    borderWidth: 2,
-    width: 300,
-    height: 75,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
-});
 
 export default withNamespaces("splashScreen")(SplashScreen);

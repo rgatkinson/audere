@@ -1,7 +1,9 @@
 import React from "react";
-import { ReturnKeyTypeOptions, StyleSheet, Text, View } from "react-native";
+import { ReturnKeyTypeOptions, StyleSheet, View } from "react-native";
 import KeyboardListener from "react-native-keyboard-listener";
+import Text from "./Text";
 import TextInput from "./TextInput";
+import { ERROR_COLOR, FONT_NORMAL, GUTTER } from "../styles";
 
 interface Props extends React.Props<EmailInput> {
   autoFocus: boolean;
@@ -48,7 +50,6 @@ export default class EmailInput extends React.Component<Props, State> {
           placeholder={this.props.placeholder}
           ref={this.textInput}
           returnKeyType={this.props.returnKeyType}
-          style={styles.input}
           value={this.state.email}
           onChangeText={(text: string) => {
             this.setState({ email: text });
@@ -60,11 +61,14 @@ export default class EmailInput extends React.Component<Props, State> {
             }
           }}
         />
-        <Text style={styles.errorText}>
-          {!!this.state.email && !this._isValid() && !this.state.keyboardOpen
-            ? this.props.validationError
-            : ""}
-        </Text>
+        <Text
+          content={
+            !!this.state.email && !this._isValid() && !this.state.keyboardOpen
+              ? this.props.validationError
+              : ""
+          }
+          style={styles.errorText}
+        />
       </View>
     );
   }
@@ -84,13 +88,10 @@ export default class EmailInput extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
+    marginBottom: GUTTER,
   },
   errorText: {
-    color: "red",
-    fontFamily: "OpenSans-Regular",
-    height: 21,
-  },
-  input: {
-    marginVertical: 10,
+    color: ERROR_COLOR,
+    fontFamily: FONT_NORMAL,
   },
 });

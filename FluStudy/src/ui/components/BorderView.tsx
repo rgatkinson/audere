@@ -1,5 +1,13 @@
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  BORDER_RADIUS,
+  BORDER_WIDTH,
+  GUTTER,
+  LIGHT_COLOR,
+  SECONDARY_COLOR,
+  THIN_BORDER_WIDTH,
+} from "../styles";
 
 interface Props {
   children?: any;
@@ -20,9 +28,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     alignSelf: "stretch",
-    borderColor: "#666",
-    borderRadius: 3,
-    borderWidth: 1,
-    padding: 15,
+    borderColor: LIGHT_COLOR,
+    borderWidth: THIN_BORDER_WIDTH,
+    marginBottom: GUTTER,
+    padding: GUTTER / 2,
   },
 });

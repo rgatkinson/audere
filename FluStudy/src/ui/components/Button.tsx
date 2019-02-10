@@ -9,6 +9,17 @@ import {
   ViewStyle,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import {
+  BORDER_COLOR,
+  BORDER_RADIUS,
+  BORDER_WIDTH,
+  FONT_SEMI_BOLD,
+  GUTTER,
+  INPUT_HEIGHT,
+  LARGE_TEXT,
+  PRIMARY_COLOR,
+  SECONDARY_COLOR,
+} from "../styles";
 
 interface Props {
   checked?: boolean;
@@ -29,37 +40,34 @@ export default class Button extends React.Component<Props> {
 
   render() {
     return (
-      <View
+      <TouchableOpacity
+        disabled={!this.props.enabled}
         style={[
-          styles.container,
+          styles.button,
           { opacity: this.props.enabled ? 0.95 : 0.5 },
+          this.props.primary && styles.primaryButton,
           this.props.style && this.props.style,
         ]}
+        onPress={this.handlePress}
       >
-        <TouchableOpacity
-          disabled={!this.props.enabled}
-          style={[styles.button, this.props.primary && styles.primaryButton]}
-          onPress={this.handlePress}
+        {this.props.checked && (
+          <Feather
+            name="check"
+            color={this.props.primary ? "#FFFFFF" : "#4B2E83"}
+            size={20}
+            style={styles.check}
+          />
+        )}
+        <Text
+          style={[
+            styles.text,
+            this.props.primary && styles.primaryButtonText,
+            !!this.props.fontSize && { fontSize: this.props.fontSize },
+          ]}
         >
-          {this.props.checked && (
-            <Feather
-              name="check"
-              color={this.props.primary ? "#FFFFFF" : "#4B2E83"}
-              size={20}
-              style={styles.check}
-            />
-          )}
-          <Text
-            style={[
-              styles.text,
-              this.props.primary && styles.primaryButtonText,
-              !!this.props.fontSize && { fontSize: this.props.fontSize },
-            ]}
-          >
-            {this.props.label}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          {this.props.label}
+        </Text>
+      </TouchableOpacity>
     );
   }
 }
@@ -67,29 +75,27 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderColor: "#333",
-    borderRadius: 4,
-    borderWidth: 2,
+    alignSelf: "stretch",
+    borderColor: PRIMARY_COLOR,
+    borderRadius: BORDER_RADIUS,
+    borderWidth: BORDER_WIDTH,
     flexDirection: "row",
-    height: 40,
+    height: INPUT_HEIGHT,
     justifyContent: "center",
+    marginBottom: GUTTER,
   },
   check: {
-    paddingRight: 8,
-  },
-  container: {
-    marginVertical: 6,
-    width: 300,
+    paddingRight: GUTTER / 2,
   },
   text: {
-    fontFamily: "OpenSans-SemiBold",
-    fontSize: 20,
+    fontFamily: FONT_SEMI_BOLD,
+    fontSize: LARGE_TEXT,
     textAlign: "center",
   },
   primaryButton: {
-    backgroundColor: "#333",
+    backgroundColor: PRIMARY_COLOR,
   },
   primaryButtonText: {
-    color: "#FFFFFF",
+    color: "white",
   },
 });
