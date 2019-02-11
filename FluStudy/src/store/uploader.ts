@@ -109,6 +109,7 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
       address: [],
     },
     consents: [],
+    samples: [],
     responses: [],
     events: [],
   };
@@ -135,7 +136,7 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
   );
 
   if (!!survey.kitBarcode) {
-    pouch.kitBarcode = survey.kitBarcode;
+    pouch.samples.push(survey.kitBarcode);
   }
 
   // Set all surveyResponses into pouch.responses

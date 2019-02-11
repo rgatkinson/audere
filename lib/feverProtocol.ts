@@ -107,7 +107,7 @@ export interface SurveyNonPIIDbInfo extends SurveyNonPIIInfo {
 }
 
 export interface SurveyNonPIIInfo extends CommonInfo {
-  kitBarcode?: SampleInfo;
+  samples: SampleInfo[];
 
   // Filtered to include only non-PII, like health data.
   responses: ResponseInfo[];
