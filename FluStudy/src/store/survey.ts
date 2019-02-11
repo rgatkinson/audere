@@ -15,7 +15,6 @@ export type SurveyAction =
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
-  | { type: "SET_NAME"; name: string }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
@@ -25,7 +24,6 @@ export type SurveyState = {
   events: EventInfo[];
   id?: string;
   kitBarcode?: SampleInfo;
-  name?: string;
   pushState: PushNotificationState;
   responses: SurveyResponse[];
   timestamp?: number;
@@ -62,9 +60,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email, timestamp: new Date().getTime() };
-  }
-  if (action.type === "SET_NAME") {
-    return { ...state, name: action.name, timestamp: new Date().getTime() };
   }
   if (action.type === "SET_KIT_BARCODE") {
     return {
@@ -117,13 +112,6 @@ export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   return {
     type: "SET_KIT_BARCODE",
     kitBarcode,
-  };
-}
-
-export function setName(name: string): SurveyAction {
-  return {
-    type: "SET_NAME",
-    name,
   };
 }
 

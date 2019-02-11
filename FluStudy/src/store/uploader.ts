@@ -57,10 +57,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   };
 
   const survey = state.survey;
-  if (!!survey.name) {
-    pouch.patient.name = survey.name;
-  }
-
   if (!!survey.email) {
     pouch.patient.telecom.push({
       system: TelecomInfoSystem.Email,
@@ -105,21 +101,24 @@ function maybePushAddressResponse(
 ): void {
   const response = responses.find(r => r.questionId === questionId);
   if (!!response) {
-    maybePushAddress(response!.answer!.addressInput, use, patient.address);
+    maybePushAddress(response!.answer!.addressInput, use, patient);
   }
 }
 
 function maybePushAddress(
   addressInput: Address | undefined | null,
   use: AddressInfoUse,
-  addresses: AddressInfo[]
+  patient: PatientInfo
 ): void {
   const info = addressValueInfo(addressInput);
   if (info != null) {
-    addresses.push({
+    patient.address.push({
       use,
       ...info,
     });
+    if (!!info.name) {
+      patient.name = info.name;
+    }
   }
 }
 

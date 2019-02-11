@@ -1,8 +1,20 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
-import { Alert, PushNotificationIOS, View, StyleSheet } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  PushNotificationIOS,
+  View,
+  StyleSheet,
+} from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import KeyboardListener from "react-native-keyboard-listener";
 import {
   EventInfoKind,
   PushNotificationState,
@@ -15,6 +27,7 @@ import {
   StoreState,
   SurveyResponse,
   appendEvent,
+  setEmail,
   setPushNotificationState,
 } from "../store";
 import {
@@ -28,11 +41,19 @@ import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import AddressInput from "./components/AddressInput";
 import Button from "./components/Button";
 import ButtonRow from "./components/ButtonRow";
+import CheckBox from "react-native-check-box";
+import EmailInput from "./components/EmailInput";
 import Screen from "./components/Screen";
 import Links from "./components/Links";
 import OptionList, { newSelectedOptionsList } from "./components/OptionList";
 import Text from "./components/Text";
-import { GUTTER, SECONDARY_COLOR } from "./styles";
+import {
+  BORDER_COLOR,
+  ERROR_COLOR,
+  GUTTER,
+  SECONDARY_COLOR,
+  SMALL_TEXT,
+} from "./styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -98,7 +119,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("what")}
         onNext={() => {
-          this.props.navigation.push("Age", { data: AgeConfig });
+          this.props.navigation.push("Age");
         }}
       />
     );
@@ -110,14 +131,14 @@ class AgeScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("Symptoms", { data: SymptomsConfig });
+    this.props.navigation.push("Symptoms");
   };
 
   render() {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={!!this.props.getAnswer("selectedButtonKey")}
+        canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -128,14 +149,20 @@ class AgeScreen extends React.Component<
       >
         {AgeConfig.buttons.map((button: ButtonConfig) => (
           <Button
-            checked={this.props.getAnswer("selectedButtonKey") === button.key}
+            checked={
+              this.props.getAnswer("selectedButtonKey", AgeConfig.id) ===
+              button.key
+            }
             enabled={true}
             key={button.key}
             label={t("surveyButton:" + button.key)}
             primary={button.primary}
             style={{ marginVertical: GUTTER }}
             onPress={() => {
-              this.props.updateAnswer({ selectedButtonKey: button.key });
+              this.props.updateAnswer(
+                { selectedButtonKey: button.key },
+                AgeConfig
+              );
               this._onNext();
             }}
           />
@@ -150,7 +177,7 @@ class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.updateAnswer({ selectedButtonKey: "next" });
+    this.props.updateAnswer({ selectedButtonKey: "next" }, SymptomsConfig);
     const { t } = this.props;
     if (this._numSymptoms() > 1) {
       Alert.alert(t("thankYou"), t("nextStep"), [
@@ -163,7 +190,7 @@ class SymptomsScreen extends React.PureComponent<
         {
           text: t("viewConsent"),
           onPress: () => {
-            this.props.navigation.push("Consent", { data: ConsentConfig });
+            this.props.navigation.push("Consent");
           },
         },
       ]);
@@ -184,7 +211,10 @@ class SymptomsScreen extends React.PureComponent<
   };
 
   _haveOption = () => {
-    const symptoms: Option[] = this.props.getAnswer("options");
+    const symptoms: Option[] = this.props.getAnswer(
+      "options",
+      SymptomsConfig.id
+    );
     return symptoms
       ? symptoms.reduce(
           (result: boolean, option: Option) => result || option.selected,
@@ -194,7 +224,10 @@ class SymptomsScreen extends React.PureComponent<
   };
 
   _numSymptoms = () => {
-    const symptoms: Option[] = this.props.getAnswer("options");
+    const symptoms: Option[] = this.props.getAnswer(
+      "options",
+      SymptomsConfig.id
+    );
     return symptoms
       ? symptoms.reduce(
           (count: number, option: Option) =>
@@ -223,18 +256,141 @@ class SymptomsScreen extends React.PureComponent<
         <OptionList
           data={newSelectedOptionsList(
             SymptomsConfig.optionList!.options,
-            this.props.getAnswer("options")
+            this.props.getAnswer("options", SymptomsConfig.id)
           )}
           multiSelect={true}
           numColumns={1}
           exclusiveOption="noneOfTheAbove"
-          onChange={symptoms => this.props.updateAnswer({ options: symptoms })}
+          onChange={symptoms =>
+            this.props.updateAnswer({ options: symptoms }, SymptomsConfig)
+          }
         />
       </Screen>
     );
   }
 }
 const Symptoms = reduxWriter(withNamespaces("symptomsScreen")(SymptomsScreen));
+
+interface ConsentProps {
+  email?: string;
+}
+
+interface ConsentState {
+  email?: string;
+  keyboardOpen?: boolean;
+  validEmail: boolean;
+}
+
+@connect((state: StoreState) => ({
+  email: state.survey.email,
+}))
+class ConsentScreen extends React.PureComponent<
+  Props & ConsentProps & WithNamespaces & ReduxWriterProps,
+  ConsentState
+> {
+  constructor(props: Props & ConsentProps & WithNamespaces & ReduxWriterProps) {
+    super(props);
+    this.state = {
+      email: props.email,
+      keyboardOpen: true,
+      validEmail: !!props.email,
+    };
+  }
+
+  _canProceed = (): boolean => {
+    return (
+      !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
+      (!!this.state.email && this.state.validEmail)
+    );
+  };
+
+  _onNext = () => {
+    const { t } = this.props;
+    if (this.props.getAnswer("booleanInput", ConsentConfig.id)) {
+      this.props.dispatch(setEmail(this.state.email!));
+    }
+    this.props.navigation.push("Address");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <KeyboardListener
+          onWillShow={() => {
+            this.setState({ keyboardOpen: true });
+          }}
+          onWillHide={() => {
+            this.setState({ keyboardOpen: false });
+          }}
+        />
+        <Screen
+          canProceed={this._canProceed()}
+          navBar={true}
+          navigation={this.props.navigation}
+          skipButton={true}
+          step={3}
+          title={t("consent")}
+          onNext={this._onNext}
+        >
+          <Text
+            center={true}
+            content={t("consentFormHeader")}
+            style={{ fontSize: SMALL_TEXT }}
+          />
+          <Text
+            content={t("consentFormText")}
+            style={{ fontSize: SMALL_TEXT }}
+          />
+          <CheckBox
+            isChecked={!!this.props.getAnswer("booleanInput", ConsentConfig.id)}
+            rightTextView={
+              <Text
+                content={t("surveyTitle:" + ConsentConfig.title)}
+                style={{ paddingLeft: GUTTER / 4 }}
+              />
+            }
+            style={{ alignSelf: "stretch", marginVertical: GUTTER }}
+            onClick={() => {
+              this.props.updateAnswer(
+                {
+                  booleanInput: !this.props.getAnswer(
+                    "booleanInput",
+                    ConsentConfig.id
+                  ),
+                },
+                ConsentConfig
+              );
+            }}
+          />
+          {!!this.props.getAnswer("booleanInput", ConsentConfig.id) && (
+            <EmailInput
+              autoFocus={true}
+              placeholder={t("emailAddress")}
+              returnKeyType="next"
+              validationError={t("validationError")}
+              value={this.state.email}
+              onChange={(email, validEmail) =>
+                this.setState({ email, validEmail })
+              }
+              onSubmit={validEmail => this.setState({ validEmail })}
+            />
+          )}
+          <ButtonRow
+            firstLabel={t("noThanks")}
+            firstOnPress={() => {
+              this.props.navigation.push("ConsentIneligible");
+            }}
+            secondEnabled={this._canProceed()}
+            secondLabel={t("accept")}
+            secondOnPress={this._onNext}
+          />
+        </Screen>
+      </KeyboardAvoidingView>
+    );
+  }
+}
+const Consent = reduxWriter(withNamespaces("consentScreen")(ConsentScreen));
 
 class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -281,7 +437,7 @@ class AddressInputScreen extends React.Component<
   };
 
   _haveValidAddress = (): boolean => {
-    const address = this.props.getAnswer("addressInput");
+    const address = this.props.getAnswer("addressInput", AddressConfig.id);
     return (
       !!address &&
       !!address.name &&
@@ -308,9 +464,9 @@ class AddressInputScreen extends React.Component<
         onNext={this._onNext}
       >
         <AddressInput
-          value={this.props.getAnswer("addressInput")}
+          value={this.props.getAnswer("addressInput", AddressConfig.id)}
           onChange={(address: Address) =>
-            this.props.updateAnswer({ addressInput: address })
+            this.props.updateAnswer({ addressInput: address }, AddressConfig)
           }
         />
       </Screen>
@@ -581,6 +737,7 @@ export {
   Symptoms,
   AddressScreen,
   SymptomsIneligible,
+  Consent,
   ConsentIneligible,
   Confirmation,
   PushNotifications,

@@ -33,6 +33,7 @@ import {
   Symptoms,
   AddressScreen,
   SymptomsIneligible,
+  Consent,
   ConsentIneligible,
   Confirmation,
   PushNotifications,
@@ -53,7 +54,6 @@ import {
   Swab,
 } from "./src/ui/SurveyScreens";
 import AboutScreen from "./src/ui/AboutScreen";
-import ConsentScreen from "./src/ui/ConsentScreen";
 import SplashScreen from "./src/ui/SplashScreen";
 
 const Home = createStackNavigator(
@@ -65,8 +65,8 @@ const Home = createStackNavigator(
     Age,
     Symptoms,
     SymptomsIneligible,
+    Consent,
     ConsentIneligible,
-    Consent: ConsentScreen,
     Address: AddressScreen,
     Confirmation,
     PushNotifications,

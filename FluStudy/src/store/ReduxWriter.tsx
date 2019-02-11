@@ -20,7 +20,6 @@ import { i18n, WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionData } from "../resources/ScreenConfig";
 
 interface InnerProps {
-  data?: SurveyQuestionData;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   responses: SurveyResponse[];
@@ -30,12 +29,8 @@ interface InnerProps {
 }
 
 export interface ReduxWriterProps {
-  updateAnswer(answer: object, data?: SurveyQuestionData): void;
-  getAnswer(key: string, id?: string): any;
-}
-
-interface State {
-  data: SurveyQuestionData;
+  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  getAnswer(key: string, id: string): any;
 }
 
 type OuterProps<P> = Dissoc<P, keyof ReduxWriterProps>;
@@ -44,33 +39,9 @@ export default function reduxWriter<P extends ReduxWriterProps>(
   WrappedComponent: React.ComponentType<P>
 ) {
   class ReduxWriter extends React.Component<
-    InnerProps & OuterProps<P> & WithNamespaces,
-    State
+    InnerProps & OuterProps<P> & WithNamespaces
   > {
-    constructor(props: InnerProps & OuterProps<P>) {
-      super(props);
-      this.state = {
-        data:
-          !!this.props.navigation && !!this.props.navigation.getParam("data")
-            ? this.props.navigation.getParam("data")
-            : this.props.data,
-      };
-    }
-
-    componentDidMount() {
-      const responses = this.props.responses.slice(0);
-      const response = responses.find(
-        response => response.questionId === this.state.data.id
-      );
-      if (response == null) {
-        responses.push(this._initializeResponse());
-        this.props.dispatch(setResponses(responses));
-      }
-    }
-
-    _initializeResponse = (
-      data: SurveyQuestionData = this.state.data
-    ): SurveyResponse => {
+    _initializeResponse = (data: SurveyQuestionData): SurveyResponse => {
       const { t } = this.props;
       const buttonLabels: ButtonLabel[] = [];
       data.buttons.forEach(button => {
@@ -105,10 +76,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       };
     };
 
-    _updateAnswer = (
-      update: SurveyAnswer,
-      data: SurveyQuestionData = this.state.data
-    ) => {
+    _updateAnswer = (update: SurveyAnswer, data: SurveyQuestionData) => {
       const responses = this.props.responses.slice(0);
       let response = responses.find(
         response => response.questionId === data.id
@@ -121,7 +89,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       this.props.dispatch(setResponses(responses));
     };
 
-    _getAnswer = (key: string, id: string = this.state.data.id): any => {
+    _getAnswer = (key: string, id: string): any => {
       const response = this.props.responses.find(
         response => response.questionId === id
       );
@@ -146,19 +114,11 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     }
   }
 
-  const mapStateToProps = function(
-    state: StoreState,
-    ownProps: InnerProps & OuterProps<P>
-  ) {
-    return {
-      responses: state.survey.responses,
-    };
-  };
-
-  const Enhanced = withNamespaces()(connect(mapStateToProps)(ReduxWriter));
-
-  // @ts-ignore
-  Enhanced.navigationOptions = WrappedComponent.navigationOptions;
-
-  return Enhanced;
+  return withNamespaces()(
+    connect((state: StoreState) => {
+      return {
+        responses: state.survey.responses,
+      };
+    })(ReduxWriter)
+  );
 }
