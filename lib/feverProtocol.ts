@@ -29,7 +29,6 @@ export interface ProtocolDocumentBase {
 }
 
 export enum DocumentType {
-  Screening = "SCREENING",
   Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Log = "LOG",
@@ -37,7 +36,6 @@ export enum DocumentType {
 }
 
 export type ProtocolDocument =
-  | ScreeningDocument
   | SurveyDocument
   | FeedbackDocument
   | LogDocument
@@ -53,14 +51,6 @@ export interface DeviceInfo {
 }
 
 // ================================================================================
-export interface ScreeningDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.Screening;
-  schemaId: 1;
-  screen: ScreeningInfo;
-}
-
-export type ScreeningInfo = PIIInfo & ScreeningNonPIIInfo;
-
 // Yes, I know, I know, "Personally-Identifiable-Information Info".
 // Unfortunately, it fits the pattern, and helps disambiguate.
 // Welcome to the department of redundancy department.
@@ -73,23 +63,12 @@ export interface PIIInfo extends CommonInfo {
   responses: ResponseInfo[];
 }
 
-// This is not part of the protocol, but represents anonymized state
-// for the purposes of analytics we save in the non-PII database.
-export interface ScreeningNonPIIDbInfo extends ScreeningNonPIIInfo {
-  consents: NonPIIConsentInfo[];
-}
-
-export interface ScreeningNonPIIInfo extends CommonInfo {
-  // Filtered to include only non-PII, like health data.
-  responses: ResponseInfo[];
-}
-
 // Common to PII and NonPII visit info.
 export interface CommonInfo {
-  complete: boolean;
   isDemo?: boolean;
   events: EventInfo[];
   pushNotificationState?: PushNotificationState;
+  workflow: WorkflowInfo;
 }
 
 export interface SurveyDocument extends ProtocolDocumentBase {
@@ -197,6 +176,11 @@ export enum ConsentInfoSignerType {
   Parent = "Parent",
   Representative = "Representative",
   Researcher = "Researcher"
+}
+
+export interface WorkflowInfo {
+  screeningComplete: boolean;
+  surveyComplete: boolean;
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource

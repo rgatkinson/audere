@@ -4,6 +4,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
+  EventInfoKind,
   PushNotificationState,
   PushRegistrationError,
 } from "audere-lib/feverProtocol";
@@ -11,10 +12,10 @@ import {
   Action,
   Address,
   Option,
-  setPushNotificationState,
-  startScreening,
   StoreState,
   SurveyResponse,
+  appendEvent,
+  setPushNotificationState,
 } from "../store";
 import {
   AddressConfig,
@@ -52,7 +53,9 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("welcome")}
         onNext={() => {
-          this.props.dispatch(startScreening());
+          this.props.dispatch(
+            appendEvent(EventInfoKind.Screening, "StartedScreening")
+          );
           this.props.navigation.push("Why");
         }}
       />
@@ -380,7 +383,7 @@ interface PushProps {
 }
 
 @connect((state: StoreState) => ({
-  pushState: state.screening.pushState,
+  pushState: state.survey.pushState,
 }))
 class ConfirmationScreen extends React.Component<
   Props & PushProps & WithNamespaces
@@ -412,7 +415,7 @@ const Confirmation = withNamespaces("confirmationScreen")<Props & PushProps>(
 );
 
 @connect((state: StoreState) => ({
-  pushState: state.screening.pushState,
+  pushState: state.survey.pushState,
 }))
 class PushNotificationsScreen extends React.Component<
   Props & PushProps & WithNamespaces

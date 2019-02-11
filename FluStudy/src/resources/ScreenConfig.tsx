@@ -1,13 +1,11 @@
-import { Action, setScreeningResponses, SurveyResponse } from "../store";
+import { Action, SurveyResponse } from "../store";
 
 export interface SurveyQuestionData {
   buttons: ButtonConfig[];
   id: string;
   description?: DescriptionConfig;
   optionList?: OptionListConfig;
-  responseType: "screening" | "survey";
   title?: string;
-  updateFunction(responses: SurveyResponse[]): Action;
 }
 
 export interface ButtonConfig {
@@ -49,8 +47,6 @@ export const AddressConfig: SurveyQuestionData = {
     label: "addressDesc",
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
-  responseType: "screening",
-  updateFunction: setScreeningResponses,
 };
 
 export const AgeConfig: SurveyQuestionData = {
@@ -62,16 +58,12 @@ export const AgeConfig: SurveyQuestionData = {
     { key: AgeBuckets.YoungAdult, primary: false, enabled: true },
     { key: AgeBuckets.Under18, primary: false, enabled: true },
   ],
-  responseType: "screening",
-  updateFunction: setScreeningResponses,
 };
 
 export const ConsentConfig: SurveyQuestionData = {
   buttons: [],
   id: "Consent",
   title: "consentEmail",
-  responseType: "screening",
-  updateFunction: setScreeningResponses,
 };
 
 export const SymptomsConfig: SurveyQuestionData = {
@@ -94,6 +86,4 @@ export const SymptomsConfig: SurveyQuestionData = {
     exclusiveOption: "noneOfTheAbove",
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
-  responseType: "screening",
-  updateFunction: setScreeningResponses,
 };

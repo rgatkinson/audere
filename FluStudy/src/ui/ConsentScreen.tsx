@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import ButtonRow from "./components/ButtonRow";
 import CheckBox from "react-native-check-box";
 import KeyboardListener from "react-native-keyboard-listener";
-import { Action, StoreState, setConsent, setEmail, setName } from "../store";
+import { Action, StoreState, setConsent, setEmail } from "../store";
 import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import { AddressConfig, ConsentConfig } from "../resources/ScreenConfig";
 import EmailInput from "./components/EmailInput";
@@ -33,7 +33,7 @@ interface State {
 }
 
 @connect((state: StoreState) => ({
-  email: state.screening.email,
+  email: state.survey.email,
 }))
 class ConsentScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps,

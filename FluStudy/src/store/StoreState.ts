@@ -4,15 +4,9 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { default as meta, MetaState, MetaAction } from "./meta";
-import {
-  default as screening,
-  ScreeningState,
-  ScreeningAction,
-} from "./screening";
 import { default as survey, SurveyState, SurveyAction } from "./survey";
 
 export interface StoreState {
   meta: MetaState;
-  screening: ScreeningState;
   survey: SurveyState;
 }

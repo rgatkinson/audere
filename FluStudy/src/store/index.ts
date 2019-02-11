@@ -10,17 +10,10 @@ export * from "./types";
 import { default as meta, MetaState, MetaAction } from "./meta";
 export * from "./meta";
 
-import {
-  default as screening,
-  ScreeningState,
-  ScreeningAction,
-} from "./screening";
-export * from "./screening";
-
 import { default as survey, SurveyState, SurveyAction } from "./survey";
 export * from "./survey";
 
-export type Action = MetaAction | ScreeningAction | SurveyAction;
+export type Action = MetaAction | SurveyAction;
 
 export { StoreState } from "./StoreState";
 
@@ -32,7 +25,6 @@ const persistConfig = {
 
 const reducer = combineReducers({
   meta,
-  screening,
   survey,
 });
 

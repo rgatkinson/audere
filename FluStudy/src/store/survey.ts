@@ -1,55 +1,82 @@
 import uuidv4 from "uuid/v4";
-import { SampleInfo, EventInfo, EventInfoKind } from "audere-lib/feverProtocol";
+import {
+  ConsentInfo,
+  EventInfo,
+  EventInfoKind,
+  SampleInfo,
+  PushNotificationState,
+  PushRegistrationError,
+  WorkflowInfo,
+} from "audere-lib/feverProtocol";
 import { SurveyResponse } from "./types";
 
 export type SurveyAction =
-  | { type: "START_SURVEY" }
-  | { type: "SET_COMPLETE"; complete: boolean }
+  | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
+  | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
-  | { type: "APPEND_EVENT"; kind: EventInfoKind; refId: string }
+  | { type: "SET_NAME"; name: string }
+  | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
 
 export type SurveyState = {
-  complete: boolean;
+  consent?: ConsentInfo;
   email?: string;
   events: EventInfo[];
   id?: string;
-  responses: SurveyResponse[];
   kitBarcode?: SampleInfo;
+  name?: string;
+  pushState: PushNotificationState;
+  responses: SurveyResponse[];
   timestamp?: number;
+  workflow: WorkflowInfo;
 };
 
 const initialState: SurveyState = {
-  complete: false,
   events: [],
+  id: uuidv4(),
   responses: [],
+  pushState: {
+    showedSystemPrompt: false,
+  },
+  workflow: {
+    screeningComplete: false,
+    surveyComplete: false,
+  },
 };
 
 export default function reducer(state = initialState, action: SurveyAction) {
-  if (action.type === "START_SURVEY") {
-    // Resets all survey data
+  if (action.type === "APPEND_EVENT") {
     return {
-      ...initialState,
-      events: pushEvent(initialState, EventInfoKind.Survey, "StartedSurvey"),
-      id: uuidv4(),
+      ...state,
+      events: pushEvent(state, action.kind, action.event),
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_CONSENT") {
+    return {
+      ...state,
+      consent: action.consent,
       timestamp: new Date().getTime(),
     };
   }
   if (action.type === "SET_EMAIL") {
     return { ...state, email: action.email, timestamp: new Date().getTime() };
   }
-  if (action.type === "APPEND_EVENT") {
-    return {
-      ...state,
-      events: pushEvent(state, action.kind, action.refId),
-      timestamp: new Date().getTime(),
-    };
+  if (action.type === "SET_NAME") {
+    return { ...state, name: action.name, timestamp: new Date().getTime() };
   }
   if (action.type === "SET_KIT_BARCODE") {
     return {
       ...state,
       kitBarcode: action.kitBarcode,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_PUSH_STATE") {
+    return {
+      ...state,
+      pushState: action.pushState,
       timestamp: new Date().getTime(),
     };
   }
@@ -60,45 +87,29 @@ export default function reducer(state = initialState, action: SurveyAction) {
       timestamp: new Date().getTime(),
     };
   }
-  if (action.type === "SET_COMPLETE") {
-    return {
-      ...state,
-      complete: action.complete,
-      timestamp: new Date().getTime(),
-    };
-  }
 
   return state;
 }
 
-export function startSurvey(): SurveyAction {
-  return {
-    type: "START_SURVEY",
-  };
-}
-
-export function setSurveyEmail(email: string): SurveyAction {
-  return {
-    type: "SET_EMAIL",
-    email,
-  };
-}
-
-export function appendSurveyEvent(
-  kind: EventInfoKind,
-  refId: string
-): SurveyAction {
+export function appendEvent(kind: EventInfoKind, event: string): SurveyAction {
   return {
     type: "APPEND_EVENT",
     kind,
-    refId,
+    event,
   };
 }
 
-export function setSurveyResponses(responses: SurveyResponse[]): SurveyAction {
+export function setConsent(consent: ConsentInfo): SurveyAction {
   return {
-    type: "SET_RESPONSES",
-    responses,
+    type: "SET_CONSENT",
+    consent,
+  };
+}
+
+export function setEmail(email: string): SurveyAction {
+  return {
+    type: "SET_EMAIL",
+    email,
   };
 }
 
@@ -109,10 +120,26 @@ export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   };
 }
 
-export function setSurveyComplete(complete: boolean): SurveyAction {
+export function setName(name: string): SurveyAction {
   return {
-    type: "SET_COMPLETE",
-    complete,
+    type: "SET_NAME",
+    name,
+  };
+}
+
+export function setPushNotificationState(
+  pushState: PushNotificationState
+): SurveyAction {
+  return {
+    type: "SET_PUSH_STATE",
+    pushState,
+  };
+}
+
+export function setResponses(responses: SurveyResponse[]): SurveyAction {
+  return {
+    type: "SET_RESPONSES",
+    responses,
   };
 }
 

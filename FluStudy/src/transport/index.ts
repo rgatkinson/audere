@@ -9,12 +9,7 @@ import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import {
-  DocumentType,
-  LogLevel,
-  ScreeningInfo,
-  SurveyInfo,
-} from "audere-lib/feverProtocol";
+import { DocumentType, LogLevel, SurveyInfo } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, LogBatcher } from "./LogBatcher";
 
@@ -51,9 +46,6 @@ class TypedDocumentUploader {
 
   public async documentsAwaitingUpload(): Promise<number | null> {
     return this.uploader.documentsAwaitingUpload();
-  }
-  public saveScreening(localUid: string, screening: ScreeningInfo) {
-    this.uploader.save(localUid, screening, DocumentType.Screening, 1);
   }
   public saveSurvey(localUid: string, survey: SurveyInfo) {
     this.uploader.save(localUid, survey, DocumentType.Survey, 1);

@@ -8,16 +8,13 @@ import { View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { Action } from "../store";
 import Button from "./components/Button";
 import Screen from "./components/Screen";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
-  dispatch(action: Action): void;
 }
 
-@connect()
 class SplashScreen extends React.PureComponent<Props & WithNamespaces> {
   render() {
     const { t } = this.props;

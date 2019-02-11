@@ -5,9 +5,7 @@
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { Address, Option, SurveyResponse } from "./types";
-import { ScreeningState } from "./screening";
-import { SurveyState } from "./survey";
-import { StoreState } from "./StoreState";
+import { SurveyState, StoreState } from "./index";
 import { createTransport } from "../transport";
 import { format } from "date-fns";
 import {
@@ -22,7 +20,6 @@ import {
   ResponseInfo,
   ResponseItemInfo,
   SampleInfo,
-  ScreeningInfo,
   SurveyInfo,
   TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
@@ -37,73 +34,17 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.screening != null) {
-      uploader.saveScreening(
-        state.screening.id,
-        screening_redux_to_pouch(state)
-      );
-    }
     if (state.survey != null) {
-      uploader.saveSurvey(state.survey.id, survey_redux_to_pouch(state));
+      uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
     }
     return result;
   };
 }
 
 // Exported so we can write unit tests for this
-export function screening_redux_to_pouch(state: StoreState): ScreeningInfo {
-  const pouch: ScreeningInfo = {
-    isDemo: state.meta.isDemo,
-    complete: state.screening.complete,
-    patient: {
-      telecom: [],
-      address: [],
-    },
-    consents: [],
-    responses: [],
-    events: [],
-  };
-
-  const screening = state.screening;
-  if (!!screening.name) {
-    pouch.patient.name = screening.name;
-  }
-  if (!!screening.email) {
-    pouch.patient.telecom.push({
-      system: TelecomInfoSystem.Email,
-      value: screening.email,
-    });
-  }
-
-  if (!!screening.events) {
-    pouch.events = screening.events;
-  }
-
-  maybePushConsent(screening, pouch.consents);
-
-  const responses = screening.responses;
-
-  maybePushAddressResponse(
-    responses,
-    "Address",
-    AddressInfoUse.Home,
-    pouch.patient
-  );
-
-  // Set all surveyResponses into pouch.responses
-  pushResponses("ScreeningQuestions", responses, pouch.responses);
-
-  if (!!screening.pushState) {
-    pouch.pushNotificationState = screening.pushState;
-  }
-  return pouch;
-}
-
-// Exported so we can write unit tests for this
-export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
+export function redux_to_pouch(state: StoreState): SurveyInfo {
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
-    complete: state.survey.complete,
     patient: {
       telecom: [],
       address: [],
@@ -111,10 +52,15 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
     consents: [],
     samples: [],
     responses: [],
-    events: [],
+    events: state.survey.events,
+    workflow: state.survey.workflow,
   };
 
   const survey = state.survey;
+  if (!!survey.name) {
+    pouch.patient.name = survey.name;
+  }
+
   if (!!survey.email) {
     pouch.patient.telecom.push({
       system: TelecomInfoSystem.Email,
@@ -122,9 +68,7 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
     });
   }
 
-  if (!!survey.events) {
-    pouch.events = survey.events;
-  }
+  maybePushConsent(survey, pouch.consents);
 
   const responses = survey.responses;
 
@@ -139,13 +83,15 @@ export function survey_redux_to_pouch(state: StoreState): SurveyInfo {
     pouch.samples.push(survey.kitBarcode);
   }
 
+  pouch.pushNotificationState = survey.pushState;
+
   // Set all surveyResponses into pouch.responses
   pushResponses("SurveyQuestions", responses, pouch.responses);
   return pouch;
 }
 
-function maybePushConsent(screening: ScreeningState, consents: ConsentInfo[]) {
-  const consent = screening.consent;
+function maybePushConsent(survey: SurveyState, consents: ConsentInfo[]) {
+  const consent = survey.consent;
   if (consent != null) {
     consents.push(consent);
   }

@@ -5,13 +5,12 @@ export interface ProtocolDocumentBase {
     device: DeviceInfo;
 }
 export declare enum DocumentType {
-    Screening = "SCREENING",
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
     Log = "LOG",
     LogBatch = "LOG_BATCH"
 }
-export declare type ProtocolDocument = ScreeningDocument | SurveyDocument | FeedbackDocument | LogDocument | LogBatchDocument;
+export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | LogDocument | LogBatchDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -20,29 +19,17 @@ export interface DeviceInfo {
     idiomText: string;
     platform: string;
 }
-export interface ScreeningDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.Screening;
-    schemaId: 1;
-    screen: ScreeningInfo;
-}
-export declare type ScreeningInfo = PIIInfo & ScreeningNonPIIInfo;
 export interface PIIInfo extends CommonInfo {
     gps_location?: GpsLocationInfo;
     patient: PatientInfo;
     consents: ConsentInfo[];
     responses: ResponseInfo[];
 }
-export interface ScreeningNonPIIDbInfo extends ScreeningNonPIIInfo {
-    consents: NonPIIConsentInfo[];
-}
-export interface ScreeningNonPIIInfo extends CommonInfo {
-    responses: ResponseInfo[];
-}
 export interface CommonInfo {
-    complete: boolean;
     isDemo?: boolean;
     events: EventInfo[];
     pushNotificationState?: PushNotificationState;
+    workflow: WorkflowInfo;
 }
 export interface SurveyDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Survey;
@@ -122,6 +109,10 @@ export declare enum ConsentInfoSignerType {
     Parent = "Parent",
     Representative = "Representative",
     Researcher = "Researcher"
+}
+export interface WorkflowInfo {
+    screeningComplete: boolean;
+    surveyComplete: boolean;
 }
 export interface ResponseInfo {
     id: string;

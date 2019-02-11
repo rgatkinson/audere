@@ -11,7 +11,6 @@ import { InteractionManager } from "react-native";
 import {
   DocumentType,
   LogBatchInfo,
-  ScreeningInfo,
   SurveyInfo,
   FeedbackInfo,
   LogInfo,
@@ -35,12 +34,7 @@ const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents =
-  | ScreeningInfo
-  | SurveyInfo
-  | FeedbackInfo
-  | LogInfo
-  | LogBatchInfo;
+type DocumentContents = SurveyInfo | FeedbackInfo | LogInfo | LogBatchInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -352,15 +346,6 @@ function idleness(): Promise<void> {
 
 function protocolDocument(save: SaveEvent): ProtocolDocument {
   switch (save.documentType) {
-    case DocumentType.Screening:
-      return {
-        documentType: save.documentType,
-        schemaId: 1,
-        csruid: CSRUID_PLACEHOLDER,
-        device: DEVICE_INFO,
-        screen: asScreeningInfo(save.document),
-      };
-
     case DocumentType.Survey:
       return {
         documentType: save.documentType,
@@ -399,38 +384,21 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
   }
 }
 
-function asScreeningInfo(contents: DocumentContents): ScreeningInfo {
-  if (isProbablyScreeningInfo(contents)) {
-    return contents;
-  }
-  throw new Error(`Expected ScreeningInfo, got ${contents}`);
-}
-
-function isProbablyScreeningInfo(contents: any): contents is ScreeningInfo {
-  return (
-    isBool(contents.complete) &&
-    isObj(contents.patient) &&
-    isObj(contents.consents) &&
-    isObj(contents.responses) &&
-    isObj(contents.events)
-  );
-}
-
 function asSurveyInfo(contents: DocumentContents): SurveyInfo {
   if (isProbablySurveyInfo(contents)) {
     return contents;
   }
-  throw new Error(`Expected FeedbackInfo, got ${contents}`);
+  throw new Error(`Expected SurveyInfo, got ${contents}`);
 }
 
 function isProbablySurveyInfo(contents: any): contents is SurveyInfo {
   return (
-    isBool(contents.complete) &&
     isObj(contents.samples) &&
     isObj(contents.patient) &&
     isObj(contents.consents) &&
     isObj(contents.responses) &&
-    isObj(contents.events)
+    isObj(contents.events) &&
+    isObj(contents.workflow)
   );
 }
 

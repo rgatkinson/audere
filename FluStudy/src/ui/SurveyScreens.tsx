@@ -10,8 +10,8 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SampleInfo } from "audere-lib/feverProtocol";
-import { Action, setKitBarcode, startSurvey, StoreState } from "../store";
+import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
+import { Action, StoreState, appendEvent, setKitBarcode } from "../store";
 import BorderView from "./components/BorderView";
 import BulletPoint from "./components/BulletPoint";
 import Button from "./components/Button";
@@ -44,7 +44,9 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("welcomeBack")}
         onNext={() => {
-          this.props.dispatch(startSurvey());
+          this.props.dispatch(
+            appendEvent(EventInfoKind.Survey, "StartedSurvey")
+          );
           this.props.navigation.push("WhatsNext");
         }}
       />

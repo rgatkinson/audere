@@ -12,6 +12,7 @@ import {
   StoreState,
   SurveyAnswer,
   SurveyResponse,
+  setResponses,
 } from "./index";
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
@@ -63,7 +64,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
       );
       if (response == null) {
         responses.push(this._initializeResponse());
-        this.props.dispatch(this.state.data.updateFunction(responses));
+        this.props.dispatch(setResponses(responses));
       }
     }
 
@@ -117,7 +118,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
         responses.push(response);
       }
       response.answer = { ...response.answer, ...update };
-      this.props.dispatch(this.state.data.updateFunction(responses));
+      this.props.dispatch(setResponses(responses));
     };
 
     _getAnswer = (key: string, id: string = this.state.data.id): any => {
@@ -149,14 +150,8 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     state: StoreState,
     ownProps: InnerProps & OuterProps<P>
   ) {
-    const data =
-      !!ownProps.navigation && !!ownProps.navigation.getParam("data")
-        ? ownProps.navigation.getParam("data")
-        : ownProps.data;
-
     return {
-      // @ts-ignore
-      responses: state[data.responseType].responses,
+      responses: state.survey.responses,
     };
   };
 
