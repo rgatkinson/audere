@@ -67,12 +67,8 @@ export class LogBatcher implements Logger {
 
   public write(level: LogRecordLevel, text: string): void {
     const timestamp = new Date().toISOString();
-    this.writeRecord({ timestamp, level, text: this.truncate(text) });
-  }
-
-  public writeRecord(record: LogRecordInfo): void {
-    this.echo(`${record.timestamp} [${record.level}]: ${record.text}`);
-    this.buffer.push(record);
+    this.echo(`${timestamp} [${level}]: ${text}`);
+    this.buffer.push({ timestamp, level, text: this.truncate(text) });
     this.pump.start();
   }
 

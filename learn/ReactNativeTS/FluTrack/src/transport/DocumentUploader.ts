@@ -166,9 +166,10 @@ export class DocumentUploader {
         _id: key,
         body: protocolDocument(save),
       };
-      this.logger.debug(
-        `Saving new '${key}':\n  ${JSON.stringify(save.document, null, 2)}`
-      );
+      this.logger.debug(`Saving new '${key}`);
+      if (IS_NODE_ENV_DEVELOPMENT) {
+        console.log(JSON.stringify(save.document, null, 2));
+      }
     }
     await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put(pouch);
@@ -220,16 +221,21 @@ export class DocumentUploader {
   }
 
   private async getCSRUID(localUid: string) {
+    this.logger.debug(`getCSRUID(${localUid})`);
     const pouchId = "csruid/" + localUid;
     try {
       const pouchResult = await this.db.get(pouchId);
+      this.logger.debug(`getCSRUID(${localUid}) read ${pouchResult.csruid}`);
       return pouchResult.csruid;
     } catch {}
+    this.logger.debug(`getCSRUID(${localUid}) getting documentId`);
     const apiResult = await this.check200(() => this.api.get(`/documentId`));
     if (apiResult === null) {
+      this.logger.debug(`getCSRUID(${localUid}) got null`);
       throw new Error("Unable to retrieve CSRUID");
     }
     const csruid = apiResult.data.id.trim();
+    this.logger.debug(`getCSRUID(${localUid}) saving ${csruid}`);
     await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put({
       _id: pouchId,
@@ -238,6 +244,7 @@ export class DocumentUploader {
 
     //TODO(ram): clean up old csruids
 
+    this.logger.debug(`getCSRUID(${localUid}) returning ${csruid}`);
     return csruid;
   }
 
@@ -303,16 +310,11 @@ export class DocumentUploader {
       const csruids = items.rows.filter((row: any) =>
         row.id.startsWith("csruid/documents/")
       ).length;
+      this.logger.debug(
+        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+      );
       if (IS_NODE_ENV_DEVELOPMENT) {
-        this.logger.debug(
-          `Pouch contents: ` +
-            `${total} entries, of which ${docs} docs and ${csruids} csruids` +
-            items.rows.map((row: any) => `\n  ${row.id}`)
-        );
-      } else {
-        this.logger.debug(
-          `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
-        );
+        console.log(items.rows.map((row: any) => `\n  ${row.id}`));
       }
     } else {
       this.logger.debug("Pouch contents: no items found");
