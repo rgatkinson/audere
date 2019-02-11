@@ -8,10 +8,10 @@ import { Dimensions, Image, View, StyleSheet, Switch } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { Action, setDemo, StoreState } from "../store";
-import Screen from "./components/Screen";
-import Title from "./components/Title";
-import { GUTTER, STATUS_BAR_HEIGHT } from "./styles";
+import { Action, setDemo, StoreState } from "../../store";
+import Screen from "../components/Screen";
+import Title from "../components/Title";
+import { GUTTER, STATUS_BAR_HEIGHT } from "../styles";
 
 interface Props {
   demoMode: boolean;
@@ -29,7 +29,7 @@ class AboutScreen extends React.PureComponent<Props & WithNamespaces> {
       <View style={{ marginTop: STATUS_BAR_HEIGHT }}>
         <Image
           style={{ height: 120, width: Dimensions.get("window").width }}
-          source={require("../img/logo.png")}
+          source={require("../../img/logo.png")}
         />
         <View style={styles.container}>
           <View style={styles.rowContainer}>

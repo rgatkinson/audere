@@ -10,20 +10,20 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
-import { Action, StoreState, appendEvent, setKitBarcode } from "../store";
-import BorderView from "./components/BorderView";
-import BulletPoint from "./components/BulletPoint";
-import Button from "./components/Button";
-import ImageGrid from "./components/ImageGrid";
-import ImageText from "./components/ImageText";
-import Screen from "./components/Screen";
-import Links from "./components/Links";
-import Text from "./components/Text";
-import TextInput from "./components/TextInput";
-import Title from "./components/Title";
 import { BarCodeScanner, Permissions } from "expo";
-import { GUTTER } from "./styles";
+import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
+import { Action, StoreState, appendEvent, setKitBarcode } from "../../store";
+import BorderView from "../components/BorderView";
+import BulletPoint from "../components/BulletPoint";
+import Button from "../components/Button";
+import ImageGrid from "../components/ImageGrid";
+import ImageText from "../components/ImageText";
+import Screen from "../components/Screen";
+import Links from "../components/Links";
+import Text from "../components/Text";
+import TextInput from "../components/TextInput";
+import Title from "../components/Title";
+import { GUTTER } from "../styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -38,7 +38,7 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/welcome.png")}
+        imageSrc={require("../../img/welcome.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -64,7 +64,7 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/why.png")}
+        imageSrc={require("../../img/why.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -93,17 +93,17 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
         }}
       >
         <ImageText
-          imageSrc={require("../img/soap.png")}
+          imageSrc={require("../../img/soap.png")}
           imageWidth={100}
           text={t("washStep")}
         />
         <ImageText
-          imageSrc={require("../img/water.png")}
+          imageSrc={require("../../img/water.png")}
           imageWidth={100}
           text={t("waterStep")}
         />
         <ImageText
-          imageSrc={require("../img/cat.png")}
+          imageSrc={require("../../img/cat.png")}
           imageWidth={100}
           text={t("flatStep")}
         />
@@ -164,7 +164,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
         <BorderView>
           <Image
             style={{ height: 180, width: 250 }}
-            source={require("../img/barcodeBox.png")}
+            source={require("../../img/barcodeBox.png")}
           />
         </BorderView>
         <Text
@@ -295,7 +295,7 @@ class ScanConfirmationScreen extends React.Component<
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
-        imageSrc={require("../img/phoneBarcode.png")}
+        imageSrc={require("../../img/phoneBarcode.png")}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -332,7 +332,7 @@ class ManualConfirmationScreen extends React.Component<
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
-        imageSrc={require("../img/phoneBarcode.png")}
+        imageSrc={require("../../img/phoneBarcode.png")}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -487,27 +487,27 @@ class ComponentsScreen extends React.Component<Props & WithNamespaces> {
           columns={2}
           items={[
             {
-              imageSrc: require("../img/kit.png"),
+              imageSrc: require("../../img/kit.png"),
               label: t("kit"),
             },
             {
-              imageSrc: require("../img/card.png"),
+              imageSrc: require("../../img/card.png"),
               label: t("card"),
             },
             {
-              imageSrc: require("../img/sampleTube.png"),
+              imageSrc: require("../../img/sampleTube.png"),
               label: t("sampleTube"),
             },
             {
-              imageSrc: require("../img/ampoule.png"),
+              imageSrc: require("../../img/ampoule.png"),
               label: t("ampoule"),
             },
             {
-              imageSrc: require("../img/swab.png"),
+              imageSrc: require("../../img/swab.png"),
               label: t("swab"),
             },
             {
-              imageSrc: require("../img/bag.png"),
+              imageSrc: require("../../img/bag.png"),
               label: t("bag"),
             },
           ]}
@@ -543,7 +543,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/swabBox.png")}
+        imageSrc={require("../../img/swabBox.png")}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}

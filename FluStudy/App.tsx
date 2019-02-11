@@ -7,17 +7,15 @@ YellowBox.ignoreWarnings([
   "Class EXDisabledDevMenu",
   "Class EXDisabledRedBox",
 ]);
-import {
-  createDrawerNavigator,
-  createStackNavigator,
-  NavigationScreenProp,
-} from "react-navigation";
-import { AppLoading, Font } from "expo";
-import { store, persistor } from "./src/store/";
-import { Provider, connect } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import { I18nextProvider, withNamespaces } from "react-i18next";
+import { AppLoading, Font } from "expo";
+import { Action, StoreState, store, persistor } from "./src/store/";
+import { Provider, connect } from "react-redux";
+import { createReduxContainer } from "react-navigation-redux-helpers";
+import { PersistGate } from "redux-persist/integration/react";
+import { NavigationState } from "react-navigation";
 import { Feather } from "@expo/vector-icons";
+import AppNavigator from "./src/ui/AppNavigator";
 import i18n from "./src/i18n";
 import {
   setupErrorHandler,
@@ -25,87 +23,38 @@ import {
   uploadingErrorHandler,
   ErrorProps,
 } from "./src/crashReporter";
-import {
-  Welcome,
-  Why,
-  What,
-  Age,
-  Symptoms,
-  AddressScreen,
-  SymptomsIneligible,
-  Consent,
-  ConsentIneligible,
-  Confirmation,
-  PushNotifications,
-  Instructions,
-  ExtraInfo,
-} from "./src/ui/ScreeningScreens";
-import {
-  WelcomeBack,
-  WhatsNext,
-  Before,
-  ScanInstructions,
-  Scan,
-  ScanConfirmation,
-  ManualEntry,
-  ManualConfirmation,
-  TestInstructions,
-  Components,
-  Swab,
-} from "./src/ui/SurveyScreens";
-import AboutScreen from "./src/ui/AboutScreen";
-import SplashScreen from "./src/ui/SplashScreen";
-
-const Home = createStackNavigator(
-  {
-    SplashScreen,
-    Welcome,
-    Why,
-    What,
-    Age,
-    Symptoms,
-    SymptomsIneligible,
-    Consent,
-    ConsentIneligible,
-    Address: AddressScreen,
-    Confirmation,
-    PushNotifications,
-    Instructions,
-    ExtraInfo,
-    WelcomeBack,
-    WhatsNext,
-    Before,
-    ScanInstructions,
-    Scan,
-    ScanConfirmation,
-    ManualEntry,
-    ManualConfirmation,
-    TestInstructions,
-    Components,
-    Swab,
-  },
-  {
-    headerMode: "float",
-    navigationOptions: ({ navigation }) => {
-      return {
-        header: null,
-      };
-    },
-  }
-);
-
-const Drawer = createDrawerNavigator({
-  Home,
-  About: { screen: AboutScreen },
-});
-
-const ReloadAppOnLanguageChange = withNamespaces("common")(connect()(Drawer));
 
 type AppProps = {
   exp?: {
     errorRecovery: ErrorProps;
   };
 };
+
+const AppContainer = createReduxContainer(AppNavigator);
+
+interface Props {
+  dispatch(action: Action): void;
+  navigationState: NavigationState;
+}
+
+class AppWithNavigationState extends React.Component<Props> {
+  render() {
+    return (
+      <AppContainer
+        state={this.props.navigationState}
+        dispatch={this.props.dispatch}
+      />
+    );
+  }
+}
+
+const ConnectedAppWithNavigationState = connect((state: StoreState) => ({
+  navigationState: state.navigation,
+}))(AppWithNavigationState);
+
+const ReloadAppOnLanguageChange = withNamespaces("common")(
+  ConnectedAppWithNavigationState
+);
 
 export default class App extends React.Component<AppProps> {
   state = {

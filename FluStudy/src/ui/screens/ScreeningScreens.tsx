@@ -15,6 +15,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import KeyboardListener from "react-native-keyboard-listener";
+import CheckBox from "react-native-check-box";
 import {
   EventInfoKind,
   PushNotificationState,
@@ -29,31 +30,30 @@ import {
   appendEvent,
   setEmail,
   setPushNotificationState,
-} from "../store";
+} from "../../store";
 import {
   AddressConfig,
   AgeConfig,
   ButtonConfig,
   ConsentConfig,
   SymptomsConfig,
-} from "../resources/ScreenConfig";
-import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
-import AddressInput from "./components/AddressInput";
-import Button from "./components/Button";
-import ButtonRow from "./components/ButtonRow";
-import CheckBox from "react-native-check-box";
-import EmailInput from "./components/EmailInput";
-import Screen from "./components/Screen";
-import Links from "./components/Links";
-import OptionList, { newSelectedOptionsList } from "./components/OptionList";
-import Text from "./components/Text";
+} from "../../resources/ScreenConfig";
+import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
+import AddressInput from "../components/AddressInput";
+import Button from "../components/Button";
+import ButtonRow from "../components/ButtonRow";
+import EmailInput from "../components/EmailInput";
+import Screen from "../components/Screen";
+import Links from "../components/Links";
+import OptionList, { newSelectedOptionsList } from "../components/OptionList";
+import Text from "../components/Text";
 import {
   BORDER_COLOR,
   ERROR_COLOR,
   GUTTER,
   SECONDARY_COLOR,
   SMALL_TEXT,
-} from "./styles";
+} from "../styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -68,7 +68,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/welcome.png")}
+        imageSrc={require("../../img/welcome.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -92,7 +92,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/why.png")}
+        imageSrc={require("../../img/why.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -113,7 +113,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/what.png")}
+        imageSrc={require("../../img/what.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -406,7 +406,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             onPress={() => this.props.navigation.pop()}
           />
         }
-        imageSrc={require("../img/ineligible.png")}
+        imageSrc={require("../../img/ineligible.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
@@ -482,7 +482,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={false}
         desc={t("description")}
-        imageSrc={require("../img/ineligible.png")}
+        imageSrc={require("../../img/ineligible.png")}
         logo={true}
         navBar={false}
         navigation={this.props.navigation}
@@ -550,7 +550,7 @@ class ConfirmationScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/confirmation.png")}
+        imageSrc={require("../../img/confirmation.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
@@ -641,7 +641,7 @@ class PushNotificationsScreen extends React.Component<
             }}
           />
         }
-        imageSrc={require("../img/pushNotifications.png")}
+        imageSrc={require("../../img/pushNotifications.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
@@ -663,7 +663,7 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../img/instructions.png")}
+        imageSrc={require("../../img/instructions.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
@@ -686,7 +686,7 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         buttonLabel={t("close")}
         canProceed={true}
-        imageSrc={require("../img/extraInfo.png")}
+        imageSrc={require("../../img/extraInfo.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
