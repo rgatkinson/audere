@@ -30,7 +30,7 @@ describe("putFeverDocument", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
@@ -164,7 +164,7 @@ describe("putDocumentWithKey", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineFeverModels(sql);
     done();
   });

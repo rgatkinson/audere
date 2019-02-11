@@ -40,6 +40,7 @@ import {
 } from "audere-lib/feverProtocol";
 import { SurveyNonPIIUpdater, SurveyPIIUpdater } from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
+import { AuthManager } from "../src/services/webPortal/auth"
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -52,6 +53,7 @@ const log = new ScriptLogger(console.log);
 const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
+const auth = new AuthManager(sql);
 
 type SnifflesNonPiiUpdater = Updater<VisitAttributes<VisitNonPIIInfo>, VisitNonPIIInfo, SnifflesDevice>;
 type SnifflesPiiUpdater = Updater<VisitAttributes<VisitPIIInfo>, VisitPIIInfo, SnifflesDevice>;
@@ -161,7 +163,18 @@ yargs
         default: ".?"
       }),
     handler: command(cmdLog)
-  })  .demandCommand().argv;
+  })
+  .command({
+    command: 'adduser <userid> <password>',
+    builder: (yargs) => yargs.string('userid').string('password'),
+    handler: command(cmdAdd),
+  })
+  .command({
+    command: 'passwd <userid> <password>',
+    builder: (yargs) => yargs.string('userid').string('password'),
+    handler: command(cmdPasswd),
+  })
+  .demandCommand().argv;
 
 function command(cmd: any) {
   return async (argv: any) => {
@@ -179,6 +192,19 @@ function command(cmd: any) {
       log.close();
     }
   };
+}
+
+interface UserPasswordArgs {
+  userid: string;
+  password: string;
+}
+
+async function cmdAdd(argv: UserPasswordArgs): Promise<void> {
+  await auth.createUser(argv.userid, argv.password);
+}
+
+async function cmdPasswd(argv: UserPasswordArgs): Promise<void> {
+  await auth.setPassword(argv.userid, argv.password);
 }
 
 interface DocumentEventsArgs {

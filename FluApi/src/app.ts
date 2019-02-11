@@ -1,34 +1,38 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2018, 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import express from "express";
-import Ouch from "ouch";
+import { resolve } from "path";
 import bodyParser from "body-parser";
-import helmet from "helmet";
 import base64url from "base64url";
 import { SnifflesEndpoint } from "./endpoints/snifflesApi";
 import { ConsentEmailerEndpoint } from "./endpoints/snifflesConsentMailer";
 import { HutchUploaderEndpoint } from "./endpoints/hutchUpload/controller";
 import { FeverEndpoint } from "./endpoints/feverApi";
 import { generateRandomKey, generateRandomBytes } from "./util/crypto";
-import logger from "./util/logger";
-import { ErrorRequestHandler } from "express-serve-static-core";
 import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReportEndpoint";
 import { isAWS } from "./util/environment";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
+import { useOuch, createApp, wrap } from "./util/expressApp";
+import { portalApp } from "./services/webPortal/endpoint";
 
 const buildInfo = require("../static/buildInfo.json");
 
-export function createPublicApp(sql: SplitSql) {
+export async function createPublicApp(sql: SplitSql) {
   // Public app is internet-facing.
-  const publicApp = express();
+  const publicApp = createApp();
   publicApp.set("port", process.env.PORT || 3000);
-  publicApp.use(helmet.noCache());
-  publicApp.use(helmet.frameguard({ action: "deny" }));
-  publicApp.use(bodyParser.json({ limit: "20mb" }));
+  publicApp.use(bodyParser.json({limit: '20mb'}));
+
+  publicApp.use('/portal', await portalApp(sql));
+  publicApp.get(
+    "/favicon.ico",
+    async (req, res) => res.sendFile(
+      resolve(__dirname, "services/webPortal/static/favicon.ico")
+    )
+  );
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
@@ -66,8 +70,7 @@ export function createPublicApp(sql: SplitSql) {
     res.status(200).send(buildInfo);
   });
 
-  publicApp.use(defaultErrorHandler(publicApp.get("env")));
-  return publicApp;
+  return useOuch(publicApp);
 }
 
 interface InternalAppEndpointOverrides {
@@ -79,10 +82,8 @@ export function createInternalApp(
   overrides: InternalAppEndpointOverrides = {}
 ) {
   // Internal app should be intranet only.
-  const internalApp = express();
+  const internalApp = createApp();
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
-  internalApp.use(helmet.noCache());
-  internalApp.use(helmet.frameguard({ action: "deny" }));
   internalApp.use(bodyParser.json());
 
   internalApp.get("/api", (req, res) => res.json({ Status: "OK" }));
@@ -117,32 +118,5 @@ export function createInternalApp(
     snifflesConsentEmailer.sendConsentEmails
   );
 
-  internalApp.use(defaultErrorHandler(internalApp.get("env")));
-  return internalApp;
-}
-
-function wrap(f: any) {
-  return function(req, res, next) {
-    f(req, res).catch(next);
-  };
-}
-
-function defaultErrorHandler(env: string): ErrorRequestHandler {
-  return (err, req, res, next) => {
-    logger.error("Request terminated abnormally");
-    if (err) {
-      logger.error("Uncaught exception:");
-      logger.error(err.message);
-      logger.error(err.stack);
-    }
-
-    if (isAWS()) {
-      next();
-      return;
-    }
-
-    const ouch = new Ouch();
-    ouch.pushHandler(new Ouch.handlers.PrettyPageHandler("orange", null));
-    ouch.handleException(err, req, res);
-  };
+  return useOuch(internalApp);
 }

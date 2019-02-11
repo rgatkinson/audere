@@ -38,7 +38,7 @@ describe("export controller", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     internalApp = createInternalApp(sql);
     models = defineSnifflesModels(sql);
     hutchUpload = defineHutchUpload(sql);

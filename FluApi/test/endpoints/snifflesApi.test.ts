@@ -30,7 +30,7 @@ describe("putDocument", () => {
   let accessKey;
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineSnifflesModels(sql);
 
     accessKey = await models.accessKey.create({
@@ -158,7 +158,7 @@ describe("putDocumentWithKey", () => {
   let models;
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineSnifflesModels(sql);
     done();
   });

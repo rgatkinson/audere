@@ -1,0 +1,37 @@
+{{!
+  Copyright (c) 2019 by Audere
+
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file distributed with this file.
+}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{static}}/css/common.css"/>
+  </head>
+  <body>
+    <div class="section">
+      <h1>Login page</h1>
+    </div>
+    <div class="section">
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+        <div class="details">
+          <label>Username:</label>
+          <input type="text" name="username"/>
+        </div>
+        <div class="details">
+          <label>Password:</label>
+          <input type="password" name="password"/>
+        </div>
+        <div class="done">
+          <button type="submit" name="action" value="login">Log In</button>
+        </div>
+      </form>
+    </div>
+    <div class="section">
+      Request count: {{requestCount}}.
+    </div>
+  </body>
+</html>

@@ -56,7 +56,7 @@ describe("VisitUpdater", () => {
   beforeAll(async done => {
     log.setVerbose(true);
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineSnifflesModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",

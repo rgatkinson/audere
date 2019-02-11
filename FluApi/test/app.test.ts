@@ -5,9 +5,9 @@ import { createSplitSql, SplitSql } from "../src/util/sql";
 let publicApp;
 let sql: SplitSql;
 
-beforeAll(() => {
+beforeAll(async () => {
   sql = createSplitSql();
-  publicApp = createPublicApp(sql);
+  publicApp = await createPublicApp(sql);
 });
 
 afterAll(() => {
