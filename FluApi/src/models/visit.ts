@@ -5,11 +5,12 @@
 
 import sequelize, { Model, Sequelize } from "sequelize";
 import { sequelizeNonPII, sequelizePII } from "./";
+import { HutchUpload } from "./hutchUpload";
 import { DeviceInfo, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
 
 export enum VisitTableType {
   CURRENT = "visit",
-  BACKUP = "visit_backup",
+  BACKUP = "visit_backup"
 }
 
 // Visits are split across two databases.  One contains PII and the
@@ -26,6 +27,11 @@ export const VisitNonPII = defineSqlVisit<VisitNonPIIInfo>(sequelizeNonPII);
 export type VisitNonPIIInstance = VisitInstance<VisitNonPIIInfo>;
 export type VisitNonPIIAttributes = VisitAttributes<VisitNonPIIInfo>;
 
+VisitNonPII.hasOne(HutchUpload, {
+  foreignKey: "visitId",
+  onDelete: "CASCADE"
+});
+
 export const VisitPII = defineSqlVisit<VisitPIIInfo>(sequelizePII);
 export type VisitPIIInstance = VisitInstance<VisitPIIInfo>;
 export type VisitPIIAttributes = VisitAttributes<VisitPIIInfo>;
@@ -37,30 +43,36 @@ export interface VisitAttributes<Visit> {
   visit: Visit;
 }
 
-export type VisitInstance<Visit> =
-  sequelize.Instance<VisitAttributes<Visit>> & VisitAttributes<Visit>;
+export type VisitInstance<Visit> = sequelize.Instance<VisitAttributes<Visit>> &
+  VisitAttributes<Visit>;
 
 export type VisitModel<T> = Model<VisitInstance<T>, VisitAttributes<T>>;
 
-export function defineSqlVisit<Visit>(sql: Sequelize, tableType = VisitTableType.CURRENT): Model<VisitInstance<Visit>, VisitAttributes<Visit>> {
+export function defineSqlVisit<Visit>(
+  sql: Sequelize,
+  tableType = VisitTableType.CURRENT
+): Model<VisitInstance<Visit>, VisitAttributes<Visit>> {
   // The sequelize type definition makes define return Model<any,any>, so cast to recover type info.
-  return <VisitModel<Visit>><any>sql.define<VisitInstance<Visit>, VisitAttributes<Visit>>(
+  return <VisitModel<Visit>>(<any>sql.define<
+    VisitInstance<Visit>,
+    VisitAttributes<Visit>
+  >(
     tableType,
     {
       csruid: {
         allowNull: false,
         ...(tableType === "visit" ? { unique: true } : {}),
-        type: sequelize.STRING,
+        type: sequelize.STRING
       },
       device: {
         allowNull: false,
-        type: sequelize.JSON,
+        type: sequelize.JSON
       },
       visit: {
         allowNull: false,
-        type: sequelize.JSON,
+        type: sequelize.JSON
       }
     },
     {}
-  );
+  ));
 }

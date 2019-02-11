@@ -17,7 +17,10 @@
       "dom", "ES6", "DOM.Iterable", "ScriptHost",
       // Extra goodies
       "es2016.array.include"
-    ]
+    ],
+
+    // Allow directly importing .JSON files
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "test/**/*", "scripts/**/*"]
 }

@@ -1,25 +1,27 @@
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 "use strict";
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("visit_backups", {
+    return queryInterface.createTable("secrets", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      csruid: {
+      key: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
-      visit: {
+      value: {
         allowNull: false,
-        type: Sequelize.JSON
-      },
-      device: {
-        allowNull: false,
-        type: Sequelize.JSON
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -31,8 +33,7 @@ module.exports = {
       }
     });
   },
-
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable("visit_backups");
+    return queryInterface.dropTables("secrets");
   }
 };

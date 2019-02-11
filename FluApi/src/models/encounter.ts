@@ -18,6 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// Any changes to the Encounter interface should increment the schema version.
+//
+// MAJOR.MINOR.PATCH
+//
+// MAJOR should increment when there is an incompatible or breaking change.
+// MINOR should increment when fields are added in a backwards compatible way.
+// PATCH should increment when there is a backward-compatible bug fix.
+export const schemaVersion: string = "1.0.0";
+
 // --------------------------------------------------------------------------
 // This defines types for the JSON body uploaded to the Hutch endpoint to
 // to transmit data about a single participant encounter during the study.
@@ -26,7 +35,7 @@
 //
 // A repeat swab is represented as a separate encounter that has a shorter
 // list of responses, but otherwise the same set of metadata.
-interface Encounter {
+export interface Encounter {
   // Opaque unique id (<1k) that persistently identifies this Encounter
   // record.
   //
@@ -41,6 +50,12 @@ interface Encounter {
   // in the Audere database.
   participant: string;
 
+  // Identifier for the JSON schema version expressed using semantic versioning.
+  // Will contain numeric values for MAJOR, MINOR, and PATCH in the form of
+  // MAJOR.MINOR.PATCH. Can be used to track data issues to a schema version.
+  schemaVersion: string;
+
+  // Build info version. Can be used to track data issues to a build version.
   revision: string;
 
   // Currently English (en) or Spanish (es), this will be the standard language
@@ -58,13 +73,17 @@ interface Encounter {
 
   // De-identified household location information.  It is optional because the
   // user may decline to provide a home address.
-  household?: Household;
+  household?: Location;
+
+  // De-identified workplace location information.  It is optional because the
+  // user may decline to provide a work address.
+  workplace?: Location;
 
   sampleCodes: SampleCode[];
   responses: Response[];
 }
 
-interface Household {
+export interface Location {
   // Opaque string that corresponds to a particular address, but that cannot be
   // mapped back to that address.
   //
@@ -79,12 +98,14 @@ interface Household {
   region: string;
 }
 
+export type SampleType = "SelfSwab" | "ClinicSwab" | "Blood" | "Serum" | "PBMC";
+
 // The value of a barcode/QR-code from a sample collection container.
-interface SampleCode {
+export interface SampleCode {
   // This is a non-localized identifier that can be used programmatically to
   // tag the sample type.  These identifiers are semantically meaningful and
   // will never change, though new identifiers could be added over time.
-  type: "SelfSwab" | "ClinicSwab" | "Blood" | "Serum" | "PBMC";
+  type: SampleType;
 
   // The text of the code scanned from the label on the container.
   // Currently this is a short hexadecimal number.
@@ -92,7 +113,7 @@ interface SampleCode {
 }
 
 // A question asked on the survey, and the participant's response.
-interface Response {
+export interface Response {
   question: LocalText;
 
   // If multiple-choice, localized text of the options presented.
@@ -103,23 +124,23 @@ interface Response {
   answer: Answer;
 }
 
-type Answer =
+export type Answer =
   | StringAnswer
   | NumberAnswer
   | OptionAnswer
   | DeclinedToAnswer;
 
-interface StringAnswer {
+export interface StringAnswer {
   type: "String";
   value: string;
 }
 
-interface NumberAnswer {
+export interface NumberAnswer {
   type: "Number";
   value: number;
 }
 
-interface OptionAnswer {
+export interface OptionAnswer {
   type: "Option";
 
   // Index(es) into options array that were chosen by the participant.
@@ -127,14 +148,11 @@ interface OptionAnswer {
   chosenOptions: number[];
 }
 
-interface DeclinedToAnswer {
+export interface DeclinedToAnswer {
   type: "Declined";
-
-  // Provides the localized text of the "Prefer not to say" button.
-  value: LocalText;
 }
 
-interface LocalText {
+export interface LocalText {
   // A short, human-readable token used by Audere for localization, used
   // by Hutch as a hint as the survey evolves over time that text on
   // one survey might be semantically equivalent or similar to text

@@ -101,7 +101,7 @@ export function documentContentsPost(csruid: string): VisitDocument {
     documentType: DocumentType.Visit,
     device: DEVICE,
     visit: VISIT_INFO
-  }
+  };
 }
 
 export function documentContentsNonPII(csruid: string) {

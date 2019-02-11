@@ -11,3 +11,5 @@
 /**/.terraform/
 /**/.terraform.tfstate.lock.info
 /**/*.auto.tfvars
+.DS_Store
+.vscode

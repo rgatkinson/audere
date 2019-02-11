@@ -63,7 +63,7 @@ variable "vpc_flow_log_role_arn" {
 }
 
 variable "mode" {
-  description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"
+  description = "One of 'provision0', 'provision0a', 'provision1', 'add-admin', or 'run'"
   default = "run"
 }
 
@@ -89,4 +89,8 @@ variable "availability_zone" {
 
 variable "pii_availability_zone" {
   default = "us-west-2b"
+}
+
+variable "generate_secret" {
+  default = "all"
 }

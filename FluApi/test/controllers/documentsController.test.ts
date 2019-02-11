@@ -9,10 +9,19 @@ import {
   VisitDocument,
   VisitInfo,
 } from "audere-lib/snifflesProtocol";
-import app from "../../src/app";
+import { publicApp } from "../../src/app";
 import { VisitNonPII, VisitPII } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
-import { PATIENT_INFO, VISIT_INFO, VISIT_NONPII, VISIT_PII, documentContentsPost, documentContentsNonPII, documentContentsPII, makeCSRUID } from "../util/sample_data"
+import {
+  PATIENT_INFO,
+  VISIT_INFO,
+  VISIT_NONPII,
+  VISIT_PII,
+  documentContentsPost,
+  documentContentsNonPII,
+  documentContentsPII,
+  makeCSRUID
+} from "../util/sample_data";
 
 describe("putDocument", () => {
   let accessKey;
@@ -31,7 +40,7 @@ describe("putDocument", () => {
 
   it("rejects malformed json", async () => {
     const csruid = makeCSRUID("rejects malformed json");
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send("{ bad json")
       .set("Content-Type", "application/json")
@@ -39,7 +48,9 @@ describe("putDocument", () => {
   });
 
   it("converts invalid UTF8 to replacement characters", async () => {
-    const csruid = makeCSRUID("converts invalid UTF8 to replacement characters");
+    const csruid = makeCSRUID(
+      "converts invalid UTF8 to replacement characters"
+    );
     const contents = {
       device: { info: "☢" },
       documentType: DocumentType.Visit,
@@ -53,7 +64,7 @@ describe("putDocument", () => {
     contentsBuffer[20] = 0xa0;
     contentsBuffer[21] = 0x80;
 
-    const req = request(app)
+    const req = request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .set("Content-Type", "application/json");
     req.write(contentsBuffer);
@@ -64,14 +75,16 @@ describe("putDocument", () => {
     expect(visit.device).toEqual({ info: "���" });
     await visit.destroy();
 
-    await VisitPII.destroy({ where: { csruid }});
+    await VisitPII.destroy({ where: { csruid } });
   });
 
   it("adds the document to the visits table in each db", async () => {
-    const csruid = makeCSRUID("adds the document to the visits table in each db");
+    const csruid = makeCSRUID(
+      "adds the document to the visits table in each db"
+    );
     const contentsPost = documentContentsPost(csruid);
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
@@ -91,7 +104,9 @@ describe("putDocument", () => {
   });
 
   it("updates existing documents in visits table in PII db", async () => {
-    const csruid = makeCSRUID("updates existing documents in visits table in PII db");
+    const csruid = makeCSRUID(
+      "updates existing documents in visits table in PII db"
+    );
     const contentsPost = documentContentsPost(csruid);
     const contentsNonPII = documentContentsNonPII(csruid);
     const contentsPII = documentContentsPII(csruid);
@@ -108,7 +123,7 @@ describe("putDocument", () => {
       }
     };
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(newProtocolContents)
       .expect(200);
@@ -139,7 +154,7 @@ describe("putDocumentWithKey", () => {
       valid: true
     });
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
@@ -168,7 +183,7 @@ describe("putDocumentWithKey", () => {
       valid: true
     });
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/notaccesskey2/${csruid}`)
       .send(contentsPost)
       .expect(404);
@@ -187,7 +202,9 @@ describe("putDocumentWithKey", () => {
   });
 
   it("rejects a docuent with key that's no longer valid", async () => {
-    const csruid = makeCSRUID("rejects a docuent with key that's no longer valid");
+    const csruid = makeCSRUID(
+      "rejects a docuent with key that's no longer valid"
+    );
     const contentsPost = documentContentsPost(csruid);
 
     const accessKey = await AccessKey.create({
@@ -195,7 +212,7 @@ describe("putDocumentWithKey", () => {
       valid: false
     });
 
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(404);

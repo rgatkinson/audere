@@ -22,3 +22,9 @@ export function generateRandomBytes(numBytes: number): Promise<Buffer> {
     });
   });
 }
+
+export function generateSHA256(secret: string, values: string[]): string {
+  const hash = crypto.createHash("SHA256");
+  hash.update([secret, ...values].join(" "));
+  return hash.digest("hex");
+}

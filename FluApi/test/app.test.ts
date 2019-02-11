@@ -1,6 +1,5 @@
 import request from "supertest";
-import { promises as fs } from "fs";
-import app from "../src/app";
+import { publicApp } from "../src/app";
 import { sequelizeNonPII, sequelizePII } from "../src/models";
 
 afterAll(() => {
@@ -10,7 +9,7 @@ afterAll(() => {
 
 describe("GET /api", () => {
   it("returns OK", async () => {
-    const response = await request(app)
+    const response = await request(publicApp)
       .get("/api")
       .expect(200)
       .expect("content-type", /json/);
@@ -20,7 +19,7 @@ describe("GET /api", () => {
 
 describe("GET /about", () => {
   it("shows build date", async () => {
-    const response = await request(app)
+    const response = await request(publicApp)
       .get("/about")
       .expect(200)
       .expect("content-type", /json/);

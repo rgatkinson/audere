@@ -1,0 +1,109 @@
+{
+  "lookups": [
+    {
+      "street": "3301 S Greenfield Road",
+      "city": "Gilbert",
+      "state": "AZ",
+      "inputId": "1_home",
+      "result": [
+        {
+          "inputIndex": 0,
+          "candidateIndex": 0,
+          "deliveryLine1": "3301 S Greenfield Rd",
+          "lastLine": "Gilbert AZ 85297-2176",
+          "deliveryPointBarcode": "852972176012",
+          "components": {
+            "primaryNumber": "3301",
+            "streetName": "Greenfield",
+            "streetPredirection": "S",
+            "streetSuffix": "Rd",
+            "cityName": "Gilbert",
+            "defaultCityName": "Gilbert",
+            "state": "AZ",
+            "zipCode": "85297",
+            "plus4Code": "2176",
+            "deliveryPoint": "01",
+            "deliveryPointCheckDigit": "2"
+          },
+          "metadata": {
+            "recordType": "S",
+            "zipType": "Standard",
+            "countyFips": "04013",
+            "countyName": "Maricopa",
+            "carrierRoute": "R083",
+            "congressionalDistrict": "05",
+            "rdi": "Commercial",
+            "elotSequence": "0453",
+            "elotSort": "A",
+            "latitude": 33.28748,
+            "longitude": -111.75881,
+            "precision": "Zip7",
+            "timeZone": "Mountain",
+            "utcOffset": -7
+          },
+          "analysis": {
+            "dpvMatchCode": "Y",
+            "dpvFootnotes": "AABB",
+            "cmra": "N",
+            "vacant": "N",
+            "active": "Y",
+            "footnotes": "N#"
+          }
+        }
+      ],
+      "zipcode": "85297"
+    },
+    {
+      "street": "100 Hinckley Way",
+      "city": "Belmont",
+      "state": "MA",
+      "inputId": "1_work",
+      "result": [
+        {
+          "inputIndex": 1,
+          "candidateIndex": 0,
+          "deliveryLine1": "100 Hinckley Way",
+          "lastLine": "Belmont MA 02478-1158",
+          "deliveryPointBarcode": "024781158004",
+          "components": {
+            "primaryNumber": "100",
+            "streetName": "Hinckley",
+            "streetSuffix": "Way",
+            "cityName": "Belmont",
+            "defaultCityName": "Belmont",
+            "state": "MA",
+            "zipCode": "02478",
+            "plus4Code": "1158",
+            "deliveryPoint": "00",
+            "deliveryPointCheckDigit": "4"
+          },
+          "metadata": {
+            "recordType": "S",
+            "zipType": "Standard",
+            "countyFips": "25017",
+            "countyName": "Middlesex",
+            "carrierRoute": "C002",
+            "congressionalDistrict": "05",
+            "rdi": "Commercial",
+            "elotSequence": "0052",
+            "elotSort": "A",
+            "latitude": 42.41062,
+            "longitude": -71.18248,
+            "precision": "Zip9",
+            "timeZone": "Eastern",
+            "utcOffset": -5,
+            "obeysDst": true
+          },
+          "analysis": {
+            "dpvMatchCode": "Y",
+            "dpvFootnotes": "AABB",
+            "cmra": "N",
+            "vacant": "N",
+            "active": "Y"
+          }
+        }
+      ],
+      "zipcode": "02478"
+    }
+  ]
+}

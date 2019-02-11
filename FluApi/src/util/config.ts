@@ -4,8 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
 
 dotenv.config();
 

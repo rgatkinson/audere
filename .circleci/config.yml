@@ -25,7 +25,7 @@ defaults: &defaults
         TEST_DATABASE_URL: postgresql://audere@localhost/test
         TEST_PII_DATABASE_URL: postgresql://audere@localhost/test_pii
         TEST_NONPII_DATABASE_URL: postgresql://audere@localhost/test_nonpii
-    - image: circleci/postgres:10.5-ram
+    - image: circleci/postgres:10.5-postgis-ram
       environment:
         POSTGRES_USER: audere
         POSTGRES_DB: test
@@ -120,9 +120,16 @@ jobs:
             (
               echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
               echo NONPII_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
+              echo HUTCH_BASE_URL=https://seattleflu.org/
+              echo HUTCH_USER=user
+              echo HUTCH_PASSWORD=password
+              echo SMARTYSTREETS_BASE_URL=https://smartystreets.com/
+              echo SMARTYSTREETS_AUTH_ID=12345
+              echo SMARTYSTREETS_AUTH_TOKEN=67890
             ) > .env
             yarn setup
             yarn test
+            yarn test-integration
       - run:
           name: Snyk Server Scan
           command: |
@@ -195,7 +202,7 @@ jobs:
       - run:
           name: Test env variables
           command: |
-            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then 
+            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then
               echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
             fi
       - run:

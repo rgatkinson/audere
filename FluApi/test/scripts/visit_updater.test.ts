@@ -4,13 +4,22 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import app from "../../src/app";
+import { publicApp } from "../../src/app";
 import Sequelize from "sequelize";
 import { VisitAttributes } from "../../src/models/visit";
 import { AccessKey } from "../../src/models/accessKey";
-import { makeCSRUID, documentContentsPost, documentContentsNonPII, documentContentsPII } from "../util/sample_data"
+import {
+  makeCSRUID,
+  documentContentsPost,
+  documentContentsNonPII,
+  documentContentsPII
+} from "../util/sample_data";
 
-import { VisitUpdater, VisitNonPIIUpdater, VisitPIIUpdater } from "../../scripts/util/visit_updater";
+import {
+  VisitUpdater,
+  VisitNonPIIUpdater,
+  VisitPIIUpdater
+} from "../../scripts/util/visit_updater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { VisitDocument } from "audere-lib/snifflesProtocol";
 
@@ -21,16 +30,20 @@ describe("VisitUpdater", () => {
   const log = new ScriptLogger(s => logs.push(s));
   // const log = new ScriptLogger(console.log);
 
-  const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, { logging: false });
+  const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
+    logging: false
+  });
   const updaterNonPII = new VisitNonPIIUpdater(sequelizeNonPII, log);
 
-  const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, { logging: false });
+  const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
+    logging: false
+  });
   const updaterPII = new VisitPIIUpdater(sequelizePII, log);
 
   async function cleanup(...csruids: string[]): Promise<void> {
     await Promise.all([
       updaterNonPII.cleanupForTesting(...csruids),
-      updaterPII.cleanupForTesting(...csruids),
+      updaterPII.cleanupForTesting(...csruids)
     ]);
   }
 
@@ -77,7 +90,7 @@ describe("VisitUpdater", () => {
     updater: VisitUpdater<T>,
     getIsDemo: (T) => boolean
   ): Promise<void> {
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
@@ -133,7 +146,7 @@ describe("VisitUpdater", () => {
     updater: VisitUpdater<T>
   ): Promise<void> {
     await cleanup(csruid);
-    await request(app)
+    await request(publicApp)
       .put(`/api/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);

@@ -7,9 +7,14 @@ import Sequelize from "sequelize";
 import "../util/config";
 
 export const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-  logging: false,
+  // This globally enables search path options, if not enabled search path
+  // options are deleted from config. This is needed for querying census data.
+  dialectOptions: {
+    prependSearchPath: true
+  },
+  logging: false
 });
 
 export const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-  logging: false,
+  logging: false
 });
