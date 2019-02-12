@@ -56,6 +56,10 @@ resource "aws_instance" "bastion" {
     "${module.dev_machine_sg.client_id}"
   ]
 
+  lifecycle {
+    ignore_changes = ["ami"]
+  }
+
   tags {
     Name = "${local.base_name}-bastion"
   }
@@ -114,6 +118,10 @@ resource "aws_instance" "dev_machine" {
     "${var.fludev_ssh_client_sg_id}",
     "${var.fludb_client_sg_id}",
   ]
+
+  lifecycle {
+    ignore_changes = ["ami"]
+  }
 
   tags {
     Name = "${local.base_name}-${var.devs[count.index]}"
