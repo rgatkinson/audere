@@ -426,18 +426,34 @@ interface AddressProps {
   name: string;
 }
 
+interface AddressState {
+  address?: Address;
+}
+
 @connect()
 class AddressInputScreen extends React.Component<
-  Props & AddressProps & WithNamespaces & ReduxWriterProps
+  Props & AddressProps & WithNamespaces & ReduxWriterProps,
+  AddressState
 > {
+  constructor(props: Props & AddressProps & WithNamespaces & ReduxWriterProps) {
+    super(props);
+    this.state = {
+      address: props.getAnswer("addressInput", AddressConfig.id),
+    };
+  }
+
   _onNext = () => {
     if (this._haveValidAddress) {
+      this.props.updateAnswer(
+        { addressInput: this.state.address },
+        AddressConfig
+      );
       this.props.navigation.push("Confirmation");
     }
   };
 
   _haveValidAddress = (): boolean => {
-    const address = this.props.getAnswer("addressInput", AddressConfig.id);
+    const address = this.state.address;
     return (
       !!address &&
       !!address.name &&
@@ -464,10 +480,8 @@ class AddressInputScreen extends React.Component<
         onNext={this._onNext}
       >
         <AddressInput
-          value={this.props.getAnswer("addressInput", AddressConfig.id)}
-          onChange={(address: Address) =>
-            this.props.updateAnswer({ addressInput: address }, AddressConfig)
-          }
+          value={this.state.address}
+          onChange={(address: Address) => this.setState({ address })}
         />
       </Screen>
     );

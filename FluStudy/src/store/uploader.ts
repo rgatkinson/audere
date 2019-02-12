@@ -34,8 +34,16 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
     const state = getState();
-    if (state.survey != null) {
-      uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
+    switch (action.type) {
+      case "APPEND_EVENT":
+      case "SET_CONSENT":
+      case "SET_EMAIL":
+      case "SET_KIT_BARCODE":
+      case "SET_PUSH_STATE":
+      case "SET_RESPONSES":
+      case "SET_DEMO":
+        uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
+        break;
     }
     return result;
   };

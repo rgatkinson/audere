@@ -562,6 +562,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
+        imageBorder={true}
         imageSrc={require("../../img/swabBox.png")}
         logo={false}
         navBar={true}

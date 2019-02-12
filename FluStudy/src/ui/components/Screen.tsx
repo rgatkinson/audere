@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
+import BorderView from "./BorderView";
 import Button from "./Button";
 import NavigationBar from "./NavigationBar";
 import Step from "./Step";
@@ -23,6 +24,7 @@ interface Props {
   children?: any;
   desc?: string;
   footer?: any;
+  imageBorder?: boolean;
   imageSrc?: ImageSourcePropType;
   logo?: boolean;
   navBar: boolean;
@@ -34,6 +36,28 @@ interface Props {
 }
 
 class Screen extends React.Component<Props & WithNamespaces> {
+  _getImage() {
+    if (!!this.props.imageSrc) {
+      return (
+        <Image
+          style={[
+            { height: 150, width: 200 },
+            !this.props.imageBorder && styles.image,
+          ]}
+          source={this.props.imageSrc}
+        />
+      );
+    }
+    return null;
+  }
+
+  _getBorderImage() {
+    if (!!this.props.imageBorder) {
+      return <BorderView style={styles.image}>{this._getImage()}</BorderView>;
+    }
+    return this._getImage();
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -65,16 +89,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
               {!!this.props.step && (
                 <Step step={this.props.step} totalSteps={4} />
               )}
-              {!!this.props.imageSrc && (
-                <Image
-                  style={{
-                    height: 150,
-                    width: 200,
-                    marginVertical: GUTTER / 2,
-                  }}
-                  source={this.props.imageSrc}
-                />
-              )}
+              {this._getBorderImage()}
               <Title label={this.props.title} />
               {!!this.props.desc && (
                 <Text
@@ -117,6 +132,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "stretch",
     marginHorizontal: GUTTER,
+  },
+  image: {
+    marginVertical: GUTTER / 2,
   },
   innerContainer: {
     alignItems: "center",
