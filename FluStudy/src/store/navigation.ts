@@ -1,9 +1,11 @@
 import { AnyAction, Dispatch, MiddlewareAPI, Store } from "redux";
 import {
   DrawerActions,
-  NavigationState,
   NavigationAction,
   NavigationActions,
+  NavigationParams,
+  NavigationState,
+  NavigationRoute,
   StackActions,
 } from "react-navigation";
 import { EventInfoKind } from "audere-lib/feverProtocol";
@@ -13,11 +15,25 @@ import AppNavigator from "../ui/AppNavigator";
 const initialAction = { type: NavigationActions.INIT };
 const initialState = AppNavigator.router.getStateForAction(initialAction);
 
+function setActiveRoute(
+  state: NavigationState | NavigationRoute<NavigationParams>
+) {
+  if ("routes" in state) {
+    state.routes.forEach((route, i) => {
+      if (!route.params) route.params = {};
+      route.params.active = i === state.index;
+      setActiveRoute(route);
+    });
+  }
+}
+
 export default function reducer(
   state = initialState,
   action: NavigationAction
 ) {
-  return AppNavigator.router.getStateForAction(action, state);
+  const nextState = AppNavigator.router.getStateForAction(action, state);
+  setActiveRoute(state);
+  return nextState;
 }
 
 function getActiveRouteName(navigationState: NavigationState): string | null {
