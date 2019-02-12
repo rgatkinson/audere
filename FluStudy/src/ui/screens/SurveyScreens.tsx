@@ -186,25 +186,33 @@ const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
 class ScanScreen extends React.Component<Props & WithNamespaces> {
   state = {
     activeScan: false,
-    timer: null,
   };
 
+  _willFocus: any;
+  _willBlur: any;
+  _timer: number | null | undefined;
+
   componentDidMount() {
-    // Timeout after 30 seconds
-    const timer = setTimeout(() => {
-      this.props.navigation.push("ManualEntry");
-    }, 30000);
-    this.setState({ timer });
+    this._willFocus = this.props.navigation.addListener("willFocus", () =>
+      this._setTimer()
+    );
+    this._willBlur = this.props.navigation.addListener("willBlur", () =>
+      this._clearTimer()
+    );
   }
 
-  componentWillUnmount() {
+  _setTimer() {
+    // Timeout after 30 seconds
     this._clearTimer();
+    this._timer = setTimeout(() => {
+      this.props.navigation.push("ManualEntry");
+    }, 30000);
   }
 
   _clearTimer() {
-    if (this.state.timer != null) {
-      clearTimeout(this.state.timer!);
-      this.setState({ timer: null });
+    if (this._timer != null) {
+      clearTimeout(this._timer);
+      this._timer = null;
     }
   }
 
@@ -223,7 +231,6 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
                   code: data,
                 })
               );
-              this._clearTimer();
               this.props.navigation.push("ScanConfirmation");
             }
           }}
@@ -233,7 +240,6 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
           <TouchableOpacity
             style={scanStyles.overlay}
             onPress={() => {
-              this._clearTimer();
               this.props.navigation.push("ManualEntry");
             }}
           >
@@ -357,12 +363,25 @@ const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
   Props & BarcodeProps
 >(ScanConfirmationScreen);
 
-@connect()
-class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
-  state = {
-    barcode1: null,
-    barcode2: null,
-  };
+interface ManualState {
+  barcode1: string | null;
+  barcode2: string | null;
+}
+
+@connect((state: StoreState) => ({
+  kitBarcode: state.survey.kitBarcode,
+}))
+class ManualEntryScreen extends React.Component<
+  Props & BarcodeProps & WithNamespaces,
+  ManualState
+> {
+  constructor(props: Props & BarcodeProps & WithNamespaces) {
+    super(props);
+    this.state = {
+      barcode1: !!props.kitBarcode ? props.kitBarcode.code : null,
+      barcode2: !!props.kitBarcode ? props.kitBarcode.code : null,
+    };
+  }
 
   confirmInput = React.createRef<TextInput>();
 
@@ -421,7 +440,7 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const ManualEntry = withNamespaces("manualEntryScreen")<Props>(
+const ManualEntry = withNamespaces("manualEntryScreen")<Props & BarcodeProps>(
   ManualEntryScreen
 );
 
