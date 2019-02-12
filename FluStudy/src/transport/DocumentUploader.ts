@@ -198,7 +198,7 @@ export class DocumentUploader {
       if (body.csruid === CSRUID_PLACEHOLDER) {
         throw new Error("Expected body.csruid to be initialized by this point");
       }
-      const url = `/documents/${this.documentUploadKey}/${body.csruid}`;
+      const url = `/fever/documents/${this.documentUploadKey}/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
       if (result == null) {
