@@ -95,7 +95,6 @@
 			isa = PBXGroup;
 			children = (
 				B56386431DB9693800A0598C /* fluathome */,
-				EA7B4C48220C0DBF0025B931 /* Libraries */,
 				B56386421DB9693800A0598C /* Products */,
 				5B29BC350A332C58878A9F13 /* Pods */,
 				EA05477A220D284100AC77FF /* Libraries */,
