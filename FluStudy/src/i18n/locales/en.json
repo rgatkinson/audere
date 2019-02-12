@@ -197,6 +197,14 @@
     "title": "Begin the first test",
     "description": "Open the box with a green #1 sticker on it and remove all of the items.\n\nTake out the small tube, remove the stopper, and stand up the small tube in the perforated hole marked small on the box. KEEP the stopper for later."
   },
+  "swabPrepScreen": {
+    "title": "Prepare Tube",
+    "description": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube.\n\nNext, remove the nasal swab from the wrapper. Be careful not to drop it, and only touch the handle, not the tip."
+  },
+  "mucusScreen": {
+    "title": "Collect mucus from nose",
+    "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",

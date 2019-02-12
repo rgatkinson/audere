@@ -42,7 +42,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
         <Image
           style={[
             { height: 150, width: 200 },
-            !this.props.imageBorder && styles.image,
+            !this.props.imageBorder && { marginVertical: GUTTER / 2 },
           ]}
           source={this.props.imageSrc}
         />
@@ -53,7 +53,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
 
   _getBorderImage() {
     if (!!this.props.imageBorder) {
-      return <BorderView style={styles.image}>{this._getImage()}</BorderView>;
+      return <BorderView style={{ marginTop: GUTTER }}>{this._getImage()}</BorderView>;
     }
     return this._getImage();
   }
@@ -132,9 +132,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "stretch",
     marginHorizontal: GUTTER,
-  },
-  image: {
-    marginVertical: GUTTER / 2,
   },
   innerContainer: {
     alignItems: "center",

@@ -406,7 +406,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             onPress={() => this.props.navigation.pop()}
           />
         }
-        imageSrc={require("../../img/ineligible.png")}
+        imageSrc={require("../../img/consentIneligible.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
@@ -571,7 +571,7 @@ class ConfirmationScreen extends React.Component<
         title={t("confirmed")}
         onNext={() => {
           if (this.props.pushState.showedSystemPrompt) {
-            this.props.navigation.push("Instructions");
+            this.props.navigation.push("ExtraInfo");
           } else {
             this.props.navigation.push("PushNotifications");
           }
@@ -593,13 +593,13 @@ class PushNotificationsScreen extends React.Component<
   _registrationEvent = (token: string) => {
     const newPushState = { ...this.props.pushState, token };
     this.props.dispatch(setPushNotificationState(newPushState));
-    this.props.navigation.push("Instructions");
+    this.props.navigation.push("ExtraInfo");
   };
 
   _registrationErrorEvent = (result: PushRegistrationError) => {
     const newPushState = { ...this.props.pushState, registrationError: result };
     this.props.dispatch(setPushNotificationState(newPushState));
-    this.props.navigation.push("Instructions");
+    this.props.navigation.push("ExtraInfo");
   };
 
   componentWillMount() {
@@ -636,13 +636,13 @@ class PushNotificationsScreen extends React.Component<
                 softResponse: false,
               };
               this.props.dispatch(setPushNotificationState(newPushState));
-              this.props.navigation.push("Instructions");
+              this.props.navigation.push("ExtraInfo");
             }}
             secondEnabled={true}
             secondLabel={t("common:button:yes")}
             secondOnPress={() => {
               if (this.props.pushState.showedSystemPrompt) {
-                this.props.navigation.push("Instructions");
+                this.props.navigation.push("ExtraInfo");
               } else {
                 const newPushState = {
                   ...this.props.pushState,
@@ -675,16 +675,15 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
+        canProceed={false}
         desc={t("description")}
         imageSrc={require("../../img/instructions.png")}
         logo={true}
         navBar={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("instructions")}
-        onNext={() => {
-          this.props.navigation.push("ExtraInfo");
-        }}
+        onNext={() => {}}
       />
     );
   }
@@ -698,7 +697,6 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("close")}
         canProceed={true}
         imageSrc={require("../../img/extraInfo.png")}
         logo={true}
@@ -706,7 +704,7 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("extraInfo")}
         onNext={() => {
-          this.props.navigation.push("SplashScreen");
+          this.props.navigation.push("Instructions");
         }}
       >
         <Links

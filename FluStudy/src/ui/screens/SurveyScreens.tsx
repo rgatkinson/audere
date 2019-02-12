@@ -571,13 +571,58 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("SplashScreen");
+          this.props.navigation.push("SwabPrep");
         }}
       />
     );
   }
 }
 const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
+
+class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        imageBorder={true}
+        imageSrc={require("../../img/swabPrep.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("Mucus");
+        }}
+      />
+    );
+  }
+}
+const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
+
+class MucusScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        imageBorder={true}
+        imageSrc={require("../../img/mucus.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("SplashScreen");
+        }}
+      />
+    );
+  }
+}
+const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+
 
 export {
   WelcomeBack,
@@ -591,4 +636,6 @@ export {
   TestInstructions,
   Components,
   Swab,
+  SwabPrep,
+  Mucus,
 };

@@ -27,6 +27,8 @@ import {
   TestInstructions,
   Components,
   Swab,
+  SwabPrep,
+  Mucus,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
 import SplashScreen from "./screens/SplashScreen";
@@ -58,6 +60,8 @@ const Home = createStackNavigator(
     TestInstructions,
     Components,
     Swab,
+    SwabPrep,
+    Mucus,
   },
   {
     headerMode: "none",
