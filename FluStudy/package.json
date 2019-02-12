@@ -43,6 +43,9 @@
   "jest": {
     "preset": "jest-expo",
     "setupTestFrameworkScriptFile": "./src/setupJest",
+    "setupFiles": [
+      "./jestSetup.js"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -58,7 +61,7 @@
       "<rootDir>/node_modules/"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|react-navigation|react-navigation-redux-helpers|pouchdb-adapter-asyncstorage))"
+      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|pouchdb-adapter-asyncstorage))"
     ]
   },
   "dependencies": {
@@ -93,7 +96,7 @@
     "react-native-keyboard-listener": "^1.1.0",
     "react-native-modal": "^7.0.0",
     "react-native-simple-radio-button": "^2.7.3",
-    "react-navigation": "^3.2.0",
+    "react-navigation": "^3.2.1",
     "react-navigation-redux-helpers": "^3.0.0",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
