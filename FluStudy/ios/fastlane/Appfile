@@ -1,0 +1,15 @@
+apple_id("ios-dev@auderenow.org") # Your Apple email address
+itc_team_id("119446930") # App Store Connect Team ID
+team_id("G8UCCFY788") # Developer Portal Team ID
+
+for_lane :dev do
+    app_identifier "org.auderenow.fluathome.dev"
+end
+
+for lane :staging do
+    app_identifier "org.auderenow.fluathome.staging"
+end 
+
+for_lane :production do
+    app_identifier "org.auderenow.fluathome"
+end
