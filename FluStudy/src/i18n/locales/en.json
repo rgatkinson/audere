@@ -101,6 +101,10 @@
     "numYears": "Number of years",
     "numMonths": "Number of months"
   },
+  "ageIneligibleScreen": {
+    "ineligible": "Thanks for your interest",
+    "description": "We're sorry, but this study is aimed at adults 18 years and older."
+  },
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "At this time your symptoms do not meet the criteria for continuation. If your symptoms change, you can open this app again on a different day.",
@@ -234,9 +238,11 @@
     "doNotKnowUndecided": "Do Not Know / Undecided",
     "noneOfTheAbove": "None of the above",
     "65andOlder": "65 and older",
-    "49to64": "49 to 64",
-    "18to49": "18 to 49",
-    "under18": "Under 18",
+    "45to64": "45 to 64",
+    "35to44": "35 to 44",
+    "25to34": "25 to 34",
+    "18to24": "18 to 24",
+    "under18": "17 and under",
     "submit": "Submit",
     "none": "None"
   },

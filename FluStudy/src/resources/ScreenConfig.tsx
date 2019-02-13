@@ -35,8 +35,10 @@ export const AgeBuckets: {
   [key: string]: string;
 } = {
   Senior: "65andOlder",
-  MiddleAge: "49to64",
-  YoungAdult: "18to49",
+  MiddleAge: "45to64",
+  Adult: "35to44",
+  YoungAdult: "25to34",
+  VeryYoungAdult: "18to24",
   Under18: "under18",
 };
 
@@ -53,10 +55,12 @@ export const AgeConfig: SurveyQuestionData = {
   id: "Age",
   title: "ageTitle",
   buttons: [
-    { key: AgeBuckets.Senior, primary: false, enabled: true },
-    { key: AgeBuckets.MiddleAge, primary: false, enabled: true },
-    { key: AgeBuckets.YoungAdult, primary: false, enabled: true },
     { key: AgeBuckets.Under18, primary: false, enabled: true },
+    { key: AgeBuckets.VeryYoungAdult, primary: false, enabled: true },
+    { key: AgeBuckets.YoungAdult, primary: false, enabled: true },
+    { key: AgeBuckets.Adult, primary: false, enabled: true },
+    { key: AgeBuckets.MiddleAge, primary: false, enabled: true },
+    { key: AgeBuckets.Senior, primary: false, enabled: true },
   ],
 };
 

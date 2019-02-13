@@ -93,7 +93,7 @@ class StateModal extends React.Component<Props & WithNamespaces, State> {
     return (
       <Modal
         height={280}
-        width={width * .75}
+        width={width * 0.75}
         submitText={t("common:button:done")}
         visible={this.props.visible}
         onDismiss={() => this.props.onDismiss(this.props.state)}

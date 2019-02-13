@@ -33,6 +33,7 @@ import {
 } from "../../store";
 import {
   AddressConfig,
+  AgeBuckets,
   AgeConfig,
   ButtonConfig,
   ConsentConfig,
@@ -131,7 +132,14 @@ class AgeScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("Symptoms");
+    if (
+      this.props.getAnswer("selectedButtonKey", AgeConfig.id) ===
+      AgeBuckets.Under18
+    ) {
+      this.props.navigation.push("AgeIneligible");
+    } else {
+      this.props.navigation.push("Symptoms");
+    }
   };
 
   render() {
@@ -489,6 +497,57 @@ class AddressInputScreen extends React.Component<
 }
 const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
 
+class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("description")}
+        imageSrc={require("../../img/ineligible.png")}
+        logo={true}
+        navBar={false}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+        onNext={() => this.props.navigation.popToTop()}
+      >
+        <Links
+          links={[
+            {
+              label: t("links:shareLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:learnLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:medLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+          ]}
+        />
+      </Screen>
+    );
+  }
+}
+const AgeIneligible = withNamespaces("ageIneligibleScreen")<Props>(
+  AgeIneligibleScreen
+);
+
 class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -748,6 +807,7 @@ export {
   Age,
   Symptoms,
   AddressScreen,
+  AgeIneligible,
   SymptomsIneligible,
   Consent,
   ConsentIneligible,
