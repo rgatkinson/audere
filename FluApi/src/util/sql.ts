@@ -6,8 +6,6 @@
 import dotenv from "dotenv";
 import Sequelize, {
   DefineModelAttributes,
-  Model as SqlModel,
-  Instance as SqlInstance,
   Sequelize as Sql,
   BOOLEAN as SQL_BOOLEAN,
   INTEGER as SQL_INTEGER,
@@ -16,9 +14,9 @@ import Sequelize, {
 } from "sequelize";
 import "../util/config";
 
-export type Inst<Attr> = SqlInstance<Attr> & Attr;
+export type Inst<Attr> = Sequelize.Instance<Attr> & Attr;
 
-export type Model<Attr> = SqlModel<Inst<Attr>, Attr>;
+export type Model<Attr> = Sequelize.Model<Inst<Attr>, Attr>;
 
 export interface SplitSql {
   pii: Sql;
@@ -57,11 +55,9 @@ export function defineModel<Attr>(
   sql: Sql,
   name: string,
   attr: DefineModelAttributes<Attr>
-): SqlModel<Inst<Attr>, Attr> {
+): Model<Attr> {
   // The sequelize type definition makes define return SqlModel<any,any>, so cast to recover type info.
-  return <SqlModel<Inst<Attr>, Attr>>(
-    (<any>sql.define<Inst<Attr>, Attr>(name, attr, { freezeTableName: true }))
-  );
+  return sql.define<Inst<Attr>, Attr>(name, attr, { freezeTableName: true });
 }
 
 export function unique(column) {

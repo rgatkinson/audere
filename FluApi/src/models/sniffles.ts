@@ -147,9 +147,6 @@ export function defineVisit<Info>(
   );
 }
 export type VisitInstance<Info> = Inst<VisitAttributes<Info>>;
-export type VisitModel<Info> = SqlModel<
-  VisitInstance<Info>,
-  VisitAttributes<Info>
->;
+export type VisitModel<Info> = Model<VisitAttributes<Info>>;
 export type VisitNonPIIInstance = VisitInstance<VisitNonPIIDbInfo>;
 export type VisitPIIInstance = VisitInstance<VisitPIIInfo>;

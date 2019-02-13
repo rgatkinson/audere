@@ -165,7 +165,4 @@ export function defineSurvey<Info>(
   );
 }
 export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
-export type SurveyModel<Info> = SqlModel<
-  SurveyInstance<Info>,
-  SurveyAttributes<Info>
->;
+export type SurveyModel<Info> = Model<SurveyAttributes<Info>>;
