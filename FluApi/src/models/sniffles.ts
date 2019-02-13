@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Model as SqlModel, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import {
   defineModel,
   Inst,
@@ -22,14 +22,24 @@ import {
   VisitPIIInfo,
   VisitNonPIIDbInfo
 } from "audere-lib/snifflesProtocol";
+import { defineHutchUpload } from "./hutchUpload";
 
 export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
+  const hutchUpload = defineHutchUpload(sql);
+  const visitNonPii = defineVisit<VisitNonPIIDbInfo>(sql.nonPii);
+  visitNonPii.hasOne(
+    hutchUpload,
+    {
+      foreignKey: "visitId",
+      onDelete: "CASCADE",
+    }
+  );
   return {
     accessKey: defineAccessKey(sql),
     clientLog: defineClientLog(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
-    visitNonPii: defineVisit(sql.nonPii),
+    visitNonPii,
     visitPii: defineVisit(sql.pii),
   }
 }
