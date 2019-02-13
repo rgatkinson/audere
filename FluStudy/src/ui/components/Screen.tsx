@@ -53,7 +53,11 @@ class Screen extends React.Component<Props & WithNamespaces> {
 
   _getBorderImage() {
     if (!!this.props.imageBorder) {
-      return <BorderView style={{ marginTop: GUTTER }}>{this._getImage()}</BorderView>;
+      return (
+        <BorderView style={{ marginTop: GUTTER }}>
+          {this._getImage()}
+        </BorderView>
+      );
     }
     return this._getImage();
   }
@@ -75,7 +79,12 @@ class Screen extends React.Component<Props & WithNamespaces> {
           />
         )}
         <View style={styles.scrollContainer}>
-          <ScrollView>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "space-between",
+            }}
+          >
             {this.props.logo && (
               <Image
                 style={{
@@ -100,22 +109,22 @@ class Screen extends React.Component<Props & WithNamespaces> {
               )}
               {this.props.children}
             </View>
+            <View style={styles.footerContainer}>
+              {!this.props.skipButton && (
+                <Button
+                  enabled={this.props.canProceed}
+                  label={
+                    this.props.buttonLabel != null
+                      ? this.props.buttonLabel
+                      : t("common:button:next")
+                  }
+                  primary={true}
+                  onPress={this.props.onNext}
+                />
+              )}
+              {this.props.footer}
+            </View>
           </ScrollView>
-        </View>
-        <View style={styles.footerContainer}>
-          {!this.props.skipButton && (
-            <Button
-              enabled={this.props.canProceed}
-              label={
-                this.props.buttonLabel != null
-                  ? this.props.buttonLabel
-                  : t("common:button:next")
-              }
-              primary={true}
-              onPress={this.props.onNext}
-            />
-          )}
-          {this.props.footer}
         </View>
       </View>
     );
@@ -135,8 +144,6 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     alignItems: "center",
-    flex: 1,
-    justifyContent: "space-between",
     marginHorizontal: GUTTER,
   },
   scrollContainer: {

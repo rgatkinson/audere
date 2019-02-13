@@ -460,7 +460,6 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         navBar={true}
         navigation={this.props.navigation}
-        skipButton={true}
         title={t("title")}
         onNext={this._onNext}
       >
@@ -473,13 +472,6 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         <BulletPoint content={t("step7")} />
         <BulletPoint content={t("step8")} />
         <BulletPoint content={t("step9")} />
-        <Button
-          enabled={true}
-          label={t("common:button:continue")}
-          primary={true}
-          style={{ marginVertical: GUTTER }}
-          onPress={this._onNext}
-        />
       </Screen>
     );
   }
@@ -622,7 +614,6 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
   }
 }
 const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
-
 
 export {
   WelcomeBack,
