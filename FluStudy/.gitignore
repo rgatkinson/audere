@@ -25,3 +25,7 @@ android/app/build
 ios/Pods
 xcuserdata
 ios/fluathome/Supporting/EXBuildConstants.*
+
+# fastlane generated files
+ios/fastlane/README.md 
+ios/fastlane/report.xml

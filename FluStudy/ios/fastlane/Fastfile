@@ -21,3 +21,51 @@ platform :ios do
     # add actions here: https://docs.fastlane.tools/actions
   end
 end
+
+####### Certificates #######
+
+desc "Installs the certificates and profiles locally"
+lane :certificates do |options|
+  if options[:use_temporary_keychain]
+    create_temporary_keychain
+  end
+
+  readonly = (options[:refresh_certificates] ? false : true)
+  force_for_new_devices = !readonly
+
+  match(
+    git_branch: "master",
+    app_identifier: "org.auderenow.fluathome.dev",
+    team_id: "G8UCCFY788",
+    type: "development",
+    readonly: readonly,
+    force_for_new_devices: force_for_new_devices
+  )
+
+  match(
+    git_branch: "master",
+    app_identifier: "org.auderenow.fluathome",
+    team_id: "G8UCCFY788",
+    type: "appstore",
+    readonly: readonly
+  )
+
+  if options[:use_temporary_keychain]
+    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{ENV["KEYCHAIN_NAME"]} #{ENV["KEYCHAIN_PASSWORD"]}"
+  end
+end
+
+private_lane :create_temporary_keychain do
+  keychain_name = "temporary_keychain"
+  ENV["KEYCHAIN_NAME"] = keychain_name
+  ENV["KEYCHAIN_PASSWORD"] = keychain_name
+  ENV["MATCH_KEYCHAIN_NAME"] = keychain_name 
+  ENV["MATCH_KEYCHAIN_PASSWORD"] = keychain_name
+
+  create_keychain(
+    default_keychain: true,
+    unlock: true,
+    timeout: 3600,
+    add_to_search_list: true
+  )
+end
