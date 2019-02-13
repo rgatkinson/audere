@@ -41,6 +41,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_KIT_BARCODE":
       case "SET_PUSH_STATE":
       case "SET_RESPONSES":
+      case "SET_WORKFLOW":
       case "SET_DEMO":
         uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
         break;

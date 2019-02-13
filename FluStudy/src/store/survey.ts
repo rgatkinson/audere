@@ -16,7 +16,8 @@ export type SurveyAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
-  | { type: "SET_RESPONSES"; responses: SurveyResponse[] };
+  | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
+  | { type: "SET_WORKFLOW"; workflow: WorkflowInfo };
 
 export type SurveyState = {
   consent?: ConsentInfo;
@@ -82,6 +83,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
       timestamp: new Date().getTime(),
     };
   }
+  if (action.type === "SET_WORKFLOW") {
+    return {
+      ...state,
+      workflow: action.workflow,
+      timestamp: new Date().getTime(),
+    };
+  }
 
   return state;
 }
@@ -128,6 +136,13 @@ export function setResponses(responses: SurveyResponse[]): SurveyAction {
   return {
     type: "SET_RESPONSES",
     responses,
+  };
+}
+
+export function setWorkflow(workflow: WorkflowInfo): SurveyAction {
+  return {
+    type: "SET_WORKFLOW",
+    workflow,
   };
 }
 

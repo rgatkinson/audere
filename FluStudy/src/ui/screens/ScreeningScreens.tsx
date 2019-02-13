@@ -20,6 +20,7 @@ import {
   EventInfoKind,
   PushNotificationState,
   PushRegistrationError,
+  WorkflowInfo,
 } from "audere-lib/feverProtocol";
 import {
   Action,
@@ -27,9 +28,9 @@ import {
   Option,
   StoreState,
   SurveyResponse,
-  appendEvent,
   setEmail,
   setPushNotificationState,
+  setWorkflow,
 } from "../../store";
 import {
   AddressConfig,
@@ -75,9 +76,6 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("welcome")}
         onNext={() => {
-          this.props.dispatch(
-            appendEvent(EventInfoKind.Screening, "StartedScreening")
-          );
           this.props.navigation.push("Why");
         }}
       />
@@ -444,20 +442,24 @@ const ConsentIneligible = withNamespaces("consentIneligibleScreen")<Props>(
   ConsentIneligibleScreen
 );
 
-interface AddressProps {
-  name: string;
+interface WorkflowProps {
+  workflow: WorkflowInfo;
 }
 
 interface AddressState {
   address?: Address;
 }
 
-@connect()
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
 class AddressInputScreen extends React.Component<
-  Props & AddressProps & WithNamespaces & ReduxWriterProps,
+  Props & WorkflowProps & WithNamespaces & ReduxWriterProps,
   AddressState
 > {
-  constructor(props: Props & AddressProps & WithNamespaces & ReduxWriterProps) {
+  constructor(
+    props: Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+  ) {
     super(props);
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
@@ -469,6 +471,12 @@ class AddressInputScreen extends React.Component<
       this.props.updateAnswer(
         { addressInput: this.state.address },
         AddressConfig
+      );
+      this.props.dispatch(
+        setWorkflow({
+          ...this.props.workflow,
+          screeningComplete: true,
+        })
       );
       this.props.navigation.push("Confirmation");
     }
