@@ -44,6 +44,14 @@ lane :certificates do |options|
 
   match(
     git_branch: "master",
+    app_identifier: "org.auderenow.fluathome.staging",
+    team_id: "G8UCCFY788",
+    type: "appstore",
+    readonly: readonly
+  )
+
+  match(
+    git_branch: "master",
     app_identifier: "org.auderenow.fluathome",
     team_id: "G8UCCFY788",
     type: "appstore",

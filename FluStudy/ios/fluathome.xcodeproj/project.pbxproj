@@ -40,7 +40,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		12844FED1207BB556E87E7CC /* Pods-fluathome.dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.dev.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.dev.xcconfig"; sourceTree = "<group>"; };
+		18C9BF29CBC7B57E98EBFCA2 /* Pods-fluathome.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.staging.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.staging.xcconfig"; sourceTree = "<group>"; };
 		2C1548D9E4CB1AEFA5CCAE6D /* Pods-fluathome.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.debug.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.debug.xcconfig"; sourceTree = "<group>"; };
+		818C321A4BE809480B39888E /* Pods-fluathome.production.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.production.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.production.xcconfig"; sourceTree = "<group>"; };
 		A47FE4D7F70906B7DC8CE39B /* Pods-fluathome.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.release.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.release.xcconfig"; sourceTree = "<group>"; };
 		B501732A1DC01252003445D9 /* EXShell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXShell.plist; sourceTree = "<group>"; };
 		B56386411DB9693800A0598C /* fluathome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fluathome.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +90,9 @@
 			children = (
 				2C1548D9E4CB1AEFA5CCAE6D /* Pods-fluathome.debug.xcconfig */,
 				A47FE4D7F70906B7DC8CE39B /* Pods-fluathome.release.xcconfig */,
+				12844FED1207BB556E87E7CC /* Pods-fluathome.dev.xcconfig */,
+				18C9BF29CBC7B57E98EBFCA2 /* Pods-fluathome.staging.xcconfig */,
+				818C321A4BE809480B39888E /* Pods-fluathome.production.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -269,7 +275,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -eo pipefail\n\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\n  echo \"Skipping asset bundling in debug mode.\"\n  exit 0\nfi\n\npushd \"${SRCROOT}/..\"\nvalue=\"$(cat ~/.expo/PATH)\"\ndest=\"$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nPATH=\"$PATH:$value\" expo bundle-assets --platform ios --dest \"$dest\"\npopd\n";
+			shellScript = "set -eo pipefail\n\nif [ \"$CONFIGURATION\" == \"Dev\" ]; then\n  echo \"Skipping asset bundling in development mode.\"\n  exit 0\nfi\n\npushd \"${SRCROOT}/..\"\nvalue=\"$(cat ~/.expo/PATH)\"\ndest=\"$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nPATH=\"$PATH:$value\" expo bundle-assets --platform ios --dest \"$dest\"\npopd\n";
 		};
 		23539343DCC44EF8449429EE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -456,7 +462,7 @@
 		};
 		B56386591DB9693800A0598C /* Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2C1548D9E4CB1AEFA5CCAE6D /* Pods-fluathome.debug.xcconfig */;
+			baseConfigurationReference = 12844FED1207BB556E87E7CC /* Pods-fluathome.dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
@@ -532,7 +538,7 @@
 		};
 		B563865A1DB9693800A0598C /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A47FE4D7F70906B7DC8CE39B /* Pods-fluathome.release.xcconfig */;
+			baseConfigurationReference = 18C9BF29CBC7B57E98EBFCA2 /* Pods-fluathome.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -599,7 +605,7 @@
 		};
 		DFEF6CCB22130582003AE6ED /* Production */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A47FE4D7F70906B7DC8CE39B /* Pods-fluathome.release.xcconfig */;
+			baseConfigurationReference = 818C321A4BE809480B39888E /* Pods-fluathome.production.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
