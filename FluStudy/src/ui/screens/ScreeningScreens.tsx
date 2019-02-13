@@ -187,7 +187,7 @@ class SymptomsScreen extends React.PureComponent<
   _onNext = () => {
     this.props.updateAnswer({ selectedButtonKey: "next" }, SymptomsConfig);
     const { t } = this.props;
-    if (this._numSymptoms() > 1) {
+    if (this._numSymptoms() > 1 && this._haveCough()) {
       Alert.alert(t("thankYou"), t("nextStep"), [
         {
           text: t("noThanks"),
@@ -245,6 +245,20 @@ class SymptomsScreen extends React.PureComponent<
           0
         )
       : 0;
+  };
+
+  _haveCough = () => {
+    const symptoms: Option[] = this.props.getAnswer(
+      "options",
+      SymptomsConfig.id
+    );
+    return symptoms
+      ? symptoms.reduce(
+          (result: boolean, option: Option) =>
+            option.selected && option.key === "cough" ? true : result,
+          false
+        )
+      : false;
   };
 
   render() {

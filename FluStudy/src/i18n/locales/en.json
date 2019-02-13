@@ -73,7 +73,7 @@
     "thankYou": "Thank You",
     "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and accept the e-signature at the end to continue",
     "areYouSure": "Are you sure?",
-    "minSymptoms": "You must be experiencing at least 2 symptoms to participate in this study."
+    "minSymptoms": "You must be experiencing at least 2 symptoms including a cough to participate in this study."
   },
   "splashScreen": {
     "welcome": "Welcome to flu@home!",
