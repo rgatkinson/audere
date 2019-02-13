@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { EncountersService } from "../services/encountersService";
-import { 
+import {
   defaultNumEncounters,
   hutchConcurrentUploads
 } from "../util/exportConfig";
@@ -12,55 +12,69 @@ import logger from "../util/logger";
 import { GeocodingService } from "../services/geocodingService";
 import { SmartyStreetsGeocoder } from "../external/smartyStreetsGeocoder";
 import { CensusTractService } from "../services/censusTractService";
-import { sequelizeNonPII } from "../models/index";
-import {
-  smartyStreetsAuthId,
-  smartyStreetsAuthToken,
-  smartyStreetsBaseUrl
-} from "../util/geocodingConfig";
+import { getGeocodingConfig } from "../util/geocodingConfig";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 import axios, { AxiosInstance } from "axios";
-import { baseUrl } from "../util/hutchUploadConfig";
 import { HutchUploader } from "../external/hutchUploader";
 import { VisitsService } from "../services/visitsService";
-import { HutchUpload } from "../models/hutchUpload";
-import { user, password } from "../util/hutchUploadConfig";
+import { defineHutchUpload } from "../models/hutchUpload";
+import { getHutchConfig } from "../util/hutchUploadConfig";
+import { defineSnifflesModels } from "../models/sniffles";
+import { SplitSql } from "../util/sql";
+import { SecretConfig } from "../util/secretsConfig";
 
-const encountersService = createEncountersService();
+export class HutchUploaderEndpoint {
+  private readonly sql: SplitSql;
+  private encountersServicePromise: Promise<EncountersService> | null;
 
-/**
- * Gets completed vists that have not been exported and converts them to
- * Encounters.
- */
-export async function getEncounters(req, res, next) {
-  try {
-    const service = await encountersService;
-    const maxToRetrieve = +req.query.limit || defaultNumEncounters;
-    const enc = await service.getEncounters(maxToRetrieve);
-    res.json({ encounters: Array.from(enc.values()) });
-  } catch (e) {
-    next(e);
+  constructor(sql: SplitSql) {
+    this.sql = sql;
+    this.encountersServicePromise = null;
+  }
+
+  private lazyEncountersService(): Promise<EncountersService> {
+    const existing = this.encountersServicePromise;
+    if (existing != null) {
+      return existing;
+    }
+
+    const created = createEncountersService(this.sql);
+    this.encountersServicePromise = created;
+    return created;
+  }
+
+  /**
+   * Gets completed vists that have not been exported and converts them to
+   * Encounters.
+   */
+  public async getEncounters(req, res, next) {
+    try {
+      const service = await this.lazyEncountersService();
+      const maxToRetrieve = +req.query.limit || defaultNumEncounters;
+      const enc = await service.getEncounters(maxToRetrieve);
+      res.json({ encounters: Array.from(enc.values()) });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   * Pushes pending Encounters externally.
+   */
+  public async sendEncounters(req, res, next) {
+    try {
+      const service = await this.lazyEncountersService();
+      const maxToSend = +req.query.limit || defaultNumEncounters;
+      const result = await service.sendEncounters(maxToSend);
+      res.json({ sent: result.sent, erred: result.erred });
+    } catch (e) {
+      next(e);
+    }
   }
 }
 
-/**
- * Pushes pending Encounters externally.
- */
-export async function sendEncounters(req, res, next) {
-  try {
-    const service = await encountersService;
-    const maxToSend = +req.query.limit || defaultNumEncounters;
-    const result = await service.sendEncounters(maxToSend);
-    res.json({ sent: result.sent, erred: result.erred });
-  } catch (e) {
-    next(e);
-  }
-}
-
-async function createAxios(): Promise<AxiosInstance> {
-  const api = axios.create({
-    baseURL: await baseUrl
-  });
+function createAxios(baseURL): AxiosInstance {
+  const api = axios.create({ baseURL });
 
   if (process.env.NODE_ENV === "development") {
     // TODO: "data" field doesn't log anything
@@ -83,22 +97,22 @@ async function createAxios(): Promise<AxiosInstance> {
   return api;
 }
 
-async function createEncountersService(): Promise<EncountersService> {
+async function createEncountersService(sql: SplitSql): Promise<EncountersService> {
+  const secrets = new SecretConfig(sql);
+
+  const geoConfig = await getGeocodingConfig(secrets);
   const geo = SmartyStreetsSDK.core;
-  const credentials = new geo.StaticCredentials(
-    await smartyStreetsAuthId,
-    await smartyStreetsAuthToken
-  );
+  const credentials = new geo.StaticCredentials(geoConfig.authId, geoConfig.authToken);
 
   let geoClient;
 
   // Specifying base URL is leveraged in tests.
   if (
-    smartyStreetsBaseUrl &&
+    geoConfig.baseUrl &&
     (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
   ) {
     geoClient = new geo.ClientBuilder(credentials)
-      .withBaseUrl(smartyStreetsBaseUrl)
+      .withBaseUrl(geoConfig.baseUrl)
       .buildUsStreetApiClient();
   } else {
     geoClient = new geo.ClientBuilder(credentials).buildUsStreetApiClient();
@@ -106,19 +120,24 @@ async function createEncountersService(): Promise<EncountersService> {
 
   const geocoder: GeocodingService = new GeocodingService(
     new SmartyStreetsGeocoder(geoClient),
-    new CensusTractService(sequelizeNonPII)
+    new CensusTractService(sql.nonPii)
   );
 
-  const axiosClient = await createAxios();
+  const hutchUploadModel = defineHutchUpload(sql);
+  const axiosClient = await createAxios(geoConfig.baseUrl);
+  const hutchConfig = await getHutchConfig(secrets);
   const uploader: HutchUploader = new HutchUploader(
     axiosClient,
     hutchConcurrentUploads,
-    await user,
-    await password,
-    HutchUpload
+    hutchConfig.user,
+    hutchConfig.password,
+    hutchUploadModel
   );
 
-  const visits: VisitsService = new VisitsService();
+  const visits: VisitsService = new VisitsService(
+    defineSnifflesModels(sql),
+    hutchUploadModel
+  );
 
   return new EncountersService(geocoder, uploader, visits);
 }

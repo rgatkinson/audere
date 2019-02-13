@@ -3,21 +3,26 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Sequelize from "sequelize";
-import { sequelizeNonPII } from "./";
+import {
+  defineModel,
+  Model,
+  SplitSql,
+  stringColumn,
+} from "../util/sql"
 
-interface SecretAttributes {
+export interface SecretAttributes {
   id?: number;
   key: string;
   value: string;
 }
-type SecretInstance = Sequelize.Instance<SecretAttributes> &
-  SecretAttributes;
 
-export const Secrets = sequelizeNonPII.define<
-  SecretInstance,
-  SecretAttributes
->("secrets", {
-  key: Sequelize.STRING,
-  value: Sequelize.STRING
-});
+export function defineSecret(sql: SplitSql): Model<SecretAttributes> {
+  return defineModel<SecretAttributes>(
+    sql.nonPii,
+    "secrets",
+    {
+      key: stringColumn(),
+      value: stringColumn(),
+    }
+  )
+}

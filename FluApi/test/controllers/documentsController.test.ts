@@ -9,9 +9,7 @@ import {
   VisitDocument,
   VisitInfo,
 } from "audere-lib/snifflesProtocol";
-import { publicApp } from "../../src/app";
-import { VisitNonPII, VisitPII } from "../../src/models/visit";
-import { AccessKey } from "../../src/models/accessKey";
+import { createPublicApp } from "../../src/app";
 import {
   PATIENT_INFO,
   VISIT_INFO,
@@ -22,11 +20,20 @@ import {
   documentContentsPII,
   makeCSRUID
 } from "../util/sample_data";
+import { createSplitSql } from "../../src/util/sql";
+import { defineSnifflesModels } from "../../src/models/sniffles";
 
 describe("putDocument", () => {
+  let sql;
+  let publicApp;
+  let models;
   let accessKey;
   beforeAll(async done => {
-    accessKey = await AccessKey.create({
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    models = defineSnifflesModels(sql);
+
+    accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -34,6 +41,7 @@ describe("putDocument", () => {
   });
 
   afterAll(async done => {
+    await sql.close();
     await accessKey.destroy();
     done();
   });
@@ -70,12 +78,12 @@ describe("putDocument", () => {
     req.write(contentsBuffer);
     await req.expect(200);
 
-    const visit = await VisitNonPII.findOne({ where: { csruid } });
+    const visit = await models.visitNonPii.findOne({ where: { csruid } });
     expect(visit.device).not.toEqual(contents.device);
     expect(visit.device).toEqual({ info: "���" });
     await visit.destroy();
 
-    await VisitPII.destroy({ where: { csruid } });
+    await models.visitPii.destroy({ where: { csruid } });
   });
 
   it("adds the document to the visits table in each db", async () => {
@@ -89,18 +97,18 @@ describe("putDocument", () => {
       .send(contentsPost)
       .expect(200);
 
-    const visitNonPII = await VisitNonPII.findOne({
+    const visitNonPii = await models.visitNonPii.findOne({
       where: { csruid }
     });
-    expect(visitNonPII.csruid).toEqual(csruid);
-    expect(visitNonPII.device).toEqual(contentsPost.device);
-    expect(visitNonPII.visit).toEqual(VISIT_NONPII);
-    await visitNonPII.destroy();
+    expect(visitNonPii.csruid).toEqual(csruid);
+    expect(visitNonPii.device).toEqual(contentsPost.device);
+    expect(visitNonPii.visit).toEqual(VISIT_NONPII);
+    await visitNonPii.destroy();
 
-    const visitPII = await VisitPII.findOne({ where: { csruid } });
-    expect(visitPII.csruid).toEqual(csruid);
-    expect(visitPII.visit).toEqual(VISIT_PII);
-    await visitPII.destroy();
+    const visitPii = await models.visitPii.findOne({ where: { csruid } });
+    expect(visitPii.csruid).toEqual(csruid);
+    expect(visitPii.visit).toEqual(VISIT_PII);
+    await visitPii.destroy();
   });
 
   it("updates existing documents in visits table in PII db", async () => {
@@ -111,8 +119,8 @@ describe("putDocument", () => {
     const contentsNonPII = documentContentsNonPII(csruid);
     const contentsPII = documentContentsPII(csruid);
 
-    await VisitNonPII.upsert(contentsNonPII);
-    await VisitPII.upsert(contentsPII);
+    await models.visitNonPii.upsert(contentsNonPII);
+    await models.visitPii.upsert(contentsPII);
 
     const newPatient = { ...PATIENT_INFO, name: "New Fake Name" };
     const newProtocolContents: VisitDocument = {
@@ -128,7 +136,7 @@ describe("putDocument", () => {
       .send(newProtocolContents)
       .expect(200);
 
-    const newPIIVisit = await VisitPII.findOne({
+    const newPIIVisit = await models.visitPii.findOne({
       where: { csruid }
     });
     const newVisitDoc = newPIIVisit.visit as VisitInfo;
@@ -136,7 +144,7 @@ describe("putDocument", () => {
     expect(newVisitDoc).toEqual({ ...VISIT_PII, patient: newPatient });
     await newPIIVisit.destroy();
 
-    const newNonPIIVisit = await VisitNonPII.findOne({
+    const newNonPIIVisit = await models.visitNonPii.findOne({
       where: { csruid }
     });
     expect(newNonPIIVisit.visit).toEqual(contentsNonPII.visit);
@@ -145,11 +153,26 @@ describe("putDocument", () => {
 });
 
 describe("putDocumentWithKey", () => {
+  let sql;
+  let publicApp;
+  let models;
+  beforeAll(async done => {
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    models = defineSnifflesModels(sql);
+    done();
+  });
+
+  afterAll(async done => {
+    await sql.close();
+    done();
+  });
+
   it("accepts a docuent with a valid key", async () => {
     const csruid = makeCSRUID("accepts a docuent with a valid key");
     const contentsPost = documentContentsPost(csruid);
 
-    const accessKey = await AccessKey.create({
+    const accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -159,12 +182,12 @@ describe("putDocumentWithKey", () => {
       .send(contentsPost)
       .expect(200);
 
-    const newVisitNonPII = await VisitNonPII.findOne({
+    const newVisitNonPII = await models.visitNonPii.findOne({
       where: { csruid }
     });
     expect(newVisitNonPII).not.toBeNull();
 
-    const newVisitPII = await VisitPII.findOne({
+    const newVisitPII = await models.visitPii.findOne({
       where: { csruid }
     });
     expect(newVisitPII).not.toBeNull();
@@ -178,7 +201,7 @@ describe("putDocumentWithKey", () => {
     const csruid = makeCSRUID("rejects a docuent with a bogus key");
     const contentsPost = documentContentsPost(csruid);
 
-    const accessKey = await AccessKey.create({
+    const accessKey = await models.accessKey.create({
       key: "accesskey2",
       valid: true
     });
@@ -188,12 +211,12 @@ describe("putDocumentWithKey", () => {
       .send(contentsPost)
       .expect(404);
 
-    const newVisitNonPII = await VisitNonPII.findOne({
+    const newVisitNonPII = await models.visitNonPii.findOne({
       where: { csruid }
     });
     expect(newVisitNonPII).toBeNull();
 
-    const newVisitPII = await VisitPII.findOne({
+    const newVisitPII = await models.visitPii.findOne({
       where: { csruid }
     });
     expect(newVisitPII).toBeNull();
@@ -207,7 +230,7 @@ describe("putDocumentWithKey", () => {
     );
     const contentsPost = documentContentsPost(csruid);
 
-    const accessKey = await AccessKey.create({
+    const accessKey = await models.accessKey.create({
       key: "accesskey3",
       valid: false
     });
@@ -217,12 +240,12 @@ describe("putDocumentWithKey", () => {
       .send(contentsPost)
       .expect(404);
 
-    const newVisitNonPII = await VisitNonPII.findOne({
+    const newVisitNonPII = await models.visitNonPii.findOne({
       where: { csruid }
     });
     expect(newVisitNonPII).toBeNull();
 
-    const newVisitPII = await VisitPII.findOne({
+    const newVisitPII = await models.visitPii.findOne({
       where: { csruid }
     });
     expect(newVisitPII).toBeNull();

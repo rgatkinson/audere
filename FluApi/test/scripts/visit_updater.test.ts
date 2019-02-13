@@ -4,10 +4,8 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { publicApp } from "../../src/app";
+import { createPublicApp } from "../../src/app";
 import Sequelize from "sequelize";
-import { VisitAttributes } from "../../src/models/visit";
-import { AccessKey } from "../../src/models/accessKey";
 import {
   makeCSRUID,
   documentContentsPost,
@@ -22,8 +20,13 @@ import {
 } from "../../scripts/util/visit_updater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { VisitDocument } from "audere-lib/snifflesProtocol";
+import { createSplitSql } from "../../src/util/sql";
+import { defineSnifflesModels, VisitAttributes } from "../../src/models/sniffles";
 
 describe("VisitUpdater", () => {
+  let sql;
+  let publicApp;
+  let models;
   let accessKey;
 
   const logs: String[] = [];
@@ -49,7 +52,10 @@ describe("VisitUpdater", () => {
 
   beforeAll(async done => {
     log.setVerbose(true);
-    accessKey = await AccessKey.create({
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    models = defineSnifflesModels(sql);
+    accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -58,6 +64,7 @@ describe("VisitUpdater", () => {
 
   afterAll(async done => {
     await accessKey.destroy();
+    await sql.close();
     done();
   });
 

@@ -6,11 +6,7 @@
 import { AxiosInstance } from "axios";
 import { Encounter } from "../models/encounter";
 import { ThrottledTaskQueue } from "../util/throttledTaskQueue";
-import Sequelize from "sequelize";
-import {
-  HutchUploadInstance,
-  HutchUploadAttributes
-} from "../models/hutchUpload";
+import { HutchUploadModel } from "../models/hutchUpload";
 import logger from "../util/logger";
 
 /**
@@ -22,17 +18,14 @@ export class HutchUploader {
   private readonly maxConcurrent: number;
   private readonly user: string;
   private readonly password: string;
-  private readonly uploads: Sequelize.Model<
-    HutchUploadInstance,
-    HutchUploadAttributes
-  >;
+  private readonly uploads: HutchUploadModel;
 
   constructor(
     api: AxiosInstance,
     maxConcurrent: number,
     user: string,
     password: string,
-    uploads: Sequelize.Model<HutchUploadInstance, HutchUploadAttributes>
+    uploads: HutchUploadModel
   ) {
     this.api = api;
     this.maxConcurrent = maxConcurrent;
@@ -61,7 +54,7 @@ export class HutchUploader {
 
   /**
    * Handles HTTP upload of a single record.
-   * @param id Identifier for the encounter. Used to track success. 
+   * @param id Identifier for the encounter. Used to track success.
    * @param e Encounter to upload.
    */
   private async upload(id: number, e: Encounter): Promise<number> {

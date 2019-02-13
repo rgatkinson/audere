@@ -1,12 +1,31 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { getSecret } from "./secretsConfig";
+import { SecretConfig } from "./secretsConfig";
 
-export const smartyStreetsAuthId: Promise<string> = getSecret("SMARTYSTREETS_AUTH_ID");
+export interface GeocodingConfig {
+  baseUrl: string;
+  authId: string;
+  authToken: string;
+}
 
-export const smartyStreetsAuthToken: Promise<string> = getSecret("SMARTYSTREETS_AUTH_TOKEN");
+let lazy: Promise<GeocodingConfig> | null = null;
 
-export const smartyStreetsBaseUrl: string = process.env.SMARTYSTREETS_BASE_URL;
+export function getGeocodingConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
+  if (lazy != null) {
+    return lazy;
+  }
+  lazy = createConfig(secrets);
+  return lazy;
+}
+
+async function createConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
+  const baseUrl = process.env.SMARTYSTREETS_BASE_URL;
+  const [authId, authToken] = await Promise.all([
+    secrets.get("SMARTYSTREETS_AUTH_ID"),
+    secrets.get("SMARTYSTREETS_AUTH_TOKEN"),
+  ]);
+  return { baseUrl, authId, authToken };
+}

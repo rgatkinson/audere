@@ -18,16 +18,10 @@ import {
   ResponseItemInfo,
   LogBatchDocument
 } from "audere-lib/feverProtocol";
-import {
-  AccessKey,
-  ClientLog,
-  ClientLogBatch,
-  Feedback,
-  SurveyNonPII,
-  SurveyPII
-} from "./models";
+import { defineFeverModels, FeverModels } from "./models";
 import { sendEmail } from "../../util/email";
 import logger from "../../util/logger";
+import { SplitSql } from "../../util/sql";
 
 const clientLogger = createLogger({
   transports: [
@@ -41,105 +35,113 @@ const clientLogger = createLogger({
 const FEEDBACK_EMAIL = "feedback@auderenow.org";
 const FEEDBACK_SENDER_EMAIL = "app@auderenow.org";
 
-export async function putFeverDocument(req, res, next) {
-  const query = { where: { key: req.params.key, valid: true }};
-  if (!await AccessKey.findOne(query)) {
-    logger.warn(`Rejected document upload with key: ${req.params.key}`);
-    next();
-    return;
+export class FeverEndpoint {
+  private readonly models: FeverModels;
+
+  constructor(sql: SplitSql) {
+    this.models = defineFeverModels(sql);
   }
-  try {
-    return await putDocument(req, res);
-  } catch (e) {
-    next(e);
+
+  async putFeverDocument(req, res, next) {
+    const query = { where: { key: req.params.key, valid: true }};
+    if (!await this.models.accessKey.findOne(query)) {
+      logger.warn(`Rejected document upload with key: ${req.params.key}`);
+      next();
+      return;
+    }
+    try {
+      return await this.putDocument(req, res);
+    } catch (e) {
+      next(e);
+    }
   }
-}
 
-export async function putDocument(req, res) {
-  switch (req.body.documentType) {
-    case DocumentType.Survey:
-      await putSurvey(req.body as SurveyDocument);
-      break;
-    case DocumentType.Feedback:
-      await sendAndPutFeedback(req.body as FeedbackDocument);
-      break;
-    case DocumentType.Log:
-      await putCrashLog(req.body as LogDocument);
-      break;
-    case DocumentType.LogBatch:
-      await putLogBatch(req.body as LogBatchDocument);
-      break;
-    default:
-      throw new Error("Invalid document type");
+  async putDocument(req, res) {
+    switch (req.body.documentType) {
+      case DocumentType.Survey:
+        await this.putSurvey(req.body as SurveyDocument);
+        break;
+      case DocumentType.Feedback:
+        await this.sendAndPutFeedback(req.body as FeedbackDocument);
+        break;
+      case DocumentType.Log:
+        await this.putCrashLog(req.body as LogDocument);
+        break;
+      case DocumentType.LogBatch:
+        await this.putLogBatch(req.body as LogBatchDocument);
+        break;
+      default:
+        throw new Error("Invalid document type");
+    }
+    res.json({ Status: "SUCCESS" });
   }
-  res.json({ Status: "SUCCESS" });
-}
 
-async function putSurvey(document: SurveyDocument): Promise<void> {
-  const { csruid, device } = document;
-  const {
-    isDemo,
-    events,
-    workflow,
-    responses,
-    consents,
-    patient,
-    samples
-  } = document.survey;
+  async putSurvey(document: SurveyDocument): Promise<void> {
+    const { csruid, device } = document;
+    const {
+      isDemo,
+      events,
+      workflow,
+      responses,
+      consents,
+      patient,
+      samples
+    } = document.survey;
 
-  const common: CommonInfo = { isDemo, events, workflow };
-  const surveyNonPII: SurveyNonPIIDbInfo = {
-    ...common,
-    consents: deIdentifyConsents(consents),
-    samples,
-    responses: responses.map(filterResponsePII(false))
-  };
-  const surveyPII: PIIInfo = {
-    ...common,
-    patient,
-    consents,
-    responses: responses.map(filterResponsePII(true))
-  };
+    const common: CommonInfo = { isDemo, events, workflow };
+    const surveyNonPII: SurveyNonPIIDbInfo = {
+      ...common,
+      consents: deIdentifyConsents(consents),
+      samples,
+      responses: responses.map(filterResponsePII(false))
+    };
+    const surveyPII: PIIInfo = {
+      ...common,
+      patient,
+      consents,
+      responses: responses.map(filterResponsePII(true))
+    };
 
-  await Promise.all([
-    SurveyNonPII.upsert({ csruid, device, survey: surveyNonPII }),
-    SurveyPII.upsert({ csruid, device, survey: surveyPII })
-  ]);
-}
+    await Promise.all([
+      this.models.surveyNonPii.upsert({ csruid, device, survey: surveyNonPII }),
+      this.models.surveyPii.upsert({ csruid, device, survey: surveyPII })
+    ]);
+  }
 
-async function sendAndPutFeedback(document: FeedbackDocument): Promise<void> {
-  await sendEmail({
-    subject: `[In-App Feedback] ${document.feedback.subject}`,
-    body:
-      document.feedback.body +
-      "\n\n" +
-      JSON.stringify(document.device, null, 2),
-    to: [FEEDBACK_EMAIL],
-    from: FEEDBACK_SENDER_EMAIL,
-    replyTo: FEEDBACK_EMAIL
-  });
-  await Feedback.create({
-    subject: document.feedback.subject,
-    body: document.feedback.body,
-    device: document.device
-  });
-}
+  async sendAndPutFeedback(document: FeedbackDocument): Promise<void> {
+    await sendEmail({
+      subject: `[In-App Feedback] ${document.feedback.subject}`,
+      body:
+        document.feedback.body +
+        "\n\n" +
+        JSON.stringify(document.device, null, 2),
+      to: [FEEDBACK_EMAIL],
+      from: FEEDBACK_SENDER_EMAIL,
+      replyTo: FEEDBACK_EMAIL
+    });
+    await this.models.feedback.create({
+      subject: document.feedback.subject,
+      body: document.feedback.body,
+      device: document.device
+    });
+  }
 
-async function putCrashLog(document: LogDocument): Promise<void> {
-  const log = document.log;
-  clientLogger.info(JSON.stringify(log));
-  await ClientLog.create({
-    log: log.logentry,
-    level: log.level,
-    device: document.device
-  });
-}
+  async putCrashLog(document: LogDocument): Promise<void> {
+    const log = document.log;
+    clientLogger.info(JSON.stringify(log));
+    await this.models.clientLog.create({
+      log: log.logentry,
+      level: log.level,
+      device: document.device
+    });
+  }
 
-async function putLogBatch(document: LogBatchDocument): Promise<void> {
-  const csruid = document.csruid;
-  const device = document.device;
-  const batch = document.batch;
-  await ClientLogBatch.upsert({ csruid, device, batch });
+  async putLogBatch(document: LogBatchDocument): Promise<void> {
+    const csruid = document.csruid;
+    const device = document.device;
+    const batch = document.batch;
+    await this.models.clientLogBatch.upsert({ csruid, device, batch });
+  }
 }
 
 function deIdentifyConsents(consents?: ConsentInfo[]): NonPIIConsentInfo[] {

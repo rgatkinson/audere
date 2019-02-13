@@ -4,10 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { publicApp, internalApp } from "../../src/app";
-import { VisitNonPII, VisitPII } from "../../src/models/visit";
-import { VisitNonPIIInstance, VisitPIIInstance } from "../../src/models/visit";
-import { AccessKey } from "../../src/models/accessKey";
+import { createPublicApp, createInternalApp } from "../../src/app";
 import {
   AddressInfo,
   DocumentType,
@@ -15,26 +12,49 @@ import {
   AddressInfoUse
 } from "audere-lib/snifflesProtocol";
 import { VisitInfoBuilder } from "../visitInfoBuilder";
-import { HutchUpload } from "../../src/models/hutchUpload";
-import { baseUrl } from "../../src/util/hutchUploadConfig";
-import { smartyStreetsBaseUrl } from "../../src/util/geocodingConfig";
 import rawResponse from "../resources/geocodingRawResponse.json";
 
 import nock = require("nock");
+import { createSplitSql } from "../../src/util/sql";
+import { SecretConfig } from "../../src/util/secretsConfig";
+import { getGeocodingConfig } from "../../src/util/geocodingConfig";
+import { getHutchConfig } from "../../src/util/hutchUploadConfig";
+import {
+  defineSnifflesModels,
+  VisitNonPIIInstance,
+  VisitPIIInstance
+} from "../../src/models/sniffles";
+import { defineHutchUpload } from "../../src/models/hutchUpload";
 
 describe("export controller", () => {
+  let sql;
+  let internalApp;
+  let publicApp;
+  let models;
+  let hutchUpload;
   let accessKey;
+  let geocodingConfig;
+  let hutchConfig;
 
   beforeAll(async done => {
-    accessKey = await AccessKey.create({
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    internalApp = createInternalApp(sql);
+    models = defineSnifflesModels(sql);
+    hutchUpload = defineHutchUpload(sql);
+    accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
+    const secrets = new SecretConfig(sql);
+    geocodingConfig = await getGeocodingConfig(secrets);
+    hutchConfig = await getHutchConfig(secrets);
     done();
   });
 
   afterAll(async done => {
     await accessKey.destroy();
+    await sql.close();
     done();
   });
 
@@ -68,9 +88,9 @@ describe("export controller", () => {
       .send(contents)
       .expect(200);
 
-    const visitPII = await VisitPII.findOne({ where: { csruid: csruid } });
+    const visitPII = await models.visitPII.findOne({ where: { csruid: csruid } });
 
-    const visitNonPII = await VisitNonPII.findOne({
+    const visitNonPII = await models.visitNonPII.findOne({
       where: { csruid: csruid }
     });
 
@@ -118,7 +138,7 @@ describe("export controller", () => {
       const c1 = await createVisit(visitId1, visit1);
 
       try {
-        await HutchUpload.bulkCreate([{ visitId: +c1[0].id }]);
+        await hutchUpload.bulkCreate([{ visitId: +c1[0].id }]);
 
         await request(internalApp)
           .get("/api/export/getEncounters")
@@ -137,7 +157,7 @@ describe("export controller", () => {
       const c = await createVisit(visitId1, visit1);
 
       try {
-        nock(await baseUrl)
+        nock(hutchConfig.baseUrl)
           .post(new RegExp(".*"), new RegExp(".*ABC123.*"))
           .reply(200);
 
@@ -148,7 +168,7 @@ describe("export controller", () => {
         expect(response.body.sent).toHaveLength(1);
         expect(response.body.sent[0]).toBe(c[0].id);
 
-        const uploaded = await HutchUpload.findAll({
+        const uploaded = await hutchUpload.findAll({
           where: {
             visitId: c[0].id
           }
@@ -184,7 +204,7 @@ describe("export controller", () => {
       const c1 = await createVisit(visitId1, visit1);
 
       try {
-        nock(smartyStreetsBaseUrl)
+        nock(geocodingConfig.baseUrl)
           .get(new RegExp(".*"))
           .reply(400);
 
@@ -219,11 +239,11 @@ describe("export controller", () => {
       const c = await Promise.all(visits);
 
       try {
-        nock(smartyStreetsBaseUrl)
+        nock(geocodingConfig.baseUrl)
           .post(new RegExp(".*"))
           .reply(200, rawResponse);
 
-        nock(await baseUrl)
+        nock(hutchUpload.baseUrl)
           .post(new RegExp(".*"))
           .times(10)
           .reply(200);

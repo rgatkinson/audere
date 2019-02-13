@@ -1,10 +1,17 @@
 import request from "supertest";
-import { publicApp } from "../src/app";
-import { sequelizeNonPII, sequelizePII } from "../src/models";
+import { createPublicApp } from "../src/app";
+import { createSplitSql, SplitSql } from "../src/util/sql";
+
+let publicApp;
+let sql: SplitSql;
+
+beforeAll(() => {
+  sql = createSplitSql();
+  publicApp = createPublicApp(sql);
+});
 
 afterAll(() => {
-  sequelizeNonPII.close();
-  sequelizePII.close();
+  sql.close();
 });
 
 describe("GET /api", () => {

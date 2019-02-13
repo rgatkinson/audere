@@ -3,31 +3,25 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Sequelize from "sequelize";
-import { sequelizeNonPII } from "./";
+import {
+  defineModel,
+  Model,
+  SplitSql,
+  integerColumn,
+  unique,
+} from "../util/sql"
 
 export interface HutchUploadAttributes {
   id?: number;
   visitId: number;
 }
-
-export type HutchUploadInstance = Sequelize.Instance<HutchUploadAttributes> &
-  HutchUploadAttributes;
-
-export const HutchUpload = sequelizeNonPII.define<
-  HutchUploadInstance,
-  HutchUploadAttributes
->(
-  "hutch_upload",
-  {
-    visitId: {
-      field: "visit_id",
-      allowNull: false,
-      unique: true,
-      type: Sequelize.INTEGER
+export type HutchUploadModel = Model<HutchUploadAttributes>;
+export function defineHutchUpload(sql: SplitSql): HutchUploadModel {
+  return defineModel<HutchUploadAttributes>(
+    sql.nonPii,
+    "hutch_upload",
+    {
+      visitId: unique(integerColumn()),
     }
-  },
-  {
-    freezeTableName: true
-  }
-);
+  )
+}

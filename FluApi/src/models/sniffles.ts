@@ -1,4 +1,4 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2018, 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
@@ -14,56 +14,33 @@ import {
   jsonColumn,
   integerColumn,
   unique,
-} from "../../util/sql"
+} from "../util/sql"
 import {
   DeviceInfo,
   LogLevel,
   LogBatchInfo,
-  PIIInfo,
-  SurveyNonPIIDbInfo
-} from "audere-lib/feverProtocol";
+  VisitPIIInfo,
+  VisitNonPIIDbInfo
+} from "audere-lib/snifflesProtocol";
 
-// ---------------------------------------------------------------
-
-export function defineFeverModels(sql: SplitSql): FeverModels {
+export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
   return {
     accessKey: defineAccessKey(sql),
     clientLog: defineClientLog(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
-    surveyNonPii: defineSurvey(sql.nonPii),
-    surveyPii: defineSurvey(sql.pii),
+    visitNonPii: defineVisit(sql.nonPii),
+    visitPii: defineVisit(sql.pii),
   }
 }
-export interface FeverModels {
+export interface SnifflesModels {
   accessKey: Model<AccessKeyAttributes>;
   clientLog: Model<ClientLogAttributes>;
   clientLogBatch: Model<LogBatchAttributes>;
   feedback: Model<FeedbackAttributes>;
-  surveyNonPii: Model<SurveyAttributes<SurveyNonPIIDbInfo>>;
-  surveyPii: Model<SurveyAttributes<PIIInfo>>;
+  visitNonPii: Model<VisitAttributes<VisitNonPIIDbInfo>>;
+  visitPii: Model<VisitAttributes<VisitPIIInfo>>;
 }
-
-// ---------------------------------------------------------------
-
-// Screens/Surveys are split across two databases.  One contains PII and
-// the other contains all the rest of the data.  The database schema is
-// identical, but we create two separate TypeScript types to help keep
-// things straight.
-export enum PersonalInfoType {
-  PII = "PII",
-  NonPII = "NON_PII"
-}
-
-// Screens/Surveys can be fixed up later.  We therefore have a current
-// table that keeps the live data, and a backup table that keeps originals
-// if a fixup has been applied.
-export enum EditableTableType {
-  CURRENT = "current",
-  BACKUP = "backup"
-}
-
-// ---------------------------------------------------------------
 
 interface AccessKeyAttributes {
   id?: string;
@@ -85,9 +62,9 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
 
 interface ClientLogAttributes {
   id?: string;
-  device: DeviceInfo;
   log: string;
   level: LogLevel;
+  device: DeviceInfo;
 }
 export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
   return defineModel<ClientLogAttributes>(
@@ -144,28 +121,35 @@ export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
 
 // ---------------------------------------------------------------
 
-export interface SurveyAttributes<Info> {
+export enum VisitTableType {
+  CURRENT = "visits",
+  BACKUP = "visit_backups"
+}
+
+export interface VisitAttributes<Info> {
   id?: string;
   device: DeviceInfo;
   csruid: string;
-  survey: Info;
+  visit: Info;
 }
-export function defineSurvey<Info>(
+export function defineVisit<Info>(
   sql: Sequelize,
-  editableType = EditableTableType.CURRENT
-): SurveyModel<Info> {
-  return defineModel<SurveyAttributes<Info>>(
+  table = VisitTableType.CURRENT
+): VisitModel<Info> {
+  return defineModel<VisitAttributes<Info>>(
     sql,
-    `fever_${editableType}_surveys`,
+    table,
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
-      survey: jsonColumn()
+      visit: jsonColumn()
     }
   );
 }
-export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
-export type SurveyModel<Info> = SqlModel<
-  SurveyInstance<Info>,
-  SurveyAttributes<Info>
+export type VisitInstance<Info> = Inst<VisitAttributes<Info>>;
+export type VisitModel<Info> = SqlModel<
+  VisitInstance<Info>,
+  VisitAttributes<Info>
 >;
+export type VisitNonPIIInstance = VisitInstance<VisitNonPIIDbInfo>;
+export type VisitPIIInstance = VisitInstance<VisitPIIInfo>;

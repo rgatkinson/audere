@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize, {Model} from "sequelize";
-import { defineSqlVisit, VisitAttributes, VisitInstance, VisitTableType } from "../../src/models/visit";
+import { defineVisit, VisitAttributes, VisitInstance, VisitModel, VisitTableType } from "../../src/models/sniffles";
 import _ from "lodash";
 
 import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
@@ -13,8 +13,6 @@ import { idtxt, ScriptLogger } from "./script_logger";
 
 const Op = Sequelize.Op;
 
-type VisitModel<T> = Model<VisitInstance<T>, VisitAttributes<T>>;
-
 export abstract class VisitUpdater<T extends object & {isDemo?: boolean}> {
   private readonly data: VisitModel<T>;
   private readonly backup: VisitModel<T>;
@@ -22,8 +20,8 @@ export abstract class VisitUpdater<T extends object & {isDemo?: boolean}> {
   private readonly label: string;
 
   constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger, label: string) {
-    this.data = defineSqlVisit(sequelize);
-    this.backup = defineSqlVisit(sequelize, VisitTableType.BACKUP);
+    this.data = defineVisit(sequelize);
+    this.backup = defineVisit(sequelize, VisitTableType.BACKUP);
     this.log = log;
     this.label = label;
   }

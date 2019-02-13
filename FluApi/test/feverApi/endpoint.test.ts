@@ -5,8 +5,7 @@
 
 import request from "supertest";
 import { DocumentType, SurveyDocument, SurveyInfo } from "audere-lib/feverProtocol";
-import { publicApp } from "../../src/app";
-import { AccessKey, SurveyNonPII, SurveyPII } from "../../src/services/feverApi/models";
+import { createPublicApp } from "../../src/app";
 import {
   PATIENT_INFO,
   PII,
@@ -14,14 +13,22 @@ import {
   SURVEY_NONPII,
   surveyPost,
   surveyNonPIIInDb,
-  surveyPIIInDb,
   makeCSRUID
 } from "./feverSampleData";
+import { createSplitSql } from "../../src/util/sql";
+import { defineFeverModels } from "../../src/services/feverApi/models";
 
 describe("putFeverDocument", () => {
+  let sql;
+  let publicApp;
+  let models;
   let accessKey;
+
   beforeAll(async done => {
-    accessKey = await AccessKey.create({
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    models = defineFeverModels(sql);
+    accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -30,6 +37,7 @@ describe("putFeverDocument", () => {
 
   afterAll(async done => {
     await accessKey.destroy();
+    await sql.close();
     done();
   });
 
@@ -65,12 +73,12 @@ describe("putFeverDocument", () => {
     req.write(contentsBuffer);
     await req.expect(200);
 
-    const dbNonPII = await SurveyNonPII.findOne({ where: { csruid } });
+    const dbNonPII = await models.surveyNonPII.findOne({ where: { csruid } });
     expect(dbNonPII.device).not.toEqual(contents.device);
     expect(dbNonPII.device).toEqual({ info: "���" });
     await dbNonPII.destroy();
 
-    await SurveyPII.destroy({ where: { csruid } });
+    await models.surveyPII.destroy({ where: { csruid } });
   });
 
   it("adds the document to the survey table in each db", async () => {
@@ -84,7 +92,7 @@ describe("putFeverDocument", () => {
       .send(contentsPost)
       .expect(200);
 
-    const dbNonPII = await SurveyNonPII.findOne({
+    const dbNonPII = await models.surveyNonPII.findOne({
       where: { csruid }
     });
     expect(dbNonPII.csruid).toEqual(csruid);
@@ -92,7 +100,7 @@ describe("putFeverDocument", () => {
     expect(dbNonPII.survey).toEqual(SURVEY_NONPII);
     await dbNonPII.destroy();
 
-    const dbPII = await SurveyPII.findOne({ where: { csruid } });
+    const dbPII = await models.surveyPII.findOne({ where: { csruid } });
     expect(dbPII.csruid).toEqual(csruid);
     expect(dbPII.survey).toEqual(PII);
     await dbPII.destroy();
@@ -109,7 +117,7 @@ describe("putFeverDocument", () => {
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
-    const originalScreen = (await SurveyPII.findOne(where)).survey as SurveyInfo;
+    const originalScreen = (await models.surveyPII.findOne(where)).survey as SurveyInfo;
     expect(originalScreen.patient.name).toEqual(PATIENT_INFO.name);
     expect(originalScreen).toEqual(PII);
 
@@ -126,23 +134,39 @@ describe("putFeverDocument", () => {
       .send(newProtocolContents)
       .expect(200);
 
-    const dbPII = await SurveyPII.findOne(where);
+    const dbPII = await models.surveyPII.findOne(where);
     const newDoc = dbPII.survey as SurveyInfo;
     expect(newDoc.patient.name).toEqual("New Fake Name");
     expect(newDoc).toEqual({ ...PII, patient: newPatient });
     await dbPII.destroy();
 
-    const dbNonPII = await SurveyNonPII.findOne(where);
+    const dbNonPII = await models.surveyNonPII.findOne(where);
     expect(dbNonPII.survey).toEqual(surveyNonPIIInDb(csruid).survey);
     await dbNonPII.destroy();
   });
 });
 
 describe("putDocumentWithKey", () => {
+  let sql;
+  let publicApp;
+  let models;
+
+  beforeAll(async done => {
+    sql = createSplitSql();
+    publicApp = createPublicApp(sql);
+    models = defineFeverModels(sql);
+    done();
+  });
+
+  afterAll(async done => {
+    await sql.close();
+    done();
+  });
+
   it("accepts a docuent with a valid key", async () => {
     const csruid = makeCSRUID("accepts a docuent with a valid key");
     const where = { where: { csruid }};
-    const accessKey = await AccessKey.create({
+    const accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -152,8 +176,8 @@ describe("putDocumentWithKey", () => {
       .send(surveyPost(csruid))
       .expect(200);
 
-    const surveyNonPII = await SurveyNonPII.findOne(where);
-    const surveyPII = await SurveyPII.findOne(where);
+    const surveyNonPII = await models.surveyNonPII.findOne(where);
+    const surveyPII = await models.surveyPII.findOne(where);
 
     expect(surveyNonPII).not.toBeNull();
     expect(surveyPII).not.toBeNull();
@@ -170,8 +194,8 @@ describe("putDocumentWithKey", () => {
       .send(surveyPost(csruid))
       .expect(404);
 
-    expect(await SurveyNonPII.findOne(where)).toBeNull();
-    expect(await SurveyPII.findOne(where)).toBeNull();
+    expect(await models.surveyNonPII.findOne(where)).toBeNull();
+    expect(await models.surveyPII.findOne(where)).toBeNull();
   });
 
   it("rejects a docuent with key that's no longer valid", async () => {
@@ -179,7 +203,7 @@ describe("putDocumentWithKey", () => {
       "rejects a docuent with key that's no longer valid"
     );
     const where = { where: { csruid }};
-    const accessKey = await AccessKey.create({
+    const accessKey = await models.accessKey.create({
       key: "accesskey3",
       valid: false
     });
@@ -189,8 +213,8 @@ describe("putDocumentWithKey", () => {
       .send(surveyPost(csruid))
       .expect(404);
 
-    expect(await SurveyNonPII.findOne(where)).toBeNull();
-    expect(await SurveyPII.findOne(where)).toBeNull();
+    expect(await models.surveyNonPII.findOne(where)).toBeNull();
+    expect(await models.surveyPII.findOne(where)).toBeNull();
 
     await accessKey.destroy();
   });

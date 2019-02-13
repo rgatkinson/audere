@@ -3,26 +3,29 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Secrets } from "../models/secrets";
+import { SplitSql, Model } from "./sql";
+import { SecretAttributes } from "../models/secrets";
 
-export async function getSecret(key: string): Promise<string> {
-  // First check process environment variables.
-  const envVar = process.env[key];
+export class SecretConfig {
+  private readonly sql: SplitSql;
+  private readonly secretModel: Model<SecretAttributes>;
 
-  if (envVar != null) {
-    return envVar;
-  } else {
-    // Fallback to the database.
-    const s = await Secrets.find({
-      where: {
-        key: key
-      }
-    });
+  constructor(sql: SplitSql) {
+    this.sql = sql;
+  }
 
-    if (s == null) {
-      throw Error("No value found for secret: " + key);
+  public async get(key: string): Promise<string> {
+    // First check process environment variables.
+    const envVar = process.env[key];
+    if (envVar != null) {
+      return envVar;
     }
 
-    return s.value;
+    const secret = await this.secretModel.findOne({ where: { key }});
+    if (secret != null) {
+      return secret.value;
+    }
+
+    throw Error(`No value found for secret: ${key}`);
   }
 }

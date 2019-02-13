@@ -3,9 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { publicApp, internalApp } from "./app";
+import { createSplitSql } from "./util/sql";
+import { createPublicApp, createInternalApp } from "./app";
 
-export const externalServer = publicApp.listen(
+const sql = createSplitSql();
+const publicApp = createPublicApp(sql);
+
+publicApp.listen(
   publicApp.get("port"),
   () => {
     console.log(
@@ -16,7 +20,9 @@ export const externalServer = publicApp.listen(
   }
 );
 
-export const internalServer = internalApp.listen(
+const internalApp = createInternalApp(sql);
+
+internalApp.listen(
   internalApp.get("port"),
   () => {
     console.log(

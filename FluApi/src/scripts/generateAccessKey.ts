@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 /**
- * This script generates a  64 character base64url-encoded random key
+ * This script generates a 64 character base64url-encoded random key
  * and prints out 3 keys that xor to it.
  *
  * Run using `yarn run generate-access-key`
@@ -13,7 +13,8 @@
 import base64url from "base64url";
 import bufferXor from "buffer-xor";
 import { generateRandomKey } from "../util/crypto";
-import { AccessKey } from "../models/accessKey";
+import { createSplitSql } from "../util/sql";
+import { defineSnifflesModels } from "../models/sniffles";
 
 async function generateAccessKey() {
   const components = [
@@ -25,7 +26,10 @@ async function generateAccessKey() {
   const buffer = buffers.reduce(bufferXor, new Buffer(0));
   const key = base64url(buffer);
 
-  await AccessKey.create({ key, valid: true });
+  const sql = createSplitSql();
+  const models = defineSnifflesModels(sql);
+  await models.accessKey.create({ key, valid: true });
+  await sql.close();
   return components;
 }
 

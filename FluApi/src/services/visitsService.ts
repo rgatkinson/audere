@@ -3,16 +3,24 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import * as Model from "../models/visit";
-import { HutchUpload } from "../models/hutchUpload";
-import { PIIVisitDetails } from "../models/visitDetails";
 import Sequelize from "sequelize";
 import logger from "../util/logger";
+import { HutchUploadModel } from "../models/hutchUpload";
+import { PIIVisitDetails } from "../models/visitDetails";
+import { SnifflesModels } from "../models/sniffles";
 
 /**
  * Consolidates the view of a visit across PII & non-PII storage.
  */
 export class VisitsService {
+  private readonly snifflesModels: SnifflesModels;
+  private readonly hutchUploadModel: HutchUploadModel;
+
+  constructor(models: SnifflesModels, hutchUploadModel: HutchUploadModel) {
+    this.snifflesModels = models;
+    this.hutchUploadModel = hutchUploadModel;
+  }
+
   /**
    * Retrieve all completed visits that have not yet been uploaded.
    * @param numToRetrieve The target number of records to retrieve from the db.
@@ -23,7 +31,7 @@ export class VisitsService {
   ): Promise<Map<number, PIIVisitDetails>> {
     // Filters by joining to HutchUpload and looking for records with no match.
     // HutchUpload exists only in the Non-PII database.
-    const v1 = Model.VisitNonPII.findAll({
+    const v1 = this.snifflesModels.visitNonPii.findAll({
       where: {
         visit: {
           complete: {
@@ -34,7 +42,7 @@ export class VisitsService {
       },
       include: [
         {
-          model: HutchUpload,
+          model: this.hutchUploadModel,
           required: false
         }
       ],
@@ -44,7 +52,7 @@ export class VisitsService {
 
     // Query the second database for the PII data associated to the visit.
     const v2 = v1.then(v => {
-      return Model.VisitPII.findAll({
+      return this.snifflesModels.visitPii.findAll({
         where: {
           csruid: v.map(visit => visit.csruid),
           visit: {
