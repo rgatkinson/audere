@@ -4,6 +4,7 @@ import {
   createReactNavigationReduxMiddleware,
   createNavigationReducer,
 } from "react-navigation-redux-helpers";
+import { NavigationAction } from "react-navigation";
 import storage from "redux-persist/lib/storage";
 import immutableTransform from "redux-persist-transform-immutable";
 import { uploaderMiddleware } from "./uploader";
@@ -17,11 +18,21 @@ import {
   default as navigation,
   navigationLoggingMiddleware,
 } from "./navigation";
+export * from "./navigation";
 
 import { default as survey, SurveyState, SurveyAction } from "./survey";
 export * from "./survey";
 
-export type Action = MetaAction | SurveyAction;
+type ClearStateAction = { type: "CLEAR_STATE" };
+export function clearState(): ClearStateAction {
+  return { type: "CLEAR_STATE" };
+}
+
+export type Action =
+  | MetaAction
+  | SurveyAction
+  | NavigationAction
+  | ClearStateAction;
 
 import { StoreState } from "./StoreState";
 export { StoreState } from "./StoreState";
@@ -38,12 +49,22 @@ const reducer = combineReducers({
   survey,
 });
 
+const rootReducer = (state: StoreState | undefined, action: Action) => {
+  if (state != null && action.type === "CLEAR_STATE") {
+    Object.keys(state).forEach(key => {
+      storage.removeItem(`persist:${key}`);
+    });
+    state = undefined;
+  }
+  return reducer(state, action);
+};
+
 const navigationMiddleware = createReactNavigationReduxMiddleware(
   (state: StoreState) => state.navigation
 );
 
 export const store = createStore(
-  persistReducer(persistConfig, reducer),
+  persistReducer(persistConfig, rootReducer),
   applyMiddleware(
     navigationMiddleware,
     navigationLoggingMiddleware,

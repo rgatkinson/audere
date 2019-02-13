@@ -44,6 +44,7 @@ const FAKE_SURVEY_CONTENTS: SurveyInfo = {
   workflow: {
     screeningComplete: false,
     surveyComplete: false,
+    surveyStarted: false,
   },
 };
 

@@ -35,11 +35,9 @@ import {
   GeneralExposure,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
-import SplashScreen from "./screens/SplashScreen";
 
 const Home = createStackNavigator(
   {
-    SplashScreen,
     Welcome,
     Why,
     What,

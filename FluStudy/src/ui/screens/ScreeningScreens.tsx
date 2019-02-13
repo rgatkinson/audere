@@ -130,11 +130,10 @@ const What = withNamespaces("whatScreen")<Props>(WhatScreen);
 class AgeScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onNext = () => {
-    if (
-      this.props.getAnswer("selectedButtonKey", AgeConfig.id) ===
-      AgeBuckets.Under18
-    ) {
+  _onNext = (
+    ageBucket: string = this.props.getAnswer("selectedButtonKey", AgeConfig.id)
+  ) => {
+    if (ageBucket === AgeBuckets.Under18) {
       this.props.navigation.push("AgeIneligible");
     } else {
       this.props.navigation.push("Symptoms");
@@ -170,7 +169,7 @@ class AgeScreen extends React.Component<
                 { selectedButtonKey: button.key },
                 AgeConfig
               );
-              this._onNext();
+              this._onNext(button.key);
             }}
           />
         ))}

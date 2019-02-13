@@ -113,6 +113,7 @@ export declare enum ConsentInfoSignerType {
 export interface WorkflowInfo {
     screeningComplete: boolean;
     surveyComplete: boolean;
+    surveyStarted: boolean;
 }
 export interface ResponseInfo {
     id: string;
@@ -164,7 +165,8 @@ export declare enum EventInfoKind {
     Sample = "sample",
     Screening = "screening",
     Survey = "survey",
-    AppNav = "appNav"
+    AppNav = "appNav",
+    TimeoutNav = "timeoutNav"
 }
 export interface FeedbackDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Feedback;

@@ -181,6 +181,7 @@ export enum ConsentInfoSignerType {
 export interface WorkflowInfo {
   screeningComplete: boolean;
   surveyComplete: boolean;
+  surveyStarted: boolean;
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
@@ -257,7 +258,8 @@ export enum EventInfoKind {
   Sample = "sample",
   Screening = "screening",
   Survey = "survey",
-  AppNav = "appNav"
+  AppNav = "appNav",
+  TimeoutNav = "timeoutNav"
 }
 
 // ================================================================================

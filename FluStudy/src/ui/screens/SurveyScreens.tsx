@@ -11,8 +11,18 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Permissions } from "expo";
-import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
-import { Action, Option, StoreState, setKitBarcode } from "../../store";
+import {
+  EventInfoKind,
+  SampleInfo,
+  WorkflowInfo,
+} from "audere-lib/feverProtocol";
+import {
+  Action,
+  Option,
+  StoreState,
+  setKitBarcode,
+  setWorkflow,
+} from "../../store";
 import {
   CoughSneezeConfig,
   InContactConfig,
@@ -198,8 +208,16 @@ const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
   ScanInstructionsScreen
 );
 
-@connect()
-class ScanScreen extends React.Component<Props & WithNamespaces> {
+interface WorkflowProps {
+  workflow: WorkflowInfo;
+}
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class ScanScreen extends React.Component<
+  Props & WorkflowProps & WithNamespaces
+> {
   state = {
     activeScan: false,
   };
@@ -247,6 +265,12 @@ class ScanScreen extends React.Component<Props & WithNamespaces> {
                 setKitBarcode({
                   sample_type: type,
                   code: data,
+                })
+              );
+              this.props.dispatch(
+                setWorkflow({
+                  ...this.props.workflow,
+                  surveyStarted: true,
                 })
               );
               this.props.navigation.push("ScanConfirmation");
@@ -301,7 +325,7 @@ const scanStyles = StyleSheet.create({
     width: 250,
   },
 });
-const Scan = withNamespaces("scanScreen")<Props>(ScanScreen);
+const Scan = withNamespaces("scanScreen")<Props & WorkflowProps>(ScanScreen);
 
 interface BarcodeProps {
   kitBarcode: SampleInfo;
@@ -388,12 +412,13 @@ interface ManualState {
 
 @connect((state: StoreState) => ({
   kitBarcode: state.survey.kitBarcode,
+  workflow: state.survey.workflow,
 }))
 class ManualEntryScreen extends React.Component<
-  Props & BarcodeProps & WithNamespaces,
+  Props & BarcodeProps & WorkflowProps & WithNamespaces,
   ManualState
 > {
-  constructor(props: Props & BarcodeProps & WithNamespaces) {
+  constructor(props: Props & BarcodeProps & WorkflowProps & WithNamespaces) {
     super(props);
     this.state = {
       barcode1: !!props.kitBarcode ? props.kitBarcode.code : null,
@@ -413,6 +438,12 @@ class ManualEntryScreen extends React.Component<
         setKitBarcode({
           sample_type: "manualEntry",
           code: this.state.barcode1!,
+        })
+      );
+      this.props.dispatch(
+        setWorkflow({
+          ...this.props.workflow,
+          surveyStarted: true,
         })
       );
       this.props.navigation.push("ManualConfirmation");
@@ -458,9 +489,9 @@ class ManualEntryScreen extends React.Component<
     );
   }
 }
-const ManualEntry = withNamespaces("manualEntryScreen")<Props & BarcodeProps>(
-  ManualEntryScreen
-);
+const ManualEntry = withNamespaces("manualEntryScreen")<
+  Props & BarcodeProps & WorkflowProps
+>(ManualEntryScreen);
 
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -813,7 +844,7 @@ class GeneralExposureScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("SplashScreen");
+    this.props.navigation.push("WelcomeBack");
   };
 
   _canProceed = () => {

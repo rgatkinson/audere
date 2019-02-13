@@ -41,6 +41,7 @@ const initialState: SurveyState = {
   workflow: {
     screeningComplete: false,
     surveyComplete: false,
+    surveyStarted: false,
   },
 };
 

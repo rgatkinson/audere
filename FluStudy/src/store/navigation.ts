@@ -9,7 +9,7 @@ import {
   StackActions,
 } from "react-navigation";
 import { EventInfoKind } from "audere-lib/feverProtocol";
-import { appendEvent } from "./index";
+import { appendEvent } from "./survey";
 import AppNavigator from "../ui/AppNavigator";
 
 const initialAction = { type: NavigationActions.INIT };
@@ -36,7 +36,9 @@ export default function reducer(
   return nextState;
 }
 
-function getActiveRouteName(navigationState: NavigationState): string | null {
+export function getActiveRouteName(
+  navigationState: NavigationState
+): string | null {
   if (!navigationState) {
     return null;
   }
@@ -61,6 +63,7 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.POP:
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
+      case StackActions.RESET:
         const currentScreen = getActiveRouteName(store.getState().navigation);
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);

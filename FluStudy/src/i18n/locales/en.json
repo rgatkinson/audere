@@ -95,11 +95,6 @@
     "areYouSure": "Are you sure?",
     "minSymptoms": "You must be experiencing at least 2 symptoms including a cough to participate in this study."
   },
-  "splashScreen": {
-    "welcome": "Welcome to flu@home!",
-    "getStarted": "Get Started",
-    "haveKit": "I have my kit"
-  },
   "aboutScreen": {
     "title": "flu@home",
     "demoMode": "Demo Mode:"
