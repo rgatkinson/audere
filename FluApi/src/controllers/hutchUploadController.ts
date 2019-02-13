@@ -124,8 +124,8 @@ async function createEncountersService(sql: SplitSql): Promise<EncountersService
   );
 
   const hutchUploadModel = defineHutchUpload(sql);
-  const axiosClient = await createAxios(geoConfig.baseUrl);
   const hutchConfig = await getHutchConfig(secrets);
+  const axiosClient = await createAxios(hutchConfig.baseUrl);
   const uploader: HutchUploader = new HutchUploader(
     axiosClient,
     hutchConcurrentUploads,
