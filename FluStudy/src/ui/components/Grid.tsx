@@ -17,6 +17,8 @@ interface Props {
     | "space-between"
     | "space-evenly";
   columns: number;
+  itemFencePostStyle?: StyleProp<ViewStyle>;
+  itemStyle?: StyleProp<ViewStyle>;
   items: any[];
   rowStyle?: StyleProp<ViewStyle>;
   keyExtractor(item: any, index: number): string;
@@ -42,7 +44,9 @@ export default class Grid extends React.Component<Props> {
             key={this.props.keyExtractor(this.props.items[i], i)}
             style={[
               styles.item,
-              i < index + this.props.columns - 1 && styles.itemMargin,
+              i != index && styles.itemMargin,
+              i != index && this.props.itemFencePostStyle,
+              this.props.itemStyle,
             ]}
           >
             {this.props.renderItem(this.props.items[i], itemWidth)}
@@ -70,7 +74,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemMargin: {
-    marginRight: GUTTER,
+    marginLeft: GUTTER,
   },
   row: {
     alignItems: "flex-end",

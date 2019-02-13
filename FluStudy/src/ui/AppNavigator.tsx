@@ -30,7 +30,9 @@ import {
   Swab,
   SwabPrep,
   Mucus,
-  SymptomsSurvey,
+  WhatSymptoms,
+  WhenSymptoms,
+  GeneralExposure,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
 import SplashScreen from "./screens/SplashScreen";
@@ -65,7 +67,9 @@ const Home = createStackNavigator(
     Swab,
     SwabPrep,
     Mucus,
-    SymptomsSurvey,
+    WhatSymptoms,
+    WhenSymptoms,
+    GeneralExposure,
   },
   {
     headerMode: "none",

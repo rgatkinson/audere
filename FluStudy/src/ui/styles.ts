@@ -39,6 +39,7 @@ export const LARGE_TEXT = 20;
 export const REGULAR_TEXT = 16;
 export const SMALL_TEXT = 14;
 export const INPUT_HEIGHT = 40;
+export const RADIO_BUTTON_HEIGHT = 50;
 export const SYSTEM_TEXT = 17;
 export const SYSTEM_FONT = "System";
 export const SYSTEM_PADDING_BOTTOM = isIPhoneX ? 20 : 0;

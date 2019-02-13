@@ -13,11 +13,17 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Permissions } from "expo";
 import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
 import { Action, Option, StoreState, setKitBarcode } from "../../store";
-import { SymptomsSurveyConfig } from "../../resources/ScreenConfig";
+import {
+  CoughSneezeConfig,
+  InContactConfig,
+  SymptomsStartConfig,
+  WhatSymptomsConfig,
+} from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
+import ButtonGrid from "../components/ButtonGrid";
 import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
@@ -608,7 +614,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("SymptomsSurvey");
+          this.props.navigation.push("WhatSymptoms");
         }}
       />
     );
@@ -616,21 +622,18 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
 }
 const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
-class SymptomsSurveyScreen extends React.Component<
+class WhatSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.updateAnswer(
-      { selectedButtonKey: "next" },
-      SymptomsSurveyConfig
-    );
-    this.props.navigation.push("SplashScreen");
+    this.props.updateAnswer({ selectedButtonKey: "next" }, WhatSymptomsConfig);
+    this.props.navigation.push("WhenSymptoms");
   };
 
   _haveOption = () => {
     const symptoms: Option[] = this.props.getAnswer(
       "options",
-      SymptomsSurveyConfig.id
+      WhatSymptomsConfig.id
     );
     return symptoms
       ? symptoms.reduce(
@@ -651,31 +654,112 @@ class SymptomsSurveyScreen extends React.Component<
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SplashScreen");
-        }}
+        onNext={this._onNext}
       >
         <QuestionText
-          text={t("surveyTitle:" + SymptomsSurveyConfig.title)}
-          subtext={t("surveyDescription:" + SymptomsSurveyConfig.description)}
+          text={t("surveyTitle:" + WhatSymptomsConfig.title)}
+          subtext={t("surveyDescription:" + WhatSymptomsConfig.description)}
         />
         <OptionList
           data={newSelectedOptionsList(
-            SymptomsSurveyConfig.optionList!.options,
-            this.props.getAnswer("options", SymptomsSurveyConfig.id)
+            WhatSymptomsConfig.optionList!.options,
+            this.props.getAnswer("options", WhatSymptomsConfig.id)
           )}
           multiSelect={true}
           numColumns={1}
           onChange={symptoms =>
-            this.props.updateAnswer({ options: symptoms }, SymptomsSurveyConfig)
+            this.props.updateAnswer({ options: symptoms }, WhatSymptomsConfig)
           }
         />
       </Screen>
     );
   }
 }
-const SymptomsSurvey = reduxWriter(
-  withNamespaces("symptomsSurveyScreen")(SymptomsSurveyScreen)
+const WhatSymptoms = reduxWriter(
+  withNamespaces("surveyScreen")(WhatSymptomsScreen)
+);
+
+class WhenSymptomsScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  _onNext = () => {
+    // TODO: will our uploader save our answer if we don't have a button label?
+    this.props.navigation.push("GeneralExposure");
+  };
+
+  _canProceed = () => {
+    // TODO: all questions answered
+    return true;
+  };
+
+  // TODO need to support multiple variations on a single question, one per
+  // each symptom provided in the previous step (have to update redux writer).
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this._canProceed()}
+        centerDesc={true}
+        desc={t("description")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={this._onNext}
+      >
+        <QuestionText
+          text={t("surveyTitle:" + SymptomsStartConfig.title)}
+          subtext={t("surveyDescription:" + SymptomsStartConfig.description)}
+        />
+      </Screen>
+    );
+  }
+}
+const WhenSymptoms = reduxWriter(
+  withNamespaces("surveyScreen")(WhenSymptomsScreen)
+);
+
+class GeneralExposureScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  _onNext = () => {
+    this.props.navigation.push("SplashScreen");
+  };
+
+  _canProceed = () => {
+    // TODO: all required questions are answered
+    return true;
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this._canProceed()}
+        centerDesc={true}
+        desc={t("description")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("generalExposure")}
+        onNext={this._onNext}
+      >
+        <ButtonGrid
+          question={InContactConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={CoughSneezeConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+      </Screen>
+    );
+  }
+}
+const GeneralExposure = reduxWriter(
+  withNamespaces("surveyScreen")(GeneralExposureScreen)
 );
 
 export {
@@ -692,5 +776,7 @@ export {
   Swab,
   SwabPrep,
   Mucus,
-  SymptomsSurvey,
+  WhatSymptoms,
+  WhenSymptoms,
+  GeneralExposure,
 };

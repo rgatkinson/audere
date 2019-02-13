@@ -6,6 +6,7 @@ export interface SurveyQuestionData {
   description?: string;
   optionList?: OptionListConfig;
   title?: string;
+  required?: boolean;
 }
 
 export interface ButtonConfig {
@@ -83,9 +84,9 @@ export const SymptomsConfig: SurveyQuestionData = {
   buttons: [{ key: "next", primary: true, enabled: true }],
 };
 
-export const SymptomsSurveyConfig: SurveyQuestionData = {
-  id: "SymptomsSurvey",
-  title: "symptomsSurveyTitle",
+export const WhatSymptomsConfig: SurveyQuestionData = {
+  id: "WhatSymptoms",
+  title: "whatSymptoms",
   description: "selectAll",
   optionList: {
     multiSelect: true,
@@ -103,4 +104,37 @@ export const SymptomsSurveyConfig: SurveyQuestionData = {
     withOther: false,
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
+};
+
+export const SymptomsStartConfig: SurveyQuestionData = {
+  id: "SymptomsStart",
+  title: "symptomsStart",
+  description: "symptomsStart",
+  buttons: [
+    { key: "1day", primary: false, enabled: true },
+    { key: "2days", primary: false, enabled: true },
+    { key: "3days", primary: false, enabled: true },
+    { key: "4days", primary: false, enabled: true },
+  ],
+};
+
+export const InContactConfig: SurveyQuestionData = {
+  id: "InContact",
+  title: "inContact",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: true,
+};
+
+export const CoughSneezeConfig: SurveyQuestionData = {
+  id: "CoughSneeze",
+  title: "coughSneeze",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
 };

@@ -61,11 +61,15 @@
     "consentEmail": "Email me the consent language",
     "symptomTitle": "Describe your symptoms",
     "consent": "Consent",
-    "symptomsSurveyTitle": "Which of the following were present during your illness?"
+    "whatSymptoms": "Which of the following were present during your illness?",
+    "symptomsStart": "How long ago did symptoms start?",
+    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
+    "coughSneeze": "Were they coughing or sneezing?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
-    "selectAll": "Please select all that apply."
+    "selectAll": "Please select all that apply.",
+    "symptomsStart": "Select the time frame that best applies"
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
@@ -209,14 +213,21 @@
     "title": "Collect mucus from nose",
     "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
   },
-  "symptomsSurveyScreen": {
+  "surveyScreen": {
     "title": "Symptoms Survey",
+    "generalExposure": "General Exposure",
     "description": "Questions marked with an * are required."
   },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
     "medLink": "Find a nearby clinic or physician"
+  },
+  "surveyRadio": {
+    "1day": "1 Day",
+    "2days": "2 Days",
+    "3days": "3 Days",
+    "4days": "4+ Days"
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",
@@ -244,6 +255,7 @@
     "yes": "Yes",
     "no": "No",
     "doNotKnow": "Do Not Know",
+    "dontKnow": "Don't Know",
     "doNotKnowUndecided": "Do Not Know / Undecided",
     "noneOfTheAbove": "None of the above",
     "65andOlder": "65 and older",
