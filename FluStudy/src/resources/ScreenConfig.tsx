@@ -158,4 +158,63 @@ export const CoughSneezeConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  required: false,
+};
+
+export const YoungChildrenConfig: SurveyQuestionData = {
+  id: "YoungChildren",
+  title: "youngChildren",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: true,
+};
+
+export const HouseholdChildrenConfig: SurveyQuestionData = {
+  id: "HouseholdChildren",
+  title: "householdChildren",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: true,
+};
+
+export const ChildrenWithChildrenConfig: SurveyQuestionData = {
+  id: "ChildrenWithChildren",
+  title: "childrenWithChildren",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const PeopleInHouseholdConfig: SurveyQuestionData = {
+  id: "PeopleInHousehold",
+  title: "peopleInHousehold",
+  buttons: [
+    { key: "1to2", primary: false, enabled: true },
+    { key: "3to4", primary: false, enabled: true },
+    { key: "5to7", primary: false, enabled: true },
+    { key: "8plus", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const BedroomsConfig: SurveyQuestionData = {
+  id: "Bedrooms",
+  title: "bedrooms",
+  buttons: [
+    { key: "1", primary: false, enabled: true },
+    { key: "2", primary: false, enabled: true },
+    { key: "3", primary: false, enabled: true },
+    { key: "4", primary: false, enabled: true },
+    { key: "5+", primary: false, enabled: true },
+  ],
+  required: false,
 };

@@ -64,7 +64,12 @@
     "symptomsLast48": "Where these symptoms present in the last 48 hours?",
     "symptomsSeverity": "How severe were your symptoms?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
-    "coughSneeze": "Were they coughing or sneezing?"
+    "coughSneeze": "Were they coughing or sneezing?",
+    "youngChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
+    "householdChildren": "Are there any children under 18 years old in your household?",
+    "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
+    "peopleInHousehold": "How many people live in the household (including you)?",
+    "bedrooms": "How many bedrooms are in your home?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -276,7 +281,16 @@
     "4days": "4+ Days",
     "mild": "Mild",
     "moderate": "Moderate",
-    "severe": "Severe"
+    "severe": "Severe",
+    "1to2": "1-2",
+    "3to4": "3-4",
+    "5to7": "5-7",
+    "8plus": "8+",
+    "1": "1",
+    "2": "2",
+    "3": "3",
+    "4": "4",
+    "5+": "5+"
   },
   "countries": {
     "Afghanistan": "Afghanistan",

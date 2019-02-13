@@ -43,6 +43,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
           columns={question.buttons.length}
           items={question.buttons}
           itemFencePostStyle={{ borderLeftWidth: 0, marginLeft: 0 }}
+          itemStyle={styles.buttonContainer}
           rowStyle={{ alignItems: "center" }}
           keyExtractor={button => button.key}
           renderItem={(button, width) => {
@@ -86,9 +87,12 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
 export default withNamespaces()<Props>(ButtonGrid);
 
 const styles = StyleSheet.create({
-  button: {
+  buttonContainer: {
     borderWidth: BORDER_WIDTH,
     borderColor: BORDER_COLOR,
+    justifyContent: "center",
+  },
+  button: {
     height: RADIO_BUTTON_HEIGHT,
     justifyContent: "center",
   },

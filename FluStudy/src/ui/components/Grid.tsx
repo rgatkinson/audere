@@ -44,9 +44,9 @@ export default class Grid extends React.Component<Props> {
             key={this.props.keyExtractor(this.props.items[i], i)}
             style={[
               styles.item,
+              this.props.itemStyle,
               i != index && styles.itemMargin,
               i != index && this.props.itemFencePostStyle,
-              this.props.itemStyle,
             ]}
           >
             {this.props.renderItem(this.props.items[i], itemWidth)}

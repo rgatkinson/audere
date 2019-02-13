@@ -21,6 +21,11 @@ import {
   SurveyQuestionData,
   SymptomsStartConfig,
   WhatSymptomsConfig,
+  YoungChildrenConfig,
+  HouseholdChildrenConfig,
+  ChildrenWithChildrenConfig,
+  PeopleInHouseholdConfig,
+  BedroomsConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -837,6 +842,31 @@ class GeneralExposureScreen extends React.Component<
         />
         <ButtonGrid
           question={CoughSneezeConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={YoungChildrenConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={HouseholdChildrenConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={ChildrenWithChildrenConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={PeopleInHouseholdConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={BedroomsConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
