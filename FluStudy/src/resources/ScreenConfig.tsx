@@ -118,6 +118,27 @@ export const SymptomsStartConfig: SurveyQuestionData = {
   ],
 };
 
+export const Last48Config: SurveyQuestionData = {
+  id: "SymptomsLast48",
+  title: "symptomsLast48",
+  description: "selectAll",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+  ],
+};
+
+export const SymptomSeverityConfig: SurveyQuestionData = {
+  id: "SymptomsSeverity",
+  title: "symptomsSeverity",
+  description: "symptomsSeverity",
+  buttons: [
+    { key: "mild", primary: false, enabled: true },
+    { key: "moderate", primary: false, enabled: true },
+    { key: "severe", primary: false, enabled: true },
+  ],
+};
+
 export const InContactConfig: SurveyQuestionData = {
   id: "InContact",
   title: "inContact",

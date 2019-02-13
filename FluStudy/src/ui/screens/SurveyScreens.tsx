@@ -16,6 +16,9 @@ import { Action, Option, StoreState, setKitBarcode } from "../../store";
 import {
   CoughSneezeConfig,
   InContactConfig,
+  Last48Config,
+  SymptomSeverityConfig,
+  SurveyQuestionData,
   SymptomsStartConfig,
   WhatSymptomsConfig,
 } from "../../resources/ScreenConfig";
@@ -24,6 +27,7 @@ import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
+import Divider from "../components/Divider";
 import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
@@ -656,6 +660,7 @@ class WhatSymptomsScreen extends React.Component<
         title={t("title")}
         onNext={this._onNext}
       >
+        <Divider />
         <QuestionText
           text={t("surveyTitle:" + WhatSymptomsConfig.title)}
           subtext={t("surveyDescription:" + WhatSymptomsConfig.description)}
@@ -692,9 +697,46 @@ class WhenSymptomsScreen extends React.Component<
     return true;
   };
 
-  // TODO need to support multiple variations on a single question, one per
-  // each symptom provided in the previous step (have to update redux writer).
   render() {
+    const symptomsStartConfigs = this.props
+      .getAnswer("options", WhatSymptomsConfig.id)
+      .filter((option: Option) => option.selected)
+      .map((option: Option) => {
+        return {
+          buttons: SymptomsStartConfig.buttons,
+          description: option.key,
+          id: SymptomsStartConfig.id + "_" + option.key,
+          required: true,
+          title: SymptomsStartConfig.title,
+        };
+      });
+
+    const last48Configs = this.props
+      .getAnswer("options", WhatSymptomsConfig.id)
+      .filter((option: Option) => option.selected)
+      .map((option: Option) => {
+        return {
+          buttons: Last48Config.buttons,
+          description: option.key,
+          id: Last48Config.id + "_" + option.key,
+          required: true,
+          title: Last48Config.title,
+        };
+      });
+
+    const severityConfigs = this.props
+      .getAnswer("options", WhatSymptomsConfig.id)
+      .filter((option: Option) => option.selected)
+      .map((option: Option) => {
+        return {
+          buttons: SymptomSeverityConfig.buttons,
+          description: option.key,
+          id: SymptomSeverityConfig.id + "_" + option.key,
+          required: true,
+          title: SymptomSeverityConfig.title,
+        };
+      });
+
     const { t } = this.props;
     return (
       <Screen
@@ -707,10 +749,53 @@ class WhenSymptomsScreen extends React.Component<
         title={t("title")}
         onNext={this._onNext}
       >
+        <Divider />
         <QuestionText
           text={t("surveyTitle:" + SymptomsStartConfig.title)}
           subtext={t("surveyDescription:" + SymptomsStartConfig.description)}
         />
+        {symptomsStartConfigs.map((config: SurveyQuestionData) => {
+          return (
+            <ButtonGrid
+              key={config.id}
+              question={config}
+              title={t("surveyDescription:" + config.description) + ":"}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            />
+          );
+        })}
+        <QuestionText
+          text={t("surveyTitle:" + Last48Config.title)}
+          subtext={t("surveyDescription:" + Last48Config.description)}
+        />
+        {last48Configs.map((config: SurveyQuestionData) => {
+          return (
+            <ButtonGrid
+              key={config.id}
+              question={config}
+              style={{ width: "50%" }}
+              title={t("surveyDescription:" + config.description) + ":"}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            />
+          );
+        })}
+        <QuestionText
+          text={t("surveyTitle:" + SymptomSeverityConfig.title)}
+          subtext={t("surveyDescription:" + SymptomSeverityConfig.description)}
+        />
+        {severityConfigs.map((config: SurveyQuestionData) => {
+          return (
+            <ButtonGrid
+              key={config.id}
+              question={config}
+              title={t("surveyDescription:" + config.description) + ":"}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            />
+          );
+        })}
       </Screen>
     );
   }
@@ -744,6 +829,7 @@ class GeneralExposureScreen extends React.Component<
         title={t("generalExposure")}
         onNext={this._onNext}
       >
+        <Divider />
         <ButtonGrid
           question={InContactConfig}
           getAnswer={this.props.getAnswer}

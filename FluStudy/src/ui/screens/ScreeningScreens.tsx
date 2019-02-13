@@ -44,6 +44,7 @@ import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import Button from "../components/Button";
 import ButtonRow from "../components/ButtonRow";
+import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
 import Links from "../components/Links";
@@ -346,6 +347,8 @@ class ConsentScreen extends React.PureComponent<
         />
         <Screen
           canProceed={this._canProceed()}
+          centerDesc={true}
+          desc={t("description")}
           navBar={true}
           navigation={this.props.navigation}
           skipButton={true}
@@ -353,6 +356,7 @@ class ConsentScreen extends React.PureComponent<
           title={t("consent")}
           onNext={this._onNext}
         >
+          <Divider />
           <Text
             center={true}
             content={t("consentFormHeader")}

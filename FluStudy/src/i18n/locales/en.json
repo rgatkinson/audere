@@ -45,11 +45,9 @@
     "validationError": "* Please provide a valid email address",
     "required": " (required)",
     "name": "Please enter your full name",
-    "eSignature": "Your e-signature:",
-    "sigPlaceholder": "Enter your name to generate your e-signature",
     "todaysDate": "Today's Date",
     "consent": "Consent Form",
-    "description": "Please read and e-sign the consent form by scrolling to the bottom and accepting the signature",
+    "description": "Please read and accept the consent form by scrolling to the bottom and clicking 'I consent'",
     "accept": "I Consent",
     "noThanks": "No, Thanks",
     "consentFormHeader": "**UNIVERSITY OF WASHINGTON\nCONSENT FORM: Ages 18 and up\nASSENT FORM:  Ages 13-17\nSEATTLE FLU STUDY**\n\nResearchers:\nHelen Y. Chu, MD, MPH, Assistant Professor of Medicine, (206) 897-5318 (University of Washington)\nJanet. A Englund, MD, Professor of Pediatric Infectious Diseases (Seattle Children’s Hospital)\nMichael Boeckh, MD, PhD, Professor of Medicine (Fred Hutchinson Cancer Research Center)\n\n",
@@ -63,20 +61,32 @@
     "consent": "Consent",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
+    "symptomsLast48": "Where these symptoms present in the last 48 hours?",
+    "symptomsSeverity": "How severe were your symptoms?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
     "selectAll": "Please select all that apply.",
-    "symptomsStart": "Select the time frame that best applies"
+    "symptomsStart": "Select the time frame that best applies",
+    "feelingFeverish": "Feeling feverish",
+    "chillsOrSweats": "Feeling chills or sweats",
+    "cough": "Cough",
+    "fatigue": "Feeling tired or more tired than usual",
+    "muscleOrBodyAches": "Muscle or body aches",
+    "soreThroat": "Sore throat",
+    "headache": "Headache",
+    "runningNose": "Runny or stuffy nose",
+    "shortnessOfBreath": "Shortness of breath",
+    "symptomsSeverity": "Select the level of discomfort you felt"
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
     "noThanks": "No, thanks",
     "viewConsent": "View Consent",
     "thankYou": "Thank You",
-    "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and accept the e-signature at the end to continue",
+    "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and click 'I consent' to continue",
     "areYouSure": "Are you sure?",
     "minSymptoms": "You must be experiencing at least 2 symptoms including a cough to participate in this study."
   },
@@ -223,12 +233,6 @@
     "learnLink": "Learn more about this flu study",
     "medLink": "Find a nearby clinic or physician"
   },
-  "surveyRadio": {
-    "1day": "1 Day",
-    "2days": "2 Days",
-    "3days": "3 Days",
-    "4days": "4+ Days"
-  },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",
     "sendCopyOfMyConsent": "Send me a copy of my consent",
@@ -265,7 +269,14 @@
     "18to24": "18 to 24",
     "under18": "17 and under",
     "submit": "Submit",
-    "none": "None"
+    "none": "None",
+    "1day": "1 Day",
+    "2days": "2 Days",
+    "3days": "3 Days",
+    "4days": "4+ Days",
+    "mild": "Mild",
+    "moderate": "Moderate",
+    "severe": "Severe"
   },
   "countries": {
     "Afghanistan": "Afghanistan",

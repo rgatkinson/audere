@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ButtonConfig, SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
@@ -15,6 +21,8 @@ import Text from "./Text";
 
 interface Props {
   question: SurveyQuestionData;
+  style?: StyleProp<ViewStyle>;
+  title?: string;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -23,13 +31,12 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
   render() {
     const { question, t } = this.props;
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.style]}>
         <QuestionText
-          text={t("surveyTitle:" + question.title)}
-          subtext={
-            !!question.description
-              ? t("surveyDescription:" + question.description)
-              : undefined
+          text={
+            !!this.props.title
+              ? this.props.title
+              : t("surveyTitle:" + question.title)
           }
         />
         <Grid
@@ -90,7 +97,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
-    marginVertical: GUTTER / 2,
+    marginBottom: GUTTER,
   },
   selectedButton: {
     backgroundColor: BORDER_COLOR,
