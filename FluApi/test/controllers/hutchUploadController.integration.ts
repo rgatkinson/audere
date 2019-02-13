@@ -88,13 +88,13 @@ describe("export controller", () => {
       .send(contents)
       .expect(200);
 
-    const visitPII = await models.visitPII.findOne({ where: { csruid: csruid } });
+    const visitPii = await models.visitPii.findOne({ where: { csruid: csruid } });
 
-    const visitNonPII = await models.visitNonPII.findOne({
+    const visitNonPii = await models.visitNonPii.findOne({
       where: { csruid: csruid }
     });
 
-    return [visitNonPII, visitPII];
+    return [visitNonPii, visitPii];
   }
 
   describe("get pending encounters", () => {
@@ -243,7 +243,7 @@ describe("export controller", () => {
           .post(new RegExp(".*"))
           .reply(200, rawResponse);
 
-        nock(hutchUpload.baseUrl)
+        nock(hutchConfig.baseUrl)
           .post(new RegExp(".*"))
           .times(10)
           .reply(200);

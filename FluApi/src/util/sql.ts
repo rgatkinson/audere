@@ -70,18 +70,22 @@ export function unique(column) {
 export function nullable(column) {
   return { ...column, allowNull: true };
 }
-export function stringColumn() {
-  return column(SQL_STRING);
+export function stringColumn(field?: string) {
+  return column(SQL_STRING, field);
 }
-export function booleanColumn() {
-  return column(SQL_BOOLEAN);
+export function booleanColumn(field?: string) {
+  return column(SQL_BOOLEAN, field);
 }
-export function jsonColumn<T>() {
-  return column(SQL_JSON);
+export function jsonColumn<T>(field?: string) {
+  return column(SQL_JSON, field);
 }
-export function integerColumn() {
-  return column(SQL_INTEGER);
+export function integerColumn(field?: string) {
+  return column(SQL_INTEGER, field);
 }
-export function column(type) {
-  return { allowNull: false, type };
+export function column(type, field?: string) {
+  if (field == null) {
+    return { allowNull: false, type };
+  } else {
+    return { allowNull: false, type, field };
+  }
 }

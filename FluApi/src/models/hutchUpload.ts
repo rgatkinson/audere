@@ -21,7 +21,7 @@ export function defineHutchUpload(sql: SplitSql): HutchUploadModel {
     sql.nonPii,
     "hutch_upload",
     {
-      visitId: unique(integerColumn()),
+      visitId: unique(integerColumn("visit_id")),
     }
   )
 }
