@@ -265,7 +265,7 @@ class SymptomsScreen extends React.PureComponent<
       <Screen
         canProceed={this._haveOption()}
         centerDesc={true}
-        desc={t("surveyDescription:" + SymptomsConfig.description!.label)}
+        desc={t("surveyDescription:" + SymptomsConfig.description)}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -501,7 +501,7 @@ class AddressInputScreen extends React.Component<
         buttonLabel={t("common:button:submit")}
         canProceed={this._haveValidAddress()}
         centerDesc={true}
-        desc={t("surveyDescription:" + AddressConfig.description!.label)}
+        desc={t("surveyDescription:" + AddressConfig.description)}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}

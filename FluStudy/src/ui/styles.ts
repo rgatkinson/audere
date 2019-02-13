@@ -25,6 +25,7 @@ export const ERROR_COLOR = "red";
 export const LINK_COLOR = "#007AFF";
 export const GUTTER = 16;
 export const FONT_EXTRA_BOLD = "OpenSans-ExtraBold";
+export const FONT_ITALIC = "OpenSans-Italic";
 export const FONT_NORMAL = "OpenSans-Regular";
 export const FONT_SEMI_BOLD = "OpenSans-SemiBold";
 export const FONT_BOLD = "OpenSans-Bold";

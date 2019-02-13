@@ -60,7 +60,8 @@
     "ageTitle": "How old are you?",
     "consentEmail": "Email me the consent language",
     "symptomTitle": "Describe your symptoms",
-    "consent": "Consent"
+    "consent": "Consent",
+    "symptomsSurveyTitle": "Which of the following were present during your illness?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -208,6 +209,10 @@
     "title": "Collect mucus from nose",
     "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
   },
+  "symptomsSurveyScreen": {
+    "title": "Symptoms Survey",
+    "description": "Questions marked with an * are required."
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
@@ -224,6 +229,10 @@
     "cough": "Cough",
     "fatigue": "Feeling tired or more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
+    "soreThroat": "Sore throat",
+    "headache": "Headache",
+    "runningNose": "Runny or stuffy nose",
+    "shortnessOfBreath": "Shortness of breath",
     "none": "None",
     "noneOfTheAbove": "None of the above"
   },

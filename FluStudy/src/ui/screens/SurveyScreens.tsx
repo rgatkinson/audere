@@ -12,14 +12,18 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Permissions } from "expo";
 import { EventInfoKind, SampleInfo } from "audere-lib/feverProtocol";
-import { Action, StoreState, setKitBarcode } from "../../store";
+import { Action, Option, StoreState, setKitBarcode } from "../../store";
+import { SymptomsSurveyConfig } from "../../resources/ScreenConfig";
+import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
 import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
-import Screen from "../components/Screen";
+import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Links from "../components/Links";
+import QuestionText from "../components/QuestionText";
+import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import Title from "../components/Title";
@@ -604,13 +608,75 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("SplashScreen");
+          this.props.navigation.push("SymptomsSurvey");
         }}
       />
     );
   }
 }
 const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+
+class SymptomsSurveyScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  _onNext = () => {
+    this.props.updateAnswer(
+      { selectedButtonKey: "next" },
+      SymptomsSurveyConfig
+    );
+    this.props.navigation.push("SplashScreen");
+  };
+
+  _haveOption = () => {
+    const symptoms: Option[] = this.props.getAnswer(
+      "options",
+      SymptomsSurveyConfig.id
+    );
+    return symptoms
+      ? symptoms.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        )
+      : false;
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this._haveOption()}
+        centerDesc={true}
+        desc={t("description")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("SplashScreen");
+        }}
+      >
+        <QuestionText
+          text={t("surveyTitle:" + SymptomsSurveyConfig.title)}
+          subtext={t("surveyDescription:" + SymptomsSurveyConfig.description)}
+        />
+        <OptionList
+          data={newSelectedOptionsList(
+            SymptomsSurveyConfig.optionList!.options,
+            this.props.getAnswer("options", SymptomsSurveyConfig.id)
+          )}
+          multiSelect={true}
+          numColumns={1}
+          onChange={symptoms =>
+            this.props.updateAnswer({ options: symptoms }, SymptomsSurveyConfig)
+          }
+        />
+      </Screen>
+    );
+  }
+}
+const SymptomsSurvey = reduxWriter(
+  withNamespaces("symptomsSurveyScreen")(SymptomsSurveyScreen)
+);
 
 export {
   WelcomeBack,
@@ -626,4 +692,5 @@ export {
   Swab,
   SwabPrep,
   Mucus,
+  SymptomsSurvey,
 };

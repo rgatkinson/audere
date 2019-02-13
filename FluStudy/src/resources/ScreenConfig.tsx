@@ -3,7 +3,7 @@ import { Action, SurveyResponse } from "../store";
 export interface SurveyQuestionData {
   buttons: ButtonConfig[];
   id: string;
-  description?: DescriptionConfig;
+  description?: string;
   optionList?: OptionListConfig;
   title?: string;
 }
@@ -13,11 +13,6 @@ export interface ButtonConfig {
   primary: boolean;
   enabled: boolean;
   subtextKey?: string;
-}
-
-interface DescriptionConfig {
-  label: string;
-  center?: boolean;
 }
 
 export interface OptionListConfig {
@@ -45,9 +40,7 @@ export const AgeBuckets: {
 export const AddressConfig: SurveyQuestionData = {
   id: "Address",
   title: "address",
-  description: {
-    label: "addressDesc",
-  },
+  description: "addressDesc",
   buttons: [{ key: "next", primary: true, enabled: true }],
 };
 
@@ -73,9 +66,7 @@ export const ConsentConfig: SurveyQuestionData = {
 export const SymptomsConfig: SurveyQuestionData = {
   id: "Symptoms",
   title: "symptomTitle",
-  description: {
-    label: "selectAll",
-  },
+  description: "selectAll",
   optionList: {
     multiSelect: true,
     options: [
@@ -88,6 +79,28 @@ export const SymptomsConfig: SurveyQuestionData = {
     ],
     withOther: false,
     exclusiveOption: "noneOfTheAbove",
+  },
+  buttons: [{ key: "next", primary: true, enabled: true }],
+};
+
+export const SymptomsSurveyConfig: SurveyQuestionData = {
+  id: "SymptomsSurvey",
+  title: "symptomsSurveyTitle",
+  description: "selectAll",
+  optionList: {
+    multiSelect: true,
+    options: [
+      "feelingFeverish",
+      "chillsOrSweats",
+      "cough",
+      "soreThroat",
+      "headache",
+      "fatigue",
+      "muscleOrBodyAches",
+      "runningNose",
+      "shortnessOfBreath",
+    ],
+    withOther: false,
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
 };

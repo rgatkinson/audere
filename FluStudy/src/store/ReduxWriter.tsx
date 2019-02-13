@@ -69,9 +69,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
         questionText: (
           (data.title ? t("surveyTitle:" + data.title) : "") +
           " " +
-          (data.description
-            ? t("surveyDescription:" + data.description!.label)
-            : "")
+          (data.description ? t("surveyDescription:" + data.description) : "")
         ).trim(),
       };
     };
