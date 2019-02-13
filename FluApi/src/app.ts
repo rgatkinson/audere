@@ -19,9 +19,6 @@ import { SplitSql } from "./util/sql";
 const buildInfo = require("../static/buildInfo.json");
 
 export function createPublicApp(sql: SplitSql) {
-  sql.nonPii.authenticate();
-  sql.pii.authenticate();
-
   // Public app is internet-facing.
   const publicApp = express();
   publicApp.set("port", process.env.PORT || 3000);

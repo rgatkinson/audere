@@ -7,6 +7,9 @@ import { createSplitSql } from "./util/sql";
 import { createPublicApp, createInternalApp } from "./app";
 
 const sql = createSplitSql();
+sql.nonPii.authenticate();
+sql.pii.authenticate();
+
 const publicApp = createPublicApp(sql);
 
 publicApp.listen(
