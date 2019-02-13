@@ -6,7 +6,7 @@ for_lane :dev do
     app_identifier "org.auderenow.fluathome.dev"
 end
 
-for lane :staging do
+for_lane :staging do
     app_identifier "org.auderenow.fluathome.staging"
 end 
 
