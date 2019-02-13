@@ -31,3 +31,5 @@ ios/fluathome/Supporting/EXBuildConstants.*
 # fastlane generated files
 ios/fastlane/README.md 
 ios/fastlane/report.xml
+ios/fluathome.ipa
+ios/fluathome.app.dSYM.zip
