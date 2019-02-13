@@ -10,7 +10,7 @@
     "build": "../scripts/generate-build-info && tsc && cp -R static build/",
     "start": "NODE_ENV=development concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "yarn run build && NODE_ENV=production node .",
-    "test": "jest --verbose --no-watchman --detectOpenHandles --forceExit --testPathPattern=\\.test\\.ts$",
+    "test": "jest --verbose --no-watchman --detectOpenHandles --forceExit --testPathPattern=\\.test\\.ts$ --maxWorkers=1",
     "test-integration": "jest --verbose --no-watchman --runInBand --detectOpenHandles --forceExit --testPathPattern=\\.integration\\.ts$",
     "test-watch": "jest --verbose --no-watchman --watchAll --testPathPattern=\\.test\\.ts$",
     "sequelize": "sequelize",
