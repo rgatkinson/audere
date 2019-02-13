@@ -15,7 +15,12 @@ import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
-import { GUTTER, LOGO_HEIGHT, STATUS_BAR_HEIGHT } from "../styles";
+import {
+  GUTTER,
+  LOGO_HEIGHT,
+  STATUS_BAR_HEIGHT,
+  SYSTEM_PADDING_BOTTOM,
+} from "../styles";
 
 interface Props {
   buttonLabel?: string;
@@ -136,6 +141,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: "white",
     flex: 1,
+    paddingBottom: SYSTEM_PADDING_BOTTOM,
   },
   footerContainer: {
     alignItems: "center",

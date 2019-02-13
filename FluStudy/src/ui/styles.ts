@@ -1,3 +1,23 @@
+import { Dimensions, NativeModules } from "react-native";
+const { PlatformConstants } = NativeModules;
+const deviceType = PlatformConstants.interfaceIdiom;
+
+const X_WIDTH = 375;
+const X_HEIGHT = 812;
+
+const XSMAX_WIDTH = 414;
+const XSMAX_HEIGHT = 896;
+
+const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get("window");
+
+let isIPhoneX = false;
+
+if (deviceType === "phone") {
+  isIPhoneX =
+    (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) ||
+    (W_WIDTH === XSMAX_WIDTH && W_HEIGHT === XSMAX_HEIGHT);
+}
+
 export const PRIMARY_COLOR = "#333";
 export const SECONDARY_COLOR = "#666";
 export const LIGHT_COLOR = "#979797";
@@ -20,7 +40,8 @@ export const SMALL_TEXT = 14;
 export const INPUT_HEIGHT = 40;
 export const SYSTEM_TEXT = 17;
 export const SYSTEM_FONT = "System";
+export const SYSTEM_PADDING_BOTTOM = isIPhoneX ? 20 : 0;
 export const STATUS_BAR_COLOR = "#F8F8F8";
-export const STATUS_BAR_HEIGHT = 20;
-export const NAV_BAR_HEIGHT = 60;
+export const STATUS_BAR_HEIGHT = isIPhoneX ? 44 : 20;
+export const NAV_BAR_HEIGHT = 40;
 export const LOGO_HEIGHT = 120;

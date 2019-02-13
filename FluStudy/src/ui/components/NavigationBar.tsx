@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
-    height: NAV_BAR_HEIGHT,
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
     justifyContent: "space-between",
     paddingTop: STATUS_BAR_HEIGHT,
     paddingHorizontal: GUTTER / 2,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Picker, StyleSheet, View } from "react-native";
+import { Dimensions, Picker, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Modal from "./Modal";
 
@@ -89,10 +89,11 @@ class StateModal extends React.Component<Props & WithNamespaces, State> {
 
   render() {
     const { t } = this.props;
+    const { width } = Dimensions.get("window");
     return (
       <Modal
         height={280}
-        width={350}
+        width={width * .75}
         submitText={t("common:button:done")}
         visible={this.props.visible}
         onDismiss={() => this.props.onDismiss(this.props.state)}

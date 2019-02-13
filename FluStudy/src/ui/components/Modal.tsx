@@ -17,8 +17,8 @@ const IOS_MODAL_ANIMATION = {
 };
 
 interface Props {
-  height?: number;
-  width?: number;
+  height: number;
+  width: number;
   dismissText?: string;
   submitText?: string;
   title?: string;
@@ -42,8 +42,8 @@ class Modal extends React.Component<Props & WithNamespaces> {
           style={[
             styles.modalContainer,
             {
-              height: this.props.height ? this.props.height : 620,
-              width: this.props.width ? this.props.width : 540,
+              height: this.props.height,
+              width: this.props.width,
             },
           ]}
         >
