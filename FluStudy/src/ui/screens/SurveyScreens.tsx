@@ -36,6 +36,17 @@ import {
   ChildrenWithChildrenConfig,
   PeopleInHouseholdConfig,
   BedroomsConfig,
+  MedConditionsConfig,
+  FluShotConfig,
+  FluShotDateConfig,
+  TobaccoConfig,
+  HouseholdTobaccoConfig,
+  InterferingConfig,
+  AntibioticsConfig,
+  AssignedSexConfig,
+  RaceConfig,
+  HispanicConfig,
+  InsuranceConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -45,8 +56,9 @@ import ButtonGrid from "../components/ButtonGrid";
 import Divider from "../components/Divider";
 import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
-import OptionList, { newSelectedOptionsList } from "../components/OptionList";
+import MonthPicker from "../components/MonthPicker";
 import Links from "../components/Links";
+import OptionQuestion from "../components/OptionQuestion";
 import QuestionText from "../components/QuestionText";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
@@ -666,7 +678,6 @@ class WhatSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.updateAnswer({ selectedButtonKey: "next" }, WhatSymptomsConfig);
     this.props.navigation.push("WhenSymptoms");
   };
 
@@ -697,20 +708,10 @@ class WhatSymptomsScreen extends React.Component<
         onNext={this._onNext}
       >
         <Divider />
-        <QuestionText
-          text={t("surveyTitle:" + WhatSymptomsConfig.title)}
-          subtext={t("surveyDescription:" + WhatSymptomsConfig.description)}
-        />
-        <OptionList
-          data={newSelectedOptionsList(
-            WhatSymptomsConfig.optionList!.options,
-            this.props.getAnswer("options", WhatSymptomsConfig.id)
-          )}
-          multiSelect={true}
-          numColumns={1}
-          onChange={symptoms =>
-            this.props.updateAnswer({ options: symptoms }, WhatSymptomsConfig)
-          }
+        <OptionQuestion
+          question={WhatSymptomsConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
         />
       </Screen>
     );
@@ -724,7 +725,6 @@ class WhenSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    // TODO: will our uploader save our answer if we don't have a button label?
     this.props.navigation.push("GeneralExposure");
   };
 
@@ -844,7 +844,7 @@ class GeneralExposureScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("WelcomeBack");
+    this.props.navigation.push("GeneralHealth");
   };
 
   _canProceed = () => {
@@ -853,6 +853,7 @@ class GeneralExposureScreen extends React.Component<
   };
 
   render() {
+    const width = Dimensions.get("window").width - 2 * GUTTER;
     const { t } = this.props;
     return (
       <Screen
@@ -866,6 +867,16 @@ class GeneralExposureScreen extends React.Component<
         onNext={this._onNext}
       >
         <Divider />
+        <Text content={t("expoDesc")} />
+        <Image
+          style={{ height: 0.65 * width, width, marginVertical: GUTTER }}
+          source={require("../../img/expo.png")}
+        />
+        <Text
+          content={t("expoRef")}
+          italic={true}
+          style={{ marginBottom: GUTTER }}
+        />
         <ButtonGrid
           question={InContactConfig}
           getAnswer={this.props.getAnswer}
@@ -909,6 +920,100 @@ const GeneralExposure = reduxWriter(
   withNamespaces("surveyScreen")(GeneralExposureScreen)
 );
 
+class GeneralHealthScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  _onNext = () => {
+    this.props.navigation.push("WelcomeBack");
+  };
+
+  _canProceed = () => {
+    // TODO: all required questions are answered
+    return true;
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this._canProceed()}
+        centerDesc={true}
+        desc={t("description")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("generalHealth")}
+        onNext={this._onNext}
+      >
+        <Divider />
+        <Text content={t("generalDesc")} />
+        <OptionQuestion
+          question={MedConditionsConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={FluShotConfig}
+          style={{ width: "50%" }}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <QuestionText text={t("surveyTitle:" + FluShotDateConfig.title)} />
+        <MonthPicker
+          date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
+          onDateChange={dateInput =>
+            this.props.updateAnswer({ dateInput }, FluShotDateConfig)
+          }
+        />
+        <ButtonGrid
+          question={TobaccoConfig}
+          style={{ width: "50%" }}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={HouseholdTobaccoConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={InterferingConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={AntibioticsConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={AssignedSexConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <OptionQuestion
+          question={RaceConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <ButtonGrid
+          question={HispanicConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        <OptionQuestion
+          question={InsuranceConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+      </Screen>
+    );
+  }
+}
+const GeneralHealth = reduxWriter(
+  withNamespaces("surveyScreen")(GeneralHealthScreen)
+);
+
 export {
   WelcomeBack,
   WhatsNext,
@@ -926,4 +1031,5 @@ export {
   WhatSymptoms,
   WhenSymptoms,
   GeneralExposure,
+  GeneralHealth,
 };

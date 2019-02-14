@@ -8,6 +8,7 @@ import {
 import {
   FONT_BOLD,
   FONT_EXTRA_BOLD,
+  FONT_ITALIC,
   FONT_NORMAL,
   GUTTER,
   PRIMARY_COLOR,
@@ -19,6 +20,7 @@ interface Props {
   center?: boolean;
   content: string;
   extraBold?: boolean;
+  italic?: boolean;
   style?: StyleProp<TextStyle>;
 }
 
@@ -28,8 +30,9 @@ export default class Text extends React.Component<Props> {
       <SystemText
         style={[
           styles.container,
-          this.props.center && styles.center,
           this.props.bold && styles.bold,
+          this.props.center && styles.center,
+          this.props.italic && styles.italic,
           this.props.style,
         ]}
       >
@@ -55,6 +58,9 @@ const styles = StyleSheet.create({
   bold: {
     fontFamily: FONT_BOLD,
   },
+  center: {
+    textAlign: "center",
+  },
   container: {
     alignSelf: "stretch",
     color: PRIMARY_COLOR,
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
   extraBold: {
     fontFamily: FONT_EXTRA_BOLD,
   },
-  center: {
-    textAlign: "center",
+  italic: {
+    fontFamily: FONT_ITALIC,
   },
 });

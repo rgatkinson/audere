@@ -21,6 +21,21 @@
   "step": {
     "step": "**Step {{step}}** of {{total}}"
   },
+  "monthPicker": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+
   "navigationBar": {
     "back": "Back",
     "next": "Next"
@@ -69,7 +84,18 @@
     "householdChildren": "Are there any children under 18 years old in your household?",
     "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
     "peopleInHousehold": "How many people live in the household (including you)?",
-    "bedrooms": "How many bedrooms are in your home?"
+    "bedrooms": "How many bedrooms are in your home?",
+    "medicalCondition": "Have you ever been told by a doctor that you have one of the following medical conditions?",
+    "fluShot": "Did you get a flu shot in the last year?",
+    "fluShotDate": "If yes, what was the date of your flu shot?",
+    "smokeTobacco": "Do you smoke tobacco?",
+    "householdTobacco": "Does anyone in your household smoke tobacco?",
+    "interfering": "Is your illness preventing you from going to work or school, going to social events, or exercising/working out?",
+    "antibiotics": "Are you currently taking antibiotics or antivirals for this illness?",
+    "assignedSex": "What was your assigned sex at birth?",
+    "race": "How would you describe your race?",
+    "hispanic": "Are you Hispanic or Latino?",
+    "healthInsurance": "Do you have health insurance?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -84,7 +110,8 @@
     "headache": "Headache",
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
-    "symptomsSeverity": "Select the level of discomfort you felt"
+    "symptomsSeverity": "Select the level of discomfort you felt",
+    "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?"
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
@@ -226,6 +253,10 @@
   "surveyScreen": {
     "title": "Symptoms Survey",
     "generalExposure": "General Exposure",
+    "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within 6 feet of them for at least 2 minutes or physical contact for any amount of time.",
+    "expoRef": "For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
+    "generalHealth": "General Health",
+    "generalDesc": "Next, we'd like to ask you some questions about your general health.",
     "description": "Questions marked with an * are required."
   },
   "links": {
@@ -249,7 +280,22 @@
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
     "none": "None",
-    "noneOfTheAbove": "None of the above"
+    "noneOfTheAbove": "None of the above",
+    "asthma": "Asthma",
+    "copd": "COPD/Emphysema",
+    "diabetes": "Diabetes",
+    "noneOfThese": "None of these",
+    "doNotKnow": "Do not know",
+    "americanIndianOrAlaskaNative": "American Indian or Alaska Native",
+    "asian": "Asian",
+    "nativeHawaiian": "Native Hawaiian or Pacific Islander",
+    "blackOrAfricanAmerican": "African American",
+    "white": "White",
+    "other": "Other",
+    "preferNotToSay": "Prefer not to say",
+    "medicaid": "Medicaid",
+    "privateInsurance": "Private Insurance",
+    "medicare": "Medicare"
   },
   "surveyButton": {
     "done": "Done",
@@ -258,6 +304,8 @@
     "na": "Not Applicable",
     "yes": "Yes",
     "no": "No",
+    "male": "Male",
+    "female": "Female",
     "doNotKnow": "Do Not Know",
     "dontKnow": "Don't Know",
     "doNotKnowUndecided": "Do Not Know / Undecided",

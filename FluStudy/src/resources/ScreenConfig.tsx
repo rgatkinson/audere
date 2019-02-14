@@ -218,3 +218,137 @@ export const BedroomsConfig: SurveyQuestionData = {
   ],
   required: false,
 };
+
+export const MedConditionsConfig: SurveyQuestionData = {
+  id: "MedicalCondition",
+  title: "medicalCondition",
+  description: "selectAll",
+  optionList: {
+    multiSelect: true,
+    options: ["asthma", "copd", "diabetes", "noneOfThese", "doNotKnow"],
+    withOther: false,
+    exclusiveOption: "noneOfThese",
+  },
+
+  buttons: [],
+  required: false,
+};
+
+export const FluShotConfig: SurveyQuestionData = {
+  id: "FluShot",
+  title: "fluShot",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+// TODO date picker
+export const FluShotDateConfig: SurveyQuestionData = {
+  id: "FluShotDate",
+  title: "fluShotDate",
+  buttons: [],
+  required: false,
+};
+
+export const TobaccoConfig: SurveyQuestionData = {
+  id: "SmokeTobacco",
+  title: "smokeTobacco",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const HouseholdTobaccoConfig: SurveyQuestionData = {
+  id: "HouseholdTobacco",
+  title: "householdTobacco",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const InterferingConfig: SurveyQuestionData = {
+  id: "Interfering",
+  title: "interfering",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const AntibioticsConfig: SurveyQuestionData = {
+  id: "Antibiotics",
+  title: "antibiotics",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  required: true,
+};
+
+export const AssignedSexConfig: SurveyQuestionData = {
+  id: "AssignedSex",
+  title: "assignedSex",
+  buttons: [
+    { key: "male", primary: false, enabled: true },
+    { key: "female", primary: false, enabled: true },
+    { key: "preferNotToSay", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const RaceConfig: SurveyQuestionData = {
+  id: "Race",
+  title: "race",
+  buttons: [],
+  required: false,
+  description: "selectAll",
+  optionList: {
+    options: [
+      "americanIndianOrAlaskaNative",
+      "asian",
+      "nativeHawaiian",
+      "blackOrAfricanAmerican",
+      "white",
+      "other",
+      "preferNotToSay",
+    ],
+    multiSelect: true,
+    exclusiveOption: "preferNotToSay",
+    withOther: false,
+  },
+};
+
+export const HispanicConfig: SurveyQuestionData = {
+  id: "Hispanic",
+  title: "hispanic",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+    { key: "preferNotToSay", primary: false, enabled: true },
+  ],
+  required: false,
+};
+
+export const InsuranceConfig: SurveyQuestionData = {
+  id: "HealthInsurance",
+  title: "healthInsurance",
+  description: "selectAll",
+  buttons: [],
+  required: false,
+  optionList: {
+    options: ["none", "medicaid", "privateInsurance", "medicare", "other"],
+    multiSelect: true,
+    withOther: false,
+    exclusiveOption: "none",
+  },
+};

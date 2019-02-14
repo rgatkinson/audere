@@ -183,7 +183,6 @@ class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.updateAnswer({ selectedButtonKey: "next" }, SymptomsConfig);
     const { t } = this.props;
     if (this._numSymptoms() > 1 && this._haveCough()) {
       Alert.alert(t("thankYou"), t("nextStep"), [
