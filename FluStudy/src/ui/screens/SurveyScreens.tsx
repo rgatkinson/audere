@@ -242,6 +242,11 @@ class ScanScreen extends React.Component<
     );
   }
 
+  componentWillUnmount() {
+    this._willFocus.remove();
+    this._willBlur.remove();
+  }
+
   _setTimer() {
     // Timeout after 30 seconds
     this._clearTimer();
@@ -673,13 +678,91 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("WhatSymptoms");
+          this.props.navigation.push("FirstTimer");
         }}
       />
     );
   }
 }
 const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+
+class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
+  state = {
+    time: 60,
+  };
+
+  _timer: number | null | undefined;
+  _willFocus: any;
+
+  componentDidMount() {
+    this._willFocus = this.props.navigation.addListener("willFocus", () =>
+      this._setTimer()
+    );
+  }
+
+  componentWillUnmount() {
+    this._willFocus.remove();
+  }
+
+  _setTimer() {
+    setTimeout(() => {
+      if (this.props.navigation.isFocused() && this.state.time > 1) {
+        this.setState({ time: this.state.time - 1 });
+        this._setTimer();
+      } else if (this.props.navigation.isFocused()) {
+        this.props.navigation.push("FirstTimerDone");
+      }
+    }, 1000);
+  }
+
+  _canProceed = () => {
+    return false;
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this._canProceed()}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title", { time: this.state.time })}
+        onNext={() => {}}
+      >
+        <Text content={t("tip")} />
+      </Screen>
+    );
+  }
+}
+const FirstTimer = withNamespaces("firstTimerScreen")<Props>(FirstTimerScreen);
+
+class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("WhatSymptoms");
+        }}
+      >
+        <Text content={t("tip")} />
+      </Screen>
+    );
+  }
+}
+const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
+  FirstTimerDoneScreen
+);
 
 class WhatSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -1035,6 +1118,8 @@ export {
   Swab,
   SwabPrep,
   Mucus,
+  FirstTimer,
+  FirstTimerDone,
   WhatSymptoms,
   WhenSymptoms,
   GeneralExposure,
