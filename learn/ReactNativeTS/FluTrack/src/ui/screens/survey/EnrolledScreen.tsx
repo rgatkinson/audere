@@ -181,7 +181,7 @@ class EnrolledScreen extends React.PureComponent<
 const styles = StyleSheet.create({
   disclaimer: {
     fontSize: 17,
-    marginTop: 20,
+    marginTop: 5,
   },
 });
 
