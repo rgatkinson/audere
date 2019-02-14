@@ -32,6 +32,7 @@ class SurveyStartScreen extends React.Component<Props & WithNamespaces> {
           <Text
             content={
               t("youAreNowEnrolled") +
+              " " +
               (locationType !== "port" ? t("pleaseAnswerFollowing") : "")
             }
           />
