@@ -11,13 +11,13 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import BorderView from "./BorderView";
 import Button from "./Button";
+import Logo from "./Logo";
 import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
 import {
   GUTTER,
-  LOGO_HEIGHT,
   STATUS_BAR_HEIGHT,
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
@@ -90,15 +90,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
               justifyContent: "space-between",
             }}
           >
-            {this.props.logo && (
-              <Image
-                style={{
-                  height: LOGO_HEIGHT,
-                  width: Dimensions.get("window").width,
-                }}
-                source={require("../../img/logo.png")}
-              />
-            )}
+            {this.props.logo && <Logo />}
             <View style={styles.innerContainer}>
               {!!this.props.step && (
                 <Step step={this.props.step} totalSteps={4} />

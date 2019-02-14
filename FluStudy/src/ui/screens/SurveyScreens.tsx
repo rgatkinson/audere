@@ -206,10 +206,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
             source={require("../../img/barcodeBox.png")}
           />
         </BorderView>
-        <Text
-          content={t("tips")}
-          style={{ marginBottom: GUTTER / 2 }}
-        />
+        <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
       </Screen>
     );
   }
