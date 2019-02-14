@@ -1,3 +1,18 @@
+How to get running from source
+
+* Install cocoapods
+  * `sudo gem install cocoapods`
+* Run `pod install` from `FluStudy/ios/`
+* Run `yarn install` from `FluStudy`
+* Install fastlane
+  * `sudo gem install fastlane -NV`
+* Run `fastlane certificates` from `FluStudy/ios/`
+  * You will be prompted for a passphrase to decrypt the signing certs from the repo. See Terri for this.
+  * If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
+* Run `yarn start` from `FluStudy/`
+* Open `FluStudy/ios/flutrack.xcworkspace` in Xcode
+* Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
+
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
