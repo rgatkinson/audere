@@ -560,6 +560,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -619,8 +622,6 @@
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
 					"\"$(PODS_ROOT)/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = G8UCCFY788;
 				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.dev;

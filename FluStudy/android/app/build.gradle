@@ -97,7 +97,6 @@ apply from: 'expo.gradle'
 
 
 dependencies {
-    compile project(':react-native-gesture-handler')
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
   implementation 'com.android.support:multidex:1.0.1'

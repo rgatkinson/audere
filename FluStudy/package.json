@@ -91,7 +91,6 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "react-native-check-box": "^2.1.7",
     "react-native-datepicker": "^1.7.2",
-    "react-native-gesture-handler": "^1.0.15",
     "react-native-keyboard-aware-scroll-view": "^0.7.4",
     "react-native-keyboard-listener": "^1.1.0",
     "react-native-modal": "^7.0.0",
