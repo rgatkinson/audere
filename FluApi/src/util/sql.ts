@@ -33,13 +33,17 @@ export function createSplitSql(): SplitSql {
     throw new Error("Copy .env.example to .env and customize stuff :)");
   }
 
-  const pii = new Sequelize(process.env.PII_DATABASE_URL, { logging: false });
+  const pii = new Sequelize(process.env.PII_DATABASE_URL, {
+    logging: false,
+    operatorsAliases: false,
+  });
   const nonPii = new Sequelize(process.env.NONPII_DATABASE_URL, {
     // This globally enables search path options, if not enabled search path
     // options are deleted from config. This is needed for querying census data.
     dialectOptions: {
       prependSearchPath: true
     },
+    operatorsAliases: false,
     logging: false
   });
   return {
