@@ -110,8 +110,8 @@ EOF
   sudo service nginx restart
 }
 
-umask 022 # TODO remove
-set -x # TODO remove
+(umask 022;touch /setup.log)
+set -x
 export TERM="xterm-256color"
 main &>/setup.log
 

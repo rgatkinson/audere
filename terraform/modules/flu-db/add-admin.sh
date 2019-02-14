@@ -80,8 +80,8 @@ EOF
   umount "$creds"
 }
 
-(umask 022;touch /setup.log) # TODO remove
-set -x # TODO remove
+(umask 022;touch /setup.log)
+set -x
 export TERM="xterm-256color"
-main &>/setup.log # TODO remove
+main &>/setup.log
 halt

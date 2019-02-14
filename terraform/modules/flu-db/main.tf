@@ -12,7 +12,7 @@ resource "aws_db_instance" "fludb_pii" {
   backup_retention_period = 35
   backup_window = "10:00-10:59"
   copy_tags_to_snapshot = true
-  deletion_protection = false // TODO
+  deletion_protection = true
   engine = "postgres"
   engine_version = "10.5"
   identifier = "${local.base_name}-pii"
@@ -22,7 +22,7 @@ resource "aws_db_instance" "fludb_pii" {
   parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
   password = "${local.db_setup_password}"
   publicly_accessible = false
-  skip_final_snapshot = true // TODO
+  skip_final_snapshot = false
   storage_encrypted = true
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "${local.my_userid}"
@@ -48,7 +48,7 @@ resource "aws_db_instance" "fludb_nonpii" {
   backup_retention_period = 35
   backup_window = "10:00-10:59"
   copy_tags_to_snapshot = true
-  deletion_protection = false // TODO
+  deletion_protection = true
   engine = "postgres"
   engine_version = "10.5"
   identifier = "${local.base_name}-nonpii"
@@ -58,7 +58,7 @@ resource "aws_db_instance" "fludb_nonpii" {
   parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
   password = "${local.db_setup_password}"
   publicly_accessible = false
-  skip_final_snapshot = true // TODO
+  skip_final_snapshot = false
   storage_encrypted = true
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "${local.my_userid}"

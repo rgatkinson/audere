@@ -120,7 +120,7 @@ resource "aws_instance" "dev_machine" {
   ]
 
   lifecycle {
-    ignore_changes = ["ami"]
+    ignore_changes = ["ami", "user_data"]
   }
 
   tags {

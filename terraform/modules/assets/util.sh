@@ -4,7 +4,7 @@
 # can be found in the LICENSE file distributed with this file.
 
 set -euo pipefail
-set -x # TODO remove
+set -x
 umask 077
 
 function install_updates() {
