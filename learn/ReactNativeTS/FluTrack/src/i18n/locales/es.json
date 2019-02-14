@@ -101,8 +101,7 @@
     "subjectAndParent": "Tanto la firma del participante como la de uno de los padres es obligatoria cuando el participante es menor de edad.",
     "thankYouAssisting": "Gracias por ayudarnos con este estudio. Se requiere su consentimiento informado para participar. Por favor, lea las siguientes declaraciones cuidadosamente. Luego firme su reconocimiento abajo.",
     "consentFormHeader": "REPLACE ME",
-    "consentFormText": "REPLACE ME",
-    "daycareFormText": "REPLACE ME"
+    "consentFormText": "REPLACE ME"
   },
   "assentScreen": {
     "assentTitle": "Forma de Asentimiento",
@@ -190,9 +189,9 @@
     "shelterInject": "¿Se inyectas alguna de estas drogas?",
     "arrivedFrom": "¿De dónde ha llegado?",
     "travelledLastMonth": "¿A dónde ha viajado en el último mes?",
-    "whereTravelled": "¿A qué estado (s) o países ha viajado en el último mes?",
+    "whereTravelled": "¿A qué estado(s) o países ha viajado en el último mes?",
     "childrensTravelledLastMonth": "¿A dónde ha viajado usted o alguien en su hogar en el último mes?",
-    "childrensWhereTravelled": "¿A qué estado (s) o países ha viajado usted o alguien en su hogar en el último mes?",
+    "childrensWhereTravelled": "¿A qué estado(s) o países ha viajado usted o alguien en su hogar en el último mes?",
     "whenTravelled": "¿Este viaje fue en los últimos 7 días?",
     "majorityOfTime": "Durante los últimos 7 días y cuando está despierto, ¿dónde ha pasado la mayor parte de su tiempo?",
     "occupation": "¿Cuál es su ocupación principal?",
@@ -292,9 +291,7 @@
     "participationRequirements": "Para participar en este estudio, debe haber experimentado algunos síntomas de resfriado o gripe en la última semana y proporcionar la dirección de su casa. La dirección de su casa se utilizará para comprender cómo se propagan geográficamente estos virus. ** No ** compartiremos esta información con terceros no autorizados, y ** no ** le enviaremos nada por correo."
   },
   "ageScreen": {
-    "welcome": "Bienvenido",
-    "numYears": "Número de años",
-    "numMonths": "Número de meses"
+    "welcome": "Bienvenido"
   },
   "enrolledScreen": {
     "contactInfo": "Información de contacto",
