@@ -4,16 +4,19 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  EventInfoKind,
-  VisitCommonInfo,
-  VisitInfo,
   AddressInfo,
+  ConsentInfo,
+  EventInfo,
+  EventInfoKind,
+  NonPIIConsentInfo,
+  ResponseItemInfo,
   SampleInfo,
-  ResponseInfo,
-  EventInfo
+  VisitCommonInfo,
+  VisitInfo
 } from "audere-lib/snifflesProtocol";
 
 export class VisitInfoBuilder {
+  private consents = [];
   private patientInfo = {
     name: "Fake Name",
     birthDate: "1900-01-01",
@@ -76,7 +79,7 @@ export class VisitInfoBuilder {
     return this;
   }
 
-  withResponses(responses: ResponseInfo[]) {
+  withResponses(responses: ResponseItemInfo[]) {
     this.responses = responses;
     return this;
   }
@@ -101,12 +104,17 @@ export class VisitInfoBuilder {
     return this;
   }
 
+  withConsents(consents: (NonPIIConsentInfo | ConsentInfo)[]) {
+    this.consents = consents;
+    return this;
+  }
+
   build(): VisitInfo {
     return {
       ...this.visitCommonInfo,
       samples: this.samples.length > 0 ? this.samples : [this.defaultSample],
       giftcards: [],
-      consents: [],
+      consents: this.consents,
       patient: this.patientInfo,
       responses: [
         {

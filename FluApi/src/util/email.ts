@@ -18,7 +18,10 @@ export async function sendEmail({
   replyTo
 }: sendEmailParams) {
   if (process.env.NODE_ENV !== "production" && !process.env.SEND_EMAIL) {
-    logger.debug(`Skipped sending email: ${subject} - ${body}`);
+    logger.debug(
+      `Skipped sending email from ${from} to ${to.join(", ")}:` +
+        `${subject}\nBEGIN EMAIL BODY\n${body}\nEND EMAIL BODY`
+    );
     return;
   }
   const emailParams = {
