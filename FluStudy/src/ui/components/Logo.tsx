@@ -42,7 +42,6 @@ class Logo extends React.Component<Props> {
   };
 
   render() {
-    console.log(this.props.isDemo);
     return (
       <TouchableWithoutFeedback
         style={styles.container}

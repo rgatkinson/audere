@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
+import { Action, StoreState } from "../../store";
 import BorderView from "./BorderView";
 import Button from "./Button";
 import Logo from "./Logo";
@@ -16,11 +18,7 @@ import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
-import {
-  GUTTER,
-  STATUS_BAR_HEIGHT,
-  SYSTEM_PADDING_BOTTOM,
-} from "../styles";
+import { GUTTER, STATUS_BAR_HEIGHT, SYSTEM_PADDING_BOTTOM } from "../styles";
 
 interface Props {
   buttonLabel?: string;
@@ -31,15 +29,19 @@ interface Props {
   footer?: any;
   imageBorder?: boolean;
   imageSrc?: ImageSourcePropType;
+  isDemo?: boolean;
   logo?: boolean;
   navBar: boolean;
-  navigation: NavigationScreenProp<any, any>;
+  navigation?: NavigationScreenProp<any, any>;
   skipButton?: boolean;
   step?: number;
   title: string;
   onNext(): void;
 }
 
+@connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+}))
 class Screen extends React.Component<Props & WithNamespaces> {
   _getImage() {
     if (!!this.props.imageSrc) {
@@ -76,13 +78,23 @@ class Screen extends React.Component<Props & WithNamespaces> {
           !this.props.navBar && { paddingTop: STATUS_BAR_HEIGHT },
         ]}
       >
-        {this.props.navBar && (
-          <NavigationBar
-            canProceed={this.props.canProceed}
-            navigation={this.props.navigation}
-            onNext={this.props.onNext}
-          />
-        )}
+        {this.props.navBar &&
+          !!this.props.navigation && (
+            <NavigationBar
+              canProceed={this.props.canProceed}
+              navigation={this.props.navigation}
+              onNext={this.props.onNext}
+            />
+          )}
+        {this.props.isDemo &&
+          !this.props.logo && (
+            <Text
+              bold={true}
+              center={true}
+              content="Demo Mode"
+              style={styles.demoText}
+            />
+          )}
         <View style={styles.scrollContainer}>
           <ScrollView
             contentContainerStyle={{
@@ -134,6 +146,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
     paddingBottom: SYSTEM_PADDING_BOTTOM,
+  },
+  demoText: {
+    backgroundColor: "green",
+    color: "white",
+    opacity: 0.75,
   },
   footerContainer: {
     alignItems: "center",
