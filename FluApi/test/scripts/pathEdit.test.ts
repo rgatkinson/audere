@@ -66,10 +66,41 @@ describe("getPart", () => {
 });
 
 describe("setPart", () => {
-  it("sets top level field", () => {
+  it("sets top level object field", () => {
     const obj = {
       a: 5
     };
     expect(setPart(obj, partPath("a"), 10)).toEqual({ a: 10 });
+  });
+  it("sets top level array index", () => {
+    const obj = [ "a", "b", "c" ];
+    expect(setPart(obj, partPath("1"), "z")).toEqual(["a", "z", "c" ]);
+  });
+  it("sets by mixed path", () => {
+    const obj = {
+      a: "a",
+      b: [
+        "b", "c", {
+          d: {
+            e: [
+              1, 2, []
+            ]
+          }
+        }
+      ]
+    }
+    expect(setPart(obj, partPath("b"), 42)).toEqual({a:"a", b:42});
+    expect(setPart(obj, partPath("b[2]"), 42)).toEqual({
+      a: "a",
+      b: [ "b", "c", 42]
+    });
+    expect(setPart(obj, partPath("b[2].d"), 42)).toEqual({
+      a: "a",
+      b: [
+        "b", "c", {
+          d: 42
+        }
+      ]
+    });
   });
 });
