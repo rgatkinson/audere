@@ -191,9 +191,7 @@
     "scanQrCode": "Scan the bar code",
     "description": "First, we'd like you to scan the bar code found on the inside cover of your box. To do that, we'll need to access your phone's camera.",
     "okScan": "Ok! Let's Scan",
-    "tips": "Tips:",
-    "holdCamera": "Hold the camera so the bar code is in the middle of the camera",
-    "lighting": "If it's too dark, please adjust your lighting",
+    "tips": "**Tips:**\n\nHold the camera so the bar code is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
     "inputManually": "Input bar code manually"
   },
   "scanScreen": {
@@ -206,7 +204,11 @@
     "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
-    "enterKit": "Enter your kit's barcode"
+    "placeholder": "ex: 0-71869-01362-4",
+    "secondPlaceholder": "Confirm barcode",
+    "enterKit": "Enter your kit's barcode",
+    "desc": "Enter the 12-digit number found on the bottom of the bar code symbol inside your flu kit box.",
+    "tips": "**Tips:**\nFind the bar code inside your box.\nLook for the 12-digit number directly below the symbol."
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code has been input!",

@@ -39,7 +39,7 @@ export default class NumberInput extends React.Component<Props, State> {
       <TextInput
         autoCorrect={false}
         autoFocus={this.props.autoFocus}
-        keyboardType="numbers-and-punctuation"
+        keyboardType={"number-pad"}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}

@@ -2,6 +2,7 @@ import React from "react";
 import {
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -206,12 +207,9 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
           />
         </BorderView>
         <Text
-          bold={true}
           content={t("tips")}
           style={{ marginBottom: GUTTER / 2 }}
         />
-        <Text content={t("holdCamera")} style={{ marginBottom: GUTTER / 2 }} />
-        <Text content={t("lighting")} style={{ marginBottom: GUTTER }} />
       </Screen>
     );
   }
@@ -464,40 +462,52 @@ class ManualEntryScreen extends React.Component<
 
   render() {
     const { t } = this.props;
+    const width = (Dimensions.get("window").width - 3 * GUTTER) / 3;
     return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={this._validBarcodes()}
-        logo={true}
-        navBar={true}
-        navigation={this.props.navigation}
-        title={t("enterKit")}
-        onNext={this._onSave}
-      >
-        <TextInput
-          autoCorrect={false}
-          autoFocus={true}
-          placeholder="Enter barcode data"
-          returnKeyType="next"
-          style={{ marginVertical: GUTTER }}
-          value={this.state.barcode1}
-          onChangeText={(text: string) => {
-            this.setState({ barcode1: text });
-          }}
-          onSubmitEditing={() => this.confirmInput.current!.focus()}
-        />
-        <TextInput
-          autoCorrect={false}
-          placeholder="Confirm barcode data"
-          ref={this.confirmInput}
-          returnKeyType="done"
-          value={this.state.barcode2}
-          onChangeText={(text: string) => {
-            this.setState({ barcode2: text });
-          }}
-          onSubmitEditing={this._onSave}
-        />
-      </Screen>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <Screen
+          buttonLabel={t("common:button:continue")}
+          canProceed={this._validBarcodes()}
+          desc={t("desc")}
+          logo={true}
+          navBar={true}
+          navigation={this.props.navigation}
+          title={t("enterKit")}
+          onNext={this._onSave}
+        >
+          <TextInput
+            autoCorrect={false}
+            autoFocus={true}
+            keyboardType={"number-pad"}
+            placeholder={t("placeholder")}
+            returnKeyType="next"
+            style={{ marginBottom: GUTTER }}
+            value={this.state.barcode1}
+            onChangeText={(text: string) => {
+              this.setState({ barcode1: text });
+            }}
+            onSubmitEditing={() => this.confirmInput.current!.focus()}
+          />
+          <TextInput
+            autoCorrect={false}
+            keyboardType={"number-pad"}
+            placeholder={t("secondPlaceholder")}
+            ref={this.confirmInput}
+            returnKeyType="done"
+            style={{ marginBottom: GUTTER }}
+            value={this.state.barcode2}
+            onChangeText={(text: string) => {
+              this.setState({ barcode2: text });
+            }}
+            onSubmitEditing={this._onSave}
+          />
+          <ImageText
+            imageSrc={require("../../img/barcodeSample.png")}
+            imageWidth={width}
+            text={t("tips")}
+          />
+        </Screen>
+      </KeyboardAvoidingView>
     );
   }
 }
