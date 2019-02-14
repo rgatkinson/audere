@@ -239,7 +239,7 @@ class ScanScreen extends React.Component<
     // Timeout after 30 seconds
     this._clearTimer();
     this._timer = setTimeout(() => {
-      if (this.props.navigation.state.params.active) {
+      if (this.props.navigation.isFocused()) {
         this.props.navigation.push("ManualEntry");
       }
     }, 30000);

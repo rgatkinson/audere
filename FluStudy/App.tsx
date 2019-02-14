@@ -63,6 +63,10 @@ class AppWithNavigationState extends React.Component<Props> {
   }
 
   _handleAppStateChange = (nextAppState: string) => {
+    // NOTE system notifications (camera, push notification permission requests) toggle
+    // the app's active/inactive state. This is fine for now since we don't have any timeouts
+    // here that happen immediately, all require a minimum amount of elapsed time. This could
+    // be an issue in the future.
     const currentDate = new Date();
     const activeRoute = getActiveRouteName(this.props.navigationState);
 

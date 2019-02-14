@@ -15,25 +15,11 @@ import AppNavigator from "../ui/AppNavigator";
 const initialAction = { type: NavigationActions.INIT };
 const initialState = AppNavigator.router.getStateForAction(initialAction);
 
-function setActiveRoute(
-  state: NavigationState | NavigationRoute<NavigationParams>
-) {
-  if ("routes" in state) {
-    state.routes.forEach((route, i) => {
-      if (!route.params) route.params = {};
-      route.params.active = i === state.index;
-      setActiveRoute(route);
-    });
-  }
-}
-
 export default function reducer(
   state = initialState,
   action: NavigationAction
 ) {
-  const nextState = AppNavigator.router.getStateForAction(action, state);
-  setActiveRoute(state);
-  return nextState;
+  return AppNavigator.router.getStateForAction(action, state);
 }
 
 export function getActiveRouteName(
