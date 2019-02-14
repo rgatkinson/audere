@@ -478,7 +478,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/lottie-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
-					"\"$(PODS_ROOT)/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
+					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -605,7 +605,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/lottie-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
-					"\"$(PODS_ROOT)/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
+					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -738,7 +738,7 @@
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/lottie-ios\"",
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
-					"\"$(PODS_ROOT)/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
+					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
