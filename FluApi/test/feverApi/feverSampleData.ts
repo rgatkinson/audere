@@ -52,6 +52,7 @@ const COMMON_INFO: CommonInfo = {
   isDemo: false,
   workflow: {
     screeningComplete: true,
+    surveyStarted: true,
     surveyComplete: false,
   },
   events: [
