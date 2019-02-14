@@ -71,8 +71,6 @@ class DateModal extends React.Component<Props & WithNamespaces> {
                   )
                 );
                 const now = new Date();
-                console.log(now.getUTCMonth());
-                console.log(newDate.getUTCMonth());
                 if (
                   this._getDate().getUTCFullYear() == now.getUTCFullYear() &&
                   now.getUTCMonth() < newDate.getUTCMonth()
