@@ -32,7 +32,7 @@ interface Props {
   admin: state.admin.administrator,
   isDemo: state.admin.isDemo,
 }))
-class HomeScreen extends React.Component<Props & WithNamespaces, State> {
+class HomeScreen extends React.Component<Props & WithNamespaces> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
