@@ -38,6 +38,8 @@ import {
   GeneralHealth,
   TestStripSurvey,
   PictureInstructions,
+  TestStripCamera,
+  TestStripConfirmation,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
 
@@ -78,6 +80,8 @@ const Home = createStackNavigator(
     GeneralHealth,
     TestStripSurvey,
     PictureInstructions,
+    TestStripCamera,
+    TestStripConfirmation,
   },
   {
     headerMode: "none",

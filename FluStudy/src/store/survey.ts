@@ -15,6 +15,7 @@ export type SurveyAction =
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
+  | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo };
@@ -25,6 +26,7 @@ export type SurveyState = {
   events: EventInfo[];
   id?: string;
   kitBarcode?: SampleInfo;
+  testStripImg?: SampleInfo;
   pushState: PushNotificationState;
   responses: SurveyResponse[];
   timestamp?: number;
@@ -67,6 +69,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
     return {
       ...state,
       kitBarcode: action.kitBarcode,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_TEST_STRIP_IMG") {
+    return {
+      ...state,
+      testStripImg: action.testStripImg,
       timestamp: new Date().getTime(),
     };
   }
@@ -121,6 +130,13 @@ export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   return {
     type: "SET_KIT_BARCODE",
     kitBarcode,
+  };
+}
+
+export function setTestStripImg(testStripImg: SampleInfo): SurveyAction {
+  return {
+    type: "SET_TEST_STRIP_IMG",
+    testStripImg,
   };
 }
 

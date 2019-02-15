@@ -12,6 +12,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Camera, Permissions } from "expo";
+import Spinner from "react-native-loading-spinner-overlay";
 import {
   EventInfoKind,
   SampleInfo,
@@ -22,6 +23,7 @@ import {
   Option,
   StoreState,
   setKitBarcode,
+  setTestStripImg,
   setWorkflow,
 } from "../../store";
 import {
@@ -68,7 +70,7 @@ import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import Title from "../components/Title";
-import { GUTTER } from "../styles";
+import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -163,7 +165,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     if (status === "granted") {
       this.props.navigation.push("Scan");
     } else {
-      this.props.navigation.push("WhyCamera");
+      this.props.navigation.push("ManualEntry");
     }
   }
 
@@ -486,7 +488,6 @@ class ManualEntryScreen extends React.Component<
         >
           <TextInput
             autoCorrect={false}
-            autoFocus={true}
             keyboardType={"number-pad"}
             placeholder={t("placeholder")}
             returnKeyType="done"
@@ -508,7 +509,7 @@ class ManualEntryScreen extends React.Component<
             onChangeText={(text: string) => {
               this.setState({ barcode2: text });
             }}
-            onSubmitEditing={this._onSave}
+            onSubmitEditing={() => {}}
           />
           <ImageText
             imageSrc={require("../../img/barcodeSample.png")}
@@ -1172,6 +1173,15 @@ export const TestStripSurvey = reduxWriter(
 class PictureInstructionsScreen extends React.Component<
   Props & WithNamespaces
 > {
+  async _onNext() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.props.navigation.push("TestStripCamera");
+    } else {
+      // TODO: skip this step
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
@@ -1183,7 +1193,9 @@ class PictureInstructionsScreen extends React.Component<
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {}}
+        onNext={async () => {
+          await this._onNext();
+        }}
       />
     );
   }
@@ -1191,3 +1203,170 @@ class PictureInstructionsScreen extends React.Component<
 export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
   PictureInstructionsScreen
 );
+
+@connect()
+class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
+  camera = React.createRef<any>();
+
+  state = {
+    spinner: false,
+  };
+
+  async _takePicture() {
+    let photo = await this.camera.current!.takePictureAsync({
+      quality: 1,
+      base64: true,
+      orientation: "portrait",
+      fixOrientation: true,
+    });
+    this.props.dispatch(
+      setTestStripImg({
+        sample_type: "TestStripBase64",
+        code: photo.base64,
+      })
+    );
+    this.setState({ spinner: false });
+    this.props.navigation.push("TestStripConfirmation");
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <View style={{ flex: 1 }}>
+        <Spinner visible={this.state.spinner} />
+        <Camera ref={this.camera} style={cameraStyles.camera} />
+        <View style={cameraStyles.overlayContainer}>
+          <Text
+            center={true}
+            content={t("title")}
+            style={[cameraStyles.overlayText, { fontSize: LARGE_TEXT }]}
+          />
+          <View style={cameraStyles.targetBox}>
+            <Image
+              style={cameraStyles.testStrip}
+              source={require("../../img/testStrip.png")}
+            />
+          </View>
+          <Text
+            center={true}
+            content={t("description")}
+            style={cameraStyles.overlayText}
+          />
+          <TouchableOpacity
+            onPress={async () => {
+              if (!this.state.spinner) {
+                this.setState({ spinner: true });
+                await this._takePicture();
+              }
+            }}
+          >
+            <View style={cameraStyles.outerCircle}>
+              <View style={cameraStyles.circle} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+}
+const cameraStyles = StyleSheet.create({
+  camera: {
+    alignSelf: "stretch",
+    flex: 1,
+    marginTop: STATUS_BAR_HEIGHT,
+  },
+  outerCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    borderColor: "white",
+    borderWidth: 7,
+    borderRadius: 40,
+    height: 80,
+    width: 80,
+  },
+  circle: {
+    backgroundColor: "white",
+    borderColor: "transparent",
+    borderRadius: 30,
+    borderWidth: 3,
+    height: 60,
+    width: 60,
+  },
+  overlayText: {
+    color: "white",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  overlayContainer: {
+    alignItems: "center",
+    justifyContent: "space-between",
+    left: 0,
+    right: 0,
+    margin: GUTTER,
+    position: "absolute",
+    top: STATUS_BAR_HEIGHT,
+    bottom: 0,
+  },
+  targetBox: {
+    alignItems: "center",
+    borderColor: "white",
+    borderRadius: 5,
+    borderStyle: "dashed",
+    borderWidth: 4,
+    height: "45%",
+    justifyContent: "center",
+    width: "80%",
+  },
+  testStrip: {
+    opacity: 0.5,
+    height: 200,
+    width: 100,
+  },
+});
+
+export const TestStripCamera = withNamespaces("testStripCameraScreen")(
+  TestStripCameraScreen
+);
+
+interface TestStripProps {
+  testStripImg: SampleInfo;
+}
+
+@connect((state: StoreState) => ({
+  testStripImg: state.survey.testStripImg,
+}))
+class TestStripConfirmationScreen extends React.Component<
+  Props & TestStripProps & WithNamespaces
+> {
+  // TODO: in case of error, show error message with options to try again or skip
+  render() {
+    const { t } = this.props;
+    const screenWidth = Dimensions.get("window").width;
+    const screenHeight = Dimensions.get("window").height;
+    const height = screenHeight / 2;
+    const width = (height * screenWidth) / screenHeight;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {}}
+      >
+        <Image
+          style={{ height, marginTop: GUTTER, width }}
+          source={{
+            uri: `data:image/gif;base64,${this.props.testStripImg.code}`,
+          }}
+        />
+      </Screen>
+    );
+  }
+}
+export const TestStripConfirmation = withNamespaces(
+  "testStripConfirmationScreen"
+)(TestStripConfirmationScreen);

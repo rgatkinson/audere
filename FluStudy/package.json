@@ -93,6 +93,7 @@
     "react-native-datepicker": "^1.7.2",
     "react-native-keyboard-aware-scroll-view": "^0.7.4",
     "react-native-keyboard-listener": "^1.1.0",
+    "react-native-loading-spinner-overlay": "^1.0.1",
     "react-native-modal": "^7.0.0",
     "react-native-simple-radio-button": "^2.7.3",
     "react-navigation": "^3.2.1",

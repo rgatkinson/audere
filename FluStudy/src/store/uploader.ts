@@ -34,6 +34,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_CONSENT":
       case "SET_EMAIL":
       case "SET_KIT_BARCODE":
+      case "SET_TEST_STRIP_IMG":
       case "SET_PUSH_STATE":
       case "SET_RESPONSES":
       case "SET_WORKFLOW":
@@ -81,6 +82,10 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
 
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
+  }
+
+  if (!!survey.testStripImg) {
+    pouch.samples.push(survey.testStripImg);
   }
 
   pouch.pushNotificationState = survey.pushState;

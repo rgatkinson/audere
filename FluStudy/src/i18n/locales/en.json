@@ -281,6 +281,15 @@
     "title": "Take a picture of the strip",
     "desc": "We know that was a lot of steps and we really appreciate you hanging in there with us.\n\nNext, we need you to take a picture of the test strip. When you're ready, click the Next button to use the camera"
   },
+  "testStripCameraScreen": {
+    "title": "Place test strip in the middle of the screen with the arrows pointing down",
+    "description": "Make sure to focus the image before taking the picture and try to use good lighting.\n\nWhen ready, tap the round button on the screen to take your picture",
+    "loading": "Loading..."
+  },
+  "testStripConfirmationScreen": {
+    "title": "Picture captured!",
+    "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
