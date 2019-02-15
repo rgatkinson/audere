@@ -250,6 +250,11 @@
     "title": "Collect mucus from nose",
     "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
   },
+  "swabInTubeScreen": {
+    "title": "Put swab in tube",
+    "description": "Place the swab into the tube sitting in box #1. Make sure the swab tip is touching the bottom of the tube and stir the swab around 3-4 times in the tube.\n\nClick 'Start timer' below. The swab needs to stay in the tube from one minute.",
+    "startTimer": "Start Timer"
+  },
   "firstTimerScreen": {
     "title": "Timer: **{{time}}**",
     "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
@@ -257,6 +262,14 @@
   "firstTimerDoneScreen": {
     "title": "Timer done!",
     "tip": "**DID YOU KNOW?**\n\nEveryone 6 months of age and older should get a flu vaccine every year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
+  },
+  "removeSwabFromTubeScreen": {
+    "title": "Remove swab from tube",
+    "description": "Carefully remove the swab by rubbing the tip of it against the wall of the tube. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+  },
+  "openTestStripScreen": {
+    "title": "Open test strip",
+    "description": "Inside the same box labeled with a green #1 you'll find a test strip in a foil pouch. Open the test strip package being careful to ONLY hold it at the very top."
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
@@ -277,12 +290,20 @@
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",
-    "desc": "The test strip was in the tube for 10 minutes. Please remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
   },
   "testStripTimerScreen": {
     "title": "Timer: **{{time}}**",
-    "doneTitle": "Timer done!",
-    "desc": "**Please wait for the timer to end.**\n\nWhen the time is up, remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+    "doneTitle": "Timer Finished",
+    "desc": "When the time is up, remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+  },
+  "finishTubeScreen": {
+    "title": "Finish with the tube",
+    "description": "Put the stopper back on the sample tube you just took the test strip out of. We want you to send this back to us. We'll walk you through packaging steps shortly."
+  },
+  "lookAtStripScreen": {
+    "title": "Look at the test strip",
+    "description": "We are going to ask you a few questions about what you see on the test strip. Please try to look at the test strip in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we are just interested in knowing what you see."
   },
   "testStripSurveyScreen": {
     "title": "What do you see?",
@@ -312,11 +333,76 @@
   "firstTestFeedbackScreen": {
     "title": "Nice job with the 1st test!"
   },
+  "beginSecondTestScreen": {
+    "title": "Begin the 2nd test",
+    "description": "Bag #2 had a large tube in it and another nose swab. Place the large tube in the perforated hole in the box so it's standing up."
+  },
+  "prepSecondTestScreen": {
+    "title": "Prepare for the test",
+    "description": "Open the swab package. Be careful to not drop it, and only touch the handle, not the tip of the swab.\n\nTip: You may have put the little card with the app logo on it on one side of your box. If you did - that means you tested that nostril already! So now, let’s test the other nostril."
+  },
+  "mucusSecondScreen": {
+    "title": "Collect mucus from nose",
+    "description": "Gently insert the swab into the OTHER nostril about 1⁄2 to 3⁄4 of an inch. Rub the swab around the inside wall of the nostril 3 or 4 times. It’s OK if there is extra mucus on it when it comes out."
+  },
+  "swabInTubeSecondScreen": {
+    "title": "Put swab in tube",
+    "description": "Place the swab into the tube and make sure the swab tip is touching the bottom of the tube. Stir the swab around 3-4 times in the tube. Leave the swab in the tube and put the stopper back on the tube."
+  },
+  "cleanSecondTestScreen": {
+    "title": "Clean up the 2nd test",
+    "description": "Put the larger tube into the same bag #2 as the other items to be returned.\n\nPut the absorbent material that was originally in bag #2, back into bag #2."
+  },
   "secondTestFeedbackScreen": {
     "title": "Nice job with the 2nd test!"
   },
+  "packingScreen": {
+    "title": "Packing things up",
+    "description": "You will be using the same box that was shipped to you to send everything back to us. Open the envelope with the orange #3 label, inside this envelope is everything you need to pack up your box."
+  },
+  "stickersScreen": {
+    "title": "Put stickers on the box",
+    "description": "Put the return mailing label on the outside of the box, OVER the label with your address on it.\n\nStick the UN3373 sticker to the side of the box. This sticker just means this box has samples in it."
+  },
+  "secondBagScreen": {
+    "title": "Put bag #2 in the box",
+    "description": "Bag #2 should have the small tube, the big tube, a baggie with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag #2 using the sticky strip on the top of the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items, or put them in the box if it’s easier:\n\nThe first used swab\n\nPackaging for both swabs and the test strip\n\nEnvelope with the orange #3 sticker on it.\n\nThe box with the two holes in it\n\nKeep the card with the app icon on it for future reference."
+  },
+  "tapeBoxScreen": {
+    "title": "Tape up the box",
+    "description": "Tape up the box using the tape provided. Please put the tape lengthwise on **EACH EDGE** of the box where there is an opening."
+  },
+  "shipBoxScreen": {
+    "title": "Shipping your box",
+    "description": "Now that your box is ready to go - select one of the following options.\n\nScheduling a parcel pick-up will take you to the USPS web site.\n\nIf you wish to drop the package off yourself, we can locate a nearby USPS Post Office or other facility.",
+    "showNearbyUsps": "Show me nearby USPS or other shipping facilities",
+    "schedulePickup": "Schedule a pickup",
+    "iWillDropOff": "I will drop it off myself"
+  },
+    "schedulePickupScreen": {
+    "title": "Schedule a pickup",
+    "description": "You will be directed to the USPS site where you can enter your pickup address. The mailperson can pick up the package directly from your doorstep while they are on their typical route.",
+    "rule1": "Please indicate on the form you want it picked up **during your regular mail delivery so there is no additional charge.**",
+    "rule2": "Indicate you have one Priority Express Mail package for pick-up.\nThe weight of the package is 1 lb.\nTry to place the package in a location that’s not in direct sunlight and please ship it back as soon as possible."
+  },
+  "giftcardDetailsScreen": {
+    "title": "Gift card details",
+    "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
+    "description": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease provide your email to receive your gift card:",
+    "placeholder": "Enter your email address",
+    "submit": "Submit"
+  },
+  "emailOptInScreen": {
+    "title": "Opt-in for messages",
+    "description": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
+  },
+  "thanksScreen": {
+    "title": "Thank you!",
+    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you are feeling. Please do your best to reply as soon as you can to that message.\n\nIn the meantime, what can you do now?",
+    "disclaimer": "Please remember, the results of these test are experimental and not to be used as medical care. Consult your doctor you normally would for your sickness.\nWe suggest you wash your hands now that you've completed all the tests."
+  },
   "links": {
-    "shareLink": "Send this to a friend who's not feeling well",
+    "shareLink": "Recommend Flu@home to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
     "medLink": "Find a nearby clinic or physician"
   },
