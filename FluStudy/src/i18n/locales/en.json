@@ -97,11 +97,13 @@
     "hispanic": "Are you Hispanic or Latino?",
     "healthInsurance": "Do you have health insurance?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
-    "redLine": "Is there a red line on your test strip?"
+    "redLine": "Is there a red line on your test strip?",
+    "firstTestFeedback": "Do you feel you performed all of the steps in the flu-test correctly?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
     "selectAll": "Please select all that apply.",
+    "selectMostApplicable": "Please select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
     "feelingFeverish": "Feeling feverish",
     "chillsOrSweats": "Feeling chills or sweats",
@@ -290,6 +292,9 @@
     "title": "Picture captured!",
     "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
   },
+  "firstTestFeedbackScreen": {
+    "title": "Nice job with the 1st test!"
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
@@ -370,7 +375,12 @@
     "yesBelowBlue": "Yes, below the blue line",
     "yesAboveBelowBlue": "Yes, above and below the blue line",
     "yesOneRed": "Yes there is one red line",
-    "yesTwoRed": "Yes there are two red lines"
+    "yesTwoRed": "Yes there are two red lines",
+    "easyCorrect": "It was easy to follow and I think I completed the test correctly",
+    "confusingCorrect": "It was a little confusing but I think I did the test correctly",
+    "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
+    "incorrect": "During the test, I realized I did something incorrectly",
+    "missingMaterials": "My kit was missing materials"
   },
   "countries": {
     "Afghanistan": "Afghanistan",

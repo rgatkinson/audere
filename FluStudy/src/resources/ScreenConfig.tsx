@@ -385,3 +385,16 @@ export const RedLineConfig: SurveyQuestionData = {
     { key: "yesTwoRed", primary: false, enabled: true },
   ],
 };
+
+export const FirstTestFeedbackConfig: SurveyQuestionData = {
+  id: "FirstTestFeedback",
+  title: "firstTestFeedback",
+  description: "selectMostApplicable",
+  buttons: [
+    { key: "easyCorrect", primary: false, enabled: true },
+    { key: "confusingCorrect", primary: false, enabled: true },
+    { key: "confusingNotCorrect", primary: false, enabled: true },
+    { key: "incorrect", primary: false, enabled: true },
+    { key: "missingMaterials", primary: false, enabled: true },
+  ],
+};

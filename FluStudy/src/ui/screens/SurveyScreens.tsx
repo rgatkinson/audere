@@ -53,6 +53,7 @@ import {
   BlueLineConfig,
   RedWhenBlueConfig,
   RedLineConfig,
+  FirstTestFeedbackConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -1355,7 +1356,9 @@ class TestStripConfirmationScreen extends React.Component<
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {}}
+        onNext={() => {
+          this.props.navigation.push("FirstTestFeedback");
+        }}
       >
         <Image
           style={{ height, marginTop: GUTTER, width }}
@@ -1370,3 +1373,33 @@ class TestStripConfirmationScreen extends React.Component<
 export const TestStripConfirmation = withNamespaces(
   "testStripConfirmationScreen"
 )(TestStripConfirmationScreen);
+
+class FirstTestFeedbackScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        imageSrc={require("../../img/mountain.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {}}
+      >
+        <ButtonGrid
+          desc={true}
+          question={FirstTestFeedbackConfig}
+          vertical={true}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+      </Screen>
+    );
+  }
+}
+export const FirstTestFeedback = reduxWriter(
+  withNamespaces("firstTestFeedbackScreen")(FirstTestFeedbackScreen)
+);
