@@ -48,6 +48,9 @@ import {
   RaceConfig,
   HispanicConfig,
   InsuranceConfig,
+  BlueLineConfig,
+  RedWhenBlueConfig,
+  RedLineConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -482,7 +485,7 @@ class ManualEntryScreen extends React.Component<
             autoFocus={true}
             keyboardType={"number-pad"}
             placeholder={t("placeholder")}
-            returnKeyType="next"
+            returnKeyType="done"
             style={{ marginBottom: GUTTER }}
             value={this.state.barcode1}
             onChangeText={(text: string) => {
@@ -898,9 +901,9 @@ class WhenSymptomsScreen extends React.Component<
         {last48Configs.map((config: SurveyQuestionData) => {
           return (
             <ButtonGrid
+              buttonStyle={{ width: "50%" }}
               key={config.id}
               question={config}
-              style={{ width: "50%" }}
               title={t("surveyDescription:" + config.description) + ":"}
               getAnswer={this.props.getAnswer}
               updateAnswer={this.props.updateAnswer}
@@ -1014,7 +1017,7 @@ class GeneralHealthScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("WelcomeBack");
+    this.props.navigation.push("TestStripSurvey");
   };
 
   _canProceed = () => {
@@ -1043,8 +1046,8 @@ class GeneralHealthScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
+          buttonStyle={{ width: "50%" }}
           question={FluShotConfig}
-          style={{ width: "50%" }}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
@@ -1056,8 +1059,8 @@ class GeneralHealthScreen extends React.Component<
           }
         />
         <ButtonGrid
+          buttonStyle={{ width: "50%" }}
           question={TobaccoConfig}
-          style={{ width: "50%" }}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
@@ -1104,6 +1107,56 @@ const GeneralHealth = reduxWriter(
   withNamespaces("surveyScreen")(GeneralHealthScreen)
 );
 
+class TestStripSurveyScreen extends React.Component<
+  Props & WithNamespaces & ReduxWriterProps
+> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {}}
+      >
+        <ButtonGrid
+          buttonStyle={{ width: "50%" }}
+          desc={true}
+          question={BlueLineConfig}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
+        {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
+          "yes" && (
+          <ButtonGrid
+            question={RedWhenBlueConfig}
+            vertical={true}
+            getAnswer={this.props.getAnswer}
+            updateAnswer={this.props.updateAnswer}
+          />
+        )}
+        {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
+          "no" && (
+          <ButtonGrid
+            question={RedLineConfig}
+            vertical={true}
+            getAnswer={this.props.getAnswer}
+            updateAnswer={this.props.updateAnswer}
+          />
+        )}
+      </Screen>
+    );
+  }
+}
+const TestStripSurvey = reduxWriter(
+  withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
+);
+
 export {
   WelcomeBack,
   WhatsNext,
@@ -1124,4 +1177,5 @@ export {
   WhenSymptoms,
   GeneralExposure,
   GeneralHealth,
+  TestStripSurvey,
 };

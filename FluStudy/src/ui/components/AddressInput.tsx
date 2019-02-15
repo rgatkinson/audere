@@ -112,9 +112,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.city = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => {
-            this.setState({ stateOpen: true });
-          }}
+          onSubmitEditing={() => this.zipcode.current!.focus()}
         />
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
@@ -142,7 +140,6 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
-              this.zipcode.current!.focus();
             }}
           />
           <NumberInput
@@ -151,7 +148,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             }
             placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
             ref={this.zipcode}
-            returnKeyType="next"
+            returnKeyType="done"
             style={[styles.zipcode, styles.textInput]}
             value={this.props.value ? this.props.value!.zipcode : undefined}
             onChangeText={(text: string) => {

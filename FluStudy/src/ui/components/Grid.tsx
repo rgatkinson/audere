@@ -20,6 +20,7 @@ interface Props {
   itemFencePostStyle?: StyleProp<ViewStyle>;
   itemStyle?: StyleProp<ViewStyle>;
   items: any[];
+  rowFencePostStyle?: StyleProp<ViewStyle>;
   rowStyle?: StyleProp<ViewStyle>;
   keyExtractor(item: any, index: number): string;
   renderItem(item: any, width: number): any;
@@ -47,6 +48,7 @@ export default class Grid extends React.Component<Props> {
               this.props.itemStyle,
               i != index && styles.itemMargin,
               i != index && this.props.itemFencePostStyle,
+              rows.length > 0 && this.props.rowFencePostStyle,
             ]}
           >
             {this.props.renderItem(this.props.items[i], itemWidth)}

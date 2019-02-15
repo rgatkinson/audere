@@ -95,7 +95,9 @@
     "assignedSex": "What was your assigned sex at birth?",
     "race": "How would you describe your race?",
     "hispanic": "Are you Hispanic or Latino?",
-    "healthInsurance": "Do you have health insurance?"
+    "healthInsurance": "Do you have health insurance?",
+    "blueLine": "Do you see a blue line in the middle of the test strip?",
+    "redLine": "Is there a red line on your test strip?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -111,7 +113,9 @@
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
     "symptomsSeverity": "Select the level of discomfort you felt",
-    "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?"
+    "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
+    "blueLine": "The line may be faint, but as long as you see a line you can answer Yes to the question.",
+    "selectOne": "Select one of the following"
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
@@ -269,6 +273,10 @@
     "generalDesc": "Next, we'd like to ask you some questions about your general health.",
     "description": "Questions marked with an * are required."
   },
+  "testStripSurveyScreen": {
+    "title": "What do you see?",
+    "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
@@ -343,7 +351,13 @@
     "2": "2",
     "3": "3",
     "4": "4",
-    "5+": "5+"
+    "5+": "5+",
+    "noRed": "No, there are no red lines",
+    "yesAboveBlue": "Yes, above the blue line",
+    "yesBelowBlue": "Yes, below the blue line",
+    "yesAboveBelowBlue": "Yes, above and below the blue line",
+    "yesOneRed": "Yes there is one red line",
+    "yesTwoRed": "Yes there are two red lines"
   },
   "countries": {
     "Afghanistan": "Afghanistan",

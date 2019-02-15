@@ -20,9 +20,12 @@ import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
+  buttonStyle?: StyleProp<ViewStyle>;
+  desc?: boolean;
   question: SurveyQuestionData;
   style?: StyleProp<ViewStyle>;
   title?: string;
+  vertical?: boolean;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -38,13 +41,21 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
               ? this.props.title
               : t("surveyTitle:" + question.title)
           }
+          subtext={
+            this.props.desc
+              ? t("surveyDescription:" + question.description)
+              : undefined
+          }
         />
         <Grid
-          columns={question.buttons.length}
+          columns={this.props.vertical ? 1 : question.buttons.length}
           items={question.buttons}
-          itemFencePostStyle={{ borderLeftWidth: 0, marginLeft: 0 }}
+          itemFencePostStyle={
+            !this.props.vertical && styles.horizontalFencePost
+          }
           itemStyle={styles.buttonContainer}
-          rowStyle={{ alignItems: "center" }}
+          rowFencePostStyle={this.props.vertical && styles.verticalFencePost}
+          rowStyle={[{ alignItems: "center" }, this.props.buttonStyle]}
           keyExtractor={button => button.key}
           renderItem={(button, width) => {
             const selectedKey = this.props.getAnswer(
@@ -99,6 +110,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: SECONDARY_COLOR,
   },
+  horizontalFencePost: {
+    borderLeftWidth: 0,
+    marginLeft: 0,
+  },
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
@@ -108,5 +123,8 @@ const styles = StyleSheet.create({
   },
   selectedButtonText: {
     color: "white",
+  },
+  verticalFencePost: {
+    borderTopWidth: 0,
   },
 });

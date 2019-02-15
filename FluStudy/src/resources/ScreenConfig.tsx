@@ -352,3 +352,36 @@ export const InsuranceConfig: SurveyQuestionData = {
     exclusiveOption: "none",
   },
 };
+
+export const BlueLineConfig: SurveyQuestionData = {
+  id: "BlueLine",
+  title: "blueLine",
+  description: "blueLine",
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "yes", primary: false, enabled: true },
+  ],
+};
+
+export const RedWhenBlueConfig: SurveyQuestionData = {
+  id: "RedWhenBlue",
+  title: "redLine",
+  description: "selectOne",
+  buttons: [
+    { key: "noRed", primary: false, enabled: true },
+    { key: "yesAboveBlue", primary: false, enabled: true },
+    { key: "yesBelowBlue", primary: false, enabled: true },
+    { key: "yesAboveBelowBlue", primary: false, enabled: true },
+  ],
+};
+
+export const RedLineConfig: SurveyQuestionData = {
+  id: "RedLine",
+  title: "redLine",
+  description: "selectOne",
+  buttons: [
+    { key: "noRed", primary: false, enabled: true },
+    { key: "yesOneRed", primary: false, enabled: true },
+    { key: "yesTwoRed", primary: false, enabled: true },
+  ],
+};
