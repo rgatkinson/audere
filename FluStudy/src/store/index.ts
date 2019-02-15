@@ -23,7 +23,10 @@ export * from "./navigation";
 import { default as survey, SurveyState, SurveyAction } from "./survey";
 export * from "./survey";
 
-export type Action = MetaAction | ScreeningAction | SurveyAction;
+type ClearStateAction = { type: "CLEAR_STATE" };
+export function clearState(): ClearStateAction {
+  return { type: "CLEAR_STATE" };
+}
 
 export type Action =
   | MetaAction
