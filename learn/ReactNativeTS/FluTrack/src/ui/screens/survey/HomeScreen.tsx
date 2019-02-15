@@ -27,6 +27,11 @@ interface Props {
   isDemo: boolean;
 }
 
+interface State {
+  language: string;
+  languageOpen: boolean;
+}
+
 @connect((state: StoreState) => ({
   location: state.admin.location,
   admin: state.admin.administrator,
