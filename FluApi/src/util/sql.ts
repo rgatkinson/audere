@@ -19,25 +19,27 @@ export type Inst<Attr> = Sequelize.Instance<Attr> & Attr;
 export type Model<Attr> = Sequelize.Model<Inst<Attr>, Attr>;
 
 export interface SplitSql {
+  piiUrl: string,
   pii: Sql;
+  nonPiiUrl: string,
   nonPii: Sql;
   close: () => Promise<void>;
 }
 
 export function createSplitSql(): SplitSql {
   dotenv.config();
-  if (!process.env.NONPII_DATABASE_URL) {
-    throw new Error("Copy .env.example to .env and customize stuff :)");
-  }
-  if (!process.env.PII_DATABASE_URL) {
+
+  const nonPiiUrl = process.env.NONPII_DATABASE_URL;
+  const piiUrl = process.env.PII_DATABASE_URL;
+  if (!nonPiiUrl || !piiUrl) {
     throw new Error("Copy .env.example to .env and customize stuff :)");
   }
 
-  const pii = new Sequelize(process.env.PII_DATABASE_URL, {
+  const pii = new Sequelize(piiUrl, {
     logging: false,
     operatorsAliases: false,
   });
-  const nonPii = new Sequelize(process.env.NONPII_DATABASE_URL, {
+  const nonPii = new Sequelize(nonPiiUrl, {
     // This globally enables search path options, if not enabled search path
     // options are deleted from config. This is needed for querying census data.
     dialectOptions: {
@@ -48,7 +50,9 @@ export function createSplitSql(): SplitSql {
   });
   return {
     pii,
+    piiUrl,
     nonPii,
+    nonPiiUrl,
     close: async () => {
       Promise.all([pii.close(), nonPii.close()]);
     },

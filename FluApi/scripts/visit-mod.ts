@@ -10,13 +10,16 @@ import { spawn } from "child_process";
 import fs from "fs";
 import { promisify } from "util";
 import { createInterface as createReadline } from "readline";
-import Sequelize from "sequelize";
+import { literal, Op } from "sequelize";
 import yargs from "yargs";
 import _ from "lodash";
 
 import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
+import { createSplitSql, Inst } from "../src/util/sql";
+import { defineSnifflesModels, LogBatchAttributes } from "../src/models/sniffles";
+import { LogRecordInfo, DeviceInfo } from "audere-lib/snifflesProtocol";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -26,15 +29,11 @@ const rmdir = promisify(fs.rmdir);
 
 const log = new ScriptLogger(console.log);
 
-const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-  logging: false
-});
-const updaterNonPII = new VisitNonPIIUpdater(sequelizeNonPII, log);
+const sql = createSplitSql();
+const snifflesModels = defineSnifflesModels(sql);
 
-const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-  logging: false
-});
-const updaterPII = new VisitPIIUpdater(sequelizePII, log);
+const updaterNonPII = new VisitNonPIIUpdater(sql.nonPii, log);
+const updaterPII = new VisitPIIUpdater(sql.pii, log);
 
 yargs
   .option("verbose", {
@@ -61,7 +60,27 @@ yargs
         .string("path"),
     handler: command(cmdEdit)
   })
-  .demandCommand().argv;
+  .command({
+    command: "log [since] [device] [text]",
+    builder: yargs => yargs
+      .positional("since", {
+        describe: "earliest timestamp to search",
+        default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      })
+      .positional("until", {
+        describe: "latest timestamp to search",
+        default: new Date(Date.now()),
+      })
+      .positional("device", {
+        describe: "regular expression to search in device name or id",
+        default: ".?"
+      })
+      .positional("text", {
+        describe: "regular expression to search in log lines",
+        default: ".?"
+      }),
+    handler: command(cmdLog)
+  })  .demandCommand().argv;
 
 function command(cmd: any) {
   return async (argv: any) => {
@@ -75,17 +94,65 @@ function command(cmd: any) {
         throw err;
       }
     } finally {
-      shutdownDb();
+      await sql.close();
       log.close();
     }
   };
 }
 
-function shutdownDb(): void {
-  log.info(`Closing NonPII database connection.`);
-  sequelizeNonPII.close();
-  log.info(`Closing PII database connection.`);
-  sequelizePII.close();
+interface LogArgs {
+  since: Date;
+  until: Date;
+  device: string;
+  text: string;
+}
+
+async function cmdLog(argv: LogArgs): Promise<void> {
+  const rows = await snifflesModels.clientLogBatch.findAll({
+    where: {
+      [Op.and]: [
+        { batch: { timestamp: { [Op.gt]: argv.since }}},
+        { batch: { timestamp: { [Op.lt]: argv.until }}},
+      ]
+    },
+    order:[
+      literal("batch->>'timestamp' ASC"),
+    ],
+  });
+
+  const emitter = new LogEmitter();
+  const reDevice = new RegExp(argv.device);
+  const reText = new RegExp(argv.text);
+
+  rows.forEach(row => {
+    if (reDevice.test(row.device.installation) || reDevice.test(row.device.deviceName)) {
+      row.batch.records.forEach(record => {
+        if (reText.test(record.text)) {
+          emitter.emit(row, record);
+        }
+      });
+    }
+  });
+}
+
+class LogEmitter {
+  private previousDevice: string = "";
+
+  emit(row: Inst<LogBatchAttributes>, record: LogRecordInfo): void {
+    this.maybeEmitDevice(row.device);
+    this.emitRecord(record);
+  }
+
+  maybeEmitDevice(device: DeviceInfo): void {
+    if (device.installation !== this.previousDevice) {
+      console.log(`========== Device: ${device.deviceName} (${device.installation}) ==========`);
+      this.previousDevice = device.installation;
+    }
+  }
+
+  emitRecord(record: LogRecordInfo): void {
+    console.log(`${record.timestamp} [${record.level}]: ${record.text}`)
+  }
 }
 
 interface DemoArgs {
