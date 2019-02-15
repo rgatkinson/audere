@@ -5,7 +5,7 @@
       "select": "Seleccionar",
       "cancel": "Cancelar",
       "submit": "Enviar",
-      "done": "Hecho",
+      "done": "Listo",
       "getStarted": "Empezar",
       "ok": "Ok"
     },
@@ -449,7 +449,7 @@
     "diabetes": "Diabetes"
   },
   "surveyButton": {
-    "done": "Hecho",
+    "done": "Listo",
     "preferNotToSay": "Prefiero No Decirlo",
     "na": "No Aplica",
     "yes": "Sí",
