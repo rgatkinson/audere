@@ -60,7 +60,7 @@ interface AccessKeyAttributes {
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
   return defineModel<AccessKeyAttributes>(
     sql.nonPii,
-    "fever_access_keys",
+    "access_keys",
     {
       key: stringColumn(),
       valid: booleanColumn()
@@ -79,7 +79,7 @@ interface ClientLogAttributes {
 export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
   return defineModel<ClientLogAttributes>(
     sql.nonPii,
-    "fever_client_logs",
+    "client_logs",
     {
       device: jsonColumn(),
       log: stringColumn(),
@@ -100,7 +100,7 @@ export type LogBatchInstance = Inst<LogBatchAttributes>;
 export function defineLogBatch(sql: SplitSql): Model<LogBatchAttributes> {
   return defineModel<LogBatchAttributes>(
     sql.nonPii,
-    "fever_client_log_batches",
+    "client_log_batches",
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
@@ -120,7 +120,7 @@ interface FeedbackAttributes {
 export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
   return defineModel<FeedbackAttributes>(
     sql.nonPii,
-    "fever_feedback",
+    "feedback",
     {
       device: jsonColumn(),
       subject: stringColumn(),
