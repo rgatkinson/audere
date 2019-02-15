@@ -11,7 +11,7 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { BarCodeScanner, Permissions } from "expo";
+import { BarCodeScanner, Camera, Permissions } from "expo";
 import {
   EventInfoKind,
   SampleInfo,
@@ -95,7 +95,7 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
+export const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
   WelcomeBackScreen
 );
 
@@ -118,7 +118,9 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const WhatsNext = withNamespaces("whatsNextScreen")<Props>(WhatsNextScreen);
+export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
+  WhatsNextScreen
+);
 
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -153,7 +155,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
+export const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
   async _onNext() {
@@ -214,7 +216,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
+export const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
   ScanInstructionsScreen
 );
 
@@ -340,7 +342,9 @@ const scanStyles = StyleSheet.create({
     width: 250,
   },
 });
-const Scan = withNamespaces("scanScreen")<Props & WorkflowProps>(ScanScreen);
+export const Scan = withNamespaces("scanScreen")<Props & WorkflowProps>(
+  ScanScreen
+);
 
 interface BarcodeProps {
   kitBarcode: SampleInfo;
@@ -379,7 +383,7 @@ class ScanConfirmationScreen extends React.Component<
     );
   }
 }
-const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
+export const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
   Props & BarcodeProps
 >(ScanConfirmationScreen);
 
@@ -416,7 +420,7 @@ class ManualConfirmationScreen extends React.Component<
     );
   }
 }
-const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
+export const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
   Props & BarcodeProps
 >(ScanConfirmationScreen);
 
@@ -516,7 +520,7 @@ class ManualEntryScreen extends React.Component<
     );
   }
 }
-const ManualEntry = withNamespaces("manualEntryScreen")<
+export const ManualEntry = withNamespaces("manualEntryScreen")<
   Props & BarcodeProps & WorkflowProps
 >(ManualEntryScreen);
 
@@ -550,7 +554,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
+export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
   TestInstructionsScreen
 );
 
@@ -621,7 +625,9 @@ class ComponentsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Components = withNamespaces("componentsScreen")<Props>(ComponentsScreen);
+export const Components = withNamespaces("componentsScreen")<Props>(
+  ComponentsScreen
+);
 
 class SwabScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -643,7 +649,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
+export const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
 
 class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -665,7 +671,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
+export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
 
 class MucusScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -687,7 +693,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
 class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
   state = {
@@ -708,14 +714,16 @@ class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
   }
 
   _setTimer() {
-    setTimeout(() => {
-      if (this.props.navigation.isFocused() && this.state.time > 1) {
-        this.setState({ time: this.state.time - 1 });
-        this._setTimer();
-      } else if (this.props.navigation.isFocused()) {
-        this.props.navigation.push("FirstTimerDone");
-      }
-    }, 1000);
+    if (this.props.navigation.isFocused()) {
+      setTimeout(() => {
+        if (this.props.navigation.isFocused() && this.state.time > 1) {
+          this.setState({ time: this.state.time - 1 });
+          this._setTimer();
+        } else if (this.props.navigation.isFocused()) {
+          this.props.navigation.push("FirstTimerDone");
+        }
+      }, 1000);
+    }
   }
 
   _canProceed = () => {
@@ -740,7 +748,9 @@ class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const FirstTimer = withNamespaces("firstTimerScreen")<Props>(FirstTimerScreen);
+export const FirstTimer = withNamespaces("firstTimerScreen")<Props>(
+  FirstTimerScreen
+);
 
 class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -763,7 +773,7 @@ class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
+export const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
   FirstTimerDoneScreen
 );
 
@@ -810,7 +820,7 @@ class WhatSymptomsScreen extends React.Component<
     );
   }
 }
-const WhatSymptoms = reduxWriter(
+export const WhatSymptoms = reduxWriter(
   withNamespaces("surveyScreen")(WhatSymptomsScreen)
 );
 
@@ -929,7 +939,7 @@ class WhenSymptomsScreen extends React.Component<
     );
   }
 }
-const WhenSymptoms = reduxWriter(
+export const WhenSymptoms = reduxWriter(
   withNamespaces("surveyScreen")(WhenSymptomsScreen)
 );
 
@@ -1009,7 +1019,7 @@ class GeneralExposureScreen extends React.Component<
     );
   }
 }
-const GeneralExposure = reduxWriter(
+export const GeneralExposure = reduxWriter(
   withNamespaces("surveyScreen")(GeneralExposureScreen)
 );
 
@@ -1103,7 +1113,7 @@ class GeneralHealthScreen extends React.Component<
     );
   }
 }
-const GeneralHealth = reduxWriter(
+export const GeneralHealth = reduxWriter(
   withNamespaces("surveyScreen")(GeneralHealthScreen)
 );
 
@@ -1122,7 +1132,9 @@ class TestStripSurveyScreen extends React.Component<
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {}}
+        onNext={() => {
+          this.props.navigation.push("PictureInstructions");
+        }}
       >
         <ButtonGrid
           buttonStyle={{ width: "50%" }}
@@ -1153,29 +1165,29 @@ class TestStripSurveyScreen extends React.Component<
     );
   }
 }
-const TestStripSurvey = reduxWriter(
+export const TestStripSurvey = reduxWriter(
   withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
 );
 
-export {
-  WelcomeBack,
-  WhatsNext,
-  Before,
-  ScanInstructions,
-  Scan,
-  ScanConfirmation,
-  ManualEntry,
-  ManualConfirmation,
-  TestInstructions,
-  Components,
-  Swab,
-  SwabPrep,
-  Mucus,
-  FirstTimer,
-  FirstTimerDone,
-  WhatSymptoms,
-  WhenSymptoms,
-  GeneralExposure,
-  GeneralHealth,
-  TestStripSurvey,
-};
+class PictureInstructionsScreen extends React.Component<
+  Props & WithNamespaces
+> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageSrc={require("../../img/phone.png")}
+        logo={false}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {}}
+      />
+    );
+  }
+}
+export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
+  PictureInstructionsScreen
+);

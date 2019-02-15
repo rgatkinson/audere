@@ -37,6 +37,7 @@ import {
   GeneralExposure,
   GeneralHealth,
   TestStripSurvey,
+  PictureInstructions,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
 
@@ -76,6 +77,7 @@ const Home = createStackNavigator(
     GeneralExposure,
     GeneralHealth,
     TestStripSurvey,
+    PictureInstructions,
   },
   {
     headerMode: "none",

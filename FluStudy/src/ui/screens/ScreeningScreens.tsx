@@ -83,7 +83,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Welcome = withNamespaces("welcomeScreen")<Props>(WelcomeScreen);
+export const Welcome = withNamespaces("welcomeScreen")<Props>(WelcomeScreen);
 
 class WhyScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -104,7 +104,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Why = withNamespaces("whyScreen")<Props>(WhyScreen);
+export const Why = withNamespaces("whyScreen")<Props>(WhyScreen);
 
 class WhatScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -125,7 +125,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const What = withNamespaces("whatScreen")<Props>(WhatScreen);
+export const What = withNamespaces("whatScreen")<Props>(WhatScreen);
 
 class AgeScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -177,7 +177,7 @@ class AgeScreen extends React.Component<
     );
   }
 }
-const Age = reduxWriter(withNamespaces("ageScreen")(AgeScreen));
+export const Age = reduxWriter(withNamespaces("ageScreen")(AgeScreen));
 
 class SymptomsScreen extends React.PureComponent<
   Props & WithNamespaces & ReduxWriterProps
@@ -288,7 +288,9 @@ class SymptomsScreen extends React.PureComponent<
     );
   }
 }
-const Symptoms = reduxWriter(withNamespaces("symptomsScreen")(SymptomsScreen));
+export const Symptoms = reduxWriter(
+  withNamespaces("symptomsScreen")(SymptomsScreen)
+);
 
 interface ConsentProps {
   email?: string;
@@ -412,7 +414,9 @@ class ConsentScreen extends React.PureComponent<
     );
   }
 }
-const Consent = reduxWriter(withNamespaces("consentScreen")(ConsentScreen));
+export const Consent = reduxWriter(
+  withNamespaces("consentScreen")(ConsentScreen)
+);
 
 class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -440,9 +444,9 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const ConsentIneligible = withNamespaces("consentIneligibleScreen")<Props>(
-  ConsentIneligibleScreen
-);
+export const ConsentIneligible = withNamespaces("consentIneligibleScreen")<
+  Props
+>(ConsentIneligibleScreen);
 
 interface WorkflowProps {
   workflow: WorkflowInfo;
@@ -519,7 +523,7 @@ class AddressInputScreen extends React.Component<
     );
   }
 }
-const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
+export const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
 
 class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -568,7 +572,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const AgeIneligible = withNamespaces("ageIneligibleScreen")<Props>(
+export const AgeIneligible = withNamespaces("ageIneligibleScreen")<Props>(
   AgeIneligibleScreen
 );
 
@@ -627,9 +631,9 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")<Props>(
-  SymptomsIneligibleScreen
-);
+export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")<
+  Props
+>(SymptomsIneligibleScreen);
 
 interface PushProps {
   pushState: PushNotificationState;
@@ -663,9 +667,9 @@ class ConfirmationScreen extends React.Component<
     );
   }
 }
-const Confirmation = withNamespaces("confirmationScreen")<Props & PushProps>(
-  ConfirmationScreen
-);
+export const Confirmation = withNamespaces("confirmationScreen")<
+  Props & PushProps
+>(ConfirmationScreen);
 
 @connect((state: StoreState) => ({
   pushState: state.survey.pushState,
@@ -749,7 +753,7 @@ class PushNotificationsScreen extends React.Component<
     );
   }
 }
-const PushNotifications = withNamespaces("pushNotificationsScreen")<
+export const PushNotifications = withNamespaces("pushNotificationsScreen")<
   Props & PushProps
 >(PushNotificationsScreen);
 
@@ -771,7 +775,7 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const Instructions = withNamespaces("instructionsScreen")<Props>(
+export const Instructions = withNamespaces("instructionsScreen")<Props>(
   InstructionsScreen
 );
 
@@ -822,21 +826,6 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-const ExtraInfo = withNamespaces("extraInfoScreen")<Props>(ExtraInfoScreen);
-
-export {
-  Welcome,
-  Why,
-  What,
-  Age,
-  Symptoms,
-  AddressScreen,
-  AgeIneligible,
-  SymptomsIneligible,
-  Consent,
-  ConsentIneligible,
-  Confirmation,
-  PushNotifications,
-  Instructions,
-  ExtraInfo,
-};
+export const ExtraInfo = withNamespaces("extraInfoScreen")<Props>(
+  ExtraInfoScreen
+);

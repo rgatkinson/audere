@@ -277,6 +277,10 @@
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
   },
+  "pictureInstructionsScreen": {
+    "title": "Take a picture of the strip",
+    "desc": "We know that was a lot of steps and we really appreciate you hanging in there with us.\n\nNext, we need you to take a picture of the test strip. When you're ready, click the Next button to use the camera"
+  },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
