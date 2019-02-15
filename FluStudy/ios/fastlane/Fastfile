@@ -26,7 +26,6 @@ lane :beta do
   sync_code_signing(type: "appstore")
   build_app(scheme: "fluathome Production",
             include_bitcode: true)
-  upload_to_testflight
 end
 
 ####### Certificates #######
