@@ -151,7 +151,9 @@ class LogEmitter {
   }
 
   emitRecord(record: LogRecordInfo): void {
-    console.log(`${record.timestamp} [${record.level}]: ${record.text}`)
+    const level = (<any>record.level.toString()).padStart(5, " ");
+    const text = record.text.replace(/\n/g, "\\n");
+    console.log(`${record.timestamp} [${level}]: ${text}`)
   }
 }
 
