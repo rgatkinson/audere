@@ -76,7 +76,10 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
                   const selected =
                     this.state.selected === button.key ? undefined : button.key;
                   this.setState({ selected });
-                  this.props.updateAnswer({ "selectedButtonKey": selected }, question);
+                  this.props.updateAnswer(
+                    { selectedButtonKey: selected },
+                    question
+                  );
                 }}
                 style={[
                   styles.button,

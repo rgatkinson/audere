@@ -1,5 +1,11 @@
 import React from "react";
-import { AppState, TouchableWithoutFeedback, View } from "react-native";
+import {
+  AppState,
+  Dimensions,
+  TouchableWithoutFeedback,
+  View,
+  StyleSheet,
+} from "react-native";
 import {
   Action,
   StoreState,
@@ -16,6 +22,7 @@ import {
 } from "react-navigation";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
 import AppNavigator from "./AppNavigator";
+import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 
 const AppContainer = createReduxContainer(AppNavigator);
 
@@ -168,17 +175,27 @@ class AppWithNavigationState extends React.Component<Props> {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.handleQuadTap}>
-        <View style={{ flex: 1 }}>
-          <AppContainer
-            state={this.props.navigationState}
-            dispatch={this.props.dispatch}
-          />
-        </View>
-      </TouchableWithoutFeedback>
+      <View style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={this.handleQuadTap}>
+          <View style={styles.touchable} />
+        </TouchableWithoutFeedback>
+        <AppContainer
+          state={this.props.navigationState}
+          dispatch={this.props.dispatch}
+        />
+      </View>
     );
   }
 }
+const styles = StyleSheet.create({
+  touchable: {
+    height: STATUS_BAR_HEIGHT + NAV_BAR_HEIGHT,
+    left: Dimensions.get("window").width / 2 - 50,
+    position: "absolute",
+    width: 100,
+    zIndex: 2,
+  },
+});
 
 export default connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
