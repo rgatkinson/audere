@@ -98,7 +98,8 @@
     "healthInsurance": "Do you have health insurance?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "redLine": "Is there a red line on your test strip?",
-    "firstTestFeedback": "Do you feel you performed all of the steps in the flu-test correctly?"
+    "firstTestFeedback": "Do you feel you performed all of the steps in the flu-test correctly?",
+    "secondTestFeedback": "How do you feel you performed the second test?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -294,6 +295,9 @@
   },
   "firstTestFeedbackScreen": {
     "title": "Nice job with the 1st test!"
+  },
+  "secondTestFeedbackScreen": {
+    "title": "Nice job with the 2nd test!"
   },
   "links": {
     "shareLink": "Send this to a friend who's not feeling well",

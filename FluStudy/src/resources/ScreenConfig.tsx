@@ -398,3 +398,16 @@ export const FirstTestFeedbackConfig: SurveyQuestionData = {
     { key: "missingMaterials", primary: false, enabled: true },
   ],
 };
+
+export const SecondTestFeedbackConfig: SurveyQuestionData = {
+  id: "SecondTestFeedback",
+  title: "secondTestFeedback",
+  description: "selectMostApplicable",
+  buttons: [
+    { key: "easyCorrect", primary: false, enabled: true },
+    { key: "confusingCorrect", primary: false, enabled: true },
+    { key: "confusingNotCorrect", primary: false, enabled: true },
+    { key: "incorrect", primary: false, enabled: true },
+    { key: "missingMaterials", primary: false, enabled: true },
+  ],
+};

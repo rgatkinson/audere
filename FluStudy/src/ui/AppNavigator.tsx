@@ -41,6 +41,7 @@ import {
   TestStripCamera,
   TestStripConfirmation,
   FirstTestFeedback,
+  SecondTestFeedback,
 } from "./screens/SurveyScreens";
 import AboutScreen from "./screens/AboutScreen";
 
@@ -84,6 +85,7 @@ const Home = createStackNavigator(
     TestStripCamera,
     TestStripConfirmation,
     FirstTestFeedback,
+    SecondTestFeedback,
   },
   {
     headerMode: "none",
