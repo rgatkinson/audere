@@ -231,6 +231,7 @@ async function colordiff(before: any, after: any): Promise<void> {
   }
 }
 
+// Run a command and throw if it does not exit successfully.
 async function run(program: string, ...args: string[]): Promise<void> {
   const code = await runCode(program, ...args);
   if (code != 0) {
@@ -238,6 +239,8 @@ async function run(program: string, ...args: string[]): Promise<void> {
   }
 }
 
+// Run a command and returns the exit code.  Naming is hard.
+// NOTE this does not throw if the command fails.
 function runCode(program: string, ...args: string[]): Promise<number> {
   return new Promise<number>((resolve, reject) => {
     const proc = spawn(program, args, {

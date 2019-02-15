@@ -46,7 +46,3 @@ export function validateField(thing: object, field: string) {
     }
   }
 }
-
-function d(x: any): string {
-  return JSON.stringify(x);
-}
