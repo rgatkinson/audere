@@ -10,7 +10,7 @@ YellowBox.ignoreWarnings([
 import { I18nextProvider, withNamespaces } from "react-i18next";
 import { AppLoading, Font } from "expo";
 import { store, persistor } from "./src/store/";
-import { Provider, connect } from "react-redux";
+import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Feather } from "@expo/vector-icons";
 import ConnectedAppWithNavigationState from "./src/ui/ConnectedAppWithNavigationState";

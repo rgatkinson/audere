@@ -49,8 +49,26 @@ const reducer = combineReducers({
   survey,
 });
 
+const rootReducer = (state: StoreState | undefined, action: Action) => {
+  if (state != null && action.type === "CLEAR_STATE") {
+    Object.keys(state).forEach(key => {
+      storage.removeItem(`persist:${key}`);
+    });
+    state = undefined;
+  }
+  return reducer(state, action);
+};
+
+const navigationMiddleware = createReactNavigationReduxMiddleware(
+  (state: StoreState) => state.navigation
+);
+
 export const store = createStore(
-  persistReducer(persistConfig, reducer),
-  applyMiddleware(uploaderMiddleware)
+  persistReducer(persistConfig, rootReducer),
+  applyMiddleware(
+    navigationMiddleware,
+    navigationLoggingMiddleware,
+    uploaderMiddleware
+  )
 );
 export const persistor = persistStore(store);
