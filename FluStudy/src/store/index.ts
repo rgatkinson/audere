@@ -1,13 +1,15 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
+import { createStore, combineReducers, applyMiddleware, Store } from "redux";
+import { persistStore, persistReducer, createTransform } from "redux-persist";
 import {
   createReactNavigationReduxMiddleware,
   createNavigationReducer,
 } from "react-navigation-redux-helpers";
 import { NavigationAction } from "react-navigation";
 import storage from "redux-persist/lib/storage";
+import { Transform } from "redux-persist/es/createTransform";
+import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
-import { uploaderMiddleware } from "./uploader";
+import { uploader, uploaderMiddleware } from "./uploader";
 
 export * from "./types";
 
@@ -37,12 +39,6 @@ export type Action =
 import { StoreState } from "./StoreState";
 export { StoreState } from "./StoreState";
 
-const persistConfig = {
-  transforms: [immutableTransform()],
-  key: "store",
-  storage,
-};
-
 const reducer = combineReducers({
   meta,
   navigation,
@@ -63,12 +59,42 @@ const navigationMiddleware = createReactNavigationReduxMiddleware(
   (state: StoreState) => state.navigation
 );
 
-export const store = createStore(
-  persistReducer(persistConfig, rootReducer),
-  applyMiddleware(
-    navigationMiddleware,
-    navigationLoggingMiddleware,
-    uploaderMiddleware
-  )
-);
-export const persistor = persistStore(store);
+let storePromise: Promise<Store>;
+export function getStore(): Promise<Store> {
+  if (storePromise) {
+    return storePromise;
+  }
+  return (storePromise = getStoreImpl());
+}
+
+const encryptingTransform = (encryptor: Transform<any, any>) =>
+  createTransform(
+    (inboundState, key) => {
+      return encryptor.in(JSON.parse(inboundState as string), key);
+    },
+    (outboundState, key) => {
+      return JSON.stringify(encryptor.out(outboundState, key));
+    }
+  );
+
+async function getStoreImpl() {
+  const password = await uploader.getEncryptionPassword();
+  const encryptor = createEncryptor({ secretKey: password });
+  const persistConfig = {
+    transforms: [immutableTransform(), encryptingTransform(encryptor)],
+    key: "store",
+    storage,
+  };
+  return createStore(
+    persistReducer(persistConfig, rootReducer),
+    applyMiddleware(
+      navigationMiddleware,
+      navigationLoggingMiddleware,
+      uploaderMiddleware
+    )
+  );
+}
+
+export async function getPersistor() {
+  return persistStore(await getStore());
+}
