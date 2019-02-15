@@ -100,7 +100,7 @@ export type LogBatchInstance = Inst<LogBatchAttributes>;
 export function defineLogBatch(sql: SplitSql): Model<LogBatchAttributes> {
   return defineModel<LogBatchAttributes>(
     sql.nonPii,
-    "client_log_batches",
+    "sniffles_client_log_batches",
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
