@@ -225,16 +225,7 @@
   },
   "testInstructionsScreen": {
     "title": "How the test works",
-    "description": "Let's get started with the test. Please complete each step in order, we'll step you through each one in detail. Here is a quick overview of what we'll be asking you to do:",
-    "step1": "Get the small vial ready for the test",
-    "step2": "Swab your nose",
-    "step3": "Put the swab in the small vial and leave it for one minute",
-    "step4": "Remove the swab from the vial",
-    "step5": "Put the test strip in the vial",
-    "step6": "Answer some questions about your illness",
-    "step7": "Take the test strip out of the vial",
-    "step8": "Take a picture of the test strip",
-    "step9": "Put the vial and test strip in bags and back in the box"
+    "description": "We'll walk you through all of the necessary steps in the following screens. From doing the tests using the items in the kit to shipping the kit back to us and getting your gift card."
   },
   "componentsScreen": {
     "title": "Remove and identify provided kit components",
@@ -260,12 +251,16 @@
     "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
   },
   "firstTimerScreen": {
-    "title": "Timer: {{time}}",
+    "title": "Timer: **{{time}}**",
     "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
   },
   "firstTimerDoneScreen": {
     "title": "Timer done!",
     "tip": "**DID YOU KNOW?**\n\nEveryone 6 months of age and older should get a flu vaccine every year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
+  },
+  "stripInTubeScreen": {
+    "title": "Put test strip in tube",
+    "description": "Put the test strip into the tube with the arrows on the strip POINTING DOWN. Make sure the strip is touching the bottom of the tube.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. In the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "surveyScreen": {
     "title": "Symptoms Survey",
@@ -275,6 +270,19 @@
     "generalHealth": "General Health",
     "generalDesc": "Next, we'd like to ask you some questions about your general health.",
     "description": "Questions marked with an * are required."
+  },
+  "thankYouSurveyScreen": {
+    "title": "Thank you!",
+    "desc": "Thank you for answering our questions. We know you're still feeling crummy and truly appreciate your time. Your answers, along with the tests, help us understand many factors related to your illness."
+  },
+  "testStripReadyScreen": {
+    "title": "Remove test strip",
+    "desc": "The test strip was in the tube for 10 minutes. Please remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+  },
+  "testStripTimerScreen": {
+    "title": "Timer: **{{time}}**",
+    "doneTitle": "Timer done!",
+    "desc": "**Please wait for the timer to end.**\n\nWhen the time is up, remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
   },
   "testStripSurveyScreen": {
     "title": "What do you see?",
@@ -292,6 +300,14 @@
   "testStripConfirmationScreen": {
     "title": "Picture captured!",
     "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
+  },
+  "cleanFirstTestScreen": {
+    "title": "Clean up the first test",
+    "step1": "Inside the box with the two holes (box #1) there was a medium sized baggie with a barcode on it.",
+    "step2": "Put the test strip inside the medium sized baggie and close the baggie.",
+    "step3": "Open the bag with a black and white #2 on it and put the contents of this bag in front of you.",
+    "step4": "Put the test strip baggie and the tube you already used into bag #2. Please ensure the stopper is tight on the tube.",
+    "step5": "As a quick note, keep the box in front of you. You’ll need that for the next test."
   },
   "firstTestFeedbackScreen": {
     "title": "Nice job with the 1st test!"

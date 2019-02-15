@@ -24,6 +24,7 @@ import {
   StoreState,
   setKitBarcode,
   setTestStripImg,
+  setTenMinuteStartTime,
   setWorkflow,
 } from "../../store";
 import {
@@ -529,7 +530,7 @@ export const ManualEntry = withNamespaces("manualEntryScreen")<
 
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    this.props.navigation.push("Components");
+    this.props.navigation.push("Swab");
   };
 
   render() {
@@ -539,21 +540,13 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
-      >
-        <BulletPoint content={t("step1")} />
-        <BulletPoint content={t("step2")} />
-        <BulletPoint content={t("step3")} />
-        <BulletPoint content={t("step4")} />
-        <BulletPoint content={t("step5")} />
-        <BulletPoint content={t("step6")} />
-        <BulletPoint content={t("step7")} />
-        <BulletPoint content={t("step8")} />
-        <BulletPoint content={t("step9")} />
-      </Screen>
+      />
     );
   }
 }
@@ -617,10 +610,7 @@ class ComponentsScreen extends React.Component<Props & WithNamespaces> {
           links={[
             {
               label: t("help"),
-              onPress: () => {
-                // TODO kit help
-                // this.props.navigation.push();
-              },
+              onPress: () => {},
             },
           ]}
         />
@@ -662,7 +652,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageBorder={true}
-        imageSrc={require("../../img/swabPrep.png")}
+        imageSrc={require("../../img/tbd.png")}
         logo={false}
         navBar={true}
         navigation={this.props.navigation}
@@ -697,6 +687,8 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
   }
 }
 export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+
+// TODO swab in tube
 
 class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
   state = {
@@ -768,7 +760,7 @@ class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("WhatSymptoms");
+          this.props.navigation.push("StripInTube");
         }}
       >
         <Text content={t("tip")} />
@@ -778,6 +770,37 @@ class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
 }
 export const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
   FirstTimerDoneScreen
+);
+
+// TODO remove swab
+// TODO open test strip
+
+@connect()
+class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.dispatch(setTenMinuteStartTime());
+    this.props.navigation.push("WhatSymptoms");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        buttonLabel={t("common:button:continue")}
+        canProceed={true}
+        desc={t("description")}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={this._onNext}
+      />
+    );
+  }
+}
+export const StripInTube = withNamespaces("stripInTubeScreen")<Props>(
+  StripInTubeScreen
 );
 
 class WhatSymptomsScreen extends React.Component<
@@ -1030,7 +1053,7 @@ class GeneralHealthScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
-    this.props.navigation.push("TestStripSurvey");
+    this.props.navigation.push("ThankYouSurvey");
   };
 
   _canProceed = () => {
@@ -1120,6 +1143,173 @@ export const GeneralHealth = reduxWriter(
   withNamespaces("surveyScreen")(GeneralHealthScreen)
 );
 
+interface StartTime {
+  tenMinuteStartTime: number;
+}
+
+@connect((state: StoreState) => ({
+  tenMinuteStartTime: state.survey.tenMinuteStartTime,
+}))
+class ThankYouSurveyScreen extends React.Component<
+  Props & StartTime & WithNamespaces
+> {
+  _onNext = () => {
+    const MILLIS_IN_SECOND = 1000.0;
+    const SECONDS_IN_MINUTE = 60;
+
+    const intervalMilis = new Date().getTime() - this.props.tenMinuteStartTime;
+    const elapsedMinutes =
+      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE);
+    if (elapsedMinutes > 10) {
+      this.props.navigation.push("TestStripReady");
+    } else {
+      this.props.navigation.push("TestStripTimer");
+    }
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageSrc={require("../../img/clipboard.png")}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={this._onNext}
+      />
+    );
+  }
+}
+export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
+  Props & StartTime
+>(ThankYouSurveyScreen);
+
+class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("TestStripSurvey");
+        }}
+      />
+    );
+  }
+}
+export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
+  TestStripReadyScreen
+);
+
+interface TestStripTimerState {
+  done: boolean;
+  remaining: Date | null;
+}
+
+@connect((state: StoreState) => ({
+  tenMinuteStartTime: state.survey.tenMinuteStartTime,
+}))
+class TestStripTimerScreen extends React.Component<
+  Props & StartTime & WithNamespaces,
+  TestStripTimerState
+> {
+  _timer: number | null | undefined;
+  _willFocus: any;
+
+  constructor(props: Props & StartTime & WithNamespaces) {
+    super(props);
+    const remaining = this._getRemaining(props.tenMinuteStartTime);
+    this.state = {
+      remaining,
+      done: remaining == null,
+    };
+  }
+
+  _getRemaining(startTime: number): Date | null {
+    const MILLIS_IN_SECOND = 1000.0;
+    const SECONDS_IN_MINUTE = 60;
+    const deltaMillis =
+      startTime +
+      MILLIS_IN_SECOND * SECONDS_IN_MINUTE * 10 -
+      new Date().getTime();
+    if (deltaMillis > 0) {
+      // @ts-ignore
+      const remaining = new Date(null);
+      remaining.setMilliseconds(deltaMillis);
+      return remaining;
+    } else {
+      return null;
+    }
+  }
+
+  componentDidMount() {
+    if (!this.state.done) {
+      this._willFocus = this.props.navigation.addListener("willFocus", () =>
+        this._setTimer()
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._willFocus != null) {
+      this._willFocus.remove();
+    }
+  }
+
+  _setTimer() {
+    if (this.props.navigation.isFocused() && !this.state.done) {
+      setTimeout(() => {
+        if (this.props.navigation.isFocused() && !this.state.done) {
+          const remaining = this._getRemaining(this.props.tenMinuteStartTime);
+          this.setState({
+            remaining,
+            done: remaining == null,
+          });
+          this._setTimer();
+        }
+      }, 1000);
+    }
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={this.state.done}
+        desc={t("desc")}
+        imageBorder={true}
+        imageSrc={require("../../img/tbd.png")}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={
+          this.state.done
+            ? t("doneTitle")
+            : t("title", {
+                time: this.state.remaining!.toISOString().substr(14, 5),
+              })
+        }
+        onNext={() => {
+          this.props.navigation.push("TestStripSurvey");
+        }}
+      />
+    );
+  }
+}
+export const TestStripTimer = withNamespaces("testStripTimerScreen")<
+  Props & StartTime
+>(TestStripTimerScreen);
+
+// TODO finish with tube
+// TODO look at strip
+
 class TestStripSurveyScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -1180,7 +1370,7 @@ class PictureInstructionsScreen extends React.Component<
     if (status === "granted") {
       this.props.navigation.push("TestStripCamera");
     } else {
-      // TODO: skip this step
+      this.props.navigation.push("CleanFirstTest");
     }
   }
 
@@ -1358,7 +1548,7 @@ class TestStripConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("FirstTestFeedback");
+          this.props.navigation.push("CleanFirstTest");
         }}
       >
         <Image
@@ -1374,6 +1564,32 @@ class TestStripConfirmationScreen extends React.Component<
 export const TestStripConfirmation = withNamespaces(
   "testStripConfirmationScreen"
 )(TestStripConfirmationScreen);
+
+class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        navBar={true}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("FirstTestFeedback");
+        }}
+      >
+        <BulletPoint content={t("step1")} />
+        <BulletPoint content={t("step2")} />
+        <BulletPoint content={t("step3")} />
+        <BulletPoint content={t("step4")} />
+        <BulletPoint content={t("step5")} />
+      </Screen>
+    );
+  }
+}
+export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")<Props>(
+  CleanFirstTestScreen
+);
 
 class FirstTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -1407,6 +1623,12 @@ export const FirstTestFeedback = reduxWriter(
   withNamespaces("firstTestFeedbackScreen")(FirstTestFeedbackScreen)
 );
 
+// TODO begin second test
+// TODO prep second test
+// TODO collect mucus
+// TODO swab in tub
+// TODO clean up
+
 class SecondTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -1438,3 +1660,14 @@ class SecondTestFeedbackScreen extends React.Component<
 export const SecondTestFeedback = reduxWriter(
   withNamespaces("secondTestFeedbackScreen")(SecondTestFeedbackScreen)
 );
+
+// TODO pack up
+// TODO stickers
+// TODO bag in box
+// TODO tape box
+// TODO shipping choice
+// TODO schedule pick up instructions
+// TODO schedule pick up behavior
+// TODO email input for gift card
+// TODO email opt ins
+// TODO thank you screen

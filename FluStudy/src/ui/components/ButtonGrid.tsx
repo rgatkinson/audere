@@ -30,7 +30,18 @@ interface Props {
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
 
-class ButtonGrid extends React.Component<Props & WithNamespaces> {
+interface State {
+  selected: string | undefined;
+}
+
+class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = {
+      selected: props.getAnswer("selectedButtonKey", props.question.id),
+    };
+  }
+
   render() {
     const { question, t } = this.props;
     return (
@@ -58,24 +69,18 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
           rowStyle={[{ alignItems: "center" }, this.props.buttonStyle]}
           keyExtractor={button => button.key}
           renderItem={(button, width) => {
-            const selectedKey = this.props.getAnswer(
-              "selectedButtonKey",
-              question.id
-            );
             return (
               <TouchableOpacity
                 key={button.key}
                 onPress={() => {
-                  const selectedButtonKey =
-                    this.props.getAnswer("selectedButtonKey", question.id) ===
-                    button.id
-                      ? undefined
-                      : button.key;
-                  this.props.updateAnswer({ selectedButtonKey }, question);
+                  const selected =
+                    this.state.selected === button.key ? undefined : button.key;
+                  this.setState({ selected });
+                  this.props.updateAnswer({ "selectedButtonKey": selected }, question);
                 }}
                 style={[
                   styles.button,
-                  selectedKey === button.key && styles.selectedButton,
+                  this.state.selected === button.key && styles.selectedButton,
                 ]}
               >
                 <Text
@@ -84,7 +89,8 @@ class ButtonGrid extends React.Component<Props & WithNamespaces> {
                   content={t("surveyButton:" + button.key)}
                   style={[
                     styles.buttonText,
-                    selectedKey === button.key && styles.selectedButtonText,
+                    this.state.selected === button.key &&
+                      styles.selectedButtonText,
                   ]}
                 />
               </TouchableOpacity>

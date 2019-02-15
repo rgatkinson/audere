@@ -16,6 +16,7 @@ export type SurveyAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
+  | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo };
@@ -29,6 +30,7 @@ export type SurveyState = {
   testStripImg?: SampleInfo;
   pushState: PushNotificationState;
   responses: SurveyResponse[];
+  tenMinuteStartTime?: number;
   timestamp?: number;
   workflow: WorkflowInfo;
 };
@@ -76,6 +78,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
     return {
       ...state,
       testStripImg: action.testStripImg,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_TEN_MINUTE_START_TIME") {
+    return {
+      ...state,
+      tenMinuteStartTime: new Date().getTime(),
       timestamp: new Date().getTime(),
     };
   }
@@ -137,6 +146,12 @@ export function setTestStripImg(testStripImg: SampleInfo): SurveyAction {
   return {
     type: "SET_TEST_STRIP_IMG",
     testStripImg,
+  };
+}
+
+export function setTenMinuteStartTime(): SurveyAction {
+  return {
+    type: "SET_TEN_MINUTE_START_TIME",
   };
 }
 

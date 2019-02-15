@@ -31,6 +31,9 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     const state = getState();
     switch (action.type) {
       case "APPEND_EVENT":
+        /*
+         * Testing only writing to pouch when the user navigates between screens
+         * for performance reasons.
       case "SET_CONSENT":
       case "SET_EMAIL":
       case "SET_KIT_BARCODE":
@@ -39,6 +42,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_RESPONSES":
       case "SET_WORKFLOW":
       case "SET_DEMO":
+         */
         uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
         break;
     }
