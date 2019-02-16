@@ -57,6 +57,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
               ? t("surveyDescription:" + question.description)
               : undefined
           }
+          required={!this.props.title && question.required}
         />
         <Grid
           columns={this.props.vertical ? 1 : question.buttons.length}

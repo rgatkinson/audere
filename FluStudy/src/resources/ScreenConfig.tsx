@@ -3,6 +3,7 @@ import { Action, SurveyResponse } from "../store";
 export interface SurveyQuestionData {
   buttons: ButtonConfig[];
   id: string;
+  dateInput?: boolean;
   description?: string;
   optionList?: OptionListConfig;
   title?: string;
@@ -104,6 +105,7 @@ export const WhatSymptomsConfig: SurveyQuestionData = {
     withOther: false,
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
+  required: true,
 };
 
 export const SymptomsStartConfig: SurveyQuestionData = {
@@ -116,6 +118,7 @@ export const SymptomsStartConfig: SurveyQuestionData = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true },
   ],
+  required: true,
 };
 
 export const Last48Config: SurveyQuestionData = {
@@ -126,6 +129,7 @@ export const Last48Config: SurveyQuestionData = {
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  required: true,
 };
 
 export const SymptomSeverityConfig: SurveyQuestionData = {
@@ -137,6 +141,7 @@ export const SymptomSeverityConfig: SurveyQuestionData = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true },
   ],
+  required: true,
 };
 
 export const InContactConfig: SurveyQuestionData = {
@@ -158,7 +163,6 @@ export const CoughSneezeConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const YoungChildrenConfig: SurveyQuestionData = {
@@ -191,7 +195,7 @@ export const ChildrenWithChildrenConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: false,
+  required: true,
 };
 
 export const PeopleInHouseholdConfig: SurveyQuestionData = {
@@ -203,7 +207,6 @@ export const PeopleInHouseholdConfig: SurveyQuestionData = {
     { key: "5to7", primary: false, enabled: true },
     { key: "8plus", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const BedroomsConfig: SurveyQuestionData = {
@@ -216,7 +219,6 @@ export const BedroomsConfig: SurveyQuestionData = {
     { key: "4", primary: false, enabled: true },
     { key: "5+", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const MedConditionsConfig: SurveyQuestionData = {
@@ -231,7 +233,6 @@ export const MedConditionsConfig: SurveyQuestionData = {
   },
 
   buttons: [],
-  required: false,
 };
 
 export const FluShotConfig: SurveyQuestionData = {
@@ -241,15 +242,13 @@ export const FluShotConfig: SurveyQuestionData = {
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
-  required: false,
 };
 
-// TODO date picker
 export const FluShotDateConfig: SurveyQuestionData = {
   id: "FluShotDate",
   title: "fluShotDate",
   buttons: [],
-  required: false,
+  dateInput: true,
 };
 
 export const TobaccoConfig: SurveyQuestionData = {
@@ -259,7 +258,6 @@ export const TobaccoConfig: SurveyQuestionData = {
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const HouseholdTobaccoConfig: SurveyQuestionData = {
@@ -270,7 +268,6 @@ export const HouseholdTobaccoConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const InterferingConfig: SurveyQuestionData = {
@@ -281,7 +278,6 @@ export const InterferingConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const AntibioticsConfig: SurveyQuestionData = {
@@ -303,14 +299,12 @@ export const AssignedSexConfig: SurveyQuestionData = {
     { key: "female", primary: false, enabled: true },
     { key: "preferNotToSay", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const RaceConfig: SurveyQuestionData = {
   id: "Race",
   title: "race",
   buttons: [],
-  required: false,
   description: "selectAll",
   optionList: {
     options: [
@@ -336,7 +330,6 @@ export const HispanicConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "preferNotToSay", primary: false, enabled: true },
   ],
-  required: false,
 };
 
 export const InsuranceConfig: SurveyQuestionData = {
@@ -344,7 +337,6 @@ export const InsuranceConfig: SurveyQuestionData = {
   title: "healthInsurance",
   description: "selectAll",
   buttons: [],
-  required: false,
   optionList: {
     options: ["none", "medicaid", "privateInsurance", "medicare", "other"],
     multiSelect: true,

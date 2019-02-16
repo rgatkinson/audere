@@ -5,6 +5,7 @@ import { FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
 
 interface Props {
   backgroundColor?: string;
+  required?: boolean;
   subtext?: string;
   text: string;
 }
@@ -20,7 +21,10 @@ export default class QuestionText extends React.Component<Props> {
           },
         ]}
       >
-        <Text content={this.props.text} style={styles.text} />
+        <Text
+          content={(!!this.props.required ? "* " : "") + this.props.text}
+          style={styles.text}
+        />
         {!!this.props.subtext && (
           <Text content={this.props.subtext} style={styles.subtext} />
         )}

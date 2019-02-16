@@ -20,6 +20,7 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
         <QuestionText
           text={t("surveyTitle:" + question.title)}
           subtext={t("surveyDescription:" + question.description)}
+          required={question.required}
         />
         <OptionList
           data={newSelectedOptionsList(
