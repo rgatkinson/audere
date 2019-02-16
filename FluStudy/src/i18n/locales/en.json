@@ -383,11 +383,12 @@
     "title": "Schedule a pickup",
     "description": "You will be directed to the USPS site where you can enter your pickup address. The mailperson can pick up the package directly from your doorstep while they are on their typical route.",
     "rule1": "Please indicate on the form you want it picked up **during your regular mail delivery so there is no additional charge.**",
-    "rule2": "Indicate you have one Priority Express Mail package for pick-up.\nThe weight of the package is 1 lb.\nTry to place the package in a location that’s not in direct sunlight and please ship it back as soon as possible."
+    "rule2": "Indicate you have one Priority Express Mail package for pick-up.\n\nThe weight of the package is 1 lb.\n\nTry to place the package in a location that’s not in direct sunlight and please ship it back as soon as possible."
   },
   "giftcardDetailsScreen": {
+    "validationError": "* Please provide a valid email address",
     "title": "Gift card details",
-    "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
+    "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
     "description": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease provide your email to receive your gift card:",
     "placeholder": "Enter your email address",
     "submit": "Submit"

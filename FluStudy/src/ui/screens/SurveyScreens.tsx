@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -22,6 +23,7 @@ import {
   Action,
   Option,
   StoreState,
+  setEmail,
   setKitBarcode,
   setTestStripImg,
   setTenMinuteStartTime,
@@ -63,6 +65,7 @@ import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
 import Divider from "../components/Divider";
+import EmailInput from "../components/EmailInput";
 import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
 import MonthPicker from "../components/MonthPicker";
@@ -731,7 +734,6 @@ class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
     this._willFocus.remove();
   }
 
-  // TODO rotate tips
   _setTimer() {
     if (this.props.navigation.isFocused()) {
       setTimeout(() => {
@@ -1968,13 +1970,24 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
 export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
 
 class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
-  // todo buttons and links ("showNearbyUsps")
+  // TODO Link action for nearby USPS/shipping facilities
   render() {
     const { t } = this.props;
     return (
       <Screen
+        buttonLabel={t("schedulePickup")}
         canProceed={true}
         desc={t("description")}
+        footer={
+          <Button
+            enabled={true}
+            label={t("iWillDropOff")}
+            primary={true}
+            onPress={() => {
+              this.props.navigation.push("GiftcardDetails");
+            }}
+          />
+        }
         imageBorder={true}
         imageSrc={require("../../img/tbd.png")}
         navBar={true}
@@ -1983,15 +1996,28 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
         onNext={() => {
           this.props.navigation.push("SchedulePickup");
         }}
-      />
+      >
+        <Links
+          links={[
+            {
+              label: t("showNearbyUsps"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+          ]}
+        />
+      </Screen>
     );
   }
 }
 export const ShipBox = withNamespaces("shipBoxScreen")<Props>(ShipBoxScreen);
 
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
+  // TODO go to USPS onNext
   render() {
-    // todo bullet points
     const { t } = this.props;
     return (
       <Screen
@@ -2004,9 +2030,19 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("GiftcardDetails");
+          Alert.alert("TODO", "Kick out to USPS site before proceeding", [
+            {
+              text: t("Ok"),
+              onPress: () => {
+                this.props.navigation.push("GiftcardDetails");
+              },
+            },
+          ]);
         }}
-      />
+      >
+        <BulletPoint content={t("rule1")} />
+        <BulletPoint content={t("rule2")} />
+      </Screen>
     );
   }
 }
@@ -2014,29 +2050,63 @@ export const SchedulePickup = withNamespaces("schedulePickupScreen")<Props>(
   SchedulePickupScreen
 );
 
-class GiftcardDetailsScreen extends React.Component<Props & WithNamespaces> {
-  // TODO email input and distinguish stored or not
+interface EmailProps {
+  email?: string;
+}
+
+interface EmailState {
+  email?: string;
+  validEmail: boolean;
+}
+
+@connect((state: StoreState) => ({
+  email: state.survey.email,
+}))
+class GiftcardDetailsScreen extends React.Component<
+  Props & EmailProps & WithNamespaces,
+  EmailState
+> {
+  // TODO option to opt out of emails
+  constructor(props: Props & EmailProps & WithNamespaces) {
+    super(props);
+    this.state = {
+      email: props.email,
+      validEmail: !!props.email,
+    };
+  }
+
   render() {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
-        desc={t("description")}
+        canProceed={!!this.state.email && this.state.validEmail}
+        desc={!!this.props.email ? t("descriptionWithEmail") : t("description")}
         imageBorder={true}
         imageSrc={require("../../img/tbd.png")}
         navBar={true}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
+          this.props.dispatch(setEmail(this.state.email!));
           this.props.navigation.push("EmailOptIn");
         }}
-      />
+      >
+        <EmailInput
+          autoFocus={true}
+          placeholder={t("placeholder")}
+          returnKeyType="next"
+          validationError={t("validationError")}
+          value={this.state.email}
+          onChange={(email, validEmail) => this.setState({ email, validEmail })}
+          onSubmit={validEmail => this.setState({ validEmail })}
+        />
+      </Screen>
     );
   }
 }
-export const GiftcardDetails = withNamespaces("giftcardDetailsScreen")<Props>(
-  GiftcardDetailsScreen
-);
+export const GiftcardDetails = withNamespaces("giftcardDetailsScreen")<
+  Props & EmailProps
+>(GiftcardDetailsScreen);
 
 class EmailOptInScreen extends React.Component<Props & WithNamespaces> {
   // TODO option list

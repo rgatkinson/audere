@@ -197,9 +197,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect((state: StoreState) => ({
-  isDemo: state.meta.isDemo,
-  lastUpdate: state.survey.timestamp,
-  navigationState: state.navigation,
-  workflow: state.survey.workflow,
-}))(AppWithNavigationState);
+export default connect((state: StoreState) => {
+  return {
+    isDemo: state.meta.isDemo,
+    lastUpdate: state.survey.timestamp,
+    navigationState: state.navigation,
+    workflow: state.survey.workflow,
+  };
+})(AppWithNavigationState);
