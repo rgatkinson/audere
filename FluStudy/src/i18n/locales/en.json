@@ -99,7 +99,8 @@
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "redLine": "Is there a red line on your test strip?",
     "firstTestFeedback": "Do you feel you performed all of the steps in the flu-test correctly?",
-    "secondTestFeedback": "How do you feel you performed the second test?"
+    "secondTestFeedback": "How do you feel you performed the second test?",
+    "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
@@ -118,7 +119,8 @@
     "symptomsSeverity": "Select the level of discomfort you felt",
     "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "blueLine": "The line may be faint, but as long as you see a line you can answer Yes to the question.",
-    "selectOne": "Select one of the following"
+    "selectOne": "Select one of the following",
+    "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
@@ -438,7 +440,9 @@
     "preferNotToSay": "Prefer not to say",
     "medicaid": "Medicaid",
     "privateInsurance": "Private Insurance",
-    "medicare": "Medicare"
+    "medicare": "Medicare",
+    "contactMeNextSeason": "Contact me next flu season",
+    "sendMeStudy": "Send me the study outcome report"
   },
   "surveyButton": {
     "done": "Done",

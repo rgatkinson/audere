@@ -58,6 +58,7 @@ import {
   RedLineConfig,
   FirstTestFeedbackConfig,
   SecondTestFeedbackConfig,
+  OptInForMessagesConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -70,6 +71,7 @@ import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
 import MonthPicker from "../components/MonthPicker";
 import Links from "../components/Links";
+import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import OptionQuestion from "../components/OptionQuestion";
 import QuestionText from "../components/QuestionText";
 import Screen from "../components/Screen";
@@ -493,6 +495,7 @@ class ManualEntryScreen extends React.Component<
           onNext={this._onSave}
         >
           <TextInput
+            autoFocus={this.props.navigation.isFocused()}
             autoCorrect={false}
             keyboardType={"number-pad"}
             placeholder={t("placeholder")}
@@ -2092,7 +2095,7 @@ class GiftcardDetailsScreen extends React.Component<
         }}
       >
         <EmailInput
-          autoFocus={true}
+          autoFocus={this.props.navigation.isFocused()}
           placeholder={t("placeholder")}
           returnKeyType="next"
           validationError={t("validationError")}
@@ -2108,9 +2111,9 @@ export const GiftcardDetails = withNamespaces("giftcardDetailsScreen")<
   Props & EmailProps
 >(GiftcardDetailsScreen);
 
-class EmailOptInScreen extends React.Component<Props & WithNamespaces> {
-  // TODO option list
-  // TODO on nav, mark survey complete
+class EmailOptInScreen extends React.Component<
+  Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+> {
   render() {
     const { t } = this.props;
     return (
@@ -2124,14 +2127,32 @@ class EmailOptInScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
+          this.props.dispatch(
+            setWorkflow({
+              ...this.props.workflow,
+              surveyComplete: true,
+            })
+          );
           this.props.navigation.push("Thanks");
         }}
-      />
+      >
+        <OptionList
+          data={newSelectedOptionsList(
+            OptInForMessagesConfig.optionList!.options,
+            this.props.getAnswer("options", OptInForMessagesConfig.id)
+          )}
+          multiSelect={true}
+          numColumns={1}
+          onChange={options =>
+            this.props.updateAnswer({ options }, OptInForMessagesConfig)
+          }
+        />
+      </Screen>
     );
   }
 }
-export const EmailOptIn = withNamespaces("emailOptInScreen")<Props>(
-  EmailOptInScreen
+export const EmailOptIn = reduxWriter(
+  withNamespaces("emailOptInScreen")(EmailOptInScreen)
 );
 
 class ThanksScreen extends React.Component<Props & WithNamespaces> {
@@ -2150,7 +2171,37 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         title={t("title")}
         onNext={() => {}}
-      />
+      >
+        <Links
+          links={[
+            {
+              label: t("links:shareLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:learnLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+            {
+              label: t("links:medLink"),
+              onPress: () => {
+                Alert.alert("Hello", "Waiting on content", [
+                  { text: "Ok", onPress: () => {} },
+                ]);
+              },
+            },
+          ]}
+        />
+        <Text content={t("disclaimer")} />
+      </Screen>
     );
   }
 }

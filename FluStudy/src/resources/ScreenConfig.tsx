@@ -411,3 +411,15 @@ export const SecondTestFeedbackConfig: SurveyQuestionData = {
     { key: "missingMaterials", primary: false, enabled: true },
   ],
 };
+
+export const OptInForMessagesConfig: SurveyQuestionData = {
+  id: "OptInForMessages",
+  title: "optInForMessages",
+  description: "optInForMessages",
+  optionList: {
+    multiSelect: true,
+    options: ["contactMeNextSeason", "sendMeStudy"],
+    withOther: false,
+  },
+  buttons: [],
+};
