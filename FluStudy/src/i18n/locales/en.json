@@ -393,6 +393,11 @@
     "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
     "description": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease provide your email to receive your gift card:",
     "placeholder": "Enter your email address",
+    "optOut": "No, I do not want to receive my gift card.",
+    "confirm": "Are you sure?",
+    "explanation": "We need your email to send you your gift card. We won't send you any other emails unless you say it's Ok.",
+    "noThanks": "No, Thanks",
+    "willEnter": "I'll enter my email",
     "submit": "Submit"
   },
   "emailOptInScreen": {
@@ -402,7 +407,7 @@
   "thanksScreen": {
     "title": "Thank you!",
     "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you are feeling. Please do your best to reply as soon as you can to that message.\n\nIn the meantime, what can you do now?",
-    "disclaimer": "Please remember, the results of these test are experimental and not to be used as medical care. Consult your doctor you normally would for your sickness.\nWe suggest you wash your hands now that you've completed all the tests."
+    "disclaimer": "Please remember, the results of these test are experimental and not to be used as medical care. Consult your doctor you normally would for your sickness.\n\nWe suggest you wash your hands now that you've completed all the tests."
   },
   "links": {
     "shareLink": "Recommend Flu@home to a friend who's not feeling well",

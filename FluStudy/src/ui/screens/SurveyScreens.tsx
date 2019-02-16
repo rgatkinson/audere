@@ -78,6 +78,13 @@ import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import Title from "../components/Title";
+import {
+  findMedHelp,
+  learnMore,
+  scheduleUSPSPickUp,
+  shareWithAFriend,
+  showNearbyShippingLocations,
+} from "../externalActions";
 import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
 
 interface Props {
@@ -558,74 +565,6 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
 }
 export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
   TestInstructionsScreen
-);
-
-class ComponentsScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        navBar={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Swab");
-        }}
-      >
-        <ImageGrid
-          columns={2}
-          items={[
-            {
-              imageSrc: require("../../img/kit.png"),
-              label: t("kit"),
-            },
-            {
-              imageSrc: require("../../img/card.png"),
-              label: t("card"),
-            },
-            {
-              imageSrc: require("../../img/sampleTube.png"),
-              label: t("sampleTube"),
-            },
-            {
-              imageSrc: require("../../img/ampoule.png"),
-              label: t("ampoule"),
-            },
-            {
-              imageSrc: require("../../img/swab.png"),
-              label: t("swab"),
-            },
-            {
-              imageSrc: require("../../img/bag.png"),
-              label: t("bag"),
-            },
-          ]}
-        />
-        <Button
-          enabled={true}
-          primary={true}
-          label={t("common:button:continue")}
-          onPress={() => this.props.navigation.push("Swab")}
-        />
-        <Links
-          center={true}
-          links={[
-            {
-              label: t("help"),
-              onPress: () => {},
-            },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const Components = withNamespaces("componentsScreen")<Props>(
-  ComponentsScreen
 );
 
 class SwabScreen extends React.Component<Props & WithNamespaces> {
@@ -1649,7 +1588,6 @@ interface TestStripProps {
 class TestStripConfirmationScreen extends React.Component<
   Props & TestStripProps & WithNamespaces
 > {
-  // TODO: in case of error, show error message with options to try again or skip
   render() {
     const { t } = this.props;
     const screenWidth = Dimensions.get("window").width;
@@ -1973,7 +1911,6 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
 export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
 
 class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
-  // TODO Link action for nearby USPS/shipping facilities
   render() {
     const { t } = this.props;
     return (
@@ -2005,9 +1942,7 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("showNearbyUsps"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                showNearbyShippingLocations();
               },
             },
           ]}
@@ -2019,7 +1954,6 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
 export const ShipBox = withNamespaces("shipBoxScreen")<Props>(ShipBoxScreen);
 
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
-  // TODO go to USPS onNext
   render() {
     const { t } = this.props;
     return (
@@ -2033,14 +1967,9 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          Alert.alert("TODO", "Kick out to USPS site before proceeding", [
-            {
-              text: t("Ok"),
-              onPress: () => {
-                this.props.navigation.push("GiftcardDetails");
-              },
-            },
-          ]);
+          scheduleUSPSPickUp(() => {
+            this.props.navigation.push("GiftcardDetails");
+          });
         }}
       >
         <BulletPoint content={t("rule1")} />
@@ -2084,6 +2013,30 @@ class GiftcardDetailsScreen extends React.Component<
       <Screen
         canProceed={!!this.state.email && this.state.validEmail}
         desc={!!this.props.email ? t("descriptionWithEmail") : t("description")}
+        footer={
+          <Links
+            center={true}
+            links={[
+              {
+                label: t("optOut"),
+                onPress: () => {
+                  Alert.alert(t("confirm"), t("explanation"), [
+                    {
+                      text: t("noThanks"),
+                      onPress: () => {
+                        this.props.navigation.push("Thanks");
+                      },
+                    },
+                    {
+                      text: t("willEnter"),
+                      onPress: () => {},
+                    },
+                  ]);
+                },
+              },
+            ]}
+          />
+        }
         imageBorder={true}
         imageSrc={require("../../img/tbd.png")}
         navBar={true}
@@ -2156,8 +2109,6 @@ export const EmailOptIn = reduxWriter(
 );
 
 class ThanksScreen extends React.Component<Props & WithNamespaces> {
-  // TODO links
-  // TODO disclaimer
   render() {
     const { t } = this.props;
     return (
@@ -2177,30 +2128,24 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:shareLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                shareWithAFriend();
               },
             },
             {
               label: t("links:learnLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                findMedHelp();
               },
             },
           ]}
         />
-        <Text content={t("disclaimer")} />
+        <Text content={t("disclaimer")} style={{ marginBottom: GUTTER }} />
       </Screen>
     );
   }

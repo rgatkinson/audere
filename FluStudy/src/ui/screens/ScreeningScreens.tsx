@@ -50,6 +50,7 @@ import Screen from "../components/Screen";
 import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
+import { findMedHelp, learnMore, shareWithAFriend } from "../externalActions";
 import {
   BORDER_COLOR,
   ERROR_COLOR,
@@ -545,25 +546,19 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:shareLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                shareWithAFriend();
               },
             },
             {
               label: t("links:learnLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                findMedHelp();
               },
             },
           ]}
@@ -596,25 +591,19 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:shareLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                shareWithAFriend();
               },
             },
             {
               label: t("links:learnLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                findMedHelp();
               },
             },
           ]}
@@ -799,25 +788,19 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:shareLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                shareWithAFriend();
               },
             },
             {
               label: t("links:learnLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
-                Alert.alert("Hello", "Waiting on content", [
-                  { text: "Ok", onPress: () => {} },
-                ]);
+                findMedHelp();
               },
             },
           ]}
