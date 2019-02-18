@@ -16,7 +16,6 @@ import {
   LogInfo,
   ProtocolDocument,
 } from "audere-lib/feverProtocol";
-import { loadRandomBytes } from "../hacks";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { PouchDoc } from "./Types";
@@ -171,7 +170,6 @@ export class DocumentUploader {
         console.log(JSON.stringify(save.document, null, 2));
       }
     }
-    await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put(pouch);
     this.logger.debug(`Saved ${key}`);
     this.uploadNext();
@@ -236,7 +234,6 @@ export class DocumentUploader {
     }
     const csruid = apiResult.data.id.trim();
     this.logger.debug(`getCSRUID(${localUid}) saving ${csruid}`);
-    await loadRandomBytes(this.api, 44, this.logger);
     await this.db.put({
       _id: pouchId,
       csruid,
