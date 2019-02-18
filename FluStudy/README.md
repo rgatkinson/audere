@@ -3,12 +3,16 @@ How to get running from source
 * Install cocoapods
   * `sudo gem install cocoapods`
 * Run `pod install` from `FluStudy/ios/`
+  * If you run into errors about `undefined method 'native_target'`, you'll need to install version 1.5.3
+    * `sudo gem uninstall cocoapods`  (when asked to remove executables, say yes)
+    * `sudo gem install cocoapods -v 1.5.3`
 * Run `yarn install` from `FluStudy`
 * Install fastlane
   * `sudo gem install fastlane -NV`
 * Run `fastlane certificates` from `FluStudy/ios/`
   * You will be prompted for a passphrase to decrypt the signing certs from the repo. See Terri for this.
   * If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
+  * If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
 * Run `yarn start` from `FluStudy/`
 * Open `FluStudy/ios/flutrack.xcworkspace` in Xcode
 * Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
