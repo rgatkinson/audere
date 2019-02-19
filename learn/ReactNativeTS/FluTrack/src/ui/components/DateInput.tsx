@@ -25,7 +25,15 @@ class DateInput extends React.Component<Props & WithNamespaces> {
       .substr(0, 10)
       .split("-");
     const realDate = new Date(+year, +month - 1, +day);
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    if (this.props.mode !== "month") {
+      realDate.setUTCHours(0);
+    }
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    };
     return this.props.mode === "month"
       ? format(realDate, LocaleConfig[language].monthFormat, {
           locale: LocaleConfig[language].dateLocale,
