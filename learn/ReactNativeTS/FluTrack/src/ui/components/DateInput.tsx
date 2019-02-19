@@ -30,7 +30,7 @@ class DateInput extends React.Component<Props & WithNamespaces> {
       ? format(realDate, LocaleConfig[language].monthFormat, {
           locale: LocaleConfig[language].dateLocale,
         })
-      : date.toLocaleDateString(language, options);
+      : realDate.toLocaleDateString(language, options);
   }
 
   render() {

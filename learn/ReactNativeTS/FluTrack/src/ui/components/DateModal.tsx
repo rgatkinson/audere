@@ -54,6 +54,7 @@ class DateModal extends React.Component<Props & WithNamespaces> {
             mode="date"
             locale={i18n.language}
             onDateChange={date => {
+              date.setUTCHours(0, 0, 0, 0);
               this.setState({ selectedDate: true, date });
             }}
             timeZoneOffsetInMinutes={0} // force to UTC
