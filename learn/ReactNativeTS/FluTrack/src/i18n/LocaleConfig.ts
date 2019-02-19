@@ -7,6 +7,7 @@ export const LocaleConfig: {
     resources: object;
     dateLocale: any;
     monthFormat: string; // How to display month+year in this language
+    dateFormat: string; // How to display date in this language
   };
 } = {
   en: {
@@ -14,12 +15,14 @@ export const LocaleConfig: {
     resources: require("./locales/en.json"),
     dateLocale: require("date-fns/locale/en"),
     monthFormat: "MMMM YYYY",
+    dateFormat: "MMMM D, YYYY",
   },
   es: {
     languageName: "Espanol",
     resources: esStrings,
     dateLocale: require("date-fns/locale/es"),
     monthFormat: "MMMM [de] YYYY",
+    dateFormat: "D [de] MMMM [de] YYYY",
   },
 };
 
