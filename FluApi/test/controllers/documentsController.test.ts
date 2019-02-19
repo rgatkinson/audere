@@ -41,8 +41,8 @@ describe("putDocument", () => {
   });
 
   afterAll(async done => {
-    await sql.close();
     await accessKey.destroy();
+    await sql.close();
     done();
   });
 
