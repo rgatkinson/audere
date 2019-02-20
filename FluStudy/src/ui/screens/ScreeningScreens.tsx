@@ -61,6 +61,7 @@ import {
   SMALL_TEXT,
 } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
+import { isValidUSZipCode } from "../../util/check"
 
 interface Props {
   dispatch(action: Action): void;
@@ -498,7 +499,7 @@ class AddressInputScreen extends React.Component<
       !!address.address &&
       !!address.city &&
       !!address.state &&
-      !!address.zipcode
+      isValidUSZipCode(address.zipcode)
     );
   };
 

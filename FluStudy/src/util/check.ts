@@ -17,3 +17,7 @@ export function checkNotNull<T>(item: T | null | undefined): T {
 export function isNotNull<T>(item: T | null | undefined): item is T {
   return item != null;
 }
+
+export function isValidUSZipCode(zip: string | null | undefined): boolean {
+  return zip != null && /^[0-9]{5,5}(-[0-9]{4,4})?$/.test(zip);
+}
