@@ -6,7 +6,7 @@
 export class Timer {
   private readonly callback: () => void;
   private readonly duration: number;
-  private id: number | null;
+  private id: NodeJS.Timeout | null;
 
   constructor(callback: () => void, duration: number) {
     this.callback = callback;

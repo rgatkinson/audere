@@ -257,7 +257,7 @@ class ScanScreen extends React.Component<
 
   _willFocus: any;
   _willBlur: any;
-  _timer: number | null | undefined;
+  _timer: NodeJS.Timeout | null | undefined;
 
   componentDidMount() {
     this._willFocus = this.props.navigation.addListener("willFocus", () =>
@@ -662,10 +662,14 @@ export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
   SwabInTubeScreen
 );
 
+interface DemoModeProps {
+  isDemo: boolean;
+}
+
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
 }))
-class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
+class FirstTimerScreen extends React.Component<Props & DemoModeProps & WithNamespaces> {
   state = {
     time: 60,
   };
@@ -723,7 +727,7 @@ class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const FirstTimer = withNamespaces("firstTimerScreen")<Props>(
+export const FirstTimer = withNamespaces("firstTimerScreen")<Props & DemoModeProps>(
   FirstTimerScreen
 );
 
@@ -1350,7 +1354,7 @@ class TestStripTimerScreen extends React.Component<
         onNext={() => {
           this.props.navigation.push("FinishTube");
         }}
-        onTitlePress={ 
+        onTitlePress={
           this.props.isDemo ? () => { this._onFastForward(); } : undefined
         }
       />
