@@ -18,9 +18,9 @@ import {
 import {
   DeviceInfo,
   LogLevel,
-  LogBatchInfo,
   PIIInfo,
-  SurveyNonPIIDbInfo
+  SurveyNonPIIDbInfo,
+  AnalyticsInfo
 } from "audere-lib/feverProtocol";
 
 // ---------------------------------------------------------------
@@ -38,7 +38,7 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
 export interface FeverModels {
   accessKey: Model<AccessKeyAttributes>;
   clientLog: Model<ClientLogAttributes>;
-  clientLogBatch: Model<LogBatchAttributes>;
+  clientLogBatch: Model<AnalyticsAttributes>;
   feedback: Model<FeedbackAttributes>;
   surveyNonPii: Model<SurveyAttributes<SurveyNonPIIDbInfo>>;
   surveyPii: Model<SurveyAttributes<PIIInfo>>;
@@ -103,21 +103,21 @@ export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
 
 // ---------------------------------------------------------------
 
-export interface LogBatchAttributes {
+export interface AnalyticsAttributes {
   id?: string;
   device: DeviceInfo;
   csruid: string;
-  batch: LogBatchInfo;
+  analytics: AnalyticsInfo;
 }
-export type LogBatchInstance = Inst<LogBatchAttributes>;
-export function defineLogBatch(sql: SplitSql): Model<LogBatchAttributes> {
-  return defineModel<LogBatchAttributes>(
+export type LogBatchInstance = Inst<AnalyticsAttributes>;
+export function defineLogBatch(sql: SplitSql): Model<AnalyticsAttributes> {
+  return defineModel<AnalyticsAttributes>(
     sql.nonPii,
-    "fever_client_log_batches",
+    "fever_client_analytics",
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
-      batch: jsonColumn()
+      analytics: jsonColumn()
     }
   );
 }

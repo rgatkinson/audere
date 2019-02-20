@@ -32,14 +32,14 @@ export enum DocumentType {
   Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Log = "LOG",
-  LogBatch = "LOG_BATCH"
+  Analytics = "ANALYTICS",
 }
 
 export type ProtocolDocument =
   | SurveyDocument
   | FeedbackDocument
   | LogDocument
-  | LogBatchDocument;
+  | AnalyticsDocument;
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -243,25 +243,6 @@ export interface OtherValueInfo {
   valueString: string;
 }
 
-export interface EventInfo {
-  kind: EventInfoKind;
-
-  at: string; // FHIR:instant
-  until?: string; // FHIR:instant
-
-  // id of the item this event describes (e.g. question id), if applicable
-  refId?: string;
-}
-
-export enum EventInfoKind {
-  Response = "response",
-  Sample = "sample",
-  Screening = "screening",
-  Survey = "survey",
-  AppNav = "appNav",
-  TimeoutNav = "timeoutNav"
-}
-
 // ================================================================================
 // Feedback
 
@@ -299,17 +280,18 @@ export interface LogInfo {
 }
 
 // ================================================================================
-// LogBatch
+// Analytics
 
-export interface LogBatchDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.LogBatch;
+export interface AnalyticsDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Analytics;
   schemaId: 1;
-  batch: LogBatchInfo;
+  analytics: AnalyticsInfo;
 }
 
-export interface LogBatchInfo {
+export interface AnalyticsInfo {
   timestamp: string;
-  records: LogRecordInfo[];
+  logs: LogRecordInfo[];
+  events: EventInfo[];
 }
 
 export interface LogRecordInfo {
@@ -324,4 +306,26 @@ export enum LogRecordLevel {
   Warn = "WARN",
   Error = "ERROR",
   Fatal = "FATAL"
+}
+
+// ================================================================================
+// EventInfo
+
+export interface EventInfo {
+  kind: EventInfoKind;
+
+  at: string; // FHIR:instant
+  until?: string; // FHIR:instant
+
+  // id of the item this event describes (e.g. question id), if applicable
+  refId?: string;
+}
+
+export enum EventInfoKind {
+  Response = "response",
+  Sample = "sample",
+  Screening = "screening",
+  Survey = "survey",
+  AppNav = "appNav",
+  TimeoutNav = "timeoutNav",
 }

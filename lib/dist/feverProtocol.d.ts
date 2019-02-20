@@ -8,9 +8,9 @@ export declare enum DocumentType {
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
     Log = "LOG",
-    LogBatch = "LOG_BATCH"
+    Analytics = "ANALYTICS"
 }
-export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | LogDocument | LogBatchDocument;
+export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | LogDocument | AnalyticsDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -154,20 +154,6 @@ export interface OtherValueInfo {
     selectedIndex: Number;
     valueString: string;
 }
-export interface EventInfo {
-    kind: EventInfoKind;
-    at: string;
-    until?: string;
-    refId?: string;
-}
-export declare enum EventInfoKind {
-    Response = "response",
-    Sample = "sample",
-    Screening = "screening",
-    Survey = "survey",
-    AppNav = "appNav",
-    TimeoutNav = "timeoutNav"
-}
 export interface FeedbackDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Feedback;
     schemaId: 1;
@@ -192,14 +178,15 @@ export interface LogInfo {
     logentry: string;
     level: LogLevel;
 }
-export interface LogBatchDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.LogBatch;
+export interface AnalyticsDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Analytics;
     schemaId: 1;
-    batch: LogBatchInfo;
+    analytics: AnalyticsInfo;
 }
-export interface LogBatchInfo {
+export interface AnalyticsInfo {
     timestamp: string;
-    records: LogRecordInfo[];
+    logs: LogRecordInfo[];
+    events: EventInfo[];
 }
 export interface LogRecordInfo {
     timestamp: string;
@@ -212,4 +199,18 @@ export declare enum LogRecordLevel {
     Warn = "WARN",
     Error = "ERROR",
     Fatal = "FATAL"
+}
+export interface EventInfo {
+    kind: EventInfoKind;
+    at: string;
+    until?: string;
+    refId?: string;
+}
+export declare enum EventInfoKind {
+    Response = "response",
+    Sample = "sample",
+    Screening = "screening",
+    Survey = "survey",
+    AppNav = "appNav",
+    TimeoutNav = "timeoutNav"
 }

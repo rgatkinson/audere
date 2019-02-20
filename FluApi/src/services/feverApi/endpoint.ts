@@ -16,7 +16,7 @@ import {
   NonPIIConsentInfo,
   ResponseInfo,
   ResponseItemInfo,
-  LogBatchDocument
+  AnalyticsDocument
 } from "audere-lib/feverProtocol";
 import { defineFeverModels, FeverModels } from "./models";
 import { sendEmail } from "../../util/email";
@@ -67,8 +67,8 @@ export class FeverEndpoint {
       case DocumentType.Log:
         await this.putCrashLog(req.body as LogDocument);
         break;
-      case DocumentType.LogBatch:
-        await this.putLogBatch(req.body as LogBatchDocument);
+      case DocumentType.Analytics:
+        await this.putAnalytics(req.body as AnalyticsDocument);
         break;
       default:
         throw new Error("Invalid document type");
@@ -136,11 +136,9 @@ export class FeverEndpoint {
     });
   }
 
-  async putLogBatch(document: LogBatchDocument): Promise<void> {
-    const csruid = document.csruid;
-    const device = document.device;
-    const batch = document.batch;
-    await this.models.clientLogBatch.upsert({ csruid, device, batch });
+  async putAnalytics(document: AnalyticsDocument): Promise<void> {
+    const { csruid, device, analytics } = document;
+    await this.models.clientLogBatch.upsert({ csruid, device, analytics });
   }
 }
 

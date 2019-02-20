@@ -8,10 +8,12 @@ import {
   DocumentType,
   LogRecordInfo,
   LogRecordLevel,
-  LogBatchInfo,
+  AnalyticsInfo,
+  EventInfo,
 } from "audere-lib/feverProtocol";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
+import { EventTracker } from "./EventUtil";
 
 const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
@@ -24,21 +26,23 @@ const DEFAULT_OPTIONS = {
   uploadPriority: 3,
 };
 
-export class LogBatcher implements Logger {
+export class AnalyticsBatcher implements EventTracker, Logger {
   private readonly uploader: LazyUploader;
   private readonly db: any;
-  private readonly buffer: LogRecordInfo[];
+  private readonly logs: LogRecordInfo[];
+  private readonly events: EventInfo[];
   private readonly pump: Pump;
   private readonly config: typeof DEFAULT_OPTIONS;
 
   constructor(
     uploader: LazyUploader,
-    db: LogStore,
+    db: AnalyticsStore,
     options: ConfigOptions = {}
   ) {
     this.uploader = uploader;
     this.db = db;
-    this.buffer = [];
+    this.logs = [];
+    this.events = [];
     this.config = { ...DEFAULT_OPTIONS, ...options };
     this.echo(`Config = ${JSON.stringify(this.config)}`);
 
@@ -68,7 +72,12 @@ export class LogBatcher implements Logger {
   public write(level: LogRecordLevel, text: string): void {
     const timestamp = new Date().toISOString();
     this.echo(`${timestamp} [${level}]: ${text}`);
-    this.buffer.push({ timestamp, level, text: this.truncate(text) });
+    this.logs.push({ timestamp, level, text: this.truncate(text) });
+    this.pump.start();
+  }
+
+  public fire(event: EventInfo): void {
+    this.events.push(event);
     this.pump.start();
   }
 
@@ -79,13 +88,18 @@ export class LogBatcher implements Logger {
   }
 
   private async pumpState(): Promise<void> {
-    const adding = this.buffer.splice(0);
-    if (adding.length > 0) {
+    const newLogs = this.logs.splice(0);
+    const newEvents = this.events.splice(0);
+    if (newLogs.length > 0 || newEvents.length > 0) {
       const state = await this.loadPending();
-      const size =
-        state.size + adding.reduce((acc, x) => acc + this.guessSize(x), 0);
-      const records = (state == null ? [] : state.records).concat(adding);
-      const durationMs = Date.now() - new Date(records[0].timestamp).getTime();
+      const size = state.size +
+        newLogs.reduce((acc, x) => acc + this.guessLogSize(x), 0) +
+        newEvents.reduce((acc, x) => acc + this.guessEventSize(x), 0);
+      const oldLogs = ((state && state.logs) || []);
+      const oldEvents = ((state && state.events) || []);
+      const logs = oldLogs.concat(newLogs);
+      const events = oldEvents.concat(newEvents);
+      const durationMs = Date.now() - new Date(logs[0].timestamp).getTime();
       const uploader = this.uploader.get();
       const needsUpload =
         size > this.config.targetBatchSizeInChars ||
@@ -94,47 +108,45 @@ export class LogBatcher implements Logger {
       this.echo(
         `LogBatcher:` +
           ` needsUpload=${needsUpload}` +
-          `, adding ${adding.length}+${state.records.length}=${
-            records.length
-          }` +
+          `, adding` +
+          ` logs:${newLogs.length}+${oldLogs.length}=${logs.length}` +
+          ` events:${newEvents.length}+${oldEvents.length}=${events.length}` +
           `, size=${size}` +
           `, dur=${durationMs}ms`
       );
 
       try {
         if (needsUpload && uploader != null) {
-          const batch = {
-            timestamp: new Date().toISOString(),
-            records,
-          };
+          const timestamp = new Date().toISOString();
+          const analytics = { timestamp, logs, events };
           this.echo(
-            `LogBatcher: sending ${records.length} records to DocumentUploader`
+            `LogBatcher: sending ${logs.length} records to DocumentUploader`
           );
           uploader.save(
             uuidv4(),
-            batch,
-            DocumentType.LogBatch,
+            analytics,
+            DocumentType.Analytics,
             this.config.uploadPriority
           );
           this.echo(`LogBatcher: clearing Pouch state`);
           await this.db.put({ ...state, ...this.emptyState() });
           this.echo(`LogBatcher: cleared Pouch state`);
         } else {
-          this.echo(`LogBatcher: writing ${records.length} records to PouchDB`);
-          await this.db.put({ ...state, size, records });
+          this.echo(`LogBatcher: writing ${logs.length} records to PouchDB`);
+          await this.db.put({ ...state, size, records: logs });
         }
       } catch (e) {
         // Hope that the crash log handler can upload a bit of the log state.
         throw new Error(
           `=====\n${e}\nWhile writing log batch:\n${this.summarize(
-            records
+            logs
           )}\n=====`
         );
       }
     }
   }
 
-  private async loadPending(): Promise<PendingLogState> {
+  private async loadPending(): Promise<PendingState> {
     try {
       return await this.db.get(this.config.pouchDbKey);
     } catch (e) {
@@ -142,20 +154,30 @@ export class LogBatcher implements Logger {
     }
   }
 
-  private emptyState(): PendingLogState {
+  private emptyState(): PendingState {
     return {
       _id: this.config.pouchDbKey,
       schemaId: 1,
       size: 0,
-      records: [],
+      logs: [],
+      events: [],
     };
   }
 
-  private guessSize(record: LogRecordInfo): number {
+  private guessLogSize(record: LogRecordInfo): number {
     return (
       record.timestamp.length +
       record.level.length +
       record.text.length +
+      this.config.guessRecordOverheadInChars
+    );
+  }
+
+  private guessEventSize(event: EventInfo): number {
+    return (
+      event.at.length +
+      (event.until ? event.until.length : 0) +
+      (event.refId ? event.refId.length : 0) +
       this.config.guessRecordOverheadInChars
     );
   }
@@ -212,24 +234,23 @@ export class LazyUploader {
 export interface Uploader {
   save(
     localUid: string,
-    document: LogBatchInfo,
+    document: AnalyticsInfo,
     documentType: DocumentType,
     priority: number
   ): void;
 }
 
-export type PendingLogState = PendingLogState1;
-
-interface PendingLogState1 {
+export interface PendingState {
   _id: string;
   schemaId: 1;
   size: number;
-  records: LogRecordInfo[];
+  logs: LogRecordInfo[];
+  events: EventInfo[];
 }
 
-export interface LogStore {
-  get(key: string): Promise<PendingLogState>;
-  put(state: PendingLogState): Promise<void>;
+export interface AnalyticsStore {
+  get(key: string): Promise<PendingState>;
+  put(state: PendingState): Promise<void>;
 }
 
 export interface ConfigOptions {

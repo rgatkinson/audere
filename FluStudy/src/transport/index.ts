@@ -11,7 +11,8 @@ import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
 import { DocumentType, LogLevel, SurveyInfo } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "./DocumentUploader";
-import { LazyUploader, LogBatcher } from "./LogBatcher";
+import { LazyUploader, AnalyticsBatcher } from "./AnalyticsBatcher";
+import { EventTracker } from "./EventUtil";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
@@ -19,21 +20,23 @@ PouchDB.plugin(CryptoPouch);
 
 interface Transport {
   uploader: TypedDocumentUploader;
-  logger: LogBatcher;
+  logger: AnalyticsBatcher;
+  events: EventTracker;
 }
 
 export function createTransport(): Transport {
   const db = new PouchDB("clientDB", { auto_compaction: true });
   const lazyUploader = new LazyUploader();
-  const logger = new LogBatcher(lazyUploader, <any>db, { uploadPriority: 3 });
-  const api = createAxios(logger);
-  const uploader = new DocumentUploader(db, api, logger);
+  const batcher = new AnalyticsBatcher(lazyUploader, <any>db, { uploadPriority: 3 });
+  const api = createAxios(batcher);
+  const uploader = new DocumentUploader(db, api, batcher);
 
   lazyUploader.bind(uploader);
 
   return {
     uploader: new TypedDocumentUploader(uploader),
-    logger,
+    logger: batcher,
+    events: batcher,
   };
 }
 
@@ -66,7 +69,7 @@ class TypedDocumentUploader {
   }
 }
 
-function createAxios(logger: LogBatcher) {
+function createAxios(logger: AnalyticsBatcher) {
   const api = axios.create({
     baseURL: getApiBaseUrl(),
     xsrfCookieName: "csrftoken",

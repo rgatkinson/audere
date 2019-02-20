@@ -10,11 +10,11 @@ import { AxiosInstance, AxiosResponse } from "axios";
 import { InteractionManager } from "react-native";
 import {
   DocumentType,
-  LogBatchInfo,
   SurveyInfo,
   FeedbackInfo,
   LogInfo,
   ProtocolDocument,
+  AnalyticsInfo,
 } from "audere-lib/feverProtocol";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
@@ -35,7 +35,7 @@ const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = SurveyInfo | FeedbackInfo | LogInfo | LogBatchInfo;
+type DocumentContents = SurveyInfo | FeedbackInfo | LogInfo | AnalyticsInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -380,13 +380,13 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         log: asLogInfo(save.document),
       };
 
-    case DocumentType.LogBatch:
+    case DocumentType.Analytics:
       return {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
         csruid: CSRUID_PLACEHOLDER,
-        batch: asLogBatchInfo(save.document),
+        analytics: asAnalyticsInfo(save.document),
       };
   }
 }
@@ -431,22 +431,28 @@ function isProbablyLogInfo(contents: any): contents is LogInfo {
   return isStr(contents.logentry);
 }
 
-function asLogBatchInfo(contents: DocumentContents): LogBatchInfo {
-  if (isProbablyLogBatchInfo(contents)) {
+function asAnalyticsInfo(contents: DocumentContents): AnalyticsInfo {
+  if (isProbablyAnalyticsInfo(contents)) {
     return contents;
   }
-  throw new Error(`Expected LogBatchInfo, got ${contents}`);
+  throw new Error(`Expected AnalyticsInfo, got ${contents}`);
 }
 
-function isProbablyLogBatchInfo(contents: any): contents is LogBatchInfo {
+function isProbablyAnalyticsInfo(contents: any): contents is AnalyticsInfo {
   return (
-    isArr(contents.records) &&
-    contents.records.every(
+    isArr(contents.logs) &&
+    contents.logs.every(
       (item: any) =>
         isObj(item) &&
         isStr(item.timestamp) &&
         isStr(item.level) &&
         isStr(item.text)
+    ) &&
+    isArr(contents.events) &&
+    contents.events.every(
+      (item: any) =>
+        isStr(item.kind) &&
+        isStr(item.at)
     )
   );
 }
