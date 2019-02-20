@@ -40,6 +40,7 @@ Below you'll find information about performing common tasks. The most recent ver
   * [Ejecting from Create React Native App](#ejecting-from-create-react-native-app)
     * [Build Dependencies (Xcode & Android Studio)](#build-dependencies-xcode-android-studio)
     * [Should I Use ExpoKit?](#should-i-use-expokit)
+* [Setting Up a Local Database](#setting-up-a-local-database)
 * [Troubleshooting](#troubleshooting)
   * [Networking](#networking)
   * [iOS Simulator won't open](#ios-simulator-wont-open)
@@ -170,6 +171,12 @@ This is usually as simple as running `npm run eject` in your project, which will
 #### Should I Use ExpoKit?
 
 If you have made use of Expo APIs while working on your project, then those API calls will stop working if you eject to a regular React Native project. If you want to continue using those APIs, you can eject to "React Native + ExpoKit" which will still allow you to build your own native code and continue using the Expo APIs. See the [ejecting guide](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md) for more details about this option.
+
+## Setting Up a Local Database
+
+In FluApi, copy .env.example to .env, and edit PII_DATABASE_URL and NONPII_DATABASE_URL in .env with your local database information. Once you have edited the .env file, run `yarn install`, `yarn setup`, and then `yarn start`. If the server started correctly, you should be able to open http://localhost:3000/about in a browser.
+
+To point the app to the server, run `yarn generate-access-key` from FluApi. In your FluStudy directory, copy .env_example to .env and paste in the access key information. Run `yarn start` in FluStudy. You may need to hit shift-R in the console window to reload the cache for the environmental variables to take effect.
 
 ## Troubleshooting
 
