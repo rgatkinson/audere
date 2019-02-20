@@ -86,6 +86,7 @@ import {
   showNearbyShippingLocations,
 } from "../externalActions";
 import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
+import { timestampRender } from "./analytics";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -100,7 +101,7 @@ interface Props {
 class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("WelcomeBackScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -113,7 +114,7 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("WhatsNext");
         }}
       />
-    );
+    ));
   }
 }
 export const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
@@ -123,7 +124,7 @@ export const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
 class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("WhatsNextScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -136,7 +137,7 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Before");
         }}
       />
-    );
+    ));
   }
 }
 export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
@@ -146,7 +147,7 @@ export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("BeforeScreen", (
       <Screen
         canProceed={true}
         logo={true}
@@ -173,7 +174,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
           text={t("flatStep")}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
@@ -190,7 +191,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ScanInstructionsScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -234,7 +235,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
         </BorderView>
         <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
       </Screen>
-    );
+    ));
   }
 }
 export const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
@@ -292,7 +293,7 @@ class ScanScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ScanScreen", (
       <View style={{ flex: 1 }}>
         <BarCodeScanner
           style={{ flex: 1, alignSelf: "stretch" }}
@@ -331,7 +332,7 @@ class ScanScreen extends React.Component<
           </TouchableOpacity>
         </View>
       </View>
-    );
+    ));
   }
 }
 const scanStyles = StyleSheet.create({
@@ -379,7 +380,7 @@ class ScanConfirmationScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ScanConfirmationScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -401,7 +402,7 @@ class ScanConfirmationScreen extends React.Component<
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
         <Text content={t("nextStep")} />
       </Screen>
-    );
+    ));
   }
 }
 export const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
@@ -416,7 +417,7 @@ class ManualConfirmationScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ManualConfirmationScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -438,7 +439,7 @@ class ManualConfirmationScreen extends React.Component<
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
         <Text content={t("nextStep")} />
       </Screen>
-    );
+    ));
   }
 }
 export const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
@@ -493,7 +494,7 @@ class ManualEntryScreen extends React.Component<
   render() {
     const { t } = this.props;
     const width = (Dimensions.get("window").width - 3 * GUTTER) / 3;
-    return (
+    return timestampRender("ManualEntryScreen", (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("common:button:continue")}
@@ -538,7 +539,7 @@ class ManualEntryScreen extends React.Component<
           />
         </Screen>
       </KeyboardAvoidingView>
-    );
+    ));
   }
 }
 export const ManualEntry = withNamespaces("manualEntryScreen")<
@@ -552,7 +553,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TestInstructionsScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -564,7 +565,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         title={t("title")}
         onNext={this._onNext}
       />
-    );
+    ));
   }
 }
 export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
@@ -574,7 +575,7 @@ export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
 class SwabScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SwabScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -588,7 +589,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("SwabPrep");
         }}
       />
-    );
+    ));
   }
 }
 export const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
@@ -596,7 +597,7 @@ export const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
 class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SwabPrepScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -610,7 +611,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Mucus");
         }}
       />
-    );
+    ));
   }
 }
 export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
@@ -618,7 +619,7 @@ export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
 class MucusScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("MucusScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -632,7 +633,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("SwabInTube");
         }}
       />
-    );
+    ));
   }
 }
 export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
@@ -640,7 +641,7 @@ export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SwabInTubeScreen", (
       <Screen
         buttonLabel={t("startTimer")}
         canProceed={true}
@@ -655,7 +656,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("FirstTimer");
         }}
       />
-    );
+    ));
   }
 }
 export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
@@ -706,7 +707,7 @@ class FirstTimerScreen extends React.Component<Props & DemoModeProps & WithNames
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("FirstTimerScreen", (
       <Screen
         canProceed={this._canProceed()}
         imageBorder={true}
@@ -724,7 +725,7 @@ class FirstTimerScreen extends React.Component<Props & DemoModeProps & WithNames
       >
         <Text content={t("tip")} />
       </Screen>
-    );
+    ));
   }
 }
 export const FirstTimer = withNamespaces("firstTimerScreen")<Props & DemoModeProps>(
@@ -734,7 +735,7 @@ export const FirstTimer = withNamespaces("firstTimerScreen")<Props & DemoModePro
 class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("FirstTimerDoneScreen", (
       <Screen
         canProceed={true}
         imageBorder={true}
@@ -749,7 +750,7 @@ class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
       >
         <Text content={t("tip")} />
       </Screen>
-    );
+    ));
   }
 }
 export const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
@@ -759,7 +760,7 @@ export const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
 class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("RemoveSwabFromTubeScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -773,7 +774,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("OpenTestStrip");
         }}
       />
-    );
+    ));
   }
 }
 export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")<
@@ -783,7 +784,7 @@ export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")<
 class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("OpenTestStripScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -797,7 +798,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("StripInTube");
         }}
       />
-    );
+    ));
   }
 }
 export const OpenTestStrip = withNamespaces("openTestStripScreen")<Props>(
@@ -813,7 +814,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("StripInTubeScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -825,7 +826,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         title={t("title")}
         onNext={this._onNext}
       />
-    );
+    ));
   }
 }
 export const StripInTube = withNamespaces("stripInTubeScreen")<Props>(
@@ -854,7 +855,7 @@ class WhatSymptomsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("WhatSymptomsScreen", (
       <Screen
         canProceed={this._haveOption()}
         centerDesc={true}
@@ -872,7 +873,7 @@ class WhatSymptomsScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const WhatSymptoms = reduxWriter(
@@ -960,7 +961,7 @@ class WhenSymptomsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("WhenSymptomsScreen", (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1022,7 +1023,7 @@ class WhenSymptomsScreen extends React.Component<
           );
         })}
       </Screen>
-    );
+    ));
   }
 }
 export const WhenSymptoms = reduxWriter(
@@ -1059,7 +1060,7 @@ class GeneralExposureScreen extends React.Component<
   render() {
     const width = Dimensions.get("window").width - 2 * GUTTER;
     const { t } = this.props;
-    return (
+    return timestampRender("GeneralExposureScreen", (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1090,7 +1091,7 @@ class GeneralExposureScreen extends React.Component<
           />
         ))}
       </Screen>
-    );
+    ));
   }
 }
 export const GeneralExposure = reduxWriter(
@@ -1112,7 +1113,7 @@ class GeneralHealthScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("GeneralHealthScreen", (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1185,7 +1186,7 @@ class GeneralHealthScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const GeneralHealth = reduxWriter(
@@ -1213,7 +1214,7 @@ class ThankYouSurveyScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ThankYouSurveyScreen", (
       <Screen
         canProceed={true}
         desc={t("desc")}
@@ -1223,7 +1224,7 @@ class ThankYouSurveyScreen extends React.Component<
         title={t("title")}
         onNext={this._onNext}
       />
-    );
+    ));
   }
 }
 export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
@@ -1233,7 +1234,7 @@ export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
 class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TestStripReadyScreen", (
       <Screen
         canProceed={true}
         desc={t("desc")}
@@ -1246,7 +1247,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("FinishTube");
         }}
       />
-    );
+    ));
   }
 }
 export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
@@ -1336,7 +1337,7 @@ class TestStripTimerScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TestStripTimerScreen", (
       <Screen
         canProceed={this.state.done}
         desc={t("desc")}
@@ -1358,7 +1359,7 @@ class TestStripTimerScreen extends React.Component<
           this.props.isDemo ? () => { this._onFastForward(); } : undefined
         }
       />
-    );
+    ));
   }
 }
 export const TestStripTimer = withNamespaces("testStripTimerScreen")<
@@ -1368,7 +1369,7 @@ export const TestStripTimer = withNamespaces("testStripTimerScreen")<
 class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("FinishTubeScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1381,7 +1382,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("LookAtStrip");
         }}
       />
-    );
+    ));
   }
 }
 export const FinishTube = withNamespaces("finishTubeScreen")<Props>(
@@ -1391,7 +1392,7 @@ export const FinishTube = withNamespaces("finishTubeScreen")<Props>(
 class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("LookAtStripScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1404,7 +1405,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("TestStripSurvey");
         }}
       />
-    );
+    ));
   }
 }
 export const LookAtStrip = withNamespaces("lookAtStripScreen")<Props>(
@@ -1416,7 +1417,7 @@ class TestStripSurveyScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TestStripSurveyScreen", (
       <Screen
         canProceed={true}
         desc={t("desc")}
@@ -1456,7 +1457,7 @@ class TestStripSurveyScreen extends React.Component<
           />
         )}
       </Screen>
-    );
+    ));
   }
 }
 export const TestStripSurvey = reduxWriter(
@@ -1477,7 +1478,7 @@ class PictureInstructionsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("PictureInstructionsScreen", (
       <Screen
         canProceed={true}
         desc={t("desc")}
@@ -1490,7 +1491,7 @@ class PictureInstructionsScreen extends React.Component<
           await this._onNext();
         }}
       />
-    );
+    ));
   }
 }
 export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
@@ -1524,7 +1525,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TestStripCameraScreen", (
       <View style={{ flex: 1 }}>
         <Spinner visible={this.state.spinner} />
         <Camera ref={this.camera} style={cameraStyles.camera} />
@@ -1559,7 +1560,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
           </TouchableOpacity>
         </View>
       </View>
-    );
+    ));
   }
 }
 const cameraStyles = StyleSheet.create({
@@ -1639,7 +1640,7 @@ class TestStripConfirmationScreen extends React.Component<
     const screenHeight = Dimensions.get("window").height;
     const height = screenHeight / 2;
     const width = (height * screenWidth) / screenHeight;
-    return (
+    return timestampRender("TestStripConfirmationScreen", (
       <Screen
         canProceed={true}
         desc={t("desc")}
@@ -1658,7 +1659,7 @@ class TestStripConfirmationScreen extends React.Component<
           }}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const TestStripConfirmation = withNamespaces(
@@ -1668,7 +1669,7 @@ export const TestStripConfirmation = withNamespaces(
 class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("CleanFirstTestScreen", (
       <Screen
         canProceed={true}
         navBar={true}
@@ -1684,7 +1685,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
         <BulletPoint content={t("step4")} />
         <BulletPoint content={t("step5")} />
       </Screen>
-    );
+    ));
   }
 }
 export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")<Props>(
@@ -1696,7 +1697,7 @@ class FirstTestFeedbackScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("FirstTestFeedbackScreen", (
       <Screen
         canProceed={true}
         imageSrc={require("../../img/mountain.png")}
@@ -1716,7 +1717,7 @@ class FirstTestFeedbackScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const FirstTestFeedback = reduxWriter(
@@ -1726,7 +1727,7 @@ export const FirstTestFeedback = reduxWriter(
 class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("BeginSecondTestScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1739,7 +1740,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("PrepSecondTest");
         }}
       />
-    );
+    ));
   }
 }
 export const BeginSecondTest = withNamespaces("beginSecondTestScreen")<Props>(
@@ -1749,7 +1750,7 @@ export const BeginSecondTest = withNamespaces("beginSecondTestScreen")<Props>(
 class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("PrepSecondTestScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1762,7 +1763,7 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("MucusSecond");
         }}
       />
-    );
+    ));
   }
 }
 export const PrepSecondTest = withNamespaces("prepSecondTestScreen")<Props>(
@@ -1772,7 +1773,7 @@ export const PrepSecondTest = withNamespaces("prepSecondTestScreen")<Props>(
 class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("MucusSecondScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1785,7 +1786,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("SwabInTubeSecond");
         }}
       />
-    );
+    ));
   }
 }
 export const MucusSecond = withNamespaces("mucusSecondScreen")<Props>(
@@ -1795,7 +1796,7 @@ export const MucusSecond = withNamespaces("mucusSecondScreen")<Props>(
 class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SwabInTubeSecondScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1808,7 +1809,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("CleanSecondTest");
         }}
       />
-    );
+    ));
   }
 }
 export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")<Props>(
@@ -1818,7 +1819,7 @@ export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")<Props>(
 class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("CleanSecondTestScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1831,7 +1832,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("SecondTestFeedback");
         }}
       />
-    );
+    ));
   }
 }
 export const CleanSecondTest = withNamespaces("cleanSecondTestScreen")<Props>(
@@ -1843,7 +1844,7 @@ class SecondTestFeedbackScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SecondTestFeedbackScreen", (
       <Screen
         canProceed={true}
         imageSrc={require("../../img/mountain.png")}
@@ -1863,7 +1864,7 @@ class SecondTestFeedbackScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const SecondTestFeedback = reduxWriter(
@@ -1873,7 +1874,7 @@ export const SecondTestFeedback = reduxWriter(
 class PackingScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("PackingScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1885,7 +1886,7 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Stickers");
         }}
       />
-    );
+    ));
   }
 }
 export const Packing = withNamespaces("packingScreen")<Props>(PackingScreen);
@@ -1893,7 +1894,7 @@ export const Packing = withNamespaces("packingScreen")<Props>(PackingScreen);
 class StickersScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("StickersScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1906,7 +1907,7 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("SecondBag");
         }}
       />
-    );
+    ));
   }
 }
 export const Stickers = withNamespaces("stickersScreen")<Props>(StickersScreen);
@@ -1914,7 +1915,7 @@ export const Stickers = withNamespaces("stickersScreen")<Props>(StickersScreen);
 class SecondBagScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SecondBagScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1927,7 +1928,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("TapeBox");
         }}
       />
-    );
+    ));
   }
 }
 export const SecondBag = withNamespaces("secondBagScreen")<Props>(
@@ -1937,7 +1938,7 @@ export const SecondBag = withNamespaces("secondBagScreen")<Props>(
 class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("TapeBoxScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -1950,7 +1951,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("ShipBox");
         }}
       />
-    );
+    ));
   }
 }
 export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
@@ -1958,7 +1959,7 @@ export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
 class ShipBoxScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ShipBoxScreen", (
       <Screen
         buttonLabel={t("schedulePickup")}
         canProceed={true}
@@ -1995,7 +1996,7 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces & ReduxWriter
           ]}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const ShipBox = reduxWriter(withNamespaces("shipBoxScreen")(ShipBoxScreen));
@@ -2003,7 +2004,7 @@ export const ShipBox = reduxWriter(withNamespaces("shipBoxScreen")(ShipBoxScreen
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("SchedulePickupScreen", (
       <Screen
         buttonLabel={t("title")}
         canProceed={true}
@@ -2022,7 +2023,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         <BulletPoint content={t("rule1")} />
         <BulletPoint content={t("rule2")} />
       </Screen>
-    );
+    ));
   }
 }
 export const SchedulePickup = withNamespaces("schedulePickupScreen")<Props>(
@@ -2055,7 +2056,7 @@ class GiftcardDetailsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("GiftcardDetailsScreen", (
       <Screen
         canProceed={!!this.state.email && this.state.validEmail}
         desc={!!this.props.email ? t("descriptionWithEmail") : t("description")}
@@ -2103,7 +2104,7 @@ class GiftcardDetailsScreen extends React.Component<
           onSubmit={validEmail => this.setState({ validEmail })}
         />
       </Screen>
-    );
+    ));
   }
 }
 export const GiftcardDetails = withNamespaces("giftcardDetailsScreen")<
@@ -2115,7 +2116,7 @@ class EmailOptInScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("EmailOptInScreen", (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -2147,7 +2148,7 @@ class EmailOptInScreen extends React.Component<
           }
         />
       </Screen>
-    );
+    ));
   }
 }
 export const EmailOptIn = reduxWriter(
@@ -2157,7 +2158,7 @@ export const EmailOptIn = reduxWriter(
 class ThanksScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return (
+    return timestampRender("ThanksScreen", (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -2187,7 +2188,7 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
         />
         <Text content={t("disclaimer")} style={{ marginBottom: GUTTER }} />
       </Screen>
-    );
+    ));
   }
 }
 export const Thanks = withNamespaces("thanksScreen")<Props>(ThanksScreen);

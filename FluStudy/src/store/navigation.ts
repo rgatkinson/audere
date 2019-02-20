@@ -11,6 +11,7 @@ import {
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import AppNavigator from "../ui/AppNavigator";
+import { events } from "../store";
 
 const initialAction = { type: NavigationActions.INIT };
 const initialState = AppNavigator.router.getStateForAction(initialAction);
@@ -54,6 +55,7 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
         if (nextScreen != null && nextScreen !== currentScreen) {
+          events.fireNow(EventInfoKind.AppNav, `${action.type}:${currentScreen}:${nextScreen}`);
           store.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
         }
         return result;

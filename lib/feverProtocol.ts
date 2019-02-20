@@ -305,4 +305,6 @@ export enum EventInfoKind {
   Survey = "survey",
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
+  Interaction = "interaction",
+  Render = "render",
 }

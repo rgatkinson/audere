@@ -20,7 +20,7 @@ import {
 } from "audere-lib/feverProtocol";
 import { isNotNull } from "../util/check";
 
-export const { uploader, logger } = createTransport();
+export const { uploader, events, logger } = createTransport();
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware

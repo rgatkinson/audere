@@ -8,6 +8,7 @@ import { Clipboard, Platform } from "react-native";
 import { Constants } from "expo";
 import { getApiBaseUrl } from "../../transport";
 import Screen from "../components/Screen";
+import { timestampRender, timestampInteraction } from "./analytics";
 
 const buildInfo = require("../../../buildInfo.json");
 
@@ -33,7 +34,7 @@ export default class AboutScreen extends React.PureComponent {
       "\n**API Server:** " +
       getApiBaseUrl();
 
-    return (
+    return timestampRender("AboutScreen", (
       <Screen
         buttonLabel="Copy"
         canProceed={true}
@@ -41,8 +42,11 @@ export default class AboutScreen extends React.PureComponent {
         logo={true}
         navBar={false}
         title={buildInfo.name}
-        onNext={() => this.copyToClipboard(aboutContent)}
+        onNext={() => {
+          timestampInteraction("AboutScreen.Copy");
+          this.copyToClipboard(aboutContent);
+        }}
       />
-    );
+    ));
   }
 }

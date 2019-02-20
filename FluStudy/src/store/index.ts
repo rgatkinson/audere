@@ -11,6 +11,8 @@ import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
 import { uploader, uploaderMiddleware } from "./uploader";
 
+export { events, logger } from "./uploader";
+
 export * from "./types";
 
 import { default as meta, MetaState, MetaAction } from "./meta";

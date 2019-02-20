@@ -10,6 +10,7 @@ import {
   LogRecordLevel,
   AnalyticsInfo,
   EventInfo,
+  EventInfoKind,
 } from "audere-lib/feverProtocol";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
@@ -91,6 +92,14 @@ export class AnalyticsBatcher implements EventTracker, Logger {
     this.echo(`${timestamp} [${level}]: ${text}`);
     this.logs.push({ timestamp, level, text: this.truncate(text) });
     this.pump.start();
+  }
+
+  public fireNow(kind: EventInfoKind, refId?: string): void {
+    this.fire({
+      kind,
+      at: new Date().toISOString(),
+      refId,
+    })
   }
 
   public fire(event: EventInfo): void {
