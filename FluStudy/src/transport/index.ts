@@ -34,7 +34,7 @@ export function createTransport(): Transport {
   lazyUploader.bind(uploader);
 
   return {
-    uploader: new TypedDocumentUploader(uploader),
+    uploader: new TypedDocumentUploader(uploader, batcher),
     logger: batcher,
     events: batcher,
   };
@@ -42,9 +42,11 @@ export function createTransport(): Transport {
 
 class TypedDocumentUploader {
   private readonly uploader: DocumentUploader;
+  private readonly batcher: AnalyticsBatcher;
 
-  constructor(uploader: DocumentUploader) {
+  constructor(uploader: DocumentUploader, batcher: AnalyticsBatcher) {
     this.uploader = uploader;
+    this.batcher = batcher;
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
@@ -63,6 +65,7 @@ class TypedDocumentUploader {
       DocumentType.Log,
       0
     );
+    this.batcher.fatal(logentry);
   }
   public async getEncryptionPassword(): Promise<string> {
     return await this.uploader.getEncryptionPassword();

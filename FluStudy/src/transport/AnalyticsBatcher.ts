@@ -103,7 +103,8 @@ export class AnalyticsBatcher implements EventTracker, Logger {
       const uploader = this.uploader.get();
       const needsUpload =
         size > this.config.targetBatchSizeInChars ||
-        durationMs > this.config.targetBatchIntervalInMs;
+        durationMs > this.config.targetBatchIntervalInMs ||
+        logs.some(x => x.level === LogRecordLevel.Fatal);
 
       this.echo(
         `LogBatcher:` +
