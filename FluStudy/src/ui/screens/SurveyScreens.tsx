@@ -59,6 +59,7 @@ import {
   FirstTestFeedbackConfig,
   SecondTestFeedbackConfig,
   OptInForMessagesConfig,
+  AddressConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import BorderView from "../components/BorderView";
@@ -82,7 +83,6 @@ import {
   findMedHelp,
   learnMore,
   scheduleUSPSPickUp,
-  shareWithAFriend,
   showNearbyShippingLocations,
 } from "../externalActions";
 import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
@@ -1951,7 +1951,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
 }
 export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
 
-class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
+class ShipBoxScreen extends React.Component<Props & WithNamespaces & ReduxWriterProps> {
   render() {
     const { t } = this.props;
     return (
@@ -1983,7 +1983,9 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("showNearbyUsps"),
               onPress: () => {
-                showNearbyShippingLocations();
+                const addressInput = this.props.getAnswer("addressInput", AddressConfig.id);
+
+                showNearbyShippingLocations(addressInput.zipcode);
               },
             },
           ]}
@@ -1992,7 +1994,7 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const ShipBox = withNamespaces("shipBoxScreen")<Props>(ShipBoxScreen);
+export const ShipBox = reduxWriter(withNamespaces("shipBoxScreen")(ShipBoxScreen));
 
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -2165,12 +2167,6 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
       >
         <Links
           links={[
-            {
-              label: t("links:shareLink"),
-              onPress: () => {
-                shareWithAFriend();
-              },
-            },
             {
               label: t("links:learnLink"),
               onPress: () => {

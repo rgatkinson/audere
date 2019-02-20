@@ -18,6 +18,7 @@ import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { i18n, WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionData } from "../resources/ScreenConfig";
+import { getStore } from "./index"
 
 interface InnerProps {
   dispatch(action: Action): void;
@@ -34,6 +35,29 @@ export interface ReduxWriterProps {
 }
 
 type OuterProps<P> = Dissoc<P, keyof ReduxWriterProps>;
+
+function _getAnswerFromResponses(responses: SurveyResponse[], key: string, id: string) {
+  const response = responses.find(
+    response => response.questionId === id
+  );
+  if (
+    !response ||
+    !response!.answer ||
+    (!response!.answer![key] && response.answer![key] !== 0)
+  ) {
+    return null;
+  }
+  return response!.answer![key];
+}
+
+export const getPriorAnswer = async (key: string, id: string): Promise<any> => {
+  return getStore().then(store => {
+    return _getAnswerFromResponses(
+      store.getState().survey.responses,
+      key,
+      id);
+  });
+};
 
 export default function reduxWriter<P extends ReduxWriterProps>(
   WrappedComponent: React.ComponentType<P>
@@ -88,17 +112,7 @@ export default function reduxWriter<P extends ReduxWriterProps>(
     };
 
     _getAnswer = (key: string, id: string): any => {
-      const response = this.props.responses.find(
-        response => response.questionId === id
-      );
-      if (
-        !response ||
-        !response!.answer ||
-        (!response!.answer![key] && response.answer![key] !== 0)
-      ) {
-        return null;
-      }
-      return response!.answer![key];
+      return _getAnswerFromResponses(this.props.responses, key, id);
     };
 
     render() {

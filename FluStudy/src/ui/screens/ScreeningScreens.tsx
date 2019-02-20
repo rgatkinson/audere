@@ -50,7 +50,7 @@ import Screen from "../components/Screen";
 import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
-import { findMedHelp, learnMore, shareWithAFriend } from "../externalActions";
+import { findMedHelp, learnMore } from "../externalActions";
 import {
   BORDER_COLOR,
   ERROR_COLOR,
@@ -533,12 +533,6 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         <Links
           links={[
             {
-              label: t("links:shareLink"),
-              onPress: () => {
-                shareWithAFriend();
-              },
-            },
-            {
               label: t("links:learnLink"),
               onPress: () => {
                 learnMore();
@@ -577,12 +571,6 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
       >
         <Links
           links={[
-            {
-              label: t("links:shareLink"),
-              onPress: () => {
-                shareWithAFriend();
-              },
-            },
             {
               label: t("links:learnLink"),
               onPress: () => {
@@ -774,12 +762,6 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
       >
         <Links
           links={[
-            {
-              label: t("links:shareLink"),
-              onPress: () => {
-                shareWithAFriend();
-              },
-            },
             {
               label: t("links:learnLink"),
               onPress: () => {

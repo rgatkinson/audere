@@ -1,36 +1,33 @@
-import { Alert } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
+import { AddressScreen } from "./screens/ScreeningScreens";
+import { AddressConfig } from "../../src/resources/ScreenConfig";
 
-export const findMedHelp = () => {
-  Alert.alert("Hello", "Waiting on content", [
-    { text: "Ok", onPress: () => {} },
-  ]);
+
+const learnMoreUrl = "http://fluathome.org/";   // Site currently only supports http, not https
+const scheduleUSPSUrl = "https://www.usps.com/pickup/";
+
+function createMapQueryUrl(query: string) {
+  const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+  const encodedQuery = encodeURIComponent(query);
+  const url = `${scheme}${encodedQuery}`;
+
+  return url;
+}
+
+export function findMedHelp() {
+  Linking.openURL(createMapQueryUrl("urgent care clinic"));
 };
 
-export const learnMore = () => {
-  Alert.alert("Hello", "Waiting on content", [
-    { text: "Ok", onPress: () => {} },
-  ]);
+export function learnMore() {
+  Linking.openURL(learnMoreUrl);
 };
 
-export const scheduleUSPSPickUp = (next: any) => {
-  Alert.alert("Hello", "Kick out to USPS site before proceeding", [
-    {
-      text: "Ok",
-      onPress: () => {
-        next();
-      },
-    },
-  ]);
+export function scheduleUSPSPickUp(next: any) {
+  Linking.openURL(scheduleUSPSUrl);
 };
 
-export const shareWithAFriend = () => {
-  Alert.alert("Hello", "Waiting on content", [
-    { text: "Ok", onPress: () => {} },
-  ]);
-};
+export function showNearbyShippingLocations(zipcode: string) {
+  let linkUrl = `https://tools.usps.com/go/POLocatorAction!input.action?address=${zipcode}&radius=10&locationTypeQ=po`;
 
-export const showNearbyShippingLocations = () => {
-  Alert.alert("Hello", "Waiting on content", [
-    { text: "Ok", onPress: () => {} },
-  ]);
+  Linking.openURL(linkUrl);
 };
