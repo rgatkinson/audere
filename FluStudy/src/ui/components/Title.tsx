@@ -11,6 +11,7 @@ import {
 interface Props {
   label: string;
   style?: StyleProp<ViewStyle>;
+  onPress?: () => any;
 }
 
 export default class Title extends React.Component<Props> {
@@ -20,6 +21,7 @@ export default class Title extends React.Component<Props> {
         center={true}
         content={this.props.label}
         extraBold={true}
+        onPress={this.props.onPress}
         style={[styles.title, this.props.style && this.props.style]}
       />
     );

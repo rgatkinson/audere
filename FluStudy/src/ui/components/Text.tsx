@@ -22,12 +22,14 @@ interface Props {
   extraBold?: boolean;
   italic?: boolean;
   style?: StyleProp<TextStyle>;
+  onPress?: () => any;
 }
 
 export default class Text extends React.Component<Props> {
   render() {
     return (
       <SystemText
+        onPress={this.props.onPress}
         style={[
           styles.container,
           this.props.bold && styles.bold,

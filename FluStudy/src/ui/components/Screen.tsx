@@ -36,6 +36,7 @@ interface Props {
   skipButton?: boolean;
   step?: number;
   title: string;
+  onTitlePress?: () => any;
   onNext(): void;
 }
 
@@ -108,7 +109,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <Step step={this.props.step} totalSteps={4} />
               )}
               {this._getBorderImage()}
-              <Title label={this.props.title} />
+              <Title label={this.props.title} onPress={this.props.onTitlePress}/>
               {!!this.props.desc && (
                 <Text
                   content={this.props.desc}

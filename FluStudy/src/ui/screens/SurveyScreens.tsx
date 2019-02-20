@@ -87,6 +87,10 @@ import {
 } from "../externalActions";
 import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
 
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const TEST_STRIP_MS = 10 * MINUTE_MS;
+
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
@@ -658,6 +662,9 @@ export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
   SwabInTubeScreen
 );
 
+@connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+}))
 class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
   state = {
     time: 60,
@@ -704,6 +711,11 @@ class FirstTimerScreen extends React.Component<Props & WithNamespaces> {
         navBar={true}
         navigation={this.props.navigation}
         title={t("title", { time: this.state.time })}
+        onTitlePress={
+          this.props.isDemo ?
+          () => { this.setState({ time: 5 }); } :
+          undefined
+        }
         onNext={() => {}}
       >
         <Text content={t("tip")} />
@@ -1178,6 +1190,7 @@ export const GeneralHealth = reduxWriter(
 
 interface StartTime {
   tenMinuteStartTime: number;
+  isDemo: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -1187,13 +1200,7 @@ class ThankYouSurveyScreen extends React.Component<
   Props & StartTime & WithNamespaces
 > {
   _onNext = () => {
-    const MILLIS_IN_SECOND = 1000.0;
-    const SECONDS_IN_MINUTE = 60;
-
-    const intervalMilis = new Date().getTime() - this.props.tenMinuteStartTime;
-    const elapsedMinutes =
-      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE);
-    if (elapsedMinutes > 10) {
+    if (new Date().getTime() - this.props.tenMinuteStartTime > TEST_STRIP_MS) {
       this.props.navigation.push("TestStripReady");
     } else {
       this.props.navigation.push("TestStripTimer");
@@ -1249,6 +1256,7 @@ interface TestStripTimerState {
 
 @connect((state: StoreState) => ({
   tenMinuteStartTime: state.survey.tenMinuteStartTime,
+  isDemo: state.meta.isDemo
 }))
 class TestStripTimerScreen extends React.Component<
   Props & StartTime & WithNamespaces,
@@ -1256,23 +1264,33 @@ class TestStripTimerScreen extends React.Component<
 > {
   _timer: number | null | undefined;
   _willFocus: any;
+  _fastForwardMillis: number;
 
   constructor(props: Props & StartTime & WithNamespaces) {
     super(props);
-    const remaining = this._getRemaining(props.tenMinuteStartTime);
+    this._fastForwardMillis = 0;
+    const remaining = this._getRemaining(props.tenMinuteStartTime, this._fastForwardMillis);
     this.state = {
       remaining,
       done: remaining == null,
     };
   }
 
-  _getRemaining(startTime: number): Date | null {
-    const MILLIS_IN_SECOND = 1000.0;
-    const SECONDS_IN_MINUTE = 60;
+  // A debug function that forwards the timer to just having 5 secs left.
+  _onFastForward(): void {
+    this._fastForwardMillis =
+      this.props.tenMinuteStartTime +
+      TEST_STRIP_MS -
+      new Date().getTime() -
+      5 * SECOND_MS;
+  }
+
+  _getRemaining(startTime: number, fastForwardMillis: number): Date | null {
     const deltaMillis =
       startTime +
-      MILLIS_IN_SECOND * SECONDS_IN_MINUTE * 10 -
-      new Date().getTime();
+      TEST_STRIP_MS -
+      new Date().getTime() -
+      this._fastForwardMillis;
     if (deltaMillis > 0) {
       // @ts-ignore
       const remaining = new Date(null);
@@ -1301,7 +1319,7 @@ class TestStripTimerScreen extends React.Component<
     if (this.props.navigation.isFocused() && !this.state.done) {
       setTimeout(() => {
         if (this.props.navigation.isFocused() && !this.state.done) {
-          const remaining = this._getRemaining(this.props.tenMinuteStartTime);
+          const remaining = this._getRemaining(this.props.tenMinuteStartTime, this._fastForwardMillis);
           this.setState({
             remaining,
             done: remaining == null,
@@ -1332,6 +1350,9 @@ class TestStripTimerScreen extends React.Component<
         onNext={() => {
           this.props.navigation.push("FinishTube");
         }}
+        onTitlePress={ 
+          this.props.isDemo ? () => { this._onFastForward(); } : undefined
+        }
       />
     );
   }
