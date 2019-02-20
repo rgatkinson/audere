@@ -176,7 +176,7 @@ If you have made use of Expo APIs while working on your project, then those API 
 
 In FluApi, copy .env.example to .env, and edit PII_DATABASE_URL and NONPII_DATABASE_URL in .env with your local database information. Once you have edited the .env file, run `yarn install`, `yarn setup`, and then `yarn start`. If the server started correctly, you should be able to open http://localhost:3000/about in a browser.
 
-To point the app to the server, run `yarn generate-access-key` from FluApi. In your FluStudy directory, copy .env_example to .env and paste in the access key information. Run `yarn start` in FluStudy. You may need to hit shift-R in the console window to reload the cache for the environmental variables to take effect.
+To point the app to the server, run `yarn generate-access-key` from FluApi. In your FluStudy directory, copy .env_example to .env and paste in the access key information. Run `yarn start-localapi` in FluStudy. You may need to hit shift-R in the console window to reload the cache for the environmental variables to take effect.
 
 ## Troubleshooting
 
