@@ -66,6 +66,23 @@ export class AnalyticsBatcher implements EventTracker, Logger {
   }
 
   public fatal(text: string): void {
+    // Upload an immediate entry with just the crash
+    const uploader = this.uploader.get();
+    if (uploader != null) {
+      const timestamp = new Date().toISOString();
+      uploader.save(
+        uuidv4(),
+        {
+          timestamp,
+          logs: [],
+          events: [],
+          crash: text,
+        },
+        DocumentType.Analytics,
+        0
+      );
+    }
+    // Add a logstream event to flush nearby log entries
     this.write(LogRecordLevel.Fatal, text);
   }
 
@@ -101,10 +118,11 @@ export class AnalyticsBatcher implements EventTracker, Logger {
       const events = oldEvents.concat(newEvents);
       const durationMs = Date.now() - new Date(logs[0].timestamp).getTime();
       const uploader = this.uploader.get();
+      const hasFatal = logs.some(x => x.level === LogRecordLevel.Fatal);
       const needsUpload =
         size > this.config.targetBatchSizeInChars ||
         durationMs > this.config.targetBatchIntervalInMs ||
-        logs.some(x => x.level === LogRecordLevel.Fatal);
+        hasFatal;
 
       this.echo(
         `LogBatcher:` +

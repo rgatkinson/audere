@@ -7,10 +7,9 @@ export interface ProtocolDocumentBase {
 export declare enum DocumentType {
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
-    Log = "LOG",
     Analytics = "ANALYTICS"
 }
-export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | LogDocument | AnalyticsDocument;
+export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | AnalyticsDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -163,21 +162,6 @@ export interface FeedbackInfo {
     subject: string;
     body: string;
 }
-export interface LogDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.Log;
-    schemaId: 1;
-    log: LogInfo;
-}
-export declare enum LogLevel {
-    Info = 1,
-    Warn = 2,
-    Error = 3,
-    Fatal = 4
-}
-export interface LogInfo {
-    logentry: string;
-    level: LogLevel;
-}
 export interface AnalyticsDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Analytics;
     schemaId: 1;
@@ -187,6 +171,7 @@ export interface AnalyticsInfo {
     timestamp: string;
     logs: LogRecordInfo[];
     events: EventInfo[];
+    crash?: string;
 }
 export interface LogRecordInfo {
     timestamp: string;

@@ -12,7 +12,6 @@ import {
   DocumentType,
   SurveyInfo,
   FeedbackInfo,
-  LogInfo,
   ProtocolDocument,
   AnalyticsInfo,
 } from "audere-lib/feverProtocol";
@@ -35,7 +34,7 @@ const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = SurveyInfo | FeedbackInfo | LogInfo | AnalyticsInfo;
+type DocumentContents = SurveyInfo | FeedbackInfo | AnalyticsInfo;
 
 interface SaveEvent {
   type: "Save";
@@ -371,15 +370,6 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         feedback: asFeedbackInfo(save.document),
       };
 
-    case DocumentType.Log:
-      return {
-        documentType: save.documentType,
-        schemaId: 1,
-        device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
-        log: asLogInfo(save.document),
-      };
-
     case DocumentType.Analytics:
       return {
         documentType: save.documentType,
@@ -418,17 +408,6 @@ function asFeedbackInfo(contents: DocumentContents): FeedbackInfo {
 
 function isProbablyFeedbackInfo(contents: any): contents is FeedbackInfo {
   return isStr(contents.subject) && isStr(contents.body);
-}
-
-function asLogInfo(contents: DocumentContents): LogInfo {
-  if (isProbablyLogInfo(contents)) {
-    return contents;
-  }
-  throw new Error(`Expected LogInfo, got ${contents}`);
-}
-
-function isProbablyLogInfo(contents: any): contents is LogInfo {
-  return isStr(contents.logentry);
 }
 
 function asAnalyticsInfo(contents: DocumentContents): AnalyticsInfo {

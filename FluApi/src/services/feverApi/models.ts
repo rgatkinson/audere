@@ -17,7 +17,6 @@ import {
 } from "../../util/sql"
 import {
   DeviceInfo,
-  LogLevel,
   PIIInfo,
   SurveyNonPIIDbInfo,
   AnalyticsInfo
@@ -28,7 +27,6 @@ import {
 export function defineFeverModels(sql: SplitSql): FeverModels {
   return {
     accessKey: defineAccessKey(sql),
-    clientLog: defineClientLog(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
     surveyNonPii: defineSurvey(sql.nonPii),
@@ -37,7 +35,6 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
 }
 export interface FeverModels {
   accessKey: Model<AccessKeyAttributes>;
-  clientLog: Model<ClientLogAttributes>;
   clientLogBatch: Model<AnalyticsAttributes>;
   feedback: Model<FeedbackAttributes>;
   surveyNonPii: Model<SurveyAttributes<SurveyNonPIIDbInfo>>;
@@ -77,26 +74,6 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
     {
       key: stringColumn(),
       valid: booleanColumn()
-    }
-  );
-}
-
-// ---------------------------------------------------------------
-
-interface ClientLogAttributes {
-  id?: string;
-  device: DeviceInfo;
-  log: string;
-  level: LogLevel;
-}
-export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
-  return defineModel<ClientLogAttributes>(
-    sql.nonPii,
-    "fever_client_logs",
-    {
-      device: jsonColumn(),
-      log: stringColumn(),
-      level: integerColumn(),
     }
   );
 }

@@ -9,7 +9,7 @@ import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import { DocumentType, LogLevel, SurveyInfo } from "audere-lib/feverProtocol";
+import { DocumentType, SurveyInfo } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, AnalyticsBatcher } from "./AnalyticsBatcher";
 import { EventTracker } from "./EventUtil";
@@ -59,12 +59,6 @@ class TypedDocumentUploader {
     this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);
   }
   public saveCrashLog(logentry: string) {
-    this.uploader.save(
-      uuidv4(),
-      { logentry, level: LogLevel.Fatal },
-      DocumentType.Log,
-      0
-    );
     this.batcher.fatal(logentry);
   }
   public async getEncryptionPassword(): Promise<string> {

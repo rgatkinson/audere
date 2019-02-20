@@ -7,7 +7,6 @@ import winston, { createLogger } from "winston";
 import {
   DocumentType,
   FeedbackDocument,
-  LogDocument,
   SurveyDocument,
   SurveyNonPIIDbInfo,
   PIIInfo,
@@ -64,9 +63,6 @@ export class FeverEndpoint {
       case DocumentType.Feedback:
         await this.sendAndPutFeedback(req.body as FeedbackDocument);
         break;
-      case DocumentType.Log:
-        await this.putCrashLog(req.body as LogDocument);
-        break;
       case DocumentType.Analytics:
         await this.putAnalytics(req.body as AnalyticsDocument);
         break;
@@ -122,16 +118,6 @@ export class FeverEndpoint {
     await this.models.feedback.create({
       subject: document.feedback.subject,
       body: document.feedback.body,
-      device: document.device
-    });
-  }
-
-  async putCrashLog(document: LogDocument): Promise<void> {
-    const log = document.log;
-    clientLogger.info(JSON.stringify(log));
-    await this.models.clientLog.create({
-      log: log.logentry,
-      level: log.level,
       device: document.device
     });
   }
