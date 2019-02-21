@@ -30,10 +30,6 @@ type AppProps = {
   };
 };
 
-const ReloadAppOnLanguageChange = withNamespaces("common")(
-  ConnectedAppWithNavigationState
-);
-
 export default class App extends React.Component<AppProps> {
   state = {
     appReady: false,
@@ -73,7 +69,18 @@ export default class App extends React.Component<AppProps> {
   }
 
   render() {
-    return this.state.appReady ? (
+    if (!this.state.appReady) {
+      return <AppLoading />
+    }
+
+    // According to https://github.com/infinitered/reactotron/issues/317#issuecomment-431627018
+    // We need to wait to reference .connect() until .createStore() is done.
+    // This attempts to do that.
+    const ReloadAppOnLanguageChange = withNamespaces("common")(
+      ConnectedAppWithNavigationState
+    );
+
+    return (
       <I18nextProvider i18n={i18n}>
         <StatusBar barStyle="dark-content" />
         <Provider store={this.store}>
@@ -82,8 +89,6 @@ export default class App extends React.Component<AppProps> {
           </PersistGate>
         </Provider>
       </I18nextProvider>
-    ) : (
-      <AppLoading />
     );
   }
 }
