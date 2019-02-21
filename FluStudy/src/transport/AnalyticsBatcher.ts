@@ -17,7 +17,7 @@ import { EventTracker } from "./EventUtil";
 
 const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
-  targetBatchSizeInChars: 1024 * 1024,
+  targetBatchSizeInChars: 64 * 1024,
   targetBatchIntervalInMs: 5 * 60 * 1000,
   maxLineLength: envAsNumber(process.env.LOG_RECORD_LIMIT, 256),
   lineTruncateTail: 50,
@@ -152,7 +152,7 @@ export class AnalyticsBatcher implements EventTracker, Logger {
           this.echo(`LogBatcher: cleared Pouch state`);
         } else {
           this.echo(`LogBatcher: writing ${logs.length} records to PouchDB`);
-          await this.db.put({ ...state, size, records: logs });
+          await this.db.put({ ...state, size, logs, events });
         }
       } catch (e) {
         // Hope that the crash log handler can upload a bit of the log state.
