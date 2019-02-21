@@ -21,6 +21,7 @@ import {
   PushNotificationState,
   PushRegistrationError,
   WorkflowInfo,
+  ConsentInfoSignerType,
 } from "audere-lib/feverProtocol";
 import {
   Action,
@@ -31,6 +32,7 @@ import {
   setEmail,
   setPushNotificationState,
   setWorkflow,
+  setConsent,
 } from "../../store";
 import {
   AddressConfig,
@@ -322,6 +324,14 @@ class ConsentScreen extends React.PureComponent<
     if (this.props.getAnswer("booleanInput", ConsentConfig.id)) {
       this.props.dispatch(setEmail(this.state.email!));
     }
+    const today = new Date();
+    this.props.dispatch(setConsent({
+      terms: t("consentFormText"),
+      signerType: ConsentInfoSignerType.Subject,
+      date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+      name: "not collected",
+      signature: "not collected",
+    }));
     this.props.navigation.push("Address");
   };
 
