@@ -537,12 +537,14 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:learnLink"),
               onPress: () => {
+                timestampInteraction("AgeIneligibleScreen.links:learnLink");
                 learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
+                timestampInteraction("AgeIneligibleScreen.links:medLink");
                 findMedHelp();
               },
             },
@@ -576,12 +578,14 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:learnLink"),
               onPress: () => {
+                timestampInteraction("SymptomsIneligibleScreen.links:learnLink");
                 learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
+                timestampInteraction("SymptomsIneligibleScreen.links:medLink");
                 findMedHelp();
               },
             },
@@ -769,12 +773,14 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:learnLink"),
               onPress: () => {
+                timestampInteraction("ExtraInfoScreen.links:learnLink");
                 learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
+                timestampInteraction("ExtraInfoScreen.links:medLink");
                 findMedHelp();
               },
             },

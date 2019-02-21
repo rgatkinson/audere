@@ -86,7 +86,7 @@ import {
   showNearbyShippingLocations,
 } from "../externalActions";
 import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
-import { timestampRender } from "./analytics";
+import { timestampRender, timestampInteraction } from "./analytics";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -1549,6 +1549,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
           <TouchableOpacity
             onPress={async () => {
               if (!this.state.spinner) {
+                timestampInteraction("TestStripCameraScreen.takePicture");
                 this.setState({ spinner: true });
                 await this._takePicture();
               }
@@ -1988,8 +1989,8 @@ class ShipBoxScreen extends React.Component<Props & WithNamespaces & ReduxWriter
             {
               label: t("showNearbyUsps"),
               onPress: () => {
+                timestampInteraction("ShipBoxScreen.showNearbyShippingLocations");
                 const addressInput = this.props.getAnswer("addressInput", AddressConfig.id);
-
                 showNearbyShippingLocations(addressInput.zipcode);
               },
             },
@@ -2067,6 +2068,7 @@ class GiftcardDetailsScreen extends React.Component<
               {
                 label: t("optOut"),
                 onPress: () => {
+                  timestampInteraction("GiftcardDetailsScreen.optOut");
                   Alert.alert(t("confirm"), t("explanation"), [
                     {
                       text: t("noThanks"),
@@ -2076,7 +2078,9 @@ class GiftcardDetailsScreen extends React.Component<
                     },
                     {
                       text: t("willEnter"),
-                      onPress: () => {},
+                      onPress: () => {
+                        timestampInteraction("GiftcardDetailsScreen.optOut.willEnter");
+                      },
                     },
                   ]);
                 },
@@ -2175,12 +2179,14 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
             {
               label: t("links:learnLink"),
               onPress: () => {
+                timestampInteraction("ThanksScreen.links:learnLink");
                 learnMore();
               },
             },
             {
               label: t("links:medLink"),
               onPress: () => {
+                timestampInteraction("ThanksScreen.links:medLink");
                 findMedHelp();
               },
             },
