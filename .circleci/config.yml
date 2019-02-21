@@ -60,6 +60,12 @@ jobs:
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
+          name: lib Yarn Install
+          command: |
+            cd lib
+            yarn install
+            ls node_modules
+      - run:
           name: FluTrack Yarn Install
           command: |
             cd learn/ReactNativeTS/FluTrack
@@ -70,6 +76,7 @@ jobs:
           command: |
             cd FluStudy
             yarn install
+            ls node_modules
       - run:
           name: Generate Build Info
           command: |
@@ -112,6 +119,7 @@ jobs:
           command: |
             cd FluApi
             yarn install
+            ls node_modules
       - run:
           name: Create Test Databases
           command: |
