@@ -1144,6 +1144,8 @@ class GeneralHealthScreen extends React.Component<
 
   render() {
     const { t } = this.props;
+    const gotFluShot = this.props.getAnswer("selectedButtonKey", FluShotConfig.id) === "yes";
+
     return timestampRender("GeneralHealthScreen", (
       <Screen
         canProceed={this._canProceed()}
@@ -1168,13 +1170,19 @@ class GeneralHealthScreen extends React.Component<
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
-        <QuestionText text={t("surveyTitle:" + FluShotDateConfig.title)} />
-        <MonthPicker
-          date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
-          onDateChange={dateInput =>
-            this.props.updateAnswer({ dateInput }, FluShotDateConfig)
-          }
-        />
+        {
+          gotFluShot &&
+          <QuestionText text={t("surveyTitle:" + FluShotDateConfig.title)} />
+        }
+        {
+          gotFluShot &&
+          <MonthPicker
+            date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
+            onDateChange={dateInput =>
+              this.props.updateAnswer({ dateInput }, FluShotDateConfig)
+            }
+          />
+        }
         <ButtonGrid
           buttonStyle={{ width: "50%" }}
           question={TobaccoConfig}
