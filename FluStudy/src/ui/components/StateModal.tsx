@@ -64,15 +64,6 @@ const states = [
   "WI",
   "WV",
   "WY",
-  "AS",
-  "DC",
-  "FM",
-  "GU",
-  "MH",
-  "MP",
-  "PW",
-  "PR",
-  "VI",
 ];
 
 class StateModal extends React.Component<Props & WithNamespaces, State> {
