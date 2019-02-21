@@ -18,7 +18,6 @@ import {
 const DEVICE = {
   installation: "uuid",
   clientVersion: "1.2.3-testing",
-  deviceName: "My Phone",
   yearClass: "2020",
   idiomText: "handset",
   platform: "iOS"

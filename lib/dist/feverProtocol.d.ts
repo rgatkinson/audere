@@ -13,7 +13,6 @@ export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | Analy
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
-    deviceName: string;
     yearClass: string;
     idiomText: string;
     platform: string;

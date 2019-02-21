@@ -10,7 +10,6 @@ const ios = Constants.platform.ios;
 export const DEVICE_INFO = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
-  deviceName: Constants.deviceName,
   yearClass: Constants.deviceYearClass,
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
   platform: JSON.stringify(Constants.platform),

@@ -42,7 +42,6 @@ export type ProtocolDocument =
 export interface DeviceInfo {
   installation: string; // uuid
   clientVersion: string;
-  deviceName: string;
   yearClass: string;
   idiomText: string;
   platform: string;
