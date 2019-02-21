@@ -24,6 +24,7 @@ export function learnMore() {
 
 export function scheduleUSPSPickUp(next: any) {
   Linking.openURL(scheduleUSPSUrl);
+  next && next();
 };
 
 export function showNearbyShippingLocations(zipcode: string) {
