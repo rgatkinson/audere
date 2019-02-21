@@ -75,14 +75,23 @@ jobs:
           command: |
             scripts/generate-build-info
       - run:
+          name: Build lib
+          command: |
+            cd lib
+            yarn build
+            # Verify no files were modified
+            git diff-index --quiet HEAD --
+      - run:
           name: FluTrack Tests
           command: |
             cd learn/ReactNativeTS/FluTrack
+            yarn typecheck
             yarn test
       - run:
           name: Flu@Home Tests
           command: |
             cd FluStudy
+            yarn typecheck
             yarn test
       - run:
           name: Snyk App Scan
@@ -128,6 +137,7 @@ jobs:
               echo SMARTYSTREETS_AUTH_TOKEN=67890
             ) > .env
             yarn setup
+            yarn typecheck
             yarn test
             yarn test-integration
       - run:
