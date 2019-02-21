@@ -470,7 +470,11 @@ class ManualEntryScreen extends React.Component<
   confirmInput = React.createRef<TextInput>();
 
   _validBarcodes = () => {
-    return !!this.state.barcode1 && this.state.barcode1 === this.state.barcode2;
+    return (
+      !!this.state.barcode1 &&
+      this.state.barcode1.length === 8 &&
+      this.state.barcode1 === this.state.barcode2
+    );
   };
 
   _onSave = () => {
