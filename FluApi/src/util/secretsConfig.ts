@@ -26,6 +26,8 @@ export class SecretConfig {
       return secret.value;
     }
 
-    throw Error(`No value found for secret: ${key}`);
+    throw Error(`${key} is unset. Copy .env.example to .env or update the ` +
+      `value in the database. An unset value could application instability ` +
+      `or errors.`);
   }
 }
