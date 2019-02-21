@@ -54,7 +54,7 @@
     "city": "City",
     "state": "State",
     "stateProvince": "State/Province",
-    "zipcode": "Zipcode",
+    "zipcode": "Zip Code",
     "postalCode": "Postal Code",
     "country": "Country"
   },
@@ -66,30 +66,30 @@
     "validationError": "* Please provide a valid email address",
     "required": " (required)",
     "name": "Please enter your full name",
-    "todaysDate": "Today's Date",
-    "consent": "Consent Form",
-    "description": "Please read and accept the consent form by scrolling to the bottom and clicking 'I consent'",
-    "accept": "I Consent",
-    "noThanks": "No, Thanks",
+    "todaysDate": "Today's date",
+    "consent": "Consent form",
+    "description": "Please read and accept the consent form by scrolling to the bottom and clicking \"I consent\"",
+    "accept": "I consent",
+    "noThanks": "No thanks",
     "consentFormHeader": "**UNIVERSITY OF WASHINGTON\nCONSENT FORM: Ages 18 and up\nASSENT FORM:  Ages 13-17\nSEATTLE FLU STUDY**\n\nResearchers:\nHelen Y. Chu, MD, MPH, Assistant Professor of Medicine, (206) 897-5318 (University of Washington)\nJanet. A Englund, MD, Professor of Pediatric Infectious Diseases (Seattle Children’s Hospital)\nMichael Boeckh, MD, PhD, Professor of Medicine (Fred Hutchinson Cancer Research Center)\n\n",
     "consentFormText": "We are asking you to be in a research study. This form gives you information to help you decide whether or not to be in the study. Being in the study is voluntary. Please read this carefully. You may ask any questions about the study. Then you can decide whether or not you want to be in the study.\n\nThis form also serves as an assent form for individuals ages 13-17. This means that if you choose to take part in this research study, you would sign this form to confirm your choice. Your parent or legally-authorized representative would also need to give their permission and sign this form for you to join the study.\n\nThis form is also used for parents and legally-authorized representatives of subjects to provide permission to the research team for individuals who are not capable of providing permission themselves. In such cases, the term “you” refers to the subject or your child.\n\n**PURPOSE OF THE STUDY**\n\nColds are common in children and adults, and can cause a runny nose, cough, or trouble breathing. We want to understand how people get sick with these cold germs and how they spread from person to person. Once we understand how the germs start and spread, we can have a better plan to prevent them from making people sick.\n\n**STUDY PROCEDURES**\n\nWe are testing children and adults who might have a cold. We are inviting you to participate because you have the symptoms of a cold. This study involves:\n\n1. Answering questions about your health, who you are around, and your living situation. We think these questions will take about 15 minutes. You may choose not to answer any question that you do not want to.\n2. Doing a swab of your nose to look for germs. This will only take about 5 seconds.\n\nThis study does not replace care you would receive from your doctor, and your participation is voluntary. The only test for this study is the swab of your nose.\n\n**RISKS, STRESS, OR DISCOMFORT**\n\nWe do not expect serious side effects from this study. Getting the nasal swab may cause mild discomfort, watery eyes, or sneezing. Some of the questions that we might ask you are sensitive and may make you feel uncomfortable. You do not have to answer any question that you do not want to. There is a risk that your privacy could be breached. We will do everything that we can to make sure that this does not happen.\n\n**BENEFITS OF THE STUDY**\n\nThis study will not benefit you directly. It may help others in the future by learning what germs make people sick.\n\n**SOURCE OF FUNDING**\n\nThe University of Washington is receiving financial support from an anonymous donor.\n\n**CONFIDENTIALITY OF RESEARCH INFORMATION**\n\nYour record will be kept secret. You will not be identified in any report about this study. All records will be kept in a secure location at the University of Washington. Your study record will never be used against you.\n\nGovernment and university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, your records may be examined. The reviewers will protect your privacy. The study records will never be used against you.\n\nWashington State law requires that we report certain conditions to local public health jurisdictions or the Department of Health. If your sample tests positive for one of these conditions, a local health jurisdiction or the Department of Health might contact you with more questions. They will keep your information secret.\n\n**SPECIMEN BANKING**\n\nStoring samples so researchers can use them in the future is called “banking.” Researchers also bank information and samples so they can share it with other researchers.\n\nThe information and/or samples that we obtain from you for this study might be used for future studies. We may remove anything that might identify you from the information and samples. If we do so, that information and samples may then be used for future research studies or given to another researcher without getting additional permission from you. It is also possible that in the future we may want to use or share study information that might identify you. If we do, a review board will decide whether or not we need to get additional permission from you.\n\nBy signing this consent form, you are giving your permission for these researchers to use your sample for future use.\n\n**OTHER INFORMATION**\n\nYou may refuse to participate and you are free to leave this study at any time without penalty or loss of benefits to which you are otherwise entitled (such as your normal medical care). By signing this form, you do not give up any of your rights.\n\nIf you join this study, you will receive a $10 gift card for each nose swab that we collect. You will receive the gift card the same day that we collect the sample.\n\n**RESEARCH-RELATED INJURY**\n\nIf you think you have been harmed from being in this research, contact Dr.Helen Y. Chu at (206) 897-5318. The University of Washington does not normally provide compensation for harm except through its discretionary program for medical industry. However, the law may allow you to seek other compensation if the harm is the fault of the researchers. You do not waive any right to seek payment by signing this consent form.\n\n**Subject's statement**\n\nThis study has been explained to me. I volunteer to take part in this research. I have had a chance to ask questions. If I have questions later about the research, or if I have been harmed by participating in this study, I can contact one of the researchers listed on the first page of this consent form. If I have questions about my rights as a research subject, I can call the Human Subjects Division at (206) 543-0098 or call collect at (206) 221-5940. I will receive a copy of this consent form."
   },
   "surveyTitle": {
     "address": "Your mailing address",
     "ageTitle": "How old are you?",
-    "consentEmail": "Email me the consent language",
+    "consentEmail": "Email me a copy of this consent form",
     "symptomTitle": "Describe your symptoms",
     "consent": "Consent",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
-    "symptomsLast48": "Where these symptoms present in the last 48 hours?",
+    "symptomsLast48": "Were these symptoms present in the last 48 hours?",
     "symptomsSeverity": "How severe were your symptoms?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
-    "youngChildren": "In the past week, have you been in contact with any children under 5 years of age for over an hour?",
+    "youngChildren": "In the past week, have you been in contact with any children under five years old for over an hour?",
     "householdChildren": "Are there any children under 18 years old in your household?",
-    "childrenWithChildren": "Do any children in your household attend a school, childcare setting, or play group with at least 3 other children for 3 or more hours per week?",
-    "peopleInHousehold": "How many people live in the household (including you)?",
+    "childrenWithChildren": "*Do any children in your household attend a school, childcare setting or play group with at least three other children for three or more hours per week?",
+    "peopleInHousehold": "How many people live in your household (including you)?",
     "bedrooms": "How many bedrooms are in your home?",
     "medicalCondition": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "fluShot": "Did you get a flu shot in the last year?",
@@ -104,13 +104,13 @@
     "healthInsurance": "Do you have health insurance?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "redLine": "Is there a red line on your test strip?",
-    "firstTestFeedback": "Do you feel you performed all of the steps in the flu-test correctly?",
+    "firstTestFeedback": "Do you feel you performed all of the steps in the flu test correctly?",
     "secondTestFeedback": "How do you feel you performed the second test?",
     "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test for you to run at home.",
-    "selectAll": "Please select all that apply.",
+    "selectAll": "Please select all that apply",
     "selectMostApplicable": "Please select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
     "feelingFeverish": "Feeling feverish",
@@ -124,31 +124,31 @@
     "shortnessOfBreath": "Shortness of breath",
     "symptomsSeverity": "Select the level of discomfort you felt",
     "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
-    "blueLine": "The line may be faint, but as long as you see a line you can answer Yes to the question.",
+    "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
     "selectOne": "Select one of the following",
     "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
   },
   "symptomsScreen": {
     "symptoms": "Symptoms",
-    "noThanks": "No, thanks",
-    "viewConsent": "View Consent",
-    "thankYou": "Thank You",
-    "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and click 'I consent' to continue"
+    "noThanks": "No thanks",
+    "viewConsent": "View consent",
+    "thankYou": "Thank you",
+    "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and click \"I consent\" to continue"
   },
   "aboutScreen": {
-    "title": "flu@home",
-    "demoMode": "Demo Mode:"
+    "title": "Flu@Home",
+    "demoMode": "Demo mode:"
   },
   "welcomeScreen": {
     "welcome": "Welcome",
-    "description": "We know you aren't feeling well right now. Thank  you for participating even when you're ill."
+    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill."
   },
   "whyScreen": {
     "why": "Why this study?",
-    "description": "The goal of this program is to understand if people (like you) can test themselves at home for the flu using a new test. This helps people know if they should stay home to prevent spreading the flu to others."
+    "description": "The goal of this program is to understand if people who are sick should test themselves at home for the flu using a new test. Although you won't learn whether or not you have the flu as part of this study, you'll play an important role in helping find ways to manage it in the future. "
   },
   "whatScreen": {
-    "what": "What do I need to do?",
+    "what": "Getting started",
     "description": "We need to ask a few questions about you and the symptoms you're feeling. In addition, you will need to provide your home or mailing address so we can send the flu test kit to you."
   },
   "ageScreen": {
@@ -158,261 +158,260 @@
   },
   "ageIneligibleScreen": {
     "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but this study is aimed at adults 18 years and older."
+    "description": "We're sorry, but this study is aimed at adults 18 years and older. "
   },
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",
-    "description": "At this time your symptoms do not meet the criteria for continuation. If your symptoms change, you can open this app again on a different day.",
+    "description": "At this time your symptoms do not meet the criteria to continue. If your symptoms change, you can open this app again on a different day.",
     "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
   },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but we need a signed consent form from you in order to participate in the study. If you wish to change your mind, click the 'Back to Consent' button below",
-    "back": "Back to Consent"
+    "description": "We're sorry, but we need a signed consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
+    "back": "Back to consent"
   },
   "confirmationScreen": {
-    "confirmed": "Thank you! Your flu test kit has been ordered.",
-    "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days"
+    "confirmed": "Thank you! Your flu test kit was ordered.",
+    "description": "You are now enrolled in the study. The flu test kit should arrive at your home within the next 1-2 days."
   },
   "pushNotificationsScreen": {
     "pushNotifications": "May we send you push notifications?",
     "description": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
   },
   "instructionsScreen": {
-    "instructions": "When your kit arrives, grab your phone",
-    "description": "When you receive the package, open flu@home on your phone and it will tell you what to do."
+    "instructions": "When your kit arrives, grab your phone.",
+    "description": "Open the Flu@Home app and it will tell you what to do next."
   },
   "extraInfoScreen": {
     "extraInfo": "Interested in sharing this or learning more?",
-    "close": "Close Flu@home"
+    "close": "Close Flu@Home"
   },
   "welcomeBackScreen": {
-    "welcomeBack": "Welcome Back",
-    "description": "Sorry, we know you are feeling bad and appreciate your participation. Before we get started, get comfortable. The full test will take about 20 minutes to complete"
+    "welcomeBack": "Welcome back",
+    "description": "Sorry, we know you're feeling bad and appreciate your participation. Before we get started, make yourself comfortable. The full test will take about 20 minutes to complete."
   },
   "whatsNextScreen": {
-    "whatsNext": "What's Next?",
-    "description": "Today you'll be completing two tests that involve nose swabs, then returning them by mail using a shipping label provided in the box. We will ask some questions about your illness. As a thank you for your help, we'll email you a $50 Amazon gift card.  You'll need to provide your email address below:"
+    "whatsNext": "What's next?",
+    "description": "Today you’ll be completing two tests that involve nose swabs, then returning them by mail using a shipping label provided in the box. We will also ask some questions about your illness. As a thank you for all your help, we'll email you a $25 Amazon gift card.  "
   },
   "beforeScreen": {
-    "beforeYouBegin": "Before you Begin",
-    "washStep": "Please wash your hands with soap and water before proceeding with the test.",
+    "beforeYouBegin": "Before you begin",
+    "washStep": "Please wash your hands with soap and water. before proceeding with the test.",
     "waterStep": "Please get yourself some water and use the restroom first. It is important you stay beside the kit until everything is done.",
     "flatStep": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "scanInstructionsScreen": {
-    "scanQrCode": "Scan the bar code",
+    "scanQrCode": "Scan the barcode",
     "description": "First, we'd like you to scan the bar code found on the inside cover of your box. To do that, we'll need to access your phone's camera.",
     "okScan": "Ok! Let's Scan",
     "tips": "**Tips:**\n\nHold the camera so the bar code is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
-    "inputManually": "Input bar code manually"
+    "inputManually": "Enter barcode manually"
   },
   "scanScreen": {
-    "enterManually": "Input bar code manually"
+    "enterManually": "Enter barcode manually",
+    "cameraWarning": "\"Flu@Home\" would like to access your camera",
+    "cameraAccess": "Camera access needed to scan barcodes."
   },
   "scanConfirmationScreen": {
     "codeSent": "Your code was scanned!",
-    "yourCode": "Your code: ",
-    "description": "Thank you. Your bar code was successfully scanned. This will help us know the kit came from you when you return it to us.",
+    "yourCode": "Your code: KIT [edf879de]",
+    "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.",
     "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
-    "placeholder": "ex: 0-71869-01362-4",
+    "placeholder": "ex: KIT edf849de",
     "secondPlaceholder": "Confirm barcode",
-    "enterKit": "Enter your kit's barcode",
-    "desc": "Enter the 12-digit number found on the bottom of the bar code symbol inside your flu kit box.",
+    "enterKit": "Enter barcode manually",
+    "desc": "Enter the 8-character code found below the barcode symbol on the inside cover of your flu kit box.",
     "tips": "**Tips:**\nFind the bar code inside your box.\nLook for the 12-digit number directly below the symbol."
   },
   "manualConfirmationScreen": {
-    "codeSent": "Your code has been input!",
-    "yourCode": "Your code: ",
-    "description": "Thank you. Your bar code was successfully entered. This will help us know the kit came from you when you return it to us.",
+    "codeSent": "Your code was accepted",
+    "yourCode": "Your code: edf879de",
+    "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.",
     "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "testInstructionsScreen": {
     "title": "How the test works",
-    "description": "We'll walk you through all of the necessary steps in the following screens. From doing the tests using the items in the kit to shipping the kit back to us and getting your gift card."
-  },
-  "componentsScreen": {
-    "title": "Remove and identify provided kit components",
-    "description": "First, let's make sure your kit is complete. It should contain the following items:",
-    "help": "Help! My kit is not complete",
-    "kit": "Kit Box w/ bar code",
-    "card": "Quick Start Card",
-    "sampleTube": "Sample tube containing pellet and stopper",
-    "ampoule": "Ampoule with Saline",
-    "swab": "Nasal Swab",
-    "bag": "Delivery bag"
+    "description": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
   },
   "swabScreen": {
     "title": "Begin the first test",
-    "description": "Open the box with a green #1 sticker on it and remove all of the items.\n\nTake out the small tube, remove the stopper, and stand up the small tube in the perforated hole marked small on the box. KEEP the stopper for later."
+    "description": "Open box 1 and remove all the items.\n\nTake out the small tube, remove the stopper, and stand up the tube in the perforated hole marked \"small\" on the box. KEEP the stopper for later."
   },
   "swabPrepScreen": {
-    "title": "Prepare Tube",
+    "title": "Prepare tube",
     "description": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube.\n\nNext, remove the nasal swab from the wrapper. Be careful not to drop it, and only touch the handle, not the tip."
   },
   "mucusScreen": {
     "title": "Collect mucus from nose",
-    "description": "Please use the nostril that is most congested for this test. Meaning, the one that has the most mucus (the kids call them boogers) in it or coming out of it.\n\n**Gently insert the swab in your nostril about 1/2 to 3/4 of an inch.** Rub the swab around the inside wall of the nostril 3 or 4 times. It's OK if there is extra mucus on it when it comes out.\n\nMake note of which nostril you're using for this test, we'll be using the other side in the next test.\n\nTip: Put the little card with the app logo on it to the right or left of your box to help you remember which nostril you are testing."
+    "description": "Gently insert the swab into one nostril about 1/2 to 3/4 of an inch. Next, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "swabInTubeScreen": {
     "title": "Put swab in tube",
-    "description": "Place the swab into the tube sitting in box #1. Make sure the swab tip is touching the bottom of the tube and stir the swab around 3-4 times in the tube.\n\nClick 'Start timer' below. The swab needs to stay in the tube from one minute.",
+    "description": "Place the swab into the tube sitting in box [circle 1]. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "firstTimerScreen": {
-    "title": "Timer: **{{time}}**",
-    "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
+    "title": "Time Remaining: **{{time}}**",
+    "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities."
   },
   "firstTimerDoneScreen": {
-    "title": "Timer done!",
-    "tip": "**DID YOU KNOW?**\n\nEveryone 6 months of age and older should get a flu vaccine every year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
+    "title": "Timer finished",
+    "tip": "**DID YOU KNOW?**\n\nEveryone six months of age and older should get a flu vaccine each year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
   },
   "removeSwabFromTubeScreen": {
     "title": "Remove swab from tube",
-    "description": "Carefully remove the swab by rubbing the tip of it against the wall of the tube. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+    "description": "Carefully rub the tip of it the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
   },
   "openTestStripScreen": {
     "title": "Open test strip",
-    "description": "Inside the same box labeled with a green #1 you'll find a test strip in a foil pouch. Open the test strip package being careful to ONLY hold it at the very top."
+    "description": "Inside the same box [circle 1] you'll find a test strip in a foil pouch. Open this package, being careful to ONLY hold it at the very top."
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
-    "description": "Put the test strip into the tube with the arrows on the strip POINTING DOWN. Make sure the strip is touching the bottom of the tube.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. In the meantime, please answer some questions so we can better understand how this illness has affected you."
+    "description": "The arrows on the test strip should be POINTING DOWN as you lower it into the tube. Make sure the strip is touching the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. In the meantime, please answer some questions so we can better understand how this illness has affected you."
+  },
+  "surveyCoverScreen": {
+    "title": "Questions for you",
+    "description": "The strip needs to stay in the tube for at least 10 minutes. While we're waiting, please answer some questions for us. We'll tell you when to take the strip out of the tube."
   },
   "surveyScreen": {
     "title": "Symptoms Survey",
-    "generalExposure": "General Exposure",
-    "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within 6 feet of them for at least 2 minutes or physical contact for any amount of time.",
-    "expoRef": "For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
+    "description": "Questions marked with an * are required.",
+    "generalExposure": "General exposure",
+    "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within six feet of them for at least two minutes or physical contact for any amount of time.",
+    "expoRef": "For reference, six feet is about the distance between you and someone sitting two rows ahead of you on the bus.",
     "generalHealth": "General Health",
-    "generalDesc": "Next, we'd like to ask you some questions about your general health.",
-    "description": "Questions marked with an * are required."
+    "generalDesc": "Next, we'd like to ask you some questions about your general health."
   },
   "thankYouSurveyScreen": {
     "title": "Thank you!",
-    "desc": "Thank you for answering our questions. We know you're still feeling crummy and truly appreciate your time. Your answers, along with the tests, help us understand many factors related to your illness."
+    "desc": "We know you're still feeling crummy and truly appreciate your time. Your answers to our questions, along with the tests you're doing today, help us understand many factors related to your illness. Click Continue and we'll check on your test strip."
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of box [circle 1]. Try not to cover the other hole in the box--you'll be using that in a moment."
   },
   "testStripTimerScreen": {
-    "title": "Timer: **{{time}}**",
-    "doneTitle": "Timer Finished",
-    "desc": "When the time is up, remove the test strip from the tube and place it flat on the middle of box #1. Try not to cover the other hole in the box, you'll be using that in a moment."
+    "title": "Time Remaining: **{{time}}**",
+    "doneTitle": "Time Complete",
+    "desc": "**Please wait for the timer to end.**"
   },
   "finishTubeScreen": {
     "title": "Finish with the tube",
-    "description": "Put the stopper back on the sample tube you just took the test strip out of. We want you to send this back to us. We'll walk you through packaging steps shortly."
+    "description": "Put the stopper back on the sample tube you just took the test strip out of. You'll be sending this back to us. We'll walk you through packaging steps shortly."
   },
   "lookAtStripScreen": {
     "title": "Look at the test strip",
-    "description": "We are going to ask you a few questions about what you see on the test strip. Please try to look at the test strip in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we are just interested in knowing what you see."
+    "description": "We are going to ask you a few questions about what you see on the test strip. Please try to look at it in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we're just interested in knowing what you see."
   },
   "testStripSurveyScreen": {
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
   },
   "pictureInstructionsScreen": {
-    "title": "Take a picture of the strip",
-    "desc": "We know that was a lot of steps and we really appreciate you hanging in there with us.\n\nNext, we need you to take a picture of the test strip. When you're ready, click the Next button to use the camera"
+    "title": "Take a photo of the strip",
+    "desc": "We know that was a lot of steps and appreciate you hanging in there with us.\n\nNext, take a photo of the test strip. When you're ready, click the Continue button to use the camera."
   },
   "testStripCameraScreen": {
-    "title": "Place test strip in the middle of the screen with the arrows pointing down",
-    "description": "Make sure to focus the image before taking the picture and try to use good lighting.\n\nWhen ready, tap the round button on the screen to take your picture",
+    "title": "Place test strip in the middle of the screen with arrows pointing down.",
+    "description": "Tap the screen to focus the image, and try to use good lighting.\nWhen ready, tap the round button to take your photo.",
     "loading": "Loading..."
   },
   "testStripConfirmationScreen": {
-    "title": "Picture captured!",
+    "title": "Photo captured!",
     "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
   },
   "cleanFirstTestScreen": {
     "title": "Clean up the first test",
-    "step1": "Inside the box with the two holes (box #1) there was a medium sized baggie with a barcode on it.",
-    "step2": "Put the test strip inside the medium sized baggie and close the baggie.",
-    "step3": "Open the bag with a black and white #2 on it and put the contents of this bag in front of you.",
-    "step4": "Put the test strip baggie and the tube you already used into bag #2. Please ensure the stopper is tight on the tube.",
-    "step5": "As a quick note, keep the box in front of you. You’ll need that for the next test."
+    "step1": "Inside box [circle 1] with the two holes, find the medium-sized bag with a barcode on it.",
+    "step2": "Put the test strip inside this bag and close it.",
+    "step3": "Open bag [circle 2] and lay its contents in front of you.",
+    "step4": "Place the test strip bag and the tube you already used into bag [circle 2]. Please ensure the stopper is tight on the tube.",
+    "step5": "Inside box [circle 1] with the two holes, find the medium-sized bag with a barcode on it.",
+    "step6": "Keep the box in front of you. You'll need it for the next test."
   },
   "firstTestFeedbackScreen": {
-    "title": "Nice job with the 1st test!"
+    "title": "Nice job with the first test!"
   },
   "beginSecondTestScreen": {
-    "title": "Begin the 2nd test",
-    "description": "Bag #2 had a large tube in it and another nose swab. Place the large tube in the perforated hole in the box so it's standing up."
+    "title": "Begin the second test",
+    "description": "Bag [circle 2] had a large tube in it and another nose swab. Place the large tube in the perforated hole in the box so it's standing up."
   },
   "prepSecondTestScreen": {
     "title": "Prepare for the test",
-    "description": "Open the swab package. Be careful to not drop it, and only touch the handle, not the tip of the swab.\n\nTip: You may have put the little card with the app logo on it on one side of your box. If you did - that means you tested that nostril already! So now, let’s test the other nostril."
+    "description": "Open the swab package. Be careful to not drop it, and only touch the handle--not the tip of the swab."
   },
   "mucusSecondScreen": {
     "title": "Collect mucus from nose",
-    "description": "Gently insert the swab into the OTHER nostril about 1⁄2 to 3⁄4 of an inch. Rub the swab around the inside wall of the nostril 3 or 4 times. It’s OK if there is extra mucus on it when it comes out."
+    "description": "Now you'll repeat the same instructions you followed during the first test:\n\nGently insert the swab into one nostril about 1/2 to 3/4 of an inch. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "swabInTubeSecondScreen": {
     "title": "Put swab in tube",
-    "description": "Place the swab into the tube and make sure the swab tip is touching the bottom of the tube. Stir the swab around 3-4 times in the tube. Leave the swab in the tube and put the stopper back on the tube."
+    "description": "Place the swab into the tube and make sure the tip is touching the bottom. Stir it around four times. Leave the swab in the tube and put the stopper back on the top."
   },
   "cleanSecondTestScreen": {
-    "title": "Clean up the 2nd test",
-    "description": "Put the larger tube into the same bag #2 as the other items to be returned.\n\nPut the absorbent material that was originally in bag #2, back into bag #2."
+    "title": "Clean up the second test",
+    "description": "Put the larger tube into the same bag [circle 2] as the other items to be returned.\n\nPlace the absorbent material that was originally in bag [circle 2] back into that bag."
   },
   "secondTestFeedbackScreen": {
-    "title": "Nice job with the 2nd test!"
+    "title": "Nice job with the second test!"
   },
   "packingScreen": {
     "title": "Packing things up",
-    "description": "You will be using the same box that was shipped to you to send everything back to us. Open the envelope with the orange #3 label, inside this envelope is everything you need to pack up your box."
+    "description": "You will be using the same box that was shipped to you to send everything back. Open bag [circle 3]. Inside, you'll find everything you need to pack up your box."
   },
   "stickersScreen": {
     "title": "Put stickers on the box",
-    "description": "Put the return mailing label on the outside of the box, OVER the label with your address on it.\n\nStick the UN3373 sticker to the side of the box. This sticker just means this box has samples in it."
+    "description": "Apply the return mailing label to the outside of the box, OVER the label with your address on it.\n\nAdd the UN3373 stickers to the side of the box. This sticker just means there are samples inside."
   },
   "secondBagScreen": {
-    "title": "Put bag #2 in the box",
-    "description": "Bag #2 should have the small tube, the big tube, a baggie with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag #2 using the sticky strip on the top of the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items, or put them in the box if it’s easier:\n\nThe first used swab\n\nPackaging for both swabs and the test strip\n\nEnvelope with the orange #3 sticker on it.\n\nThe box with the two holes in it\n\nKeep the card with the app icon on it for future reference."
+    "title": "Put bag [circle 2] in the box",
+    "description": "Bag [circle 2] should have the small tube, the big tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag [circle 2] using the sticky strip on the top of the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items (below), or put them in the box if it's easier:\n\nFirst-used swab\nPackaging for both swabs and the test strip [see comment]\nBag [circle 3]\nBox with two holes in it\n\nKeep the card with the app icon on it for future reference."
   },
   "tapeBoxScreen": {
     "title": "Tape up the box",
-    "description": "Tape up the box using the tape provided. Please put the tape lengthwise on **EACH EDGE** of the box where there is an opening."
+    "description": "Adhere the provided tape lengthwise to the long seam of the box where there is an opening."
   },
   "shipBoxScreen": {
     "title": "Shipping your box",
-    "description": "Now that your box is ready to go - select one of the following options.\n\nScheduling a parcel pick-up will take you to the USPS web site.\n\nIf you wish to drop the package off yourself, we can locate a nearby USPS Post Office or other facility.",
+    "description": "Now that your box is ready to go, select one of the following options. Both will take you to the USPS website for further instruction.",
     "showNearbyUsps": "Show me nearby USPS or other shipping facilities",
     "schedulePickup": "Schedule a pickup",
     "iWillDropOff": "I will drop it off myself"
   },
-    "schedulePickupScreen": {
+  "schedulePickupScreen": {
     "title": "Schedule a pickup",
-    "description": "You will be directed to the USPS site where you can enter your pickup address. The mailperson can pick up the package directly from your doorstep while they are on their typical route.",
-    "rule1": "Please indicate on the form you want it picked up **during your regular mail delivery so there is no additional charge.**",
-    "rule2": "Indicate you have one Priority Express Mail package for pick-up.\n\nThe weight of the package is 1 lb.\n\nTry to place the package in a location that’s not in direct sunlight and please ship it back as soon as possible."
+    "description": "You will be directed to the USPS site where you can enter the pickup address. The mailperson can pick up the package directly from your doorstep while on their typical route. Indicate the following items on the form:",
+    "rule1": "One Priority Mail package for pick-up.",
+    "rule2": "Pick-up during your regular mail delivery so there is no additional charge.  The weight of the package is **1 lb**."
   },
   "giftcardDetailsScreen": {
     "title": "Gift card details",
-    "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
-    "description": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease provide your email to receive your gift card:",
-    "optOut": "No, I do not want to receive my gift card.",
+    "descriptionWithEmail": "For all your hard work, we'd we would like to send you a $50 Amazon gift card via email. ",
+    "description": "For all your hard work, we'd like to send you a $25 Amazon gift card via email. ",
+    "placeholder": "Enter your email address",
+    "optOut": "No, I do not want a gift card.",
     "confirm": "Are you sure?",
-    "explanation": "We need your email to send you your gift card. We won't send you any other emails unless you say it's Ok.",
-    "noThanks": "No, Thanks",
+    "explanation": "We need your email to send you your gift card. We won't send you any other emails unless you say it's OK.",
+    "noThanks": "No thanks",
     "willEnter": "I'll enter my email",
     "submit": "Submit"
   },
   "emailOptInScreen": {
     "title": "Opt-in for messages",
-    "description": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
+    "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
   },
   "thanksScreen": {
     "title": "Thank you!",
-    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you are feeling. Please do your best to reply as soon as you can to that message.\n\nIn the meantime, what can you do now?",
-    "disclaimer": "Please remember, the results of these test are experimental and not to be used as medical care. Consult your doctor you normally would for your sickness.\n\nWe suggest you wash your hands now that you've completed all the tests."
+    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.",
+    "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as your normally would for your sickness."
   },
   "links": {
+    "recommendLink": "Recommend Flu@Home to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
+    "searchMapsLink": "Search Maps for urgent care clinics nearby",
     "medLink": "Find a nearby clinic or physician"
   },
   "surveyOption": {
@@ -433,7 +432,7 @@
     "none": "None",
     "noneOfTheAbove": "None of the above",
     "asthma": "Asthma",
-    "copd": "COPD/Emphysema",
+    "copd": "COPD/emphysema",
     "diabetes": "Diabetes",
     "noneOfThese": "None of these",
     "doNotKnow": "Do not know",
@@ -448,7 +447,8 @@
     "privateInsurance": "Private Insurance",
     "medicare": "Medicare",
     "contactMeNextSeason": "Contact me next flu season",
-    "sendMeStudy": "Send me the study outcome report"
+    "sendMeStudy": "Send me the study outcome report",
+    "contactMeForFollowUpStudy": "Contact me in a couple months to participate in a follow-up study (Note: You will be compensated for your time)"
   },
   "surveyButton": {
     "done": "Done",
