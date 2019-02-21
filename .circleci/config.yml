@@ -86,8 +86,6 @@ jobs:
           command: |
             cd lib
             yarn build
-            # Verify no files were modified
-            git diff-index --quiet HEAD --
       - run:
           name: FluTrack Tests
           command: |
