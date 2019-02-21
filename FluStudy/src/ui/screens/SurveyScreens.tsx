@@ -1088,7 +1088,17 @@ class GeneralExposureScreen extends React.Component<
 
   render() {
     const width = Dimensions.get("window").width - 2 * GUTTER;
-    const { t } = this.props;
+    const { t, getAnswer } = this.props;
+
+    function conditionalQuestionFilter(question: SurveyQuestionData): boolean {
+      switch (question.id) {
+        case "CoughSneeze":
+          return getAnswer("selectedButtonKey", InContactConfig.id) === "yes";
+        default:
+          return true;
+      }
+    }
+
     return timestampRender("GeneralExposureScreen", (
       <Screen
         canProceed={this._canProceed()}
@@ -1111,7 +1121,9 @@ class GeneralExposureScreen extends React.Component<
           italic={true}
           style={{ marginBottom: GUTTER }}
         />
-        {this._questions.map(question => (
+        {this._questions
+          .filter(conditionalQuestionFilter)
+          .map(question => (
           <ButtonGrid
             key={question.id}
             question={question}
