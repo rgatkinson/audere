@@ -121,22 +121,49 @@ export const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
   WelcomeBackScreen
 );
 
-class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
+@connect((state: StoreState) => ({
+  email: state.survey.email,
+}))
+class WhatsNextScreen extends React.Component<
+  Props & EmailProps & WithNamespaces,
+  EmailState
+> {
+  constructor(props: Props & EmailProps & WithNamespaces) {
+    super(props);
+    this.state = {
+      email: props.email,
+      validEmail: !!props.email,
+    };
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender("WhatsNextScreen", (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={require("../../img/why.png")}
-        logo={true}
-        navBar={false}
-        navigation={this.props.navigation}
-        title={t("whatsNext")}
-        onNext={() => {
-          this.props.navigation.push("Before");
-        }}
-      />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <Screen
+          canProceed={this.state.validEmail}
+          desc={t("description")}
+          imageSrc={require("../../img/why.png")}
+          logo={true}
+          navBar={false}
+          navigation={this.props.navigation}
+          title={t("whatsNext")}
+          onNext={() => {
+            this.props.dispatch(setEmail(this.state.email!));
+            this.props.navigation.push("Before");
+          }}>
+
+          <EmailInput
+            autoFocus={this.props.navigation.isFocused()}
+            placeholder={t("common:placeholder:enterEmail")}
+            returnKeyType="next"
+            validationError={t("common:validationErrors:email")}
+            value={this.state.email}
+            onChange={(email, validEmail) => this.setState({ email, validEmail })}
+            onSubmit={validEmail => this.setState({ validEmail })}
+          />
+        </Screen>
+      </KeyboardAvoidingView>
     ));
   }
 }
@@ -2104,9 +2131,9 @@ class GiftcardDetailsScreen extends React.Component<
       >
         <EmailInput
           autoFocus={this.props.navigation.isFocused()}
-          placeholder={t("placeholder")}
+          placeholder={t("common:placeholder:enterEmail")}
           returnKeyType="next"
-          validationError={t("validationError")}
+          validationError={t("common:validationErrors:email")}
           value={this.state.email}
           onChange={(email, validEmail) => this.setState({ email, validEmail })}
           onSubmit={validEmail => this.setState({ validEmail })}

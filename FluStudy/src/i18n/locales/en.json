@@ -16,6 +16,12 @@
     "tab": {
       "Home": "Home",
       "Admin": "Admin"
+    },
+    "placeholder": {
+      "enterEmail": "Enter your email address"
+    },
+    "validationErrors": {
+      "email": "* Please provide a valid email address"
     }
   },
   "step": {
@@ -186,7 +192,7 @@
   },
   "whatsNextScreen": {
     "whatsNext": "What's Next?",
-    "description": "We need you to do the test and return it by mail to complete the study and receive your gift card. Please do your best to answer the questions and follow the instructions. The test itself is just a simple nose swab."
+    "description": "Today you'll be completing two tests that involve nose swabs, then returning them by mail using a shipping label provided in the box. We will ask some questions about your illness. As a thank you for your help, we'll email you a $50 Amazon gift card.  You'll need to provide your email address below:"
   },
   "beforeScreen": {
     "beforeYouBegin": "Before you Begin",
@@ -386,11 +392,9 @@
     "rule2": "Indicate you have one Priority Express Mail package for pick-up.\n\nThe weight of the package is 1 lb.\n\nTry to place the package in a location that’s not in direct sunlight and please ship it back as soon as possible."
   },
   "giftcardDetailsScreen": {
-    "validationError": "* Please provide a valid email address",
     "title": "Gift card details",
     "descriptionWithEmail": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease confirm this email we have on file is the best one to use for receiving your gift card:",
     "description": "For all your hard work we would like to send you a $25 Amazon gift card. This gift card will be sent to you via email. By providing your email you are agreeing we can send you the gift card.\n\nPlease provide your email to receive your gift card:",
-    "placeholder": "Enter your email address",
     "optOut": "No, I do not want to receive my gift card.",
     "confirm": "Are you sure?",
     "explanation": "We need your email to send you your gift card. We won't send you any other emails unless you say it's Ok.",
