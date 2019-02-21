@@ -540,7 +540,6 @@ class ManualEntryScreen extends React.Component<
           <TextInput
             autoFocus={this.props.navigation.isFocused()}
             autoCorrect={false}
-            keyboardType={"number-pad"}
             placeholder={t("placeholder")}
             returnKeyType="done"
             style={{ marginBottom: GUTTER }}
@@ -552,7 +551,6 @@ class ManualEntryScreen extends React.Component<
           />
           <TextInput
             autoCorrect={false}
-            keyboardType={"number-pad"}
             placeholder={t("secondPlaceholder")}
             ref={this.confirmInput}
             returnKeyType="done"
