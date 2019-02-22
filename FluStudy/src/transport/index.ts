@@ -13,6 +13,7 @@ import { DocumentType, SurveyInfo } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, AnalyticsBatcher } from "./AnalyticsBatcher";
 import { EventTracker } from "./EventUtil";
+import { newCSRUID } from "../util/csruid";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
@@ -52,15 +53,32 @@ class TypedDocumentUploader {
   public async documentsAwaitingUpload(): Promise<number | null> {
     return this.uploader.documentsAwaitingUpload();
   }
-  public saveSurvey(localUid: string, survey: SurveyInfo) {
-    this.uploader.save(localUid, survey, DocumentType.Survey, 1);
+  public saveSurvey(csruid: string, survey: SurveyInfo) {
+    this.uploader.save(csruid, survey, DocumentType.Survey, 1);
   }
-  public saveFeedback(subject: string, body: string) {
-    this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);
+  public async saveFeedback(subject: string, body: string): Promise<void> {
+    const csruid = await newCSRUID();
+    this.uploader.save(csruid, { subject, body }, DocumentType.Feedback, 2);
   }
-  public saveCrashLog(logentry: string) {
+  public async saveCrashLog(logentry: string) {
+    this.uploader.save(
+      await newCSRUID(),
+      {
+        timestamp: new Date().toISOString(),
+        logs: [],
+        events: [],
+        crash: logentry,
+      },
+      DocumentType.Analytics,
+      0
+    );
     this.batcher.fatal(logentry);
   }
+  public async savePhoto(csruid: string, jpegBase64: string) {
+    const timestamp = new Date().toISOString();
+    this.uploader.save(csruid, { timestamp, jpegBase64 }, DocumentType.Photo, 1);
+  }
+
   public async getEncryptionPassword(): Promise<string> {
     return await this.uploader.getEncryptionPassword();
   }

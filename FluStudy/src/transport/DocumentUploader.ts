@@ -14,6 +14,7 @@ import {
   FeedbackInfo,
   ProtocolDocument,
   AnalyticsInfo,
+  PhotoInfo,
 } from "audere-lib/feverProtocol";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
@@ -25,20 +26,17 @@ const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const RETRY_DELAY = 1 * MINUTE;
 
-// exported for testing
-export const CSRUID_PLACEHOLDER = "CSRUID_PLACEHOLDER";
-
 const POUCH_PASS_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = SurveyInfo | FeedbackInfo | AnalyticsInfo;
+type DocumentContents = SurveyInfo | FeedbackInfo | AnalyticsInfo | PhotoInfo;
 
 interface SaveEvent {
   type: "Save";
-  localUid: string;
+  csruid: string;
   document: DocumentContents;
   priority: number;
   documentType: DocumentType;
@@ -74,14 +72,14 @@ export class DocumentUploader {
   }
 
   public save(
-    localUid: string,
+    csruid: string,
     document: DocumentContents,
     documentType: DocumentType,
     priority: number
   ): void {
     this.fireEvent({
       type: "Save",
-      localUid,
+      csruid,
       document,
       documentType,
       priority,
@@ -147,7 +145,7 @@ export class DocumentUploader {
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
-    const key = `documents/${save.priority}/${save.localUid}`;
+    const key = `documents/${save.priority}/${save.csruid}`;
     let pouch: PouchDoc;
     try {
       pouch = await this.db.get(key);
@@ -188,13 +186,8 @@ export class DocumentUploader {
     // Until we know there are no more documents to upload, we want a retry timer pending.
     this.timer.start();
 
-    pouch.body.csruid = await this.getCSRUID(pouch._id);
-
     {
       const body = pouch.body;
-      if (body.csruid === CSRUID_PLACEHOLDER) {
-        throw new Error("Expected body.csruid to be initialized by this point");
-      }
       const url = `/fever/documents/${this.documentUploadKey}/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
@@ -215,33 +208,6 @@ export class DocumentUploader {
     await idleness();
 
     this.uploadNext();
-  }
-
-  private async getCSRUID(localUid: string) {
-    this.logger.debug(`getCSRUID(${localUid})`);
-    const pouchId = "csruid/" + localUid;
-    try {
-      const pouchResult = await this.db.get(pouchId);
-      this.logger.debug(`getCSRUID(${localUid}) read ${pouchResult.csruid}`);
-      return pouchResult.csruid;
-    } catch {}
-    this.logger.debug(`getCSRUID(${localUid}) getting documentId`);
-    const apiResult = await this.check200(() => this.api.get(`/documentId`));
-    if (apiResult === null) {
-      this.logger.debug(`getCSRUID(${localUid}) got null`);
-      throw new Error("Unable to retrieve CSRUID");
-    }
-    const csruid = apiResult.data.id.trim();
-    this.logger.debug(`getCSRUID(${localUid}) saving ${csruid}`);
-    await this.db.put({
-      _id: pouchId,
-      csruid,
-    });
-
-    //TODO(ram): clean up old csruids
-
-    this.logger.debug(`getCSRUID(${localUid}) returning ${csruid}`);
-    return csruid;
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
@@ -301,11 +267,8 @@ export class DocumentUploader {
       const docs = items.rows.filter((row: any) =>
         row.doc._id.startsWith("documents/")
       ).length;
-      const csruids = items.rows.filter((row: any) =>
-        row.doc._id.startsWith("csruid/documents/")
-      ).length;
       this.logger.debug(
-        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+        `Pouch contents: ${total} entries, of which ${docs} docs`
       );
       if (IS_NODE_ENV_DEVELOPMENT) {
         console.log(items.rows.map((row: any) => `\n  ${row.id}`));
@@ -356,7 +319,7 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
       return {
         documentType: save.documentType,
         schemaId: 1,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.csruid,
         device: DEVICE_INFO,
         survey: asSurveyInfo(save.document),
       };
@@ -366,7 +329,7 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.csruid,
         feedback: asFeedbackInfo(save.document),
       };
 
@@ -375,8 +338,17 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.csruid,
         analytics: asAnalyticsInfo(save.document),
+      };
+
+    case DocumentType.Photo:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        device: DEVICE_INFO,
+        csruid: save.csruid,
+        photo: asPhotoInfo(save.document),
       };
   }
 }
@@ -433,6 +405,20 @@ function isProbablyAnalyticsInfo(contents: any): contents is AnalyticsInfo {
         isStr(item.kind) &&
         isStr(item.at)
     )
+  );
+}
+
+function asPhotoInfo(contents: DocumentContents): PhotoInfo {
+  if (isProbablyPhotoInfo(contents)) {
+    return contents;
+  }
+  throw new Error(`Expected PhotoInfo, got ${contents}`);
+}
+
+function isProbablyPhotoInfo(contents: any): contents is PhotoInfo {
+  return (
+    isStr(contents.timestamp) &&
+    isStr(contents.jpegBase64)
   );
 }
 

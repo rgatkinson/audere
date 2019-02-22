@@ -19,13 +19,14 @@ export type SurveyAction =
   | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
-  | { type: "SET_WORKFLOW"; workflow: WorkflowInfo };
+  | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
+  | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
 
 export type SurveyState = {
   consent?: ConsentInfo;
   email?: string;
   events: EventInfo[];
-  id?: string;
+  csruid?: string;
   kitBarcode?: SampleInfo;
   testStripImg?: SampleInfo;
   pushState: PushNotificationState;
@@ -37,7 +38,6 @@ export type SurveyState = {
 
 const initialState: SurveyState = {
   events: [],
-  id: uuidv4(),
   responses: [],
   pushState: {
     showedSystemPrompt: false,
@@ -109,6 +109,14 @@ export default function reducer(state = initialState, action: SurveyAction) {
       timestamp: new Date().getTime(),
     };
   }
+  if (action.type === "SET_CSRUID_IF_UNSET") {
+    if (state.csruid == null) {
+      return {
+        ...state,
+        csruid: action.csruid,
+      };
+    }
+  }
 
   return state;
 }
@@ -176,6 +184,13 @@ export function setWorkflow(workflow: WorkflowInfo): SurveyAction {
     type: "SET_WORKFLOW",
     workflow,
   };
+}
+
+export function setCSRUIDIfUnset(csruid: string): SurveyAction {
+  return {
+    type: "SET_CSRUID_IF_UNSET",
+    csruid,
+  }
 }
 
 function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {

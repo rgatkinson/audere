@@ -7,9 +7,10 @@ export interface ProtocolDocumentBase {
 export declare enum DocumentType {
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
-    Analytics = "ANALYTICS"
+    Analytics = "ANALYTICS",
+    Photo = "PHOTO"
 }
-export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | AnalyticsDocument;
+export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | AnalyticsDocument | PhotoDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -183,6 +184,15 @@ export declare enum LogRecordLevel {
     Warn = "WARN",
     Error = "ERROR",
     Fatal = "FATAL"
+}
+export interface PhotoDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Photo;
+    schemaId: 1;
+    photo: PhotoInfo;
+}
+export interface PhotoInfo {
+    timestamp: string;
+    jpegBase64: string;
 }
 export interface EventInfo {
     kind: EventInfoKind;

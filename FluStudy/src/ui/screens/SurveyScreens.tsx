@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import React from "react";
 import {
   Alert,
@@ -62,6 +67,8 @@ import {
   AddressConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
+import { newCSRUID } from "../../util/csruid";
+import { uploader } from "../../store"
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
@@ -1556,16 +1563,18 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
   };
 
   async _takePicture() {
-    let photo = await this.camera.current!.takePictureAsync({
+    const photo = await this.camera.current!.takePictureAsync({
       quality: 1,
       base64: true,
       orientation: "portrait",
       fixOrientation: true,
     });
+    const csruid = await newCSRUID();
+    uploader.savePhoto(csruid, photo.base64);
     this.props.dispatch(
       setTestStripImg({
         sample_type: "TestStripBase64",
-        code: photo.base64,
+        code: csruid,
       })
     );
     this.setState({ spinner: false });

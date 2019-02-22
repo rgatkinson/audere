@@ -15,7 +15,8 @@ import {
   NonPIIConsentInfo,
   ResponseInfo,
   ResponseItemInfo,
-  AnalyticsDocument
+  AnalyticsDocument,
+  PhotoDocument
 } from "audere-lib/feverProtocol";
 import { defineFeverModels, FeverModels } from "./models";
 import { sendEmail } from "../../util/email";
@@ -65,6 +66,9 @@ export class FeverEndpoint {
         break;
       case DocumentType.Analytics:
         await this.putAnalytics(req.body as AnalyticsDocument);
+        break;
+      case DocumentType.Photo:
+        await this.putPhoto(req.body as PhotoDocument);
         break;
       default:
         throw new Error("Invalid document type");
@@ -125,6 +129,11 @@ export class FeverEndpoint {
   async putAnalytics(document: AnalyticsDocument): Promise<void> {
     const { csruid, device, analytics } = document;
     await this.models.clientLogBatch.upsert({ csruid, device, analytics });
+  }
+
+  async putPhoto(document: PhotoDocument): Promise<void> {
+    const { csruid, device, photo } = document;
+    await this.models.photo.upsert({ csruid, device, photo });
   }
 }
 

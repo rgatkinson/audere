@@ -101,6 +101,8 @@ server {
 
     proxy_pass $service_url;
     proxy_redirect off;
+
+    client_max_body_size 20M;
   }
 }
 EOF

@@ -24,7 +24,7 @@ export function createPublicApp(sql: SplitSql) {
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(helmet.noCache());
   publicApp.use(helmet.frameguard({ action: "deny" }));
-  publicApp.use(bodyParser.json({limit: '5mb'}));
+  publicApp.use(bodyParser.json({limit: '20mb'}));
   publicApp.use(defaultErrorHandler(publicApp.get("env")));
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));

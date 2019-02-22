@@ -43,7 +43,11 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_WORKFLOW":
       case "SET_DEMO":
          */
-        uploader.saveSurvey(state.survey.id, redux_to_pouch(state));
+        if (state.survey.csruid) {
+          uploader.saveSurvey(state.survey.csruid, redux_to_pouch(state));
+        } else {
+          logger.warn("Skipping survey upload because no csruid is available yet");
+        }
         break;
     }
     return result;

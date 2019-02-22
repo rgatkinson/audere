@@ -11,6 +11,7 @@ import {
   StoreState,
   appendEvent,
   clearState,
+  setCSRUIDIfUnset,
   getActiveRouteName,
 } from "../store/";
 import { connect } from "react-redux";
@@ -23,6 +24,7 @@ import {
 import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
 import AppNavigator from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
+import { newCSRUID } from "../util/csruid";
 
 const AppContainer = createReduxContainer(AppNavigator);
 
@@ -31,6 +33,7 @@ interface Props {
   lastUpdate?: number;
   navigationState: NavigationState;
   workflow: WorkflowInfo;
+  csruid?: string;
   dispatch(action: Action): void;
 }
 
@@ -67,6 +70,17 @@ class AppWithNavigationState extends React.Component<Props> {
   }
 
   _handleAppStateChange = (nextAppState: string) => {
+    // Bleagh.
+    //
+    // For idempotence and security, we need to call the uploader with
+    // a csruid, but we can only generate csruids asynchronously.  So
+    // attempt to acquire one whenever we notice we don't have one.
+    //
+    // Similarly, we attempt to acquire one whenever we clear state below.
+    if (!this.props.csruid) {
+      this.initializeCSRUID();
+    }
+
     // NOTE system notifications (camera, push notification permission requests) toggle
     // the app's active/inactive state. This is fine for now since we don't have any timeouts
     // here that happen immediately, all require a minimum amount of elapsed time. This could
@@ -128,7 +142,7 @@ class AppWithNavigationState extends React.Component<Props> {
               ":ineligibleExpirationRedirectToScreeningStart"
           )
         );
-        this.props.dispatch(clearState());
+        this.clearState();
       } else if (
         !this.props.workflow.screeningComplete &&
         (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
@@ -142,7 +156,7 @@ class AppWithNavigationState extends React.Component<Props> {
               ":screeningExpirationRedirectToScreeningStart"
           )
         );
-        this.props.dispatch(clearState());
+        this.clearState();
       } else if (
         this.props.workflow.surveyComplete &&
         (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
@@ -154,7 +168,7 @@ class AppWithNavigationState extends React.Component<Props> {
             "app:" + nextAppState + ":surveyCompleteRedirectToScreeningStart"
           )
         );
-        this.props.dispatch(clearState());
+        this.clearState();
       } else if (
         this.props.workflow.surveyStarted &&
         (nextAppState === "quadTap" || elapsedHours > 4 * HOURS_IN_DAY)
@@ -168,10 +182,20 @@ class AppWithNavigationState extends React.Component<Props> {
               ":surveyIncompleteExpirationRedirectToScreeningStart"
           )
         );
-        this.props.dispatch(clearState());
+        this.clearState();
       }
     }
   };
+
+  clearState() {
+    this.props.dispatch(clearState());
+    this.initializeCSRUID();
+  }
+
+  async initializeCSRUID(): Promise<void> {
+    const csruid = await newCSRUID();
+    this.props.dispatch(setCSRUIDIfUnset(csruid));
+  }
 
   render() {
     return (
@@ -203,5 +227,6 @@ export default connect((state: StoreState) => {
     lastUpdate: state.survey.timestamp,
     navigationState: state.navigation,
     workflow: state.survey.workflow,
+    csruid: state.survey.csruid,
   };
 })(AppWithNavigationState);

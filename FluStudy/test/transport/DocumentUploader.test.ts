@@ -18,10 +18,7 @@ import {
   when,
 } from "ts-mockito";
 import { DocumentType, SurveyInfo } from "audere-lib/feverProtocol";
-import {
-  DocumentUploader,
-  CSRUID_PLACEHOLDER,
-} from "../../src/transport/DocumentUploader";
+import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
@@ -52,11 +49,11 @@ const FAKE_SURVEY_CONTENTS: SurveyInfo = {
 const FAKE_CSRUID = "abc123";
 
 const FAKE_POUCH_DOC: PouchDoc = {
-  _id: "documents/random_id",
+  _id: `documents/1/${FAKE_CSRUID}`,
   body: {
     documentType: DocumentType.Survey,
     schemaId: 1,
-    csruid: CSRUID_PLACEHOLDER,
+    csruid: FAKE_CSRUID,
     device: DEVICE_INFO,
     survey: JSON.parse(JSON.stringify(FAKE_SURVEY_CONTENTS)),
   },

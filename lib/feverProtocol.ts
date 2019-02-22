@@ -32,12 +32,14 @@ export enum DocumentType {
   Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Analytics = "ANALYTICS",
+  Photo = "PHOTO",
 }
 
 export type ProtocolDocument =
   | SurveyDocument
   | FeedbackDocument
-  | AnalyticsDocument;
+  | AnalyticsDocument
+  | PhotoDocument;
 
 export interface DeviceInfo {
   installation: string; // uuid
@@ -282,6 +284,20 @@ export enum LogRecordLevel {
   Warn = "WARN",
   Error = "ERROR",
   Fatal = "FATAL"
+}
+
+// ================================================================================
+// Photo
+
+export interface PhotoDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Photo;
+  schemaId: 1;
+  photo: PhotoInfo;
+}
+
+export interface PhotoInfo {
+  timestamp: string;
+  jpegBase64: string;
 }
 
 // ================================================================================

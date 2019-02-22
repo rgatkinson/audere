@@ -19,7 +19,8 @@ import {
   DeviceInfo,
   PIIInfo,
   SurveyNonPIIDbInfo,
-  AnalyticsInfo
+  AnalyticsInfo,
+  PhotoInfo
 } from "audere-lib/feverProtocol";
 
 // ---------------------------------------------------------------
@@ -29,6 +30,7 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
     accessKey: defineAccessKey(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
+    photo: definePhoto(sql),
     surveyNonPii: defineSurvey(sql.nonPii),
     surveyPii: defineSurvey(sql.pii),
   }
@@ -37,6 +39,7 @@ export interface FeverModels {
   accessKey: Model<AccessKeyAttributes>;
   clientLogBatch: Model<AnalyticsAttributes>;
   feedback: Model<FeedbackAttributes>;
+  photo: Model<PhotoAttributes>;
   surveyNonPii: Model<SurveyAttributes<SurveyNonPIIDbInfo>>;
   surveyPii: Model<SurveyAttributes<PIIInfo>>;
 }
@@ -115,6 +118,26 @@ export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
       device: jsonColumn(),
       subject: stringColumn(),
       body: stringColumn(),
+    }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface PhotoAttributes {
+  id?: string;
+  device: DeviceInfo;
+  csruid: string;
+  photo: PhotoInfo;
+}
+export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
+  return defineModel<PhotoAttributes>(
+    sql.nonPii,
+    "fever_client_analytics",
+    {
+      device: jsonColumn(),
+      csruid: unique(stringColumn()),
+      photo: jsonColumn()
     }
   );
 }

@@ -15,6 +15,7 @@ import {
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
 import { EventTracker } from "./EventUtil";
+import { newCSRUID } from "../util/csruid";
 
 const DEFAULT_OPTIONS = {
   guessRecordOverheadInChars: 40,
@@ -67,23 +68,6 @@ export class AnalyticsBatcher implements EventTracker, Logger {
   }
 
   public fatal(text: string): void {
-    // Upload an immediate entry with just the crash
-    const uploader = this.uploader.get();
-    if (uploader != null) {
-      const timestamp = new Date().toISOString();
-      uploader.save(
-        uuidv4(),
-        {
-          timestamp,
-          logs: [],
-          events: [],
-          crash: text,
-        },
-        DocumentType.Analytics,
-        0
-      );
-    }
-    // Add a logstream event to flush nearby log entries
     this.write(LogRecordLevel.Fatal, text);
   }
 
@@ -150,8 +134,10 @@ export class AnalyticsBatcher implements EventTracker, Logger {
           this.echo(
             `LogBatcher: sending ${logs.length} records to DocumentUploader`
           );
+          const csruid = await newCSRUID();
+          this.echo(`LogBatcher: csruid = '${csruid}'`);
           uploader.save(
-            uuidv4(),
+            csruid,
             analytics,
             DocumentType.Analytics,
             this.config.uploadPriority

@@ -6,20 +6,22 @@
 import { DocumentType, AnalyticsInfo, LogRecordInfo, LogRecordLevel, EventInfoKind } from "audere-lib/feverProtocol";
 import { LazyUploader, AnalyticsBatcher, ConfigOptions, PendingState } from "../../src/transport/AnalyticsBatcher";
 import { ticks } from "../util";
+import { newCSRUID } from "../../src/util/csruid";
 
 jest.useFakeTimers();
 
-describe("LogBatcher", () => {
+jest.mock("../../src/util/csruid");
+(<any>newCSRUID).mockImplementation(async () => "CSRUID");
+
+describe("AnalyticsBatcher", () => {
 
   it("saves small logs locally without uploading", async () => {
     const env = new TestEnv();
     env.bind();
     env.logger.error("abc");
-    await ticks(1);
-    env.logger.error("abc");
-    await ticks(1);
+    await ticks(5);
 
-    expect(env.saves).toHaveLength(1);
+    expect(env.saves.length).toBeGreaterThan(0);
     expect(env.uploads).toHaveLength(0);
   });
 
@@ -27,11 +29,9 @@ describe("LogBatcher", () => {
     const env = new TestEnv();
     env.bind();
     env.logger.fire({ kind: EventInfoKind.AppNav, at: "timestamp" });
-    await ticks(1);
-    env.logger.fire({ kind: EventInfoKind.AppNav, at: "timestamp" });
-    await ticks(1);
+    await ticks(5);
 
-    expect(env.saves).toHaveLength(1);
+    expect(env.saves.length).toBeGreaterThan(0);
     expect(env.uploads).toHaveLength(0);
   });
 
@@ -46,10 +46,11 @@ describe("LogBatcher", () => {
     env.logger.warn(message);
     env.logger.info(message);
     env.logger.debug(message);
-    await ticks(1);
+    jest.runAllTimers();
+    await ticks(5);
 
     env.logger.debug("something else");
-    await ticks(1);
+    await ticks(5);
 
     expect(env.uploads.length).toBeGreaterThan(0);
     const entries = env.uploads.reduce(
@@ -101,17 +102,17 @@ class TestEnv {
   // Uploader
 
   public save(
-    localUid: string,
+    csruid: string,
     document: AnalyticsInfo,
     documentType: DocumentType,
     priority: number
   ): void {
-    this.uploads.push({ localUid, document, documentType, priority });
+    this.uploads.push({ csruid, document, documentType, priority });
   }
 }
 
 interface Analytics {
-  localUid: string;
+  csruid: string;
   document: AnalyticsInfo;
   documentType: DocumentType;
   priority: number;
