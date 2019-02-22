@@ -63,6 +63,10 @@ export default class GiftCardTypeScreen extends React.Component<Props, State> {
         selected: false,
       },
       {
+        key: "Costco ", // hack: Need space here so that we don't load the key for "Workplace - Costco"
+        selected: false,
+      },
+      {
         key: "Other",
         selected: false,
       },
