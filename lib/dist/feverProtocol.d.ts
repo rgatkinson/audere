@@ -99,8 +99,8 @@ export interface NonPIIConsentInfo {
     localTime?: string;
 }
 export interface ConsentInfo extends NonPIIConsentInfo {
-    name: string;
-    signature: string;
+    name?: string;
+    signature?: string;
     relation?: string;
 }
 export declare enum ConsentInfoSignerType {

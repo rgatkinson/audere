@@ -330,8 +330,6 @@ class ConsentScreen extends React.PureComponent<
       terms: t("consentFormText"),
       signerType: ConsentInfoSignerType.Subject,
       date: format(new Date(), "YYYY-MM-DD"),
-      name: "not collected",
-      signature: "not collected",
     }));
     this.props.navigation.push("Address");
   };

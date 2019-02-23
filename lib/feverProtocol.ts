@@ -165,8 +165,8 @@ export interface NonPIIConsentInfo {
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {
-  name: string;
-  signature: string; // Base64-encoded PNG of the signature
+  name?: string;
+  signature?: string; // Base64-encoded PNG of the signature
   relation?: string;
 }
 
