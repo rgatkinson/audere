@@ -17,6 +17,17 @@ How to get running from source
 * Open `FluStudy/ios/flutrack.xcworkspace` in Xcode
 * Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
 
+To run from source on a physical device that has not already been registered:
+
+* Connect the device to your Mac using the USB hub 
+* Run this command on command line to find your device's udid: 
+  * `system_profiler SPUSBDataType | grep -A 11 -w "iPad\|iPhone\|iPad"` 
+* In the FluStudy/ios directory run 
+  * `fastlane run register_device` and enter your device's name and udid
+* `fastlane match development --force_for_new_devices` 
+* Restart XCode and now you should be able to select fluathome Debug > your device as the run target
+
+
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
