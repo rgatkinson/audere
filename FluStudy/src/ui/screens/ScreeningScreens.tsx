@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { format } from "date-fns";
 import React from "react";
 import {
   Alert,
@@ -325,11 +326,10 @@ class ConsentScreen extends React.PureComponent<
     if (this.props.getAnswer("booleanInput", ConsentConfig.id)) {
       this.props.dispatch(setEmail(this.state.email!));
     }
-    const today = new Date();
     this.props.dispatch(setConsent({
       terms: t("consentFormText"),
       signerType: ConsentInfoSignerType.Subject,
-      date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+      date: format(new Date(), "YYYY-MM-DD"),
       name: "not collected",
       signature: "not collected",
     }));
