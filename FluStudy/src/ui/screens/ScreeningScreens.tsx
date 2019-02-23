@@ -391,17 +391,23 @@ class ConsentScreen extends React.PureComponent<
             }}
           />
           {!!this.props.getAnswer("booleanInput", ConsentConfig.id) && (
-            <EmailInput
-              autoFocus={true}
-              placeholder={t("emailAddress")}
-              returnKeyType="next"
-              validationError={t("validationError")}
-              value={this.state.email}
-              onChange={(email, validEmail) =>
-                this.setState({ email, validEmail })
-              }
-              onSubmit={validEmail => this.setState({ validEmail })}
-            />
+            <View style={{ flex: 1 }}>
+              <EmailInput
+                autoFocus={true}
+                placeholder={t("emailAddress")}
+                returnKeyType="next"
+                validationError={t("validationError")}
+                value={this.state.email}
+                onChange={(email, validEmail) =>
+                  this.setState({ email, validEmail })
+                }
+                onSubmit={validEmail => this.setState({ validEmail })}
+              />
+              <Text
+                content={t("privacyNotice")}
+                style={{ fontSize: SMALL_TEXT, marginVertical: GUTTER }}
+              />
+            </View>
           )}
           <ButtonRow
             firstLabel={t("noThanks")}

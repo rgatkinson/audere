@@ -92,7 +92,7 @@ import {
   scheduleUSPSPickUp,
   showNearbyShippingLocations,
 } from "../externalActions";
-import { GUTTER, LARGE_TEXT, STATUS_BAR_HEIGHT } from "../styles";
+import { GUTTER, LARGE_TEXT, SMALL_TEXT, STATUS_BAR_HEIGHT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
 
 const SECOND_MS = 1000;
@@ -2165,6 +2165,10 @@ class GiftcardDetailsScreen extends React.Component<
           onChange={(email, validEmail) => this.setState({ email, validEmail })}
           onSubmit={validEmail => this.setState({ validEmail })}
         />
+        <Text
+          content={t("privacyNotice")}
+          style={{ fontSize: SMALL_TEXT }}
+        />
       </Screen>
     ));
   }
@@ -2222,7 +2226,7 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return timestampRender("ThanksScreen", (
       <Screen
-        canProceed={true}
+        canProceed={false}
         desc={t("description")}
         imageBorder={true}
         imageSrc={require("../../img/tbd.png")}
