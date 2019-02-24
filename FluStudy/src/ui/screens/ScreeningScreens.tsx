@@ -510,23 +510,25 @@ class AddressInputScreen extends React.Component<
   render() {
     const { t } = this.props;
     return timestampRender("AddressInputScreen", (
-      <Screen
-        buttonLabel={t("common:button:submit")}
-        canProceed={this._haveValidAddress()}
-        centerDesc={true}
-        desc={t("surveyDescription:" + AddressConfig.description)}
-        logo={false}
-        navBar={true}
-        navigation={this.props.navigation}
-        step={4}
-        title={t("surveyTitle:" + AddressConfig.title)}
-        onNext={this._onNext}
-      >
-        <AddressInput
-          value={this.state.address}
-          onChange={(address: Address) => this.setState({ address })}
-        />
-      </Screen>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <Screen
+          buttonLabel={t("common:button:submit")}
+          canProceed={this._haveValidAddress()}
+          centerDesc={true}
+          desc={t("surveyDescription:" + AddressConfig.description)}
+          logo={false}
+          navBar={true}
+          navigation={this.props.navigation}
+          step={4}
+          title={t("surveyTitle:" + AddressConfig.title)}
+          onNext={this._onNext}
+        >
+          <AddressInput
+            value={this.state.address}
+            onChange={(address: Address) => this.setState({ address })}
+          />
+        </Screen>
+      </KeyboardAvoidingView>
     ));
   }
 }
