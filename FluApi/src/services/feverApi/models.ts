@@ -133,7 +133,7 @@ export interface PhotoAttributes {
 export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
   return defineModel<PhotoAttributes>(
     sql.nonPii,
-    "fever_client_analytics",
+    "fever_photos",
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
