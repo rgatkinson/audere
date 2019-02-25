@@ -19,7 +19,10 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
       <View style={{ alignSelf: "stretch", marginVertical: GUTTER }}>
         <QuestionText
           text={t("surveyTitle:" + question.title)}
-          subtext={t("surveyDescription:" + question.description)}
+          subtext={question.description ?
+            t("surveyDescription:" + question.description) :
+            undefined
+          }
           required={question.required}
         />
         <OptionList
@@ -28,7 +31,7 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
             this.props.getAnswer("options", question.id)
           )}
           exclusiveOption={question.optionList!.exclusiveOption}
-          multiSelect={true}
+          multiSelect={question.optionList!.multiSelect}
           numColumns={1}
           onChange={options => this.props.updateAnswer({ options }, question)}
         />

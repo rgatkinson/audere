@@ -99,6 +99,8 @@ const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
+const FLUSHOT_START_DATE = new Date(2018, 0);
+
 interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
@@ -1101,6 +1103,8 @@ class GeneralExposureScreen extends React.Component<
       switch (question.id) {
         case "CoughSneeze":
           return getAnswer("selectedButtonKey", InContactConfig.id) === "yes";
+        case "ChildrenWithChildren":
+          return getAnswer("selectedButtonKey", HouseholdChildrenConfig.id) === "yes";
         default:
           return true;
       }
@@ -1130,13 +1134,19 @@ class GeneralExposureScreen extends React.Component<
         />
         {this._questions
           .filter(conditionalQuestionFilter)
-          .map(question => (
-          <ButtonGrid
-            key={question.id}
-            question={question}
-            getAnswer={this.props.getAnswer}
-            updateAnswer={this.props.updateAnswer}
-          />
+          .map(question => ( question.optionList ?
+            <OptionQuestion
+              key={question.id}
+              question={question}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            /> :
+            <ButtonGrid
+              key={question.id}
+              question={question}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            />
         ))}
       </Screen>
     ));
@@ -1182,7 +1192,6 @@ class GeneralHealthScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
-          buttonStyle={{ width: "50%" }}
           question={FluShotConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
@@ -1195,23 +1204,27 @@ class GeneralHealthScreen extends React.Component<
           gotFluShot &&
           <MonthPicker
             date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
+            startDate={FLUSHOT_START_DATE}
+            endDate={new Date(Date.now())}
             onDateChange={dateInput =>
               this.props.updateAnswer({ dateInput }, FluShotDateConfig)
             }
           />
         }
         <ButtonGrid
-          buttonStyle={{ width: "50%" }}
+          buttonStyle={{ width: "67%" }}
           question={TobaccoConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
+          buttonStyle={{ width: "67%" }}
           question={HouseholdTobaccoConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
+          buttonStyle={{ width: "67%" }}
           question={InterferingConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}

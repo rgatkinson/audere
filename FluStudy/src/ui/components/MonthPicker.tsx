@@ -20,6 +20,8 @@ const months = [
 
 interface Props {
   date?: Date;
+  startDate: Date;
+  endDate: Date;
   onDateChange(date: Date): void;
 }
 
@@ -28,20 +30,27 @@ const NUM_OPTIONS = 18;
 class MonthPicker extends React.Component<Props & WithNamespaces> {
   _getOptions(): Date[] {
     const options = [];
-    const now = new Date();
 
-    let currentMonth = now.getMonth();
-    let currentYear = now.getFullYear();
-    let count;
-    for (count = 0; count < NUM_OPTIONS; count++) {
+    let currentMonth = this.props.startDate.getMonth();
+    let currentYear = this.props.startDate.getFullYear();
+    let endMonth = this.props.endDate.getMonth();
+    let endYear = this.props.endDate.getFullYear();
+
+    if (endYear < currentYear || endYear == currentYear && endMonth < currentMonth) {
+      throw new Error("Invalid date range given to MonthPicker");
+    }
+
+    while (currentYear < endYear || currentMonth <= endMonth) {
       options.push(new Date(currentYear, currentMonth));
-      currentMonth = currentMonth - 1;
-      if (currentMonth == -1) {
-        currentMonth = months.length - 1;
-        currentYear = currentYear - 1;
+      if (currentMonth < months.length - 1) {
+        currentMonth += 1;
+      } else {
+        currentMonth = 0;
+        currentYear++;
       }
     }
-    return options.reverse();
+
+    return options;
   }
 
   render() {

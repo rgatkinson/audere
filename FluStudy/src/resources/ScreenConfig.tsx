@@ -152,7 +152,6 @@ export const InContactConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: true,
 };
 
 export const CoughSneezeConfig: SurveyQuestionData = {
@@ -168,12 +167,18 @@ export const CoughSneezeConfig: SurveyQuestionData = {
 export const YoungChildrenConfig: SurveyQuestionData = {
   id: "YoungChildren",
   title: "youngChildren",
-  buttons: [
-    { key: "no", primary: false, enabled: true },
-    { key: "yes", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  required: true,
+  optionList: {
+    options: [
+      "noContactUnderFive",
+      "oneChild",
+      "twoToFiveChildren",
+      "moreThanFiveChildren",
+      "doNotKnow"
+    ],
+    withOther: false,
+    multiSelect: false,
+  },
+  buttons: [],
 };
 
 export const HouseholdChildrenConfig: SurveyQuestionData = {
@@ -184,7 +189,6 @@ export const HouseholdChildrenConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: true,
 };
 
 export const ChildrenWithChildrenConfig: SurveyQuestionData = {
@@ -195,7 +199,6 @@ export const ChildrenWithChildrenConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  required: true,
 };
 
 export const PeopleInHouseholdConfig: SurveyQuestionData = {
@@ -241,6 +244,7 @@ export const FluShotConfig: SurveyQuestionData = {
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
   ],
 };
 
@@ -266,7 +270,6 @@ export const HouseholdTobaccoConfig: SurveyQuestionData = {
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
   ],
 };
 
@@ -276,7 +279,6 @@ export const InterferingConfig: SurveyQuestionData = {
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
   ],
 };
 
@@ -297,7 +299,7 @@ export const AssignedSexConfig: SurveyQuestionData = {
   buttons: [
     { key: "male", primary: false, enabled: true },
     { key: "female", primary: false, enabled: true },
-    { key: "preferNotToSay", primary: false, enabled: true },
+    { key: "other", primary: false, enabled: true },
   ],
 };
 
