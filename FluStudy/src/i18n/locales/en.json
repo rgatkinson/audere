@@ -203,9 +203,9 @@
   },
   "scanInstructionsScreen": {
     "scanQrCode": "Scan the barcode",
-    "description": "First, we'd like you to scan the bar code found on the inside cover of your box. To do that, we'll need to access your phone's camera.",
+    "description": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your phone's camera.",
     "okScan": "Ok! Let's Scan",
-    "tips": "**Tips:**\n\nHold the camera so the bar code is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
+    "tips": "**Tips:**\n\nHold the camera so the barcode is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
     "inputManually": "Enter barcode manually"
   },
   "scanScreen": {
@@ -215,20 +215,20 @@
   },
   "scanConfirmationScreen": {
     "codeSent": "Your code was scanned!",
-    "yourCode": "Your code: KIT [edf879de]",
+    "yourCode": "Your code: KIT ",
     "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.",
     "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
-    "placeholder": "ex: KIT edf849de",
+    "placeholder": "ex: KIT xxxxxxxx",
     "secondPlaceholder": "Confirm barcode",
     "enterKit": "Enter barcode manually",
     "desc": "Enter the 8-character code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tips": "**Tips:**\nFind the bar code inside your box.\nLook for the 8-character code directly below the symbol."
+    "tips": "**Tips:**\nFind the barcode inside your box.\nLook for the 8-character code directly below the symbol."
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",
-    "yourCode": "Your code: edf879de",
+    "yourCode": "Your code: ",
     "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.",
     "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
