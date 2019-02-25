@@ -81,9 +81,7 @@ class TypedDocumentUploader {
       { timestamp, jpegBase64: "" },
       DocumentType.Photo,
       1,
-      {
-        "photo.jpegBase64": jpegBase64
-      }
+      { jpegBase64 }
     );
   }
 

@@ -213,7 +213,7 @@ export class DocumentUploader {
 
       if (IS_NODE_ENV_DEVELOPMENT) {
         console.log("=== Begin upload document ===");
-        console.log(JSON.stringify(pouch, truncatingReplacer(100)));
+        console.log(JSON.stringify(upload, truncatingReplacer(100)));
         console.log("=== End upload document ===");
       }
 
@@ -403,7 +403,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         analytics: asAnalyticsInfo(save.document),
       };
 
-    case DocumentType.Photo:
+    case DocumentType.Photo: {
       return {
         documentType: save.documentType,
         schemaId: 1,
@@ -414,6 +414,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
           jpegBase64: save._attachments!.jpegBase64.data,
         }
       };
+    }
   }
 }
 
