@@ -76,7 +76,15 @@ class TypedDocumentUploader {
   }
   public async savePhoto(csruid: string, jpegBase64: string) {
     const timestamp = new Date().toISOString();
-    this.uploader.save(csruid, { timestamp, jpegBase64 }, DocumentType.Photo, 1);
+    this.uploader.save(
+      csruid,
+      { timestamp, jpegBase64: "" },
+      DocumentType.Photo,
+      1,
+      {
+        "photo.jpegBase64": jpegBase64
+      }
+    );
   }
 
   public async getEncryptionPassword(): Promise<string> {

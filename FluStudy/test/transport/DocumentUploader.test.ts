@@ -17,7 +17,7 @@ import {
   verify,
   when,
 } from "ts-mockito";
-import { DocumentType, SurveyInfo } from "audere-lib/feverProtocol";
+import { DocumentType, SurveyInfo, ProtocolDocument } from "audere-lib/feverProtocol";
 import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
@@ -50,14 +50,18 @@ const FAKE_CSRUID = "abc123";
 
 const FAKE_POUCH_DOC: PouchDoc = {
   _id: `documents/1/${FAKE_CSRUID}`,
-  body: {
-    documentType: DocumentType.Survey,
-    schemaId: 1,
-    csruid: FAKE_CSRUID,
-    device: DEVICE_INFO,
-    survey: JSON.parse(JSON.stringify(FAKE_SURVEY_CONTENTS)),
-  },
+  csruid: FAKE_CSRUID,
+  document: JSON.parse(JSON.stringify(FAKE_SURVEY_CONTENTS)),
+  documentType: DocumentType.Survey,
 };
+
+const FAKE_POST_DOC: ProtocolDocument = {
+  documentType: DocumentType.Survey,
+  schemaId: 1,
+  device: DEVICE_INFO,
+  csruid: FAKE_CSRUID,
+  survey: FAKE_SURVEY_CONTENTS,
+}
 
 const LOGGER = new ArrayLogger();
 
@@ -82,8 +86,8 @@ describe("DocumentUploader", () => {
 
       await nextCall(mockPouchDB, "put", [anything()]);
       const newRecord = capture(mockPouchDB.put).last()[0] as any;
-      expect(newRecord.body.documentType).toEqual(DocumentType.Survey);
-      expect(newRecord.body.survey).toEqual(FAKE_SURVEY_CONTENTS);
+      expect(newRecord.documentType).toEqual(DocumentType.Survey);
+      expect(newRecord.document).toEqual(FAKE_SURVEY_CONTENTS);
     });
     it("uploads a saved record to the api server", async () => {
       const contents = {
@@ -108,7 +112,7 @@ describe("DocumentUploader", () => {
         axiosResponse()
       );
       const [url, postData] = capture(mockAxios.put as any).last();
-      expect(postData).toEqual(FAKE_POUCH_DOC.body);
+      expect(postData).toEqual(FAKE_POST_DOC);
       expect(url).toMatch(new RegExp(`/documents/.*/${FAKE_CSRUID}`));
     });
   });

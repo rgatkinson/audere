@@ -12,7 +12,7 @@ export interface Logger {
 }
 
 export function summarize(obj: object): string {
-  const json = JSON.stringify(obj);
+  const json = JSON.stringify(obj, truncatingReplacer(70));
   if (json.length < 70) {
     return json;
   } else {
@@ -20,4 +20,16 @@ export function summarize(obj: object): string {
     const suffix = json.substr(json.length - 18);
     return `${prefix}...${suffix}`;
   }
+}
+
+interface StringifyReplacer {
+  (key: any, value: any): any;
+}
+
+export function truncatingReplacer(size: number): StringifyReplacer {
+  return (k: any, v: any) => typeof v !== "string" ? v : truncate(v, size);
+}
+
+function truncate(str: string, size: number): string {
+  return str.length <= size ? str : `${str.substring(0, size - 3)}...`;
 }

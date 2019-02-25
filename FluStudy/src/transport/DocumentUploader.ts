@@ -18,9 +18,9 @@ import {
 } from "audere-lib/feverProtocol";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
-import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
-import { Logger, summarize } from "./LogUtil";
+import { Logger, summarize, truncatingReplacer } from "./LogUtil";
+import { UniformObject, DocumentContents, PouchDoc, PouchAttachmentObject } from "./Types";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -32,7 +32,14 @@ const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
 
-type DocumentContents = SurveyInfo | FeedbackInfo | AnalyticsInfo | PhotoInfo;
+// Values are base64 encoded strings.
+//
+// At rest, attachments are stored (unencrypted) as
+// a PouchDB attachment.
+//
+// During upload, values here overwrite the corresponding
+// keys in the document.
+type UploadAttachments = UniformObject<string>;
 
 interface SaveEvent {
   type: "Save";
@@ -40,6 +47,7 @@ interface SaveEvent {
   document: DocumentContents;
   priority: number;
   documentType: DocumentType;
+  attachments?: UploadAttachments;
 }
 
 interface UploadNextEvent {
@@ -75,7 +83,8 @@ export class DocumentUploader {
     csruid: string,
     document: DocumentContents,
     documentType: DocumentType,
-    priority: number
+    priority: number,
+    attachments?: UploadAttachments
   ): void {
     this.fireEvent({
       type: "Save",
@@ -83,6 +92,7 @@ export class DocumentUploader {
       document,
       documentType,
       priority,
+      attachments,
     });
   }
 
@@ -141,31 +151,37 @@ export class DocumentUploader {
   private async handleDecryptDB(): Promise<void> {
     this.db.crypto(await this.getEncryptionPassword(), {
       algorithm: "chacha20",
+      ignore: "_attachments",
     });
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
     const key = `documents/${save.priority}/${save.csruid}`;
+    const attachments = this.attachmentsToPouch(save.attachments);
+    const { csruid, document, documentType } = save;
     let pouch: PouchDoc;
     try {
-      pouch = await this.db.get(key);
-      pouch.body = protocolDocument(save);
-      this.logger.debug(
-        `Updating existing '${key}':\n  ${JSON.stringify(
-          save.document,
-          null,
-          2
-        )}`
-      );
+      pouch = {
+        ...await this.db.get(key),
+        document,
+        documentType,
+        ...attachments
+      };
+      this.logger.debug(`Updating existing '${key}'`);
     } catch (e) {
       pouch = {
         _id: key,
-        body: protocolDocument(save),
+        csruid,
+        document,
+        documentType,
+        ...attachments
       };
       this.logger.debug(`Saving new '${key}`);
-      if (IS_NODE_ENV_DEVELOPMENT) {
-        console.log(JSON.stringify(save.document, null, 2));
-      }
+    }
+    if (IS_NODE_ENV_DEVELOPMENT) {
+      console.log("=== Begin save document ===");
+      console.log(JSON.stringify(pouch, truncatingReplacer(100)));
+      console.log("=== End save document ===");
     }
     await this.db.put(pouch);
     this.logger.debug(`Saved ${key}`);
@@ -186,11 +202,27 @@ export class DocumentUploader {
     // Until we know there are no more documents to upload, we want a retry timer pending.
     this.timer.start();
 
+    if (IS_NODE_ENV_DEVELOPMENT) {
+      console.log("=== Begin loaded pouch document ===");
+      console.log(JSON.stringify(pouch, truncatingReplacer(100)));
+      console.log("=== End loaded pouch document ===");
+    }
+
     {
-      const body = pouch.body;
-      const url = `/fever/documents/${this.documentUploadKey}/${body.csruid}`;
-      let result = await this.check200(() => this.api.put(url, body));
+      const upload = protocolDocument(pouch);
+
+      if (IS_NODE_ENV_DEVELOPMENT) {
+        console.log("=== Begin upload document ===");
+        console.log(JSON.stringify(pouch, truncatingReplacer(100)));
+        console.log("=== End upload document ===");
+      }
+
+      const url = `/fever/documents/${this.documentUploadKey}/${upload.csruid}`;
+      this.logger.debug(`Starting upload to ${url}`);
+      let result = await this.check200(() => this.api.put(url, upload));
+      this.logger.debug(`Finished upload to ${url}`);
       await idleness();
+
       if (result == null) {
         return;
       }
@@ -232,6 +264,7 @@ export class DocumentUploader {
       startkey: "documents/",
       limit: 1,
       include_docs: true,
+      attachments: true,
     };
 
     await this.logPouchKeys();
@@ -278,6 +311,34 @@ export class DocumentUploader {
     }
   }
 
+  private attachmentsToPouch(attachments?: UploadAttachments): { _attachments: PouchAttachmentObject } | {} {
+    console.log("attachmentsToPouch");
+    return attachments == null ? {} : {
+      _attachments: this.mapAttachments(
+        data => ({ content_type: "text/plain", data }),
+        attachments,
+      )
+    };
+  }
+
+  private mapAttachments<I,O>(mapItem: (x: I) => O, attachments?: UniformObject<I>): UniformObject<O> {
+    if (attachments == null) {
+      console.log("No attachments");
+      return {};
+    } else {
+      const o: UniformObject<O> = {};
+      Object.keys(attachments).forEach(k => {
+        if (IS_NODE_ENV_DEVELOPMENT) {
+          console.log(`mapAttachment ${k}:`);
+          console.log(`  from ${JSON.stringify(attachments[k], truncatingReplacer(50))}`);
+          console.log(`    to ${JSON.stringify(mapItem(attachments[k]), truncatingReplacer(50))}`);
+        }
+        return o[k] = mapItem(attachments[k])
+      });
+      return o;
+    }
+  }
+
   private async check200(
     action: () => Promise<AxiosResponse>
   ): Promise<AxiosResponse | null> {
@@ -313,7 +374,7 @@ function idleness(): Promise<void> {
   return new Promise(InteractionManager.runAfterInteractions);
 }
 
-function protocolDocument(save: SaveEvent): ProtocolDocument {
+function protocolDocument(save: PouchDoc): ProtocolDocument {
   switch (save.documentType) {
     case DocumentType.Survey:
       return {
@@ -348,7 +409,10 @@ function protocolDocument(save: SaveEvent): ProtocolDocument {
         schemaId: 1,
         device: DEVICE_INFO,
         csruid: save.csruid,
-        photo: asPhotoInfo(save.document),
+        photo: {
+          ...asPhotoInfo(save.document),
+          jpegBase64: save._attachments!.jpegBase64.data,
+        }
       };
   }
 }
