@@ -800,7 +800,8 @@ resource "aws_iam_policy" "rds_describe_access" {
 data "aws_iam_policy_document" "rds_describe_access" {
   statement {
     actions = [
-      "rds:Describe*"
+      "rds:Describe*",
+      "rds:ListTagsForResource"
     ]
 
     resources = ["*"]
