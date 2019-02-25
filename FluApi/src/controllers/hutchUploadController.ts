@@ -6,7 +6,8 @@
 import { EncountersService } from "../services/encountersService";
 import {
   defaultNumEncounters,
-  hutchConcurrentUploads
+  hutchConcurrentUploads,
+  getHashSecret
 } from "../util/exportConfig";
 import logger from "../util/logger";
 import { GeocodingService } from "../services/geocodingService";
@@ -139,5 +140,7 @@ async function createEncountersService(sql: SplitSql): Promise<EncountersService
     hutchUploadModel
   );
 
-  return new EncountersService(geocoder, uploader, visits);
+  const hashSecret = await getHashSecret(secrets);
+
+  return new EncountersService(geocoder, uploader, visits, hashSecret);
 }

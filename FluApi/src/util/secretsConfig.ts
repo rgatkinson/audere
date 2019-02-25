@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SplitSql, Model } from "./sql";
-import { SecretAttributes } from "../models/secrets";
+import { SecretAttributes, defineSecret } from "../models/secrets";
 
 export class SecretConfig {
   private readonly sql: SplitSql;
@@ -12,6 +12,7 @@ export class SecretConfig {
 
   constructor(sql: SplitSql) {
     this.sql = sql;
+    this.secretModel = defineSecret(sql);
   }
 
   public async get(key: string): Promise<string> {
@@ -21,7 +22,7 @@ export class SecretConfig {
       return envVar;
     }
 
-    const secret = await this.secretModel.findOne({ where: { key }});
+    const secret = await this.secretModel.findOne({ where: { key: key }});
     if (secret != null) {
       return secret.value;
     }

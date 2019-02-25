@@ -70,7 +70,8 @@ describe("encounters service", () => {
       const encountersService = new EncountersService(
         instance(geocoderMock),
         undefined,
-        instance(visitsMock)
+        instance(visitsMock),
+        "secret"
       );
       const result = await encountersService.getEncounters(numToRetrieve);
 
@@ -126,7 +127,8 @@ describe("encounters service", () => {
       const encountersService = new EncountersService(
         instance(geocoderMock),
         undefined,
-        instance(visitsMock)
+        instance(visitsMock),
+        "secret"
       );
       const result = await encountersService.getEncounters(numToRetrieve);
 
@@ -167,7 +169,8 @@ describe("encounters service", () => {
       const encountersService = new EncountersService(
         instance(geocoderMock),
         instance(uploaderMock),
-        instance(visitsMock)
+        instance(visitsMock),
+        "secret"
       );
       const result = await encountersService.sendEncounters(numToRetrieve);
 

@@ -28,7 +28,7 @@ set -x
 npm install --global yarn
 
 cd ~/audere/FluApi
-cat /creds/db/env /creds/app/env > .env
+ln -s /creds/db/env .env
 
 git checkout "$commit"
 yarn install --frozen-lockfile

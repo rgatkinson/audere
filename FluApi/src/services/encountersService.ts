@@ -12,7 +12,6 @@ import { VisitsService } from "./visitsService";
 import { generateSHA256 } from "../util/crypto";
 import { GeocodingResponse } from "../models/geocoding";
 import { NonPIIVisitDetails, PIIVisitDetails } from "../models/visitDetails";
-import { hashSecret } from "../util/exportConfig";
 import logger from "../util/logger";
 
 /**
@@ -36,15 +35,18 @@ export class EncountersService {
   private readonly geocoder: GeocodingService;
   private readonly uploader: HutchUploader;
   private readonly visits: VisitsService;
+  private readonly hashSecret: string;
 
   constructor(
     geocoder: GeocodingService,
     uploader: HutchUploader,
-    visits: VisitsService
+    visits: VisitsService,
+    hashSecret: string
   ) {
     this.geocoder = geocoder;
     this.uploader = uploader;
     this.visits = visits;
+    this.hashSecret = hashSecret;
   }
 
   /**
@@ -122,13 +124,13 @@ export class EncountersService {
     censusTract: string
   ): Encounter.Location {
     return {
-      id: generateSHA256(hashSecret, [streetAddress]),
+      id: generateSHA256(this.hashSecret, [streetAddress]),
       region: censusTract
     };
   }
 
   private deidentifyParticipant(name: string, birthDate: string): string {
-    return generateSHA256(hashSecret, [name, birthDate]);
+    return generateSHA256(this.hashSecret, [name, birthDate]);
   }
 
   /**

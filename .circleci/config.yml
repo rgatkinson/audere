@@ -124,6 +124,7 @@ jobs:
             (
               echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
               echo NONPII_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
+              echo EXPORT_HASH_SECRET=secret
               echo HUTCH_BASE_URL=https://seattleflu.org/
               echo HUTCH_USER=user
               echo HUTCH_PASSWORD=password

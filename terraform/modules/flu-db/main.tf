@@ -163,43 +163,6 @@ resource "aws_volume_attachment" "provision0_my_creds" {
   volume_id = "${element(aws_ebs_volume.admin_creds.*.id, local.my_admin_index)}"
 }
 
-resource "aws_instance" "provision0a" {
-  count = "${local.mode_provision0a}"
-
-  ami = "${module.ami.ubuntu}"
-  availability_zone = "${var.availability_zone}"
-  instance_type = "t2.micro"
-  subnet_id = "${aws_subnet.provision.id}"
-  user_data = "${data.template_file.provision0a_sh.rendered}"
-
-  vpc_security_group_ids = [
-    "${aws_security_group.provision.id}",
-    "${module.fludb_sg.client_id}",
-  ]
-
-  tags {
-    Name = "${local.base_name}-provision0"
-  }
-}
-
-data "template_file" "provision0a_sh" {
-  template = "${file("${path.module}/provision0a.sh")}"
-
-  vars {
-    api_device_letter = "n"
-    random_seed = "${local.random_seed_base64}"
-    util_sh = "${file("${path.module}/../assets/util.sh")}"
-  }
-}
-
-resource "aws_volume_attachment" "provision0a_api_creds" {
-  count = "${local.mode_provision0a}"
-
-  device_name = "/dev/sdn"
-  instance_id = "${aws_instance.provision0a.id}"
-  volume_id = "${aws_ebs_volume.api_creds.id}"
-}
-
 // --------------------------------------------------------------------------------
 // add admin
 
@@ -303,8 +266,7 @@ module "ami" {
 
 locals {
   mode_provision0 = "${(var.mode == "provision0") ? 1 : 0}"
-  mode_provision0a = "${(var.mode == "provisiona") ? 1 : 0}"
-  mode_after_provision0 = "${(var.mode == "provision0" || var.mode == "provision0a") ? 0 : 1}"
+  mode_after_provision0 = "${(var.mode == "provision0") ? 0 : 1}"
   mode_provision1 = "${(var.mode == "provision1") ? 1 : 0}"
   mode_add_admin = "${(var.mode == "add-admin") ? 1 : 0}"
   mode_run = "${(var.mode == "run") ? 1 : 0}"
