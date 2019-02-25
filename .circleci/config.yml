@@ -3,12 +3,12 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 aliases:
-  - &filter_tag_staging
+  - &filter_sniffles_tag_staging
     tags:
       only: /v0\.[0-9]+\.[0-9]+_[a-zA-Z0-9]+$/
     branches:
       ignore: /.*/
-  - &filter_tag_prod
+  - &filter_sniffles_tag_prod
     tags:
       only: /v0\.[0-9]+\.[0-9]+_prod_[a-zA-Z0-9]+$/
     branches:
@@ -32,7 +32,10 @@ defaults: &defaults
   working_directory: ~/repo
 
 setenv: &setenv
+  name: setenv
   command: |
+    echo "$PRODUCT"
+    echo "$EXPO_RELEASE_CHANNEL"
     if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
       export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
       export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
@@ -40,7 +43,11 @@ setenv: &setenv
       export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
       export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
     fi
-    cd learn/ReactNativeTS/FluTrack
+    case "$PRODUCT" in
+      sniffles) cd learn/ReactNativeTS/FluTrack;;
+      fever) cd FluStudy;;
+      *) echo 1>&2 "Unrecognized product '$PRODUCT'"; false;;
+    esac
     echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
     echo "ACCESS_KEY_A=TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB" >> .env
     echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
@@ -58,13 +65,14 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+      - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
           name: FluTrack Yarn Install
           command: |
             cd learn/ReactNativeTS/FluTrack
             yarn install
-            ls node_modules
       - run:
           name: Flu@Home Yarn Install
           command: |
@@ -75,6 +83,7 @@ jobs:
           name: Generate Build Info
           command: |
             scripts/generate-build-info
+            scripts/build-hacks
       - run:
           name: FluTrack Tests
           command: |
@@ -155,6 +164,10 @@ jobs:
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
+      - save_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
             - FluApi/node_modules
@@ -164,7 +177,7 @@ jobs:
             - learn/ReactNativeTS/FluTrack
             - lib
 
-  publish: &publish
+  publish_sniffles: &publish_sniffles
     <<: *defaults
     steps:
       - attach_workspace:
@@ -186,21 +199,23 @@ jobs:
             export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
             curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build, triggered by tag $CIRCLE_TAG, has been published to <$EXPO_URL>. \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1.\", \"icon_emoji\": \":hatching_chick:\"}" $SLACK_WEBHOOK
 
-  publish_to_expo_staging:
+  publish_sniffles_to_expo_staging:
     environment:
-      EXPO_DEBUG: true
       EXPO_RELEASE_CHANNEL: v0-staging
+      PRODUCT: sniffles
       <<: *const
-    <<: *publish
+    <<: *publish_sniffles
 
-  publish_to_expo_prod:
+  publish_sniffles_to_expo_prod:
     environment:
       EXPO_RELEASE_CHANNEL: v0-prod
+      PRODUCT: sniffles
       <<: *const
-    <<: *publish
+    <<: *publish_sniffles
 
   build_ios:
     environment:
+      PRODUCT: sniffles
       <<: *const
     <<: *defaults
     steps:
@@ -248,6 +263,72 @@ jobs:
             export IPA_URL=`expo url:ipa`
             curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1.\", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
 
+  build_deploy_fever: &build_deploy_fever
+    environment:
+      PRODUCT: fever
+      # Fastlane env variable for where it should put output files
+      FL_OUTPUT_DIR: output
+      <<: *const
+    macos:
+      xcode: 10.1.0
+    working_directory: ~/repo
+    shell: /bin/bash --login -euo pipefail
+    steps:
+      - checkout
+      - restore_cache:
+          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+      - run:
+          name: Flu@Home Yarn Install
+          command: |
+            cd FluStudy
+            yarn install
+      - run:
+          name: Run setup scripts
+          command: |
+            scripts/generate-build-info
+            scripts/build-hacks
+            scripts/get-cached-pods
+      - run:
+          name: Flu@Home Tests
+          command: |
+            cd FluStudy
+            yarn test
+      - save_cache:
+          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
+      - run:
+          name: Configure Bundler
+          command: |
+            cd FluStudy/ios
+            export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")
+            sudo gem install bundler
+      - restore_cache:
+          key: 1-gems-{{ checksum "FluStudy/ios/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            cd FluStudy/ios
+            bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-{{ checksum "FluStudy/ios/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: *setenv
+      - run:
+          name: Setup Expo and expo publish
+          command: |
+            yarn global add expo-cli
+            export PATH="$PATH:$(yarn global bin)" 
+            cd FluStudy
+            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
+            expo publish
+      - run:
+          name: Fastlane
+          command: |
+            cd FluStudy/ios
+            bundle exec fastlane beta
+
 workflows:
   version: 2
   build_and_publish:
@@ -256,11 +337,11 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - publish_to_expo_staging:
+      - publish_sniffles_to_expo_staging:
           requires:
             - build
-          filters: *filter_tag_staging
-      - publish_to_expo_prod:
+          filters: *filter_sniffles_tag_staging
+      - publish_sniffles_to_expo_prod:
           requires:
             - build
-          filters: *filter_tag_prod
+          filters: *filter_sniffles_tag_prod

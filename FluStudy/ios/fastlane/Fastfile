@@ -13,73 +13,153 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-default_platform(:ios)
+default_platform :ios
 
-platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+platform :ios do 
+  before_all do
+    setup_circle_ci
   end
-end
-
-lane :beta do
-  sync_code_signing(type: "appstore")
-  build_app(scheme: "fluathome Production",
-            include_bitcode: true)
-end
 
 ####### Certificates #######
 
-desc "Installs the certificates and profiles locally"
-lane :certificates do |options|
-  if options[:use_temporary_keychain]
-    create_temporary_keychain
+  desc "Installs the certificates and profiles locally"
+  lane :certificates do |options|
+    if options[:use_temporary_keychain]
+      create_temporary_keychain
+    end
+  
+    readonly = (options[:refresh_certificates] ? false : true)
+    force_for_new_devices = !readonly
+  
+    match(
+      git_branch: "master",
+      app_identifier: "org.auderenow.fluathome.dev",
+      team_id: "G8UCCFY788",
+      type: "development",
+      readonly: readonly,
+      force_for_new_devices: force_for_new_devices
+    )
+  
+    match(
+      git_branch: "master",
+      app_identifier: "org.auderenow.fluathome",
+      team_id: "G8UCCFY788",
+      type: "appstore",
+      readonly: readonly
+    )
+  
+    if options[:use_temporary_keychain]
+      sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{ENV["KEYCHAIN_NAME"]} #{ENV["KEYCHAIN_PASSWORD"]}"
+    end
+  end
+  
+  private_lane :create_temporary_keychain do
+    keychain_name = "temporary_keychain"
+    ENV["KEYCHAIN_NAME"] = keychain_name
+    ENV["KEYCHAIN_PASSWORD"] = keychain_name
+    ENV["MATCH_KEYCHAIN_NAME"] = keychain_name 
+    ENV["MATCH_KEYCHAIN_PASSWORD"] = keychain_name
+  
+    create_keychain(
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      add_to_search_list: true
+    )
+  end
+  
+  ####### Builds #######
+  
+  desc "Submit a new build to TestFlight"
+  lane :beta do 
+    if is_ci 
+      match(type:"appstore")
+    else 
+      certificates(
+        use_temporary_keychain: true,
+        refresh_certificates: false
+      )
+    end
+    changelog = changelog_from_git_commits(
+      # http://git-scm.com/docs/pretty-formats
+      # - <short hash> <commit title>
+      pretty: "- %h %s"
+    )
+    build_app(
+      scheme: "fluathome Production",
+      include_bitcode: true,
+      export_method: "app-store"
+    )
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+    )
+    slack_announce(
+      destination: "TestFlight", 
+      changelog: changelog
+    )
+    git_tag
+  end
+  
+  private_lane :git_tag do 
+    version = get_version_number
+    build = get_build_number
+    release_type = ENV["EXPO_RELEASE_CHANNEL"]
+    add_git_tag(
+      tag: "v#{version}_#{release_type}_#{build}",
+      message: ENV["BUILD_DESCRIPTION"]
+    )
+    push_to_git_remote
+  end 
+
+  private_lane :slack_announce do |options|
+    version = get_version_number
+    build = get_build_number
+    destination = options[:destination]
+    changelog = options[:changelog]
+    lasttag = last_git_tag
+    ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
+    slack(
+      message: "Flu@Home #{version} build #{build} has been uploaded to #{destination} :rocket:",
+      default_payloads: [:git_branch, :last_git_commit_hash],
+      payload: {
+        "Built by" => ENV["CIRCLE_USERNAME"],
+        "Description" => ENV["BUILD_DESCRIPTION"],
+        "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
+        "Changelog since #{lasttag}" => changelog
+      }
+    )
   end
 
-  readonly = (options[:refresh_certificates] ? false : true)
-  force_for_new_devices = !readonly
-
-  match(
-    git_branch: "master",
-    app_identifier: "org.auderenow.fluathome.dev",
-    team_id: "G8UCCFY788",
-    type: "development",
-    readonly: readonly,
-    force_for_new_devices: force_for_new_devices
-  )
-
-  match(
-    git_branch: "master",
-    app_identifier: "org.auderenow.fluathome.staging",
-    team_id: "G8UCCFY788",
-    type: "appstore",
-    readonly: readonly
-  )
-
-  match(
-    git_branch: "master",
-    app_identifier: "org.auderenow.fluathome",
-    team_id: "G8UCCFY788",
-    type: "appstore",
-    readonly: readonly
-  )
-
-  if options[:use_temporary_keychain]
-    sh "security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{ENV["KEYCHAIN_NAME"]} #{ENV["KEYCHAIN_PASSWORD"]}"
+  desc "Increment build number and commit to current branch"
+  lane :increment_build_number_and_commit do 
+    ensure_git_status_clean
+    build_num = increment_build_number
+    commit_version_bump(
+      message: "Build script incrementing build number to #{build_num}",
+      xcodeproj: "fluathome.xcodeproj",
+    )
+    push_to_git_remote
   end
-end
 
-private_lane :create_temporary_keychain do
-  keychain_name = "temporary_keychain"
-  ENV["KEYCHAIN_NAME"] = keychain_name
-  ENV["KEYCHAIN_PASSWORD"] = keychain_name
-  ENV["MATCH_KEYCHAIN_NAME"] = keychain_name 
-  ENV["MATCH_KEYCHAIN_PASSWORD"] = keychain_name
-
-  create_keychain(
-    default_keychain: true,
-    unlock: true,
-    timeout: 3600,
-    add_to_search_list: true
-  )
+  desc "Provision a device for running Flu@Home from source" 
+  lane :register_new_device do |options|
+    udid = Helper.backticks("system_profiler SPUSBDataType | sed -n -E -e '/(iPhone|iPad)/,/Serial/s/ *Serial Number: *(.+)/\\1/p'")
+    if udid.length < 24
+      UI.error "Error: Could not find udid for connected device. First connect your phone to this Mac."
+    else 
+      UI.message "Your device udid is: #{udid}" 
+    end
+    name = options[:name]
+    if name.to_s.empty?
+      name = UI.input("Enter the device name: ")
+    end
+    register_device(
+      name: name,
+      udid: udid
+    )
+    match(
+      type: "development",
+      force_for_new_devices: true
+    )
+  end
 end

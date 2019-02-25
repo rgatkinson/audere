@@ -1,0 +1,25 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+#
+# Downloads cached pods from S3 and unzip into FluStudy/ios/Pods 
+
+set -euo pipefail
+
+HASH="6af7a5acb21f4570c52e028911090c6115192bebbffc74e9637528c083044a0c"
+DATE="2019-02-22"
+PODS_FILENAME="$DATE.$HASH.Pods.tar.bz2"
+
+PODS_URL="https://s3-us-west-2.amazonaws.com/build-artifacts.auderenow.io/$PODS_FILENAME"
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+cd "$REPO_ROOT_DIR/FluStudy/ios"
+echo "Downloading pods from $PODS_URL"
+curl "$PODS_URL" -o "Pods.tar.bz2"
+#sha256sum "Pods.tar.bz2" | grep "$HASH"
+echo "Expanding tar file"
+tar xjf "Pods.tar.bz2"
+echo "Removing tar file"
+rm "Pods.tar.bz2"

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flu@home</string>
+	<string>Flu@Home</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>19</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -67,23 +67,23 @@
 		<dict/>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allow Flu@home to access your calendar</string>
+	<string>Allow Flu@Home to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Flu@home to use your camera</string>
+	<string>Allow Flu@Home to use your camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Allow Flu@home to access your contacts</string>
+	<string>Allow Flu@Home to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Flu@home to use your location</string>
+	<string>Allow Flu@Home to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Flu@home to access your microphone</string>
+	<string>Allow Flu@Home to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Flu@home to access your device's accelerometer</string>
+	<string>Allow Flu@Home to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give Flu@home permission to save photos</string>
+	<string>Give Flu@Home permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give Flu@home permission to access your photos</string>
+	<string>Give Flu@Home permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Allow Flu@home to access your reminders</string>
+	<string>Allow Flu@Home to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

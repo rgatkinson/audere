@@ -418,6 +418,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -478,12 +479,14 @@
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
 					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
+				INFOPLIST_FILE = fluathome/Supporting/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome.staging";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Staging;
 		};
@@ -545,6 +548,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -605,12 +609,14 @@
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
 					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
+				INFOPLIST_FILE = fluathome/Supporting/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Production;
 		};
@@ -678,6 +684,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
 				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -738,12 +745,14 @@
 					"\"${PODS_ROOT}/Headers/Public/yoga\"",
 					"\"${PODS_ROOT}/../../node_modules/react-native/Libraries/PushNotificationIOS\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/fluathome/Supporting/Info.plist";
+				INFOPLIST_FILE = fluathome/Supporting/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development org.auderenow.fluathome.dev";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};

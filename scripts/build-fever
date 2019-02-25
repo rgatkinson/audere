@@ -1,0 +1,63 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+# This increments build number (CFBundleVersion) in Info.plist then triggers Circle build-deploy-fever job 
+# Assumes we want to build head of current branch
+
+set -euo pipefail
+
+function usage() {
+  echo 1>&2 "Usage: build-fever <type> \"description of build\" [--no-increment]"
+  echo 1>&2 ""
+  echo 1>&2 "<type> = \"staging\"|\"prod\""
+  echo 1>&2 "description of build = Brief description of what's new, used in Slack and git tag message" 
+  echo 1>&2 "--no-increment = Skip incrementing build number"
+  echo 1>&2 ""
+  echo 1>&2 "Example:"
+  echo 1>&2 "    build-fever prod \"Latest strings from copywriter\""
+  echo 1>&2 ""
+  exit 1
+}
+INCREMENT=true
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+# To build a specific commit 1234567 instead of head, use --no-increment and uncomment following line
+#REVISION="\"revision\":\"1234567\","
+REVISION=""
+
+case "$#" in
+  2) CHANNEL="$1"
+     DESCRIPTION="$2";;
+  3) if [ "$3" == "--no-increment" ]; then 
+       CHANNEL="$1"
+       DESCRIPTION="$2"
+       INCREMENT=false
+     else 
+       usage
+     fi;;
+  *) usage;;
+esac
+
+if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
+  echo 1>&2 "Error: CIRCLE_TOKEN env variable is not set. Set this before running this script."
+  echo 1>&2 "       If you have no API token, get one here: https://circleci.com/account/api"
+  exit 1 
+fi
+
+if [ "$INCREMENT" = true ]; then 
+  REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+  PLIST_FILE="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/Info.plist"
+  BUILD_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$PLIST_FILE")"
+  read -p "Will increment build number to $((BUILD_NUM+1)) and commit to $BRANCH. Press Enter to continue or Ctrl-C to abort."
+  cd "$REPO_ROOT_DIR/FluStudy/ios"
+  bundle exec fastlane increment_build_number_and_commit
+fi 
+
+set -x
+curl --user "${CIRCLE_TOKEN}":\
+     -X POST\
+     --header "Content-Type: application/json"\
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_fever", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
+https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
