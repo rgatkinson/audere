@@ -555,6 +555,11 @@ resource "aws_iam_group_policy_attachment" "s3_full_access" {
   policy_arn = "${aws_iam_policy.s3_full_access.arn}"
 }
 
+resource "aws_iam_group_policy_attachment" "rds_describe_access" {
+  group      = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.rds_describe_access.arn}"
+}
+
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
   name   = "AudereEC2FullAccess"
@@ -783,6 +788,27 @@ data "aws_iam_policy_document" "s3_full_access" {
       test     = "Bool"
       variable = "aws:SecureTransport"
       values   = ["true"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "rds_describe_access" {
+  name   = "AudereRDSDescribe"
+  policy = "${data.aws_iam_policy_document.rds_describe_access.json}"
+}
+
+data "aws_iam_policy_document" "rds_describe_access" {
+  statement {
+    actions = [
+      "rds:Describe*"
+    ]
+
+    resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 }
