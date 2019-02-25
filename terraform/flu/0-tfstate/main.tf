@@ -76,6 +76,29 @@ resource "aws_s3_bucket" "staging_log" {
   }
 }
 
+resource "aws_iam_policy" "staging_log_restricted_access" {
+  name   = "StagingLogRestrictedAccesss"
+  policy = "${data.aws_iam_policy_document.staging_log_restricted_access.json}"
+}
+
+data "aws_iam_policy_document" "staging_log_restricted_access" {
+  statement {
+    effect = "Deny"
+
+    actions = [
+      "s3:Delete*",
+      "s3:Put*"
+    ]
+
+    resources = ["${aws_s3_bucket.staging_log.arn}"]
+  }
+}
+
+resource "aws_iam_group_policy_attachment" "staging_log_restricted_access" {
+  group      = "${data.terraform_remote_state.global.infrastructurers_group_name}"
+  policy_arn = "${aws_iam_policy.staging_log_restricted_access.arn}"
+}
+
 resource "aws_s3_bucket" "prod_log" {
   bucket = "flu-prod-log.auderenow.io"
   acl = "log-delivery-write"
@@ -90,5 +113,35 @@ resource "aws_s3_bucket" "prod_log" {
         sse_algorithm = "aws:kms"
       }
     }
+  }
+}
+
+resource "aws_iam_policy" "prod_log_restricted_access" {
+  name   = "ProdLogRestrictedAccesss"
+  policy = "${data.aws_iam_policy_document.prod_log_restricted_access.json}"
+}
+
+data "aws_iam_policy_document" "prod_log_restricted_access" {
+  statement {
+    effect = "Deny"
+
+    actions = [
+      "s3:Delete*",
+      "s3:Put*"
+    ]
+
+    resources = ["${aws_s3_bucket.prod_log.arn}"]
+  }
+}
+
+resource "aws_iam_group_policy_attachment" "prod_log_restricted_access" {
+  group      = "${data.terraform_remote_state.global.infrastructurers_group_name}"
+  policy_arn = "${aws_iam_policy.prod_log_restricted_access.arn}"
+}
+
+data "terraform_remote_state" "global" {
+  backend = "local"
+  config {
+    path = "../../global/terraform.tfstate"
   }
 }

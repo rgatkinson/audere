@@ -550,6 +550,11 @@ resource "aws_iam_group_policy_attachment" "iam_manage_own_mfa" {
   policy_arn = "${aws_iam_policy.iam_manage_own_mfa.arn}"
 }
 
+resource "aws_iam_group_policy_attachment" "s3_full_access" {
+  group      = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.s3_full_access.arn}"
+}
+
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
   name   = "AudereEC2FullAccess"
@@ -754,6 +759,30 @@ data "aws_iam_policy_document" "iam_manage_own_mfa" {
       test     = "${local.mfa_condition_test}"
       variable = "${local.mfa_condition_variable}"
       values   = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "s3_full_access" {
+  name   = "AudereS3FullAccess"
+  policy = "${data.aws_iam_policy_document.s3_full_access.json}"
+}
+
+data "aws_iam_policy_document" "s3_full_access" {
+  statement {
+    actions = ["s3:*"]
+    resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+
+    condition = {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["true"]
     }
   }
 }

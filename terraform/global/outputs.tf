@@ -14,3 +14,7 @@ output "vpc_flow_log_role_arn" {
 output "database_log_archive_bucket_name" {
   value = "${aws_s3_bucket.database_log_archive.id}"
 }
+
+output "infrastructurers_group_name" {
+  value = "${aws_iam_group.infrastructurers.name}"
+}
