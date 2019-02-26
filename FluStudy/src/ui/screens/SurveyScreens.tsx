@@ -1665,7 +1665,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
 
   async _takePicture() {
     const photo = await this.camera.current!.takePictureAsync({
-      quality: 1,
+      quality: 0.8,
       base64: true,
       orientation: "portrait",
       fixOrientation: true,
