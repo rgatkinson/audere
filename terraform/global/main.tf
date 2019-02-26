@@ -560,6 +560,11 @@ resource "aws_iam_group_policy_attachment" "rds_describe_access" {
   policy_arn = "${aws_iam_policy.rds_describe_access.arn}"
 }
 
+resource "aws_iam_group_policy_attachment" "flu_iam_readonly_access" {
+  group      = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.flu_iam_readonly_access.arn}"
+}
+
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
   name   = "AudereEC2FullAccess"
@@ -805,6 +810,29 @@ data "aws_iam_policy_document" "rds_describe_access" {
     ]
 
     resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "flu_iam_readonly_access" {
+  name   = "AudereFluIAMGet"
+  policy = "${data.aws_iam_policy_document.flu_iam_readonly_access.json}"
+}
+
+data "aws_iam_policy_document" "flu_iam_readonly_access" {
+  statement {
+    actions = ["iam:Get*"]
+
+    resources = [
+      "arn:aws:iam::*:group/flu*",
+      "arn:aws:iam::*:policy/flu*",
+      "arn:aws:iam::*:role/flu*",
+    ]
 
     condition = {
       test     = "${local.mfa_condition_test}"
