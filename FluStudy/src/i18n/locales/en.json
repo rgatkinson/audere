@@ -239,6 +239,10 @@
     "title": "How the test works",
     "description": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
   },
+  "unpackingScreen": {
+    "title": "Unpacking Instructions",
+    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number **1**, a bag with a number **2**, a bag with a number **3**, and some bubble wrap."
+  },
   "swabScreen": {
     "title": "Begin the first test",
     "description": "Open box 1 and remove all the items.\n\nTake out the small tube, remove the stopper, and stand up the tube in the perforated hole marked \"small\" on the box. **Keep** the stopper for later."

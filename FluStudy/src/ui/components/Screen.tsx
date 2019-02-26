@@ -28,6 +28,7 @@ interface Props {
   desc?: string;
   footer?: any;
   imageBorder?: boolean;
+  imageAspectRatio?: number;
   imageSrc?: ImageSourcePropType;
   isDemo?: boolean;
   logo?: boolean;
@@ -50,7 +51,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
       return (
         <Image
           style={[
-            { height: 150, width: "75%" },
+            !!this.props.imageAspectRatio ? { width: "100%", height: undefined, aspectRatio: this.props.imageAspectRatio } : { height: 150, width: 200 },
             !this.props.imageBorder && { marginVertical: GUTTER / 2 },
           ]}
           source={this.props.imageSrc}
