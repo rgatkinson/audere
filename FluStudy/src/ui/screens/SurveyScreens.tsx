@@ -655,7 +655,9 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Unpacking = withNamespaces("unpackingScreen")<Props>(UnpackingScreen);
+export const Unpacking = withNamespaces("unpackingScreen")<Props>(
+  UnpackingScreen
+);
 
 class SwabScreen extends React.Component<Props & WithNamespaces> {
   render() {
