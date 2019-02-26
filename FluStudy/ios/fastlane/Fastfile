@@ -108,7 +108,10 @@ platform :ios do
       tag: "v#{version}_#{release_type}_#{build}",
       message: ENV["BUILD_DESCRIPTION"]
     )
-    push_to_git_remote
+    push_to_git_remote(
+      # Otherwise this action will fail if someone committed after the build kicked off
+      force: true
+    )
   end 
 
   private_lane :slack_announce do |options|

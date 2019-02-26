@@ -272,7 +272,7 @@ jobs:
     macos:
       xcode: 10.1.0
     working_directory: ~/repo
-    shell: /bin/bash --login -euo pipefail
+    shell: /bin/bash --login -o pipefail
     steps:
       - checkout
       - restore_cache:
