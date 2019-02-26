@@ -19,7 +19,6 @@
     "lint": "prettier --list-different '{src,test}/**/*.ts' 'db/**/*.js'",
     "lint-fix": "prettier --write '{src,test}/**/*.ts' 'db/**/*.js'",
     "typecheck": "tsc --noEmit",
-    "generate-access-key": "yarn run build && node build/src/scripts/generateAccessKey.js",
     "dbcli": "yarn ts-node scripts/dbcli.ts"
   },
   "main": "build/src/server.js",
