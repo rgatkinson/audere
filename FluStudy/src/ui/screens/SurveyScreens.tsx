@@ -1457,7 +1457,7 @@ class TestStripTimerScreen extends React.Component<
               })
         }
         onNext={() => {
-          this.props.navigation.push("FinishTube");
+          this.props.navigation.push("TestStripReady");
         }}
         onTitlePress={
           this.props.isDemo
