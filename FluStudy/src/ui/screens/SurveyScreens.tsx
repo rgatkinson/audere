@@ -681,7 +681,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.87}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/prepareTube.png")}
         logo={false}
@@ -705,7 +705,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.35}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/collectMucus.png")}
         logo={false}
@@ -730,7 +730,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("startTimer")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.69}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/putSwabInTube.png")}
         logo={false}
@@ -852,7 +852,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.38}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/removeSwabFromTube.png")}
         navBar={true}
@@ -878,7 +878,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.93}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/openTestStrip.png")}
         navBar={true}
@@ -910,7 +910,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.93}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/putTestStripInTube.png")}
         navBar={true}
@@ -1368,7 +1368,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.35}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/removeTestStrip.png")}
         navBar={true}
@@ -1515,7 +1515,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.87}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/finishWithTube.png")}
         navBar={true}
@@ -1540,7 +1540,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.78}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navBar={true}
@@ -1567,7 +1567,7 @@ class TestStripSurveyScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.78}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navBar={true}
@@ -1629,7 +1629,7 @@ class PictureInstructionsScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.37}
+        imageAspectRatio={1.75}
         imageSrc={require("../../img/takePictureTestStrip.png")}
         navBar={true}
         navigation={this.props.navigation}
@@ -1884,7 +1884,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.83}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/begin2ndTest.png")}
         navBar={true}
@@ -1933,7 +1933,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.35}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/collectMucus.png")}
         navBar={true}
@@ -1958,7 +1958,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.69}
+        imageAspectRatio={1.75}
         imageBorder={false}
         imageSrc={require("../../img/putSwabInTube.png")}
         navBar={true}

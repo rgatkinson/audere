@@ -44,19 +44,20 @@ class AppWithNavigationState extends React.Component<Props> {
   thirdLastTap: number | null = null;
 
   handleQuadTap = () => {
-    const now = Date.now();
-    if (
-      this.props.isDemo &&
-      this.lastTap != null &&
-      this.secondLastTap != null &&
-      this.thirdLastTap != null &&
-      now - this.thirdLastTap! < this.QUAD_PRESS_DELAY
-    ) {
-      this._handleAppStateChange("quadTap");
-    } else {
-      this.thirdLastTap = this.secondLastTap;
-      this.secondLastTap = this.lastTap;
-      this.lastTap = now;
+    if (this.props.isDemo) {
+      const now = Date.now();
+      if (
+        this.lastTap != null &&
+        this.secondLastTap != null &&
+        this.thirdLastTap != null &&
+        now - this.thirdLastTap! < this.QUAD_PRESS_DELAY
+      ) {
+        this._handleAppStateChange("quadTap");
+      } else {
+        this.thirdLastTap = this.secondLastTap;
+        this.secondLastTap = this.lastTap;
+        this.lastTap = now;
+      }
     }
   };
 
