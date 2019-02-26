@@ -14,7 +14,7 @@ resource "aws_db_instance" "fludb_pii" {
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"
-  engine_version = "10.5"
+  engine_version = "10.6"
   identifier = "${local.base_name}-pii"
   instance_class = "db.t2.small"
   license_model = "postgresql-license"
@@ -50,7 +50,7 @@ resource "aws_db_instance" "fludb_nonpii" {
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"
-  engine_version = "10.5"
+  engine_version = "10.6"
   identifier = "${local.base_name}-nonpii"
   instance_class = "db.t2.small"
   license_model = "postgresql-license"
