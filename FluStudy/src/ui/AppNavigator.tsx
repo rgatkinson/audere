@@ -66,7 +66,17 @@ import {
   EmailOptIn,
   Thanks,
 } from "./screens/SurveyScreens";
-import About from "./screens/About";
+import {
+  About,
+  Funding,
+  Partners,
+  GeneralQuestions,
+  Problems,
+  TestQuestions,
+  GiftcardQuestions,
+  ContactSupport,
+  Version,
+} from "./screens/MenuScreens";
 
 const Home = createStackNavigator(
   {
@@ -146,6 +156,14 @@ export default createDrawerNavigator(
   {
     Home,
     About,
+    Funding,
+    Partners,
+    GeneralQuestions,
+    Problems,
+    TestQuestions,
+    GiftcardQuestions,
+    ContactSupport,
+    Version,
   },
   {
     drawerPosition: "right",
