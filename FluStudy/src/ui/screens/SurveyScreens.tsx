@@ -199,16 +199,6 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
         }}
       >
         <ImageText
-          imageSrc={require("../../img/soap.png")}
-          imageWidth={100}
-          text={t("washStep")}
-        />
-        <ImageText
-          imageSrc={require("../../img/water.png")}
-          imageWidth={100}
-          text={t("waterStep")}
-        />
-        <ImageText
           imageSrc={require("../../img/cat.png")}
           imageWidth={100}
           text={t("flatStep")}

@@ -200,8 +200,6 @@
   },
   "beforeScreen": {
     "beforeYouBegin": "Before you begin",
-    "washStep": "Please wash your hands with soap and water. before proceeding with the test.",
-    "waterStep": "Please get yourself some water and use the restroom first. It is important you stay beside the kit until everything is done.",
     "flatStep": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "scanInstructionsScreen": {
