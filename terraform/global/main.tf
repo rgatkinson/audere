@@ -565,6 +565,11 @@ resource "aws_iam_group_policy_attachment" "flu_iam_readonly_access" {
   policy_arn = "${aws_iam_policy.flu_iam_readonly_access.arn}"
 }
 
+resource "aws_iam_group_policy_attachment" "cloudwatch_access" {
+  group      = "${aws_iam_group.infrastructurers.name}"
+  policy_arn = "${aws_iam_policy.cloudwatch_access.arn}"
+}
+
 // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
 resource "aws_iam_policy" "ec2_full_access" {
   name   = "AudereEC2FullAccess"
@@ -833,6 +838,25 @@ data "aws_iam_policy_document" "flu_iam_readonly_access" {
       "arn:aws:iam::*:policy/flu*",
       "arn:aws:iam::*:role/flu*",
     ]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "cloudwatch_access" {
+  name   = "AudereCloudwatchAccess"
+  policy = "${data.aws_iam_policy_document.cloudwatch_access.json}"
+}
+
+data "aws_iam_policy_document" "cloudwatch_access" {
+  statement {
+    actions = ["events:DescribeRule"]
+
+    resources = ["*"]
 
     condition = {
       test     = "${local.mfa_condition_test}"
