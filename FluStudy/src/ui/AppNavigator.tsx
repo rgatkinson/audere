@@ -67,6 +67,7 @@ import {
   Thanks,
 } from "./screens/SurveyScreens";
 import {
+  Menu,
   About,
   Funding,
   Partners,
@@ -166,6 +167,7 @@ export default createDrawerNavigator(
     Version,
   },
   {
+    contentComponent: Menu,
     drawerPosition: "right",
   }
 );
