@@ -73,12 +73,23 @@ jobs:
           command: |
             cd learn/ReactNativeTS/FluTrack
             yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
       - run:
           name: Flu@Home Yarn Install
           command: |
             cd FluStudy
             yarn install
             ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
       - run:
           name: Generate Build Info
           command: |
@@ -128,8 +139,13 @@ jobs:
           name: Server Yarn Install
           command: |
             cd FluApi
-            yarn install
+            yarn install --frozen-lockfile
             ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
       - run:
           name: Create Test Databases
           command: |
