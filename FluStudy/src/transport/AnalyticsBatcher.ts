@@ -83,7 +83,7 @@ export class AnalyticsBatcher implements EventTracker, Logger {
       kind,
       at: new Date().toISOString(),
       refId,
-    })
+    });
   }
 
   public fire(event: EventInfo): void {
@@ -102,11 +102,12 @@ export class AnalyticsBatcher implements EventTracker, Logger {
     const newEvents = this.events.splice(0);
     if (newLogs.length > 0 || newEvents.length > 0) {
       const state = await this.loadPending();
-      const size = state.size +
+      const size =
+        state.size +
         newLogs.reduce((acc, x) => acc + this.guessLogSize(x), 0) +
         newEvents.reduce((acc, x) => acc + this.guessEventSize(x), 0);
-      const oldLogs = ((state && state.logs) || []);
-      const oldEvents = ((state && state.events) || []);
+      const oldLogs = (state && state.logs) || [];
+      const oldEvents = (state && state.events) || [];
       const logs = oldLogs.concat(newLogs);
       const events = oldEvents.concat(newEvents);
       const durationMs = Date.now() - new Date(logs[0].timestamp).getTime();

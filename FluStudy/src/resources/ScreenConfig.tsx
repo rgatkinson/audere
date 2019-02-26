@@ -173,7 +173,7 @@ export const YoungChildrenConfig: SurveyQuestionData = {
       "oneChild",
       "twoToFiveChildren",
       "moreThanFiveChildren",
-      "doNotKnow"
+      "doNotKnow",
     ],
     withOther: false,
     multiSelect: false,

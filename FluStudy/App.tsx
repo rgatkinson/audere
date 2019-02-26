@@ -70,7 +70,7 @@ export default class App extends React.Component<AppProps> {
 
   render() {
     if (!this.state.appReady) {
-      return <AppLoading />
+      return <AppLoading />;
     }
 
     // According to https://github.com/infinitered/reactotron/issues/317#issuecomment-431627018

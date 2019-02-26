@@ -5,6 +5,7 @@
 
 import React from "react";
 import { Clipboard, Platform } from "react-native";
+import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
 import { getApiBaseUrl } from "../../transport";
 import Screen from "../components/Screen";
@@ -12,7 +13,11 @@ import { timestampRender, timestampInteraction } from "./analytics";
 
 const buildInfo = require("../../../buildInfo.json");
 
-export default class AboutScreen extends React.PureComponent {
+interface Props {
+  navigation: NavigationScreenProp<any, any>;
+}
+
+export default class About extends React.Component<Props> {
   copyToClipboard = async (text: string) => {
     await Clipboard.setString(text);
   };
@@ -34,19 +39,22 @@ export default class AboutScreen extends React.PureComponent {
       "\n**API Server:** " +
       getApiBaseUrl();
 
-    return timestampRender("AboutScreen", (
+    return timestampRender(
+      "About",
       <Screen
         buttonLabel="Copy"
         canProceed={true}
         desc={aboutContent}
         logo={true}
-        navBar={false}
+        navBar={true}
+        navigation={this.props.navigation}
         title={buildInfo.name}
+        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {
-          timestampInteraction("AboutScreen.Copy");
+          timestampInteraction("About.Copy");
           this.copyToClipboard(aboutContent);
         }}
       />
-    ));
+    );
   }
 }

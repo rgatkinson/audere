@@ -18,7 +18,7 @@ import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { i18n, WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionData } from "../resources/ScreenConfig";
-import { getStore } from "./index"
+import { getStore } from "./index";
 
 interface InnerProps {
   dispatch(action: Action): void;
@@ -36,10 +36,12 @@ export interface ReduxWriterProps {
 
 type OuterProps<P> = Dissoc<P, keyof ReduxWriterProps>;
 
-function _getAnswerFromResponses(responses: SurveyResponse[], key: string, id: string) {
-  const response = responses.find(
-    response => response.questionId === id
-  );
+function _getAnswerFromResponses(
+  responses: SurveyResponse[],
+  key: string,
+  id: string
+) {
+  const response = responses.find(response => response.questionId === id);
   if (
     !response ||
     !response!.answer ||
@@ -52,10 +54,7 @@ function _getAnswerFromResponses(responses: SurveyResponse[], key: string, id: s
 
 export const getPriorAnswer = async (key: string, id: string): Promise<any> => {
   return getStore().then(store => {
-    return _getAnswerFromResponses(
-      store.getState().survey.responses,
-      key,
-      id);
+    return _getAnswerFromResponses(store.getState().survey.responses, key, id);
   });
 };
 

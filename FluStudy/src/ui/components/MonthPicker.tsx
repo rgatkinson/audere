@@ -36,7 +36,10 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     let endMonth = this.props.endDate.getMonth();
     let endYear = this.props.endDate.getFullYear();
 
-    if (endYear < currentYear || endYear == currentYear && endMonth < currentMonth) {
+    if (
+      endYear < currentYear ||
+      (endYear == currentYear && endMonth < currentMonth)
+    ) {
       throw new Error("Invalid date range given to MonthPicker");
     }
 

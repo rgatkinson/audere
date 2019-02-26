@@ -19,7 +19,7 @@ import {
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   canProceed: boolean;
-  onNext(): void;
+  onBack?: () => void;
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
@@ -30,30 +30,21 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         <TouchableOpacity
           style={styles.actionContainer}
           onPress={() => {
-            this.props.navigation.pop();
+            if (!!this.props.onBack) {
+              this.props.onBack();
+            } else {
+              this.props.navigation.pop();
+            }
           }}
         >
-          <Feather color={LINK_COLOR} name="chevron-left" size={30} />
-          <Text style={styles.actionText} content={t("back")} />
+          <Feather color={LINK_COLOR} name="arrow-left" size={30} />
         </TouchableOpacity>
         <Text style={styles.title} center={true} content="FLU@HOME" />
         <TouchableOpacity
           style={styles.actionContainer}
-          onPress={this.props.onNext}
-          disabled={!this.props.canProceed}
+          onPress={this.props.navigation.openDrawer}
         >
-          <Text
-            style={[
-              styles.actionText,
-              !this.props.canProceed && styles.inactiveText,
-            ]}
-            content={t("next")}
-          />
-          <Feather
-            color={this.props.canProceed ? LINK_COLOR : DISABLED_COLOR}
-            name="chevron-right"
-            size={30}
-          />
+          <Feather color={LINK_COLOR} name="menu" size={30} />
         </TouchableOpacity>
       </View>
     );
@@ -64,12 +55,6 @@ const styles = StyleSheet.create({
   actionContainer: {
     alignItems: "center",
     flexDirection: "row",
-  },
-  actionText: {
-    alignSelf: "center",
-    color: LINK_COLOR,
-    fontFamily: SYSTEM_FONT,
-    fontSize: SYSTEM_TEXT,
   },
   container: {
     alignItems: "center",

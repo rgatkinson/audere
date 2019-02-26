@@ -37,6 +37,7 @@ interface Props {
   step?: number;
   title: string;
   onTitlePress?: () => any;
+  onBack?: () => void;
   onNext(): void;
 }
 
@@ -49,7 +50,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
       return (
         <Image
           style={[
-            { height: 150, width: 200 },
+            { height: 150, width: "75%" },
             !this.props.imageBorder && { marginVertical: GUTTER / 2 },
           ]}
           source={this.props.imageSrc}
@@ -84,7 +85,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
             <NavigationBar
               canProceed={this.props.canProceed}
               navigation={this.props.navigation}
-              onNext={this.props.onNext}
+              onBack={this.props.onBack}
             />
           )}
         {this.props.isDemo &&
@@ -109,7 +110,10 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <Step step={this.props.step} totalSteps={4} />
               )}
               {this._getBorderImage()}
-              <Title label={this.props.title} onPress={this.props.onTitlePress}/>
+              <Title
+                label={this.props.title}
+                onPress={this.props.onTitlePress}
+              />
               {!!this.props.desc && (
                 <Text
                   content={this.props.desc}

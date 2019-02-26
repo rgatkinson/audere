@@ -19,9 +19,10 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
       <View style={{ alignSelf: "stretch", marginVertical: GUTTER }}>
         <QuestionText
           text={t("surveyTitle:" + question.title)}
-          subtext={question.description ?
-            t("surveyDescription:" + question.description) :
-            undefined
+          subtext={
+            question.description
+              ? t("surveyDescription:" + question.description)
+              : undefined
           }
           required={question.required}
         />

@@ -66,7 +66,7 @@ import {
   EmailOptIn,
   Thanks,
 } from "./screens/SurveyScreens";
-import AboutScreen from "./screens/AboutScreen";
+import About from "./screens/About";
 
 const Home = createStackNavigator(
   {
@@ -134,11 +134,20 @@ const Home = createStackNavigator(
     Thanks,
   },
   {
+    // @ts-ignore
+    defaultNavigationOptions: {
+      gesturesEnabled: false,
+    },
     headerMode: "none",
   }
 );
 
-export default createDrawerNavigator({
-  Home,
-  About: { screen: AboutScreen },
-});
+export default createDrawerNavigator(
+  {
+    Home,
+    About,
+  },
+  {
+    drawerPosition: "right",
+  }
+);

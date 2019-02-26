@@ -10,7 +10,10 @@ export function timestampInteraction(refId: string) {
   events.fireNow(EventInfoKind.Interaction, refId);
 }
 
-export function timestampRender(refId: string, element: JSX.Element): JSX.Element {
+export function timestampRender(
+  refId: string,
+  element: JSX.Element
+): JSX.Element {
   events.fireNow(EventInfoKind.Render, refId);
   return element;
 }

@@ -46,7 +46,9 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
         if (state.survey.csruid) {
           uploader.saveSurvey(state.survey.csruid, redux_to_pouch(state));
         } else {
-          logger.warn("Skipping survey upload because no csruid is available yet");
+          logger.warn(
+            "Skipping survey upload because no csruid is available yet"
+          );
         }
         break;
     }

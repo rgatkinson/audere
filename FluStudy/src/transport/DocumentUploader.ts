@@ -465,11 +465,7 @@ function isProbablyAnalyticsInfo(contents: any): contents is AnalyticsInfo {
         isStr(item.text)
     ) &&
     isArr(contents.events) &&
-    contents.events.every(
-      (item: any) =>
-        isStr(item.kind) &&
-        isStr(item.at)
-    )
+    contents.events.every((item: any) => isStr(item.kind) && isStr(item.at))
   );
 }
 
@@ -481,10 +477,7 @@ function asPhotoInfo(contents: DocumentContents): PhotoInfo {
 }
 
 function isProbablyPhotoInfo(contents: any): contents is PhotoInfo {
-  return (
-    isStr(contents.timestamp) &&
-    isStr(contents.jpegBase64)
-  );
+  return isStr(contents.timestamp) && isStr(contents.jpegBase64);
 }
 
 function isArr(x: any) {

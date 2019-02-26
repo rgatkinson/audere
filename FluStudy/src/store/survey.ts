@@ -20,7 +20,7 @@ export type SurveyAction =
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
-  | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
+  | { type: "SET_CSRUID_IF_UNSET"; csruid: string };
 
 export type SurveyState = {
   consent?: ConsentInfo;
@@ -190,7 +190,7 @@ export function setCSRUIDIfUnset(csruid: string): SurveyAction {
   return {
     type: "SET_CSRUID_IF_UNSET",
     csruid,
-  }
+  };
 }
 
 function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {

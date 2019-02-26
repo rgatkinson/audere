@@ -28,7 +28,9 @@ interface Transport {
 export function createTransport(): Transport {
   const db = new PouchDB("clientDB", { auto_compaction: true });
   const lazyUploader = new LazyUploader();
-  const batcher = new AnalyticsBatcher(lazyUploader, <any>db, { uploadPriority: 3 });
+  const batcher = new AnalyticsBatcher(lazyUploader, <any>db, {
+    uploadPriority: 3,
+  });
   const api = createAxios(batcher);
   const uploader = new DocumentUploader(db, api, batcher);
 
@@ -82,6 +84,7 @@ class TypedDocumentUploader {
       DocumentType.Photo,
       1,
       { jpegBase64 }
+      1,
     );
   }
 
