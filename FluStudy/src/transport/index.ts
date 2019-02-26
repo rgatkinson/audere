@@ -84,7 +84,6 @@ class TypedDocumentUploader {
       DocumentType.Photo,
       1,
       { jpegBase64 }
-      1,
     );
   }
 
