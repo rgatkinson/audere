@@ -13,13 +13,17 @@ import { createInterface as createReadline } from "readline";
 import { literal, Op } from "sequelize";
 import yargs from "yargs";
 import _ from "lodash";
+import base64url from "base64url";
+import bufferXor from "buffer-xor";
 
 import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
 import { createSplitSql, Inst } from "../src/util/sql";
+import { generateRandomKey } from "../src/util/crypto";
 import { defineSnifflesModels, LogBatchAttributes } from "../src/models/sniffles";
 import { LogRecordInfo, DeviceInfo } from "audere-lib/snifflesProtocol";
+import { defineFeverModels } from "../src/services/feverApi/models";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -31,9 +35,15 @@ const log = new ScriptLogger(console.log);
 
 const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
+const feverModels = defineFeverModels(sql);
 
 const updaterNonPII = new VisitNonPIIUpdater(sql.nonPii, log);
 const updaterPII = new VisitPIIUpdater(sql.pii, log);
+
+enum Release {
+  Sniffles = "sniffles",
+  Fever = "fever",
+}
 
 yargs
   .option("verbose", {
@@ -45,6 +55,23 @@ yargs
     command: "demo <row> [unset]",
     builder: yargs => yargs.string("row").boolean("unset"),
     handler: command(cmdDemo)
+  })
+  .command({
+    command: "generate-random-key [size]",
+    builder: yargs => yargs.option("size", {
+      number: true
+    }),
+    handler: command(cmdGenerateRandomKey),
+  })
+  .command({
+    command: "add-access-key <release> <key>",
+    builder: yargs => yargs.string("release"),
+    handler: command(cmdAddAccessKey)
+  })
+  .command({
+    command: "create-access-key <release>",
+    builder: yargs => yargs.string("release"),
+    handler: command(cmdCreateAccessKey)
   })
   .command({
     command: "show <kind> <row>",
@@ -172,6 +199,48 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
     updaterNonPII.setDemo(dataNP, isDemo),
     updaterPII.setDemo(dataP, isDemo)
   ]);
+}
+
+interface GenerateRandomKeyArgs {
+  size?: number;
+}
+async function cmdGenerateRandomKey(argv: GenerateRandomKeyArgs): Promise<void> {
+  console.log(await generateRandomKey(argv.size));
+}
+
+interface AddAccessKeyArgs {
+  release: Release;
+  key: string;
+}
+async function cmdAddAccessKey(argv: AddAccessKeyArgs): Promise<void> {
+  await accessKey(argv.release).create({
+    key: argv.key,
+    valid: true,
+  });
+  console.log(`Added access key '${argv.key}' and marked valid.`);
+}
+
+interface SetAccessKeyArgs {
+  release: Release;
+}
+async function cmdCreateAccessKey(argv: SetAccessKeyArgs): Promise<void> {
+  const components = [
+    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
+    await generateRandomKey(),
+    await generateRandomKey()
+  ];
+  const buffers = components.map(base64url.toBuffer);
+  const buffer = buffers.reduce(bufferXor, Buffer.alloc(buffers[0].length));
+  const key = base64url(buffer);
+
+  await accessKey(argv.release).create({ key, valid: true});
+
+  console.log(`New access key created and added for ${argv.release}`);
+  console.log();
+  console.log("Copy the following lines to your .env file:");
+  console.log(`ACCESS_KEY_A='${components[1]}'`);
+  console.log(`ACCESS_KEY_B='${components[2]}'`);
+  console.log();
 }
 
 interface ShowArgs {
@@ -336,4 +405,38 @@ function fail(message: string): never {
   const error = new Error(message);
   (<any>error).checked = true;
   throw error;
+}
+
+function accessKey(release: Release) {
+  return forApp(release, {
+    sniffles: snifflesModels.accessKey,
+    fever: feverModels.accessKey,
+  });
+}
+
+function forApp<T>(release: Release, choices: { [key in Release]: T }) {
+  {
+    const required = Object.keys(Release)
+      .map(x => Release[x])
+      .sort();
+    const provided = Object.keys(choices)
+      .sort();
+    if (!_.isEqual(required, provided)) {
+      throw new Error(
+        `Internal error: forApp called with choices that don't match releases: ` +
+        `required=[${required.join(",")}] ` +
+        `provided=[${provided.join(",")}]`
+      )
+    }
+  }
+
+  const choice = choices[release];
+  if (choice == null) {
+    throw fail(
+      `Unrecognized release: '${release}', ` +
+      `expected one of '${Object.keys(Release).join("', '")}'`
+    );
+  }
+
+  return choice;
 }
