@@ -831,7 +831,10 @@ resource "aws_iam_policy" "flu_iam_readonly_access" {
 
 data "aws_iam_policy_document" "flu_iam_readonly_access" {
   statement {
-    actions = ["iam:Get*"]
+    actions = [
+      "iam:Get*",
+      "iam:List*"
+    ]
 
     resources = [
       "arn:aws:iam::*:group/flu*",
