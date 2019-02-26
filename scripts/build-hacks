@@ -21,3 +21,16 @@ insert='HEADER_SEARCH_PATHS = (\
 FILEBAK="$FILE.bak"
 sed -i.bak "s/$match/$insert$match/" $FILE && rm $FILEBAK
 fi
+
+# Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
+EXBUILDCONSTANTS="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/EXBuildConstants.plist"
+if [ ! -f "$EXBUILDCONSTANTS" ]; then
+  echo "Creating EXBuildConstants.plist"
+  cat >"$EXBUILDCONSTANTS" <<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+</dict>
+</plist>
+EOT
+fi
