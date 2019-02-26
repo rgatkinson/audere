@@ -6,14 +6,23 @@
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import { events } from "../../store";
 
+let interacted = false;
+
 export function timestampInteraction(refId: string) {
+  console.log(`timestampInteraction: ${refId}`);
   events.fireNow(EventInfoKind.Interaction, refId);
+  interacted = true;
 }
 
+// We only record the time of the first render after an interaction.
 export function timestampRender(
   refId: string,
   element: JSX.Element
 ): JSX.Element {
-  events.fireNow(EventInfoKind.Render, refId);
+  if (interacted) {
+    console.log(`timestampRender: ${refId}`);
+    events.fireNow(EventInfoKind.Render, refId);
+    interacted = false;
+  }
   return element;
 }
