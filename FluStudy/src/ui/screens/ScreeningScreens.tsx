@@ -527,12 +527,16 @@ class AddressInputScreen extends React.Component<
             value={this.state.address}
             onChange={(address: Address) => this.setState({ address })}
           />
+          <Text
+            content={t("addressExceptions")}
+            style={{ fontSize: SMALL_TEXT }}
+          />
         </Screen>
       </KeyboardAvoidingView>
     ));
   }
 }
-export const AddressScreen = reduxWriter(withNamespaces()(AddressInputScreen));
+export const AddressScreen = reduxWriter(withNamespaces("addressScreen")(AddressInputScreen));
 
 class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {

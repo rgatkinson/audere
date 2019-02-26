@@ -216,7 +216,7 @@ export const BedroomsConfig: SurveyQuestionData = {
   id: "Bedrooms",
   title: "bedrooms",
   buttons: [
-    { key: "1", primary: false, enabled: true },
+    { key: "0-1", primary: false, enabled: true },
     { key: "2", primary: false, enabled: true },
     { key: "3", primary: false, enabled: true },
     { key: "4", primary: false, enabled: true },
@@ -340,7 +340,7 @@ export const InsuranceConfig: SurveyQuestionData = {
   description: "selectAll",
   buttons: [],
   optionList: {
-    options: ["none", "medicaid", "privateInsurance", "medicare", "other"],
+    options: ["noInsurance", "privateInsuranceEmployer", "privateInsuranceSelf", "governmentInsurance", "doNotKnow", "other"],
     multiSelect: true,
     withOther: false,
     exclusiveOption: "none",
