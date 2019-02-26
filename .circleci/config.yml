@@ -156,6 +156,7 @@ jobs:
               echo SMARTYSTREETS_AUTH_TOKEN=67890
             ) > .env
             yarn setup
+            yarn "migration:postgis"
             yarn typecheck
             yarn test
             yarn test-integration
