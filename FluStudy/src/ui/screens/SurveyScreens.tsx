@@ -2137,7 +2137,7 @@ class ShipBoxScreen extends React.Component<
             label={t("iWillDropOff")}
             primary={true}
             onPress={() => {
-              this.props.navigation.push("GiftcardDetails");
+              this.props.navigation.push("EmailOptIn");
             }}
           />
         }
@@ -2191,7 +2191,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         title={t("title")}
         onNext={() => {
           scheduleUSPSPickUp(() => {
-            this.props.navigation.push("GiftcardDetails");
+            this.props.navigation.push("EmailOptIn");
           });
         }}
       >
@@ -2213,85 +2213,6 @@ interface EmailState {
   email?: string;
   validEmail: boolean;
 }
-
-@connect((state: StoreState) => ({
-  email: state.survey.email,
-}))
-class GiftcardDetailsScreen extends React.Component<
-  Props & EmailProps & WithNamespaces,
-  EmailState
-> {
-  constructor(props: Props & EmailProps & WithNamespaces) {
-    super(props);
-    this.state = {
-      email: props.email,
-      validEmail: !!props.email,
-    };
-  }
-
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "GiftcardDetailsScreen",
-      <Screen
-        canProceed={!!this.state.email && this.state.validEmail}
-        desc={!!this.props.email ? t("descriptionWithEmail") : t("description")}
-        footer={
-          <Links
-            center={true}
-            links={[
-              {
-                label: t("optOut"),
-                onPress: () => {
-                  timestampInteraction("GiftcardDetailsScreen.optOut");
-                  Alert.alert(t("confirm"), t("explanation"), [
-                    {
-                      text: t("noThanks"),
-                      onPress: () => {
-                        this.props.navigation.push("Thanks");
-                      },
-                    },
-                    {
-                      text: t("willEnter"),
-                      onPress: () => {
-                        timestampInteraction(
-                          "GiftcardDetailsScreen.optOut.willEnter"
-                        );
-                      },
-                    },
-                  ]);
-                },
-              },
-            ]}
-          />
-        }
-        imageBorder={true}
-        imageSrc={require("../../img/tbd.png")}
-        navBar={true}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={() => {
-          this.props.dispatch(setEmail(this.state.email!));
-          this.props.navigation.push("EmailOptIn");
-        }}
-      >
-        <EmailInput
-          autoFocus={this.props.navigation.isFocused()}
-          placeholder={t("common:placeholder:enterEmail")}
-          returnKeyType="next"
-          validationError={t("common:validationErrors:email")}
-          value={this.state.email}
-          onChange={(email, validEmail) => this.setState({ email, validEmail })}
-          onSubmit={validEmail => this.setState({ validEmail })}
-        />
-        <Text content={t("privacyNotice")} style={{ fontSize: SMALL_TEXT }} />
-      </Screen>
-    );
-  }
-}
-export const GiftcardDetails = withNamespaces("giftcardDetailsScreen")<
-  Props & EmailProps
->(GiftcardDetailsScreen);
 
 class EmailOptInScreen extends React.Component<
   Props & WorkflowProps & WithNamespaces & ReduxWriterProps

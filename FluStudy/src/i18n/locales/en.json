@@ -393,19 +393,6 @@
     "rule1": "One **Priority Mail** package for pick-up.",
     "rule2": "Pick-up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**."
   },
-  "giftcardDetailsScreen": {
-    "title": "Gift card details",
-    "descriptionWithEmail": "For all your hard work, we'd we would like to send you a $50 Amazon gift card via email. ",
-    "description": "For all your hard work, we'd like to send you a $50 Amazon gift card via email. ",
-    "placeholder": "Enter your email address",
-    "optOut": "No, I do not want a gift card.",
-    "confirm": "Are you sure?",
-    "explanation": "We need your email to send you your gift card. We won't send you any other emails unless you say it's OK.",
-    "noThanks": "No thanks",
-    "willEnter": "I'll enter my email",
-    "privacyNotice": "We will not share this with any third party or for purposes other than this study.",
-    "submit": "Submit"
-  },
   "emailOptInScreen": {
     "title": "Opt-in for messages",
     "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."

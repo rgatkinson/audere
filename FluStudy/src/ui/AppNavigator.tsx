@@ -63,7 +63,6 @@ import {
   TapeBox,
   ShipBox,
   SchedulePickup,
-  GiftcardDetails,
   EmailOptIn,
   Thanks,
 } from "./screens/SurveyScreens";
@@ -131,7 +130,6 @@ const Home = createStackNavigator(
     TapeBox,
     ShipBox,
     SchedulePickup,
-    GiftcardDetails,
     EmailOptIn,
     Thanks,
   },
