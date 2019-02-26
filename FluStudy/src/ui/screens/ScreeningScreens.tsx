@@ -539,7 +539,9 @@ class AddressInputScreen extends React.Component<
     );
   }
 }
-export const AddressScreen = reduxWriter(withNamespaces("addressScreen")(AddressInputScreen));
+export const AddressScreen = reduxWriter(
+  withNamespaces("addressScreen")(AddressInputScreen)
+);
 
 class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
   render() {

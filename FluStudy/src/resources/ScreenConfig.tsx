@@ -340,7 +340,14 @@ export const InsuranceConfig: SurveyQuestionData = {
   description: "selectAll",
   buttons: [],
   optionList: {
-    options: ["noInsurance", "privateInsuranceEmployer", "privateInsuranceSelf", "governmentInsurance", "doNotKnow", "other"],
+    options: [
+      "noInsurance",
+      "privateInsuranceEmployer",
+      "privateInsuranceSelf",
+      "governmentInsurance",
+      "doNotKnow",
+      "other",
+    ],
     multiSelect: true,
     withOther: false,
     exclusiveOption: "none",

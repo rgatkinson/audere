@@ -27,7 +27,7 @@ interface StringifyReplacer {
 }
 
 export function truncatingReplacer(size: number): StringifyReplacer {
-  return (k: any, v: any) => typeof v !== "string" ? v : truncate(v, size);
+  return (k: any, v: any) => (typeof v !== "string" ? v : truncate(v, size));
 }
 
 function truncate(str: string, size: number): string {

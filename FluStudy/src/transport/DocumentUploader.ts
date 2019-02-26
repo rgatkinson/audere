@@ -20,7 +20,12 @@ import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
 import { Logger, summarize, truncatingReplacer } from "./LogUtil";
-import { UniformObject, DocumentContents, PouchDoc, PouchAttachmentObject } from "./Types";
+import {
+  UniformObject,
+  DocumentContents,
+  PouchDoc,
+  PouchAttachmentObject,
+} from "./Types";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -162,10 +167,10 @@ export class DocumentUploader {
     let pouch: PouchDoc;
     try {
       pouch = {
-        ...await this.db.get(key),
+        ...(await this.db.get(key)),
         document,
         documentType,
-        ...attachments
+        ...attachments,
       };
       this.logger.debug(`Updating existing '${key}'`);
     } catch (e) {
@@ -174,7 +179,7 @@ export class DocumentUploader {
         csruid,
         document,
         documentType,
-        ...attachments
+        ...attachments,
       };
       this.logger.debug(`Saving new '${key}`);
     }
@@ -311,17 +316,24 @@ export class DocumentUploader {
     }
   }
 
-  private attachmentsToPouch(attachments?: UploadAttachments): { _attachments: PouchAttachmentObject } | {} {
+  private attachmentsToPouch(
+    attachments?: UploadAttachments
+  ): { _attachments: PouchAttachmentObject } | {} {
     console.log("attachmentsToPouch");
-    return attachments == null ? {} : {
-      _attachments: this.mapAttachments(
-        data => ({ content_type: "text/plain", data }),
-        attachments,
-      )
-    };
+    return attachments == null
+      ? {}
+      : {
+          _attachments: this.mapAttachments(
+            data => ({ content_type: "text/plain", data }),
+            attachments
+          ),
+        };
   }
 
-  private mapAttachments<I,O>(mapItem: (x: I) => O, attachments?: UniformObject<I>): UniformObject<O> {
+  private mapAttachments<I, O>(
+    mapItem: (x: I) => O,
+    attachments?: UniformObject<I>
+  ): UniformObject<O> {
     if (attachments == null) {
       console.log("No attachments");
       return {};
@@ -330,10 +342,17 @@ export class DocumentUploader {
       Object.keys(attachments).forEach(k => {
         if (IS_NODE_ENV_DEVELOPMENT) {
           console.log(`mapAttachment ${k}:`);
-          console.log(`  from ${JSON.stringify(attachments[k], truncatingReplacer(50))}`);
-          console.log(`    to ${JSON.stringify(mapItem(attachments[k]), truncatingReplacer(50))}`);
+          console.log(
+            `  from ${JSON.stringify(attachments[k], truncatingReplacer(50))}`
+          );
+          console.log(
+            `    to ${JSON.stringify(
+              mapItem(attachments[k]),
+              truncatingReplacer(50)
+            )}`
+          );
         }
-        return o[k] = mapItem(attachments[k])
+        return (o[k] = mapItem(attachments[k]));
       });
       return o;
     }
@@ -412,7 +431,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         photo: {
           ...asPhotoInfo(save.document),
           jpegBase64: save._attachments!.jpegBase64.data,
-        }
+        },
       };
     }
   }

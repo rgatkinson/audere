@@ -99,7 +99,7 @@ const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
-const BARCODE_PREFIX = 'KIT ';  // Space intentional. Hardcoded, because never translated.
+const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
 const BARCODE_CHARS = 8;
 const FLUSHOT_START_DATE = new Date(2018, 0);
 
@@ -474,7 +474,13 @@ class ManualConfirmationScreen extends React.Component<
         <BorderView>
           <Text
             center={true}
-            content={"**" + t("yourCode") + "**" + BARCODE_PREFIX + this.props.kitBarcode.code}
+            content={
+              "**" +
+              t("yourCode") +
+              "**" +
+              BARCODE_PREFIX +
+              this.props.kitBarcode.code
+            }
           />
         </BorderView>
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
@@ -510,11 +516,14 @@ class ManualEntryScreen extends React.Component<
 
   confirmInput = React.createRef<TextInput>();
 
-  _extractOnlyBarcode = (text: string|null): string => {
+  _extractOnlyBarcode = (text: string | null): string => {
     if (!text) {
       return "";
     }
-    return text.toLowerCase().replace(/[^a-f0-9]+/g, "").substring(0, BARCODE_CHARS);
+    return text
+      .toLowerCase()
+      .replace(/[^a-f0-9]+/g, "")
+      .substring(0, BARCODE_CHARS);
   };
 
   _validBarcodes = () => {
@@ -565,7 +574,8 @@ class ManualEntryScreen extends React.Component<
             style={{ marginBottom: GUTTER }}
             value={this.state.barcode1}
             onChangeText={(text: string) => {
-              const prefixedCode = BARCODE_PREFIX + this._extractOnlyBarcode(text);
+              const prefixedCode =
+                BARCODE_PREFIX + this._extractOnlyBarcode(text);
               this.setState({ barcode1: prefixedCode });
             }}
             onSubmitEditing={() => this.confirmInput.current!.focus()}
@@ -578,7 +588,8 @@ class ManualEntryScreen extends React.Component<
             style={{ marginBottom: GUTTER }}
             value={this.state.barcode2}
             onChangeText={(text: string) => {
-              const prefixedCode = BARCODE_PREFIX + this._extractOnlyBarcode(text);
+              const prefixedCode =
+                BARCODE_PREFIX + this._extractOnlyBarcode(text);
               this.setState({ barcode2: prefixedCode });
             }}
             onSubmitEditing={() => {}}

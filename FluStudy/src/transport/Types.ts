@@ -3,7 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, SurveyInfo, FeedbackInfo, AnalyticsInfo, PhotoInfo } from "audere-lib/feverProtocol";
+import {
+  DocumentType,
+  SurveyInfo,
+  FeedbackInfo,
+  AnalyticsInfo,
+  PhotoInfo,
+} from "audere-lib/feverProtocol";
 
 // Wrapper document saved in PouchDB.
 export interface PouchDoc {
@@ -20,12 +26,16 @@ export interface PouchDoc {
 export type PouchAttachmentObject = UniformObject<PouchAttachment>;
 
 export interface PouchAttachment {
-  content_type: "text/plain",
-  data: string,
+  content_type: "text/plain";
+  data: string;
 }
 
 export interface UniformObject<T> {
-  [key: string]: T
+  [key: string]: T;
 }
 
-export type DocumentContents = SurveyInfo | FeedbackInfo | AnalyticsInfo | PhotoInfo;
+export type DocumentContents =
+  | SurveyInfo
+  | FeedbackInfo
+  | AnalyticsInfo
+  | PhotoInfo;
