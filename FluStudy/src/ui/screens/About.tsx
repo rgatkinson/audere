@@ -46,7 +46,6 @@ export default class About extends React.Component<Props> {
         canProceed={true}
         desc={aboutContent}
         logo={true}
-        navBar={true}
         navigation={this.props.navigation}
         title={buildInfo.name}
         onBack={() => this.props.navigation.navigate("Home")}

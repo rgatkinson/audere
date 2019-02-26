@@ -17,8 +17,9 @@ import {
 } from "../styles";
 
 interface Props {
-  navigation: NavigationScreenProp<any, any>;
   canProceed: boolean;
+  hideBackButton?: boolean;
+  navigation: NavigationScreenProp<any, any>;
   onBack?: () => void;
 }
 
@@ -27,18 +28,22 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.actionContainer}
-          onPress={() => {
-            if (!!this.props.onBack) {
-              this.props.onBack();
-            } else {
-              this.props.navigation.pop();
-            }
-          }}
-        >
-          <Feather color={LINK_COLOR} name="arrow-left" size={30} />
-        </TouchableOpacity>
+        {!!this.props.hideBackButton ? (
+          <View style={{ width: 30 }} />
+        ) : (
+          <TouchableOpacity
+            style={styles.actionContainer}
+            onPress={() => {
+              if (!!this.props.onBack) {
+                this.props.onBack();
+              } else {
+                this.props.navigation.pop();
+              }
+            }}
+          >
+            <Feather color={LINK_COLOR} name="arrow-left" size={30} />
+          </TouchableOpacity>
+        )}
         <Text style={styles.title} center={true} content="FLU@HOME" />
         <TouchableOpacity
           style={styles.actionContainer}

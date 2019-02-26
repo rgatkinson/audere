@@ -78,8 +78,8 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
+        hideBackButton={true}
         imageSrc={require("../../img/welcome.png")}
-        navBar={true}
         navigation={this.props.navigation}
         title={t("welcome")}
         onNext={() => {
@@ -100,7 +100,6 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/why.png")}
-        navBar={true}
         navigation={this.props.navigation}
         title={t("why")}
         onNext={() => {
@@ -121,7 +120,6 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/what.png")}
-        navBar={true}
         navigation={this.props.navigation}
         title={t("what")}
         onNext={() => {
@@ -152,7 +150,6 @@ class AgeScreen extends React.Component<
       "AgeScreen",
       <Screen
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
-        navBar={true}
         navigation={this.props.navigation}
         skipButton={true}
         step={1}
@@ -262,7 +259,6 @@ class SymptomsScreen extends React.PureComponent<
         canProceed={this._haveOption()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
-        navBar={true}
         navigation={this.props.navigation}
         step={2}
         title={t("surveyTitle:" + SymptomsConfig.title)}
@@ -353,7 +349,6 @@ class ConsentScreen extends React.PureComponent<
           canProceed={this._canProceed()}
           centerDesc={true}
           desc={t("description")}
-          navBar={true}
           navigation={this.props.navigation}
           skipButton={true}
           step={3}
@@ -444,7 +439,6 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
           />
         }
         imageSrc={require("../../img/consentIneligible.png")}
-        navBar={true}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -520,7 +514,6 @@ class AddressInputScreen extends React.Component<
           canProceed={this._haveValidAddress()}
           centerDesc={true}
           desc={t("surveyDescription:" + AddressConfig.description)}
-          navBar={true}
           navigation={this.props.navigation}
           step={4}
           title={t("surveyTitle:" + AddressConfig.title)}
@@ -551,8 +544,8 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={false}
         desc={t("description")}
+        hideBackButton={true}
         imageSrc={require("../../img/ineligible.png")}
-        navBar={false}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -592,8 +585,8 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={false}
         desc={t("description")}
+        hideBackButton={true}
         imageSrc={require("../../img/ineligible.png")}
-        navBar={false}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -653,7 +646,6 @@ class ConfirmationScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/confirmation.png")}
-        navBar={true}
         navigation={this.props.navigation}
         title={t("confirmed")}
         onNext={() => {
@@ -750,7 +742,6 @@ class PushNotificationsScreen extends React.Component<
           />
         }
         imageSrc={require("../../img/pushNotifications.png")}
-        navBar={true}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}
@@ -772,7 +763,6 @@ class InstructionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         imageSrc={require("../../img/instructions.png")}
-        navBar={true}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("instructions")}
@@ -793,7 +783,6 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         imageSrc={require("../../img/extraInfo.png")}
-        navBar={true}
         navigation={this.props.navigation}
         title={t("extraInfo")}
         onNext={() => {

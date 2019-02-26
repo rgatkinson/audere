@@ -27,13 +27,13 @@ interface Props {
   children?: any;
   desc?: string;
   footer?: any;
+  hideBackButton?: boolean;
   imageBorder?: boolean;
   imageAspectRatio?: number;
   imageSrc?: ImageSourcePropType;
   isDemo?: boolean;
   logo?: boolean;
-  navBar: boolean;
-  navigation?: NavigationScreenProp<any, any>;
+  navigation: NavigationScreenProp<any, any>;
   skipButton?: boolean;
   step?: number;
   title: string;
@@ -81,20 +81,13 @@ class Screen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View
-        style={[
-          styles.container,
-          !this.props.navBar && { paddingTop: STATUS_BAR_HEIGHT },
-        ]}
-      >
-        {this.props.navBar &&
-          !!this.props.navigation && (
-            <NavigationBar
-              canProceed={this.props.canProceed}
-              navigation={this.props.navigation}
-              onBack={this.props.onBack}
-            />
-          )}
+      <View style={styles.container}>
+        <NavigationBar
+          canProceed={this.props.canProceed}
+          hideBackButton={this.props.hideBackButton}
+          navigation={this.props.navigation}
+          onBack={this.props.onBack}
+        />
         {this.props.isDemo &&
           !this.props.logo && (
             <Text
