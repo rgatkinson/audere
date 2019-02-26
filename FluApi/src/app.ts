@@ -25,6 +25,12 @@ import {
   getThisSunday,
   getExcelReport
 } from "./util/metrics";
+import {
+  getFeverMetrics,
+  getFeverExcelDataSummary,
+  getFeverToday,
+  getFeverExcelReport
+} from "./util/feverMetrics";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -113,6 +119,26 @@ export async function createPublicApp(config: AppConfig) {
       endDate: endDate
     });
   });
+
+  publicApp.get("/feverMetrics", (req, res) => {
+    const startDate = req.query.startDate || getLastMonday();
+    const endDate = req.query.endDate || getThisSunday();
+    const [
+      surveyStatsData,
+      surveyStatsByAdminData,
+      lastQuestionData,
+      studyIdData,
+      feedbackData
+    ] = getFeverMetrics(startDate, endDate);
+    res.render("feverMetrics", {
+      surveyStatsData: surveyStatsData,
+      surveyStatsByAdminData: surveyStatsByAdminData,
+      lastQuestionData: lastQuestionData,
+      feedbackData: feedbackData,
+      startDate: startDate,
+      endDate: endDate
+    });
+  })
 
   publicApp.get("/saveMetrics", (req, res) => {
     const startDate = req.query.startDate || getLastMonday();
