@@ -111,6 +111,20 @@ jobs:
               snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
+          name: Snyk Flu@Home Scan
+          command: |
+            cd FluStudy
+            yarn list --json > ~/current_packages
+            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
+            git show $(git rev-parse origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - run:
           name: Server Yarn Install
           command: |
             cd FluApi
