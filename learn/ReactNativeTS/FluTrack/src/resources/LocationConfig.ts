@@ -114,4 +114,9 @@ export const COLLECTION_LOCATIONS: {
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
+  FredHutchLobby: {
+    type: "clinic",
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318",
+  },
 };
