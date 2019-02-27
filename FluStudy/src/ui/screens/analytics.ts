@@ -9,7 +9,6 @@ import { events } from "../../store";
 let interacted = false;
 
 export function timestampInteraction(refId: string) {
-  console.log(`timestampInteraction: ${refId}`);
   events.fireNow(EventInfoKind.Interaction, refId);
   interacted = true;
 }
@@ -20,7 +19,6 @@ export function timestampRender(
   element: JSX.Element
 ): JSX.Element {
   if (interacted) {
-    console.log(`timestampRender: ${refId}`);
     events.fireNow(EventInfoKind.Render, refId);
     interacted = false;
   }
