@@ -56,16 +56,30 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
+  _getSelectedTime(): number {
+    return !!this.props.date
+      ? this.props.date.getTime()
+      : new Date(
+          this.props.endDate.getFullYear(),
+          this.props.endDate.getMonth()
+        ).getTime();
+  }
+
+  componentDidMount() {
+    // We need this because by default, Picker doesn't send an onValueChange
+    // upon initial render.  So if the user leaves the value at its default
+    // selected value, the parent of this component never updates its date
+    // otherwise.
+    this.props.onDateChange(new Date(this._getSelectedTime()));
+  }
+
   render() {
     const { t } = this.props;
     const now = new Date();
-    const value = !!this.props.date
-      ? this.props.date.getTime()
-      : new Date(now.getFullYear(), now.getMonth()).getTime();
     return (
       <BorderView>
         <Picker
-          selectedValue={value}
+          selectedValue={this._getSelectedTime()}
           style={{ alignSelf: "stretch" }}
           onValueChange={time => this.props.onDateChange(new Date(time))}
         >
