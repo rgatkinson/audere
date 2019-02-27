@@ -123,7 +123,7 @@ platform :ios do
     lasttag = last_git_tag
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "Flu@Home #{version} build #{build} has been uploaded to #{destination} :rocket:",
+      message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
@@ -145,7 +145,7 @@ platform :ios do
     push_to_git_remote
   end
 
-  desc "Provision a device for running Flu@Home from source" 
+  desc "Provision a device for running flu@home from source" 
   lane :register_new_device do |options|
     udid = Helper.backticks("system_profiler SPUSBDataType | sed -n -E -e '/(iPhone|iPad)/,/Serial/s/ *Serial Number: *(.+)/\\1/p'")
     if udid.length < 24
