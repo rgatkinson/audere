@@ -5,19 +5,14 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import {
-  BORDER_COLOR,
-  DISABLED_COLOR,
   GUTTER,
-  LINK_COLOR,
   NAV_BAR_HEIGHT,
-  STATUS_BAR_COLOR,
   STATUS_BAR_HEIGHT,
   SYSTEM_FONT,
   SYSTEM_TEXT,
 } from "../styles";
 
 interface Props {
-  canProceed: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -35,22 +30,22 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             style={styles.actionContainer}
             onPress={() => this.props.navigation.navigate("Home")}
           >
-            <Feather color={LINK_COLOR} name="x" size={30} />
+            <Feather color="white" name="x" size={30} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.actionContainer}
             onPress={() => this.props.navigation.pop()}
           >
-            <Feather color={LINK_COLOR} name="arrow-left" size={30} />
+            <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
         )}
-        <Text style={styles.title} center={true} content="FLU@HOME" />
+        <Text style={styles.title} center={true} content="flu@home" />
         <TouchableOpacity
           style={styles.actionContainer}
           onPress={() => this.props.navigation.openDrawer()}
         >
-          <Feather color={LINK_COLOR} name={"menu"} size={30} />
+          <Feather color="white" name={"menu"} size={30} />
         </TouchableOpacity>
       </View>
     );
@@ -64,20 +59,16 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    backgroundColor: STATUS_BAR_COLOR,
-    borderBottomColor: BORDER_COLOR,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: "transparent",
     flexDirection: "row",
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
     justifyContent: "space-between",
     paddingTop: STATUS_BAR_HEIGHT,
     paddingHorizontal: GUTTER / 2,
   },
-  inactiveText: {
-    color: DISABLED_COLOR,
-  },
   title: {
     alignSelf: "center",
+    color: "white",
     fontFamily: SYSTEM_FONT,
     fontSize: SYSTEM_TEXT,
     fontWeight: "bold",

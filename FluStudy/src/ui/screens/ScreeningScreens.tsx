@@ -73,8 +73,9 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={require("../../img/welcome.png")}
         navigation={this.props.navigation}
+        imageAspectRatio={1.75}
+        stableImageSrc={require("../../img/welcome.png")}
         title={t("welcome")}
         onNext={() => {
           this.props.navigation.push("Why");
@@ -150,17 +151,13 @@ class AgeScreen extends React.Component<
         title={t("surveyTitle:" + AgeConfig.title)}
         onNext={this._onNext}
       >
+        <View style={{ marginTop: GUTTER }} />
         {AgeConfig.buttons.map((button: ButtonConfig) => (
           <Button
-            checked={
-              this.props.getAnswer("selectedButtonKey", AgeConfig.id) ===
-              button.key
-            }
             enabled={true}
             key={button.key}
             label={t("surveyButton:" + button.key)}
-            primary={button.primary}
-            style={{ marginVertical: GUTTER }}
+            primary={true}
             onPress={() => {
               timestampInteraction("AgeScreen." + button.key);
               this.props.updateAnswer(
@@ -364,7 +361,7 @@ class ConsentScreen extends React.PureComponent<
             rightTextView={
               <Text
                 content={t("surveyTitle:" + ConsentConfig.title)}
-                style={{ paddingLeft: GUTTER / 4 }}
+                style={{ alignSelf: "center", paddingLeft: GUTTER / 4 }}
               />
             }
             style={{ alignSelf: "stretch", marginVertical: GUTTER }}
@@ -395,7 +392,7 @@ class ConsentScreen extends React.PureComponent<
               />
               <Text
                 content={t("privacyNotice")}
-                style={{ fontSize: SMALL_TEXT, marginVertical: GUTTER }}
+                style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
               />
             </View>
           )}
@@ -610,7 +607,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
           content={t("disclaimer")}
           style={{
             alignSelf: "stretch",
-            color: SECONDARY_COLOR,
+            fontSize: SMALL_TEXT,
             marginBottom: GUTTER,
           }}
         />
@@ -783,6 +780,7 @@ class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("Instructions");
         }}
       >
+        <View style={{ marginTop: GUTTER }} />
         <Links
           links={[
             {

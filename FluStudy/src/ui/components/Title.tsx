@@ -3,9 +3,9 @@ import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import Text from "./Text";
 import {
   EXTRA_LARGE_TEXT,
-  FONT_SEMI_BOLD,
+  FONT_NORMAL,
   GUTTER,
-  SECONDARY_COLOR,
+  PRIMARY_COLOR,
 } from "../styles";
 
 interface Props {
@@ -30,9 +30,10 @@ export default class Title extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   title: {
-    color: SECONDARY_COLOR,
-    fontFamily: FONT_SEMI_BOLD,
+    color: PRIMARY_COLOR,
+    fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
+    lineHeight: EXTRA_LARGE_TEXT,
     marginVertical: GUTTER / 2,
   },
 });

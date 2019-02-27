@@ -11,8 +11,8 @@ import {
   BORDER_COLOR,
   FONT_NORMAL,
   GUTTER,
-  PRIMARY_COLOR,
   REGULAR_TEXT,
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -65,7 +65,7 @@ export default class TextInput extends React.Component<Props> {
 const styles = StyleSheet.create({
   textInput: {
     alignSelf: "stretch",
-    color: PRIMARY_COLOR,
+    color: TEXT_COLOR,
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     fontFamily: FONT_NORMAL,

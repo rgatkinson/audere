@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
-import { GUTTER, LINK_COLOR } from "../styles";
+import { GUTTER, PRIMARY_COLOR } from "../styles";
 
 export interface LinkData {
   label: string;
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     marginBottom: GUTTER,
   },
   linkStyle: {
-    color: LINK_COLOR,
+    color: PRIMARY_COLOR,
     marginBottom: GUTTER / 2,
   },
 });

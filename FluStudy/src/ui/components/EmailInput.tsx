@@ -89,10 +89,11 @@ export default class EmailInput extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginBottom: GUTTER,
+    marginBottom: GUTTER / 2,
   },
   errorText: {
     color: ERROR_COLOR,
     fontFamily: FONT_NORMAL,
+    marginTop: GUTTER / 4,
   },
 });

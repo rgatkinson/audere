@@ -6,9 +6,13 @@ import Grid from "./Grid";
 import Text from "./Text";
 import {
   BORDER_COLOR,
+  BORDER_RADIUS,
+  DISABLED_COLOR,
+  FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
-  LINK_COLOR,
+  PRIMARY_COLOR,
+  SECONDARY_COLOR,
   SMALL_TEXT,
 } from "../styles";
 
@@ -137,16 +141,26 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   render() {
     return (
       <TouchableOpacity
-        style={[styles.item, { width: this.props.width }]}
+        style={[
+          styles.item,
+          this.props.selected && styles.selectedItem,
+          { width: this.props.width },
+        ]}
         onPress={this._onPress}
       >
+        <Feather
+          name="check"
+          color={this.props.selected ? SECONDARY_COLOR : DISABLED_COLOR}
+          size={20}
+        />
         <Text
           content={this.props.t("surveyOption:" + this.props.id)}
-          style={[styles.itemText, { width: this.props.width - 20 - GUTTER }]}
+          style={[
+            styles.itemText,
+            this.props.selected && styles.selectedItemText,
+            { width: this.props.width - 20 - 2 * GUTTER },
+          ]}
         />
-        {this.props.selected && (
-          <Feather name="check" color={LINK_COLOR} size={20} />
-        )}
       </TouchableOpacity>
     );
   }
@@ -154,19 +168,29 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
 
 const styles = StyleSheet.create({
   item: {
-    alignItems: "flex-end",
+    alignItems: "center",
     alignSelf: "stretch",
-    borderBottomColor: BORDER_COLOR,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: BORDER_COLOR,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: BORDER_RADIUS,
     flexDirection: "row",
     flexGrow: 1,
     height: INPUT_HEIGHT,
-    justifyContent: "space-between",
+    marginBottom: GUTTER / 2,
     padding: GUTTER / 2,
   },
   itemText: {
-    alignSelf: "flex-end",
+    alignSelf: "center",
     fontSize: SMALL_TEXT,
+    lineHeight: INPUT_HEIGHT - GUTTER,
+    marginLeft: GUTTER / 2,
+  },
+  selectedItem: {
+    borderColor: SECONDARY_COLOR,
+  },
+  selectedItemText: {
+    color: SECONDARY_COLOR,
+    fontFamily: FONT_SEMI_BOLD,
   },
 });
 

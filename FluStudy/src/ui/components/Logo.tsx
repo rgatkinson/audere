@@ -3,7 +3,6 @@ import {
   Dimensions,
   Image,
   ImageSourcePropType,
-  StyleSheet,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -44,49 +43,22 @@ class Logo extends React.Component<Props> {
   render() {
     return (
       <TouchableWithoutFeedback
-        style={styles.container}
+        style={{ alignSelf: "stretch" }}
         onPress={this.handleTripleTap}
       >
         <View>
           <Image
             style={{
-              height: LOGO_HEIGHT,
+              aspectRatio: 3.12,
+              height: undefined,
               width: Dimensions.get("window").width,
             }}
             source={require("../../img/logo.png")}
           />
-          {this.props.isDemo && (
-            <View style={styles.overlayContainer}>
-              <Text
-                bold={true}
-                center={true}
-                content="Demo Mode"
-                style={styles.demoText}
-              />
-            </View>
-          )}
         </View>
       </TouchableWithoutFeedback>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: "stretch",
-  },
-  demoText: {
-    backgroundColor: "green",
-    color: "white",
-    opacity: 0.75,
-  },
-  overlayContainer: {
-    height: LOGO_HEIGHT,
-    left: 0,
-    position: "absolute",
-    top: 0,
-    width: Dimensions.get("window").width,
-  },
-});
 
 export default Logo;

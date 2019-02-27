@@ -2,7 +2,7 @@ import "./src/hacks";
 import React from "react";
 import { Store } from "redux";
 import { Persistor } from "redux-persist";
-import { StatusBar, YellowBox } from "react-native";
+import { YellowBox } from "react-native";
 YellowBox.ignoreWarnings([
   "Class EXHomeModule",
   "Class EXTest",
@@ -55,11 +55,11 @@ export default class App extends React.Component<AppProps> {
     await Promise.all([
       Font.loadAsync({
         UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
-        "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-        "OpenSans-ExtraBold": require("./assets/fonts/OpenSans-Bold.ttf"),
-        "OpenSans-Italic": require("./assets/fonts/OpenSans-Italic.ttf"),
-        "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
-        "OpenSans-SemiBold": require("./assets/fonts/OpenSans-SemiBold.ttf"),
+        Regular: require("./assets/fonts/Roboto-Regular.ttf"),
+        SemiBold: require("./assets/fonts/Roboto-Medium.ttf"),
+        Bold: require("./assets/fonts/Roboto-Bold.ttf"),
+        ExtraBold: require("./assets/fonts/Roboto-Black.ttf"),
+        Italic: require("./assets/fonts/Roboto-Italic.ttf"),
       }),
       getStore().then(store => (this.store = store)),
       getPersistor().then(persistor => (this.persistor = persistor)),
@@ -82,7 +82,6 @@ export default class App extends React.Component<AppProps> {
 
     return (
       <I18nextProvider i18n={i18n}>
-        <StatusBar barStyle="dark-content" />
         <Provider store={this.store}>
           <PersistGate loading={null} persistor={this.persistor!}>
             <ReloadAppOnLanguageChange />

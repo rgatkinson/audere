@@ -2,8 +2,10 @@ import React from "react";
 import {
   Dimensions,
   Image,
+  ImageBackground,
   ImageSourcePropType,
   ScrollView,
+  StatusBar,
   StyleSheet,
   View,
 } from "react-native";
@@ -28,7 +30,6 @@ interface Props {
   desc?: string;
   footer?: any;
   hideBackButton?: boolean;
-  imageBorder?: boolean;
   imageAspectRatio?: number;
   imageSrc?: ImageSourcePropType;
   isDemo?: boolean;
@@ -36,6 +37,7 @@ interface Props {
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   skipButton?: boolean;
+  stableImageSrc?: ImageSourcePropType;
   step?: number;
   title: string;
   onTitlePress?: () => any;
@@ -46,50 +48,42 @@ interface Props {
   isDemo: state.meta.isDemo,
 }))
 class Screen extends React.Component<Props & WithNamespaces> {
-  _getImage() {
-    if (!!this.props.imageSrc) {
-      return (
-        <Image
-          style={[
-            !!this.props.imageAspectRatio
-              ? {
-                  width: "100%",
-                  height: undefined,
-                  aspectRatio: this.props.imageAspectRatio,
-                }
-              : { height: 150, width: 200 },
-            !this.props.imageBorder && { marginVertical: GUTTER / 2 },
-          ]}
-          source={this.props.imageSrc}
-        />
-      );
-    }
-    return null;
-  }
-
-  _getBorderImage() {
-    if (!!this.props.imageBorder) {
-      return (
-        <BorderView style={{ marginTop: GUTTER }}>
-          {this._getImage()}
-        </BorderView>
-      );
-    }
-    return this._getImage();
+  _getImage(source: ImageSourcePropType) {
+    return (
+      <Image
+        style={[
+          !!this.props.imageAspectRatio
+            ? {
+                width: "100%",
+                height: undefined,
+                aspectRatio: this.props.imageAspectRatio,
+              }
+            : { height: 150, width: 200 },
+          { alignSelf: "center", marginVertical: GUTTER / 2 },
+        ]}
+        source={source}
+      />
+    );
   }
 
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <NavigationBar
-          canProceed={this.props.canProceed}
-          hideBackButton={this.props.hideBackButton}
-          menuItem={this.props.menuItem}
-          navigation={this.props.navigation}
-        />
-        {this.props.isDemo &&
-          !this.props.logo && (
+        <ImageBackground
+          source={require("../../img/backgroundCrop.png")}
+          style={[
+            { alignSelf: "stretch" },
+            !!this.props.stableImageSrc && { aspectRatio: 1.05, width: "100%" },
+          ]}
+        >
+          <StatusBar barStyle="light-content" backgroundColor="transparent" />
+          <NavigationBar
+            hideBackButton={this.props.hideBackButton}
+            menuItem={this.props.menuItem}
+            navigation={this.props.navigation}
+          />
+          {this.props.isDemo && (
             <Text
               bold={true}
               center={true}
@@ -97,6 +91,9 @@ class Screen extends React.Component<Props & WithNamespaces> {
               style={styles.demoText}
             />
           )}
+          {!!this.props.stableImageSrc &&
+            this._getImage(this.props.stableImageSrc)}
+        </ImageBackground>
         <View style={styles.scrollContainer}>
           <ScrollView
             contentContainerStyle={{
@@ -104,12 +101,12 @@ class Screen extends React.Component<Props & WithNamespaces> {
               justifyContent: "space-between",
             }}
           >
-            {this.props.logo && <Logo />}
             <View style={styles.innerContainer}>
+              {this.props.logo && <Logo />}
               {!!this.props.step && (
                 <Step step={this.props.step} totalSteps={4} />
               )}
-              {this._getBorderImage()}
+              {!!this.props.imageSrc && this._getImage(this.props.imageSrc)}
               <Title
                 label={this.props.title}
                 onPress={this.props.onTitlePress}
@@ -118,7 +115,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <Text
                   content={this.props.desc}
                   center={!!this.props.centerDesc}
-                  style={{ marginBottom: GUTTER }}
+                  style={{ marginBottom: GUTTER, marginTop: GUTTER / 2 }}
                 />
               )}
               {this.props.children}

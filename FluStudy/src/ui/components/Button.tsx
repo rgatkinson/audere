@@ -4,6 +4,7 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -13,11 +14,12 @@ import {
   BORDER_COLOR,
   BORDER_RADIUS,
   BORDER_WIDTH,
+  BUTTON_WIDTH,
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
-  LARGE_TEXT,
   PRIMARY_COLOR,
+  REGULAR_TEXT,
   SECONDARY_COLOR,
 } from "../styles";
 
@@ -28,6 +30,7 @@ interface Props {
   primary: boolean;
   label: string;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   onPress?(event: GestureResponderEvent): void;
 }
 
@@ -61,11 +64,14 @@ export default class Button extends React.Component<Props> {
         <Text
           style={[
             styles.text,
-            this.props.primary && styles.primaryButtonText,
+            this.props.primary
+              ? styles.primaryButtonText
+              : styles.secondaryButtonText,
             !!this.props.fontSize && { fontSize: this.props.fontSize },
+            this.props.textStyle,
           ]}
         >
-          {this.props.label}
+          {this.props.label.toUpperCase()}
         </Text>
       </TouchableOpacity>
     );
@@ -75,7 +81,6 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    alignSelf: "stretch",
     borderColor: PRIMARY_COLOR,
     borderRadius: BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
@@ -83,13 +88,14 @@ const styles = StyleSheet.create({
     height: INPUT_HEIGHT,
     justifyContent: "center",
     marginBottom: GUTTER,
+    width: BUTTON_WIDTH,
   },
   check: {
     paddingRight: GUTTER / 2,
   },
   text: {
     fontFamily: FONT_SEMI_BOLD,
-    fontSize: LARGE_TEXT,
+    fontSize: REGULAR_TEXT,
     textAlign: "center",
   },
   primaryButton: {
@@ -97,5 +103,8 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: "white",
+  },
+  secondaryButtonText: {
+    color: PRIMARY_COLOR,
   },
 });

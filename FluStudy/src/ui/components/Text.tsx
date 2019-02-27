@@ -11,8 +11,8 @@ import {
   FONT_ITALIC,
   FONT_NORMAL,
   GUTTER,
-  PRIMARY_COLOR,
   REGULAR_TEXT,
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -65,9 +65,10 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
-    color: PRIMARY_COLOR,
+    color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
+    lineHeight: REGULAR_TEXT,
   },
   extraBold: {
     fontFamily: FONT_EXTRA_BOLD,

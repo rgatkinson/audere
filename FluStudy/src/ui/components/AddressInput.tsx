@@ -7,7 +7,13 @@ import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
 import Text from "./Text";
 import TextInput from "./TextInput";
-import { BORDER_COLOR, GUTTER, INPUT_HEIGHT, LINK_COLOR } from "../styles";
+import {
+  BORDER_COLOR,
+  ERROR_COLOR,
+  GUTTER,
+  INPUT_HEIGHT,
+  LINK_COLOR,
+} from "../styles";
 
 interface Props {
   value?: Address | null;
@@ -50,7 +56,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           placeholder={
             t("name") + (this.state.keyboardOpen ? "" : t("required"))
           }
-          placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+          placeholderTextColor={
+            this.state.keyboardOpen ? undefined : ERROR_COLOR
+          }
           returnKeyType="next"
           style={styles.textInput}
           value={this.props.value ? this.props.value!.name : undefined}
@@ -68,7 +76,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           placeholder={
             t("streetAddress") + (this.state.keyboardOpen ? "" : t("required"))
           }
-          placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+          placeholderTextColor={
+            this.state.keyboardOpen ? undefined : ERROR_COLOR
+          }
           ref={this.address}
           returnKeyType="next"
           style={styles.textInput}
@@ -102,7 +112,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           placeholder={
             t("city") + (this.state.keyboardOpen ? "" : t("required"))
           }
-          placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+          placeholderTextColor={
+            this.state.keyboardOpen ? undefined : ERROR_COLOR
+          }
           ref={this.city}
           returnKeyType="next"
           style={styles.textInput}
@@ -146,7 +158,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             placeholder={
               t("zipcode") + (this.state.keyboardOpen ? "" : t("required"))
             }
-            placeholderTextColor={this.state.keyboardOpen ? undefined : "red"}
+            placeholderTextColor={
+              this.state.keyboardOpen ? undefined : ERROR_COLOR
+            }
             ref={this.zipcode}
             returnKeyType="done"
             style={[styles.zipcode, styles.textInput]}

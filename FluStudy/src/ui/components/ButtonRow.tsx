@@ -23,6 +23,7 @@ export default class ButtonRow extends React.Component<Props> {
             fontSize={REGULAR_TEXT}
             label={this.props.firstLabel}
             primary={true}
+            style={{ width: undefined, alignSelf: "stretch" }}
             onPress={this.props.firstOnPress}
           />,
           <Button
@@ -30,6 +31,7 @@ export default class ButtonRow extends React.Component<Props> {
             fontSize={REGULAR_TEXT}
             label={this.props.secondLabel}
             primary={true}
+            style={{ width: undefined, alignSelf: "stretch" }}
             onPress={this.props.secondOnPress}
           />,
         ]}

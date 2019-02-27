@@ -27,7 +27,7 @@ import { getApiBaseUrl } from "../../transport";
 import { timestampRender, timestampInteraction } from "./analytics";
 import {
   GUTTER,
-  LINK_COLOR,
+  PRIMARY_COLOR,
   STATUS_BAR_HEIGHT,
   SYSTEM_FONT,
   SYSTEM_TEXT,
@@ -51,7 +51,7 @@ export const Menu = (props: any) => {
             }
           }}
         >
-          <Feather color={LINK_COLOR} name="x" size={30} />
+          <Feather color={PRIMARY_COLOR} name="x" size={30} />
         </TouchableOpacity>
         <Text style={styles.header}>ABOUT FLU@HOME</Text>
         <Divider style={styles.divider} />

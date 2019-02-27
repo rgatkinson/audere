@@ -256,7 +256,7 @@
     "secondPlaceholder": "Confirm barcode",
     "enterKit": "Enter barcode manually",
     "desc": "Enter the 8-character code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tips": "**Tips:**\nFind the barcode inside your box.\nLook for the 8-character code directly below the symbol."
+    "tips": "**Tips:**\n\nFind the barcode inside your box.\n\nLook for the 8-character code directly below the symbol."
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",
