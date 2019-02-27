@@ -5,12 +5,12 @@
 aliases:
   - &filter_sniffles_tag_staging
     tags:
-      only: /v0\.[0-9]+\.[0-9]+_[a-zA-Z0-9]+$/
+      only: /v0\.1\.[0-9]+_[a-zA-Z0-9]+$/
     branches:
       ignore: /.*/
   - &filter_sniffles_tag_prod
     tags:
-      only: /v0\.[0-9]+\.[0-9]+_prod_[a-zA-Z0-9]+$/
+      only: /v0\.1\.[0-9]+_prod_[a-zA-Z0-9]+$/
     branches:
       ignore: /.*/
 
