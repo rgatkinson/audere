@@ -107,6 +107,7 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -132,6 +133,7 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -151,6 +153,7 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -176,6 +179,7 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -203,6 +207,7 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -228,6 +233,7 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -255,6 +261,7 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
@@ -282,6 +289,7 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         logo={true}
         menuItem={true}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("title")}
         onNext={() => {}}
       />
