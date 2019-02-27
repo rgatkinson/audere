@@ -10,17 +10,23 @@ import {
 } from "react-navigation";
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
-import AppNavigator from "../ui/AppNavigator";
-import { events } from "../store";
+import { getAppNavigator } from "../ui/NavigatorRegistry";
+import { events } from "./uploader";
 
 const initialAction = { type: NavigationActions.INIT };
-const initialState = AppNavigator.router.getStateForAction(initialAction);
 
 export default function reducer(
-  state = initialState,
+  state: NavigationState,
   action: NavigationAction
 ) {
-  return AppNavigator.router.getStateForAction(action, state);
+  const navigator = getAppNavigator();
+  if (navigator == null) {
+    return null;
+  }
+  if (state == null) {
+    state = navigator.router.getStateForAction(initialAction);
+  }
+  return navigator.router.getStateForAction(action, state);
 }
 
 export function getActiveRouteName(

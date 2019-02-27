@@ -33,6 +33,7 @@ import {
   setTestStripImg,
   setTenMinuteStartTime,
   setWorkflow,
+  uploader,
 } from "../../store";
 import {
   CoughSneezeConfig,
@@ -68,7 +69,6 @@ import {
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { newCSRUID } from "../../util/csruid";
-import { uploader } from "../../store";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";

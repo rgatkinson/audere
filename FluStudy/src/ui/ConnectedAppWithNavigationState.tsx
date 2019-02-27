@@ -23,10 +23,14 @@ import {
 } from "react-navigation";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
 import AppNavigator from "./AppNavigator";
+import { registerNavigator } from "./NavigatorRegistry";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
 
-const AppContainer = createReduxContainer(AppNavigator);
+const navigator = AppNavigator;
+registerNavigator(navigator);
+
+const AppContainer = createReduxContainer(navigator);
 
 interface Props {
   isDemo: boolean;
