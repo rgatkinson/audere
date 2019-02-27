@@ -220,17 +220,17 @@ async function cmdAddAccessKey(argv: AddAccessKeyArgs): Promise<void> {
   console.log(`Added access key '${argv.key}' and marked valid.`);
 }
 
-interface SetAccessKeyArgs {
+interface CreateAccessKeyArgs {
   release: Release;
 }
-async function cmdCreateAccessKey(argv: SetAccessKeyArgs): Promise<void> {
+async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   const components = [
     "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
     await generateRandomKey(),
     await generateRandomKey()
   ];
   const buffers = components.map(base64url.toBuffer);
-  const buffer = buffers.reduce(bufferXor, Buffer.alloc(buffers[0].length));
+  const buffer = buffers.reduce(bufferXor, Buffer.alloc(0));
   const key = base64url(buffer);
 
   await accessKey(argv.release).create({ key, valid: true});
