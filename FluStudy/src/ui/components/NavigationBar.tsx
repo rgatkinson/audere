@@ -50,11 +50,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
           style={styles.actionContainer}
           onPress={() => this.props.navigation.openDrawer()}
         >
-          <Feather
-            color={LINK_COLOR}
-            name={"menu"}
-            size={30}
-          />
+          <Feather color={LINK_COLOR} name={"menu"} size={30} />
         </TouchableOpacity>
       </View>
     );

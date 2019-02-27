@@ -246,6 +246,9 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
             />
           </View>
         }
+        imageAspectRatio={1.75}
+        imageBorder={false}
+        imageSrc={require("../../img/barCodeOnBox.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("scanQrCode")}
@@ -253,12 +256,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
           await this._onNext();
         }}
       >
-        <BorderView>
-          <Image
-            style={{ height: 180, width: 250 }}
-            source={require("../../img/barcodeBox.png")}
-          />
-        </BorderView>
         <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
       </Screen>
     );
@@ -1947,8 +1944,9 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageBorder={true}
-        imageSrc={require("../../img/tbd.png")}
+        imageAspectRatio={1.75}
+        imageBorder={false}
+        imageSrc={require("../../img/cleanUp2ndTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2021,8 +2019,9 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageBorder={true}
-        imageSrc={require("../../img/tbd.png")}
+        imageAspectRatio={1.75}
+        imageBorder={false}
+        imageSrc={require("../../img/putStickersOnBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2065,8 +2064,9 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageBorder={true}
-        imageSrc={require("../../img/tbd.png")}
+        imageAspectRatio={1.75}
+        imageBorder={false}
+        imageSrc={require("../../img/tapeUpBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
