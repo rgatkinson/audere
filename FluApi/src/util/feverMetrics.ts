@@ -44,7 +44,7 @@ function getTimezoneAbbrev(): string {
 export function getFeverMetrics(
   startDate: string,
   endDate: string
-): [object, object, object, object, object] {
+): [object, object, object, object] {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -53,62 +53,14 @@ export function getFeverMetrics(
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause =
-    "(id > 351 and (visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE))";
+    "(visit->>'isDemo')::boolean IS FALSE))";
 
   function getSurveyStatsQuery(byField: string): string {
     return `
-    WITH t AS (
-      SELECT t1.grouping, t1.formstarts, t2.eligible, t1.consented, t2.completed, t1.specimenscanned, t3.giftcards, t2.adverseevents, t1.questionsanswered, t2.declinedresponses
-      FROM (
-        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
-               COUNT(*) AS formstarts, 
-               SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented, 
-               SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned, 
-               SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered 
-        FROM visits 
-        WHERE ${dateClause} AND ${demoClause} AND visit->>'location' IS NOT NULL
-        GROUP BY grouping
-        ORDER BY grouping) t1
-      LEFT JOIN (
-        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping,
-               SUM(CASE WHEN (items->>'id'='MedicalInsurance' OR items->>'id'='AddressNextWeek') THEN 1 END) AS completed,
-               SUM(CASE WHEN items->>'id'='WhichProcedures' THEN 1 END) AS adverseevents,
-               SUM(CASE WHEN (items->'answer'->0)::jsonb ? 'valueDeclined' THEN 1 END) AS declinedresponses,
-               SUM(CASE WHEN (items->>'id'='Symptoms' AND json_array_length(items->'answer') >= 2) THEN 1 END) AS eligible
-        FROM visits v, json_array_elements(v.visit->'responses'->0->'item') items 
-        WHERE ${dateClause} AND ${demoClause}
-        GROUP BY grouping) t2
-      ON (t1.grouping = t2.grouping)
-      LEFT JOIN (
-        SELECT grouping, 
-               COUNT(*) AS giftcards 
-        FROM (
-          SELECT DISTINCT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
-                 csruid, 
-                 json_array_elements(visit->'giftcards')->>'code' AS code 
-          FROM visits
-          WHERE ${dateClause} AND ${demoClause}
-        ) sub 
-        GROUP BY grouping) t3
-      ON (t1.grouping = t3.grouping)
-    ) SELECT * FROM t UNION ALL 
-      SELECT 'Total', 
-             SUM(formstarts), 
-             SUM(eligible), 
-             SUM(consented), 
-             SUM(completed), 
-             SUM(specimenscanned), 
-             SUM(giftcards), 
-             SUM(adverseevents), 
-             SUM(questionsanswered), 
-             SUM(declinedresponses) 
-      FROM t;`;
+      SELECT COUNT(*) as total, json_array_length(survey->'consents') as consents
+      FROM fever_current_surveys;`;
   }
   const surveyStatsData = client.querySync(getSurveyStatsQuery("location"));
-
-  const surveyStatsByAdminData = client.querySync(
-    getSurveyStatsQuery("administrator")
-  );
 
   const lastQuestionQuery = `
     SELECT visit->'responses'->0->'item'->(json_array_length(visit->'responses'->0->'item')-1)->>'id' AS lastquestion, 
@@ -170,13 +122,11 @@ export function getFeverMetrics(
 
   const feedbackQuery = `
     SELECT COUNT(*) 
-    FROM feedback
-    WHERE ${dateClause};`;
+    FROM fever_current_surveys;`;
   const feedbackData = client.querySync(feedbackQuery);
 
   return [
     surveyStatsData,
-    surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
     feedbackData
@@ -266,7 +216,6 @@ function filterLastQuestionData(lastQuestionData): object {
 export function getFeverExcelReport(startDate: string, endDate: string) {
   const [
     surveyStatsData,
-    surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
     feedbackData
@@ -355,42 +304,6 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Sample Text",
       headerStyle: styles.columnHeader,
       width: 300
-    }
-  };
-
-  const surveyStatsByAdminSpec = {
-    grouping: {
-      displayName: "Administrator",
-      headerStyle: styles.columnHeader,
-      width: 150
-    },
-    formstarts: {
-      displayName: "Started",
-      ...defaultCell
-    },
-    eligible: {
-      displayName: "Eligible",
-      ...defaultCell
-    },
-    consented: {
-      displayName: "Consented",
-      ...defaultCell
-    },
-    completed: {
-      displayName: "Completed",
-      ...defaultCell
-    },
-    specimenscanned: {
-      displayName: "Specimen Scanned",
-      ...defaultCell
-    },
-    giftcards: {
-      displayName: "Gift Cards",
-      ...defaultCell
-    },
-    adverseevents: {
-      displayName: "Adverse Events",
-      ...defaultCell
     }
   };
 
@@ -489,11 +402,6 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
   };
   const surveyStatsHeading = [
     [{ value: "SFS Stats by Location", style: styles.title }],
-    [dateRangeHeading],
-    [generatedHeading]
-  ];
-  const surveyStatsByAdminHeading = [
-    [{ value: "SFS Stats by Administrator", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
   ];
@@ -616,13 +524,6 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       heading: surveyStatsHeading,
       specification: surveyStatsSpec,
       data: surveyStatsData
-    },
-    {
-      name: "By Administrator",
-      merges: merges,
-      heading: surveyStatsByAdminHeading,
-      specification: surveyStatsByAdminSpec,
-      data: surveyStatsByAdminData
     },
     {
       name: "Last Question",

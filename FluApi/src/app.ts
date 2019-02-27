@@ -125,14 +125,12 @@ export async function createPublicApp(config: AppConfig) {
     const endDate = req.query.endDate || getThisSunday();
     const [
       surveyStatsData,
-      surveyStatsByAdminData,
       lastQuestionData,
       studyIdData,
       feedbackData
     ] = getFeverMetrics(startDate, endDate);
     res.render("feverMetrics", {
       surveyStatsData: surveyStatsData,
-      surveyStatsByAdminData: surveyStatsByAdminData,
       lastQuestionData: lastQuestionData,
       feedbackData: feedbackData,
       startDate: startDate,
