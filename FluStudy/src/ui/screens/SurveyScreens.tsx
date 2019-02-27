@@ -1871,6 +1871,8 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/prepareForTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2078,6 +2080,8 @@ class ShipBoxScreen extends React.Component<
         buttonLabel={t("schedulePickup")}
         canProceed={true}
         desc={t("description")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/shippingYourBox.png")}
         footer={
           <Button
             enabled={true}
