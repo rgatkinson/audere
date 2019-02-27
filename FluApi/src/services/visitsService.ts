@@ -31,7 +31,7 @@ export class VisitsService {
   ): Promise<Map<number, PIIVisitDetails>> {
     // Filters by joining to HutchUpload and looking for records with no match.
     // HutchUpload exists only in the Non-PII database.
-    const v1 = this.snifflesModels.visitNonPii.findAll({
+    const nonPiiVisits = await this.snifflesModels.visitNonPii.findAll({
       where: {
         visit: {
           complete: {
@@ -51,20 +51,17 @@ export class VisitsService {
     });
 
     // Query the second database for the PII data associated to the visit.
-    const v2 = v1.then(v => {
-      return this.snifflesModels.visitPii.findAll({
-        where: {
-          csruid: v.map(visit => visit.csruid),
-          visit: {
-            complete: {
-              [Sequelize.Op.eq]: "true"
-            }
+    const piiVisits = await this.snifflesModels.visitPii.findAll({
+      where: {
+        csruid: nonPiiVisits.map(visit => visit.csruid),
+        visit: {
+          complete: {
+            [Sequelize.Op.eq]: "true"
           }
         }
-      });
+      }
     });
 
-    const [nonPiiVisits, piiVisits] = await Promise.all([v1, v2]);
     const zipped: Map<number, PIIVisitDetails> = new Map();
 
     // Discard records missing complementary PII data.

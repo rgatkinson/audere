@@ -5,6 +5,9 @@
 
 import { createSplitSql } from "./util/sql";
 import { createPublicApp, createInternalApp } from "./app";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const sql = createSplitSql();
 sql.nonPii.authenticate();

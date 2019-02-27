@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import dotenv from "dotenv";
 import Sequelize, {
   DefineModelAttributes,
   Sequelize as Sql,
@@ -27,8 +26,6 @@ export interface SplitSql {
 }
 
 export function createSplitSql(): SplitSql {
-  dotenv.config();
-
   const nonPiiUrl = process.env.NONPII_DATABASE_URL;
   const piiUrl = process.env.PII_DATABASE_URL;
   if (!nonPiiUrl || !piiUrl) {
