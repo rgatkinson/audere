@@ -54,13 +54,7 @@ import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
 import { findMedHelp, learnMore } from "../externalActions";
-import {
-  BORDER_COLOR,
-  ERROR_COLOR,
-  GUTTER,
-  SECONDARY_COLOR,
-  SMALL_TEXT,
-} from "../styles";
+import { GUTTER, SECONDARY_COLOR, SMALL_TEXT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
 import { isValidUSZipCode } from "../../util/check";
 

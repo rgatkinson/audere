@@ -34,7 +34,6 @@ import {
 } from "./../styles";
 
 export const Menu = (props: any) => {
-  const homeItem = { ...props, items: props.items.slice(0, 1) };
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
   const helpItems = { ...props, items: props.items.slice(4) };
   return (
@@ -45,11 +44,15 @@ export const Menu = (props: any) => {
       >
         <TouchableOpacity
           style={styles.icon}
-          onPress={props.navigation.closeDrawer}
+          onPress={() => {
+            props.navigation.closeDrawer();
+            if (props.activeItemKey !== "Home") {
+              props.navigation.navigate("Home");
+            }
+          }}
         >
           <Feather color={LINK_COLOR} name="x" size={30} />
         </TouchableOpacity>
-        <DrawerItems {...homeItem} />
         <Text style={styles.header}>ABOUT FLU@HOME</Text>
         <Divider style={styles.divider} />
         <DrawerItems {...aboutItems} />
@@ -102,9 +105,9 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -127,9 +130,9 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -146,9 +149,9 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -171,9 +174,9 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -198,9 +201,9 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -223,9 +226,9 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -250,9 +253,9 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -277,9 +280,9 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {}}
       />
     );
@@ -325,9 +328,9 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={aboutContent}
         logo={true}
+        menuItem={true}
         navigation={this.props.navigation}
         title={t("title")}
-        onBack={() => this.props.navigation.navigate("Home")}
         onNext={() => {
           timestampInteraction("About.Copy");
           this.copyToClipboard(aboutContent);

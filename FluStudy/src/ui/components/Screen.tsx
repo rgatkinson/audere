@@ -33,12 +33,12 @@ interface Props {
   imageSrc?: ImageSourcePropType;
   isDemo?: boolean;
   logo?: boolean;
+  menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   skipButton?: boolean;
   step?: number;
   title: string;
   onTitlePress?: () => any;
-  onBack?: () => void;
   onNext(): void;
 }
 
@@ -85,8 +85,8 @@ class Screen extends React.Component<Props & WithNamespaces> {
         <NavigationBar
           canProceed={this.props.canProceed}
           hideBackButton={this.props.hideBackButton}
+          menuItem={this.props.menuItem}
           navigation={this.props.navigation}
-          onBack={this.props.onBack}
         />
         {this.props.isDemo &&
           !this.props.logo && (
