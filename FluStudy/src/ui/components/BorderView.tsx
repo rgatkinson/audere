@@ -4,7 +4,6 @@ import {
   BORDER_RADIUS,
   BORDER_WIDTH,
   GUTTER,
-  LIGHT_COLOR,
   SECONDARY_COLOR,
   THIN_BORDER_WIDTH,
 } from "../styles";
@@ -28,7 +27,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     alignSelf: "stretch",
-    borderColor: LIGHT_COLOR,
+    borderColor: SECONDARY_COLOR,
     borderWidth: THIN_BORDER_WIDTH,
     marginBottom: GUTTER,
     padding: GUTTER / 2,

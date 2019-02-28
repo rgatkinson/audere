@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
     lineHeight: EXTRA_LARGE_TEXT,
-    marginVertical: GUTTER / 2,
+    paddingTop: GUTTER,
   },
 });

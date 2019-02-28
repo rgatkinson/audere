@@ -96,6 +96,7 @@ import {
   GUTTER,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
+  SMALL_TEXT,
   STATUS_BAR_HEIGHT,
 } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
@@ -175,10 +176,10 @@ class WhatsNextScreen extends React.Component<
             returnKeyType="next"
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
+            onValidChange={validEmail => this.setState({ validEmail })}
             onChange={(email, validEmail) =>
               this.setState({ email, validEmail })
             }
-            onSubmit={validEmail => this.setState({ validEmail })}
           />
         </Screen>
       </KeyboardAvoidingView>
@@ -202,6 +203,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
           this.props.navigation.push("ScanInstructions");
         }}
       >
+        <View style={{ marginTop: GUTTER }} />
         <ImageText
           imageSrc={require("../../img/cat.png")}
           imageWidth={100}
@@ -629,7 +631,6 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/unpackingInstructions.png")}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -653,7 +654,6 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/begin1stTest.png")}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -675,7 +675,6 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/prepareTube.png")}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -697,7 +696,6 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/collectMucus.png")}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -720,7 +718,6 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/putSwabInTube.png")}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -1163,7 +1160,12 @@ class GeneralExposureScreen extends React.Component<
         <Divider />
         <Text content={t("expoDesc")} />
         <Image
-          style={{ height: 0.65 * width, width, marginVertical: GUTTER }}
+          style={{
+            aspectRatio: 1.75,
+            height: undefined,
+            marginVertical: GUTTER,
+            width: "100%",
+          }}
           source={require("../../img/expo.png")}
         />
         <Text
@@ -2248,7 +2250,14 @@ class ThanksScreen extends React.Component<
             },
           ]}
         />
-        <Text content={t("disclaimer")} style={{ marginBottom: GUTTER }} />
+        <Text
+          content={t("disclaimer")}
+          style={{
+            alignSelf: "stretch",
+            fontSize: SMALL_TEXT,
+            marginBottom: GUTTER,
+          }}
+        />
       </Screen>
     );
   }

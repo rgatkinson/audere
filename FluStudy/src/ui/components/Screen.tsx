@@ -7,15 +7,15 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState } from "../../store";
+import { Action, StoreState, setDemo } from "../../store";
 import BorderView from "./BorderView";
 import Button from "./Button";
-import Logo from "./Logo";
 import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
@@ -28,12 +28,13 @@ interface Props {
   centerDesc?: boolean;
   children?: any;
   desc?: string;
+  dispatch?(action: Action): void;
   footer?: any;
   hideBackButton?: boolean;
   imageAspectRatio?: number;
   imageSrc?: ImageSourcePropType;
+  shortImage?: boolean;
   isDemo?: boolean;
-  logo?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   skipButton?: boolean;
@@ -44,17 +45,36 @@ interface Props {
   onNext(): void;
 }
 
+const TRIPLE_PRESS_DELAY = 500;
+
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
 }))
 class Screen extends React.Component<Props & WithNamespaces> {
+  lastTap: number | null = null;
+  secondLastTap: number | null = null;
+
+  handleTripleTap = () => {
+    const now = Date.now();
+    if (
+      this.lastTap != null &&
+      this.secondLastTap != null &&
+      now - this.secondLastTap! < TRIPLE_PRESS_DELAY
+    ) {
+      this.props.dispatch!(setDemo(!this.props.isDemo));
+    } else {
+      this.secondLastTap = this.lastTap;
+      this.lastTap = now;
+    }
+  };
+
   _getImage(source: ImageSourcePropType) {
-    return (
+    const image = (
       <Image
         style={[
           !!this.props.imageAspectRatio
             ? {
-                width: "100%",
+                width: this.props.shortImage ? "75%" : "100%",
                 height: undefined,
                 aspectRatio: this.props.imageAspectRatio,
               }
@@ -64,6 +84,17 @@ class Screen extends React.Component<Props & WithNamespaces> {
         source={source}
       />
     );
+    if (this.props.shortImage) {
+      return (
+        <TouchableWithoutFeedback
+          style={{ alignSelf: "stretch" }}
+          onPress={this.handleTripleTap}
+        >
+          <View>{image}</View>
+        </TouchableWithoutFeedback>
+      );
+    }
+    return image;
   }
 
   render() {
@@ -71,10 +102,17 @@ class Screen extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <ImageBackground
-          source={require("../../img/backgroundCrop.png")}
+          source={
+            this.props.shortImage
+              ? require("../../img/shortBackground.png")
+              : require("../../img/backgroundCrop.png")
+          }
           style={[
             { alignSelf: "stretch" },
-            !!this.props.stableImageSrc && { aspectRatio: 1.05, width: "100%" },
+            !!this.props.stableImageSrc && {
+              aspectRatio: this.props.shortImage ? 1.61 : 1.05,
+              width: "100%",
+            },
           ]}
         >
           <StatusBar barStyle="light-content" backgroundColor="transparent" />
@@ -83,14 +121,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
             menuItem={this.props.menuItem}
             navigation={this.props.navigation}
           />
-          {this.props.isDemo && (
-            <Text
-              bold={true}
-              center={true}
-              content="Demo Mode"
-              style={styles.demoText}
-            />
-          )}
           {!!this.props.stableImageSrc &&
             this._getImage(this.props.stableImageSrc)}
         </ImageBackground>
@@ -102,7 +132,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
             }}
           >
             <View style={styles.innerContainer}>
-              {this.props.logo && <Logo />}
               {!!this.props.step && (
                 <Step step={this.props.step} totalSteps={4} />
               )}
@@ -115,7 +144,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <Text
                   content={this.props.desc}
                   center={!!this.props.centerDesc}
-                  style={{ marginBottom: GUTTER, marginTop: GUTTER / 2 }}
+                  style={{ paddingBottom: GUTTER, paddingTop: GUTTER / 2 }}
                 />
               )}
               {this.props.children}
@@ -127,7 +156,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                   label={
                     this.props.buttonLabel != null
                       ? this.props.buttonLabel
-                      : t("common:button:next")
+                      : t("common:button:continue")
                   }
                   primary={true}
                   onPress={this.props.onNext}
@@ -136,6 +165,14 @@ class Screen extends React.Component<Props & WithNamespaces> {
               {this.props.footer}
             </View>
           </ScrollView>
+          {this.props.isDemo && (
+            <Text
+              bold={true}
+              center={true}
+              content="Demo Mode"
+              style={styles.demoText}
+            />
+          )}
         </View>
       </View>
     );
@@ -153,6 +190,11 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     color: "white",
     opacity: 0.75,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: GUTTER,
   },
   footerContainer: {
     alignItems: "center",

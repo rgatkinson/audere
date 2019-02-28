@@ -7,6 +7,7 @@ import Text from "./Text";
 import {
   BORDER_COLOR,
   BORDER_RADIUS,
+  BORDER_WIDTH,
   DISABLED_COLOR,
   FONT_SEMI_BOLD,
   GUTTER,
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "stretch",
     borderColor: BORDER_COLOR,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: BORDER_WIDTH,
     borderRadius: BORDER_RADIUS,
     flexDirection: "row",
     flexGrow: 1,

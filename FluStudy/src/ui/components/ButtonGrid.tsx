@@ -9,7 +9,6 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ButtonConfig, SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
-  BORDER_COLOR,
   BORDER_WIDTH,
   GUTTER,
   RADIO_BUTTON_HEIGHT,
@@ -110,7 +109,7 @@ export default withNamespaces()<Props>(ButtonGrid);
 const styles = StyleSheet.create({
   buttonContainer: {
     borderWidth: BORDER_WIDTH,
-    borderColor: BORDER_COLOR,
+    borderColor: SECONDARY_COLOR,
     justifyContent: "center",
   },
   button: {
@@ -129,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: GUTTER,
   },
   selectedButton: {
-    backgroundColor: BORDER_COLOR,
+    backgroundColor: SECONDARY_COLOR,
   },
   selectedButtonText: {
     color: "white",

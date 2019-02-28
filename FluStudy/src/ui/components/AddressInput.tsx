@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     height: INPUT_HEIGHT,
   },
   zipcode: {
-    flex: 1,
+    flex: 2,
     borderLeftColor: BORDER_COLOR,
     borderLeftWidth: StyleSheet.hairlineWidth,
   },

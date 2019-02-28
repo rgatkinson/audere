@@ -385,10 +385,10 @@ class ConsentScreen extends React.PureComponent<
                 returnKeyType="next"
                 validationError={t("validationError")}
                 value={this.state.email}
+                onValidChange={validEmail => this.setState({ validEmail })}
                 onChange={(email, validEmail) =>
                   this.setState({ email, validEmail })
                 }
-                onSubmit={validEmail => this.setState({ validEmail })}
               />
               <Text
                 content={t("privacyNotice")}

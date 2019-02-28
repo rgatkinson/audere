@@ -104,10 +104,12 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -130,10 +132,12 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -150,10 +154,12 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -176,10 +182,12 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -204,10 +212,12 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -230,10 +240,12 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -258,10 +270,12 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -286,10 +300,12 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {}}
       />
@@ -335,9 +351,12 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel="Copy"
         canProceed={true}
         desc={aboutContent}
-        logo={true}
         menuItem={true}
+        imageAspectRatio={4.23}
+        shortImage={true}
         navigation={this.props.navigation}
+        skipButton={true}
+        stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {
           timestampInteraction("About.Copy");

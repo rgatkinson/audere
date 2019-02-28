@@ -11,8 +11,8 @@ interface Props extends React.Props<EmailInput> {
   returnKeyType: ReturnKeyTypeOptions;
   validationError: string;
   value?: string;
+  onValidChange(valid: boolean): void;
   onChange(email: string, valid: boolean): void;
-  onSubmit?(valid: boolean): void;
 }
 
 interface State {
@@ -55,11 +55,7 @@ export default class EmailInput extends React.Component<Props, State> {
             this.setState({ email: text });
             this.props.onChange(text, this._isValid());
           }}
-          onSubmitEditing={() => {
-            if (this.props.onSubmit != null) {
-              this.props.onSubmit(this._isValid());
-            }
-          }}
+          onSubmitEditing={() => this.props.onValidChange(this._isValid())}
         />
         <Text
           content={
