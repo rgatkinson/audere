@@ -48,8 +48,10 @@
           <th><label title="How many scanned/entered a barcode">Barcode Scanned</label></th>
           <th><label title="How many completed the questionnaire">Completed Questionnaire</label></th>
           <th><label title="How many completed test 1">Test 1 Complete</label></th>
+          <th><label title="How many mess up on test 1">Test 1 Errors</label></th>
           <th><label title="How many completed test 2">Test 2 Completed</label></th>
-          <th><label title="How many returned the kit">Kit Returned</label></th>
+          <th><label title="How many messed up on test 2">Test 2 Errors</label></th>
+          <th><label title="How many made it to the last screen">Finished App</label></th>
         </tr>
       </thead>
       <tbody>
@@ -63,8 +65,10 @@
           <td><%= row.scanned %></td>
           <td><%= row.surveyscompleted %></td>
           <td><%= row.test1 %></td>
+          <td><%= row.test1errors %></td>
           <td><%= row.test2 %></td>
-          <td><%= row.kitsreturned %></td>
+          <td><%= row.test2errors %></td>
+          <td><%= row.finished %></td>
         </tr>
         <%}); %>
         </tr>

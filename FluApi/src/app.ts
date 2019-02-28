@@ -23,14 +23,10 @@ import {
   getExcelDataSummary,
   getLastMonday,
   getThisSunday,
-  getExcelReport
-} from "./util/metrics";
-import {
+  getExcelReport,
   getFeverMetrics,
-  getFeverExcelDataSummary,
-  getFeverToday,
   getFeverExcelReport
-} from "./util/feverMetrics";
+} from "./util/metrics";
 
 const buildInfo = require("../static/buildInfo.json");
 
