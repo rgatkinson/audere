@@ -786,7 +786,6 @@ class FirstTimerScreen extends React.Component<
       "FirstTimerScreen",
       <Screen
         canProceed={false}
-        logo={false}
         navigation={this.props.navigation}
         title={t("title", { time: this.state.time })}
         onTitlePress={
