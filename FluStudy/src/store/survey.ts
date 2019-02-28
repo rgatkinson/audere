@@ -42,11 +42,7 @@ const initialState: SurveyState = {
   pushState: {
     showedSystemPrompt: false,
   },
-  workflow: {
-    screeningComplete: false,
-    surveyComplete: false,
-    surveyStarted: false,
-  },
+  workflow: {},
 };
 
 export default function reducer(state = initialState, action: SurveyAction) {

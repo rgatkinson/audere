@@ -114,8 +114,8 @@ class AppWithNavigationState extends React.Component<Props> {
       nextAppState === "quadTap"
     ) {
       if (
-        this.props.workflow.screeningComplete &&
-        !this.props.workflow.surveyStarted &&
+        this.props.workflow.screeningCompletedAt &&
+        !this.props.workflow.surveyStartedAt &&
         (nextAppState === "quadTap" || elapsedMinutes > 3 * MINUTES_IN_HOUR)
       ) {
         // Have completed screening but not started survey and at least 3 hours have passed,
@@ -149,7 +149,7 @@ class AppWithNavigationState extends React.Component<Props> {
         );
         this.clearState();
       } else if (
-        !this.props.workflow.screeningComplete &&
+        !this.props.workflow.screeningCompletedAt &&
         (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
       ) {
         // Have not completed screening (not ordered kit) and 2 days have passed, clear state
@@ -163,7 +163,7 @@ class AppWithNavigationState extends React.Component<Props> {
         );
         this.clearState();
       } else if (
-        this.props.workflow.surveyComplete &&
+        this.props.workflow.surveyCompletedAt &&
         (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
       ) {
         // Successfully completed survey and 1 day has passed, clear state
@@ -175,7 +175,7 @@ class AppWithNavigationState extends React.Component<Props> {
         );
         this.clearState();
       } else if (
-        this.props.workflow.surveyStarted &&
+        this.props.workflow.surveyStartedAt &&
         (nextAppState === "quadTap" || elapsedHours > 4 * HOURS_IN_DAY)
       ) {
         // Started survey but did not finish, at least 4 days have passed, clear state

@@ -39,11 +39,7 @@ const FAKE_SURVEY_CONTENTS: SurveyInfo = {
   responses: [],
   samples: [],
   events: [],
-  workflow: {
-    screeningComplete: false,
-    surveyComplete: false,
-    surveyStarted: false,
-  },
+  workflow: {},
 };
 
 const FAKE_CSRUID = "abc123";

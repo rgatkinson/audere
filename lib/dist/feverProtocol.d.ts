@@ -110,9 +110,9 @@ export declare enum ConsentInfoSignerType {
     Researcher = "Researcher"
 }
 export interface WorkflowInfo {
-    screeningComplete: boolean;
-    surveyComplete: boolean;
-    surveyStarted: boolean;
+    screeningCompletedAt?: string;
+    surveyCompletedAt?: string;
+    surveyStartedAt?: string;
 }
 export interface ResponseInfo {
     id: string;

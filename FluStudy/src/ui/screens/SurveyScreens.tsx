@@ -344,7 +344,7 @@ class ScanScreen extends React.Component<
               this.props.dispatch(
                 setWorkflow({
                   ...this.props.workflow,
-                  surveyStarted: true,
+                  surveyStartedAt: new Date().toISOString(),
                 })
               );
               this.props.navigation.push("ScanConfirmation");
@@ -536,7 +536,7 @@ class ManualEntryScreen extends React.Component<
       this.props.dispatch(
         setWorkflow({
           ...this.props.workflow,
-          surveyStarted: true,
+          surveyStartedAt: new Date().toISOString(),
         })
       );
       this.props.navigation.push("ManualConfirmation");
@@ -2185,7 +2185,7 @@ class EmailOptInScreen extends React.Component<
           this.props.dispatch(
             setWorkflow({
               ...this.props.workflow,
-              surveyComplete: true,
+              surveyCompletedAt: new Date().toISOString(),
             })
           );
           this.props.navigation.push("Thanks");

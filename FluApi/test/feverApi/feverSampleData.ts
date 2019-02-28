@@ -50,9 +50,8 @@ const PII_RESPONSE_ITEM = {
 const COMMON_INFO: CommonInfo = {
   isDemo: false,
   workflow: {
-    screeningComplete: true,
-    surveyStarted: true,
-    surveyComplete: false,
+    screeningCompletedAt: "2019-01-01T00:00:00Z",
+    surveyStartedAt: "2019-01-01T00:00:00Z"
   },
   events: [
     {

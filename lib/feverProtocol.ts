@@ -178,9 +178,9 @@ export enum ConsentInfoSignerType {
 }
 
 export interface WorkflowInfo {
-  screeningComplete: boolean;
-  surveyComplete: boolean;
-  surveyStarted: boolean;
+  screeningCompletedAt?: string; // FHIR:instant
+  surveyCompletedAt?: string; // FHIR:instant
+  surveyStartedAt?: string; // FHIR: instant
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource

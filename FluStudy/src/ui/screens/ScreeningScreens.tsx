@@ -476,7 +476,7 @@ class AddressInputScreen extends React.Component<
       this.props.dispatch(
         setWorkflow({
           ...this.props.workflow,
-          screeningComplete: true,
+          screeningCompletedAt: new Date().toISOString(),
         })
       );
       this.props.navigation.push("Confirmation");
