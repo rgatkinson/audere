@@ -428,14 +428,13 @@ class ScanConfirmationScreen extends React.Component<
           this.props.navigation.push("TestInstructions");
         }}
       >
-        <BorderView>
+        <BorderView style={{ marginTop: GUTTER }}>
           <Text
             center={true}
             content={t("yourCode") + this.props.kitBarcode.code}
           />
         </BorderView>
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
-        <Text content={t("nextStep")} />
       </Screen>
     );
   }
@@ -464,7 +463,7 @@ class ManualConfirmationScreen extends React.Component<
           this.props.navigation.push("TestInstructions");
         }}
       >
-        <BorderView>
+        <BorderView style={{ marginTop: GUTTER }}>
           <Text
             center={true}
             content={
@@ -477,7 +476,6 @@ class ManualConfirmationScreen extends React.Component<
           />
         </BorderView>
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
-        <Text content={t("nextStep")} />
       </Screen>
     );
   }

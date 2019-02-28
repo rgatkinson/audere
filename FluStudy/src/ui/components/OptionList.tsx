@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS,
     flexDirection: "row",
     flexGrow: 1,
-    height: INPUT_HEIGHT,
     marginBottom: GUTTER / 2,
     padding: GUTTER / 2,
   },

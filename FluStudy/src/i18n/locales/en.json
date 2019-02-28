@@ -245,8 +245,7 @@
   "scanConfirmationScreen": {
     "codeSent": "Your code was scanned!",
     "yourCode": "Your code: KIT ",
-    "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.",
-    "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
     "placeholder": "ex: KIT xxxxxxxx",
@@ -258,8 +257,7 @@
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",
     "yourCode": "Your code: ",
-    "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.",
-    "nextStep": "Next up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "testInstructionsScreen": {
     "title": "How the test works",
