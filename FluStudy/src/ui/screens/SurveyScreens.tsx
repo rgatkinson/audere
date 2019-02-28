@@ -748,7 +748,8 @@ class FirstTimerScreen extends React.Component<
     time: 60,
   };
 
-  _timer: number | null | undefined;
+  _endTime: number = Date.now() + 60 * SECOND_MS;
+  _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
 
   componentDidMount() {
@@ -759,38 +760,43 @@ class FirstTimerScreen extends React.Component<
 
   componentWillUnmount() {
     this._willFocus.remove();
+    this._timer && clearTimeout(this._timer);
+    this._timer = undefined;
+  }
+
+  _secondsRemaining() {
+    const secondsLeft = Math.ceil((this._endTime - Date.now()) / SECOND_MS);
+
+    return Math.max(0, secondsLeft);
   }
 
   _setTimer() {
     if (this.props.navigation.isFocused()) {
-      setTimeout(() => {
-        if (this.props.navigation.isFocused() && this.state.time > 1) {
-          this.setState({ time: this.state.time - 1 });
+      this._timer = setTimeout(() => {
+        if (this.props.navigation.isFocused() && this._secondsRemaining() > 0) {
+          this.setState({ time: this._secondsRemaining() });
           this._setTimer();
         } else if (this.props.navigation.isFocused()) {
           this.props.navigation.push("FirstTimerDone");
         }
-      }, 1000);
+      }, SECOND_MS);
     }
   }
-
-  _canProceed = () => {
-    return false;
-  };
 
   render() {
     const { t } = this.props;
     return timestampRender(
       "FirstTimerScreen",
       <Screen
-        canProceed={this._canProceed()}
+        canProceed={false}
         logo={false}
         navigation={this.props.navigation}
         title={t("title", { time: this.state.time })}
         onTitlePress={
           this.props.isDemo
             ? () => {
-                this.setState({ time: 5 });
+                this._endTime = Date.now() + 5 * SECOND_MS;
+                this.setState({ time: this._secondsRemaining() });
               }
             : undefined
         }
