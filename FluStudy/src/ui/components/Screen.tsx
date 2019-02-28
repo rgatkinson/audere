@@ -196,12 +196,13 @@ const styles = StyleSheet.create({
   demoText: {
     backgroundColor: "green",
     color: "white",
-    opacity: 0.75,
-    paddingTop: STATUS_BAR_HEIGHT + GUTTER / 2,
+    opacity: 0.5,
     position: "absolute",
+    top: STATUS_BAR_HEIGHT,
     left: 0,
+    lineHeight: NAV_BAR_HEIGHT,
     right: 0,
-    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
+    height: NAV_BAR_HEIGHT,
   },
   footerContainer: {
     alignItems: "center",

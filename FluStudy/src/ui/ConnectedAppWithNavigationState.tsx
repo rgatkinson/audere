@@ -219,10 +219,10 @@ class AppWithNavigationState extends React.Component<Props> {
 const styles = StyleSheet.create({
   touchable: {
     height: STATUS_BAR_HEIGHT + NAV_BAR_HEIGHT,
-    left: Dimensions.get("window").width / 2 - 50,
+    left: Dimensions.get("window").width / 2 - 100,
     position: "absolute",
-    width: 100,
-    zIndex: 2,
+    width: 200,
+    zIndex: 3,
   },
 });
 
