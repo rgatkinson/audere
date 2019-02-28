@@ -162,8 +162,11 @@ class WhatsNextScreen extends React.Component<
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           canProceed={
-            this.emailInput.current != null &&
-            this.emailInput.current!.isValid(this.state.email)
+            (!!this.props.email && this.state.email == this.props.email) ||
+            (
+              this.emailInput.current != null &&
+              this.emailInput.current!.isValid(this.state.email)
+            )
           }
           desc={t("description")}
           imageSrc={require("../../img/why.png")}
