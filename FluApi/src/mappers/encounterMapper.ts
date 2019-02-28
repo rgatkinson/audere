@@ -3,8 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import * as Encounter from "audere-lib/hutchProtocol";
 import * as Model from "audere-lib/snifflesProtocol";
-import * as Encounter from "../models/encounter";
 import { NonPIIVisitDetails } from "../models/visitDetails";
 import logger from "../util/logger";
 

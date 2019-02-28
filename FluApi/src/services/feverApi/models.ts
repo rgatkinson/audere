@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Model as SqlModel, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import {
   defineModel,
   Inst,
@@ -12,7 +12,6 @@ import {
   stringColumn,
   booleanColumn,
   jsonColumn,
-  integerColumn,
   unique,
 } from "../../util/sql"
 import {

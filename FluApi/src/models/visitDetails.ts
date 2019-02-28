@@ -3,8 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { Location } from "audere-lib/hutchProtocol";
 import { PatientInfo, VisitNonPIIInfo } from "audere-lib/snifflesProtocol";
-import { Location } from "./encounter";
 
 export interface PIIVisitDetails {
   id: number;

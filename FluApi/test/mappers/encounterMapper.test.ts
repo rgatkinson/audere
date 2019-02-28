@@ -10,9 +10,9 @@ import {
   schemaVersion,
   Location,
   NumberAnswer,
+  OptionAnswer,
   StringAnswer
-} from "../../src/models/encounter";
-import { OptionAnswer } from "../../src/models/encounter";
+} from "audere-lib/hutchProtocol";
 
 describe("encounter mapper", () => {
   class VisitBuilder {

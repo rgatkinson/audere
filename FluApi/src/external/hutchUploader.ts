@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { AxiosInstance } from "axios";
-import { Encounter } from "../models/encounter";
+import { Encounter } from "audere-lib/hutchProtocol";
 import { ThrottledTaskQueue } from "../util/throttledTaskQueue";
 import { HutchUploadModel } from "../models/hutchUpload";
 import logger from "../util/logger";
