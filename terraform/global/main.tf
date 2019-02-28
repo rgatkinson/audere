@@ -589,6 +589,7 @@ data "aws_iam_policy_document" "infrastructurer_access" {
 
   statement {
     actions = [
+      "acm:DescribeCertificate",
       "acm:ListCertificates",
       "iam:GetInstanceProfile",
     ]
