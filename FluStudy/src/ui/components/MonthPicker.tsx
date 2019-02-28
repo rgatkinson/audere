@@ -2,6 +2,7 @@ import React from "react";
 import { Picker } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import BorderView from "./BorderView";
+import { GUTTER, SECONDARY_COLOR } from "../styles";
 
 const months = [
   "january",
@@ -80,11 +81,21 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
       <BorderView>
         <Picker
           selectedValue={this._getSelectedTime()}
-          style={{ alignSelf: "stretch" }}
+          style={{
+            alignSelf: "stretch",
+            height: 140,
+            justifyContent: "center",
+            overflow: "hidden",
+          }}
           onValueChange={time => this.props.onDateChange(new Date(time))}
         >
           {this._getOptions().map(date => (
             <Picker.Item
+              color={
+                date.getTime() === this._getSelectedTime()
+                  ? SECONDARY_COLOR
+                  : undefined
+              }
               label={t(months[date.getMonth()]) + " " + date.getFullYear()}
               value={date.getTime()}
               key={date.getTime()}
