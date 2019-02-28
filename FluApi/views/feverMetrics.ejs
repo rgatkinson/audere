@@ -36,58 +36,39 @@
     <a href="/saveFeverMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a> 
     <br />
     <br />
-    <a href="/saveFeverDataSummary?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel data summary report</a>
-    <br />
-    <br />
     <h1>Fever Survey Stats</h1>
-    <% queryTypes=[{key: "Location", data:surveyStatsData}];
-       for (let queryType of queryTypes) { %>
     <table class="hor-zebra">
       <thead>
         <tr>
-          <th><label title="How many surveys started">Started Part 1</label></th>
-          <th><label title="How many eligible to participate">Eligible</label></th>
+          <th><label title="How many made it past the welcome screen">Started Part 1</label></th>
+          <th><label title="How many had eligible sypmtoms">Eligible</label></th>
           <th><label title="How many consented to participate">Consented</label></th>
-          <th><label title="How many kits ordered">Ordered Kit</label></th>
-          <th><label title="How many started part 2">Started Part 2</label></th>
-          <th><label title="Total scanned the barcode">Barcode Scanned</label></th>
-          <th><label title="How many completed test 1">Test 1 Complete</label></th>
+          <th><label title="How many ordered a kit">Ordered Kit</label></th>
+          <th><label title="How many started part 2 of app">Started Part 2</label></th>
+          <th><label title="How many scanned/entered a barcode">Barcode Scanned</label></th>
           <th><label title="How many completed the questionnaire">Completed Questionnaire</label></th>
-          <th><label title="Total many completed test 2">Test 2 Completed</label></th>
+          <th><label title="How many completed test 1">Test 1 Complete</label></th>
+          <th><label title="How many completed test 2">Test 2 Completed</label></th>
           <th><label title="How many returned the kit">Kit Returned</label></th>
         </tr>
       </thead>
       <tbody>
-        <% oddRow = true;
-           queryType.data.forEach(function(row) { 
-            if (row.grouping === "Total") {
-          %>
-        <tr class="sum">
-          <% } else if (oddRow) { %>
+        <% surveyStatsData.forEach(function(row) { %>
         <tr class="odd">
-          <% } else { %>
-        <tr>
-          <% } %> 
           <td class="label"><%= row.total %></td>
-          <td><%= row.consents %></td>
           <td><%= row.eligible %></td>
-          <td><%= row.consented %></td>
-          <td><%= row.completed %></td>
-          <td><%= row.specimenscanned %></td>
-          <td><%= row.giftcards %></td>
-          <td><%= row.adverseevents %></td>
-          <% if (queryType.key === "Location") { %>
-          <td class="sectionbreak"><%= row.questionsanswered %></td>
-          <td><%= row.declinedresponses %></td>
-          <% } %>
+          <td><%= row.consents %></td>
+          <td><%= row.kits %></td>
+          <td><%= row.part2%></td>
+          <td><%= row.scanned %></td>
+          <td><%= row.surveyscompleted %></td>
+          <td><%= row.test1 %></td>
+          <td><%= row.test2 %></td>
+          <td><%= row.kitsreturned %></td>
         </tr>
-        <% oddRow = !oddRow; 
-          }); %>
+        <%}); %>
         </tr>
       </tbody>
     </table>
-    <br />
-    <% } %>
-
   </body>
 </html>

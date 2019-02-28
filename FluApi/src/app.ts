@@ -124,15 +124,10 @@ export async function createPublicApp(config: AppConfig) {
     const startDate = req.query.startDate || getLastMonday();
     const endDate = req.query.endDate || getThisSunday();
     const [
-      surveyStatsData,
-      lastQuestionData,
-      studyIdData,
-      feedbackData
+      surveyStatsData
     ] = getFeverMetrics(startDate, endDate);
     res.render("feverMetrics", {
       surveyStatsData: surveyStatsData,
-      lastQuestionData: lastQuestionData,
-      feedbackData: feedbackData,
       startDate: startDate,
       endDate: endDate
     });
@@ -144,6 +139,23 @@ export async function createPublicApp(config: AppConfig) {
     const excelFile = getExcelReport(startDate, endDate);
     const downloadedFilename =
       "sfs-" + startDate + (startDate === endDate ? "" : "_" + endDate) + ".xlsx";
+    res.setHeader("Content-Type", "application/vnd.openxmlformats");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=" + downloadedFilename
+    );
+    res.end(excelFile, "binary");
+  });
+
+  publicApp.get("/saveFeverMetrics", (req, res) => {
+    const startDate = req.query.startDate || getLastMonday();
+    const endDate = req.query.endDate || getThisSunday();
+    const excelFile = getFeverExcelReport(startDate, endDate);
+    const downloadedFilename =
+      "fever-" +
+      startDate +
+      (startDate === endDate ? "" : "_" + endDate) +
+      ".xlsx";
     res.setHeader("Content-Type", "application/vnd.openxmlformats");
     res.setHeader(
       "Content-Disposition",
