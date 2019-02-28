@@ -587,6 +587,21 @@ data "aws_iam_policy_document" "infrastructurer_access" {
     }
   }
 
+  statement {
+    actions = [
+      "acm:ListCertificates",
+      "iam:GetInstanceProfile",
+    ]
+
+    resources = ["*"]
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
+  }
+
   // route53_full_access (copied from AmazonRoute53FullAccess managed policy)
   statement {
     actions = [
