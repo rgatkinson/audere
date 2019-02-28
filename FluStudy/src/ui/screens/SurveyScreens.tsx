@@ -2208,14 +2208,23 @@ export const EmailOptIn = reduxWriter(
   withNamespaces("emailOptInScreen")(EmailOptInScreen)
 );
 
-class ThanksScreen extends React.Component<Props & WithNamespaces> {
+interface ThanksScreenProps {
+  email: string;
+}
+
+@connect((state: StoreState) => ({
+  email: state.survey.email,
+}))
+class ThanksScreen extends React.Component<
+  Props & ThanksScreenProps & WithNamespaces & ReduxWriterProps
+> {
   render() {
     const { t } = this.props;
     return timestampRender(
       "ThanksScreen",
       <Screen
         canProceed={false}
-        desc={t("description")}
+        desc={t("description", { email: this.props.email })}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
@@ -2244,4 +2253,4 @@ class ThanksScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Thanks = withNamespaces("thanksScreen")<Props>(ThanksScreen);
+export const Thanks = reduxWriter(withNamespaces("thanksScreen")(ThanksScreen));
