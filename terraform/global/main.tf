@@ -530,53 +530,18 @@ resource "aws_iam_group" "infrastructurers" {
   name = "AudereInfrastructurers"
 }
 
-resource "aws_iam_group_policy_attachment" "ec2_full_access" {
+resource "aws_iam_group_policy_attachment" "infrastructurer_access" {
   group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.ec2_full_access.arn}"
+  policy_arn = "${aws_iam_policy.infrastructurer_access.arn}"
 }
 
-resource "aws_iam_group_policy_attachment" "route53_full_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.route53_full_access.arn}"
+resource "aws_iam_policy" "infrastructurer_access" {
+  name   = "AudereInfrastructurerAccess"
+  policy = "${data.aws_iam_policy_document.infrastructurer_access.json}"
 }
 
-resource "aws_iam_group_policy_attachment" "ses_manage" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.ses_manage.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "iam_manage_own_mfa" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.iam_manage_own_mfa.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "s3_full_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.s3_full_access.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "rds_describe_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.rds_describe_access.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "flu_iam_readonly_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.flu_iam_readonly_access.arn}"
-}
-
-resource "aws_iam_group_policy_attachment" "cloudwatch_access" {
-  group      = "${aws_iam_group.infrastructurers.name}"
-  policy_arn = "${aws_iam_policy.cloudwatch_access.arn}"
-}
-
-// ec2_full_access (copied from AmazonEC2FullAccess managed policy)
-resource "aws_iam_policy" "ec2_full_access" {
-  name   = "AudereEC2FullAccess"
-  policy = "${data.aws_iam_policy_document.ec2_full_access.json}"
-}
-
-data "aws_iam_policy_document" "ec2_full_access" {
+data "aws_iam_policy_document" "infrastructurer_access" {
+  // ec2_full_access (copied from AmazonEC2FullAccess managed policy)
   statement {
     actions = [
       "ec2:*",
@@ -621,15 +586,8 @@ data "aws_iam_policy_document" "ec2_full_access" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-// route53_full_access (copied from AmazonRoute53FullAccess managed policy)
-resource "aws_iam_policy" "route53_full_access" {
-  name   = "AudereRoute53FullAccess"
-  policy = "${data.aws_iam_policy_document.route53_full_access.json}"
-}
-
-data "aws_iam_policy_document" "route53_full_access" {
+  // route53_full_access (copied from AmazonRoute53FullAccess managed policy)
   statement {
     actions = [
       "route53:*",
@@ -656,15 +614,8 @@ data "aws_iam_policy_document" "route53_full_access" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-// ses_manage
-resource "aws_iam_policy" "ses_manage" {
-  name   = "AudereSESManageEmail"
-  policy = "${data.aws_iam_policy_document.ses_manage.json}"
-}
-
-data "aws_iam_policy_document" "ses_manage" {
+  // ses_manage
   statement {
     actions = [
       "ses:SendEmail",
@@ -684,14 +635,8 @@ data "aws_iam_policy_document" "ses_manage" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-resource "aws_iam_policy" "iam_manage_own_mfa" {
-  name   = "AudereManageOwnMFA"
-  policy = "${data.aws_iam_policy_document.iam_manage_own_mfa.json}"
-}
-
-data "aws_iam_policy_document" "iam_manage_own_mfa" {
+  // manage own mfa
   statement {
     sid = "AllowAllUsersToListAccounts"
 
@@ -776,14 +721,8 @@ data "aws_iam_policy_document" "iam_manage_own_mfa" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-resource "aws_iam_policy" "s3_full_access" {
-  name   = "AudereS3FullAccess"
-  policy = "${data.aws_iam_policy_document.s3_full_access.json}"
-}
-
-data "aws_iam_policy_document" "s3_full_access" {
+  // s3 full access
   statement {
     actions = ["s3:*"]
     resources = ["*"]
@@ -800,14 +739,8 @@ data "aws_iam_policy_document" "s3_full_access" {
       values   = ["true"]
     }
   }
-}
 
-resource "aws_iam_policy" "rds_describe_access" {
-  name   = "AudereRDSDescribe"
-  policy = "${data.aws_iam_policy_document.rds_describe_access.json}"
-}
-
-data "aws_iam_policy_document" "rds_describe_access" {
+  // rds
   statement {
     actions = [
       "rds:Describe*",
@@ -822,14 +755,8 @@ data "aws_iam_policy_document" "rds_describe_access" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-resource "aws_iam_policy" "flu_iam_readonly_access" {
-  name   = "AudereFluIAMGet"
-  policy = "${data.aws_iam_policy_document.flu_iam_readonly_access.json}"
-}
-
-data "aws_iam_policy_document" "flu_iam_readonly_access" {
+  // flu iam
   statement {
     actions = [
       "iam:Get*",
@@ -848,14 +775,8 @@ data "aws_iam_policy_document" "flu_iam_readonly_access" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
-}
 
-resource "aws_iam_policy" "cloudwatch_access" {
-  name   = "AudereCloudwatchAccess"
-  policy = "${data.aws_iam_policy_document.cloudwatch_access.json}"
-}
-
-data "aws_iam_policy_document" "cloudwatch_access" {
+  // cloudwatch
   statement {
     actions = ["events:DescribeRule"]
 
@@ -866,6 +787,16 @@ data "aws_iam_policy_document" "cloudwatch_access" {
       variable = "${local.mfa_condition_variable}"
       values   = ["${local.mfa_condition_value}"]
     }
+  }
+
+  // flu lambda dev
+  statement {
+    not_actions = [
+      "lambda:AddPermission",
+      "lambda:PutFunctionConcurrency"
+    ]
+
+    resources = ["arn:aws:lambda:*:*:function:flu*"]
   }
 }
 
