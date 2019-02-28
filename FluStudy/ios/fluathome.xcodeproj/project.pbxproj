@@ -531,7 +531,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome.staging";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Staging;
@@ -665,7 +665,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Production;
@@ -805,7 +805,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development org.auderenow.fluathome.dev";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;

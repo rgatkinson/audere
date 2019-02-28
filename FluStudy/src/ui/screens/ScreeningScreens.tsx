@@ -56,6 +56,7 @@ import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SECONDARY_COLOR, SMALL_TEXT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
 import { isValidUSZipCode } from "../../util/check";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 
 interface Props {
   dispatch(action: Action): void;
@@ -650,7 +651,9 @@ class ConfirmationScreen extends React.Component<
       "ConfirmationScreen",
       <Screen
         canProceed={true}
-        desc={t("description")}
+        desc={t("description", {
+          device: t("common:device:" + DEVICE_INFO.idiomText),
+        })}
         imageAspectRatio={1.75}
         imageSrc={require("../../img/fluKitOrdered.png")}
         navigation={this.props.navigation}

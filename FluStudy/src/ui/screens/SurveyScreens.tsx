@@ -101,6 +101,7 @@ import {
   STATUS_BAR_HEIGHT,
 } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -230,7 +231,9 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
       "ScanInstructionsScreen",
       <Screen
         canProceed={true}
-        desc={t("description")}
+        desc={t("description", {
+          device: t("common:device:" + DEVICE_INFO.idiomText),
+        })}
         footer={
           <View style={{ alignSelf: "stretch", marginTop: GUTTER / 2 }}>
             <Button

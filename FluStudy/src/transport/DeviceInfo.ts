@@ -11,6 +11,7 @@ export const DEVICE_INFO = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
   yearClass: Constants.deviceYearClass,
+  // ios.userInterfaceIdiom will return "handset" or "tablet"
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
   platform: JSON.stringify(Constants.platform),
 };

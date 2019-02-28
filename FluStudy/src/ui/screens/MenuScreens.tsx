@@ -32,6 +32,7 @@ import {
   SYSTEM_FONT,
   SYSTEM_TEXT,
 } from "./../styles";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 
 export const Menu = (props: any) => {
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
@@ -211,7 +212,9 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
       "Problems",
       <Screen
         canProceed={true}
-        desc={t("description")}
+        desc={t("description", {
+          device: t("common:device:" + DEVICE_INFO.idiomText),
+        })}
         menuItem={true}
         imageAspectRatio={4.23}
         shortImage={true}
