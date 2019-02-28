@@ -91,6 +91,7 @@ import {
   learnMore,
   scheduleUSPSPickUp,
   showNearbyShippingLocations,
+  emailSupport,
 } from "../externalActions";
 import {
   GUTTER,
@@ -637,7 +638,21 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
         onNext={() => {
           this.props.navigation.push("Swab");
         }}
-      />
+      >
+        <Links
+          links={[
+            {
+              label: t("kitMissingItems"),
+              onPress: () => {
+                timestampInteraction(
+                  "UnpackingScreen.kitMissingItemsEmailSupport"
+                );
+                emailSupport();
+              },
+            },
+          ]}
+        />
+      </Screen>
     );
   }
 }

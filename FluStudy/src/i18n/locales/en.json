@@ -265,7 +265,8 @@
   },
   "unpackingScreen": {
     "title": "Unpacking Instructions",
-    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number **①**, a bag with a number **②**, a bag with a number **③**, and some bubble wrap."
+    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number **①**, a bag with a number **②**, a bag with a number **③**, and some bubble wrap.",
+    "kitMissingItems": "Is your kit missing items? Email us"
   },
   "swabScreen": {
     "title": "Begin the first test",
