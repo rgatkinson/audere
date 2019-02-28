@@ -24,7 +24,7 @@ export interface OptionListConfig {
   withOther: boolean;
   defaultOptions?: string[];
   otherPlaceholder?: string;
-  exclusiveOption?: string;
+  exclusiveOption?: string | string[];
   inclusiveOption?: string;
 }
 
@@ -232,7 +232,7 @@ export const MedConditionsConfig: SurveyQuestionData = {
     multiSelect: true,
     options: ["asthma", "copd", "diabetes", "noneOfThese", "doNotKnow"],
     withOther: false,
-    exclusiveOption: "noneOfThese",
+    exclusiveOption: ["noneOfThese", "doNotKnow"],
   },
 
   buttons: [],
@@ -350,7 +350,7 @@ export const InsuranceConfig: SurveyQuestionData = {
     ],
     multiSelect: true,
     withOther: false,
-    exclusiveOption: "none",
+    exclusiveOption: ["noInsurance", "doNotKnow"],
   },
 };
 

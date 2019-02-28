@@ -25,7 +25,7 @@ interface Props {
   data: Option[];
   multiSelect: boolean;
   numColumns: number;
-  exclusiveOption?: string;
+  exclusiveOption?: string | string[];
   inclusiveOption?: string;
   onChange(data: Option[]): void;
 }
@@ -49,20 +49,34 @@ const newSelectedOptionsList = (
 export { newSelectedOptionsList };
 
 class OptionList extends React.Component<Props & WithNamespaces> {
+  _isExclusive(id: string): boolean {
+    if (Array.isArray(this.props.exclusiveOption)) {
+      // Array.includes() only available starting es7
+      let matched = false;
+      this.props.exclusiveOption.forEach(key => {
+        if (key === id) {
+          matched = true;
+        };
+      });
+      return matched;
+    }
+    return id === this.props.exclusiveOption;
+  }
+
   _onPressItem = (id: string) => {
     const dataItem = this.props.data.find(option => option.key === id);
     if (!!dataItem) {
       const toggled = !dataItem.selected;
 
       let data =
-        !this.props.multiSelect || this.props.exclusiveOption === id
+        !this.props.multiSelect || this._isExclusive(id)
           ? emptyList(this.props.data.map(option => option.key))
           : this.props.data.slice(0);
 
       data = data.map(option => {
         if (
           this.props.inclusiveOption === id &&
-          this.props.exclusiveOption !== option.key
+          !this._isExclusive(option.key)
         ) {
           return {
             key: option.key,
@@ -71,8 +85,8 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         }
 
         if (
-          this.props.exclusiveOption === option.key &&
-          this.props.exclusiveOption !== id
+          this._isExclusive(option.key) &&
+          !this._isExclusive(id)
         ) {
           return {
             key: option.key,
@@ -95,12 +109,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           selected: option.key === id ? toggled : option.selected,
         };
       });
-
-      if (
-        this.props.exclusiveOption != null &&
-        this.props.exclusiveOption !== id
-      ) {
-      }
+      
       this.props.onChange(data);
     }
   };
