@@ -951,7 +951,7 @@ class WhatSymptomsScreen extends React.Component<
         title={t("title")}
         onNext={() => this.props.navigation.push("WhenSymptoms")}
       >
-        <Divider />
+        <Divider style={{ marginBottom: 0 }} />
         <OptionQuestion
           question={WhatSymptomsConfig}
           getAnswer={this.props.getAnswer}
