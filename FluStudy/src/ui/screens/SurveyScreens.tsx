@@ -163,7 +163,7 @@ class WhatsNextScreen extends React.Component<
         <Screen
           canProceed={
             this.emailInput.current != null &&
-            this.emailInput.current!.isValid()
+            this.emailInput.current!.isValid(this.state.email)
           }
           desc={t("description")}
           imageSrc={require("../../img/why.png")}

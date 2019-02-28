@@ -304,7 +304,7 @@ class ConsentScreen extends React.PureComponent<
       !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
       (!!this.state.email &&
         this.emailInput.current != null &&
-        this.emailInput.current!.isValid())
+        this.emailInput.current!.isValid(this.state.email))
     );
   };
 
@@ -363,7 +363,11 @@ class ConsentScreen extends React.PureComponent<
             rightTextView={
               <Text
                 content={t("surveyTitle:" + ConsentConfig.title)}
-                style={{ alignSelf: "center", paddingLeft: GUTTER / 4 }}
+                style={{
+                  alignSelf: "center",
+                  fontSize: SMALL_TEXT,
+                  paddingLeft: GUTTER / 4,
+                }}
               />
             }
             style={{ alignSelf: "stretch", marginVertical: GUTTER }}

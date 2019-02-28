@@ -72,12 +72,10 @@ export default class EmailInput extends React.Component<Props, State> {
     this.textInput.current!.focus();
   }
 
-  isValid = (): boolean => {
+  isValid = (email: string | undefined = this.state.email): boolean => {
     // Top answer in https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
     const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return (
-      this.state.email != null && validationPattern.test(this.state.email!)
-    );
+    return email != null && validationPattern.test(email!);
   };
 }
 
