@@ -642,6 +642,7 @@ class ConfirmationScreen extends React.Component<
         desc={t("description")}
         imageSrc={require("../../img/confirmation.png")}
         navigation={this.props.navigation}
+        skipButton={true}
         title={t("confirmed")}
         onNext={() => {
           this.props.navigation.push("ExtraInfo");
@@ -654,7 +655,34 @@ class ConfirmationScreen extends React.Component<
           }
           */
         }}
-      />
+      >
+        <Links
+          links={[
+            {
+              label: t("links:learnLink"),
+              onPress: () => {
+                timestampInteraction("ExtraInfoScreen.links:learnLink");
+                learnMore();
+              },
+            },
+            {
+              label: t("links:medLink"),
+              onPress: () => {
+                timestampInteraction("ExtraInfoScreen.links:medLink");
+                findMedHelp();
+              },
+            },
+          ]}
+        />
+        <Text
+          content={t("disclaimer")}
+          style={{
+            alignSelf: "stretch",
+            fontSize: SMALL_TEXT,
+            marginBottom: GUTTER,
+          }}
+        />
+      </Screen>
     );
   }
 }
@@ -748,65 +776,3 @@ class PushNotificationsScreen extends React.Component<
 export const PushNotifications = withNamespaces("pushNotificationsScreen")<
   Props & PushProps
 >(PushNotificationsScreen);
-
-class InstructionsScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "InstructionsScreen",
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        imageSrc={require("../../img/instructions.png")}
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("instructions")}
-        onNext={() => {}}
-      />
-    );
-  }
-}
-export const Instructions = withNamespaces("instructionsScreen")<Props>(
-  InstructionsScreen
-);
-
-class ExtraInfoScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "ExtraInfoScreen",
-      <Screen
-        canProceed={true}
-        imageSrc={require("../../img/extraInfo.png")}
-        navigation={this.props.navigation}
-        title={t("extraInfo")}
-        onNext={() => {
-          this.props.navigation.push("Instructions");
-        }}
-      >
-        <View style={{ marginTop: GUTTER }} />
-        <Links
-          links={[
-            {
-              label: t("links:learnLink"),
-              onPress: () => {
-                timestampInteraction("ExtraInfoScreen.links:learnLink");
-                learnMore();
-              },
-            },
-            {
-              label: t("links:medLink"),
-              onPress: () => {
-                timestampInteraction("ExtraInfoScreen.links:medLink");
-                findMedHelp();
-              },
-            },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const ExtraInfo = withNamespaces("extraInfoScreen")<Props>(
-  ExtraInfoScreen
-);

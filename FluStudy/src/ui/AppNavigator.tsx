@@ -13,8 +13,6 @@ import {
   ConsentIneligible,
   Confirmation,
   PushNotifications,
-  Instructions,
-  ExtraInfo,
 } from "./screens/ScreeningScreens";
 import {
   WelcomeBack,
@@ -93,8 +91,6 @@ const Home = createStackNavigator(
     Address: AddressScreen,
     Confirmation,
     PushNotifications,
-    Instructions,
-    ExtraInfo,
     WelcomeBack,
     WhatsNext,
     Before,
