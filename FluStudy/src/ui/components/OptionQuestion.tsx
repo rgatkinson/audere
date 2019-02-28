@@ -31,7 +31,7 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
             question.optionList!.options,
             this.props.getAnswer("options", question.id)
           )}
-          exclusiveOption={question.optionList!.exclusiveOption}
+          exclusiveOptions={question.optionList!.exclusiveOptions}
           multiSelect={question.optionList!.multiSelect}
           numColumns={1}
           onChange={options => this.props.updateAnswer({ options }, question)}

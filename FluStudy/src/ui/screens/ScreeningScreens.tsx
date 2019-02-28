@@ -262,7 +262,7 @@ class SymptomsScreen extends React.PureComponent<
           )}
           multiSelect={true}
           numColumns={1}
-          exclusiveOption="noneOfTheAbove"
+          exclusiveOptions={["noneOfTheAbove"]}
           onChange={symptoms =>
             this.props.updateAnswer({ options: symptoms }, SymptomsConfig)
           }

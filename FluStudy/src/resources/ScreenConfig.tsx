@@ -24,7 +24,7 @@ export interface OptionListConfig {
   withOther: boolean;
   defaultOptions?: string[];
   otherPlaceholder?: string;
-  exclusiveOption?: string | string[];
+  exclusiveOptions?: string[];
   inclusiveOption?: string;
 }
 
@@ -80,7 +80,7 @@ export const SymptomsConfig: SurveyQuestionData = {
       "noneOfTheAbove",
     ],
     withOther: false,
-    exclusiveOption: "noneOfTheAbove",
+    exclusiveOptions: ["noneOfTheAbove"],
   },
   buttons: [{ key: "next", primary: true, enabled: true }],
 };
@@ -232,7 +232,7 @@ export const MedConditionsConfig: SurveyQuestionData = {
     multiSelect: true,
     options: ["asthma", "copd", "diabetes", "noneOfThese", "doNotKnow"],
     withOther: false,
-    exclusiveOption: ["noneOfThese", "doNotKnow"],
+    exclusiveOptions: ["noneOfThese", "doNotKnow"],
   },
 
   buttons: [],
@@ -319,7 +319,7 @@ export const RaceConfig: SurveyQuestionData = {
       "preferNotToSay",
     ],
     multiSelect: true,
-    exclusiveOption: "preferNotToSay",
+    exclusiveOptions: ["preferNotToSay"],
     withOther: false,
   },
 };
@@ -350,7 +350,7 @@ export const InsuranceConfig: SurveyQuestionData = {
     ],
     multiSelect: true,
     withOther: false,
-    exclusiveOption: ["noInsurance", "doNotKnow"],
+    exclusiveOptions: ["noInsurance", "doNotKnow"],
   },
 };
 

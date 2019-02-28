@@ -26,7 +26,7 @@ interface Props {
   data: Option[];
   multiSelect: boolean;
   numColumns: number;
-  exclusiveOption?: string | string[];
+  exclusiveOptions?: string[];
   inclusiveOption?: string;
   onChange(data: Option[]): void;
 }
@@ -51,17 +51,7 @@ export { newSelectedOptionsList };
 
 class OptionList extends React.Component<Props & WithNamespaces> {
   _isExclusive(id: string): boolean {
-    if (Array.isArray(this.props.exclusiveOption)) {
-      // Array.includes() only available starting es7
-      let matched = false;
-      this.props.exclusiveOption.forEach(key => {
-        if (key === id) {
-          matched = true;
-        }
-      });
-      return matched;
-    }
-    return id === this.props.exclusiveOption;
+    return (this.props.exclusiveOptions || []).some(key => key === id);
   }
 
   _onPressItem = (id: string) => {
