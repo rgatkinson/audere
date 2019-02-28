@@ -13,6 +13,7 @@ import {
 } from "../styles";
 
 interface Props {
+  demoMode?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -43,7 +44,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         <Text
           style={styles.title}
           center={true}
-          content={this.props.menuItem ? "" : "flu@home"}
+          content={this.props.menuItem || this.props.demoMode ? "" : "flu@home"}
         />
         <TouchableOpacity
           style={styles.actionContainer}

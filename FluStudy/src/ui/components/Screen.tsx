@@ -20,7 +20,13 @@ import NavigationBar from "./NavigationBar";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
-import { GUTTER, STATUS_BAR_HEIGHT, SYSTEM_PADDING_BOTTOM } from "../styles";
+import {
+  GUTTER,
+  NAV_BAR_HEIGHT,
+  EXTRA_SMALL_TEXT,
+  STATUS_BAR_HEIGHT,
+  SYSTEM_PADDING_BOTTOM,
+} from "../styles";
 
 interface Props {
   buttonLabel?: string;
@@ -116,7 +122,16 @@ class Screen extends React.Component<Props & WithNamespaces> {
           ]}
         >
           <StatusBar barStyle="light-content" backgroundColor="transparent" />
+          {this.props.isDemo && (
+            <Text
+              bold={true}
+              center={true}
+              content="Demo Mode"
+              style={styles.demoText}
+            />
+          )}
           <NavigationBar
+            demoMode={this.props.isDemo}
             hideBackButton={this.props.hideBackButton}
             menuItem={this.props.menuItem}
             navigation={this.props.navigation}
@@ -165,14 +180,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
               {this.props.footer}
             </View>
           </ScrollView>
-          {this.props.isDemo && (
-            <Text
-              bold={true}
-              center={true}
-              content="Demo Mode"
-              style={styles.demoText}
-            />
-          )}
         </View>
       </View>
     );
@@ -190,11 +197,11 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     color: "white",
     opacity: 0.75,
+    paddingTop: STATUS_BAR_HEIGHT + GUTTER / 2,
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 0,
-    height: GUTTER,
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
   footerContainer: {
     alignItems: "center",

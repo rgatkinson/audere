@@ -163,10 +163,8 @@ class WhatsNextScreen extends React.Component<
         <Screen
           canProceed={
             (!!this.props.email && this.state.email == this.props.email) ||
-            (
-              this.emailInput.current != null &&
-              this.emailInput.current!.isValid(this.state.email)
-            )
+            (this.emailInput.current != null &&
+              this.emailInput.current!.isValid(this.state.email))
           }
           desc={t("description")}
           imageSrc={require("../../img/why.png")}
@@ -915,10 +913,6 @@ export const StripInTube = withNamespaces("stripInTubeScreen")<Props>(
 class WhatSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onNext = () => {
-    this.props.navigation.push("WhenSymptoms");
-  };
-
   _haveOption = () => {
     const symptoms: Option[] = this.props.getAnswer(
       "options",
@@ -942,7 +936,7 @@ class WhatSymptomsScreen extends React.Component<
         desc={t("description")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={this._onNext}
+        onNext={() => this.props.navigation.push("WhenSymptoms")}
       >
         <Divider />
         <OptionQuestion
