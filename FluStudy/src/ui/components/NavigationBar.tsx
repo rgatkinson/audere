@@ -40,7 +40,11 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
         )}
-        <Text style={styles.title} center={true} content="flu@home" />
+        <Text
+          style={styles.title}
+          center={true}
+          content={this.props.menuItem ? "" : "flu@home"}
+        />
         <TouchableOpacity
           style={styles.actionContainer}
           onPress={() => this.props.navigation.openDrawer()}

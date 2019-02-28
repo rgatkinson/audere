@@ -282,7 +282,6 @@ interface ConsentProps {
 interface ConsentState {
   email?: string;
   keyboardOpen?: boolean;
-  validEmail: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -297,14 +296,15 @@ class ConsentScreen extends React.PureComponent<
     this.state = {
       email: props.email,
       keyboardOpen: true,
-      validEmail: !!props.email,
     };
   }
 
   _canProceed = (): boolean => {
     return (
       !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
-      (!!this.state.email && this.state.validEmail)
+      (!!this.state.email &&
+        this.emailInput.current != null &&
+        this.emailInput.current!.isValid())
     );
   };
 
@@ -322,6 +322,8 @@ class ConsentScreen extends React.PureComponent<
     );
     this.props.navigation.push("Address");
   };
+
+  emailInput = React.createRef<EmailInput>();
 
   render() {
     const { t } = this.props;
@@ -382,13 +384,11 @@ class ConsentScreen extends React.PureComponent<
               <EmailInput
                 autoFocus={true}
                 placeholder={t("emailAddress")}
+                ref={this.emailInput}
                 returnKeyType="next"
                 validationError={t("validationError")}
                 value={this.state.email}
-                onValidChange={validEmail => this.setState({ validEmail })}
-                onChange={(email, validEmail) =>
-                  this.setState({ email, validEmail })
-                }
+                onChange={email => this.setState({ email })}
               />
               <Text
                 content={t("privacyNotice")}

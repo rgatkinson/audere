@@ -11,8 +11,7 @@ interface Props extends React.Props<EmailInput> {
   returnKeyType: ReturnKeyTypeOptions;
   validationError: string;
   value?: string;
-  onValidChange(valid: boolean): void;
-  onChange(email: string, valid: boolean): void;
+  onChange(email: string): void;
 }
 
 interface State {
@@ -53,13 +52,13 @@ export default class EmailInput extends React.Component<Props, State> {
           value={this.state.email}
           onChangeText={(text: string) => {
             this.setState({ email: text });
-            this.props.onChange(text, this._isValid());
+            this.props.onChange(text);
           }}
-          onSubmitEditing={() => this.props.onValidChange(this._isValid())}
+          onSubmitEditing={() => {}}
         />
         <Text
           content={
-            !!this.state.email && !this._isValid() && !this.state.keyboardOpen
+            !!this.state.email && !this.isValid() && !this.state.keyboardOpen
               ? this.props.validationError
               : ""
           }
@@ -73,7 +72,7 @@ export default class EmailInput extends React.Component<Props, State> {
     this.textInput.current!.focus();
   }
 
-  _isValid = (): boolean => {
+  isValid = (): boolean => {
     // Top answer in https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
     const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     return (

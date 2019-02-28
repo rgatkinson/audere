@@ -61,7 +61,9 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
         if (nextScreen != null && nextScreen !== currentScreen) {
-          timestampInteraction(`navigation:${action.type}:${currentScreen}:${nextScreen}`);
+          timestampInteraction(
+            `navigation:${action.type}:${currentScreen}:${nextScreen}`
+          );
           store.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
         }
         return result;

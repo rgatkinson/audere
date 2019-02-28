@@ -150,9 +150,10 @@ class WhatsNextScreen extends React.Component<
     super(props);
     this.state = {
       email: props.email,
-      validEmail: !!props.email,
     };
   }
+
+  emailInput = React.createRef<EmailInput>();
 
   render() {
     const { t } = this.props;
@@ -160,7 +161,10 @@ class WhatsNextScreen extends React.Component<
       "WhatsNextScreen",
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
-          canProceed={this.state.validEmail}
+          canProceed={
+            this.emailInput.current != null &&
+            this.emailInput.current!.isValid()
+          }
           desc={t("description")}
           imageSrc={require("../../img/why.png")}
           navigation={this.props.navigation}
@@ -173,13 +177,11 @@ class WhatsNextScreen extends React.Component<
           <EmailInput
             autoFocus={this.props.navigation.isFocused()}
             placeholder={t("common:placeholder:enterEmail")}
+            ref={this.emailInput}
             returnKeyType="next"
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
-            onValidChange={validEmail => this.setState({ validEmail })}
-            onChange={(email, validEmail) =>
-              this.setState({ email, validEmail })
-            }
+            onChange={email => this.setState({ email })}
           />
         </Screen>
       </KeyboardAvoidingView>
@@ -2164,7 +2166,6 @@ interface EmailProps {
 
 interface EmailState {
   email?: string;
-  validEmail: boolean;
 }
 
 class EmailOptInScreen extends React.Component<

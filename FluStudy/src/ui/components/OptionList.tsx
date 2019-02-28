@@ -57,7 +57,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
       this.props.exclusiveOption.forEach(key => {
         if (key === id) {
           matched = true;
-        };
+        }
       });
       return matched;
     }
@@ -85,10 +85,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           };
         }
 
-        if (
-          this._isExclusive(option.key) &&
-          !this._isExclusive(id)
-        ) {
+        if (this._isExclusive(option.key) && !this._isExclusive(id)) {
           return {
             key: option.key,
             selected: false,
@@ -110,7 +107,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           selected: option.key === id ? toggled : option.selected,
         };
       });
-      
+
       this.props.onChange(data);
     }
   };
