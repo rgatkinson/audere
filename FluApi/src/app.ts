@@ -15,6 +15,7 @@ import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import logger from "./util/logger";
 import { ErrorRequestHandler } from "express-serve-static-core";
 import { SplitSql } from "./util/sql";
+import { FeverIncentivesEndpoint } from "./endpoints/feverIncentivesEndpoint";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -82,9 +83,16 @@ export function createInternalApp(sql: SplitSql) {
       (req, res, next) => hutchUploader.getEncounters(req, res, next)
     );
   }
+  
   internalApp.get(
     "/api/export/sendEncounters",
     (req, res, next) => hutchUploader.sendEncounters(req, res, next)
+  );
+  
+  const fever = new FeverIncentivesEndpoint(sql);
+  internalApp.get(
+    "/api/export/sendIncentives",
+    (req, res, next) => fever.sendIncentives(req, res, next)
   );
 
   return internalApp;

@@ -171,6 +171,7 @@ export class EncountersService {
     }
 
     const geocoded = await this.geocoder.geocodeAddresses(requests);
+    await this.geocoder.appendCensusTract(geocoded);
     return geocoded.reduce((map, x) => 
       this.multiMapAdd(map, x.id, x), new Map()
     );

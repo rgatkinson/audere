@@ -44,6 +44,10 @@ describe("geocoding service", () => {
       use: request.use,
       address: {
         canonicalAddress: addressComponents.join(", "),
+        address1: request.line[0],
+        address2: request.line[1],
+        city: request.city,
+        state: request.state,
         latitude: lat,
         longitude: lng,
         postalCode: postalCode
@@ -85,16 +89,13 @@ describe("geocoding service", () => {
   describe("geocode addresses", () => {
     it("should call to format address & get lat/long", async () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded, workCoded];
-      let censusService = mock(CensusTractService);
-      when(censusService.lookupCensusTract(anything())).thenResolve(new Map());
       let geoService: GeocodingService = new GeocodingService(
         makeClient(geoResponse),
-        instance(censusService)
+        undefined
       );
 
       let result = await geoService.geocodeAddresses(new Map([[1, addresses]]));
 
-      verify(censusService.lookupCensusTract(anything())).called();
       expect(result.length).toBe(2);
       
       const homeResponse = result.find(
@@ -124,11 +125,11 @@ describe("geocoding service", () => {
       let censusService = mock(CensusTractService);
       when(censusService.lookupCensusTract(anything())).thenResolve(tracts);
       let geoService: GeocodingService = new GeocodingService(
-        makeClient(geoResponse),
+        undefined,
         instance(censusService)
       );
 
-      let result = await geoService.geocodeAddresses(new Map([[1, addresses]]));
+      let result = await geoService.appendCensusTract([homeCoded, workCoded]);
 
       verify(censusService.lookupCensusTract(anything())).called();
       expect(result.length).toBe(2);

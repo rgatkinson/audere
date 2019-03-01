@@ -34,15 +34,14 @@ export class GeocodingService {
   public async geocodeAddresses(
     addresses: Map<number, AddressInfo[]>
   ): Promise<GeocodingResponse[]> {
-    const geocoded = await this.geocoder.geocode(addresses);
-    return this.appendCensusTract(geocoded);
+    return this.geocoder.geocode(addresses);
   }
 
   /**
    * Optionally adds census geo id if it can be found.
    * @param addresses Geocoded address data lacking census tract information.
    */
-  private async appendCensusTract(
+  public async appendCensusTract(
     addresses: GeocodingResponse[]
   ): Promise<GeocodingResponse[]> {
     const latlng: LatLng[] = addresses

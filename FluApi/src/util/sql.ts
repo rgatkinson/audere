@@ -65,6 +65,9 @@ export function defineModel<Attr>(
   return sql.define<Inst<Attr>, Attr>(name, attr, { freezeTableName: true });
 }
 
+export function primaryKey(column) {
+  return { ...column, primaryKey: true };
+}
 export function unique(column) {
   return { ...column, unique: true };
 }

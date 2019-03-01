@@ -10,10 +10,12 @@ import {
   Model,
   SplitSql,
   stringColumn,
+  integerColumn,
   booleanColumn,
   jsonColumn,
   unique,
-} from "../util/sql"
+  primaryKey,
+} from "../util/sql";
 import {
   DeviceInfo,
   PIIInfo,
@@ -165,3 +167,57 @@ export function defineSurvey<Info>(
 }
 export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
 export type SurveyModel<Info> = Model<SurveyAttributes<Info>>;
+
+// ---------------------------------------------------------------
+
+export interface BatchAttributes {
+  id: number;
+  uploaded: boolean;
+}
+export function defineIncentiveBatch(sql: Sequelize): Model<BatchAttributes> {
+  return defineModel<BatchAttributes>(
+    sql,
+    "fever_incentive_batch",
+    {
+      id: primaryKey(integerColumn()),
+      uploaded: booleanColumn()
+    }
+  );
+}
+
+export interface BatchItemAttributes {
+  id?: number;
+  batchId: number;
+  surveyId: number;
+}
+export function defineIncentiveItem(
+  sql: Sequelize
+): Model<BatchItemAttributes> {
+  return defineModel<BatchItemAttributes>(
+    sql,
+    "fever_incentive_item",
+    {  
+      id: primaryKey(integerColumn()),
+      batchId: integerColumn(),
+      surveyId: integerColumn()
+    }
+  );
+}
+
+export interface BatchDiscardAttributes {
+  id?: number,
+  batchId: number,
+  workflowId: number
+}
+export function defineIncentiveDiscard(
+  sql: Sequelize
+): Model<BatchDiscardAttributes> {
+  return defineModel<BatchDiscardAttributes>(
+    sql,
+    "fever_incentive_discard",
+    {
+      batchId: integerColumn(),
+      workflowId: integerColumn()
+    }
+  )
+}

@@ -7,11 +7,9 @@ import { SplitSql, Model } from "./sql";
 import { SecretAttributes, defineSecret } from "../models/secrets";
 
 export class SecretConfig {
-  private readonly sql: SplitSql;
   private readonly secretModel: Model<SecretAttributes>;
 
   constructor(sql: SplitSql) {
-    this.sql = sql;
     this.secretModel = defineSecret(sql);
   }
 

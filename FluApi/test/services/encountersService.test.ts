@@ -95,6 +95,9 @@ describe("encounters service", () => {
         use: AddressInfoUse.Home,
         address: {
           canonicalAddress: "Home",
+          address1: "123 Street",
+          city: "West Someplace",
+          state: "AB",
           latitude: 10,
           longitude: -10,
           postalCode: "99999",
@@ -106,6 +109,9 @@ describe("encounters service", () => {
         use: AddressInfoUse.Work,
         address: {
           canonicalAddress: "Work",
+          address1: "123 Avenue",
+          city: "East Bay",
+          state: "CD",
           latitude: -20,
           longitude: 20,
           postalCode: "99999",

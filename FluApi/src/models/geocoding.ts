@@ -13,8 +13,12 @@ export interface GeocodingResponse {
 
 export interface GeocodedAddress {
   canonicalAddress: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
   latitude: number;
   longitude: number;
-  postalCode: string;
   censusTract?: string;
 }

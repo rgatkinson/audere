@@ -116,20 +116,20 @@ export class SmartyStreetsGeocoder implements Geocoder {
         const latitude = result.metadata.latitude;
         const longitude = result.metadata.longitude;
 
-        let postalCode: string
-
-        if (result.components != null) {
-          postalCode = result.components.zipCode;
-        }
+        const { cityName, state, zipCode }: any = result.components || {};
 
         const r: GeocodingResponse = {
           id: id,
           use: use,
           address: {
             canonicalAddress: address.length > 0 ? address : undefined,
+            address1: result.deliveryLine1,
+            address2: result.deliveryLine2,
+            city: cityName,
+            state: state,
             latitude: latitude,
             longitude: longitude,
-            postalCode: postalCode
+            postalCode: zipCode
           }
         };
 

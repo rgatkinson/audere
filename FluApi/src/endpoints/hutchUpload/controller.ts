@@ -10,11 +10,6 @@ import {
   getHashSecret
 } from "../../util/exportConfig";
 import logger from "../../util/logger";
-import { GeocodingService } from "../../services/geocodingService";
-import { SmartyStreetsGeocoder } from "../../external/smartyStreetsGeocoder";
-import { CensusTractService } from "../../services/censusTractService";
-import { getGeocodingConfig } from "../../util/geocodingConfig";
-import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 import axios, { AxiosInstance } from "axios";
 import { HutchUploader } from "../../external/hutchUploader";
 import { VisitsService } from "../../services/visitsService";
@@ -23,6 +18,7 @@ import { getHutchConfig } from "../../util/hutchUploadConfig";
 import { defineSnifflesModels } from "../../models/sniffles";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
+import { createGeocoder } from "../../util/geocoder";
 
 export class HutchUploaderEndpoint {
   private readonly sql: SplitSql;
@@ -99,31 +95,9 @@ function createAxios(baseURL): AxiosInstance {
 }
 
 async function createEncountersService(sql: SplitSql): Promise<EncountersService> {
+  const geocoder = await createGeocoder(sql);
+
   const secrets = new SecretConfig(sql);
-
-  const geoConfig = await getGeocodingConfig(secrets);
-  const geo = SmartyStreetsSDK.core;
-  const credentials = new geo.StaticCredentials(geoConfig.authId, geoConfig.authToken);
-
-  let geoClient;
-
-  // Specifying base URL is leveraged in tests.
-  if (
-    geoConfig.baseUrl &&
-    (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
-  ) {
-    geoClient = new geo.ClientBuilder(credentials)
-      .withBaseUrl(geoConfig.baseUrl)
-      .buildUsStreetApiClient();
-  } else {
-    geoClient = new geo.ClientBuilder(credentials).buildUsStreetApiClient();
-  }
-
-  const geocoder: GeocodingService = new GeocodingService(
-    new SmartyStreetsGeocoder(geoClient),
-    new CensusTractService(sql.nonPii)
-  );
-
   const hutchUploadModel = defineHutchUpload(sql);
   const hutchConfig = await getHutchConfig(secrets);
   const axiosClient = await createAxios(hutchConfig.baseUrl);
