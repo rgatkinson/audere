@@ -180,20 +180,7 @@ class SymptomsScreen extends React.PureComponent<
   _onNext = () => {
     const { t } = this.props;
     if (this._numSymptoms() > 1 && this._haveCough()) {
-      Alert.alert(t("thankYou"), t("nextStep"), [
-        {
-          text: t("noThanks"),
-          onPress: () => {
-            this.props.navigation.push("ConsentIneligible");
-          },
-        },
-        {
-          text: t("viewConsent"),
-          onPress: () => {
-            this.props.navigation.push("Consent");
-          },
-        },
-      ]);
+      this.props.navigation.push("Consent");
     } else {
       this.props.navigation.push("SymptomsIneligible");
     }

@@ -167,11 +167,7 @@
     "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
   },
   "symptomsScreen": {
-    "symptoms": "Symptoms",
-    "noThanks": "No thanks",
-    "viewConsent": "View consent",
-    "thankYou": "Thank you",
-    "nextStep": "The next step is to obtain your consent to participate. Please read the consent form carefully, and click \"I consent\" to continue"
+    "symptoms": "Symptoms"
   },
   "welcomeScreen": {
     "welcome": "Welcome",
