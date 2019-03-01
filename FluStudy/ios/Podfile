@@ -68,6 +68,8 @@ target 'fluathome' do
   pod 'EXSMS',
     :path => "../node_modules/expo-sms/ios"
 
+  pod 'Firebase/Core'
+
   pod 'React',
     :path => "../node_modules/react-native",
     :inhibit_warnings => true,

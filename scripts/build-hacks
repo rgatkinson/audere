@@ -5,22 +5,33 @@
 # can be found in the LICENSE file distributed with this file.
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
 
-if grep -q HEADER_SEARCH_PATH "$FILE";
+NOTIF_FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
+FIREBASE_FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
+
+if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE";
 then
  echo "No need to update"
 else
-echo "Updating"
+echo "Updating RCTNotification build search paths"
 match='LIBRARY_SEARCH_PATHS'
 insert='HEADER_SEARCH_PATHS = (\
 					"\\"$(SRCROOT)\/..\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/\\"\/**",\
 					"\\"$(SRCROOT)\/..\/..\/ReactCommon\/yoga\\"",\
 				);\
 				'
-FILEBAK="$FILE.bak"
-sed -i.bak "s/$match/$insert$match/" $FILE && rm $FILEBAK
+FILEBAK="$NOTIF_FILE.bak"
+sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
 fi
+
+echo "Updating Firebase build search paths"
+match='HEADER_SEARCH_PATHS = .+?;'
+replace='HEADER_SEARCH_PATHS = (\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/**",\
+				);'
+FILEBAK="$FIREBASE_FILE.bak"
+perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
 EXBUILDCONSTANTS="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/EXBuildConstants.plist"

@@ -91,6 +91,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "react-native-check-box": "^2.1.7",
     "react-native-datepicker": "^1.7.2",
+    "react-native-firebase": "^5.2.3",
     "react-native-get-random-values": "balderdash/react-native-get-random-values#v1.2.0-pre2",
     "react-native-keyboard-aware-scroll-view": "^0.7.4",
     "react-native-keyboard-listener": "^1.1.0",
