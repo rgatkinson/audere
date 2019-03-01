@@ -209,7 +209,7 @@
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",
     "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your phone and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at: (509) 593-3964.\n\nWant to learn more?",
-    "disclaimer": "The kit is for your use only. Please do not share or use the kit with anyone else after you receieve it."
+    "disclaimer": "The kit is for your use only. Please do not share or use the kit with anyone else after you receive it."
   },
   "pushNotificationsScreen": {
     "pushNotifications": "May we send you push notifications?",
