@@ -396,7 +396,6 @@ export const FirstTestFeedbackConfig: SurveyQuestionData = {
     { key: "confusingCorrect", primary: false, enabled: true },
     { key: "confusingNotCorrect", primary: false, enabled: true },
     { key: "incorrect", primary: false, enabled: true },
-    { key: "missingMaterials", primary: false, enabled: true },
   ],
 };
 
@@ -409,7 +408,6 @@ export const SecondTestFeedbackConfig: SurveyQuestionData = {
     { key: "confusingCorrect", primary: false, enabled: true },
     { key: "confusingNotCorrect", primary: false, enabled: true },
     { key: "incorrect", primary: false, enabled: true },
-    { key: "missingMaterials", primary: false, enabled: true },
   ],
 };
 
