@@ -1667,10 +1667,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
           <Text
             center={true}
             content={t("title")}
-            style={[
-              cameraStyles.overlayText,
-              { fontSize: LARGE_TEXT, lineHeight: LARGE_TEXT },
-            ]}
+            style={[cameraStyles.overlayText, { fontSize: LARGE_TEXT }]}
           />
           <View style={cameraStyles.targetBox}>
             <Image

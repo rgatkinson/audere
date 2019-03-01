@@ -28,6 +28,7 @@
     "step": "**Step {{step}}** of {{total}}"
   },
   "monthPicker": {
+    "selectDate": "Select date",
     "january": "January",
     "february": "February",
     "march": "March",
@@ -265,7 +266,7 @@
   },
   "unpackingScreen": {
     "title": "Unpacking Instructions",
-    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number **①**, a bag with a number **②**, a bag with a number **③**, and some bubble wrap.",
+    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number ①①, a bag with a number **②**, a bag with a number ③③, and some bubble wrap.",
     "kitMissingItems": "Is your kit missing items? Email us"
   },
   "swabScreen": {
@@ -282,7 +283,7 @@
   },
   "swabInTubeScreen": {
     "title": "Put swab in tube",
-    "description": "Place the swab into the tube sitting in box ①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
+    "description": "Place the swab into the tube sitting in box ①①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "firstTimerScreen": {
@@ -299,7 +300,7 @@
   },
   "openTestStripScreen": {
     "title": "Open test strip",
-    "description": "Inside the same box ① you'll find a test strip in a foil pouch. Open this package, being careful to ONLY hold it at the very top."
+    "description": "Inside the same box ①① you'll find a test strip in a foil pouch. Open this package, being careful to ONLY hold it at the very top."
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
@@ -324,7 +325,7 @@
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①. Try not to cover the other hole in the box--you'll be using that in a moment."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①①. Try not to cover the other hole in the box--you'll be using that in a moment."
   },
   "testStripTimerScreen": {
     "title": "Time Remaining: **{{time}}**",
@@ -358,11 +359,11 @@
   },
   "cleanFirstTestScreen": {
     "title": "Clean up the first test",
-    "step1": "Inside box ① with the two holes, find the medium-sized bag with a barcode on it.",
+    "step1": "Inside box ①① with the two holes, find the medium-sized bag with a barcode on it.",
     "step2": "Put the test strip inside this bag and close it.",
-    "step3": "Open bag ② and lay its contents in front of you.",
-    "step4": "Place the test strip bag and the tube you already used into bag ②. Please ensure the stopper is tight on the tube.",
-    "step5": "Inside box ① with the two holes, find the medium-sized bag with a barcode on it.",
+    "step3": "Open bag ②② and lay its contents in front of you.",
+    "step4": "Place the test strip bag and the tube you already used into bag ②②. Please ensure the stopper is tight on the tube.",
+    "step5": "Inside box ①① with the two holes, find the medium-sized bag with a barcode on it.",
     "step6": "Keep the box in front of you. You'll need it for the next test."
   },
   "firstTestFeedbackScreen": {
@@ -370,7 +371,7 @@
   },
   "beginSecondTestScreen": {
     "title": "Begin the second test",
-    "description": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nBag ② had a large tube in it and another nose swab. Place the large tube in the perforated hole in the box so it's standing up."
+    "description": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nBag ②② had a large tube in it and another nose swab. Place the large tube in the perforated hole in the box so it's standing up."
   },
   "prepSecondTestScreen": {
     "title": "Prepare for the test",
@@ -386,22 +387,22 @@
   },
   "cleanSecondTestScreen": {
     "title": "Clean up the second test",
-    "description": "Put the larger tube into the same bag ② as the other items to be returned.\n\nPlace the absorbent material that was originally in bag ② back into that bag."
+    "description": "Put the larger tube into the same bag ②② as the other items to be returned.\n\nPlace the absorbent material that was originally in bag ②② back into that bag."
   },
   "secondTestFeedbackScreen": {
     "title": "Nice job with the second (and final) test!"
   },
   "packingScreen": {
     "title": "Packing things up",
-    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③. Inside, you'll find everything you need to pack up your box."
+    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③③. Inside, you'll find everything you need to pack up your box."
   },
   "stickersScreen": {
     "title": "Put stickers on the box",
     "description": "Apply the return mailing label to the outside of the box, OVER the label with your address on it.\n\nAdd the UN3373 stickers to the side of the box. This sticker just means there are samples inside."
   },
   "secondBagScreen": {
-    "title": "Put bag ② in the box",
-    "description": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ②  using the sticky strip on the top of the bag and ensure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items (below), or put them in the box if it's easier:\n- Swab used in first test\n- Packaging for both swabs and the test strip [see comment]\n- Bag ③\n- Box with two holes in it"
+    "title": "Put bag ②② in the box",
+    "description": "Bag ②② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ②②  using the sticky strip on the top of the bag and ensure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items (below), or put them in the box if it's easier:\n- Swab used in first test\n- Packaging for both swabs and the test strip [see comment]\n- Bag ③③\n- Box with two holes in it"
   },
   "tapeBoxScreen": {
     "title": "Tape up the box",
