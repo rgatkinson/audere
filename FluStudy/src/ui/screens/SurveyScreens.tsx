@@ -1075,7 +1075,6 @@ class WhenSymptomsScreen extends React.Component<
         })}
         <QuestionText
           required={Last48Config.required}
-          subtext={t("surveyDescription:" + Last48Config.description)}
           text={t("surveyTitle:" + Last48Config.title)}
         />
         {this.state.last48Configs.map((config: SurveyQuestionData) => {

@@ -124,7 +124,6 @@ export const SymptomsStartConfig: SurveyQuestionData = {
 export const Last48Config: SurveyQuestionData = {
   id: "SymptomsLast48",
   title: "symptomsLast48",
-  description: "selectAll",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
