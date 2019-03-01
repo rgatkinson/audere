@@ -147,8 +147,8 @@
   },
   "surveyDescription": {
     "addressDesc": "Please provide a mailing address so we may mail a flu test kit for you to run at home.",
-    "selectAll": "Please select all that apply",
-    "selectMostApplicable": "Please select the most applicable option",
+    "selectAll": "Select all that apply",
+    "selectMostApplicable": "Select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
     "feelingFeverish": "Fever",
     "chillsOrSweats": "Chills or sweats",
