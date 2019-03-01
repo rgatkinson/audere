@@ -760,7 +760,8 @@ data "aws_iam_policy_document" "infrastructurer_access" {
   statement {
     actions = [
       "rds:Describe*",
-      "rds:ListTagsForResource"
+      "rds:DownloadDBLogFilePortion",
+      "rds:ListTagsForResource",
     ]
 
     resources = ["*"]
