@@ -1,8 +1,21 @@
 import React from "react";
-import { Picker } from "react-native";
+import {
+  Dimensions,
+  Picker,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import BorderView from "./BorderView";
-import { GUTTER, SECONDARY_COLOR } from "../styles";
+import Modal from "./Modal";
+import Text from "./Text";
+import {
+  BORDER_COLOR,
+  GUTTER,
+  INPUT_HEIGHT,
+  LINK_COLOR,
+  SECONDARY_COLOR,
+} from "../styles";
 
 const months = [
   "january",
@@ -19,6 +32,65 @@ const months = [
   "december",
 ];
 
+interface MonthModalProps {
+  date: Date;
+  options: Date[];
+  visible: boolean;
+  onDismiss(date: Date): void;
+}
+
+interface MonthModalState {
+  date: Date | null;
+}
+
+class MonthModal extends React.Component<
+  MonthModalProps & WithNamespaces,
+  MonthModalState
+> {
+  state = {
+    date: null,
+  };
+
+  _getDate = (): Date => {
+    if (this.state.date != null) {
+      return this.state.date!;
+    }
+    return this.props.date;
+  };
+
+  render() {
+    const { t } = this.props;
+    const { width } = Dimensions.get("window");
+    return (
+      <Modal
+        height={280}
+        width={width * 0.75}
+        submitText={t("common:button:done")}
+        visible={this.props.visible}
+        onDismiss={() => this.props.onDismiss(this.props.date)}
+        onSubmit={() => this.props.onDismiss(this._getDate())}
+      >
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <Picker
+            selectedValue={this._getDate().getTime()}
+            style={{ alignSelf: "stretch", justifyContent: "center" }}
+            onValueChange={time => this.setState({ date: new Date(time) })}
+          >
+            {this.props.options.map(date => (
+              <Picker.Item
+                label={t(months[date.getMonth()]) + " " + date.getFullYear()}
+                value={date.getTime()}
+                key={date.getTime()}
+              />
+            ))}
+          </Picker>
+        </View>
+      </Modal>
+    );
+  }
+}
+const TranslatedMonthModal = withNamespaces("monthPicker")(MonthModal);
+
 interface Props {
   date?: Date;
   startDate: Date;
@@ -26,9 +98,11 @@ interface Props {
   onDateChange(date: Date): void;
 }
 
-const NUM_OPTIONS = 18;
-
 class MonthPicker extends React.Component<Props & WithNamespaces> {
+  state = {
+    pickerOpen: false,
+  };
+
   _getOptions(): Date[] {
     const options = [];
 
@@ -57,54 +131,58 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
-  _getSelectedTime(): number {
+  _getSelectedDate(): Date {
     return !!this.props.date
-      ? this.props.date.getTime()
+      ? this.props.date
       : new Date(
           this.props.endDate.getFullYear(),
           this.props.endDate.getMonth()
-        ).getTime();
-  }
-
-  componentDidMount() {
-    // We need this because by default, Picker doesn't send an onValueChange
-    // upon initial render.  So if the user leaves the value at its default
-    // selected value, the parent of this component never updates its date
-    // otherwise.
-    this.props.onDateChange(new Date(this._getSelectedTime()));
+        );
   }
 
   render() {
     const { t } = this.props;
     const now = new Date();
+
     return (
-      <BorderView>
-        <Picker
-          selectedValue={this._getSelectedTime()}
-          style={{
-            alignSelf: "stretch",
-            height: 140,
-            justifyContent: "center",
-            overflow: "hidden",
-          }}
-          onValueChange={time => this.props.onDateChange(new Date(time))}
+      <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
+        <TouchableOpacity
+          style={styles.pickerContainer}
+          onPress={() => this.setState({ pickerOpen: true })}
         >
-          {this._getOptions().map(date => (
-            <Picker.Item
-              color={
-                date.getTime() === this._getSelectedTime()
-                  ? SECONDARY_COLOR
-                  : undefined
-              }
-              label={t(months[date.getMonth()]) + " " + date.getFullYear()}
-              value={date.getTime()}
-              key={date.getTime()}
-            />
-          ))}
-        </Picker>
-      </BorderView>
+          <Text
+            content={
+              !!this.props.date
+                ? t(months[this.props.date.getMonth()]) +
+                  " " +
+                  this.props.date.getFullYear()
+                : t("selectDate")
+            }
+            style={{ color: !!this.props.date ? SECONDARY_COLOR : LINK_COLOR }}
+          />
+        </TouchableOpacity>
+        <TranslatedMonthModal
+          options={this._getOptions()}
+          date={this._getSelectedDate()}
+          visible={this.state.pickerOpen}
+          onDismiss={(date: Date) => {
+            this.setState({ pickerOpen: false });
+            this.props.onDateChange(date);
+          }}
+        />
+      </View>
     );
   }
 }
 
+const styles = StyleSheet.create({
+  pickerContainer: {
+    borderBottomColor: BORDER_COLOR,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    height: INPUT_HEIGHT,
+    justifyContent: "center",
+    padding: GUTTER / 4,
+  },
+});
 export default withNamespaces("monthPicker")(MonthPicker);
