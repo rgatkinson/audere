@@ -78,7 +78,6 @@ function linkify(
 
   let elements: (JSX.Element | string)[] = [];
   let toProcess = text;
-  let linkIndex = 0;
 
   links.forEach(link => {
     // Output whatever precedes the link as a pure string
@@ -89,7 +88,7 @@ function linkify(
     // Now the link itself
     elements.push(
       <SystemText
-        key={linkIndex++}
+        key={link.url}
         style={style}
         onPress={() => {
           Linking.openURL(link.url);
@@ -111,7 +110,7 @@ function linkify(
 }
 
 export default class Text extends React.Component<Props> {
-  _oneReplace(str: string, bold: boolean) {
+  _oneReplace(str: string, bold: boolean, contentKey: string) {
     return str
       .split("①")
       .map(
@@ -124,12 +123,12 @@ export default class Text extends React.Component<Props> {
               size={20}
             />
           ) : (
-            this._twoReplace(subStr, bold)
+            this._twoReplace(subStr, bold, contentKey)
           )
       );
   }
 
-  _twoReplace(str: string, bold: boolean) {
+  _twoReplace(str: string, bold: boolean, contentKey: string) {
     return str
       .split("②")
       .map(
@@ -142,12 +141,12 @@ export default class Text extends React.Component<Props> {
               size={20}
             />
           ) : (
-            this._threeReplace(subStr, bold)
+            this._threeReplace(subStr, bold, contentKey)
           )
       );
   }
 
-  _threeReplace(str: string, bold: boolean) {
+  _threeReplace(str: string, bold: boolean, contentKey: string) {
     return str
       .split("③")
       .map(
@@ -160,14 +159,17 @@ export default class Text extends React.Component<Props> {
               size={20}
             />
           ) : (
-            this._makeBold(subStr, bold)
+            this._makeBold(subStr, bold, contentKey)
           )
       );
   }
 
-  _makeBold(content: string, bold: boolean) {
+  _makeBold(content: string, bold: boolean, contentKey: string) {
     return bold ? (
-      <SystemText style={this.props.extraBold ? styles.extraBold : styles.bold}>
+      <SystemText
+        key={contentKey + content}
+        style={this.props.extraBold ? styles.extraBold : styles.bold}
+      >
         {linkify(content, this.props.linkStyle || styles.linkStyle)}
       </SystemText>
     ) : (
@@ -189,7 +191,7 @@ export default class Text extends React.Component<Props> {
       >
         {this.props.content
           .split("**")
-          .map((str, i) => this._oneReplace(str, i % 2 == 1))}
+          .map((str, i) => this._oneReplace(str, i % 2 == 1, i.toString()))}
       </SystemText>
     );
   }
