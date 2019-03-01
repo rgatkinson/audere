@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Linking,
   StyleProp,
   StyleSheet,
   Text as SystemText,
@@ -14,6 +15,7 @@ import {
   FONT_ITALIC,
   FONT_NORMAL,
   GUTTER,
+  LINK_COLOR,
   REGULAR_TEXT,
   TEXT_COLOR,
 } from "../styles";
@@ -25,7 +27,87 @@ interface Props {
   extraBold?: boolean;
   italic?: boolean;
   style?: StyleProp<TextStyle>;
+  linkStyle?: StyleProp<TextStyle>;
   onPress?: () => any;
+}
+
+interface LinkData {
+  startIndex: number;
+  length: number;
+  title: string;
+  url: string;
+}
+
+function findMarkdownLinks(text: string): LinkData[] {
+  const linkRegex = /\[(.+?)\]\((.+?)\)/;
+  let toProcess = text;
+  let links = [];
+
+  while (toProcess.length > 0) {
+    const match = toProcess.match(linkRegex);
+
+    if (match) {
+      const startIndex = match["index"]!;
+      const length = match[0].length;
+
+      links.push({
+        startIndex,
+        length,
+        title: match[1],
+        url: match[2],
+      });
+
+      toProcess = toProcess.substr(startIndex + length);
+    } else {
+      toProcess = "";
+    }
+  }
+
+  return links;
+}
+
+function linkify(
+  text: string,
+  style?: StyleProp<TextStyle>
+): (JSX.Element | string)[] {
+  const links = findMarkdownLinks(text);
+
+  if (links.length == 0) {
+    return [text];
+  }
+
+  let elements: (JSX.Element | string)[] = [];
+  let toProcess = text;
+  let linkIndex = 0;
+
+  links.forEach(link => {
+    // Output whatever precedes the link as a pure string
+    if (link.startIndex > 0) {
+      elements.push(toProcess.substr(0, link.startIndex));
+    }
+
+    // Now the link itself
+    elements.push(
+      <SystemText
+        key={linkIndex++}
+        style={style}
+        onPress={() => {
+          Linking.openURL(link.url);
+        }}
+      >
+        {link.title}
+      </SystemText>
+    );
+
+    toProcess = toProcess.substr(link.startIndex + link.length);
+  });
+
+  // Tack on anything that follows the final link
+  if (toProcess.length > 0) {
+    elements.push(toProcess);
+  }
+
+  return elements;
 }
 
 export default class Text extends React.Component<Props> {
@@ -85,10 +167,10 @@ export default class Text extends React.Component<Props> {
 
   _makeBold(content: string, bold: boolean) {
     return bold ? (
-      content
+      linkify(content, this.props.linkStyle || styles.linkStyle)
     ) : (
       <SystemText style={this.props.extraBold ? styles.extraBold : styles.bold}>
-        {content}
+        {linkify(content, this.props.linkStyle || styles.linkStyle)}
       </SystemText>
     );
   }
@@ -130,5 +212,8 @@ const styles = StyleSheet.create({
   },
   italic: {
     fontFamily: FONT_ITALIC,
+  },
+  linkStyle: {
+    color: LINK_COLOR,
   },
 });
