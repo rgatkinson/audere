@@ -13,7 +13,7 @@ import {
   booleanColumn,
   jsonColumn,
   unique,
-} from "../../util/sql"
+} from "../util/sql"
 import {
   DeviceInfo,
   PIIInfo,

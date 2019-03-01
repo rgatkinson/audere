@@ -18,10 +18,10 @@ import {
   AnalyticsDocument,
   PhotoDocument
 } from "audere-lib/feverProtocol";
-import { defineFeverModels, FeverModels } from "./models";
-import { sendEmail } from "../../util/email";
-import logger from "../../util/logger";
-import { SplitSql } from "../../util/sql";
+import { defineFeverModels, FeverModels } from "../models/fever";
+import { sendEmail } from "../util/email";
+import logger from "../util/logger";
+import { SplitSql } from "../util/sql";
 
 const clientLogger = createLogger({
   transports: [

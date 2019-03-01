@@ -16,7 +16,7 @@ import {
   makeCSRUID
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
-import { defineFeverModels } from "../../src/services/feverApi/models";
+import { defineFeverModels } from "../../src/models/fever";
 
 describe("putFeverDocument", () => {
   let sql;

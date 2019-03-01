@@ -3,26 +3,26 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { EncountersService } from "../services/encountersService";
+import { EncountersService } from "../../services/encountersService";
 import {
   defaultNumEncounters,
   hutchConcurrentUploads,
   getHashSecret
-} from "../util/exportConfig";
-import logger from "../util/logger";
-import { GeocodingService } from "../services/geocodingService";
-import { SmartyStreetsGeocoder } from "../external/smartyStreetsGeocoder";
-import { CensusTractService } from "../services/censusTractService";
-import { getGeocodingConfig } from "../util/geocodingConfig";
+} from "../../util/exportConfig";
+import logger from "../../util/logger";
+import { GeocodingService } from "../../services/geocodingService";
+import { SmartyStreetsGeocoder } from "../../external/smartyStreetsGeocoder";
+import { CensusTractService } from "../../services/censusTractService";
+import { getGeocodingConfig } from "../../util/geocodingConfig";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 import axios, { AxiosInstance } from "axios";
-import { HutchUploader } from "../external/hutchUploader";
-import { VisitsService } from "../services/visitsService";
-import { defineHutchUpload } from "../models/hutchUpload";
-import { getHutchConfig } from "../util/hutchUploadConfig";
-import { defineSnifflesModels } from "../models/sniffles";
-import { SplitSql } from "../util/sql";
-import { SecretConfig } from "../util/secretsConfig";
+import { HutchUploader } from "../../external/hutchUploader";
+import { VisitsService } from "../../services/visitsService";
+import { defineHutchUpload } from "../../models/hutchUpload";
+import { getHutchConfig } from "../../util/hutchUploadConfig";
+import { defineSnifflesModels } from "../../models/sniffles";
+import { SplitSql } from "../../util/sql";
+import { SecretConfig } from "../../util/secretsConfig";
 
 export class HutchUploaderEndpoint {
   private readonly sql: SplitSql;

@@ -23,7 +23,7 @@ import { createSplitSql, Inst } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
 import { defineSnifflesModels, LogBatchAttributes } from "../src/models/sniffles";
 import { LogRecordInfo, DeviceInfo } from "audere-lib/snifflesProtocol";
-import { defineFeverModels } from "../src/services/feverApi/models";
+import { defineFeverModels } from "../src/models/fever";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
