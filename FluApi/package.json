@@ -45,7 +45,8 @@
     "sequelize": "^4.39.0",
     "sequelize-log-syntax-colors": "^2.0.0",
     "smartystreets-javascript-sdk": "^1.1.8",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "winston-cloudwatch": "^2.0.5"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",

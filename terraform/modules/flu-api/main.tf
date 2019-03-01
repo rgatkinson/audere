@@ -196,3 +196,16 @@ module "devs" {
   source = "../devs"
   userids = "${var.devs}"
 }
+
+// --------------------------------------------------------------------------------
+// CloudWatch log group
+
+resource "aws_cloudwatch_log_group" "flu_api_log_group" {
+  name = "flu_api_${var.environment}"
+  retention_in_days = 30
+
+  tags = {
+    environment = "${var.environment}"
+    application = "FluApi"
+  }
+}
