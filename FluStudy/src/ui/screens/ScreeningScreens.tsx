@@ -94,7 +94,8 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../../img/why.png")}
+        imageAspectRatio={1.75}
+        stableImageSrc={require("../../img/whyThisStudy.png")}
         navigation={this.props.navigation}
         title={t("why")}
         onNext={() => {
@@ -114,7 +115,8 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../../img/what.png")}
+        imageAspectRatio={1.75}
+        stableImageSrc={require("../../img/whatDoIDoNext.png")}
         navigation={this.props.navigation}
         title={t("what")}
         onNext={() => {
@@ -420,7 +422,8 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             onPress={() => this.props.navigation.pop()}
           />
         }
-        imageSrc={require("../../img/consentIneligible.png")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/thanksForYourInterest.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -528,7 +531,8 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={require("../../img/ineligible.png")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/thanksForYourInterest.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -569,7 +573,8 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={require("../../img/ineligible.png")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/thanksForYourInterest.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -628,7 +633,8 @@ class ConfirmationScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../../img/confirmation.png")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/yourKitShipped.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}
