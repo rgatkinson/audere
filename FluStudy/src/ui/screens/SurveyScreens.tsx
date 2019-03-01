@@ -975,7 +975,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageAspectRatio={1.75}
-        imageSrc={require("../../img/putTestStripInTube.png")}
+        imageSrc={require("../../img/openTestStrip_1.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -1240,7 +1240,7 @@ class GeneralExposureScreen extends React.Component<
             marginVertical: GUTTER,
             width: "100%",
           }}
-          source={require("../../img/expo.png")}
+          source={require("../../img/generalExposure.png")}
         />
         <Text
           content={t("expoRef")}
