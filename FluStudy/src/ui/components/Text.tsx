@@ -167,11 +167,11 @@ export default class Text extends React.Component<Props> {
 
   _makeBold(content: string, bold: boolean) {
     return bold ? (
-      linkify(content, this.props.linkStyle || styles.linkStyle)
-    ) : (
       <SystemText style={this.props.extraBold ? styles.extraBold : styles.bold}>
         {linkify(content, this.props.linkStyle || styles.linkStyle)}
       </SystemText>
+    ) : (
+      linkify(content, this.props.linkStyle || styles.linkStyle)
     );
   }
 
@@ -189,7 +189,7 @@ export default class Text extends React.Component<Props> {
       >
         {this.props.content
           .split("**")
-          .map((str, i) => this._oneReplace(str, 1 % 2 == 1))}
+          .map((str, i) => this._oneReplace(str, i % 2 == 1))}
       </SystemText>
     );
   }
