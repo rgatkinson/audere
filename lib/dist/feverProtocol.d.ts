@@ -63,7 +63,8 @@ export interface SampleInfo {
     code: string;
 }
 export interface PatientInfo {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     birthDate?: string;
     gender?: PatientInfoGender;
     telecom: TelecomInfo[];
@@ -99,7 +100,8 @@ export interface NonPIIConsentInfo {
     localTime?: string;
 }
 export interface ConsentInfo extends NonPIIConsentInfo {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     signature?: string;
     relation?: string;
 }
@@ -142,7 +144,8 @@ export interface AnswerInfo {
     valueDeclined?: boolean;
 }
 export interface AddressValueInfo {
-    name: string;
+    firstName?: string;
+    lastName?: string;
     line: string[];
     city: string;
     state: string;

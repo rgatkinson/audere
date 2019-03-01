@@ -24,7 +24,8 @@ const DEVICE = {
 };
 
 export const PATIENT_INFO = {
-  name: "Fake Name",
+  firstName: "Fake",
+  lastName: "Name",
   birthDate: "1900-01-01",
   telecom: [],
   address: []

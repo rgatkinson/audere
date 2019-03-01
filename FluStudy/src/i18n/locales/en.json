@@ -48,7 +48,8 @@
     "next": "Next"
   },
   "addressInput": {
-    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "required": " (required)",
     "locationName": "Location name or neighborhood",
     "streetAddress": "Street address",

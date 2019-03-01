@@ -26,6 +26,7 @@ interface State {
 }
 
 class AddressInput extends React.Component<Props & WithNamespaces> {
+  lastName = React.createRef<TextInput>();
   address = React.createRef<TextInput>();
   address2 = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
@@ -49,26 +50,49 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             this.setState({ keyboardOpen: false });
           }}
         />
-        <TextInput
-          autoCapitalize="words"
-          autoCorrect={false}
-          autoFocus={true}
-          placeholder={
-            t("name") + (this.state.keyboardOpen ? "" : t("required"))
-          }
-          placeholderTextColor={
-            this.state.keyboardOpen ? undefined : ERROR_COLOR
-          }
-          returnKeyType="next"
-          style={styles.textInput}
-          value={this.props.value ? this.props.value!.name : undefined}
-          onChangeText={(text: string) => {
-            const address = this.props.value || {};
-            address.name = text;
-            this.props.onChange(address);
-          }}
-          onSubmitEditing={() => this.address.current!.focus()}
-        />
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            autoCapitalize="words"
+            autoCorrect={false}
+            autoFocus={true}
+            placeholder={
+              t("firstName") + (this.state.keyboardOpen ? "" : t("required"))
+            }
+            placeholderTextColor={
+              this.state.keyboardOpen ? undefined : ERROR_COLOR
+            }
+            returnKeyType="next"
+            style={styles.firstName}
+            value={this.props.value ? this.props.value!.firstName : undefined}
+            onChangeText={(text: string) => {
+              const address = this.props.value || {};
+              address.firstName = text;
+              this.props.onChange(address);
+            }}
+            onSubmitEditing={() => this.lastName.current!.focus()}
+          />
+          <TextInput
+            autoCapitalize="words"
+            autoCorrect={false}
+            autoFocus={false}
+            placeholder={
+              t("lastName") + (this.state.keyboardOpen ? "" : t("required"))
+            }
+            ref={this.lastName}
+            placeholderTextColor={
+              this.state.keyboardOpen ? undefined : ERROR_COLOR
+            }
+            returnKeyType="next"
+            style={styles.inputRowRight}
+            value={this.props.value ? this.props.value!.lastName : undefined}
+            onChangeText={(text: string) => {
+              const address = this.props.value || {};
+              address.lastName = text;
+              this.props.onChange(address);
+            }}
+            onSubmitEditing={() => this.address.current!.focus()}
+          />
+        </View>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
@@ -163,7 +187,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             }
             ref={this.zipcode}
             returnKeyType="done"
-            style={[styles.zipcode, styles.textInput]}
+            style={[styles.inputRowRight, styles.textInput]}
             value={this.props.value ? this.props.value!.zipcode : undefined}
             onChangeText={(text: string) => {
               const address = this.props.value || {};
@@ -191,6 +215,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: GUTTER / 4,
   },
+  firstName: {
+    flex: 1,
+    height: INPUT_HEIGHT,
+    padding: GUTTER / 4,
+  },
   text: {
     color: LINK_COLOR,
     marginVertical: 0,
@@ -198,7 +227,7 @@ const styles = StyleSheet.create({
   textInput: {
     height: INPUT_HEIGHT,
   },
-  zipcode: {
+  inputRowRight: {
     flex: 2,
     borderLeftColor: BORDER_COLOR,
     borderLeftWidth: StyleSheet.hairlineWidth,

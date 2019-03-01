@@ -120,7 +120,8 @@ export interface SampleInfo {
 // This is a subset of the FHIR 'Patient' resource
 // https://www.hl7.org/fhir/patient.html
 export interface PatientInfo {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   birthDate?: string; // FHIR:date
   gender?: PatientInfoGender;
   telecom: TelecomInfo[];
@@ -165,7 +166,8 @@ export interface NonPIIConsentInfo {
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   signature?: string; // Base64-encoded PNG of the signature
   relation?: string;
 }
@@ -228,7 +230,8 @@ export interface AnswerInfo {
 }
 
 export interface AddressValueInfo {
-  name: string;
+  firstName?: string;
+  lastName?: string;
   line: string[];
   city: string;
   state: string;

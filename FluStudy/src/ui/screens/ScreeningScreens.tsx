@@ -491,7 +491,8 @@ class AddressInputScreen extends React.Component<
     const address = this.state.address;
     return (
       !!address &&
-      !!address.name &&
+      !!address.firstName &&
+      !!address.lastName &&
       !!address.address &&
       !!address.city &&
       !!address.state &&

@@ -135,8 +135,11 @@ function maybePushAddress(
       use,
       ...info,
     });
-    if (!!info.name) {
-      patient.name = info.name;
+    if (!!info.firstName) {
+      patient.firstName = info.firstName;
+    }
+    if (!!info.lastName) {
+      patient.lastName = info.lastName;
     }
   }
 }
@@ -145,7 +148,8 @@ function addressValueInfo(
   addressInput: Address | undefined | null
 ): AddressValueInfo | null {
   if (addressInput != null) {
-    const name = addressInput.name || "";
+    const firstName = addressInput.firstName || "";
+    const lastName = addressInput.lastName || "";
     const city = addressInput.city || "";
     const state = addressInput.state || "";
     const zipcode = addressInput.zipcode || "";
@@ -154,7 +158,8 @@ function addressValueInfo(
       isNotNull
     );
     return {
-      name,
+      firstName,
+      lastName,
       line,
       city,
       state,

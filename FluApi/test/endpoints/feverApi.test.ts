@@ -118,10 +118,11 @@ describe("putFeverDocument", () => {
       .send(contentsPost)
       .expect(200);
     const originalScreen = (await models.surveyPii.findOne(where)).survey as SurveyInfo;
-    expect(originalScreen.patient.name).toEqual(PATIENT_INFO.name);
+    expect(originalScreen.patient.firstName).toEqual(PATIENT_INFO.firstName);
+    expect(originalScreen.patient.lastName).toEqual(PATIENT_INFO.lastName);
     expect(originalScreen).toEqual(PII);
 
-    const newPatient = { ...PATIENT_INFO, name: "New Fake Name" };
+    const newPatient = { ...PATIENT_INFO, firstName: "New", lastName: 'FakeName' };
     const newProtocolContents: SurveyDocument = {
       ...contentsPost,
       survey: {
@@ -136,7 +137,8 @@ describe("putFeverDocument", () => {
 
     const dbPII = await models.surveyPii.findOne(where);
     const newDoc = dbPII.survey as SurveyInfo;
-    expect(newDoc.patient.name).toEqual("New Fake Name");
+    expect(newDoc.patient.firstName).toEqual("New");
+    expect(newDoc.patient.lastName).toEqual("FakeName");
     expect(newDoc).toEqual({ ...PII, patient: newPatient });
     await dbPII.destroy();
 
