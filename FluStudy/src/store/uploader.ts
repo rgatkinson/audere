@@ -19,8 +19,41 @@ import {
   TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { isNotNull } from "../util/check";
+import {
+  FluShotConfig,
+  FluShotDateConfig,
+  BlueLineConfig,
+  RedWhenBlueConfig,
+  RedLineConfig,
+  InContactConfig,
+  CoughSneezeConfig,
+} from "../resources/ScreenConfig";
 
 export const { uploader, events, logger } = createTransport();
+
+// See comment below on cleanupResponses.
+const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
+  {
+    conditionalId: CoughSneezeConfig.id,
+    dependsOnId: InContactConfig.id,
+    includeWhen: isSelected("yes"),
+  },
+  {
+    conditionalId: FluShotDateConfig.id,
+    dependsOnId: FluShotConfig.id,
+    includeWhen: isSelected("yes"),
+  },
+  {
+    conditionalId: RedWhenBlueConfig.id,
+    dependsOnId: BlueLineConfig.id,
+    includeWhen: isSelected("yes"),
+  },
+  {
+    conditionalId: RedLineConfig.id,
+    dependsOnId: BlueLineConfig.id,
+    includeWhen: isSelected("no"),
+  },
+];
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -81,7 +114,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
 
   maybePushConsent(survey, pouch.consents);
 
-  const responses = survey.responses;
+  const responses = cleanupResponses(survey.responses);
 
   maybePushAddressResponse(
     responses,
@@ -282,4 +315,60 @@ function pushResponses(
     }
   });
   pouchResponses.push({ id: responseId, item: items });
+}
+
+// This filters responses to remove things that are inconsistent.
+// E.g. we normally only ask the CoughSneezeConfig question if the
+// person answered yes on the InContactConfig question.  However,
+// it is possible for the person to:
+//
+// - answer InContactConfig with yes
+// - answer CoughSneezeConfig
+// - go back and change InContactConfig to no
+//
+// At this point, we have an answer for CoughSneezeConfig but the
+// InContactConfig is in a state that normally would not allow that.
+//
+// We could delete the CoughSneezeConfig in the UI store, but then if
+// they hit the final "no" by accident and put it back to "yes" then
+// we just lost their CoughSneezeConfig answer.
+//
+// So instead, we filter out the alternate universe responses here
+// before uploading.
+function cleanupResponses(responses: SurveyResponse[]): SurveyResponse[] {
+  const byId = new Map(responses.map(responseById));
+
+  return responses.filter(r => {
+    const conditional = CONDITIONAL_QUESTIONS
+      .find(c => c.conditionalId === r.questionId);
+    if (conditional == null) {
+      return true;
+    }
+
+    const dependency = byId.get(conditional.dependsOnId);
+    return dependency == null || conditional.includeWhen(dependency);
+  });
+}
+
+function isSelected(...keys: string[]): ResponsePredicate {
+  return (resp: SurveyResponse) => (
+    resp.answer != null &&
+    keys.some(x => x === resp.answer!.selectedButtonKey)
+  );
+}
+
+function responseById(r: SurveyResponse): ById<SurveyResponse> {
+  return [r.questionId, r];
+}
+
+type ById<T> = [string, T];
+
+interface ConditionalQuestion {
+  conditionalId: string;
+  dependsOnId: string;
+  includeWhen: ResponsePredicate;
+}
+
+interface ResponsePredicate {
+  (response: SurveyResponse): boolean;
 }
