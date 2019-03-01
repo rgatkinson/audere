@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
       "logs:DescribeLogStreams"
     ]
 
-    resource = ["arn:aws:logs:*:*:*"]
+    resources = ["arn:aws:logs:*:*:*"]
   }
 
   statement {
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
       "cloudwatch:PutEvents"
     ]
 
-    resource = ["*"]
+    resources = ["*"]
   }
 }
 
