@@ -180,6 +180,7 @@ export default class Text extends React.Component<Props> {
   render() {
     return (
       <SystemText
+        selectable={true}
         style={[
           styles.text,
           this.props.bold && styles.bold,

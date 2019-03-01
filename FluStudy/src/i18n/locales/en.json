@@ -318,7 +318,10 @@
   },
   "thankYouSurveyScreen": {
     "title": "Thank you!",
-    "desc": "We know you're still feeling crummy and truly appreciate your time. Your answers to our questions, along with the tests you're doing today, help us understand many factors related to your illness. Click Continue and we'll check on your test strip."
+    "desc": "Your answers, along with the tests, help us to understand many factors related to your illness. Click Continue and we'll check on your test strip.",
+    "waiting": "Now, just wait for the time to end and the app will direct you to next steps.",
+    "remaining": "TIME REMAINING:",
+    "done": "TIMER FINISHED!"
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",

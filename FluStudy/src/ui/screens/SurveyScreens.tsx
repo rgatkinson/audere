@@ -94,9 +94,12 @@ import {
   emailSupport,
 } from "../externalActions";
 import {
+  BORDER_RADIUS,
+  BUTTON_WIDTH,
   GUTTER,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
+  SECONDARY_COLOR,
   SMALL_TEXT,
   STATUS_BAR_HEIGHT,
 } from "../styles";
@@ -1315,85 +1318,30 @@ export const GeneralHealth = reduxWriter(
   withNamespaces("surveyScreen")(GeneralHealthScreen)
 );
 
-interface StartTime {
+interface ThankYouSurveyProps {
   tenMinuteStartTime: number;
-  isDemo: boolean;
 }
 
-@connect((state: StoreState) => ({
-  tenMinuteStartTime: state.survey.tenMinuteStartTime,
-}))
-class ThankYouSurveyScreen extends React.Component<
-  Props & StartTime & WithNamespaces
-> {
-  _onNext = () => {
-    if (new Date().getTime() - this.props.tenMinuteStartTime > TEST_STRIP_MS) {
-      this.props.navigation.push("TestStripReady");
-    } else {
-      this.props.navigation.push("TestStripTimer");
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "ThankYouSurveyScreen",
-      <Screen
-        canProceed={true}
-        desc={t("desc")}
-        imageSrc={require("../../img/clipboard.png")}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
-  Props & StartTime
->(ThankYouSurveyScreen);
-
-class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "TestStripReadyScreen",
-      <Screen
-        canProceed={true}
-        desc={t("desc")}
-        imageAspectRatio={1.75}
-        imageSrc={require("../../img/removeTestStrip.png")}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("FinishTube");
-        }}
-      />
-    );
-  }
-}
-export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
-  TestStripReadyScreen
-);
-
-interface TestStripTimerState {
+interface ThankYouSurveyState {
   done: boolean;
   remaining: Date | null;
 }
 
 @connect((state: StoreState) => ({
-  tenMinuteStartTime: state.survey.tenMinuteStartTime,
   isDemo: state.meta.isDemo,
+  tenMinuteStartTime: state.survey.tenMinuteStartTime,
 }))
-class TestStripTimerScreen extends React.Component<
-  Props & StartTime & WithNamespaces,
-  TestStripTimerState
+class ThankYouSurveyScreen extends React.Component<
+  Props & DemoModeProps & ThankYouSurveyProps & WithNamespaces,
+  ThankYouSurveyState
 > {
   _timer: number | null | undefined;
   _willFocus: any;
   _fastForwardMillis: number;
 
-  constructor(props: Props & StartTime & WithNamespaces) {
+  constructor(
+    props: Props & DemoModeProps & ThankYouSurveyProps & WithNamespaces
+  ) {
     super(props);
     this._fastForwardMillis = 0;
     const remaining = this._getRemaining(
@@ -1467,35 +1415,87 @@ class TestStripTimerScreen extends React.Component<
   render() {
     const { t } = this.props;
     return timestampRender(
-      "TestStripTimerScreen",
+      "ThankYouSurveyScreen",
       <Screen
         canProceed={this.state.done}
         desc={t("desc")}
+        footer={
+          <View
+            style={{
+              alignSelf: "stretch",
+              alignItems: "center",
+              marginBottom: GUTTER,
+            }}
+          >
+            <Text
+              content={this.state.done ? t("done") : t("remaining")}
+              style={{ marginBottom: GUTTER }}
+            />
+            {this.state.done ? (
+              <Button
+                enabled={true}
+                primary={true}
+                label={t("common:button:continue")}
+              />
+            ) : (
+              <BorderView
+                style={{
+                  alignSelf: "center",
+                  borderRadius: BORDER_RADIUS,
+                  width: BUTTON_WIDTH,
+                }}
+              >
+                <Text
+                  bold={true}
+                  content={this.state.remaining!.toISOString().substr(14, 5)}
+                  style={{ color: SECONDARY_COLOR }}
+                />
+              </BorderView>
+            )}
+          </View>
+        }
+        imageSrc={require("../../img/clipboard.png")}
         navigation={this.props.navigation}
-        title={
-          this.state.done
-            ? t("doneTitle")
-            : t("title", {
-                time: this.state.remaining!.toISOString().substr(14, 5),
-              })
-        }
-        onNext={() => {
-          this.props.navigation.push("TestStripReady");
+        skipButton={true}
+        title={t("title")}
+        onNext={() => this.props.navigation.push("TestStripReady")}
+        onTitlePress={() => {
+          this.props.isDemo && this._onFastForward();
         }}
-        onTitlePress={
-          this.props.isDemo
-            ? () => {
-                this._onFastForward();
-              }
-            : undefined
-        }
+      >
+        {!this.state.done && (
+          <Text content={t("waiting")} style={{ alignSelf: "stretch" }} />
+        )}
+      </Screen>
+    );
+  }
+}
+export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
+  Props & DemoModeProps & ThankYouSurveyProps
+>(ThankYouSurveyScreen);
+
+class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return timestampRender(
+      "TestStripReadyScreen",
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/removeTestStrip.png")}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("FinishTube");
+        }}
       />
     );
   }
 }
-export const TestStripTimer = withNamespaces("testStripTimerScreen")<
-  Props & StartTime
->(TestStripTimerScreen);
+export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
+  TestStripReadyScreen
+);
 
 class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
