@@ -31,6 +31,7 @@ import {
   setEmail,
   setKitBarcode,
   setTestStripImg,
+  setOneMinuteStartTime,
   setTenMinuteStartTime,
   setWorkflow,
   uploader,
@@ -726,6 +727,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
 }
 export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
+@connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -740,6 +742,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
+          this.props.dispatch(setOneMinuteStartTime());
           this.props.navigation.push("FirstTimer");
         }}
       />
@@ -750,52 +753,96 @@ export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
   SwabInTubeScreen
 );
 
+interface FirstTimerProps {
+  oneMinuteStartTime: number;
+}
+
 interface DemoModeProps {
   isDemo: boolean;
 }
 
+interface TimerState {
+  done: boolean;
+  remaining: Date | null;
+}
+
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
+  oneMinuteStartTime: state.survey.oneMinuteStartTime,
 }))
 class FirstTimerScreen extends React.Component<
-  Props & DemoModeProps & WithNamespaces
+  Props & DemoModeProps & FirstTimerProps & WithNamespaces,
+  TimerState
 > {
-  state = {
-    time: 60,
-  };
-
-  _endTime: number = Date.now() + 60 * SECOND_MS;
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
+  _fastForwardMillis: number;
+
+  constructor(props: Props & DemoModeProps & FirstTimerProps & WithNamespaces) {
+    super(props);
+    this._fastForwardMillis = 0;
+    const remaining = this._getRemaining(
+      props.oneMinuteStartTime,
+      this._fastForwardMillis
+    );
+    this.state = {
+      remaining,
+      done: remaining == null,
+    };
+  }
+
+  // A debug function that forwards the timer to just having 5 secs left.
+  _onFastForward(): void {
+    this._fastForwardMillis =
+      this.props.oneMinuteStartTime +
+      MINUTE_MS -
+      new Date().getTime() -
+      5 * SECOND_MS;
+  }
+
+  _getRemaining(startTime: number, fastForwardMillis: number): Date | null {
+    const deltaMillis =
+      startTime + MINUTE_MS - new Date().getTime() - this._fastForwardMillis;
+    if (deltaMillis > 0) {
+      // @ts-ignore
+      const remaining = new Date(null);
+      remaining.setMilliseconds(deltaMillis);
+      return remaining;
+    } else {
+      return null;
+    }
+  }
 
   componentDidMount() {
-    this._willFocus = this.props.navigation.addListener("willFocus", () =>
-      this._setTimer()
-    );
+    if (!this.state.done) {
+      this._willFocus = this.props.navigation.addListener("willFocus", () =>
+        this._setTimer()
+      );
+    }
   }
 
   componentWillUnmount() {
-    this._willFocus.remove();
-    this._timer && clearTimeout(this._timer);
-    this._timer = undefined;
-  }
-
-  _secondsRemaining() {
-    const secondsLeft = Math.ceil((this._endTime - Date.now()) / SECOND_MS);
-
-    return Math.max(0, secondsLeft);
+    if (this._willFocus != null) {
+      this._willFocus.remove();
+      this._willFocus = null;
+    }
   }
 
   _setTimer() {
-    if (this.props.navigation.isFocused()) {
-      this._timer = setTimeout(() => {
-        if (this.props.navigation.isFocused() && this._secondsRemaining() > 0) {
-          this.setState({ time: this._secondsRemaining() });
+    if (this.props.navigation.isFocused() && !this.state.done) {
+      setTimeout(() => {
+        if (this.props.navigation.isFocused() && !this.state.done) {
+          const remaining = this._getRemaining(
+            this.props.oneMinuteStartTime,
+            this._fastForwardMillis
+          );
+          this.setState({
+            remaining,
+            done: remaining == null,
+          });
           this._setTimer();
-        } else if (this.props.navigation.isFocused()) {
-          this.props.navigation.push("FirstTimerDone");
         }
-      }, SECOND_MS);
+      }, 1000);
     }
   }
 
@@ -804,51 +851,65 @@ class FirstTimerScreen extends React.Component<
     return timestampRender(
       "FirstTimerScreen",
       <Screen
-        canProceed={false}
-        navigation={this.props.navigation}
-        title={t("title", { time: this.state.time })}
-        onTitlePress={
-          this.props.isDemo
-            ? () => {
-                this._endTime = Date.now() + 5 * SECOND_MS;
-                this.setState({ time: this._secondsRemaining() });
-              }
-            : undefined
+        canProceed={this.state.done}
+        desc={
+          this.state.remaining != null &&
+          this.state.remaining.getTime() > 30 * 1000
+            ? t("tip")
+            : t("tip2")
         }
+        footer={
+          <View
+            style={{
+              alignSelf: "stretch",
+              alignItems: "center",
+              marginBottom: GUTTER,
+            }}
+          >
+            <Text
+              content={this.state.done ? t("done") : t("remaining")}
+              style={{ marginBottom: GUTTER }}
+            />
+            {this.state.done ? (
+              <Button
+                enabled={true}
+                primary={true}
+                label={t("common:button:continue")}
+                onPress={() => this.props.navigation.push("RemoveSwabFromTube")}
+              />
+            ) : (
+              <BorderView
+                style={{
+                  alignSelf: "center",
+                  borderRadius: BORDER_RADIUS,
+                  width: BUTTON_WIDTH,
+                }}
+              >
+                <Text
+                  bold={true}
+                  content={this.state.remaining!.toISOString().substr(14, 5)}
+                  style={{ color: SECONDARY_COLOR }}
+                />
+              </BorderView>
+            )}
+          </View>
+        }
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/putSwabInTube.png")}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("title")}
+        onTitlePress={() => {
+          this.props.isDemo && this._onFastForward();
+        }}
         onNext={() => {}}
-      >
-        <View style={{ marginTop: GUTTER }} />
-        <Text content={t("tip")} />
-      </Screen>
+      />
     );
   }
 }
 export const FirstTimer = withNamespaces("firstTimerScreen")<
-  Props & DemoModeProps
+  Props & DemoModeProps & FirstTimerProps
 >(FirstTimerScreen);
-
-class FirstTimerDoneScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return timestampRender(
-      "FirstTimerDoneScreen",
-      <Screen
-        canProceed={true}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("RemoveSwabFromTube");
-        }}
-      >
-        <View style={{ marginTop: GUTTER }} />
-        <Text content={t("tip")} />
-      </Screen>
-    );
-  }
-}
-export const FirstTimerDone = withNamespaces("firstTimerDoneScreen")<Props>(
-  FirstTimerDoneScreen
-);
 
 class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -1322,18 +1383,13 @@ interface ThankYouSurveyProps {
   tenMinuteStartTime: number;
 }
 
-interface ThankYouSurveyState {
-  done: boolean;
-  remaining: Date | null;
-}
-
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
   tenMinuteStartTime: state.survey.tenMinuteStartTime,
 }))
 class ThankYouSurveyScreen extends React.Component<
   Props & DemoModeProps & ThankYouSurveyProps & WithNamespaces,
-  ThankYouSurveyState
+  TimerState
 > {
   _timer: number | null | undefined;
   _willFocus: any;
@@ -1436,6 +1492,7 @@ class ThankYouSurveyScreen extends React.Component<
                 enabled={true}
                 primary={true}
                 label={t("common:button:continue")}
+                onPress={() => this.props.navigation.push("TestStripReady")}
               />
             ) : (
               <BorderView
@@ -1458,7 +1515,7 @@ class ThankYouSurveyScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
-        onNext={() => this.props.navigation.push("TestStripReady")}
+        onNext={() => {}}
         onTitlePress={() => {
           this.props.isDemo && this._onFastForward();
         }}

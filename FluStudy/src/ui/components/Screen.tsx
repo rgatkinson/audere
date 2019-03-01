@@ -159,7 +159,11 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <Text
                   content={this.props.desc}
                   center={!!this.props.centerDesc}
-                  style={{ paddingBottom: GUTTER, paddingTop: GUTTER / 2 }}
+                  style={{
+                    alignSelf: "stretch",
+                    paddingBottom: GUTTER,
+                    paddingTop: GUTTER / 2,
+                  }}
                 />
               )}
               {this.props.children}
