@@ -46,7 +46,12 @@ API_DIR="$(cd "$SELF_DIR/../terraform/flu/api-$environment" && pwd)"
 set -x
 cd "$API_DIR"
 terraform init
-terraform taint -module=flu_api aws_autoscaling_group.flu_api
+if ! terraform taint -module=flu_api aws_autoscaling_group.flu_api; then
+  echo "=================================================="
+  echo "Taint failed, but proceeding anyway"
+  echo "Is the flu_api autoscaling group missing?"
+  echo "=================================================="
+fi
 terraform apply -var "commit=$commit" -var "migrate=true"
 set +x
 
