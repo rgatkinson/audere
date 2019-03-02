@@ -9,6 +9,7 @@ export const cronGet = async (event: any) => {
   try {
     const res = await axios.get(process.env.TARGET_URL);
     console.log(JSON.stringify(res.data));
+    return res.data;
   } catch(e) {
     console.log("Error occurred:");
     console.log(e.message);
