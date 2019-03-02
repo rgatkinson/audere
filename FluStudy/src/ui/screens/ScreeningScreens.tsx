@@ -46,7 +46,6 @@ import {
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import Button from "../components/Button";
-import ButtonRow from "../components/ButtonRow";
 import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
@@ -328,11 +327,19 @@ class ConsentScreen extends React.PureComponent<
           }}
         />
         <Screen
+          buttonLabel={t("accept")}
           canProceed={this._canProceed()}
           centerDesc={true}
           desc={t("description")}
+          footer={
+            <Button
+              enabled={true}
+              primary={false}
+              label={t("noThanks")}
+              onPress={() => this.props.navigation.push("ConsentIneligible")}
+            />
+          }
           navigation={this.props.navigation}
-          skipButton={true}
           step={3}
           title={t("consent")}
           onNext={this._onNext}
@@ -389,15 +396,6 @@ class ConsentScreen extends React.PureComponent<
               />
             </View>
           )}
-          <ButtonRow
-            firstLabel={t("noThanks")}
-            firstOnPress={() => {
-              this.props.navigation.push("ConsentIneligible");
-            }}
-            secondEnabled={this._canProceed()}
-            secondLabel={t("accept")}
-            secondOnPress={this._onNext}
-          />
         </Screen>
       </KeyboardAvoidingView>
     );
@@ -726,12 +724,15 @@ class PushNotificationsScreen extends React.Component<
     return timestampRender(
       "PushNotificationsScreen",
       <Screen
-        canProceed={false}
+        buttonLabel={t("common:button:yes")}
+        canProceed={true}
         desc={t("description")}
         footer={
-          <ButtonRow
-            firstLabel={t("common:button:no")}
-            firstOnPress={() => {
+          <Button
+            enabled={true}
+            primary={false}
+            label={t("common:button:no")}
+            onPress={() => {
               timestampInteraction("PushNotificationsScreen.NoButton");
               const newPushState = {
                 ...this.props.pushState,
@@ -740,29 +741,26 @@ class PushNotificationsScreen extends React.Component<
               this.props.dispatch(setPushNotificationState(newPushState));
               this.props.navigation.push("ExtraInfo");
             }}
-            secondEnabled={true}
-            secondLabel={t("common:button:yes")}
-            secondOnPress={() => {
-              timestampInteraction("PushNotificationsScreen.YesButton");
-              if (this.props.pushState.showedSystemPrompt) {
-                this.props.navigation.push("ExtraInfo");
-              } else {
-                const newPushState = {
-                  ...this.props.pushState,
-                  softResponse: true,
-                  showedSystemPrompt: true,
-                };
-                this.props.dispatch(setPushNotificationState(newPushState));
-                PushNotificationIOS.requestPermissions();
-              }
-            }}
           />
         }
         imageSrc={require("../../img/pushNotifications.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}
-        onNext={() => {}}
+        onNext={() => {
+          timestampInteraction("PushNotificationsScreen.YesButton");
+          if (this.props.pushState.showedSystemPrompt) {
+            this.props.navigation.push("ExtraInfo");
+          } else {
+            const newPushState = {
+              ...this.props.pushState,
+              softResponse: true,
+              showedSystemPrompt: true,
+            };
+            this.props.dispatch(setPushNotificationState(newPushState));
+            PushNotificationIOS.requestPermissions();
+          }
+        }}
       />
     );
   }
