@@ -102,25 +102,21 @@ server {
 EOF
 }
 
-function init_nginx() {
-  readonly local public_url="http://localhost:3000"
-  readonly local public_port="443"
-  readonly local internal_url="http://localhost:3200"
-  readonly local internal_port="444"
-
-  apt-get -y install nginx
-  rm /etc/nginx/sites-enabled/default
-
-  sudo tee "/etc/nginx/sites-enabled/${domain}" <<EOF
+function echo_nginx_config() {
+  cat <<EOF
 # Rate limiting
 # On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
 limit_req_zone \$http_x_forwarded_for zone=${subdomain}:10m rate=5r/s;
-
-$(echo_nginx_server "$public_url" "$public_port")
-
-$(echo_nginx_server "$internal_url" "$internal_port")
 EOF
+  echo_nginx_server "443" "http://localhost:3000"
+  echo_nginx_server "444" "http://localhost:3200"
+}
 
+function init_nginx() {
+
+  apt-get -y install nginx
+  rm /etc/nginx/sites-enabled/default
+  echo_nginx_config |  sudo tee "/etc/nginx/sites-enabled/${domain}"
   # Check the config before restarting
   nginx -t
   sudo service nginx restart
