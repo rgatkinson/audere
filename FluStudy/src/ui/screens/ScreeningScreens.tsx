@@ -344,10 +344,24 @@ class ConsentScreen extends React.PureComponent<
           title={t("consent")}
           onNext={this._onNext}
         >
-          <Divider />
+          <Divider
+            style={{ borderBottomColor: "#444", borderBottomWidth: 1 }}
+          />
           <Text
             center={true}
-            content={t("consentFormHeader")}
+            content={t("consentFormHeader1")}
+            style={{ fontSize: SMALL_TEXT }}
+          />
+          <Divider
+            style={{
+              borderBottomColor: "#666",
+              width: "90%",
+              alignSelf: "center",
+            }}
+          />
+          <Text
+            center={true}
+            content={t("consentFormHeader2")}
             style={{ fontSize: SMALL_TEXT }}
           />
           <Text
