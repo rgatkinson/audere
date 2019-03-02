@@ -172,7 +172,7 @@
   },
   "welcomeScreen": {
     "welcome": "Welcome",
-    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $50 Amazon gift card at the end of the study after we receive your completed test kit in the mail. We've tried to make the following steps as easy to follow as possible. Let's get started."
+    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $50 Amazon gift card at the end of the study after we receive your completed test kit in the mail. Let's get started."
   },
   "whyScreen": {
     "why": "Why this study?",
@@ -206,7 +206,7 @@
   },
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",
-    "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your phone and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at: (509) 593-3964.\n\nWant to learn more?",
+    "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your phone and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?",
     "disclaimer": "The kit is for your use only. Please do not share or use the kit with anyone else after you receive it."
   },
   "pushNotificationsScreen": {
@@ -251,7 +251,7 @@
     "secondPlaceholder": "Confirm barcode",
     "enterKit": "Enter barcode manually",
     "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tips": "**Tips:**\n\nFind the barcode inside your box.\n\nLook for the code directly below the symbol."
+    "tips": "**Tips:**\n\nFind the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",
@@ -269,7 +269,7 @@
   },
   "swabScreen": {
     "title": "Begin the first test",
-    "description": "Open box 1 and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
+    "description": "Open box ①① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
   },
   "swabPrepScreen": {
     "title": "Prepare tube",
@@ -289,7 +289,7 @@
     "remaining": "TIME REMAINING:",
     "done": "TIMER FINISHED!",
     "tip": "**DID YOU KNOW?**\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
-    "tip2": "**DID YOU KNOW?**\nTo avoid the flu, wash your hands. Hand washing is one of the most basic and proven methods for preventing the spread of disease. Wash your hands frequently using soap and water, especially after coughing, sneezing or touching commonly shared items in your house or workplace."
+    "tip2": "**DID YOU KNOW?**\nTo avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
   },
   "removeSwabFromTubeScreen": {
     "title": "Remove swab from tube",
@@ -325,7 +325,7 @@
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①①. Try not to cover the other hole in the box--you'll be using that in a moment."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①①."
   },
   "testStripTimerScreen": {
     "title": "Time Remaining: **{{time}}**",
@@ -349,7 +349,7 @@
     "desc": "We know that was a lot of steps and appreciate you hanging in there with us.\n\nNext, take a photo of the test strip. Lay the test strip on box ①① so it's flat with the arrows pointing down towards you. When you're ready, click the Continue button to use the camera."
   },
   "testStripCameraScreen": {
-    "title": "Line up your test strip so it's beside the example shown.",
+    "title": "Line up your test strip so it aligns with the example shown.",
     "description": "Tap the screen to focus the image, and try to use good lighting.\nWhen ready, tap the round button to take a photo.",
     "loading": "Loading..."
   },
@@ -360,7 +360,7 @@
   "cleanFirstTestScreen": {
     "title": "Clean up the first test",
     "step1": "Find the medium-sized bag with a green barcode on it.",
-    "step2": "Put the test strip inside the bag with a green barcode, remove the white strip on the bag and seal it.",
+    "step2": "Put the test strip inside that bag, remove the white strip on the bag and seal it.",
     "step3": "Open bag ②② and take out the tube with the red top and the swab package. Leave the soft material in the bag.",
     "step4": "Place the bag with the green barcode and the tube with the grey top into bag ②②. Please ensure the grey stopper is tight on the tube.",
     "step5": "Keep the box in front of you. You'll need it for the next test."
@@ -393,11 +393,11 @@
   },
   "packingScreen": {
     "title": "Packing things up",
-    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③③. Inside, you'll find everything you need to pack up your box."
+    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③③, and inside, you'll find everything you need to pack up your box."
   },
   "stickersScreen": {
     "title": "Put stickers on the box",
-    "description": "Apply the return mailing label to the outside of the box, OVER the label with your address on it.\n\nAdd the UN3373 stickers to the side of the box. This sticker just means there are samples inside."
+    "description": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 stickers to the side of the box. This sticker just means there are samples inside."
   },
   "secondBagScreen": {
     "title": "Put bag ②② in the box",
@@ -405,11 +405,11 @@
   },
   "tapeBoxScreen": {
     "title": "Tape up the box",
-    "description": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word **Open**. Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
+    "description": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word \"Open.\" Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
   },
   "shipBoxScreen": {
     "title": "Shipping your box",
-    "description": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS Post Office or other facility below, or schedule a pick-up from your location.",
+    "description": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pick-up from your location.",
     "showNearbyUsps": "Show nearby USPS facilities",
     "schedulePickup": "Schedule a pickup",
     "iWillDropOff": "I have a drop-off location"
@@ -426,8 +426,8 @@
   },
   "thanksScreen": {
     "title": "Thank you!",
-    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please do your best to reply as soon as you can to that message.\n\nYour gift card will be sent to your email inbox at {{email}} within a week after you mail your completed test kit back.\n\nIn the meantime, what can you do now?",
-    "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness.\n\nWe suggest you wash your hands, now that you've completed all the tests."
+    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please reply as soon as you can to that message.\n\nYour gift card will be sent to {{email}} within a week after you mail your completed test kit back.\n\nIn the meantime, what can you do now?",
+    "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness."
   },
   "links": {
     "recommendLink": "Recommend flu@home to a friend who's not feeling well",

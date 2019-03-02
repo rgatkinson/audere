@@ -647,7 +647,7 @@ class ConfirmationScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         imageAspectRatio={1.75}
-        imageSrc={require("../../img/yourKitShipped.png")}
+        imageSrc={require("../../img/fluKitOrdered.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}

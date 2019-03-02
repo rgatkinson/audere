@@ -172,7 +172,7 @@ class WhatsNextScreen extends React.Component<
               this.emailInput.current!.isValid(this.state.email))
           }
           desc={t("description")}
-          imageSrc={require("../../img/why.png")}
+          imageSrc={require("../../img/whatsNext.png")}
           navigation={this.props.navigation}
           title={t("whatsNext")}
           onNext={() => {
@@ -205,6 +205,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
       "BeforeScreen",
       <Screen
         canProceed={true}
+        imageSrc={require("../../img/beforeYouBegin.png")}
         navigation={this.props.navigation}
         title={t("beforeYouBegin")}
         onNext={() => {
@@ -426,7 +427,7 @@ class ScanConfirmationScreen extends React.Component<
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
-        imageSrc={require("../../img/phoneBarcode.png")}
+        imageSrc={require("../../img/barCodeSuccess.png")}
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
@@ -461,7 +462,7 @@ class ManualConfirmationScreen extends React.Component<
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
-        imageSrc={require("../../img/phoneBarcode.png")}
+        imageSrc={require("../../img/barCodeSuccess.png")}
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
@@ -616,6 +617,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
+        imageSrc={require("../../img/howTestWorks.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -895,7 +897,7 @@ class FirstTimerScreen extends React.Component<
           </View>
         }
         imageAspectRatio={1.75}
-        imageSrc={require("../../img/putSwabInTube.png")}
+        imageSrc={require("../../img/oneMinuteTimer.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
@@ -1511,7 +1513,7 @@ class ThankYouSurveyScreen extends React.Component<
             )}
           </View>
         }
-        imageSrc={require("../../img/clipboard.png")}
+        imageSrc={require("../../img/questionsThankYou.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
@@ -1835,6 +1837,7 @@ class TestStripConfirmationScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
+        imageSrc={require("../../img/testStripPicSuccess.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -1862,6 +1865,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
       "CleanFirstTestScreen",
       <Screen
         canProceed={true}
+        imageSrc={require("../../img/cleanUpFirstTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -1890,7 +1894,7 @@ class FirstTestFeedbackScreen extends React.Component<
       "FirstTestFeedbackScreen",
       <Screen
         canProceed={true}
-        imageSrc={require("../../img/mountain.png")}
+        imageSrc={require("../../img/niceJob.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -1990,7 +1994,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageAspectRatio={1.75}
-        imageSrc={require("../../img/putSwabInTube.png")}
+        imageSrc={require("../../img/putSwabInRedTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2013,7 +2017,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageAspectRatio={1.75}
-        imageSrc={require("../../img/cleanUp2ndTest.png")}
+        imageSrc={require("../../img/cleanUpSecondTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2036,7 +2040,7 @@ class SecondTestFeedbackScreen extends React.Component<
       "SecondTestFeedbackScreen",
       <Screen
         canProceed={true}
-        imageSrc={require("../../img/mountain.png")}
+        imageSrc={require("../../img/niceJob.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2205,6 +2209,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("title")}
         canProceed={true}
         desc={t("description")}
+        imageSrc={require("../../img/schedulePickup.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2242,6 +2247,7 @@ class EmailOptInScreen extends React.Component<
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
+        imageSrc={require("../../img/optInMessages.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
@@ -2290,6 +2296,7 @@ class ThanksScreen extends React.Component<
       <Screen
         canProceed={false}
         desc={t("description", { email: this.props.email })}
+        imageSrc={require("../../img/finalThanks.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
