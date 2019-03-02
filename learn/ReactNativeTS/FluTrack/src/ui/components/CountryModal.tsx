@@ -108,7 +108,6 @@ const countries = [
   "Guinea",
   "Guyana",
   "Haiti",
-  "Hawaii",
   "Honduras",
   "Hong Kong",
   "Hungary",
