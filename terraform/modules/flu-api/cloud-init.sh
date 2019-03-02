@@ -60,7 +60,7 @@ function pm2_startup() {
 function echo_nginx_server() {
   local app_port="$1"
   local app_url="$2"
-  readonly local VPC_CERT="/creds/vpc-cert"
+  local VPC_CERT="/creds/vpc-cert"
 
   cat <<EOF
 server {
