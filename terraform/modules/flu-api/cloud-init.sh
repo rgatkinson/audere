@@ -57,23 +57,17 @@ function pm2_startup() {
   )
 }
 
-function init_nginx() {
+function echo_nginx_server() {
+  local app_port="$1"
+  local app_url="$2"
   readonly local VPC_CERT="/creds/vpc-cert"
-  readonly local service_url="http://localhost:3000"
 
-  apt-get -y install nginx
-  rm /etc/nginx/sites-enabled/default
-
-  sudo tee "/etc/nginx/sites-enabled/${domain}" <<EOF
-# Rate limiting
-# On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
-limit_req_zone \$http_x_forwarded_for zone=${subdomain}:10m rate=5r/s;
-
+  cat <<EOF
 server {
   server_name ${domain};
 
-  listen [::]:443 ssl ipv6only=on;
-  listen 443 ssl;
+  listen [::]:$app_port ssl ipv6only=on;
+  listen $app_port ssl;
 
   ssl_certificate $VPC_CERT/vpc.crt;
   ssl_certificate_key $VPC_CERT/vpc.key;
@@ -99,12 +93,32 @@ server {
     proxy_set_header Upgrade \$http_upgrade;
     proxy_set_header Connection \"upgrade\";
 
-    proxy_pass $service_url;
+    proxy_pass $app_url;
     proxy_redirect off;
 
     client_max_body_size 20M;
   }
 }
+EOF
+}
+
+function init_nginx() {
+  readonly local public_url="http://localhost:3000"
+  readonly local public_port="443"
+  readonly local internal_url="http://localhost:3200"
+  readonly local internal_port="444"
+
+  apt-get -y install nginx
+  rm /etc/nginx/sites-enabled/default
+
+  sudo tee "/etc/nginx/sites-enabled/${domain}" <<EOF
+# Rate limiting
+# On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
+limit_req_zone \$http_x_forwarded_for zone=${subdomain}:10m rate=5r/s;
+
+$(echo_nginx_server "$public_url" "$public_port")
+
+$(echo_nginx_server "$internal_url" "$internal_port")
 EOF
 
   # Check the config before restarting

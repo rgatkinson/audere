@@ -62,7 +62,8 @@ module "fludb_sg" {
   source = "../sg-pair"
 
   name = "${local.base_name}-db"
-  port = 5432
+  from_port = 5432
+  to_port = 5432
   vpc_id = "${aws_vpc.fludb.id}"
 }
 
@@ -70,7 +71,8 @@ module "fludev_ssh_sg" {
   source = "../sg-pair"
 
   name = "${local.base_name}-ssh"
-  port = 22
+  from_port = 22
+  to_port = 22
   vpc_id = "${aws_vpc.fludb.id}"
 }
 

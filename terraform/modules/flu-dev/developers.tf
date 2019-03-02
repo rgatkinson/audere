@@ -201,7 +201,8 @@ module "dev_machine_sg" {
   source = "../sg-pair"
 
   name = "${local.base_name}-dev-machine"
-  port = "22"
+  from_port = 22
+  to_port = 22
   vpc_id = "${var.vpc_id}"
 }
 

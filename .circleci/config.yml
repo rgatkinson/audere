@@ -202,6 +202,23 @@ jobs:
               sudo npm install -g snyk
               snyk test --org=auderenow --severity-threshold=high
             fi
+      - run:
+          name: FluLambda Yarn Install
+          command: |
+            cd FluLambda
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Lambda Build and Test
+          command: |
+            cd FluLambda
+            yarn build
+            yarn test
       - save_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
           paths:

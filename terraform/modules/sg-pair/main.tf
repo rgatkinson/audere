@@ -15,8 +15,13 @@ variable "name" {
   type = "string"
 }
 
-variable "port" {
+variable "from_port" {
   description = "Port on which to allow traffic between the two groups."
+  type = "string"
+}
+
+variable "to_port" {
+  description = "Upper on which to allow traffic"
   type = "string"
 }
 
@@ -39,20 +44,20 @@ output "client_id" {
 
 resource "aws_security_group" "server" {
   name = "${var.name}"
-  description = "Allow incoming traffic from ${var.name}-client (port ${var.port})."
+  description = "Allow incoming traffic from ${var.name}-client (port range ${var.from_port} - ${var.to_port})."
   vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group" "client" {
   name = "${var.name}-client"
-  description = "Allow outgoing traffic to ${var.name} (port ${var.port})."
+  description = "Allow outgoing traffic to ${var.name} (port range ${var.from_port} - ${var.to_port})."
   vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group_rule" "ingress" {
   type = "ingress"
-  from_port = "${var.port}"
-  to_port = "${var.port}"
+  from_port = "${var.from_port}"
+  to_port = "${var.to_port}"
   protocol = "${var.protocol}"
 
   security_group_id = "${aws_security_group.server.id}"
@@ -61,8 +66,8 @@ resource "aws_security_group_rule" "ingress" {
 
 resource "aws_security_group_rule" "egress" {
   type = "egress"
-  from_port = "${var.port}"
-  to_port = "${var.port}"
+  from_port = "${var.from_port}"
+  to_port = "${var.to_port}"
   protocol = "${var.protocol}"
 
   security_group_id = "${aws_security_group.client.id}"

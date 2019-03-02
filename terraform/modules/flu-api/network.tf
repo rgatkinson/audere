@@ -48,19 +48,19 @@ resource "aws_subnet" "api" {
   }
 }
 
-resource "aws_route_table_association" "migrate" {
-  subnet_id      = "${aws_subnet.migrate.id}"
+resource "aws_route_table_association" "transient" {
+  subnet_id      = "${aws_subnet.transient.id}"
   route_table_id = "${aws_route_table.fluapi_rt.id}"
 }
 
-resource "aws_subnet" "migrate" {
+resource "aws_subnet" "transient" {
   availability_zone = "${var.availability_zone}"
-  cidr_block = "${local.subnet_migrate_cidr}"
+  cidr_block = "${local.subnet_transient_cidr}"
   map_public_ip_on_launch = true
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "${local.base_name}-migrate"
+    Name = "${local.base_name}-transient"
   }
 }
 
@@ -70,7 +70,17 @@ module "fluapi_sg" {
   source = "../sg-pair"
 
   name = "${local.base_name}"
-  port = 443
+  from_port = 443
+  to_port = 444
+  vpc_id = "${var.vpc_id}"
+}
+
+module "elbinternal_sg" {
+  source = "../sg-pair"
+
+  name = "${local.base_name}-elb"
+  from_port = 444
+  to_port = 444
   vpc_id = "${var.vpc_id}"
 }
 
@@ -118,6 +128,6 @@ resource "aws_security_group_rule" "public_http" {
 
 locals {
   subnet_api_cidr = "${cidrsubnet(var.api_cidr, 1, 0)}"
-  subnet_migrate_cidr = "${cidrsubnet(var.api_cidr, 1, 1)}"
+  subnet_transient_cidr = "${cidrsubnet(var.api_cidr, 1, 1)}"
   subnet_public_cidr = "${var.public_cidr}"
 }

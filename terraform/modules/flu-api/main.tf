@@ -67,7 +67,7 @@ data "template_file" "service_init_sh" {
 resource "aws_instance" "migrate_instance" {
   ami = "${module.ami.ubuntu}"
   instance_type = "t2.micro"
-  subnet_id = "${aws_subnet.migrate.id}"
+  subnet_id = "${aws_subnet.transient.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
   vpc_security_group_ids = [
@@ -140,6 +140,7 @@ resource "aws_elb" "flu_api_elb" {
   security_groups = [
     "${aws_security_group.public_http.id}",
     "${module.fluapi_sg.client_id}",
+    "${module.elbinternal_sg.server_id}",
   ]
 
   listener {
@@ -156,6 +157,14 @@ resource "aws_elb" "flu_api_elb" {
     timeout = 5
     interval = 30
     target = "HTTPS:443/api"
+  }
+
+  listener {
+    lb_port = 444
+    lb_protocol = "https"
+    instance_port = 444
+    instance_protocol = "https"
+    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
   }
 
   tags {

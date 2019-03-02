@@ -1,0 +1,50 @@
+{
+  "name": "flu-lambda",
+  "version": "0.1.6",
+  "description": "Lambda functions for the flu infrastructure",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p .",
+    "clean": "rm -rf build && rm -rf node_modules",
+    "test": "jest --verbose --no-watchman",
+    "package": "yarn clean && yarn install --production=true && mkdir -p build && zip -r build/FluLambda.zip node_modules/ && yarn install --production=false && yarn build && yarn test && zip -ur build/FluLambda.zip build/src/*.js",
+    "lint": "prettier --list-different '{src,test}/**/*.ts'",
+    "lint-fix": "prettier --write '{src,test}/**/*.ts'"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.373.0",
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.2",
+    "@types/nock": "^9.3.1",
+    "@types/node": "^10.11.0",
+    "jest": "^23.6.0",
+    "nock": "^10.0.6",
+    "prettier": "^1.14.3",
+    "ts-jest": "^23.10.1",
+    "typescript": "^3.0.3",
+    "url-parse": "^1.4.4"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/test/**/*.test.(ts|js)"
+    ],
+    "testEnvironment": "node"
+  }
+}
