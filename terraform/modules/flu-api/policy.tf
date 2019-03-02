@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "flu_api_role_policy" {
 }
 
 resource "aws_iam_role_policy" "flu_api_cloudwatch_policy" {
-  name = "flu_api_cloudwatch_policy"
+  name = "${local.base_name}-cloudwatch-policy"
   role = "${aws_iam_role.flu_api_role.id}"
   policy = "${data.aws_iam_policy_document.flu_api_cloudwatch_policy.json}"
 }
