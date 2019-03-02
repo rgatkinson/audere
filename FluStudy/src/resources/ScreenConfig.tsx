@@ -416,7 +416,11 @@ export const OptInForMessagesConfig: SurveyQuestionData = {
   description: "optInForMessages",
   optionList: {
     multiSelect: true,
-    options: ["contactMeNextSeason", "sendMeStudy"],
+    options: [
+      "contactMeNextSeason",
+      "contactMeForFollowUpStudy",
+      "sendMeStudy",
+    ],
     withOther: false,
   },
   buttons: [],
