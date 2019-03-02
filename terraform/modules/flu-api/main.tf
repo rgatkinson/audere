@@ -201,7 +201,7 @@ module "devs" {
 // CloudWatch log group
 
 resource "aws_cloudwatch_log_group" "flu_api_log_group" {
-  name = "flu_api_${var.environment}"
+  name = "${local.base_name}"
   retention_in_days = 30
 
   tags = {
