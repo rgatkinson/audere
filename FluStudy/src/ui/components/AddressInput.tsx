@@ -23,6 +23,7 @@ interface Props {
 interface State {
   keyboardOpen: boolean;
   stateOpen: boolean;
+  focusZip: boolean;
 }
 
 class AddressInput extends React.Component<Props & WithNamespaces> {
@@ -36,7 +37,20 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   state = {
     stateOpen: false,
     keyboardOpen: true,
+    focusZip: false,
   };
+
+  componentWillUpdate(nextProps: any, nextState: any){
+    if(this.state.focusZip) {
+      this.zipcode.current!.focus();
+    }
+  }
+
+  removeZipFocus = (): void => {
+    if(this.state.focusZip) {
+      this.setState({ focusZip: false });
+    }
+  }
 
   render() {
     const { t } = this.props;
@@ -55,6 +69,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={true}
+            onFocus={this.removeZipFocus}
             placeholder={
               t("firstName") + (this.state.keyboardOpen ? "" : t("required"))
             }
@@ -79,6 +94,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               t("lastName") + (this.state.keyboardOpen ? "" : t("required"))
             }
             ref={this.lastName}
+            onFocus={this.removeZipFocus}
             placeholderTextColor={
               this.state.keyboardOpen ? undefined : ERROR_COLOR
             }
@@ -97,6 +113,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={false}
+          onFocus={this.removeZipFocus}
           placeholder={
             t("streetAddress") + (this.state.keyboardOpen ? "" : t("required"))
           }
@@ -118,6 +135,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={false}
+          onFocus={this.removeZipFocus}
           placeholder={t("streetAddress")}
           ref={this.address2}
           returnKeyType="next"
@@ -133,6 +151,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
+          onFocus={this.removeZipFocus}
           placeholder={
             t("city") + (this.state.keyboardOpen ? "" : t("required"))
           }
@@ -148,7 +167,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             address.city = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => this.zipcode.current!.focus()}
+          onSubmitEditing={() => this.setState({ stateOpen: true })}
         />
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
@@ -172,10 +191,9 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             }
             visible={this.state.stateOpen}
             onDismiss={(state: string) => {
-              this.setState({ stateOpen: false });
+              this.setState({ stateOpen: false, focusZip: true });
               const address = this.props.value || {};
               address.state = state;
-              this.props.onChange(address);
             }}
           />
           <NumberInput
@@ -193,8 +211,11 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
               const address = this.props.value || {};
               address.zipcode = text;
               this.props.onChange(address);
+              this.setState({ focusZip: false });
             }}
-            onSubmitEditing={() => {}}
+            onSubmitEditing={() => {
+              this.setState({ focusZip: false });
+            }}
           />
         </View>
       </View>

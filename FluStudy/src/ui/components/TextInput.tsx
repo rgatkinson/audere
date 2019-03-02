@@ -27,6 +27,7 @@ interface Props {
   style?: StyleProp<TextStyle>;
   value?: string | null;
   onChangeText(text: string): void;
+  onFocus?: () => void;
   onSubmitEditing(): void;
 }
 
@@ -43,6 +44,7 @@ export default class TextInput extends React.Component<Props> {
         keyboardType={
           !!this.props.keyboardType ? this.props.keyboardType : "default"
         }
+        onFocus={this.props.onFocus}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
