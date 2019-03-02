@@ -122,7 +122,7 @@ platform :ios do
     build = get_build_number
     destination = options[:destination]
     changelog = options[:changelog]
-    lasttag = sh("git describe --match "v#{version}_*" --abbrev=0 --tags")
+    lasttag = Helper.backticks("git describe --match \"v#{version}_*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
       message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
@@ -156,12 +156,17 @@ platform :ios do
       UI.message "Your device udid is: #{udid}" 
     end
     name = options[:name]
+    username = options[:username]
     if name.to_s.empty?
       name = UI.input("Enter the device name: ")
     end
+    if username.to_s.empty?
+      username = UI.input("Enter the Apple ID email address you use for Audere's App Store Connect: ")
+    end
     register_device(
       name: name,
-      udid: udid
+      udid: udid,
+      username: username
     )
     match(
       type: "development",
