@@ -40,17 +40,17 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
     focusZip: false,
   };
 
-  componentWillUpdate(nextProps: any, nextState: any){
-    if(this.state.focusZip) {
+  componentWillUpdate(nextProps: any, nextState: any) {
+    if (this.state.focusZip) {
       this.zipcode.current!.focus();
     }
   }
 
   removeZipFocus = (): void => {
-    if(this.state.focusZip) {
+    if (this.state.focusZip) {
       this.setState({ focusZip: false });
     }
-  }
+  };
 
   render() {
     const { t } = this.props;

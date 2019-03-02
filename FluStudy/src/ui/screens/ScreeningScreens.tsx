@@ -523,7 +523,7 @@ class AddressInputScreen extends React.Component<
           />
           <Text
             content={t("addressExceptions")}
-            style={{ fontSize: SMALL_TEXT }}
+            style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
           />
         </Screen>
       </KeyboardAvoidingView>

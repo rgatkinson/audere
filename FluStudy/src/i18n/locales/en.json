@@ -288,8 +288,8 @@
     "title": "Keep swab in tube for one minute",
     "remaining": "TIME REMAINING:",
     "done": "TIMER FINISHED!",
-    "tip": "\n\n**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
-    "tip2": "\n\n**DID YOU KNOW?**\n\nEveryone six months of age and older should get a flu vaccine each year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
+    "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
+    "tip2": "**DID YOU KNOW?**\n\nEveryone six months of age and older should get a flu vaccine each year before flu activity begins in their community. CDC recommends getting vaccinated by the end of October."
   },
   "removeSwabFromTubeScreen": {
     "title": "Remove swab from tube",

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import Text from "./Text";
-import { FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
+import { ERROR_COLOR, FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
 
 interface Props {
   backgroundColor?: string;
@@ -21,10 +21,12 @@ export default class QuestionText extends React.Component<Props> {
           },
         ]}
       >
-        <Text
-          content={(!!this.props.required ? "* " : "") + this.props.text}
-          style={styles.text}
-        />
+        <View style={{ flexDirection: "row", alignSelf: "stretch" }}>
+          {!!this.props.required && (
+            <Text content="* " style={[styles.text, { color: ERROR_COLOR }]} />
+          )}
+          <Text content={this.props.text} style={styles.text} />
+        </View>
         {!!this.props.subtext && (
           <Text content={this.props.subtext} style={styles.subtext} />
         )}
