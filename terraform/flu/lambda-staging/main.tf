@@ -6,7 +6,7 @@
 terraform {
   backend "s3" {
     bucket = "flu-staging-terraform.auderenow.io"
-    key = "api/terraform.state"
+    key = "lambda/terraform.state"
     region = "us-west-2"
   }
 }
@@ -25,7 +25,7 @@ module "flu_lambda" {
 
   environment = "staging"
 
-  fluapi_fqdn = "${data.terraform_remote_state.flu_data.fluapi_fqdn}"
+  fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_fqdn}"
   lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
   lambda_sg_ids = [
     "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
@@ -36,7 +36,7 @@ data "terraform_remote_state" "flu_api" {
   backend = "s3"
   config {
     bucket = "flu-staging-terraform.auderenow.io"
-    key = "lambda/terraform.state"
+    key = "api/terraform.state"
     region = "us-west-2"
   }
 }

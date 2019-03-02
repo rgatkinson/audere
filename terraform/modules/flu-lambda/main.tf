@@ -23,8 +23,13 @@ data "aws_iam_policy_document" "flu_lambda_role_policy" {
   }
 }
 
-resource "aws_lambda_function" "hutch_upload_function" {
-  name = "${local.base_name}-hutch-upload"
+resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
+  role = "${aws_iam_role.flu_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
+resource "aws_lambda_function" "hutch_upload" {
+  function_name = "${local.base_name}-hutch-upload"
   filename = "${local.archive_path}"
   function_name = "hutch_upload"
   handler = "handler.hutchUpload"
@@ -41,14 +46,14 @@ resource "aws_lambda_function" "hutch_upload_function" {
 
   vpc_config {
     subnet_ids = ["${var.lambda_subnet_id}"]
-    security_group_ids = "${var.lambda_sg_ids}"
+    security_group_ids = ["${var.lambda_sg_ids}"]
   }
 }
 
 resource "aws_cloudwatch_event_rule" "every_hour" {
   name = "every-hour"
   description = "Fires every hour"
-  schedule_expression = "rate(1 hours)"
+  schedule_expression = "rate(1 hour)"
 }
 
 resource "aws_cloudwatch_event_target" "hutch_upload_every_hour" {

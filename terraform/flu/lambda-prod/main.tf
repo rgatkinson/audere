@@ -6,7 +6,7 @@
 terraform {
   backend "s3" {
     bucket = "flu-prod-terraform.auderenow.io"
-    key = "api/terraform.state"
+    key = "lambda/terraform.state"
     region = "us-west-2"
   }
 }
@@ -25,18 +25,18 @@ module "flu_lambda" {
 
   environment = "prod"
 
-  fluapi_fqdn = "${data.terraform_remote_state.flu_data.fluapi_fqdn}"
-  lambda_subnet_id = "${data.terraform_remote_state.flu_data.fluapi_transient_subnet_id}"
+  fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_fqdn}"
+  lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
   lambda_sg_ids = [
-    "${data.terraform_remote_state.flu_data.elbinternal_sg_client_id}"
+    "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
   ]
 }
 
-data "terraform_remote_state" "flu_data" {
+data "terraform_remote_state" "flu_api" {
   backend = "s3"
   config {
     bucket = "flu-prod-terraform.auderenow.io"
-    key = "lambda/terraform.state"
+    key = "api/terraform.state"
     region = "us-west-2"
   }
 }
