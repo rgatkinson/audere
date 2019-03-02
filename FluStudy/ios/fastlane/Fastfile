@@ -122,6 +122,7 @@ platform :ios do
     build = get_build_number
     destination = options[:destination]
     changelog = options[:changelog]
+    lasttag = sh("git describe --match "v#{version}_*" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
       message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
@@ -130,7 +131,7 @@ platform :ios do
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
         "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
-        "Changelog" => changelog
+        "Changelog since #{lasttag}" => changelog
       }
     )
   end
