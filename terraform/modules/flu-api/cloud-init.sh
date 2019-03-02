@@ -6,14 +6,15 @@
 ${util_sh}
 
 function main() {
-  add_developer_accounts
-
   install_updates
   mount_creds
   adduser --gecos "Audere Api" --disabled-password api
   chown -R "api:api" /creds/{github,db}
 
-  apt-get -y install git postgresql-client-common
+  apt-get -y install git jq postgresql-client-common
+
+  add_developer_accounts
+
   [[ "${mode}" != service ]] || init_nginx
   configure_api
 }
