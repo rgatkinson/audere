@@ -396,7 +396,7 @@ class ConsentScreen extends React.PureComponent<
           {!!this.props.getAnswer("booleanInput", ConsentConfig.id) && (
             <View style={{ flex: 1 }}>
               <EmailInput
-                autoFocus={true}
+                autoFocus={this.props.navigation.isFocused()}
                 placeholder={t("emailAddress")}
                 ref={this.emailInput}
                 returnKeyType="next"
@@ -518,6 +518,7 @@ class AddressInputScreen extends React.Component<
           onNext={this._onNext}
         >
           <AddressInput
+            autoFocus={this.props.navigation.isFocused()}
             value={this.state.address}
             onChange={(address: Address) => this.setState({ address })}
           />

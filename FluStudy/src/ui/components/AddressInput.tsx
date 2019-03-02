@@ -16,6 +16,7 @@ import {
 } from "../styles";
 
 interface Props {
+  autoFocus?: boolean;
   value?: Address | null;
   onChange(value: Address): void;
 }
@@ -26,7 +27,7 @@ interface State {
   focusZip: boolean;
 }
 
-class AddressInput extends React.Component<Props & WithNamespaces> {
+class AddressInput extends React.Component<Props & WithNamespaces, State> {
   lastName = React.createRef<TextInput>();
   address = React.createRef<TextInput>();
   address2 = React.createRef<TextInput>();
@@ -34,11 +35,14 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   stateProvince = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
 
-  state = {
-    stateOpen: false,
-    keyboardOpen: true,
-    focusZip: false,
-  };
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = {
+      focusZip: false,
+      stateOpen: false,
+      keyboardOpen: !!props.autoFocus,
+    };
+  }
 
   componentWillUpdate(nextProps: any, nextState: any) {
     if (this.state.focusZip) {
@@ -68,7 +72,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
           <TextInput
             autoCapitalize="words"
             autoCorrect={false}
-            autoFocus={true}
+            autoFocus={this.props.autoFocus}
             onFocus={this.removeZipFocus}
             placeholder={
               t("firstName") + (this.state.keyboardOpen ? "" : t("required"))
