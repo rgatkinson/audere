@@ -303,7 +303,12 @@ class ConsentScreen extends React.PureComponent<
     }
     this.props.dispatch(
       setConsent({
-        terms: t("consentFormText"),
+        terms:
+          t("consentFormHeader1") +
+          "\n" +
+          t("consentFormHeader2") +
+          "\n" +
+          t("consentFormText"),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
       })
