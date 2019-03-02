@@ -219,7 +219,7 @@
   },
   "welcomeBackScreen": {
     "welcomeBack": "Welcome back",
-    "description": "Sorry, we know you're feeling bad and appreciate your participation. Before we get started, find a location with good lighting (we'll need you to take a picture of a test strip later)and make yourself comfortable. Today you'll be completing two tests, which allows us to double check your results. The whole process should take about 20 minutes total."
+    "description": "Sorry, we know you're feeling bad and appreciate your participation. Before we get started, find a location with good lighting (we'll need you to take a picture of a test strip later)  and make yourself comfortable. Today you'll be completing two tests, which allows us to double check your results. The whole process should take about 20 minutes total."
   },
   "whatsNextScreen": {
     "whatsNext": "What's next?",
@@ -288,8 +288,8 @@
     "title": "Keep swab in tube for one minute",
     "remaining": "TIME REMAINING:",
     "done": "TIMER FINISHED!",
-    "tip": "**DID YOU KNOW?**\n\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
-    "tip2": "**DID YOU KNOW?**\n\nTo avoid the flu, wash your hands. Hand washing is one of the most basic and proven methods for preventing the spread of disease. Wash your hands frequently using soap and water, especially after coughing, sneezing or touching commonly shared items in your house or workplace."
+    "tip": "**DID YOU KNOW?**\nIf you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
+    "tip2": "**DID YOU KNOW?**\nTo avoid the flu, wash your hands. Hand washing is one of the most basic and proven methods for preventing the spread of disease. Wash your hands frequently using soap and water, especially after coughing, sneezing or touching commonly shared items in your house or workplace."
   },
   "removeSwabFromTubeScreen": {
     "title": "Remove swab from tube",
@@ -301,7 +301,7 @@
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
-    "description": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out. In the meantime, please answer some questions so we can better understand how this illness has affected you."
+    "description": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out. In the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "surveyCoverScreen": {
     "title": "Questions for you",
