@@ -46,7 +46,7 @@ function configure_api() {
 ${init_tar_bz2_base64}
 EOF
   chown -R "api:api" "$API"
-  sudo -H --login --user=api bash "$API/init/api-init" "${mode}" "${commit}"
+  sudo -H --login --user=api bash "$API/init/api-init" "${mode}" "${commit}" "${environment}"
   [[ "${mode}" != service ]] || pm2_startup
 }
 

@@ -16,6 +16,7 @@ import logger from "./util/logger";
 import { ErrorRequestHandler } from "express-serve-static-core";
 import { SplitSql } from "./util/sql";
 import { FeverIncentivesEndpoint } from "./endpoints/feverIncentivesEndpoint";
+import { isAWS } from "./util/environment";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -77,7 +78,7 @@ export function createInternalApp(sql: SplitSql) {
   internalApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
-  if (internalApp.get("env") !== "production") {
+  if (!isAWS()) {
     internalApp.get(
       "/api/export/getEncounters",
       (req, res, next) => hutchUploader.getEncounters(req, res, next)
@@ -106,7 +107,7 @@ function wrap(f: any) {
 
 function defaultErrorHandler(env: string): ErrorRequestHandler {
   return (err, req, res, next) => {
-    if (env === "production") {
+    if (isAWS()) {
       next();
       return;
     }

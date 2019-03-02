@@ -5,11 +5,9 @@
 
 import winston, { createLogger } from "winston";
 import WinstonCloudWatch from "winston-cloudwatch";
-import * as AWS from "aws-sdk";
+import { isAWS } from "./environment";
 
-const PRODUCTION = process.env.NODE_ENV === "production";
-const STAGING = process.env.NODE_ENV === "staging";
-const LOGGER_OPTIONS = PRODUCTION
+const LOGGER_OPTIONS = isAWS()
   ? {
       level: "error",
       format: winston.format.simple()
@@ -28,28 +26,15 @@ const logger = createLogger({
   ]
 });
 
-if (!PRODUCTION) {
+if (!isAWS()) {
   logger.debug("Logging initialized at debug level");
-}
-
-if (PRODUCTION || STAGING) {
+} else {
   const env = process.env.NODE_ENV.toLowerCase();
-  new AWS.MetadataService().request(
-    "http://169.254.169.254/latest/meta-data/instance-id",
-    function(err, data) {
-      let streamName: string;
-      if (err) {
-        streamName = "flu_api_unknown_host"
-      } else {
-        streamName = "flu_api_" + data
-      }
-
-      logger.add(new WinstonCloudWatch({
-        logGroupName: "flu_api_" + env,
-        logStreamName: streamName
-      }));
-    }
-  );
+  logger.add(new WinstonCloudWatch({
+    logGroupName: "flu-" + env + "-api",
+    logStreamName: "flu-api-instance",
+    awsRegion: "us-west-2"
+  }));
 }
 
 export default logger;

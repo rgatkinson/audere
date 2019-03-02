@@ -37,6 +37,7 @@ data "template_file" "sequelize_migrate_sh" {
   vars {
     commit = "${var.commit}"
     domain = "${local.full_domain}"
+    environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "migrate"
     service_url = "${local.service_url}"
