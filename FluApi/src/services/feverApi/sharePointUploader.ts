@@ -28,7 +28,7 @@ export class SharePointUploader {
 
   public async sendFile(batch: number, contents: string): Promise<void> {
     // YYYY-MM-DDTHH:mm
-    const now = new Date().toISOString().substring(0, 16);
+    const now = new Date().toISOString().substring(0, 10);
     const file = `Gift-Card-Report-${batch}.${now}.csv`;
 
     await sp.web.getFolderByServerRelativePath(this.config.incentivesFolder)

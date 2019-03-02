@@ -77,7 +77,7 @@ describe("sending incentives", () => {
     await i.sendIncentives();
 
     const contents = capture(uploader.sendFile).first()[1];
-    const rows: string[][] = parse(contents);
+    const rows: string[][] = parse(contents).slice(1);
 
     items.forEach(item => {
       const geo = geoResponses.find(r => r.id === item.workflowId);
@@ -85,8 +85,8 @@ describe("sending incentives", () => {
         return row[0] === item.firstName &&
           row[1] === item.lastName &&
           row[2] === geo.address.address1 &&
-          row[9] === item.workflowId.toString() &&
-          row[10] === item.surveyId.toString();
+          row[9] === item.workflowId.toFixed() &&
+          row[10] === item.surveyId.toFixed();
       });
 
       expect(contains).toBe(true);

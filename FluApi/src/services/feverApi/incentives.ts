@@ -10,17 +10,17 @@ import { parse } from "json2csv";
 import logger from "../../util/logger";
 
 export interface IncentiveRow {
-  firstName: string;
-  lastName: string;
-  address1: string;
-  address2: string;
-  city: string;
-  state: string;
-  zip: string;
-  email: string;
-  timestamp: string;
-  workflowId: number;
-  systemId: number;
+  "First Name": string;
+  "Last Name": string;
+  "Address 1": string;
+  "Address 2": string;
+  "City": string;
+  "State": string;
+  "Zip": string;
+  "Email": string;
+  "Timestamp": string;
+  "Workflow ID": number;
+  "Audere System ID": number;
 }
 
 /**
@@ -60,17 +60,17 @@ export class Incentives {
 
         if (geocoded != null) {
           const row =  {
-            firstName: i.firstName,
-            lastName: i.lastName,
-            address1: geocoded.address.address1,
-            address2: geocoded.address.address2,
-            city: geocoded.address.city,
-            state: geocoded.address.state,
-            zip: geocoded.address.postalCode,
-            email: i.email,
-            timestamp: i.timestamp,
-            workflowId: i.workflowId,
-            systemId: i.surveyId
+            "First Name": i.firstName,
+            "Last Name": i.lastName,
+            "Address 1": geocoded.address.address1,
+            "Address 2": geocoded.address.address2,
+            "City": geocoded.address.city,
+            "State": geocoded.address.state,
+            "Zip": geocoded.address.postalCode,
+            "Email": i.email,
+            "Timestamp": i.timestamp,
+            "Workflow ID": i.workflowId.toFixed(),
+            "Audere System ID": i.surveyId.toFixed()
           }
 
           rows.push(row);
@@ -83,7 +83,7 @@ export class Incentives {
       });
 
       if (rows.length > 0) {
-        const csv = parse(rows, { header: false });
+        const csv = parse(rows, { header: true });
         await this.uploader.sendFile(batch.id, csv);
       }
 
