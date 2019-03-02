@@ -27,6 +27,8 @@ import {
   RedLineConfig,
   InContactConfig,
   CoughSneezeConfig,
+  ChildrenWithChildrenConfig,
+  HouseholdChildrenConfig,
 } from "../resources/ScreenConfig";
 
 export const { uploader, events, logger } = createTransport();
@@ -41,6 +43,11 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
   {
     conditionalId: FluShotDateConfig.id,
     dependsOnId: FluShotConfig.id,
+    includeWhen: isSelected("yes"),
+  },
+  {
+    conditionalId: ChildrenWithChildrenConfig.id,
+    dependsOnId: HouseholdChildrenConfig.id,
     includeWhen: isSelected("yes"),
   },
   {
