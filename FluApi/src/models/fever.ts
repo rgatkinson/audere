@@ -3,7 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Sequelize } from "sequelize";
+import {
+  FindOptions,
+  Op,
+  Sequelize,
+  STRING as SQL_STRING,
+} from "sequelize";
 import {
   defineModel,
   Inst,
@@ -15,6 +20,8 @@ import {
   jsonColumn,
   unique,
   primaryKey,
+  nullable,
+  foreignIdKey,
 } from "../util/sql";
 import {
   DeviceInfo,
@@ -27,17 +34,31 @@ import {
 // ---------------------------------------------------------------
 
 export function defineFeverModels(sql: SplitSql): FeverModels {
-  return {
+  const models: FeverModels = {
     accessKey: defineAccessKey(sql),
     clientLogBatch: defineLogBatch(sql),
+    consentEmail: defineConsentEmail(sql.pii),
     feedback: defineFeedback(sql),
     photo: definePhoto(sql),
     surveyNonPii: defineSurvey(sql.nonPii),
     surveyPii: defineSurvey(sql.pii),
-  }
+  };
+
+  models.surveyPii.hasOne(
+    models.consentEmail,
+    {
+      as: "fever_consent_emails",
+      foreignKey: "survey_id",
+      onDelete: "CASCADE",
+    }
+  );
+
+  return models;
 }
+
 export interface FeverModels {
   accessKey: Model<AccessKeyAttributes>;
+  consentEmail: Model<ConsentEmailAttributes>;
   clientLogBatch: Model<AnalyticsAttributes>;
   feedback: Model<FeedbackAttributes>;
   photo: Model<PhotoAttributes>;
@@ -196,7 +217,7 @@ export function defineIncentiveItem(
   return defineModel<BatchItemAttributes>(
     sql,
     "fever_incentive_item",
-    {  
+    {
       id: primaryKey(integerColumn()),
       batchId: integerColumn(),
       surveyId: integerColumn()
@@ -220,4 +241,48 @@ export function defineIncentiveDiscard(
       workflowId: integerColumn()
     }
   )
+}
+
+export interface ConsentEmailAttributes {
+  id?: number,
+  survey_id: string,
+  completed?: string,
+}
+export function defineConsentEmail(sql: Sequelize): Model<ConsentEmailAttributes> {
+  return defineModel<ConsentEmailAttributes>(
+    sql,
+    "fever_consent_emails",
+    {
+      survey_id: foreignIdKey(stringColumn(), "fever_current_surveys"),
+      completed: nullable(stringColumn()),
+    }
+  )
+}
+
+export type SurveyWithConsentEmail =
+  (SurveyInstance<PIIInfo> | SurveyAttributes<PIIInfo>) & HasConsentEmail;
+
+export interface HasConsentEmail {
+  consentEmail: Inst<ConsentEmailAttributes> | ConsentEmailAttributes;
+}
+
+export async function querySurveyJoinConsentEmail<TCustom>(
+  models: FeverModels,
+  options: FindOptions<SurveyAttributes<PIIInfo> & TCustom>
+): Promise<SurveyWithConsentEmail[]> {
+  if (options.include != null) {
+    throw new Error("Custom include not supported");
+  }
+  const items = await models.surveyPii.findAll<TCustom>({
+    ...options,
+    include: [
+      {
+        model: models.consentEmail,
+        as: "fever_consent_emails",
+        required: false,
+        attributes: ["id", "completed"],
+      }
+    ]
+  });
+  return <SurveyWithConsentEmail[]>(<any>items);
 }

@@ -86,6 +86,14 @@ export function jsonColumn<T>(field?: string) {
 export function integerColumn(field?: string) {
   return column(SQL_INTEGER, field);
 }
+export function foreignIdKey(column, model) {
+  return {
+    ...column,
+    unique: true,
+    references: { model, key: "id" },
+    onDelete: "CASCADE",
+  };
+}
 export function column(type, field?: string) {
   if (field == null) {
     return { allowNull: false, type };

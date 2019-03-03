@@ -17,6 +17,7 @@ import { ErrorRequestHandler } from "express-serve-static-core";
 import { SplitSql } from "./util/sql";
 import { FeverIncentivesEndpoint } from "./endpoints/feverIncentivesEndpoint";
 import { isAWS } from "./util/environment";
+import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -66,7 +67,14 @@ export function createPublicApp(sql: SplitSql) {
   return publicApp;
 }
 
-export function createInternalApp(sql: SplitSql) {
+interface InternalAppEndpointOverrides {
+  consentEmailer?: FeverConsentEmailerEndpoint;
+}
+
+export function createInternalApp(
+  sql: SplitSql,
+  overrides: InternalAppEndpointOverrides = {}
+) {
   // Internal app should be intranet only.
   const internalApp = express();
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
@@ -84,17 +92,21 @@ export function createInternalApp(sql: SplitSql) {
       (req, res, next) => hutchUploader.getEncounters(req, res, next)
     );
   }
-  
+
   internalApp.get(
     "/api/export/sendEncounters",
     (req, res, next) => hutchUploader.sendEncounters(req, res, next)
   );
-  
+
   const fever = new FeverIncentivesEndpoint(sql);
   internalApp.get(
     "/api/export/sendIncentives",
     (req, res, next) => fever.sendIncentives(req, res, next)
   );
+
+  const consentEmailer =
+    overrides.consentEmailer || new FeverConsentEmailerEndpoint(sql);
+  internalApp.get("/api/sendConsentEmails", consentEmailer.handleGet);
 
   return internalApp;
 }

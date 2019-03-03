@@ -13,9 +13,11 @@ import {
   SurveyDocument,
   SurveyInfo,
   SurveyNonPIIDbInfo,
+  TelecomInfoSystem,
+  ConsentInfoSignerType,
 } from "audere-lib/feverProtocol";
 
-const DEVICE = {
+export const DEVICE = {
   installation: "uuid",
   clientVersion: "1.2.3-testing",
   yearClass: "2020",
@@ -23,11 +25,16 @@ const DEVICE = {
   platform: "iOS"
 };
 
+export const FAKE_EMAIL = "fakename@email.org";
+
 export const PATIENT_INFO = {
   firstName: "Fake",
   lastName: "Name",
   birthDate: "1900-01-01",
-  telecom: [],
+  telecom: [{
+    system: TelecomInfoSystem.Email,
+    value: FAKE_EMAIL,
+  }],
   address: []
 };
 
@@ -48,6 +55,19 @@ const PII_RESPONSE_ITEM = {
   answer: [{ valueString: "1900-01-01" }]
 };
 
+const CONSENT_NONPII_INFO = {
+  terms: "I agree.",
+  signerType: ConsentInfoSignerType.Subject,
+  date: "2019-01-01",
+};
+
+const CONSENT_INFO = {
+  ...CONSENT_NONPII_INFO,
+  firstName: "Fake",
+  lastName: "Name",
+  signature: "AAAAAAAAAA",
+};
+
 const COMMON_INFO: CommonInfo = {
   isDemo: false,
   workflow: {
@@ -65,7 +85,7 @@ const COMMON_INFO: CommonInfo = {
 export const PII: PIIInfo = {
   ...COMMON_INFO,
   patient: PATIENT_INFO,
-  consents: [],
+  consents: [CONSENT_INFO],
   responses: [
     {
       id: "Questionnaire",
@@ -77,7 +97,7 @@ export const PII: PIIInfo = {
 export const SURVEY_NONPII: SurveyNonPIIDbInfo = {
   ...COMMON_INFO,
   samples: [SAMPLE_INFO],
-  consents: [],
+  consents: [CONSENT_NONPII_INFO],
   responses: [
     {
       id: "Questionnaire",
@@ -88,6 +108,7 @@ export const SURVEY_NONPII: SurveyNonPIIDbInfo = {
 export const SURVEY_INFO: SurveyInfo = {
   ...SURVEY_NONPII,
   ...PII,
+  consents: [CONSENT_INFO],
   responses: [
     {
       id: "Questionnaire",
