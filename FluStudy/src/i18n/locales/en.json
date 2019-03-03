@@ -432,8 +432,7 @@
   "links": {
     "recommendLink": "Recommend flu@home to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
-    "searchMapsLink": "Search Maps for urgent care clinics nearby",
-    "medLink": "Find a nearby clinic or physician"
+    "medLink": "Search Maps for urgent care clinics nearby"
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",
