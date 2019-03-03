@@ -349,7 +349,7 @@
     "desc": "We know that was a lot of steps and appreciate you hanging in there with us.\n\nNext, take a photo of the test strip. Lay the test strip on box ①① so it's flat with the arrows pointing down towards you. When you're ready, click the Continue button to use the camera."
   },
   "testStripCameraScreen": {
-    "title": "Line up your test strip so it aligns with the example shown.",
+    "title": "Place test strip next to the sample below, centered in the box.",
     "description": "Tap the screen to focus the image, and try to use good lighting.\nWhen ready, tap the round button to take a photo.",
     "loading": "Loading..."
   },

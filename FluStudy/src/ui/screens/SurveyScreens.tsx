@@ -5,11 +5,9 @@
 
 import React from "react";
 import {
-  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -76,7 +74,6 @@ import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
 import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
-import ImageGrid from "../components/ImageGrid";
 import ImageText from "../components/ImageText";
 import MonthPicker from "../components/MonthPicker";
 import Links from "../components/Links";
@@ -86,7 +83,6 @@ import QuestionText from "../components/QuestionText";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
-import Title from "../components/Title";
 import {
   findMedHelp,
   learnMore,
@@ -1730,7 +1726,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
           <View style={cameraStyles.targetBox}>
             <Image
               style={cameraStyles.testStrip}
-              source={require("../../img/testStrip.png")}
+              source={require("../../img/testStripCameraImage.png")}
             />
           </View>
           <Text
@@ -1796,7 +1792,7 @@ const cameraStyles = StyleSheet.create({
     bottom: 0,
   },
   targetBox: {
-    alignItems: "center",
+    alignItems: "flex-start",
     borderColor: "white",
     borderRadius: 5,
     borderStyle: "dashed",
@@ -1806,9 +1802,9 @@ const cameraStyles = StyleSheet.create({
     width: "80%",
   },
   testStrip: {
-    opacity: 0.5,
-    height: 200,
-    width: 100,
+    height: 260,
+    marginLeft: GUTTER,
+    width: 28,
   },
 });
 
