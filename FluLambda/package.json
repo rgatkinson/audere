@@ -7,12 +7,11 @@
     "build": "tsc -p .",
     "clean": "rm -rf build && rm -rf node_modules",
     "test": "jest --verbose --no-watchman",
-    "package": "yarn clean && yarn install --production=true && mkdir -p build && zip -r build/FluLambda.zip node_modules/ && yarn install --production=false && yarn build && yarn test && zip -ur build/FluLambda.zip build/src/*.js",
+    "package": "yarn clean && yarn install --production=true && mkdir -p build && zip -r build/FluLambda.zip node_modules/ && yarn install --production=false && yarn build && yarn test && zip -jru build/FluLambda.zip build/src/*.js",
     "lint": "prettier --list-different '{src,test}/**/*.ts'",
     "lint-fix": "prettier --write '{src,test}/**/*.ts'"
   },
   "dependencies": {
-    "aws-sdk": "^2.373.0",
     "axios": "^0.18.0"
   },
   "devDependencies": {
