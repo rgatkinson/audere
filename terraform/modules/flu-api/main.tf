@@ -51,6 +51,7 @@ data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
     commit = "${var.commit}"
+    environment = "${var.environment}"
     domain = "${local.full_domain}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "service"
