@@ -782,7 +782,7 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
 export function getFeverMetrics(
   startDate: string,
   endDate: string
-): [object] {
+): [object,object,object] {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -819,14 +819,53 @@ export function getFeverMetrics(
   }
   const surveyStatsData = client.querySync(getSurveyStatsQuery());
 
+  const lastScreenQuery = `
+    SELECT survey->'events'->(json_array_length(survey->'events')-1)->>'refId' AS lastscreen, 
+           COUNT(*), 
+           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
+    FROM fever_current_surveys
+    WHERE ${dateClause} AND ${demoClause} AND json_array_length(survey->'events') > 0
+    GROUP BY lastscreen 
+    ORDER BY percent DESC;`;
+  const lastScreenData = client.querySync(lastScreenQuery);
+
+  const studyIdQuery = `
+    WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
+      (SELECT events->>'at' as kitordertime
+        FROM json_array_elements(survey->'events') events
+        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='Confirmation' LIMIT 1),
+      (SELECT events->>'at' as part2time
+        FROM json_array_elements(survey->'events') events
+        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1)
+      FROM fever_current_surveys fcs, json_array_elements(survey->'events') events
+      WHERE ${dateClause} AND ${demoClause}
+      ORDER BY fcs.id, kitordertime ASC) 
+    SELECT 
+          t.kitordertime, 
+          t.part2time, 
+          fcs.id, 
+          fcs."createdAt", 
+          fcs.survey->'samples'->0->'code' as barcode,
+          fcs.survey->'workflow'->'surveyCompletedAt' as finishtime 
+      FROM t RIGHT JOIN fever_current_surveys fcs
+    ON fcs.id=t.id
+    WHERE ${dateClause} AND ${demoClause}
+    ORDER BY fcs."createdAt";`;
+
+  const studyIdData = client.querySync(studyIdQuery);
+
   return [
-    surveyStatsData
+    surveyStatsData,
+    lastScreenData,
+    studyIdData
   ];
 }
 
 export function getFeverExcelReport(startDate: string, endDate: string) {
   const [
-    surveyStatsData
+    surveyStatsData,
+    lastScreenData,
+    studyIdData
   ] = getFeverMetrics(startDate, endDate);
 
   const styles = {
@@ -901,6 +940,62 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     }
   };
 
+  const lastScreenSpec = {
+    lastscreen: {
+      displayName: "Screen Key",
+      headerStyle: styles.columnHeader,
+      width: 120
+    },
+    count: {
+      displayName: "Count",
+      ...defaultCell
+    },
+    percent: {
+      displayName: "%",
+      ...defaultCell
+    },
+  };
+
+  const studyIdSpec = {
+    createdAt: {
+      displayName: "App Start Time (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    },
+    kitordertime: {
+      displayName: "Kit Ordered (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    },
+    part2time: {
+      displayName: "Started Part II (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    },
+    barcode: {
+      displayName: "Barcode",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    finishtime: {
+      displayName: "Finished App (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    }
+  };
+
   const dateRangeHeading = {
     value: "Data from " + startDate + " to " + endDate,
     style: styles.title
@@ -913,6 +1008,22 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [{ value: "Fever Stats", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
+  ];
+  const lastScreenHeading = [
+    [{ value: "Last Screen Viewed", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading]
+  ];
+  const studyIdHeading = [
+    [{ value: "Barcodes, Timestamps, etc.", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading],
+    [
+      {
+        value: "Sorted by App Start Time.",
+        style: styles.default
+      }
+    ]
   ];
   const helpHeading = [
     [{ value: "Explanation of Metrics Columns", style: styles.title }],
@@ -974,6 +1085,20 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       heading: surveyStatsHeading,
       specification: surveyStatsSpec,
       data: surveyStatsData
+    },
+    {
+      name: "Last Question",
+      merges: merges,
+      heading: lastScreenHeading,
+      specification: lastScreenSpec,
+      data: lastScreenData
+    },
+    {
+      name: "Details",
+      merges: merges,
+      heading: studyIdHeading,
+      specification: studyIdSpec,
+      data: studyIdData
     },
     {
       name: "Help",
