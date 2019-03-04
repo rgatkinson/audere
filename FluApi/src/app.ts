@@ -124,15 +124,17 @@ function wrap(f: any) {
 
 function defaultErrorHandler(env: string): ErrorRequestHandler {
   return (err, req, res, next) => {
-    if (isAWS()) {
-      next();
-      return;
-    }
     if (err) {
       logger.error("Uncaught exception:");
       logger.error(err.message);
       logger.error(err.stack);
     }
+
+    if (isAWS()) {
+      next();
+      return;
+    }
+
     const ouch = new Ouch();
     ouch.pushHandler(new Ouch.handlers.PrettyPageHandler("orange", null));
     ouch.handleException(err, req, res);
