@@ -15,7 +15,7 @@ import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import logger from "./util/logger";
 import { ErrorRequestHandler } from "express-serve-static-core";
 import { SplitSql } from "./util/sql";
-import { FeverIncentivesEndpoint } from "./endpoints/feverIncentivesEndpoint";
+import { FeverCronReportEndpoint } from "./endpoints/feverCronReportEndpoint";
 import { isAWS } from "./util/environment";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 
@@ -97,11 +97,16 @@ export function createInternalApp(
     "/api/export/sendEncounters",
     (req, res, next) => hutchUploader.sendEncounters(req, res, next)
   );
-
-  const fever = new FeverIncentivesEndpoint(sql);
+  
+  const fever = new FeverCronReportEndpoint(sql);
   internalApp.get(
     "/api/export/sendIncentives",
     (req, res, next) => fever.sendIncentives(req, res, next)
+  );
+
+  internalApp.get(
+    "/api/export/sendKitOrders",
+    (req, res, next) => fever.sendKitOrders(req, res, next)
   );
 
   const consentEmailer =

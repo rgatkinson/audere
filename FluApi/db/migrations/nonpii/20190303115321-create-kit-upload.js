@@ -7,7 +7,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("fever_incentive_batch", {
+    await queryInterface.createTable("fever_kit_batches", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -27,7 +27,7 @@ module.exports = {
       }
     });
     
-    await queryInterface.createTable("fever_incentive_item", {
+    await queryInterface.createTable("fever_kit_items", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -37,7 +37,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "fever_incentive_batch",
+          model: "fever_kit_batches",
           key: "id",
           as: "batchId"
         },
@@ -64,7 +64,7 @@ module.exports = {
       }
     });
 
-    await queryInterface.createTable("fever_incentive_discard", {
+    await queryInterface.createTable("fever_kit_discards", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -75,7 +75,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "fever_incentive_batch",
+          model: "fever_kit_batches",
           key: "id",
           as: "batchId"
         },
@@ -85,7 +85,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "fever_incentive_item",
+          model: "fever_kit_items",
           key: "id",
           as: "workflowId"
         },
@@ -102,8 +102,8 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTables("fever_incentive_item");
-    await queryInterface.dropTables("fever_incentive_batch");
-    await queryInterface.dropTables("fever_incentive_discard");
+    await queryInterface.dropTables("fever_kit_items");
+    await queryInterface.dropTables("fever_kit_batches");
+    await queryInterface.dropTables("fever_kit_discards");
   }
 };

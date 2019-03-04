@@ -8,11 +8,16 @@ import { PIIInfo } from "audere-lib/feverProtocol";
 import { Batch, BatchItem, SurveyBatchDataAccess } from "./surveyBatchData";
 import logger from "../../util/logger";
 
+export interface RenderResult {
+  report: string,
+  discarded: number[]
+}
+
 /**
  * Common code for extracting a view of PII survey data from the database and
  * uploading it to an external system.
  */
-export abstract class SurveyBatch<T> {
+export abstract class PIIReport<T> {
   private readonly dao: SurveyBatchDataAccess;
 
   constructor(dao: SurveyBatchDataAccess) {
@@ -20,18 +25,43 @@ export abstract class SurveyBatch<T> {
   }
 
   /**
-   * Converts a single record from PII survey data into the desired output type.
+   * Generates a report from a fixed batch of survey data. Ensures that the
+   * batch is processed by tracking and committing status information about the
+   * batch.
+   */
+  public async generateReport(): Promise<void> {
+    const batch = await this.getBatch();
+    const result = await this.buildReport(batch);
+
+    if (result.report != null) {
+      await this.writeReport(batch.id, result.report);
+    }
+
+    this.dao.commitUploadedBatch(batch.id, result.discarded);
+  }
+
+  /**
+   * Converts a batch into a report, returning discarded ids.
+   * @param batch Batch items to render into a report.
+   */
+  abstract async buildReport(batch: Batch<T>): Promise<RenderResult>;
+
+  /**
+   * Converts a single record from PII survey data into a batch item.
    * @param item Non-PII tracking data about the record.
    * @param pii PII survey data related to the record.
    */
-  abstract mapItem(item: BatchItem, pii: SurveyAttributes<PIIInfo>): T;
+  abstract transformSurveyData(
+    item: BatchItem,
+    pii: SurveyAttributes<PIIInfo>
+  ): T;
 
-  public async commitUploadedBatch(
-    batchId: number,
-    discarded: number[]
-  ): Promise<void> {
-    await this.dao.commitUploadedBatch(batchId, discarded);
-  }
+  /**
+   * Saves the report in the appropriate location.
+   * @param batchId Identifier for the batch being processed. 
+   * @param rows Formatted string rows that comprise a report.
+   */
+  abstract async writeReport(batchId: number, report: string): Promise<void>;
 
   /**
    * Gets the next batch to process. Depending on current state this may either
@@ -83,7 +113,7 @@ export abstract class SurveyBatch<T> {
       const pii = piiData.find(p => p.csruid === i.csruid);
 
       if (pii != null && pii.survey != null) {
-        const item = this.mapItem(i, pii);
+        const item = this.transformSurveyData(i, pii);
         output.push(item);
       } else {
         logger.error(

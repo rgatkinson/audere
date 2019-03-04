@@ -3,18 +3,18 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { BatchAttributes, BatchItemAttributes, defineIncentiveBatch, defineIncentiveItem, SurveyModel, defineSurvey, BatchDiscardAttributes, defineIncentiveDiscard } from "../../src/models/fever";
+import { BatchAttributes, BatchItemAttributes, defineKitBatch, defineKitItem, SurveyModel, defineSurvey, BatchDiscardAttributes, defineKitDiscard } from "../../src/models/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
-import { IncentiveRecipientsDataAccess, INCENTIVE_BATCH_NAMESPACE, INCENTIVE_ITEMS_NAMESPACE } from "../../src/services/feverApi/incentiveRecipients";
 import { defineGaplessSeq, GaplessSeqAttributes } from "../../src/models/gaplessSeq";
+import { KitRecipientsDataAccess, KIT_BATCH_NAMESPACE, KIT_ITEMS_NAMESPACE } from "../../src/services/feverApi/kitOrders";
 
 describe("survey batch data access", () => {
   let sql: SplitSql;
-  let incentiveBatch: Model<BatchAttributes>;
-  let incentiveItems: Model<BatchItemAttributes>;
-  let incentiveDiscard: Model<BatchDiscardAttributes>;
+  let kitBatch: Model<BatchAttributes>;
+  let kitItems: Model<BatchItemAttributes>;
+  let kitDiscard: Model<BatchDiscardAttributes>;
   let nonPii: SurveyModel<SurveyNonPIIInfo>;
   let seq: Model<GaplessSeqAttributes>;
 
@@ -25,58 +25,52 @@ describe("survey batch data access", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    incentiveBatch = defineIncentiveBatch(sql.nonPii);
-    incentiveItems = defineIncentiveItem(sql.nonPii);
-    incentiveDiscard = defineIncentiveDiscard(sql.nonPii);
+    kitBatch = defineKitBatch(sql.nonPii);
+    kitItems = defineKitItem(sql.nonPii);
+    kitDiscard = defineKitDiscard(sql.nonPii);
     nonPii = defineSurvey(sql.nonPii);
     seq = defineGaplessSeq(sql);
+
+    batchSeq = await seq.find({
+      where: { name: KIT_BATCH_NAMESPACE }
+    });
+
+    itemSeq = await seq.find({
+      where: { name: KIT_ITEMS_NAMESPACE }
+    });
+
     done();
   });
 
   afterAll(async done => {
+    await cleanupDb();
     await sql.close();
     done();
   });
 
   beforeEach(async () => {
-    batchSeq = await seq.find({
-      where: { name: INCENTIVE_BATCH_NAMESPACE }
-    });
-
-    itemSeq = await seq.find({
-      where: { name: INCENTIVE_ITEMS_NAMESPACE }
-    });
+    await cleanupDb();
+    batchSeq.reload();
+    itemSeq.reload();
   });
 
-  afterEach(async () => {
-    cleanup.push(async () => {
-      await incentiveBatch.destroy({ where: {} });
-    });
-
-    cleanup.push(async () => {
-      await incentiveItems.destroy({ where: {} });
-    });
-
-    cleanup.push(async () => {
-      await incentiveDiscard.destroy({ where: {} });
-    });
-
-    // Reset the sequences as part of cleanup.
-    cleanup.push(async () => {
-      await batchSeq.update({ index: 0 });
-    });
-
-    cleanup.push(async () => {
-      await itemSeq.update({ index: 0 });
-    });
-
-    await Promise.all(cleanup.map(x => x()));
+  async function cleanupDb() {
+    await Promise.all([
+      nonPii.destroy({ where: {} }).then(() => {}),
+      kitBatch.destroy({ where: {} }).then(() => {}),
+      kitItems.destroy({ where: {} }).then(() => {}),
+      kitDiscard.destroy({ where: {} }).then(() => {}),
+      batchSeq.update({ index: 0 }).then(() => {}),
+      itemSeq.update({ index: 0 }).then(() => {}),
+      ...cleanup.map(x => x()),
+    ]);
+    
     cleanup = [];
-  });
+  }
 
   async function createTestData(
     batchUploaded: boolean = true,
-    surveyComplete: boolean = true
+    screeningComplete: boolean = true
   ): Promise<void> {
     const surveys = [
       JSON.parse(JSON.stringify(surveyNonPIIInDb("0"))),
@@ -84,13 +78,12 @@ describe("survey batch data access", () => {
       JSON.parse(JSON.stringify(surveyNonPIIInDb("2"))),
       JSON.parse(JSON.stringify(surveyNonPIIInDb("3")))
     ];
-    const now = new Date().toISOString();
-    if (surveyComplete) {
-      surveys.forEach(s => s.survey.workflow.surveyCompletedAt = now);
+    if (!screeningComplete) {
+      surveys.forEach(s => s.survey.workflow.screeningCompletedAt = undefined);
     }
     const s = await nonPii.bulkCreate(surveys, { returning: true });
 
-    await incentiveBatch.create({
+    await kitBatch.create({
       id: 1,
       uploaded: batchUploaded
     });
@@ -101,7 +94,7 @@ describe("survey batch data access", () => {
       batchId: 1,
       surveyId: +s[i].id
     }));
-    await incentiveItems.bulkCreate(batchItems);
+    await kitItems.bulkCreate(batchItems);
 
     s.forEach(x => cleanup.push(
       async () => await x.destroy()
@@ -110,7 +103,7 @@ describe("survey batch data access", () => {
 
   describe("get existing batch", async () => {
     it("should retrieve existing batches", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       const out = await dao.getExistingBatch();
@@ -126,7 +119,7 @@ describe("survey batch data access", () => {
     });
   
     it("should return null if no pending batch is present", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       const out = await dao.getExistingBatch();
@@ -137,7 +130,7 @@ describe("survey batch data access", () => {
 
   describe("get new batch items", () => {
     it("should retrieve unassigned items", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       const out = await dao.getNewBatchItems(); 
@@ -151,7 +144,7 @@ describe("survey batch data access", () => {
     });
 
     it("should not retrieve surveys that are incomplete", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(true, false);
 
       const out = await dao.getNewBatchItems(); 
@@ -162,7 +155,7 @@ describe("survey batch data access", () => {
 
   describe("track batch", () => {
     it("creates a new batch and assigns sequential ids to items", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       // Modify the sequences to offset the expected output ids.
@@ -185,12 +178,12 @@ describe("survey batch data access", () => {
 
   describe("commit batch upload", () => {
     it("marks a batch as uploaded", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       await dao.commitUploadedBatch(1, []);
 
-      const batch = await incentiveBatch.find({
+      const batch = await kitBatch.find({
         where: { id: 1 }
       });
 
@@ -199,7 +192,7 @@ describe("survey batch data access", () => {
     });
 
     it("records discarded items", async () => {
-      const dao = new IncentiveRecipientsDataAccess(sql);
+      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       await batchSeq.update({ index: 1 });
@@ -209,14 +202,14 @@ describe("survey batch data access", () => {
       const itemIds = batch.items.map(x => x.workflowId);
       await dao.commitUploadedBatch(batch.id, itemIds);
 
-      const db = await incentiveBatch.find({
+      const db = await kitBatch.find({
         where: { id: batch.id }
       });
 
       expect(db).not.toBeNull();
       expect(db.uploaded).toBe(true);
 
-      const discarded = await incentiveDiscard.findAll({
+      const discarded = await kitDiscard.findAll({
         where: { batchId: batch.id }
       });
 
@@ -226,8 +219,6 @@ describe("survey batch data access", () => {
           workflowId: id
         }));
       });
-
-      discarded.forEach(d => cleanup.push(async () => await d.destroy()));
     });
   });
 });

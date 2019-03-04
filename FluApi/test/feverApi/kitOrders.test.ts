@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Incentives, IncentiveRecipientsDataAccess } from "../../src/services/feverApi/incentiveRecipients";
 import { Participant } from "../../src/services/feverApi/uwParticipantReport";
 import { instance, mock, when, anything, anyString, capture } from "ts-mockito";
 import { GeocodingService } from "../../src/services/geocodingService";
@@ -11,13 +10,14 @@ import { SharePointUploader } from "../../src/services/feverApi/sharePointUpload
 import { Batch } from "../../src/services/feverApi/surveyBatchData";
 import { makeRandomParticipant, makeRandomGeoResponse } from "./reportTestUtil";
 import parse from "csv-parse/lib/sync";
+import { KitOrders, KitRecipientsDataAccess } from "../../src/services/feverApi/kitOrders";
 
-export class TestIncentives extends Incentives {
+export class TestKitOrders extends KitOrders {
   private readonly batch: Batch<Participant>;
 
   constructor(
     batch: Batch<Participant>,
-    dao: IncentiveRecipientsDataAccess,
+    dao: KitRecipientsDataAccess,
     geocoder: GeocodingService,
     uploader: SharePointUploader
   ) {
@@ -30,7 +30,7 @@ export class TestIncentives extends Incentives {
   }
 }
 
-describe("sending incentives", () => {
+describe("sending kit orders", () => {
   it("should convert output to CSV format", async () => {
     const items = [
       makeRandomParticipant(2),
@@ -40,7 +40,7 @@ describe("sending incentives", () => {
     ];
     const batch = { id: 8, items: items };
 
-    const dao = mock(IncentiveRecipientsDataAccess);
+    const dao = mock(KitRecipientsDataAccess);
     when(dao.commitUploadedBatch(batch.id, [])).thenResolve();
 
     const geoResponses = items.map(makeRandomGeoResponse);
@@ -48,9 +48,9 @@ describe("sending incentives", () => {
     when(geocoder.geocodeAddresses(anything())).thenResolve(geoResponses);
 
     const uploader = mock(SharePointUploader);
-    when(uploader.sendIncentives(batch.id, anyString())).thenResolve();
+    when(uploader.sendKits(batch.id, anyString())).thenResolve();
 
-    const i = new TestIncentives(
+    const i = new TestKitOrders(
       batch,
       instance(dao),
       instance(geocoder),
@@ -58,15 +58,23 @@ describe("sending incentives", () => {
     );
     await i.generateReport();
 
-    const contents = capture(uploader.sendIncentives).first()[1];
+    const contents = capture(uploader.sendKits).first()[1];
     const rows: string[][] = parse(contents).slice(1);
 
     items.forEach(item => {
       const geo = geoResponses.find(r => r.id === item.workflowId);
       const contains = rows.some(row => {
+        // These row indices follow the CSV format created for UW reports in
+        // UWParticipantReport. 
         return row[0] === item.firstName &&
           row[1] === item.lastName &&
           row[2] === geo.address.address1 &&
+          row[3] === geo.address.address2 &&
+          row[4] === geo.address.city &&
+          row[5] === geo.address.state &&
+          row[6] === geo.address.postalCode &&
+          row[7] === item.email &&
+          row[8] === item.timestamp &&
           row[9] === item.workflowId.toFixed() &&
           row[10] === item.surveyId.toFixed();
       });
@@ -82,13 +90,13 @@ describe("sending incentives", () => {
     ];
     const batch = { id: 24, items: items };
 
-    const dao = mock(IncentiveRecipientsDataAccess);
+    const dao = mock(KitRecipientsDataAccess);
     when(dao.commitUploadedBatch(batch.id, [11, 12])).thenResolve();
 
     const geocoder = mock(GeocodingService);
     when(geocoder.geocodeAddresses(anything())).thenResolve([]);
 
-    const i = new TestIncentives(
+    const i = new TestKitOrders(
       batch,
       instance(dao),
       instance(geocoder),

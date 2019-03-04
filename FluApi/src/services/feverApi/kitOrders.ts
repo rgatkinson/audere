@@ -6,18 +6,18 @@
 import { AddressInfoUse, PIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
 import { SharePointUploader } from "./sharePointUploader";
 import { BatchItem, SurveyBatchDataAccess } from "./surveyBatchData";
-import { defineIncentiveItem, defineIncentiveBatch, SurveyAttributes, defineIncentiveDiscard } from "../../models/fever";
+import { defineKitItem, defineKitBatch, SurveyAttributes, defineKitDiscard } from "../../models/fever";
 import { GeocodingService } from "../geocodingService";
 import { SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
 import { UWParticipantReport, Participant } from "./uwParticipantReport";
 
-export class Incentives extends UWParticipantReport {
+export class KitOrders extends UWParticipantReport {
   protected readonly geocoder;
   private readonly uploader;
 
   constructor(
-    dao: IncentiveRecipientsDataAccess,
+    dao: KitRecipientsDataAccess,
     geocoder: GeocodingService,
     uploader: SharePointUploader
   ) {
@@ -36,10 +36,9 @@ export class Incentives extends UWParticipantReport {
     const homeAddress = pii.survey.patient.address
       .find(a => a.use === AddressInfoUse.Home);
 
-    if (email == null || homeAddress == null) {
-      throw new Error("A survey without an email address or home address " +
-        "can not be converted into an incentive. csruid " + item.csruid +
-        " may be malformed.");
+    if (homeAddress == null) {
+      throw new Error("A survey without a home address can not be converted " +
+        "into an kit order. csruid " + item.csruid + " may be malformed.");
     }
 
     const recipient: Participant = {
@@ -48,7 +47,9 @@ export class Incentives extends UWParticipantReport {
       firstName: pii.survey.patient.firstName.trim(),
       lastName: pii.survey.patient.lastName.trim(),
       homeAddress: homeAddress,
-      email: email.value,
+      // TODO: UW will be providing an updated email destination for kit order
+      // requests & tracking
+      email: email == null ? "grahamcd@uw.edu" : email.value,
       timestamp: pii.survey.workflow.surveyCompletedAt
     }
 
@@ -56,26 +57,26 @@ export class Incentives extends UWParticipantReport {
   }
 
   public async writeReport(batchId: number, report: string): Promise<void> {
-    await this.uploader.sendIncentives(batchId, report);
+    await this.uploader.sendKits(batchId, report);
   }
 }
 
-export const INCENTIVE_BATCH_NAMESPACE = "Incentives_Batch";
-export const INCENTIVE_ITEMS_NAMESPACE = "Incentives_Items";
+export const KIT_BATCH_NAMESPACE = "Kit_Batch";
+export const KIT_ITEMS_NAMESPACE = "Kit_Items";
 
-export class IncentiveRecipientsDataAccess extends SurveyBatchDataAccess {
+export class KitRecipientsDataAccess extends SurveyBatchDataAccess {
   constructor(sql: SplitSql) {
-    const incentiveBatch = defineIncentiveBatch(sql.nonPii);
-    const incentiveItems = defineIncentiveItem(sql.nonPii);
-    const incentiveDiscard = defineIncentiveDiscard(sql.nonPii);
+    const kitBatch = defineKitBatch(sql.nonPii);
+    const kitItems = defineKitItem(sql.nonPii);
+    const kitDiscard = defineKitDiscard(sql.nonPii);
 
     super(
       sql,
-      incentiveBatch,
-      incentiveItems,
-      incentiveDiscard,
-      INCENTIVE_BATCH_NAMESPACE,
-      INCENTIVE_ITEMS_NAMESPACE
+      kitBatch,
+      kitItems,
+      kitDiscard,
+      KIT_BATCH_NAMESPACE,
+      KIT_ITEMS_NAMESPACE
     );
   }
 
@@ -83,7 +84,7 @@ export class IncentiveRecipientsDataAccess extends SurveyBatchDataAccess {
     return {
       survey: {
         workflow: {
-          surveyCompletedAt: {
+          screeningCompletedAt: {
             [Sequelize.Op.ne]: null
           }
         }

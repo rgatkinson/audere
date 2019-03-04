@@ -193,6 +193,19 @@ export interface BatchAttributes {
   id: number;
   uploaded: boolean;
 }
+
+export interface BatchItemAttributes {
+  id?: number;
+  batchId: number;
+  surveyId: number;
+}
+
+export interface BatchDiscardAttributes {
+  id?: number,
+  batchId: number,
+  workflowId: number
+}
+
 export function defineIncentiveBatch(sql: Sequelize): Model<BatchAttributes> {
   return defineModel<BatchAttributes>(
     sql,
@@ -204,11 +217,6 @@ export function defineIncentiveBatch(sql: Sequelize): Model<BatchAttributes> {
   );
 }
 
-export interface BatchItemAttributes {
-  id?: number;
-  batchId: number;
-  surveyId: number;
-}
 export function defineIncentiveItem(
   sql: Sequelize
 ): Model<BatchItemAttributes> {
@@ -223,17 +231,50 @@ export function defineIncentiveItem(
   );
 }
 
-export interface BatchDiscardAttributes {
-  id?: number,
-  batchId: number,
-  workflowId: number
-}
 export function defineIncentiveDiscard(
   sql: Sequelize
 ): Model<BatchDiscardAttributes> {
   return defineModel<BatchDiscardAttributes>(
     sql,
     "fever_incentive_discard",
+    {
+      batchId: integerColumn(),
+      workflowId: integerColumn()
+    }
+  )
+}
+
+export function defineKitBatch(sql: Sequelize): Model<BatchAttributes> {
+  return defineModel<BatchAttributes>(
+    sql,
+    "fever_kit_batches",
+    {
+      id: primaryKey(integerColumn()),
+      uploaded: booleanColumn()
+    }
+  );
+}
+
+export function defineKitItem(
+  sql: Sequelize
+): Model<BatchItemAttributes> {
+  return defineModel<BatchItemAttributes>(
+    sql,
+    "fever_kit_items",
+    {  
+      id: primaryKey(integerColumn()),
+      batchId: integerColumn(),
+      surveyId: integerColumn()
+    }
+  );
+}
+
+export function defineKitDiscard(
+  sql: Sequelize
+): Model<BatchDiscardAttributes> {
+  return defineModel<BatchDiscardAttributes>(
+    sql,
+    "fever_kit_discards",
     {
       batchId: integerColumn(),
       workflowId: integerColumn()
