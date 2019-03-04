@@ -30,8 +30,8 @@ resource "aws_lambda_function" "cron" {
 
 resource "aws_cloudwatch_event_rule" "cron" {
   name = "${var.name}-cron-events"
-  description = "Fires at ${frequency}"
-  schedule_expression = "${frequency}"
+  description = "Fires at ${var.frequency}"
+  schedule_expression = "${var.frequency}"
 }
 
 resource "aws_cloudwatch_event_target" "cron" {
@@ -44,9 +44,4 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_cron" {
   function_name = "${aws_lambda_function.cron.function_name}"
   principal = "events.amazonaws.com"
   source_arn = "${aws_cloudwatch_event_rule.cron.arn}"
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
-  role = "${var.role_arn}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }

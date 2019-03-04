@@ -23,6 +23,11 @@ data "aws_iam_policy_document" "flu_lambda_role_policy" {
   }
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
+  role = "${aws_iam_role.flu_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 module "hutch_upload_cron" {
   source = "../lambda-cron"
   name = "${local.base_name}-hutch-upload"
