@@ -17,6 +17,7 @@ import {
   ResponseItemInfo,
   SurveyInfo,
   TelecomInfoSystem,
+  PatientInfoGender,
 } from "audere-lib/feverProtocol";
 import { isNotNull } from "../util/check";
 import {
@@ -29,6 +30,7 @@ import {
   CoughSneezeConfig,
   ChildrenWithChildrenConfig,
   HouseholdChildrenConfig,
+  AssignedSexConfig,
 } from "../resources/ScreenConfig";
 
 export const { uploader, events, logger } = createTransport();
@@ -61,6 +63,13 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     includeWhen: isSelected("no"),
   },
 ];
+
+const GENDER_MAP = new Map([
+  ["female", PatientInfoGender.Female] as GenderMapEntry,
+  ["male", PatientInfoGender.Male] as GenderMapEntry,
+  ["other", PatientInfoGender.Other] as GenderMapEntry,
+]);
+type GenderMapEntry = [string, PatientInfoGender];
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -98,9 +107,11 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
 
 // Exported so we can write unit tests for this
 export function redux_to_pouch(state: StoreState): SurveyInfo {
+  const survey = state.survey;
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     patient: {
+      gender: getGender(survey),
       telecom: [],
       address: [],
     },
@@ -111,7 +122,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     workflow: state.survey.workflow,
   };
 
-  const survey = state.survey;
   if (!!survey.email) {
     pouch.patient.telecom.push({
       system: TelecomInfoSystem.Email,
@@ -322,6 +332,28 @@ function pushResponses(
     }
   });
   pouchResponses.push({ id: responseId, item: items });
+}
+
+function getGender(survey: SurveyState): PatientInfoGender {
+  const key = buttonKey(survey, AssignedSexConfig.id);
+  return (key && GENDER_MAP.get(key)) || PatientInfoGender.Unknown;
+}
+
+function buttonKey(survey: SurveyState, questionId: string): string | undefined {
+  const answer = answerForId(survey, questionId);
+  if (answer) {
+    return answer.selectedButtonKey;
+  }
+  return undefined;
+}
+
+function answerForId(survey: SurveyState, questionId: string) {
+  const response = survey.responses.find(r => r.questionId === questionId);
+  if (response) {
+    return response.answer;
+  } else {
+    return undefined;
+  }
 }
 
 // This filters responses to remove things that are inconsistent.
