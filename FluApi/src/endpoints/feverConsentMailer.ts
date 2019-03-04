@@ -88,7 +88,10 @@ export async function newSurveys(models: FeverModels) {
   return querySurveyJoinConsentEmail(models, {
     where: {
       survey: {
-        consents: { [Op.ne]: '"[]' },
+        consents: { [Op.ne]: '[]' },
+        patient: {
+          telecom: { [Op.ne]: '[]' },
+        },
         workflow: {
           screeningCompletedAt: { [Op.ne]: null }
         },

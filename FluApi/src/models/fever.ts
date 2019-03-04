@@ -5,9 +5,7 @@
 
 import {
   FindOptions,
-  Op,
   Sequelize,
-  STRING as SQL_STRING,
 } from "sequelize";
 import {
   defineModel,

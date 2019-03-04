@@ -98,6 +98,40 @@ describe("FeverConsentEmailer", () => {
     await deleteSurveyPii(csruid);
   });
 
+  it("does nothing if no consent", async () => {
+    const csruid = makeCSRUID("does nothing if no consent");
+    const post = _.cloneDeep(surveyPost(csruid));
+
+    postRequestConsentEmail(post, true);
+    postMarkScreeningComplete(post, true);
+    post.survey.consents.splice(0);
+
+    const result = await putSurveyAndRunEmailer(post);
+
+    // We should not have completed any items, nor sent any email.
+    expect(result.body.length).toEqual(0);
+    expect(emails.length).toEqual(0);
+
+    await deleteSurveyPii(csruid);
+  });
+
+  it("does nothing if no email", async () => {
+    const csruid = makeCSRUID("does nothing if no email");
+    const post = _.cloneDeep(surveyPost(csruid));
+
+    postRequestConsentEmail(post, true);
+    postMarkScreeningComplete(post, true);
+    post.survey.patient.telecom.splice(0);
+
+    const result = await putSurveyAndRunEmailer(post);
+
+    // We should not have completed any items, nor sent any email.
+    expect(result.body.length).toEqual(0);
+    expect(emails.length).toEqual(0);
+
+    await deleteSurveyPii(csruid);
+  });
+
   it("does not email consent if screening not complete", async () => {
     const csruid = makeCSRUID("does not email consent if screening not complete");
     const post = _.cloneDeep(surveyPost(csruid));
