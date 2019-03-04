@@ -38,6 +38,9 @@ export class FeverConsentEmailerEndpoint {
         info("done");
         break;
       }
+      const piisById = new Map(piis.map(
+        x => [x.id, x] as [string, SurveyPii]
+      ));
 
       dbg(`loading non-pii for ${piis.length} surveys`);
       const nonPiis = await this.models.surveyNonPii.findAll({
@@ -45,23 +48,29 @@ export class FeverConsentEmailerEndpoint {
           csruid: piis.map(x => x.csruid)
         }
       });
-      const nonPiiMap = new Map(nonPiis.map(
+      const nonPiisByCSRUID = new Map(nonPiis.map(
         x => [x.csruid, x] as [string, SurveyNonPii]
       ));
 
       info(`processing ${piis.length} surveys`);
+      const rows = await this.models.consentEmail.bulkCreate(
+        piis.map(pii => ({ survey_id: pii.id })),
+        { returning: true }
+      );
+
       const results: ConsentEmailAttributes[] = [];
-      for (let pii of piis) {
-        const nonPii = nonPiiMap.get(pii.csruid);
-        results.push(await this.processSurvey(pii, nonPii));
+      for (let row of rows) {
+        const pii = piisById.get(row.survey_id);
+        const nonPii = nonPiisByCSRUID.get(pii.csruid);
+        results.push(await this.processSurvey(row, pii, nonPii));
       }
       summary = [...summary, ...results];
-      await this.models.consentEmail.bulkCreate(results);
     }
     return summary;
   }
 
   private async processSurvey(
+    row: ConsentEmailAttributes,
     pii: SurveyPii,
     nonPii: SurveyNonPii
   ): Promise<ConsentEmailAttributes> {
@@ -76,10 +85,15 @@ export class FeverConsentEmailerEndpoint {
       } else {
         dbgrow(survey_id, "completing without email");
       }
-      return { survey_id, completed: new Date().toISOString() };
+      const update = {
+        ...row,
+        completed: new Date().toISOString(),
+      };
+      await this.models.consentEmail.upsert(update);
+      return update
     } catch (err) {
       logger.error(`${D_PREFIX}[${survey_id}]: not completing because '${err}'`);
-      return { survey_id };
+      return row;
     }
   }
 }
