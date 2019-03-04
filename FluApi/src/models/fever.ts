@@ -260,10 +260,10 @@ export function defineConsentEmail(sql: Sequelize): Model<ConsentEmailAttributes
 }
 
 export type SurveyWithConsentEmail =
-  (SurveyInstance<PIIInfo> | SurveyAttributes<PIIInfo>) & HasConsentEmail;
+  (SurveyInstance<PIIInfo> | SurveyAttributes<PIIInfo>) & MightHaveConsentEmail;
 
-export interface HasConsentEmail {
-  consentEmail: Inst<ConsentEmailAttributes> | ConsentEmailAttributes;
+export interface MightHaveConsentEmail {
+  consentEmail?: Inst<ConsentEmailAttributes> | ConsentEmailAttributes;
 }
 
 export async function querySurveyJoinConsentEmail<TCustom>(
