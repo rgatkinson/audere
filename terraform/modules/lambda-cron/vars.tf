@@ -18,6 +18,12 @@ variable "frequency" {
   type = "string"
 }
 
+variable "timeout" {
+  description = "The timeout in seconds for the specified Lambda to complete, defaults to 10"
+  type = "number"
+  default = 10
+}
+
 variable "url" {
   description = "URL to target via https at the specified frequency"
   type = "string"

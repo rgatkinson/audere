@@ -14,11 +14,12 @@ resource "aws_lambda_function" "cron" {
   runtime = "nodejs8.10"
   source_code_hash = "${local.archive_path}"
   role = "${var.role_arn}"
-  timeout = "10"
+  timeout = "${var.timeout}"
 
   environment {
     variables = {
       TARGET_URL = "${var.url}"
+      TIMEOUT = "${var.timeout * 1000}"
     }
   }
 

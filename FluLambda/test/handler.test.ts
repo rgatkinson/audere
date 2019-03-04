@@ -7,7 +7,7 @@ import { cronGet } from "../src/handler";
 import nock = require("nock");
 import Url = require("url-parse");
 
-describe("sendEncounters handler", () => {
+describe("cronGet handler", () => {
   const OLD_ENV = process.env;
   let serviceUrl;
 
@@ -22,7 +22,7 @@ describe("sendEncounters handler", () => {
     process.env = OLD_ENV;
   });
 
-  it("should error if the request to send encounters fails", async () => {
+  it("should error if the request to the endpoint fails", async () => {
     nock(serviceUrl.origin)
       .get(serviceUrl.pathname)
       .reply(400);
