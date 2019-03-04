@@ -30,8 +30,11 @@ if (!isAWS()) {
   logger.debug("Logging initialized at debug level");
 } else {
   const env = process.env.NODE_ENV.toLowerCase();
+
+  // AWS resources such as the log group name use prod instead of production.
+  const awsEnv = env === "production" ? "prod" : env;
   logger.add(new WinstonCloudWatch({
-    logGroupName: "flu-" + env + "-api",
+    logGroupName: "flu-" + awsEnv + "-api",
     logStreamName: "flu-api-instance",
     awsRegion: "us-west-2"
   }));
