@@ -20,7 +20,7 @@ variable "frequency" {
 
 variable "timeout" {
   description = "The timeout in seconds for the specified Lambda to complete, defaults to 10"
-  type = "number"
+  type = "string"
   default = 10
 }
 
