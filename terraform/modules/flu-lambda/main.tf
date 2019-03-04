@@ -60,6 +60,7 @@ module "fever_incentives_report_cron" {
   url = "https://${var.fluapi_fqdn}:3200/api/sendIncentives"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
+  timeout = 300
 }
 
 module "fever_kits_report_cron" {
@@ -70,4 +71,5 @@ module "fever_kits_report_cron" {
   url = "https://${var.fluapi_fqdn}:3200/api/sendKitOrders"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
+  timeout = 300
 }
