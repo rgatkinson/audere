@@ -201,7 +201,7 @@
   },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but we need a signed consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
+    "description": "We're sorry, but you need to agree to the consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
     "back": "Back to consent"
   },
   "confirmationScreen": {
@@ -293,7 +293,7 @@
   },
   "removeSwabFromTubeScreen": {
     "title": "Remove swab from tube",
-    "description": "Carefully rub the tip of it the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+    "description": "Carefully rub the tip of the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
   },
   "openTestStripScreen": {
     "title": "Open test strip",
@@ -397,7 +397,7 @@
   },
   "stickersScreen": {
     "title": "Put stickers on the box",
-    "description": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 stickers to the side of the box. This sticker just means there are samples inside."
+    "description": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
   },
   "secondBagScreen": {
     "title": "Put bag ②② in the box",
@@ -422,7 +422,7 @@
   },
   "emailOptInScreen": {
     "title": "Opt-in for messages",
-    "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
+    "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can email you about, or if you're not interested, just click Continue."
   },
   "thanksScreen": {
     "title": "Thank you!",

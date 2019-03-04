@@ -201,20 +201,14 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
       "BeforeScreen",
       <Screen
         canProceed={true}
+        desc={t("flatStep")}
         imageSrc={require("../../img/beforeYouBegin.png")}
         navigation={this.props.navigation}
         title={t("beforeYouBegin")}
         onNext={() => {
           this.props.navigation.push("ScanInstructions");
         }}
-      >
-        <View style={{ marginTop: GUTTER }} />
-        <ImageText
-          imageSrc={require("../../img/cat.png")}
-          imageWidth={100}
-          text={t("flatStep")}
-        />
-      </Screen>
+      />
     );
   }
 }
@@ -613,7 +607,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../../img/howTestWorks.png")}
+        imageSrc={require("../../img/whatsNext.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
