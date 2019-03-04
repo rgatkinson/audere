@@ -42,7 +42,7 @@ export class FeverConsentEmailerEndpoint {
       dbg(`loading non-pii for ${piis.length} surveys`);
       const nonPiis = await this.models.surveyNonPii.findAll({
         where: {
-          csruid: { [Op.in]: piis.map(x => x.csruid) }
+          csruid: piis.map(x => x.csruid)
         }
       });
       const nonPiiMap = new Map(nonPiis.map(
