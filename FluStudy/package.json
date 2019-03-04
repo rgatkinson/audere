@@ -42,7 +42,7 @@
   },
   "jest": {
     "preset": "jest-expo",
-    "setupTestFrameworkScriptFile": "./src/setupJest",
+    "setupTestFrameworkScriptFile": "./test/setupJest",
     "setupFiles": [
       "./jestSetup.js"
     ],

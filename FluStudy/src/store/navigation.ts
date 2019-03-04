@@ -3,15 +3,15 @@ import {
   DrawerActions,
   NavigationAction,
   NavigationActions,
-  NavigationParams,
   NavigationState,
-  NavigationRoute,
   StackActions,
 } from "react-navigation";
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { timestampInteraction } from "../ui/screens/analytics";
+import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
+import { ConsentIneligible } from "../ui/screens/ScreeningScreens";
 
 const initialAction = { type: NavigationActions.INIT };
 
@@ -67,6 +67,56 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
           store.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
         }
         return result;
+    }
+    return next(action);
+  };
+}
+
+function getNavEvent(action: AnyAction): string | undefined {
+  switch (action.type) {
+    case NavigationActions.NAVIGATE:
+    case StackActions.PUSH:
+      return NavEvents.FORWARD;
+
+    case NavigationActions.BACK:
+    case StackActions.POP:
+      return NavEvents.BACKWARD;
+  }
+}
+
+export function firebaseNavigationLoggingMiddleware(store: MiddlewareAPI) {
+  return (next: Dispatch) => (action: AnyAction) => {
+    switch (action.type) {
+      case DrawerActions.OPEN_DRAWER:
+      case DrawerActions.CLOSE_DRAWER:
+        const screen = getActiveRouteName(store.getState().navigation);
+
+        tracker.logEvent(
+          action.type == DrawerActions.OPEN_DRAWER
+            ? DrawerEvents.OPEN
+            : DrawerEvents.CLOSE,
+          { screen }
+        );
+        break;
+
+      case NavigationActions.NAVIGATE:
+      case NavigationActions.BACK:
+      case StackActions.POP:
+      case StackActions.POP_TO_TOP:
+      case StackActions.PUSH:
+      case StackActions.RESET:
+        const currentScreen = getActiveRouteName(store.getState().navigation);
+        const nextScreen = getActiveRouteName(store.getState().navigation);
+
+        if (nextScreen && nextScreen !== currentScreen) {
+          const navEvent = getNavEvent(action);
+
+          tracker.setCurrentScreen(nextScreen);
+          if (navEvent) {
+            tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
+          }
+        }
+        break;
     }
     return next(action);
   };

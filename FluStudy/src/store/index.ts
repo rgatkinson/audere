@@ -1,9 +1,6 @@
 import { createStore, combineReducers, applyMiddleware, Store } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
-import {
-  createReactNavigationReduxMiddleware,
-  createNavigationReducer,
-} from "react-navigation-redux-helpers";
+import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
 import { NavigationAction } from "react-navigation";
 import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
@@ -21,6 +18,7 @@ export * from "./meta";
 import {
   default as navigation,
   navigationLoggingMiddleware,
+  firebaseNavigationLoggingMiddleware,
 } from "./navigation";
 export * from "./navigation";
 
@@ -90,6 +88,7 @@ async function getStoreImpl() {
   return createStore(
     persistReducer(persistConfig, rootReducer),
     applyMiddleware(
+      firebaseNavigationLoggingMiddleware,
       navigationMiddleware,
       navigationLoggingMiddleware,
       uploaderMiddleware
