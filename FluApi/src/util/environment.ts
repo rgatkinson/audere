@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 export function isAWS() {
-  return process.env.NODE_ENV in ["production", "staging"];
+  return ["production", "staging"].includes(process.env.NODE_ENV);
 }
 
 export function isProduction() {
