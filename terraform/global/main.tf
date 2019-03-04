@@ -855,6 +855,7 @@ data "aws_iam_policy_document" "infrastructurer_access" {
       "logs:PutRetentionPolicy",
       "logs:PutSubscriptionFilter",
       "logs:TestMetricFilter",
+      "logs:ListTagsLogGroup",
       "s3:CreateBucket",
       "s3:ListBucket",
       "sns:CreateTopic",
