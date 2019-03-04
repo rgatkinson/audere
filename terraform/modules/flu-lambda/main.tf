@@ -6,6 +6,10 @@
 locals {
   base_name = "flu-${var.environment}-lambda"
   archive_path = "../../../FluLambda/build/FluLambda.zip"
+
+  // This is 8:30 AM and 1:30 PM local in PST
+  // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+  cron_daily_before_9AM_and_2PM_PST = "cron(30 16,21 * * ? *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -44,6 +48,26 @@ module "fever_consent_emailer_cron" {
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "rate(1 hour)"
   url = "https://${var.fluapi_fqdn}:3200/api/sendConsentEmails"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.lambda_sg_ids}"]
+}
+
+module "fever_incentives_report_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-fever-incentives-report"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_daily_before_9AM_and_2PM_PST}"
+  url = "https://${var.fluapi_fqdn}:3200/api/sendIncentives"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.lambda_sg_ids}"]
+}
+
+module "fever_kits_report_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-fever-kits-report"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_daily_before_9AM_and_2PM_PST}"
+  url = "https://${var.fluapi_fqdn}:3200/api/sendKitOrders"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
 }

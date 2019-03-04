@@ -220,3 +220,11 @@ resource "aws_cloudwatch_log_group" "flu_api_log_group" {
     application = "FluApi"
   }
 }
+
+// --------------------------------------------------------------------------------
+// FluApi reporting bucket
+
+resource "aws_s3_bucket" "flu_api_reports_bucket" {
+  bucket        = "${local.base_name}-reports"
+  force_destroy = true
+}

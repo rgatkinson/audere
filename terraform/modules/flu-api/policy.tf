@@ -57,6 +57,23 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
   }
 }
 
+resource "aws_iam_role_policy" "flu_api_s3_policy" {
+  name = "${local.base_name}-s3-policy"
+  role = "${aws_iam_role.flu_api_role.id}"
+  policy = "${data.aws_iam_policy_document.flu_api_s3_policy.json}"
+}
+
+data "aws_iam_policy_document" "flu_api_s3_policy" {
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+
+    resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}"]
+  }
+}
+
 resource "aws_iam_policy" "ses_send_email" {
   name = "${local.base_name}-ses-send-email"
   policy = "${data.aws_iam_policy_document.ses_send_email.json}"

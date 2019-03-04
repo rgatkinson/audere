@@ -5,12 +5,13 @@
 
 import { Incentives, IncentiveRecipientsDataAccess } from "../services/feverApi/incentiveRecipients";
 import { KitOrders, KitRecipientsDataAccess } from "../services/feverApi/kitOrders";
-import { SharePointUploader } from "../services/feverApi/sharePointUploader";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
-import { getSharePointConfig } from "../util/sharePointConfig";
+import { getS3Config } from "../util/s3Config";
 import { SplitSql } from "../util/sql";
+import { S3Uploader } from "../services/feverApi/s3Uploader";
+import * as AWS from "aws-sdk";
 
 export class FeverCronReportEndpoint {
   private readonly sql: SplitSql;
@@ -46,8 +47,9 @@ async function createIncentives(sql: SplitSql): Promise<Incentives> {
   const geocoder = await createGeocoder(sql);
   const dao = new IncentiveRecipientsDataAccess(sql);
   const secrets = new SecretConfig(sql);
-  const sharePointConfig = await getSharePointConfig(secrets);
-  const uploader = new SharePointUploader(sharePointConfig);
+  const s3Config = await getS3Config(secrets);
+  const s3 = new AWS.S3({ region: "us-west-2" });
+  const uploader = new S3Uploader(s3, s3Config);
   return new Incentives(dao, geocoder, uploader);
 }
 
@@ -55,7 +57,8 @@ async function createKits(sql: SplitSql): Promise<KitOrders> {
   const geocoder = await createGeocoder(sql);
   const dao = new KitRecipientsDataAccess(sql);
   const secrets = new SecretConfig(sql);
-  const sharePointConfig = await getSharePointConfig(secrets);
-  const uploader = new SharePointUploader(sharePointConfig);
+  const s3Config = await getS3Config(secrets);
+  const s3 = new AWS.S3({ region: "us-west-2" });
+  const uploader = new S3Uploader(s3, s3Config);
   return new KitOrders(dao, geocoder, uploader);
 }

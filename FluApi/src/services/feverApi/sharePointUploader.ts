@@ -6,8 +6,9 @@
 import { sp } from "@pnp/sp";
 import { SPFetchClient } from "@pnp/nodejs";
 import { SharePointConfig } from "../../util/sharePointConfig";
+import { UWUploader } from "./uwUploader";
 
-export class SharePointUploader {
+export class SharePointUploader implements UWUploader {
   private readonly config: SharePointConfig;
 
   constructor(config: SharePointConfig) {
