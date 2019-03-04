@@ -12,7 +12,7 @@ import {
   querySurveyJoinConsentEmail
 } from "../models/fever";
 import { SplitSql, Inst } from "../util/sql";
-import { PIIInfo, SurveyNonPIIInfo } from "audere-lib/feverProtocol";
+import { PIIInfo, SurveyNonPIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
 import { Emailer } from "../util/email";
 import logger from "../util/logger";
 
@@ -78,7 +78,7 @@ export class FeverConsentEmailerEndpoint {
       }
       return { survey_id, completed: new Date().toISOString() };
     } catch (err) {
-      dbgrow(survey_id, `not completing because '${err}'`);
+      logger.error(`${D_PREFIX}[${survey_id}]: not completing because '${err}'`);
       return { survey_id };
     }
   }
@@ -120,7 +120,7 @@ ${consentTerms}`
   await emailer.send({
     to: [participantEmail],
     from: "noreply@auderenow.org",
-    subject: "Seattle Flu Study Consent Form",
+    subject: "flu@home Research Study Consent Form",
     body
   });
 }
@@ -131,7 +131,9 @@ function didRequestEmail(row: SurveyNonPii): boolean {
 }
 
 function getEmail(row: SurveyPii): string {
-  return row.survey.patient.telecom[0].value;
+  return row.survey.patient.telecom.find(
+    x => x.system === TelecomInfoSystem.Email
+  ).value;
 }
 
 function getConsentDate(row: SurveyPii): string {
