@@ -111,7 +111,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     patient: {
-      gender: getGender(survey),
       telecom: [],
       address: [],
     },
@@ -121,6 +120,8 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     events: state.survey.events,
     workflow: state.survey.workflow,
   };
+
+  when(getGender(survey), x => pouch.patient.gender = x);
 
   if (!!survey.email) {
     pouch.patient.telecom.push({
@@ -334,9 +335,9 @@ function pushResponses(
   pouchResponses.push({ id: responseId, item: items });
 }
 
-function getGender(survey: SurveyState): PatientInfoGender {
+function getGender(survey: SurveyState): Maybe<PatientInfoGender> {
   const key = buttonKey(survey, AssignedSexConfig.id);
-  return (key && GENDER_MAP.get(key)) || PatientInfoGender.Unknown;
+  return (key && GENDER_MAP.get(key)) || undefined;
 }
 
 function buttonKey(survey: SurveyState, questionId: string): string | undefined {
@@ -353,6 +354,13 @@ function answerForId(survey: SurveyState, questionId: string) {
     return response.answer;
   } else {
     return undefined;
+  }
+}
+
+type Maybe<T> = T | null | undefined;
+function when<T>(maybe: Maybe<T>, then: (item: T) => void) {
+  if (maybe) {
+    then(maybe);
   }
 }
 
