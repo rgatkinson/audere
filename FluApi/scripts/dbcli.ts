@@ -1,5 +1,5 @@
-#!/usr/bin/env node
-// Copyright (c) 2018 by Audere
+#!/usr/bin/env ts-node
+// Copyright (c) 2018, 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
@@ -21,9 +21,12 @@ import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
 import { createSplitSql, Inst } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
-import { defineSnifflesModels, LogBatchAttributes } from "../src/models/sniffles";
-import { LogRecordInfo, DeviceInfo } from "audere-lib/snifflesProtocol";
-import { defineFeverModels } from "../src/models/fever";
+import { defineSnifflesModels, LogBatchAttributes, VisitAttributes } from "../src/models/sniffles";
+import { LogRecordInfo, DeviceInfo as SnifflesDevice, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
+import { defineFeverModels, SurveyAttributes } from "../src/models/fever";
+import { DeviceInfo as FeverDevice, SurveyNonPIIDbInfo, PIIInfo } from "audere-lib/feverProtocol";
+import { SurveyNonPIIUpdater, SurveyPIIUpdater } from "./util/feverSurveyUpdater";
+import { Updater } from "./util/updater";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -37,8 +40,28 @@ const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
 
-const updaterNonPII = new VisitNonPIIUpdater(sql.nonPii, log);
-const updaterPII = new VisitPIIUpdater(sql.pii, log);
+type SnifflesNonPiiUpdater = Updater<VisitAttributes<VisitNonPIIInfo>, VisitNonPIIInfo, SnifflesDevice>;
+type SnifflesPiiUpdater = Updater<VisitAttributes<VisitPIIInfo>, VisitPIIInfo, SnifflesDevice>;
+type FeverNonPiiUpdater = Updater<SurveyAttributes<SurveyNonPIIDbInfo>, SurveyNonPIIDbInfo, FeverDevice>;
+type FeverPiiUpdater = Updater<SurveyAttributes<PIIInfo>, PIIInfo, FeverDevice>;
+type SomeUpdater = SnifflesNonPiiUpdater | SnifflesPiiUpdater | FeverNonPiiUpdater | FeverPiiUpdater;
+
+type PerReleaseUpdater<TNonPii, TPii> = {
+  nonPii: TNonPii;
+  pii: TPii;
+}
+type SnifflesUpdater = PerReleaseUpdater<SnifflesNonPiiUpdater, SnifflesPiiUpdater>;
+type FeverUpdater = PerReleaseUpdater<FeverNonPiiUpdater, FeverPiiUpdater>;
+
+const sniffles: SnifflesUpdater = {
+  nonPii: new VisitNonPIIUpdater(sql.nonPii, log),
+  pii: new VisitPIIUpdater(sql.pii, log),
+};
+
+const fever: FeverUpdater = {
+  nonPii: new SurveyNonPIIUpdater(sql.nonPii, log),
+  pii: new SurveyPIIUpdater(sql.pii, log),
+};
 
 enum Release {
   Sniffles = "sniffles",
@@ -52,8 +75,8 @@ yargs
     global: true
   })
   .command({
-    command: "demo <row> [unset]",
-    builder: yargs => yargs.string("row").boolean("unset"),
+    command: "demo <release> <row> [value]",
+    builder: yargs => yargs.string("row").boolean("value"),
     handler: command(cmdDemo)
   })
   .command({
@@ -74,7 +97,7 @@ yargs
     handler: command(cmdCreateAccessKey)
   })
   .command({
-    command: "show <kind> <row>",
+    command: "show <release> <kind> <row>",
     builder: yargs => yargs.string("kind").string("row"),
     handler: command(cmdShow)
   })
@@ -170,7 +193,7 @@ class LogEmitter {
     this.emitRecord(record);
   }
 
-  maybeEmitDevice(device: DeviceInfo): void {
+  maybeEmitDevice(device: SnifflesDevice): void {
     if (device.installation !== this.previousDevice) {
       console.log(`========== Device: ${device.deviceName} (${device.installation}) ==========`);
       this.previousDevice = device.installation;
@@ -185,20 +208,40 @@ class LogEmitter {
 }
 
 interface DemoArgs {
+  release: Release;
   row: string;
-  unset: boolean;
+  value: boolean;
 }
 
 async function cmdDemo(argv: DemoArgs): Promise<void> {
-  const isDemo = !argv.unset;
-  const dataNP = await updaterNonPII.load(argv.row);
-  const csruid = dataNP.csruid;
-  const dataP = await updaterPII.load(csruid);
+  const isDemo = !!argv.value;
 
-  await Promise.all([
-    updaterNonPII.setDemo(dataNP, isDemo),
-    updaterPII.setDemo(dataP, isDemo)
-  ]);
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const dataNP = await sniffles.nonPii.load(argv.row);
+      const { csruid } = dataNP;
+      const dataP = await sniffles.pii.load(csruid);
+      await Promise.all([
+        sniffles.nonPii.setDemo(dataNP, isDemo),
+        sniffles.pii.setDemo(dataP, isDemo),
+      ])
+      break;
+    }
+
+    case Release.Fever: {
+      const dataNP = await fever.nonPii.load(argv.row);
+      const { csruid } = dataNP;
+      const dataP = await fever.pii.load(csruid);
+      await Promise.all([
+        fever.nonPii.setDemo(dataNP, isDemo),
+        fever.pii.setDemo(dataP, isDemo),
+      ])
+      break;
+    }
+
+    default:
+      throw new Error(`Unrecognized release: '${argv.release}`);
+  }
 }
 
 interface GenerateRandomKeyArgs {
@@ -244,41 +287,81 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
 }
 
 interface ShowArgs {
+  release: Release;
   kind: string;
   row: string;
 }
 
 async function cmdShow(argv: ShowArgs): Promise<void> {
-  const updater = updaterFor(argv.kind);
-  const data = await updater.load(argv.row);
-  console.log(JSON.stringify(data.visit));
+  const upd = updater(argv.release, argv.kind);
+  const data = await upd.load(argv.row);
+  console.log(JSON.stringify(data));
 }
 
 interface EditArgs {
+  release: Release;
   kind: string;
   row: string;
   path: string;
 }
 
 async function cmdEdit(argv: EditArgs): Promise<void> {
-  if (argv.kind === "pii") {
-    await cmdEditPii(argv.row, argv.path);
-  } else if (argv.kind === "nonpii") {
-    await cmdEditNonPii(argv.row, argv.path);
+  switch (argv.release) {
+    case Release.Sniffles:
+      switch (argv.kind) {
+        case "pii":
+          await snifflesEditPii(argv.row, argv.path);
+          break;
+        case "nonpii":
+          await snifflesEditNonPii(argv.row, argv.path);
+          break;
+        default:
+          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+      }
+      break;
+    case Release.Fever:
+      switch (argv.kind) {
+        case "pii":
+          await feverEditNonPii(argv.row, argv.path);
+          break;
+        case "nonpii":
+          await feverEditPii(argv.row, argv.path);
+          break;
+        default:
+          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+      }
+      break;
+    default:
+      throw fail(
+        `Unrecognized release: '${argv.release}', ` +
+        `expected one of '${Object.keys(Release).join("', '")}'`
+      );
   }
   console.log("Committed changes.");
 }
 
-async function cmdEditNonPii(row: string, path: string): Promise<void> {
-  const original = await updaterNonPII.load(row);
+async function snifflesEditNonPii(row: string, path: string): Promise<void> {
+  const original = await sniffles.nonPii.load(row);
   const merged = await editVisitPart(original, path);
-  await updaterNonPII.updateVisit(original, merged);
+  await sniffles.nonPii.updateItem(original, merged);
 }
 
-async function cmdEditPii(row: string, path: string): Promise<void> {
-  const original = await updaterPII.load(row);
+async function snifflesEditPii(row: string, path: string): Promise<void> {
+  const original = await sniffles.pii.load(row);
   const merged = await editVisitPart(original, path);
-  await updaterPII.updateVisit(original, merged);
+  await sniffles.pii.updateItem(original, merged);
+}
+
+async function feverEditNonPii(row: string, path: string): Promise<void> {
+  const original = await fever.nonPii.load(row);
+  const merged = await editVisitPart(original, path);
+  await fever.nonPii.updateItem(original, merged);
+}
+
+async function feverEditPii(row: string, path: string): Promise<void> {
+  const original = await fever.pii.load(row);
+  const merged = await editVisitPart(original, path);
+  await fever.pii.updateItem(original, merged);
 }
 
 async function editVisitPart(original: any, path: string) {
@@ -391,16 +474,6 @@ function runCode(program: string, ...args: string[]): Promise<number> {
   });
 }
 
-function updaterFor(db: string): VisitNonPIIUpdater | VisitPIIUpdater {
-  if (db === "pii") {
-    return updaterPII;
-  } else if (db === "nonpii") {
-    return updaterNonPII;
-  } else {
-    throw fail(`expected db to be either 'pii' or 'nonpii', got '${db}'`);
-  }
-}
-
 function fail(message: string): never {
   const error = new Error(message);
   (<any>error).checked = true;
@@ -411,6 +484,28 @@ function accessKey(release: Release) {
   return forApp(release, {
     sniffles: snifflesModels.accessKey,
     fever: feverModels.accessKey,
+  });
+}
+
+function updater(release: Release, kind: string): SomeUpdater {
+  switch (kind) {
+    case "pii": return piiUpdater(release);
+    case "nonpii": return nonPiiUpdater(release);
+    default: throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
+  }
+}
+
+function piiUpdater(release: Release) {
+  return forApp<SnifflesPiiUpdater | FeverPiiUpdater>(release, {
+    sniffles: sniffles.pii,
+    fever: fever.pii,
+  });
+}
+
+function nonPiiUpdater(release: Release) {
+  return forApp<SnifflesNonPiiUpdater | FeverNonPiiUpdater>(release, {
+    sniffles: sniffles.nonPii,
+    fever: fever.nonPii,
   });
 }
 
