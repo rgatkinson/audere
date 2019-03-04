@@ -47,9 +47,9 @@ export class KitOrders extends UWParticipantReport {
       firstName: pii.survey.patient.firstName.trim(),
       lastName: pii.survey.patient.lastName.trim(),
       homeAddress: homeAddress,
-      // TODO: UW will be providing an updated email destination for kit order
-      // requests & tracking
-      email: email == null ? "grahamcd@uw.edu" : email.value,
+      // This email address is used by the UW for the fulfillment house and
+      // for answering questions about the mailing process.
+      email: email == null ? "kittrack@uw.edu" : email.value,
       timestamp: pii.survey.workflow.surveyCompletedAt
     }
 
