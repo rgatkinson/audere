@@ -31,13 +31,16 @@ export abstract class PIIReport<T> {
    */
   public async generateReport(): Promise<void> {
     const batch = await this.getBatch();
-    const result = await this.buildReport(batch);
+    
+    if (batch != null) {
+      const result = await this.buildReport(batch);
 
-    if (result.report != null) {
-      await this.writeReport(batch.id, result.report);
+      if (result.report != null) {
+        await this.writeReport(batch.id, result.report);
+      }
+
+      this.dao.commitUploadedBatch(batch.id, result.discarded);
     }
-
-    this.dao.commitUploadedBatch(batch.id, result.discarded);
   }
 
   /**

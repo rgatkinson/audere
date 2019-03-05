@@ -27,7 +27,8 @@ export class FeverCronReportEndpoint {
   async sendIncentives(req, res, next) {
     try {
       const service = await this.incentives.get();
-      return await service.generateReport();
+      await service.generateReport();
+      res.sendStatus(200);
     } catch (e) {
       next(e);
     }
@@ -36,7 +37,8 @@ export class FeverCronReportEndpoint {
   async sendKitOrders(req, res, next) {
     try {
       const service = await this.kits.get();
-      return await service.generateReport();
+      await service.generateReport();
+      res.sendStatus(200);
     } catch (e) {
       next(e);
     }
