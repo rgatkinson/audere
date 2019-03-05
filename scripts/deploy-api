@@ -42,8 +42,23 @@ if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
 fi
 
 API_DIR="$(cd "$SELF_DIR/../terraform/flu/api-$environment" && pwd)"
+API_MODULE_DIR="$(cd "$SELF_DIR/../terraform/modules/flu-api" && pwd)"
+LOCAL_DIR="$(cd "$SELF_DIR/../local" && pwd)"
+API_INIT_TAR="$LOCAL_DIR/flu-api-staging-init.tar.bz2.base64"
+
+if [[ \
+  "$API_MODULE_DIR/init/api-init" -nt "$API_INIT_TAR" || \
+  "$API_MODULE_DIR/init/bash_profile" -nt "$API_INIT_TAR"
+]]; then
+  cd "$API_MODULE_DIR"
+  ./init-local
+  echo "=================================================="
+  echo "Updated $API_INIT_TAR"
+  echo "=================================================="
+fi
 
 set -x
+
 cd "$API_DIR"
 terraform init
 if ! terraform taint -module=flu_api aws_autoscaling_group.flu_api; then
