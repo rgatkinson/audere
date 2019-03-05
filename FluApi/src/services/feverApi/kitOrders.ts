@@ -50,7 +50,7 @@ export class KitOrders extends UWParticipantReport {
       // This email address is used by the UW for the fulfillment house and
       // for answering questions about the mailing process.
       email: email == null ? "kittrack@uw.edu" : email.value,
-      timestamp: pii.survey.workflow.surveyCompletedAt
+      timestamp: pii.survey.workflow.screeningCompletedAt
     }
 
     return recipient;
