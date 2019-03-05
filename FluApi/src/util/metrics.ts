@@ -2,6 +2,7 @@
 import { EventInfo } from "audere-lib/snifflesProtocol";
 const excel = require("node-excel-export");
 
+const enStrings = require("../../../FluStudy/src/i18n/locales/en.json");
 const Client = require("pg-native");
 const client = new Client();
 const conString = process.env.NONPII_DATABASE_URL;
@@ -782,7 +783,7 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
 export function getFeverMetrics(
   startDate: string,
   endDate: string
-): [object,object,object] {
+): [object, object, object] {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -790,8 +791,7 @@ export function getFeverMetrics(
 
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
-  const demoClause =
-    "((survey->>'isDemo')::boolean IS FALSE)";
+  const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
 
   function getSurveyStatsQuery(): string {
     return `
@@ -871,7 +871,7 @@ export function getFeverMetrics(
              SUM(test2),
              SUM(finished),
              SUM(kitsreturned)
-      FROM agebuckets;`
+      FROM agebuckets;`;
   }
   const surveyStatsData = client.querySync(getSurveyStatsQuery());
 
@@ -938,16 +938,12 @@ export function getFeverMetrics(
     WHERE ${dateClause} AND ${demoClause}
     ORDER BY fcs."createdAt";`;
 
-    const studyIdData = client.querySync(studyIdQuery).map(study => ({
-      ...study,
-      studyid: study.studyid.substring(0, 21)
-    }));
+  const studyIdData = client.querySync(studyIdQuery).map(study => ({
+    ...study,
+    studyid: study.studyid.substring(0, 21)
+  }));
 
-  return [
-    surveyStatsData,
-    lastScreenData,
-    studyIdData
-  ];
+  return [surveyStatsData, lastScreenData, studyIdData];
 }
 
 function filterLastScreenData(lastScreenData): object {
@@ -955,29 +951,44 @@ function filterLastScreenData(lastScreenData): object {
   let completedCount: number = 0;
   let completedPercent: number = 0.0;
   for (let row of lastScreenData) {
-    if (
-      row.lastscreen === "Thanks"
-    ) {
+    if (row.lastscreen === "Thanks") {
       completedCount += +row.count;
       completedPercent += +row.percent;
     } else {
-      lastScreenFiltered.push(row);
+      let lastscreenText = "";
+      if (!!row.lastscreen) {
+        const screenNamespace =
+          row.lastscreen.charAt(0).toLowerCase() +
+          row.lastscreen.slice(1) +
+          "Screen";
+        if (!!enStrings[screenNamespace]) {
+          lastscreenText = enStrings[screenNamespace].title; // show "title" if exists for this screen
+          if (!lastscreenText) {
+            // else show the content of the first key for this screen
+            lastscreenText =
+              enStrings[screenNamespace][
+                Object.keys(enStrings[screenNamespace])[0]
+              ];
+          }
+        }
+      }
+      const rowWithText = { ...row, lastscreenText };
+      lastScreenFiltered.push(rowWithText);
     }
   }
   lastScreenFiltered.push({
     lastscreen: "(Finished App)",
     count: completedCount,
-    percent: (Math.round(completedPercent * 10) / 10).toFixed(1),
+    percent: (Math.round(completedPercent * 10) / 10).toFixed(1)
   });
   return lastScreenFiltered;
 }
 
 export function getFeverExcelReport(startDate: string, endDate: string) {
-  const [
-    surveyStatsData,
-    lastScreenData,
-    studyIdData
-  ] = getFeverMetrics(startDate, endDate);
+  const [surveyStatsData, lastScreenData, studyIdData] = getFeverMetrics(
+    startDate,
+    endDate
+  );
 
   const styles = {
     small: {
@@ -1072,7 +1083,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     percent: {
       displayName: "%",
       ...defaultCell
-    },
+    }
   };
 
   const studyIdSpec = {
@@ -1194,7 +1205,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ],
     ["Consented", null, "How many signed the consent form"],
     ["Ordered Kit", null, "How many input their address to order a kit"],
-    ["Started Part 2", null, "How many reopened the app to find Welcome Back screen"],
+    [
+      "Started Part 2",
+      null,
+      "How many reopened the app to find Welcome Back screen"
+    ],
     ["Barcode Scanned", null, "How many scanned or manually entered a barcode"],
     [
       "Completed Questionnaire",
@@ -1202,13 +1217,13 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "How many completed the questionnaire, i.e. got to the MedicalInsurance question"
     ],
     [
-      "Test 1 Complete", 
-      null, 
+      "Test 1 Complete",
+      null,
       "How many made it to the survey question at the end of the first test"
     ],
     [
-      "Test 1 Errors", 
-      null, 
+      "Test 1 Errors",
+      null,
       "How many said they messed up test 1, thought it was very confusing, or were missing materials"
     ],
     [
@@ -1217,18 +1232,22 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "How many made it to the survey question at the end of the second test"
     ],
     [
-      "Test 2 Errors", 
-      null, 
+      "Test 2 Errors",
+      null,
       "How many said they messed up test 2, thought it was very confusing, or were missing materials"
     ],
     ["Finished", null, "How many made it to the last screen"],
     [],
     ["Details sheet columns"],
     ["App Start Time", null, "Time user clicked beyond Welcome page"],
-    ["Barcode", null, "Barcode that was scanned or manually entered from label on kit"],
     [
-      "Study ID", 
-      null, 
+      "Barcode",
+      null,
+      "Barcode that was scanned or manually entered from label on kit"
+    ],
+    [
+      "Study ID",
+      null,
       "Unique ID for associating this survey with other specimens (longitudinal usage)"
     ],
     ["DB ID", null, "Internal ID for Audere use"],
@@ -1236,8 +1255,16 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
     ["Started Part II", null, "Time user reopened app to begin part 2"],
     ["Finished App", null, "Time user reached last screen of app"],
-    ["First Test Feedback", null, "User's choice on first test feedback question"],
-    ["Second Test Feedback", null, "User's choice on second test feedback question"],
+    [
+      "First Test Feedback",
+      null,
+      "User's choice on first test feedback question"
+    ],
+    [
+      "Second Test Feedback",
+      null,
+      "User's choice on second test feedback question"
+    ],
     ["Workflow", null, "Current workflow state of app"]
   ];
 
