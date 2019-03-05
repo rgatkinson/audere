@@ -81,7 +81,15 @@
     "description": "This study is funded by the Brotman Baty Institute and is being conducted by the University of Washington in conjunction with Fred Hutch."
   },
   "versionScreen": {
-    "title": "App Version"
+    "title": "App Version",
+    "version": "**Version:** ",
+    "commit": "\n**Commit:** ",
+    "date": "\n**Date:** ",
+    "device": "\n**Device:** ",
+    "installation": "\n**Installation:** ",
+    "apiServer": "\n**API Server:** ",
+    "copyright": "\n\nCopyright © 2019 Audere. All rights reserved.",
+    "copy": "Copy"
   },
   "generalQuestionsScreen": {
     "title": "General Questions",
@@ -521,8 +529,8 @@
     "yesAboveBlue": "Yes, above the blue line",
     "yesBelowBlue": "Yes, below the blue line",
     "yesAboveBelowBlue": "Yes, above and below the blue line",
-    "yesOneRed": "Yes there is one red line",
-    "yesTwoRed": "Yes there are two red lines",
+    "yesOneRed": "Yes, there is one red line",
+    "yesTwoRed": "Yes, there are two red lines",
     "easyCorrect": "It was easy to follow and I think I completed the test correctly",
     "confusingCorrect": "It was a little confusing but I think I did the test correctly",
     "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",

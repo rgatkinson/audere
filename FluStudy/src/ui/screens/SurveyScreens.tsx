@@ -1357,6 +1357,7 @@ class GeneralHealthScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
+          buttonStyle={{ width: "67%" }}
           question={HispanicConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}

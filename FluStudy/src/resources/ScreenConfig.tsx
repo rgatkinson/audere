@@ -315,10 +315,8 @@ export const RaceConfig: SurveyQuestionData = {
       "blackOrAfricanAmerican",
       "white",
       "other",
-      "preferNotToSay",
     ],
     multiSelect: true,
-    exclusiveOptions: ["preferNotToSay"],
     withOther: false,
   },
 };
@@ -329,7 +327,6 @@ export const HispanicConfig: SurveyQuestionData = {
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
-    { key: "preferNotToSay", primary: false, enabled: true },
   ],
 };
 

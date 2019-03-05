@@ -9,7 +9,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
+  Text as SystemText,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -25,14 +25,9 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Constants } from "expo";
 import { getApiBaseUrl } from "../../transport";
 import { timestampRender, timestampInteraction } from "./analytics";
-import {
-  GUTTER,
-  PRIMARY_COLOR,
-  STATUS_BAR_HEIGHT,
-  SYSTEM_FONT,
-  SYSTEM_TEXT,
-} from "./../styles";
+import { GUTTER, PRIMARY_COLOR, SYSTEM_FONT, SYSTEM_TEXT } from "./../styles";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
+import Text from "../components/Text";
 
 export const Menu = (props: any) => {
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
@@ -54,10 +49,10 @@ export const Menu = (props: any) => {
         >
           <Feather color={PRIMARY_COLOR} name="x" size={30} />
         </TouchableOpacity>
-        <Text style={styles.header}>ABOUT FLU@HOME</Text>
+        <SystemText style={styles.header}>ABOUT FLU@HOME</SystemText>
         <Divider style={styles.divider} />
         <DrawerItems {...aboutItems} />
-        <Text style={styles.header}>HELP & SUPPORT</Text>
+        <SystemText style={styles.header}>HELP & SUPPORT</SystemText>
         <Divider style={styles.divider} />
         <DrawerItems {...helpItems} />
       </SafeAreaView>
@@ -73,6 +68,9 @@ const styles = StyleSheet.create({
   divider: {
     marginTop: GUTTER / 2,
     marginRight: GUTTER,
+  },
+  footer: {
+    marginBottom: GUTTER,
   },
   header: {
     fontFamily: SYSTEM_FONT,
@@ -333,32 +331,33 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     const aboutContent: string =
-      "**Version:** " +
+      t("version") +
       buildInfo.version +
-      "\n**Commit:** " +
+      t("commit") +
       buildInfo.hash +
-      "\n**Date:** " +
+      t("date") +
       buildInfo.buildDate +
-      "\n**Device:** " +
+      t("device") +
       Platform.OS +
       " " +
       Platform.Version +
-      "\n**Installation:** " +
+      t("installation") +
       Constants.installationId +
-      "\n**API Server:** " +
+      t("apiServer") +
       getApiBaseUrl();
 
     return timestampRender(
       "About",
       <Screen
-        buttonLabel="Copy"
+        buttonLabel={t("copy")}
         canProceed={true}
         desc={aboutContent}
+        footer={<Text content={t("copyright")} style={styles.footer} />}
         menuItem={true}
         imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
-        skipButton={true}
+        skipButton={false}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
         onNext={() => {
