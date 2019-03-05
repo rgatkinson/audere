@@ -798,7 +798,8 @@ export function getFeverMetrics(
       WITH agebuckets AS (
       WITH t AS (
         WITH t1 AS (
-          SELECT survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+          SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
+              survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
             SUM(CASE WHEN (items->>'id'='FirstTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
               THEN 1 ELSE 0 END) test1errors
           FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
@@ -806,7 +807,8 @@ export function getFeverMetrics(
           GROUP BY age)
         SELECT t1.age, t1.test1errors, t2.test2errors
         FROM t1 LEFT JOIN (
-          SELECT survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+          SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
+              survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
             SUM(CASE WHEN (items->>'id'='SecondTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
               THEN 1 ELSE 0 END) test2errors
           FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
@@ -816,13 +818,7 @@ export function getFeverMetrics(
         ON t1.age=t2.age
       )
       SELECT 
-        CASE t.age 
-          WHEN '0' THEN '0-17'
-          WHEN '1' THEN '18-24'
-          WHEN '2' THEN '25-34'
-          WHEN '3' THEN '35-44'
-          WHEN '4' THEN '45-64'
-          ELSE '65+' END as age, 
+        t.age,
         t.test1errors, 
         t.test2errors, 
         t4.total, 
@@ -838,7 +834,8 @@ export function getFeverMetrics(
         t4.kitsreturned
        FROM t RIGHT JOIN (
         SELECT
-          survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+          json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
+            survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
           COUNT(*) as total, 
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Consent"}]' THEN 1 END) as eligible,
           SUM(CASE WHEN survey->'consents'->0->'date' IS NOT NULL THEN 1 END) as consents,
@@ -849,7 +846,7 @@ export function getFeverMetrics(
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"FirstTestFeedback"}]' THEN 1 END) as test1,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"SecondTestFeedback"}]' THEN 1 END) as test2,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished, 
-          0 as kitsreturned
+          '' as kitsreturned
           FROM fever_current_surveys fcs
           WHERE ${dateClause} AND ${demoClause}
           GROUP BY age
@@ -870,7 +867,7 @@ export function getFeverMetrics(
              SUM(test1), 
              SUM(test2),
              SUM(finished),
-             SUM(kitsreturned)
+             ''
       FROM agebuckets;`;
   }
   const surveyStatsData = client.querySync(getSurveyStatsQuery());
@@ -895,20 +892,12 @@ export function getFeverMetrics(
       (SELECT events->>'at' as part2time
         FROM json_array_elements(survey->'events') events
         WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1),
-      (SELECT CASE items->'answer'->0->>'valueIndex' 
-          WHEN '0' THEN 'easyCorrect'
-          WHEN '1' THEN 'confusingCorrect'
-          WHEN '2' THEN 'confusingNotCorrect'
-          WHEN '3' THEN 'incorrect'
-          ELSE 'missingMaterials' END as firsttestfeedback 
+      (SELECT json_extract_path(items->'answerOptions',
+        items->'answer'->0->>'valueIndex','id') as firsttestfeedback 
         FROM json_array_elements(survey->'responses'->0->'item') items
         WHERE ${dateClause} AND ${demoClause} AND items->>'id'='FirstTestFeedback'),
-      (SELECT CASE items->'answer'->0->>'valueIndex' 
-        WHEN '0' THEN 'easyCorrect'
-        WHEN '1' THEN 'confusingCorrect'
-        WHEN '2' THEN 'confusingNotCorrect'
-        WHEN '3' THEN 'incorrect'
-        ELSE 'missingMaterials' END as secondtestfeedback 
+      (SELECT json_extract_path(items->'answerOptions',
+        items->'answer'->0->>'valueIndex','id') as secondtestfeedback 
       FROM json_array_elements(survey->'responses'->0->'item') items
       WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback') 
       FROM fever_current_surveys fcs
