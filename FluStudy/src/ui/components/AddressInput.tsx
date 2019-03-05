@@ -176,7 +176,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.pickerContainer}
-            onPress={() => this.setState({ stateOpen: true })}
+            onPress={() => {this.setState({ stateOpen: true, focusZip: false })}}
           >
             <Text
               content={
@@ -198,6 +198,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               this.setState({ stateOpen: false, focusZip: true });
               const address = this.props.value || {};
               address.state = state;
+              this.props.onChange(address);
             }}
           />
           <NumberInput
