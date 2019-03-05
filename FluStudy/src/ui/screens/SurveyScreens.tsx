@@ -1671,10 +1671,6 @@ class TestStripConfirmationScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    const screenWidth = Dimensions.get("window").width;
-    const screenHeight = Dimensions.get("window").height;
-    const height = screenHeight / 2;
-    const width = (height * screenWidth) / screenHeight;
     return timestampRender(
       "TestStripConfirmationScreen",
       <Screen
@@ -1686,14 +1682,7 @@ class TestStripConfirmationScreen extends React.Component<
         onNext={() => {
           this.props.navigation.push("CleanFirstTest");
         }}
-      >
-        <Image
-          style={{ height, marginTop: GUTTER, width }}
-          source={{
-            uri: `data:image/gif;base64,${this.props.testStripImg.code}`,
-          }}
-        />
-      </Screen>
+      />
     );
   }
 }
