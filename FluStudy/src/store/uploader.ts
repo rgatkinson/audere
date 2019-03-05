@@ -386,8 +386,9 @@ function cleanupResponses(responses: SurveyResponse[]): SurveyResponse[] {
   const byId = new Map(responses.map(responseById));
 
   return responses.filter(r => {
-    const conditional = CONDITIONAL_QUESTIONS
-      .find(c => c.conditionalId === r.questionId);
+    const conditional = CONDITIONAL_QUESTIONS.find(
+      c => c.conditionalId === r.questionId
+    );
     if (conditional == null) {
       return true;
     }
@@ -398,10 +399,8 @@ function cleanupResponses(responses: SurveyResponse[]): SurveyResponse[] {
 }
 
 function isSelected(...keys: string[]): ResponsePredicate {
-  return (resp: SurveyResponse) => (
-    resp.answer != null &&
-    keys.some(x => x === resp.answer!.selectedButtonKey)
-  );
+  return (resp: SurveyResponse) =>
+    resp.answer != null && keys.some(x => x === resp.answer!.selectedButtonKey);
 }
 
 function responseById(r: SurveyResponse): ById<SurveyResponse> {

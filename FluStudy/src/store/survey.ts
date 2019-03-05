@@ -36,6 +36,16 @@ export type SurveyState = {
   tenMinuteStartTime?: number;
   timestamp?: number;
   workflow: WorkflowInfo;
+  [key: string]:
+    | ConsentInfo
+    | string
+    | EventInfo[]
+    | SampleInfo
+    | PushNotificationState
+    | SurveyResponse[]
+    | number
+    | WorkflowInfo
+    | undefined;
 };
 
 const initialState: SurveyState = {

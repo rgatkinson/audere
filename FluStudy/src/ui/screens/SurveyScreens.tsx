@@ -67,6 +67,10 @@ import {
   AddressConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
+import timerWithConfigProps, {
+  ConfigProps,
+  TimerProps,
+} from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
@@ -722,7 +726,6 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
 }
 export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
-@connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -737,7 +740,6 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.dispatch(setOneMinuteStartTime());
           this.props.navigation.push("FirstTimer");
         }}
       />
@@ -749,16 +751,11 @@ export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
 );
 
 interface FirstTimerProps {
-  oneMinuteStartTime: number;
+  oneMinuteStartTime: number | undefined;
 }
 
 interface DemoModeProps {
   isDemo: boolean;
-}
-
-interface TimerState {
-  done: boolean;
-  remaining: Date | null;
 }
 
 @connect((state: StoreState) => ({
@@ -766,78 +763,11 @@ interface TimerState {
   oneMinuteStartTime: state.survey.oneMinuteStartTime,
 }))
 class FirstTimerScreen extends React.Component<
-  Props & DemoModeProps & FirstTimerProps & WithNamespaces,
-  TimerState
+  Props & DemoModeProps & FirstTimerProps & WithNamespaces & TimerProps
 > {
-  _timer: NodeJS.Timeout | undefined;
-  _willFocus: any;
-  _fastForwardMillis: number;
-
-  constructor(props: Props & DemoModeProps & FirstTimerProps & WithNamespaces) {
-    super(props);
-    this._fastForwardMillis = 0;
-    const remaining = this._getRemaining(
-      props.oneMinuteStartTime,
-      this._fastForwardMillis
-    );
-    this.state = {
-      remaining,
-      done: remaining == null,
-    };
-  }
-
-  // A debug function that forwards the timer to just having 5 secs left.
-  _onFastForward(): void {
-    this._fastForwardMillis =
-      this.props.oneMinuteStartTime +
-      MINUTE_MS -
-      new Date().getTime() -
-      5 * SECOND_MS;
-  }
-
-  _getRemaining(startTime: number, fastForwardMillis: number): Date | null {
-    const deltaMillis =
-      startTime + MINUTE_MS - new Date().getTime() - this._fastForwardMillis;
-    if (deltaMillis > 0) {
-      // @ts-ignore
-      const remaining = new Date(null);
-      remaining.setMilliseconds(deltaMillis);
-      return remaining;
-    } else {
-      return null;
-    }
-  }
-
   componentDidMount() {
-    if (!this.state.done) {
-      this._willFocus = this.props.navigation.addListener("willFocus", () =>
-        this._setTimer()
-      );
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._willFocus != null) {
-      this._willFocus.remove();
-      this._willFocus = null;
-    }
-  }
-
-  _setTimer() {
-    if (this.props.navigation.isFocused() && !this.state.done) {
-      setTimeout(() => {
-        if (this.props.navigation.isFocused() && !this.state.done) {
-          const remaining = this._getRemaining(
-            this.props.oneMinuteStartTime,
-            this._fastForwardMillis
-          );
-          this.setState({
-            remaining,
-            done: remaining == null,
-          });
-          this._setTimer();
-        }
-      }, 1000);
+    if (this.props.oneMinuteStartTime == null) {
+      this.props.dispatch(setOneMinuteStartTime());
     }
   }
 
@@ -846,13 +776,8 @@ class FirstTimerScreen extends React.Component<
     return timestampRender(
       "FirstTimerScreen",
       <Screen
-        canProceed={this.state.done}
-        desc={
-          this.state.remaining != null &&
-          this.state.remaining.getTime() > 30 * 1000
-            ? t("tip")
-            : t("tip2")
-        }
+        canProceed={this.props.done()}
+        desc={this.props.getRemainingTime() > 30 * 1000 ? t("tip") : t("tip2")}
         footer={
           <View
             style={{
@@ -862,10 +787,10 @@ class FirstTimerScreen extends React.Component<
             }}
           >
             <Text
-              content={this.state.done ? t("done") : t("remaining")}
+              content={this.props.done() ? t("done") : t("remaining")}
               style={{ marginBottom: GUTTER }}
             />
-            {this.state.done ? (
+            {this.props.done() ? (
               <Button
                 enabled={true}
                 primary={true}
@@ -882,7 +807,7 @@ class FirstTimerScreen extends React.Component<
               >
                 <Text
                   bold={true}
-                  content={this.state.remaining!.toISOString().substr(14, 5)}
+                  content={this.props.getRemainingLabel()}
                   style={{ color: SECONDARY_COLOR }}
                 />
               </BorderView>
@@ -895,16 +820,17 @@ class FirstTimerScreen extends React.Component<
         skipButton={true}
         title={t("title")}
         onTitlePress={() => {
-          this.props.isDemo && this._onFastForward();
+          this.props.isDemo && this.props.onFastForward();
         }}
         onNext={() => {}}
       />
     );
   }
 }
-export const FirstTimer = withNamespaces("firstTimerScreen")<
-  Props & DemoModeProps & FirstTimerProps
->(FirstTimerScreen);
+export const FirstTimer = timerWithConfigProps({
+  totalTimeMs: MINUTE_MS,
+  startTimeConfig: "oneMinuteStartTime",
+})(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
 class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -1376,7 +1302,7 @@ export const GeneralHealth = reduxWriter(
 );
 
 interface ThankYouSurveyProps {
-  tenMinuteStartTime: number;
+  tenMinuteStartTime: number | undefined;
 }
 
 @connect((state: StoreState) => ({
@@ -1384,92 +1310,14 @@ interface ThankYouSurveyProps {
   tenMinuteStartTime: state.survey.tenMinuteStartTime,
 }))
 class ThankYouSurveyScreen extends React.Component<
-  Props & DemoModeProps & ThankYouSurveyProps & WithNamespaces,
-  TimerState
+  Props & DemoModeProps & WithNamespaces & ThankYouSurveyProps & TimerProps
 > {
-  _timer: number | null | undefined;
-  _willFocus: any;
-  _fastForwardMillis: number;
-
-  constructor(
-    props: Props & DemoModeProps & ThankYouSurveyProps & WithNamespaces
-  ) {
-    super(props);
-    this._fastForwardMillis = 0;
-    const remaining = this._getRemaining(
-      props.tenMinuteStartTime,
-      this._fastForwardMillis
-    );
-    this.state = {
-      remaining,
-      done: remaining == null,
-    };
-  }
-
-  // A debug function that forwards the timer to just having 5 secs left.
-  _onFastForward(): void {
-    this._fastForwardMillis =
-      this.props.tenMinuteStartTime +
-      TEST_STRIP_MS -
-      new Date().getTime() -
-      5 * SECOND_MS;
-  }
-
-  _getRemaining(startTime: number, fastForwardMillis: number): Date | null {
-    const deltaMillis =
-      startTime +
-      TEST_STRIP_MS -
-      new Date().getTime() -
-      this._fastForwardMillis;
-    if (deltaMillis > 0) {
-      // @ts-ignore
-      const remaining = new Date(null);
-      remaining.setMilliseconds(deltaMillis);
-      return remaining;
-    } else {
-      return null;
-    }
-  }
-
-  componentDidMount() {
-    if (!this.state.done) {
-      this._willFocus = this.props.navigation.addListener("willFocus", () =>
-        this._setTimer()
-      );
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._willFocus != null) {
-      this._willFocus.remove();
-      this._willFocus = null;
-    }
-  }
-
-  _setTimer() {
-    if (this.props.navigation.isFocused() && !this.state.done) {
-      setTimeout(() => {
-        if (this.props.navigation.isFocused() && !this.state.done) {
-          const remaining = this._getRemaining(
-            this.props.tenMinuteStartTime,
-            this._fastForwardMillis
-          );
-          this.setState({
-            remaining,
-            done: remaining == null,
-          });
-          this._setTimer();
-        }
-      }, 1000);
-    }
-  }
-
   render() {
     const { t } = this.props;
     return timestampRender(
       "ThankYouSurveyScreen",
       <Screen
-        canProceed={this.state.done}
+        canProceed={this.props.done()}
         desc={t("desc")}
         footer={
           <View
@@ -1480,10 +1328,10 @@ class ThankYouSurveyScreen extends React.Component<
             }}
           >
             <Text
-              content={this.state.done ? t("done") : t("remaining")}
+              content={this.props.done() ? t("done") : t("remaining")}
               style={{ marginBottom: GUTTER }}
             />
-            {this.state.done ? (
+            {this.props.done() ? (
               <Button
                 enabled={true}
                 primary={true}
@@ -1500,7 +1348,7 @@ class ThankYouSurveyScreen extends React.Component<
               >
                 <Text
                   bold={true}
-                  content={this.state.remaining!.toISOString().substr(14, 5)}
+                  content={this.props.getRemainingLabel()}
                   style={{ color: SECONDARY_COLOR }}
                 />
               </BorderView>
@@ -1513,19 +1361,20 @@ class ThankYouSurveyScreen extends React.Component<
         title={t("title")}
         onNext={() => {}}
         onTitlePress={() => {
-          this.props.isDemo && this._onFastForward();
+          this.props.isDemo && this.props.onFastForward();
         }}
       >
-        {!this.state.done && (
+        {!this.props.done() && (
           <Text content={t("waiting")} style={{ alignSelf: "stretch" }} />
         )}
       </Screen>
     );
   }
 }
-export const ThankYouSurvey = withNamespaces("thankYouSurveyScreen")<
-  Props & DemoModeProps & ThankYouSurveyProps
->(ThankYouSurveyScreen);
+export const ThankYouSurvey = timerWithConfigProps({
+  totalTimeMs: TEST_STRIP_MS,
+  startTimeConfig: "tenMinuteStartTime",
+})(withNamespaces("thankYouSurveyScreen")(ThankYouSurveyScreen));
 
 class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
   render() {
