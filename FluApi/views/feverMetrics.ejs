@@ -40,6 +40,7 @@
     <table class="hor-zebra">
       <thead>
         <tr>
+          <th><label title="Age of app user">Age</label></th>
           <th><label title="How many made it past the welcome screen">Started Part 1</label></th>
           <th><label title="How many had eligible sypmtoms">Eligible</label></th>
           <th><label title="How many consented to participate">Consented</label></th>
@@ -52,11 +53,21 @@
           <th><label title="How many completed test 2">Test 2 Completed</label></th>
           <th><label title="How many messed up on test 2">Test 2 Errors</label></th>
           <th><label title="How many made it to the last screen">Finished App</label></th>
+          <th><label title="How many returned their kit">Kits Returned</label></th>
         </tr>
       </thead>
       <tbody>
-        <% surveyStatsData.forEach(function(row) { %>
-        <tr class="odd">
+        <% oddRow = true;
+          surveyStatsData.forEach(function(row) { 
+           if (row.age === "Total") {
+         %>
+       <tr class="sum">
+         <% } else if (oddRow) { %>
+       <tr class="odd">
+         <% } else { %>
+       <tr>
+         <% } %> 
+          <td><%= row.age %></td>
           <td class="label"><%= row.total %></td>
           <td><%= row.eligible %></td>
           <td><%= row.consents %></td>
@@ -69,8 +80,10 @@
           <td><%= row.test2 %></td>
           <td><%= row.test2errors %></td>
           <td><%= row.finished %></td>
+          <td><%= row.kitsreturned %></td>
         </tr>
-        <%}); %>
+        <% oddRow = !oddRow; 
+          }); %>
         </tr>
       </tbody>
     </table>

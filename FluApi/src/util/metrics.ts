@@ -795,27 +795,83 @@ export function getFeverMetrics(
 
   function getSurveyStatsQuery(): string {
     return `
+      WITH agebuckets AS (
+      WITH t AS (
+        WITH t1 AS (
+          SELECT survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+            SUM(CASE WHEN (items->>'id'='FirstTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
+              THEN 1 ELSE 0 END) test1errors
+          FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
+          WHERE ${dateClause} AND ${demoClause}
+          GROUP BY age)
+        SELECT t1.age, t1.test1errors, t2.test2errors
+        FROM t1 LEFT JOIN (
+          SELECT survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+            SUM(CASE WHEN (items->>'id'='SecondTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
+              THEN 1 ELSE 0 END) test2errors
+          FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
+          WHERE ${dateClause} AND ${demoClause}
+          GROUP BY age
+        ) t2
+        ON t1.age=t2.age
+      )
       SELECT 
-        COUNT(*) as total, 
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Consent"}]' THEN 1 END) as eligible,
-        SUM(CASE WHEN survey->'consents'->0->'date' IS NOT NULL THEN 1 END) as consents,
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Confirmation"}]' THEN 1 END) as kits,
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"WelcomeBack"}]' THEN 1 END) as part2,
-        SUM(CASE WHEN survey->'samples'->0->'code' IS NOT NULL THEN 1 END) as scanned,
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"ThankYouSurvey"}]' THEN 1 END) as surveyscompleted,
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"FirstTestFeedback"}]' THEN 1 END) as test1,
-        (SELECT SUM(CASE WHEN (items->>'id'='FirstTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >=2) 
-          THEN 1 ELSE 0 END) as test1errors 
-          FROM fever_current_surveys fcs, json_array_elements(survey->'responses'->0->'item') items
-          WHERE ${dateClause} AND ${demoClause}),
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"SecondTestFeedback"}]' THEN 1 END) as test2,
-        (SELECT SUM(CASE WHEN (items->>'id'='SecondTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >=2) 
-          THEN 1 ELSE 0 END) as test2errors 
-          FROM fever_current_surveys fcs, json_array_elements(survey->'responses'->0->'item') items
-          WHERE ${dateClause} AND ${demoClause}),
-        SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished
-      FROM fever_current_surveys fcs
-      WHERE ${dateClause} AND ${demoClause};`;
+        CASE t.age 
+          WHEN '0' THEN '0-17'
+          WHEN '1' THEN '18-24'
+          WHEN '2' THEN '25-34'
+          WHEN '3' THEN '35-44'
+          WHEN '4' THEN '45-64'
+          ELSE '65+' END as age, 
+        t.test1errors, 
+        t.test2errors, 
+        t4.total, 
+        t4.eligible, 
+        t4.consents,
+        t4.kits,
+        t4.part2,
+        t4.scanned,
+        t4.surveyscompleted,
+        t4.test1,
+        t4.test2,
+        t4.finished,
+        t4.kitsreturned
+       FROM t RIGHT JOIN (
+        SELECT
+          survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex' as age,
+          COUNT(*) as total, 
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Consent"}]' THEN 1 END) as eligible,
+          SUM(CASE WHEN survey->'consents'->0->'date' IS NOT NULL THEN 1 END) as consents,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Confirmation"}]' THEN 1 END) as kits,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"WelcomeBack"}]' THEN 1 END) as part2,
+          SUM(CASE WHEN survey->'samples'->0->'code' IS NOT NULL THEN 1 END) as scanned,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"ThankYouSurvey"}]' THEN 1 END) as surveyscompleted,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"FirstTestFeedback"}]' THEN 1 END) as test1,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"SecondTestFeedback"}]' THEN 1 END) as test2,
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished, 
+          0 as kitsreturned
+          FROM fever_current_surveys fcs
+          WHERE ${dateClause} AND ${demoClause}
+          GROUP BY age
+          ORDER BY age
+        ) t4
+      ON t.age = t4.age)
+      SELECT * FROM agebuckets UNION ALL 
+      SELECT 'Total', 
+             SUM(test1errors), 
+             SUM(test2errors),
+             SUM(total),
+             SUM(eligible), 
+             SUM(consents), 
+             SUM(kits), 
+             SUM(part2), 
+             SUM(scanned), 
+             SUM(surveyscompleted), 
+             SUM(test1), 
+             SUM(test2),
+             SUM(finished),
+             SUM(kitsreturned)
+      FROM agebuckets;`
   }
   const surveyStatsData = client.querySync(getSurveyStatsQuery());
 
@@ -827,7 +883,9 @@ export function getFeverMetrics(
     WHERE ${dateClause} AND ${demoClause} AND json_array_length(survey->'events') > 0
     GROUP BY lastscreen 
     ORDER BY percent DESC;`;
-  const lastScreenData = client.querySync(lastScreenQuery);
+  const lastScreenData = filterLastScreenData(
+    client.querySync(lastScreenQuery)
+  );
 
   const studyIdQuery = `
     WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
@@ -836,29 +894,82 @@ export function getFeverMetrics(
         WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='Confirmation' LIMIT 1),
       (SELECT events->>'at' as part2time
         FROM json_array_elements(survey->'events') events
-        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1)
-      FROM fever_current_surveys fcs, json_array_elements(survey->'events') events
+        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1),
+      (SELECT CASE items->'answer'->0->>'valueIndex' 
+          WHEN '0' THEN 'easyCorrect'
+          WHEN '1' THEN 'confusingCorrect'
+          WHEN '2' THEN 'confusingNotCorrect'
+          WHEN '3' THEN 'incorrect'
+          ELSE 'missingMaterials' END as firsttestfeedback 
+        FROM json_array_elements(survey->'responses'->0->'item') items
+        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='FirstTestFeedback'),
+      (SELECT CASE items->'answer'->0->>'valueIndex' 
+        WHEN '0' THEN 'easyCorrect'
+        WHEN '1' THEN 'confusingCorrect'
+        WHEN '2' THEN 'confusingNotCorrect'
+        WHEN '3' THEN 'incorrect'
+        ELSE 'missingMaterials' END as secondtestfeedback 
+      FROM json_array_elements(survey->'responses'->0->'item') items
+      WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback') 
+      FROM fever_current_surveys fcs
       WHERE ${dateClause} AND ${demoClause}
       ORDER BY fcs.id, kitordertime ASC) 
     SELECT 
           t.kitordertime, 
           t.part2time, 
-          fcs.id, 
+          t.firsttestfeedback,
+          t.secondtestfeedback,
+          fcs.id as dbid, 
           fcs."createdAt", 
           fcs.survey->'samples'->0->'code' as barcode,
-          fcs.survey->'workflow'->'surveyCompletedAt' as finishtime 
+          fcs.survey->'workflow'->'surveyCompletedAt' as finishtime,
+          fcs.csruid as studyid,
+          fcs.device->'installation' as installation,
+          fcs.survey->>'workflow' as workflow,
+          CASE survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex'
+            WHEN '0' THEN 'Under 17'
+            WHEN '1' THEN '18-24'
+            WHEN '2' THEN '25-34'
+            WHEN '3' THEN '35-44'
+            WHEN '4' THEN '45-64'
+            ELSE '65+' END as age
       FROM t RIGHT JOIN fever_current_surveys fcs
     ON fcs.id=t.id
     WHERE ${dateClause} AND ${demoClause}
     ORDER BY fcs."createdAt";`;
 
-  const studyIdData = client.querySync(studyIdQuery);
+    const studyIdData = client.querySync(studyIdQuery).map(study => ({
+      ...study,
+      studyid: study.studyid.substring(0, 21)
+    }));
 
   return [
     surveyStatsData,
     lastScreenData,
     studyIdData
   ];
+}
+
+function filterLastScreenData(lastScreenData): object {
+  let lastScreenFiltered = [];
+  let completedCount: number = 0;
+  let completedPercent: number = 0.0;
+  for (let row of lastScreenData) {
+    if (
+      row.lastscreen === "Thanks"
+    ) {
+      completedCount += +row.count;
+      completedPercent += +row.percent;
+    } else {
+      lastScreenFiltered.push(row);
+    }
+  }
+  lastScreenFiltered.push({
+    lastscreen: "(Finished App)",
+    count: completedCount,
+    percent: (Math.round(completedPercent * 10) / 10).toFixed(1),
+  });
+  return lastScreenFiltered;
 }
 
 export function getFeverExcelReport(startDate: string, endDate: string) {
@@ -884,12 +995,16 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
 
   const defaultCell = {
     headerStyle: styles.columnHeader,
-    width: 70,
+    width: 100,
     cellStyle: function(value, row) {
       return { alignment: { horizontal: "right" } };
     }
   };
   const surveyStatsSpec = {
+    age: {
+      displayName: "Age",
+      ...defaultCell
+    },
     total: {
       displayName: "Started Part 1",
       ...defaultCell
@@ -907,7 +1022,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       ...defaultCell
     },
     part2: {
-      displayName: "Started Part 2",
+      displayName: "Began Part 2",
       ...defaultCell
     },
     scanned: {
@@ -937,6 +1052,10 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     finished: {
       displayName: "Finished App",
       ...defaultCell
+    },
+    kitsreturned: {
+      displayName: "Kits Returned",
+      ...defaultCell
     }
   };
 
@@ -957,6 +1076,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
   };
 
   const studyIdSpec = {
+    age: {
+      displayName: "Age",
+      headerStyle: styles.columnHeader,
+      width: 70
+    },
     createdAt: {
       displayName: "App Start Time (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
@@ -964,6 +1088,26 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
         return !!value ? toStudyDateString(value) : value;
       },
       width: 150
+    },
+    barcode: {
+      displayName: "Barcode",
+      headerStyle: styles.columnHeader,
+      width: 100
+    },
+    studyid: {
+      displayName: "Study ID",
+      headerStyle: styles.columnHeader,
+      width: 170
+    },
+    dbid: {
+      displayName: "DB ID",
+      headerStyle: styles.columnHeader,
+      width: 50
+    },
+    installation: {
+      displayName: "Installation ID",
+      headerStyle: styles.columnHeader,
+      width: 300
     },
     kitordertime: {
       displayName: "Kit Ordered (" + getTimezoneAbbrev() + ")",
@@ -981,11 +1125,6 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       },
       width: 150
     },
-    barcode: {
-      displayName: "Barcode",
-      headerStyle: styles.columnHeader,
-      width: 100
-    },
     finishtime: {
       displayName: "Finished App (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
@@ -993,6 +1132,21 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
         return !!value ? toStudyDateString(value) : value;
       },
       width: 150
+    },
+    firsttestfeedback: {
+      displayName: "First Test Feedback",
+      headerStyle: styles.columnHeader,
+      width: 125
+    },
+    secondtestfeedback: {
+      displayName: "Second Test Feedback",
+      headerStyle: styles.columnHeader,
+      width: 125
+    },
+    workflow: {
+      displayName: "Workflow",
+      headerStyle: styles.columnHeader,
+      width: 500
     }
   };
 
@@ -1015,7 +1169,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [generatedHeading]
   ];
   const studyIdHeading = [
-    [{ value: "Barcodes, Timestamps, etc.", style: styles.title }],
+    [{ value: "Study IDs, Barcodes, Timestamps, etc.", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading],
     [
@@ -1027,6 +1181,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
   ];
   const helpHeading = [
     [{ value: "Explanation of Metrics Columns", style: styles.title }],
+    ["By Age sheet columns"],
     [
       "Started Part 1",
       null,
@@ -1067,12 +1222,29 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "How many said they messed up test 2, thought it was very confusing, or were missing materials"
     ],
     ["Finished", null, "How many made it to the last screen"],
+    [],
+    ["Details sheet columns"],
+    ["App Start Time", null, "Time user clicked beyond Welcome page"],
+    ["Barcode", null, "Barcode that was scanned or manually entered from label on kit"],
+    [
+      "Study ID", 
+      null, 
+      "Unique ID for associating this survey with other specimens (longitudinal usage)"
+    ],
+    ["DB ID", null, "Internal ID for Audere use"],
+    ["Installation ID", null, "Unique ID associated with App installation"],
+    ["Kit Ordered", null, "Time user submitted their address to order kit"],
+    ["Started Part II", null, "Time user reopened app to begin part 2"],
+    ["Finished App", null, "Time user reached last screen of app"],
+    ["First Test Feedback", null, "User's choice on first test feedback question"],
+    ["Second Test Feedback", null, "User's choice on second test feedback question"],
+    ["Workflow", null, "Current workflow state of app"]
   ];
 
   const merges = [
-    { start: { row: 1, column: 1 }, end: { row: 1, column: 12 } },
-    { start: { row: 2, column: 1 }, end: { row: 2, column: 12 } },
-    { start: { row: 3, column: 1 }, end: { row: 3, column: 12 } }
+    { start: { row: 1, column: 1 }, end: { row: 1, column: 14 } },
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 14 } },
+    { start: { row: 3, column: 1 }, end: { row: 3, column: 14 } }
   ];
   const helpMerges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 13 } }
@@ -1080,14 +1252,14 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
 
   const report = excel.buildExport([
     {
-      name: "Fever Metrics",
+      name: "By Age",
       merges: merges,
       heading: surveyStatsHeading,
       specification: surveyStatsSpec,
       data: surveyStatsData
     },
     {
-      name: "Last Question",
+      name: "Last Screen",
       merges: merges,
       heading: lastScreenHeading,
       specification: lastScreenSpec,
