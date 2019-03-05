@@ -9,6 +9,11 @@ readonly mode="$1"
 readonly commit="${2:-master}"
 readonly env="$3"
 
+if [ "$env" == "prod" ]
+then
+  env="production"
+fi
+
 echo "=== api-init begins, mode=$mode commit=$commit env=$env"
 mkdir "$HOME/.ssh"
 ln -s /creds/github/id_rsa "$HOME/.ssh/id_rsa"
