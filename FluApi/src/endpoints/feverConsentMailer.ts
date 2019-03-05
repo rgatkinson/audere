@@ -125,7 +125,7 @@ async function emailConsent(emailer: Emailer, survey: SurveyPii) {
   const body = (
 `Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
 
-This email is sent from an unmonitored address. Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or if you have any other questions or concerns.
+This email is sent from an unmonitored address. Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or contact support@auderenow.org if you have any other questions or concerns.
 
 Here is a copy of the Consent Form you accepted:
 
