@@ -11,6 +11,10 @@ output "elbinternal_sg_client_id" {
   value = "${module.elbinternal_sg.client_id}"
 }
 
+output "fluapi_internal_fqdn" {
+  value = "${aws_elb.flu_api_internal_elb.dns_name}"
+}
+
 output "fluapi_route53_fqdn" {
   value = "${element(concat(aws_route53_record.api_record.*.fqdn, list("")), 0)}"
 }
