@@ -86,7 +86,7 @@ export class FeverConsentEmailerEndpoint {
         dbgrow(survey_id, "completing without email");
       }
       const update = {
-        ...row,
+        survey_id,
         completed: new Date().toISOString(),
       };
       await this.models.consentEmail.upsert(update);
