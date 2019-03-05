@@ -167,6 +167,23 @@ describe("FeverConsentEmailer", () => {
     await deleteSurveyPii(csruid);
   });
 
+  it("does not email consent if demo mode", async () => {
+    const csruid = makeCSRUID("does not email consent if demo mode");
+    const post = _.cloneDeep(surveyPost(csruid));
+
+    postRequestConsentEmail(post, true);
+    postMarkScreeningComplete(post, true);
+    post.survey.isDemo = true;
+
+    const result = await putSurveyAndRunEmailer(post);
+
+    // We should have completed 1 item and sent email for it.
+    expect(result.body.length).toEqual(0);
+    expect(emails.length).toEqual(0);
+
+    await deleteSurveyPii(csruid);
+  });
+
   async function putSurveyAndRunEmailer(document: SurveyDocument) {
     // Clean up beforehand in case a previous test failed and left behind.
     // An existing record can cause these tests to fail.
