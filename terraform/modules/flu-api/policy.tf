@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
       "s3:DeleteObject"
     ]
 
-    resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}"]
+    resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}/*"]
   }
 }
 
