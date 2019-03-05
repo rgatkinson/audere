@@ -82,6 +82,7 @@ export class IncentiveRecipientsDataAccess extends SurveyBatchDataAccess {
   public surveyPredicate() {
     return {
       survey: {
+        isDemo: false,
         workflow: {
           surveyCompletedAt: {
             [Sequelize.Op.ne]: null

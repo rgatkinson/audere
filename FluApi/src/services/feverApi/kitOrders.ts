@@ -83,6 +83,7 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess {
   public surveyPredicate() {
     return {
       survey: {
+        isDemo: false,
         workflow: {
           screeningCompletedAt: {
             [Sequelize.Op.ne]: null
