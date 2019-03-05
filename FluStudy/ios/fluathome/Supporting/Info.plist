@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIAppFonts</key>
-	<array>
-		<string>circlenumbers.ttf</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -21,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.0</string>
+	<string>0.2.1</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -81,13 +77,17 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow flu@home to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow flu@home to access your device&apos;s accelerometer</string>
+	<string>Allow flu@home to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give flu@home permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give flu@home permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow flu@home to access your reminders</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>circlenumbers.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
