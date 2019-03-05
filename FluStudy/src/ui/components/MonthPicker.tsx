@@ -33,10 +33,10 @@ const months = [
 ];
 
 interface MonthModalProps {
-  date: Date;
+  date: Date | null;
   options: Date[];
   visible: boolean;
-  onDismiss(date: Date): void;
+  onDismiss(date: Date | null): void;
 }
 
 interface MonthModalState {
@@ -51,7 +51,7 @@ class MonthModal extends React.Component<
     date: null,
   };
 
-  _getDate = (): Date => {
+  _getDate = (): Date | null => {
     if (this.state.date != null) {
       return this.state.date!;
     }
@@ -72,7 +72,9 @@ class MonthModal extends React.Component<
       >
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <Picker
-            selectedValue={this._getDate().getTime()}
+            selectedValue={
+              this._getDate() ? this._getDate()!.getTime() : undefined
+            }
             style={{ alignSelf: "stretch", justifyContent: "center" }}
             onValueChange={time => this.setState({ date: new Date(time) })}
           >
@@ -131,15 +133,6 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
-  _getSelectedDate(): Date {
-    return !!this.props.date
-      ? this.props.date
-      : new Date(
-          this.props.endDate.getFullYear(),
-          this.props.endDate.getMonth()
-        );
-  }
-
   render() {
     const { t } = this.props;
     const now = new Date();
@@ -163,7 +156,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
         </TouchableOpacity>
         <TranslatedMonthModal
           options={this._getOptions()}
-          date={this._getSelectedDate()}
+          date={!!this.props.date ? this.props.date : null}
           visible={this.state.pickerOpen}
           onDismiss={(date: Date) => {
             this.setState({ pickerOpen: false });
