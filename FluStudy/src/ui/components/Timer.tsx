@@ -84,8 +84,11 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     }
 
     getRemainingLabel(): string {
+      if (this.state.remaining == null) {
+        return "";
+      }
       // @ts-ignore
-      return this.state.remaining == null ? "" : this.state.remaining!.toISOString().substr(14, 5);
+      return this.state.remaining!.toISOString().substr(14, 5);
     }
 
     getRemainingTime(): Date | null {

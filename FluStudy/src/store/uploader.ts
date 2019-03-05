@@ -121,7 +121,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     workflow: state.survey.workflow,
   };
 
-  when(getGender(survey), x => pouch.patient.gender = x);
+  when(getGender(survey), x => (pouch.patient.gender = x));
 
   if (!!survey.email) {
     pouch.patient.telecom.push({
@@ -340,7 +340,10 @@ function getGender(survey: SurveyState): Maybe<PatientInfoGender> {
   return (key && GENDER_MAP.get(key)) || undefined;
 }
 
-function buttonKey(survey: SurveyState, questionId: string): string | undefined {
+function buttonKey(
+  survey: SurveyState,
+  questionId: string
+): string | undefined {
   const answer = answerForId(survey, questionId);
   if (answer) {
     return answer.selectedButtonKey;

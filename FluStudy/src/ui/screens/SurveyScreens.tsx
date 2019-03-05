@@ -351,6 +351,7 @@ class ScanScreen extends React.Component<
                   surveyStartedAt: new Date().toISOString(),
                 })
               );
+              this.setState({ activeScan: false });
               this.props.navigation.push("ScanConfirmation");
             }
           }}
