@@ -44,13 +44,13 @@ output "client_id" {
 
 resource "aws_security_group" "server" {
   name = "${var.name}"
-  description = "Allow incoming traffic from ${var.name}-client (port range ${var.from_port} - ${var.to_port})."
+  description = "Allow incoming traffic from ${var.name}-client (${local.port_description})."
   vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_security_group" "client" {
   name = "${var.name}-client"
-  description = "Allow outgoing traffic to ${var.name} (port range ${var.from_port} - ${var.to_port})."
+  description = "Allow outgoing traffic to ${var.name} (${local.port_description})."
   vpc_id = "${var.vpc_id}"
 }
 
@@ -72,4 +72,8 @@ resource "aws_security_group_rule" "egress" {
 
   security_group_id = "${aws_security_group.client.id}"
   source_security_group_id = "${aws_security_group.server.id}"
+}
+
+locals {
+  port_description = "${(var.from_port == var.to_port) ? "port ${var.to_port}" : "port range ${var.from_port} - ${var.to_port}"}"
 }
