@@ -72,7 +72,7 @@ module "fludev_ssh_sg" {
 
   name = "${local.base_name}-ssh"
   from_port = 22
-  to_port = 444
+  to_port = 3200
   vpc_id = "${aws_vpc.fludb.id}"
 }
 
