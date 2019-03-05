@@ -23,6 +23,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
+                <string>fb270588223842056</string>
 				<string>expdcd6f73fcd53486284683e2a09a2d545</string>
 			</array>
 		</dict>
@@ -35,6 +36,10 @@
 			</array>
 		</dict>
 	</array>
+    <key>FacebookAppID</key>
+    <string>270588223842056</string>
+    <key>FacebookDisplayName</key>
+    <string>flu@home</string>
 	<key>CFBundleVersion</key>
 	<string>36</string>
 	<key>Fabric</key>
