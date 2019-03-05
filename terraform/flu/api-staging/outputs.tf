@@ -11,10 +11,6 @@ output "transient_subnet_id" {
   value = "${module.flu_api.transient_subnet_id}"
 }
 
-output "fluapi_internal_fqdn" {
-  value = "${module.flu_api.fluapi_internal_fqdn}"
-}
-
 output "fluapi_fqdn" {
   value = "${module.flu_api.fluapi_route53_fqdn}"
 }
