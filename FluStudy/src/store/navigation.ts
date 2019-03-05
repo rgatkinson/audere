@@ -6,6 +6,7 @@ import {
   NavigationState,
   StackActions,
 } from "react-navigation";
+import { AppEventsLogger } from "react-native-fbsdk";
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import { getAppNavigator } from "../ui/NavigatorRegistry";
@@ -65,6 +66,9 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
             `navigation:${action.type}:${currentScreen}:${nextScreen}`
           );
           store.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
+          AppEventsLogger.logEvent(
+            `navigation:${action.type}:${currentScreen}:${nextScreen}`
+          );
         }
         return result;
     }

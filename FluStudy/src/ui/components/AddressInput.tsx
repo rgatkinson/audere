@@ -176,7 +176,9 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.pickerContainer}
-            onPress={() => {this.setState({ stateOpen: true, focusZip: false })}}
+            onPress={() => {
+              this.setState({ stateOpen: true, focusZip: false });
+            }}
           >
             <Text
               content={
