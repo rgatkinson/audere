@@ -94,7 +94,9 @@ function createAxios(baseURL): AxiosInstance {
   return api;
 }
 
-async function createEncountersService(sql: SplitSql): Promise<EncountersService> {
+async function createEncountersService(
+  sql: SplitSql
+): Promise<EncountersService> {
   const geocoder = await createGeocoder(sql);
 
   const secrets = new SecretConfig(sql);

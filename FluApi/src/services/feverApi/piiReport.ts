@@ -9,8 +9,8 @@ import { Batch, BatchItem, SurveyBatchDataAccess } from "./surveyBatchData";
 import logger from "../../util/logger";
 
 export interface RenderResult {
-  report: string,
-  discarded: number[]
+  report: string;
+  discarded: number[];
 }
 
 /**
@@ -31,7 +31,7 @@ export abstract class PIIReport<T> {
    */
   public async generateReport(): Promise<void> {
     const batch = await this.getBatch();
-    
+
     if (batch != null) {
       const result = await this.buildReport(batch);
 
@@ -61,7 +61,7 @@ export abstract class PIIReport<T> {
 
   /**
    * Saves the report in the appropriate location.
-   * @param batchId Identifier for the batch being processed. 
+   * @param batchId Identifier for the batch being processed.
    * @param rows Formatted string rows that comprise a report.
    */
   abstract async writeReport(batchId: number, report: string): Promise<void>;
@@ -105,9 +105,7 @@ export abstract class PIIReport<T> {
    * Receives a set of survey identifiers and converts them into a collection
    * of the output type.
    */
-  private async makeOutput(
-    items: BatchItem[]
-  ): Promise<T[]> {
+  private async makeOutput(items: BatchItem[]): Promise<T[]> {
     const csruids = items.map(i => i.csruid);
     const piiData = await this.dao.getPiiData(csruids);
     const output: Array<T> = [];
@@ -121,10 +119,11 @@ export abstract class PIIReport<T> {
       } else {
         logger.error(
           "A completed survey was found without corresponding PII " +
-          "completion data, csruid " + i.csruid
+            "completion data, csruid " +
+            i.csruid
         );
       }
-    })
+    });
 
     return output;
   }

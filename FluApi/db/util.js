@@ -7,7 +7,7 @@ function baseColumns(sql) {
   return {
     id: identity(column(sql.INTEGER)),
     createdAt: column(sql.DATE),
-    updatedAt: column(sql.DATE),
+    updatedAt: column(sql.DATE)
   };
 }
 
@@ -30,7 +30,7 @@ function identity(column) {
   return {
     ...column,
     autoIncrement: true,
-    primaryKey: true,
+    primaryKey: true
   };
 }
 
@@ -47,7 +47,7 @@ function foreignIdKey(sql, model) {
     unique: true,
     type: sql.INTEGER,
     references: { model, key: "id" },
-    onDelete: "CASCADE",
+    onDelete: "CASCADE"
   };
 }
 
@@ -57,5 +57,5 @@ module.exports = {
   nullableColumn,
   identity,
   unique,
-  foreignIdKey,
+  foreignIdKey
 };

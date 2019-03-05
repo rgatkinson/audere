@@ -33,11 +33,13 @@ if (!isAWS()) {
 
   // AWS resources such as the log group name use prod instead of production.
   const awsEnv = env === "production" ? "prod" : env;
-  logger.add(new WinstonCloudWatch({
-    logGroupName: "flu-" + awsEnv + "-api",
-    logStreamName: "flu-api-instance",
-    awsRegion: "us-west-2"
-  }));
+  logger.add(
+    new WinstonCloudWatch({
+      logGroupName: "flu-" + awsEnv + "-api",
+      logStreamName: "flu-api-instance",
+      awsRegion: "us-west-2"
+    })
+  );
 }
 
 export default logger;

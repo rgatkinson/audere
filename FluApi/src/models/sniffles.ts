@@ -13,8 +13,8 @@ import {
   booleanColumn,
   jsonColumn,
   integerColumn,
-  unique,
-} from "../util/sql"
+  unique
+} from "../util/sql";
 import {
   DeviceInfo,
   LogLevel,
@@ -27,21 +27,18 @@ import { defineHutchUpload } from "./hutchUpload";
 export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
   const hutchUpload = defineHutchUpload(sql);
   const visitNonPii = defineVisit<VisitNonPIIDbInfo>(sql.nonPii);
-  visitNonPii.hasOne(
-    hutchUpload,
-    {
-      foreignKey: "visitId",
-      onDelete: "CASCADE",
-    }
-  );
+  visitNonPii.hasOne(hutchUpload, {
+    foreignKey: "visitId",
+    onDelete: "CASCADE"
+  });
   return {
     accessKey: defineAccessKey(sql),
     clientLog: defineClientLog(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
     visitNonPii,
-    visitPii: defineVisit(sql.pii),
-  }
+    visitPii: defineVisit(sql.pii)
+  };
 }
 export interface SnifflesModels {
   accessKey: Model<AccessKeyAttributes>;
@@ -58,14 +55,10 @@ interface AccessKeyAttributes {
   valid: boolean;
 }
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
-  return defineModel<AccessKeyAttributes>(
-    sql.nonPii,
-    "access_keys",
-    {
-      key: stringColumn(),
-      valid: booleanColumn()
-    }
-  );
+  return defineModel<AccessKeyAttributes>(sql.nonPii, "access_keys", {
+    key: stringColumn(),
+    valid: booleanColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -77,15 +70,11 @@ interface ClientLogAttributes {
   device: DeviceInfo;
 }
 export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
-  return defineModel<ClientLogAttributes>(
-    sql.nonPii,
-    "client_logs",
-    {
-      device: jsonColumn(),
-      log: stringColumn(),
-      level: integerColumn(),
-    }
-  );
+  return defineModel<ClientLogAttributes>(sql.nonPii, "client_logs", {
+    device: jsonColumn(),
+    log: stringColumn(),
+    level: integerColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -118,15 +107,11 @@ interface FeedbackAttributes {
   body: string;
 }
 export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
-  return defineModel<FeedbackAttributes>(
-    sql.nonPii,
-    "feedback",
-    {
-      device: jsonColumn(),
-      subject: stringColumn(),
-      body: stringColumn(),
-    }
-  );
+  return defineModel<FeedbackAttributes>(sql.nonPii, "feedback", {
+    device: jsonColumn(),
+    subject: stringColumn(),
+    body: stringColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -146,15 +131,11 @@ export function defineVisit<Info>(
   sql: Sequelize,
   table = VisitTableType.CURRENT
 ): VisitModel<Info> {
-  return defineModel<VisitAttributes<Info>>(
-    sql,
-    table,
-    {
-      device: jsonColumn(),
-      csruid: unique(stringColumn()),
-      visit: jsonColumn()
-    }
-  );
+  return defineModel<VisitAttributes<Info>>(sql, table, {
+    device: jsonColumn(),
+    csruid: unique(stringColumn()),
+    visit: jsonColumn()
+  });
 }
 export type VisitInstance<Info> = Inst<VisitAttributes<Info>>;
 export type VisitModel<Info> = Model<VisitAttributes<Info>>;

@@ -8,8 +8,8 @@ import {
   Model,
   SplitSql,
   integerColumn,
-  unique,
-} from "../util/sql"
+  unique
+} from "../util/sql";
 
 export interface HutchUploadAttributes {
   id?: number;
@@ -17,11 +17,7 @@ export interface HutchUploadAttributes {
 }
 export type HutchUploadModel = Model<HutchUploadAttributes>;
 export function defineHutchUpload(sql: SplitSql): HutchUploadModel {
-  return defineModel<HutchUploadAttributes>(
-    sql.nonPii,
-    "hutch_upload",
-    {
-      visitId: unique(integerColumn("visit_id")),
-    }
-  )
+  return defineModel<HutchUploadAttributes>(sql.nonPii, "hutch_upload", {
+    visitId: unique(integerColumn("visit_id"))
+  });
 }

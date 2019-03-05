@@ -16,8 +16,10 @@ export async function createGeocoder(sql: SplitSql): Promise<GeocodingService> {
 
   const geoConfig = await getGeocodingConfig(secrets);
   const geo = SmartyStreetsSDK.core;
-  const credentials =
-    new geo.StaticCredentials(geoConfig.authId, geoConfig.authToken);
+  const credentials = new geo.StaticCredentials(
+    geoConfig.authId,
+    geoConfig.authToken
+  );
 
   let geoClient;
 

@@ -63,7 +63,7 @@ describe("Smarty Streets geocoder", () => {
 
       const geocoder = new SmartyStreetsGeocoder(client);
       const result = await geocoder.geocode(addressInfo);
-      const x = 5
+      const x = 5;
 
       expect(result.length).toBe(2);
       expect(

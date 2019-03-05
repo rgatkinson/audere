@@ -88,7 +88,9 @@ describe("export controller", () => {
       .send(contents)
       .expect(200);
 
-    const visitPii = await models.visitPii.findOne({ where: { csruid: csruid } });
+    const visitPii = await models.visitPii.findOne({
+      where: { csruid: csruid }
+    });
 
     const visitNonPii = await models.visitNonPii.findOne({
       where: { csruid: csruid }

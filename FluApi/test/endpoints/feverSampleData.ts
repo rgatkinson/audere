@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-
 import crypto from "crypto";
 import {
   DocumentType,
@@ -14,7 +13,7 @@ import {
   SurveyInfo,
   SurveyNonPIIDbInfo,
   TelecomInfoSystem,
-  ConsentInfoSignerType,
+  ConsentInfoSignerType
 } from "audere-lib/feverProtocol";
 
 export const DEVICE = {
@@ -31,10 +30,12 @@ export const PATIENT_INFO = {
   firstName: "Fake",
   lastName: "Name",
   birthDate: "1900-01-01",
-  telecom: [{
-    system: TelecomInfoSystem.Email,
-    value: FAKE_EMAIL,
-  }],
+  telecom: [
+    {
+      system: TelecomInfoSystem.Email,
+      value: FAKE_EMAIL
+    }
+  ],
   address: []
 };
 
@@ -58,14 +59,14 @@ const PII_RESPONSE_ITEM = {
 const CONSENT_NONPII_INFO = {
   terms: "I agree.",
   signerType: ConsentInfoSignerType.Subject,
-  date: "2019-01-01",
+  date: "2019-01-01"
 };
 
 const CONSENT_INFO = {
   ...CONSENT_NONPII_INFO,
   firstName: "Fake",
   lastName: "Name",
-  signature: "AAAAAAAAAA",
+  signature: "AAAAAAAAAA"
 };
 
 const COMMON_INFO: CommonInfo = {
@@ -123,8 +124,8 @@ export function surveyPost(csruid: string): SurveyDocument {
     csruid,
     documentType: DocumentType.Survey,
     device: DEVICE,
-    survey: SURVEY_INFO,
-  }
+    survey: SURVEY_INFO
+  };
 }
 
 export function surveyNonPIIInDb(csruid: string) {
@@ -134,7 +135,6 @@ export function surveyNonPIIInDb(csruid: string) {
 export function surveyPIIInDb(csruid: string) {
   return { csruid, device: DEVICE, survey: PII };
 }
-
 
 export function makeCSRUID(seed: string): string {
   // SHA256 as hex string happens to be 64 characters long

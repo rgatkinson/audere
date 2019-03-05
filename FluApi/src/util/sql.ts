@@ -9,7 +9,7 @@ import Sequelize, {
   BOOLEAN as SQL_BOOLEAN,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
-  STRING as SQL_STRING,
+  STRING as SQL_STRING
 } from "sequelize";
 import "../util/config";
 
@@ -18,9 +18,9 @@ export type Inst<Attr> = Sequelize.Instance<Attr> & Attr;
 export type Model<Attr> = Sequelize.Model<Inst<Attr>, Attr>;
 
 export interface SplitSql {
-  piiUrl: string,
+  piiUrl: string;
   pii: Sql;
-  nonPiiUrl: string,
+  nonPiiUrl: string;
   nonPii: Sql;
   close: () => Promise<void>;
 }
@@ -34,7 +34,7 @@ export function createSplitSql(): SplitSql {
 
   const pii = new Sequelize(piiUrl, {
     logging: false,
-    operatorsAliases: false,
+    operatorsAliases: false
   });
   const nonPii = new Sequelize(nonPiiUrl, {
     // This globally enables search path options, if not enabled search path
@@ -52,7 +52,7 @@ export function createSplitSql(): SplitSql {
     nonPiiUrl,
     close: async () => {
       Promise.all([pii.close(), nonPii.close()]);
-    },
+    }
   };
 }
 
@@ -91,7 +91,7 @@ export function foreignIdKey(column, model) {
     ...column,
     unique: true,
     references: { model, key: "id" },
-    onDelete: "CASCADE",
+    onDelete: "CASCADE"
   };
 }
 export function column(type, field?: string) {

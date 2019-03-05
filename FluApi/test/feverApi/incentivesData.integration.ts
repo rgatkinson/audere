@@ -3,12 +3,28 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { BatchAttributes, BatchItemAttributes, defineIncentiveBatch, defineIncentiveItem, SurveyModel, defineSurvey, BatchDiscardAttributes, defineIncentiveDiscard } from "../../src/models/fever";
+import {
+  BatchAttributes,
+  BatchItemAttributes,
+  defineIncentiveBatch,
+  defineIncentiveItem,
+  SurveyModel,
+  defineSurvey,
+  BatchDiscardAttributes,
+  defineIncentiveDiscard
+} from "../../src/models/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
-import { IncentiveRecipientsDataAccess, INCENTIVE_BATCH_NAMESPACE, INCENTIVE_ITEMS_NAMESPACE } from "../../src/services/feverApi/incentiveRecipients";
-import { defineGaplessSeq, GaplessSeqAttributes } from "../../src/models/gaplessSeq";
+import {
+  IncentiveRecipientsDataAccess,
+  INCENTIVE_BATCH_NAMESPACE,
+  INCENTIVE_ITEMS_NAMESPACE
+} from "../../src/services/feverApi/incentiveRecipients";
+import {
+  defineGaplessSeq,
+  GaplessSeqAttributes
+} from "../../src/models/gaplessSeq";
 
 describe("survey batch data access", () => {
   let sql: SplitSql;
@@ -86,7 +102,7 @@ describe("survey batch data access", () => {
     ];
     const now = new Date().toISOString();
     if (surveyComplete) {
-      surveys.forEach(s => s.survey.workflow.surveyCompletedAt = now);
+      surveys.forEach(s => (s.survey.workflow.surveyCompletedAt = now));
     }
     const s = await nonPii.bulkCreate(surveys, { returning: true });
 
@@ -103,9 +119,7 @@ describe("survey batch data access", () => {
     }));
     await incentiveItems.bulkCreate(batchItems);
 
-    s.forEach(x => cleanup.push(
-      async () => await x.destroy()
-    ));
+    s.forEach(x => cleanup.push(async () => await x.destroy()));
   }
 
   describe("get existing batch", async () => {
@@ -118,13 +132,15 @@ describe("survey batch data access", () => {
       expect(out.id).toBe(1);
       expect(out.items).toHaveLength(2);
       [0, 1].forEach(key =>
-        expect(out.items).toContainEqual(expect.objectContaining({
-          workflowId: key,
-          csruid: key.toString()
-        }))
+        expect(out.items).toContainEqual(
+          expect.objectContaining({
+            workflowId: key,
+            csruid: key.toString()
+          })
+        )
       );
     });
-  
+
     it("should return null if no pending batch is present", async () => {
       const dao = new IncentiveRecipientsDataAccess(sql);
       await createTestData();
@@ -140,13 +156,15 @@ describe("survey batch data access", () => {
       const dao = new IncentiveRecipientsDataAccess(sql);
       await createTestData();
 
-      const out = await dao.getNewBatchItems(); 
-      
+      const out = await dao.getNewBatchItems();
+
       expect(out).toHaveLength(2);
       [2, 3].forEach(key =>
-        expect(out).toContainEqual(expect.objectContaining({
-          csruid: key.toString()
-        }))
+        expect(out).toContainEqual(
+          expect.objectContaining({
+            csruid: key.toString()
+          })
+        )
       );
     });
 
@@ -154,8 +172,8 @@ describe("survey batch data access", () => {
       const dao = new IncentiveRecipientsDataAccess(sql);
       await createTestData(true, false);
 
-      const out = await dao.getNewBatchItems(); 
-      
+      const out = await dao.getNewBatchItems();
+
       expect(out).toBeNull();
     });
   });
@@ -174,12 +192,16 @@ describe("survey batch data access", () => {
 
       expect(batch.id).toBe(3);
       expect(batch.items).toHaveLength(2);
-      expect(batch.items).toContainEqual(expect.objectContaining({
-        workflowId: 46
-      }));
-      expect(batch.items).toContainEqual(expect.objectContaining({
-        workflowId: 47
-      }));
+      expect(batch.items).toContainEqual(
+        expect.objectContaining({
+          workflowId: 46
+        })
+      );
+      expect(batch.items).toContainEqual(
+        expect.objectContaining({
+          workflowId: 47
+        })
+      );
     });
   });
 
@@ -222,9 +244,11 @@ describe("survey batch data access", () => {
 
       expect(discarded).toHaveLength(2);
       itemIds.forEach(id => {
-        expect(discarded).toContainEqual(expect.objectContaining({
-          workflowId: id
-        }));
+        expect(discarded).toContainEqual(
+          expect.objectContaining({
+            workflowId: id
+          })
+        );
       });
 
       discarded.forEach(d => cleanup.push(async () => await d.destroy()));

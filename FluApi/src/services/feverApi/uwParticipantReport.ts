@@ -23,9 +23,7 @@ export interface Participant {
 export abstract class UWParticipantReport extends PIIReport<Participant> {
   protected abstract geocoder: GeocodingService;
 
-  public async buildReport(
-    batch: Batch<Participant>
-  ): Promise<RenderResult> {
+  public async buildReport(batch: Batch<Participant>): Promise<RenderResult> {
     const addresses = new Map();
     batch.items.forEach(i => addresses.set(i.workflowId, [i.homeAddress]));
     const geocodedAddresses = await this.geocoder.geocodeAddresses(addresses);
@@ -37,24 +35,27 @@ export abstract class UWParticipantReport extends PIIReport<Participant> {
       const geocoded = geocodedAddresses.find(a => a.id === i.workflowId);
 
       if (geocoded != null) {
-        const row =  {
+        const row = {
           "First Name": i.firstName,
           "Last Name": i.lastName,
           "Address 1": geocoded.address.address1,
           "Address 2": geocoded.address.address2,
-          "City": geocoded.address.city,
-          "State": geocoded.address.state,
-          "Zip": geocoded.address.postalCode,
-          "Email": i.email,
-          "Timestamp": i.timestamp,
+          City: geocoded.address.city,
+          State: geocoded.address.state,
+          Zip: geocoded.address.postalCode,
+          Email: i.email,
+          Timestamp: i.timestamp,
           "Workflow ID": i.workflowId.toFixed(),
           "Audere System ID": i.surveyId.toFixed()
-        }
+        };
 
         rows.push(row);
       } else {
-        logger.error("Discarded a participant because the address for survey " +
-          + i.surveyId + " did not return successfully from geocoding.");
+        logger.error(
+          "Discarded a participant because the address for survey " +
+            +i.surveyId +
+            " did not return successfully from geocoding."
+        );
         discarded.push(i.workflowId);
       }
     });

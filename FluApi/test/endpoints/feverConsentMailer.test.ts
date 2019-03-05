@@ -12,8 +12,11 @@ import { Email, Emailer } from "../../src/util/email";
 import { createPublicApp, createInternalApp } from "../../src/app";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels, FeverModels } from "../../src/models/fever";
-import { surveyPost, makeCSRUID, } from "./feverSampleData";
-import { FeverConsentEmailerEndpoint, newSurveys } from "../../src/endpoints/feverConsentMailer";
+import { surveyPost, makeCSRUID } from "./feverSampleData";
+import {
+  FeverConsentEmailerEndpoint,
+  newSurveys
+} from "../../src/endpoints/feverConsentMailer";
 import { SurveyDocument } from "audere-lib/feverProtocol";
 
 describe("FeverConsentEmailer", () => {
@@ -44,10 +47,14 @@ describe("FeverConsentEmailer", () => {
   beforeEach(() => {
     emails = [];
     const MockEmailer = mock(Emailer);
-    when(MockEmailer.send(anything()))
-      .thenCall(async email => emails.push(email));
+    when(MockEmailer.send(anything())).thenCall(async email =>
+      emails.push(email)
+    );
     internalApp = createInternalApp(sql, {
-      consentEmailer: new FeverConsentEmailerEndpoint(sql, instance(MockEmailer))
+      consentEmailer: new FeverConsentEmailerEndpoint(
+        sql,
+        instance(MockEmailer)
+      )
     });
   });
 
@@ -68,7 +75,9 @@ describe("FeverConsentEmailer", () => {
   });
 
   it("does not email consent if request not mentioned", async () => {
-    const csruid = makeCSRUID("does not email consent if request not mentioned");
+    const csruid = makeCSRUID(
+      "does not email consent if request not mentioned"
+    );
     const post = _.cloneDeep(surveyPost(csruid));
 
     postMarkScreeningComplete(post, true);
@@ -133,7 +142,9 @@ describe("FeverConsentEmailer", () => {
   });
 
   it("does not email consent if screening not complete", async () => {
-    const csruid = makeCSRUID("does not email consent if screening not complete");
+    const csruid = makeCSRUID(
+      "does not email consent if screening not complete"
+    );
     const post = _.cloneDeep(surveyPost(csruid));
 
     postRequestConsentEmail(post, true);
@@ -211,15 +222,16 @@ describe("FeverConsentEmailer", () => {
   }
 
   function postMarkScreeningComplete(post: SurveyDocument, value: boolean) {
-    post.survey.workflow.screeningCompletedAt =
-      value ? new Date(2019, 1, 2).toISOString() : undefined;
+    post.survey.workflow.screeningCompletedAt = value
+      ? new Date(2019, 1, 2).toISOString()
+      : undefined;
   }
 
   function postRequestConsentEmail(post: SurveyDocument, value: boolean) {
     post.survey.responses[0].item.push({
       id: "Consent",
       text: "Do you want a copy of this consent emailed to you?",
-      answer: [{ valueBoolean: value }],
+      answer: [{ valueBoolean: value }]
     });
   }
 

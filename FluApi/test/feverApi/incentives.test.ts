@@ -3,7 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Incentives, IncentiveRecipientsDataAccess } from "../../src/services/feverApi/incentiveRecipients";
+import {
+  Incentives,
+  IncentiveRecipientsDataAccess
+} from "../../src/services/feverApi/incentiveRecipients";
 import { Participant } from "../../src/services/feverApi/uwParticipantReport";
 import { instance, mock, when, anything, anyString, capture } from "ts-mockito";
 import { GeocodingService } from "../../src/services/geocodingService";
@@ -64,11 +67,13 @@ describe("sending incentives", () => {
     items.forEach(item => {
       const geo = geoResponses.find(r => r.id === item.workflowId);
       const contains = rows.some(row => {
-        return row[0] === item.firstName &&
+        return (
+          row[0] === item.firstName &&
           row[1] === item.lastName &&
           row[2] === geo.address.address1 &&
           row[9] === item.workflowId.toFixed() &&
-          row[10] === item.surveyId.toFixed();
+          row[10] === item.surveyId.toFixed()
+        );
       });
 
       expect(contains).toBe(true);
@@ -76,10 +81,7 @@ describe("sending incentives", () => {
   });
 
   it("should discard rows that can't be geocoded", async () => {
-    const items = [
-      makeRandomParticipant(11),
-      makeRandomParticipant(12)
-    ];
+    const items = [makeRandomParticipant(11), makeRandomParticipant(12)];
     const batch = { id: 24, items: items };
 
     const dao = mock(IncentiveRecipientsDataAccess);

@@ -20,13 +20,15 @@ export class SecretConfig {
       return envVar;
     }
 
-    const secret = await this.secretModel.findOne({ where: { key: key }});
+    const secret = await this.secretModel.findOne({ where: { key: key } });
     if (secret != null) {
       return secret.value;
     }
 
-    throw Error(`${key} is unset. Copy .env.example to .env or update the ` +
-      `value in the database. An unset value could application instability ` +
-      `or errors.`);
+    throw Error(
+      `${key} is unset. Copy .env.example to .env or update the ` +
+        `value in the database. An unset value could application instability ` +
+        `or errors.`
+    );
   }
 }

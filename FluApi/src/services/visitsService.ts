@@ -68,11 +68,11 @@ export class VisitsService {
     nonPiiVisits.forEach(v => {
       const pii = piiVisits.find(p => p.csruid == v.csruid);
       if (pii != null && pii.visit != null) {
-        let consentDate: string
+        let consentDate: string;
         if (pii.visit.consents != null && pii.visit.consents.length > 0) {
           consentDate = pii.visit.consents
             .map(x => x.date)
-            .reduce((prev, curr) => prev > curr ? curr : prev);
+            .reduce((prev, curr) => (prev > curr ? curr : prev));
         }
 
         zipped.set(+v.id, {
@@ -85,7 +85,8 @@ export class VisitsService {
       } else {
         logger.error(
           "A completed visit was found without corresponding PII " +
-          " completion data, csruid " + v.csruid
+            " completion data, csruid " +
+            v.csruid
         );
       }
     });

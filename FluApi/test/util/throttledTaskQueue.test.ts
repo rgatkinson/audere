@@ -7,11 +7,7 @@ import { ThrottledTaskQueue } from "../../src/util/throttledTaskQueue";
 
 describe("task queue", () => {
   it("should return the results from tasks", async () => {
-    const tasks = [
-      async () => 1,
-      async () => 2,
-      async () => 3
-    ];
+    const tasks = [async () => 1, async () => 2, async () => 3];
 
     const queue = new ThrottledTaskQueue(tasks, 10);
     const result = await queue.drain();
@@ -22,7 +18,9 @@ describe("task queue", () => {
   it("should propagate errors from tasks", async () => {
     const tasks = [
       async () => 1,
-      async () => { throw new Error("Uh oh"); },
+      async () => {
+        throw new Error("Uh oh");
+      },
       async () => 3
     ];
 

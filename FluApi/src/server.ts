@@ -15,26 +15,20 @@ sql.pii.authenticate();
 
 const publicApp = createPublicApp(sql);
 
-publicApp.listen(
-  publicApp.get("port"),
-  () => {
-    console.log(
-      "Public app is running at http://localhost:%d in %s mode",
-      publicApp.get("port"),
-      publicApp.get("env")
-    );
-  }
-);
+publicApp.listen(publicApp.get("port"), () => {
+  console.log(
+    "Public app is running at http://localhost:%d in %s mode",
+    publicApp.get("port"),
+    publicApp.get("env")
+  );
+});
 
 const internalApp = createInternalApp(sql);
 
-internalApp.listen(
-  internalApp.get("port"),
-  () => {
-    console.log(
-      "Internal app is running at http://localhost:%d in %s mode",
-      internalApp.get("port"),
-      internalApp.get("env")
-    );
-  }
-);
+internalApp.listen(internalApp.get("port"), () => {
+  console.log(
+    "Internal app is running at http://localhost:%d in %s mode",
+    internalApp.get("port"),
+    internalApp.get("env")
+  );
+});

@@ -25,7 +25,7 @@ async function createConfig(secrets: SecretConfig): Promise<HutchConfig> {
   const [baseUrl, user, password] = await Promise.all([
     secrets.get("HUTCH_BASE_URL"),
     secrets.get("HUTCH_USER"),
-    secrets.get("HUTCH_PASSWORD"),
+    secrets.get("HUTCH_PASSWORD")
   ]);
   return { baseUrl, user, password };
 }

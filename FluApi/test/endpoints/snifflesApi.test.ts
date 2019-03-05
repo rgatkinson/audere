@@ -7,7 +7,7 @@ import request from "supertest";
 import {
   DocumentType,
   VisitDocument,
-  VisitInfo,
+  VisitInfo
 } from "audere-lib/snifflesProtocol";
 import { createPublicApp } from "../../src/app";
 import {

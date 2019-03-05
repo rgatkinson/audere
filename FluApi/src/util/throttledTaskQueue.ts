@@ -19,7 +19,7 @@ export class ThrottledTaskQueue<T> {
   private async doWork(): Promise<T[]> {
     const result: T[] = [];
 
-    while(this.tasks.length > 0) {
+    while (this.tasks.length > 0) {
       const task = this.tasks.pop();
       result.push(await task());
     }

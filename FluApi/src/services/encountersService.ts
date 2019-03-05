@@ -54,11 +54,14 @@ export class EncountersService {
    * @param maxToSend Maximum number of records to send. Actual number sent may
    * be less even if nuumerous pending records exist.
    */
-  public async sendEncounters(maxToSend: number): Promise<SendEncountersResult> {
+  public async sendEncounters(
+    maxToSend: number
+  ): Promise<SendEncountersResult> {
     const encounters = await this.getEncounters(maxToSend);
     const sent = await this.sendToHutch(encounters);
-    const erred = Array.from(encounters.keys())
-      .filter(id => !sent.includes(id));
+    const erred = Array.from(encounters.keys()).filter(
+      id => !sent.includes(id)
+    );
     return { sent: sent, erred: erred };
   }
 
@@ -87,7 +90,7 @@ export class EncountersService {
         );
       }
     });
-    
+
     return encounters;
   }
 
@@ -172,8 +175,9 @@ export class EncountersService {
 
     const geocoded = await this.geocoder.geocodeAddresses(requests);
     await this.geocoder.appendCensusTract(geocoded);
-    return geocoded.reduce((map, x) => 
-      this.multiMapAdd(map, x.id, x), new Map()
+    return geocoded.reduce(
+      (map, x) => this.multiMapAdd(map, x.id, x),
+      new Map()
     );
   }
 
@@ -212,27 +216,31 @@ export class EncountersService {
   ): Promise<NonPIIVisitDetails[]> {
     const geocodedAddresses = await this.geocodeAddressData(visits);
 
-    const scrubbedVisits = Array.from(visits.keys())
-      .map(k => {
-        try {
-          const visit = visits.get(k);
+    const scrubbedVisits = Array.from(visits.keys()).map(k => {
+      try {
+        const visit = visits.get(k);
 
-          if (visit.patientInfo == null) {
-            throw new Error("Patient info should exist for all visits but " +
-              "does not exist for visit " + visit.id);
-          }
-
-          return this.scrubVisit(k, visit, geocodedAddresses.get(k));
-        } catch (e) {
-          logger.error(
-            "A problem occurred converting a PII visit to a non-PII visit. " +
-            "Record with id " + k + " will be ommitted",
-            e
+        if (visit.patientInfo == null) {
+          throw new Error(
+            "Patient info should exist for all visits but " +
+              "does not exist for visit " +
+              visit.id
           );
-
-          return undefined;
         }
-      });
+
+        return this.scrubVisit(k, visit, geocodedAddresses.get(k));
+      } catch (e) {
+        logger.error(
+          "A problem occurred converting a PII visit to a non-PII visit. " +
+            "Record with id " +
+            k +
+            " will be ommitted",
+          e
+        );
+
+        return undefined;
+      }
+    });
 
     return scrubbedVisits.filter(v => v != null);
   }
@@ -248,14 +256,16 @@ export class EncountersService {
     geocodedAddresses: GeocodingResponse[]
   ) {
     // Try to extract home address and deidentify.
-    const geocodedHomeAddress = (geocodedAddresses || [])
-      .find(a => a.use === Model.AddressInfoUse.Home);
+    const geocodedHomeAddress = (geocodedAddresses || []).find(
+      a => a.use === Model.AddressInfoUse.Home
+    );
 
-    let inputHomeAddress: Model.AddressInfo
-    
+    let inputHomeAddress: Model.AddressInfo;
+
     if (visit.patientInfo.address != null) {
-      inputHomeAddress = visit.patientInfo.address
-        .find(a => a.use === Model.AddressInfoUse.Home);
+      inputHomeAddress = visit.patientInfo.address.find(
+        a => a.use === Model.AddressInfoUse.Home
+      );
     }
 
     const household = this.deidentifyAddress(
@@ -264,14 +274,16 @@ export class EncountersService {
     );
 
     // Try to extract work address and deidentify.
-    const geocodedWorkAddress = (geocodedAddresses || [])
-      .find(a => a.use === Model.AddressInfoUse.Work);
+    const geocodedWorkAddress = (geocodedAddresses || []).find(
+      a => a.use === Model.AddressInfoUse.Work
+    );
 
-    let inputWorkAddress: Model.AddressInfo
+    let inputWorkAddress: Model.AddressInfo;
 
     if (visit.patientInfo.address != null) {
-      inputWorkAddress = visit.patientInfo.address
-        .find(a => a.use === Model.AddressInfoUse.Work);
+      inputWorkAddress = visit.patientInfo.address.find(
+        a => a.use === Model.AddressInfoUse.Work
+      );
     }
 
     const workplace = this.deidentifyAddress(
@@ -282,13 +294,13 @@ export class EncountersService {
     // Get the postal code most closely associated with the user's home
     // address. This will be used for ensuring each participant has a
     // unique identifier.
-    let userPostalCode: string
+    let userPostalCode: string;
 
     if (
-    geocodedHomeAddress != null &&
-    geocodedHomeAddress.address.postalCode != null
+      geocodedHomeAddress != null &&
+      geocodedHomeAddress.address.postalCode != null
     ) {
-      userPostalCode = geocodedHomeAddress.address.postalCode
+      userPostalCode = geocodedHomeAddress.address.postalCode;
     } else if (
       inputHomeAddress != null &&
       inputHomeAddress.postalCode != null

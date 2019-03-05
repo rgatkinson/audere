@@ -13,7 +13,9 @@ export interface GeocodingConfig {
 
 let lazy: Promise<GeocodingConfig> | null = null;
 
-export function getGeocodingConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
+export function getGeocodingConfig(
+  secrets: SecretConfig
+): Promise<GeocodingConfig> {
   if (lazy != null) {
     return lazy;
   }
@@ -25,7 +27,7 @@ async function createConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
   const baseUrl = process.env.SMARTYSTREETS_BASE_URL;
   const [authId, authToken] = await Promise.all([
     secrets.get("SMARTYSTREETS_AUTH_ID"),
-    secrets.get("SMARTYSTREETS_AUTH_TOKEN"),
+    secrets.get("SMARTYSTREETS_AUTH_TOKEN")
   ]);
   return { baseUrl, authId, authToken };
 }

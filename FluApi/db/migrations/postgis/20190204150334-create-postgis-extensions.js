@@ -7,27 +7,41 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query("CREATE EXTENSION IF NOT EXISTS postgis")
+    return queryInterface.sequelize
+      .query("CREATE EXTENSION IF NOT EXISTS postgis")
       .then(() => {
-        return queryInterface.sequelize.query("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch");
+        return queryInterface.sequelize.query(
+          "CREATE EXTENSION IF NOT EXISTS fuzzystrmatch"
+        );
       })
       .then(() => {
-        return queryInterface.sequelize.query("CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder");
+        return queryInterface.sequelize.query(
+          "CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder"
+        );
       })
       .then(() => {
-        return queryInterface.sequelize.query("CREATE EXTENSION IF NOT EXISTS postgis_topology");
+        return queryInterface.sequelize.query(
+          "CREATE EXTENSION IF NOT EXISTS postgis_topology"
+        );
       });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.query("DROP EXTENSION IF EXISTS postgis CASCADE")
+    return queryInterface.sequelize
+      .query("DROP EXTENSION IF EXISTS postgis CASCADE")
       .then(() => {
-        return queryInterface.sequelize.query("DROP EXTENSION IF EXISTS fuzzystrmatch CASCADE");
+        return queryInterface.sequelize.query(
+          "DROP EXTENSION IF EXISTS fuzzystrmatch CASCADE"
+        );
       })
       .then(() => {
-        return queryInterface.sequelize.query("DROP EXTENSION IF EXISTS postgis_tiger_geocoder CASCADE");
+        return queryInterface.sequelize.query(
+          "DROP EXTENSION IF EXISTS postgis_tiger_geocoder CASCADE"
+        );
       })
       .then(() => {
-        return queryInterface.sequelize.query("DROP EXTENSION IF EXISTS postgis_topology CASCADE");
+        return queryInterface.sequelize.query(
+          "DROP EXTENSION IF EXISTS postgis_topology CASCADE"
+        );
       });
   }
 };

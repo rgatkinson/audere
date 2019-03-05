@@ -7,14 +7,13 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-
     // Every table includes these columns
     function basicTable(name, columns) {
       return queryInterface.createTable(name, {
         id: identity(column(Sequelize.INTEGER)),
         createdAt: column(Sequelize.DATE),
         updatedAt: column(Sequelize.DATE),
-        ...columns,
+        ...columns
       });
     }
 
@@ -23,7 +22,7 @@ module.exports = {
       return basicTable(name, {
         csruid: unique(column(Sequelize.STRING)),
         device: column(Sequelize.JSON),
-        ...columns,
+        ...columns
       });
     }
 
@@ -50,7 +49,7 @@ module.exports = {
       }),
       uploadTable("fever_backup_surveys", {
         survey: column(Sequelize.JSON)
-      }),
+      })
     ]);
   },
 
@@ -62,7 +61,7 @@ module.exports = {
         "fever_client_log_batches",
         "fever_feedback",
         "fever_current_surveys",
-        "fever_backup_surveys",
+        "fever_backup_surveys"
       ].map(name => queryInterface.dropTable(name))
     );
   }
@@ -72,7 +71,7 @@ function identity(column) {
   return {
     ...column,
     autoIncrement: true,
-    primaryKey: true,
+    primaryKey: true
   };
 }
 

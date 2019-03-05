@@ -47,8 +47,12 @@ export class HutchUploader {
     const queue = new ThrottledTaskQueue(requests, this.maxConcurrent);
     const result = await queue.drain();
 
-    logger.info(encounters.size + " records were provided and " +
-      result.length + " records were uploaded to the Hutch endpoint");
+    logger.info(
+      encounters.size +
+        " records were provided and " +
+        result.length +
+        " records were uploaded to the Hutch endpoint"
+    );
     return result;
   }
 
@@ -69,15 +73,20 @@ export class HutchUploader {
         }
       });
       return id;
-    } catch(error) {
+    } catch (error) {
       // Anything that does not get to the point of handling a response is a
       // hard error.
       if (error.response != null) {
-        logger.warn("Unexpected status code uploading encounter " +
-          error.response.status.toString());
+        logger.warn(
+          "Unexpected status code uploading encounter " +
+            error.response.status.toString()
+        );
       } else {
-        logger.error("Call to upload encounter " + id.toString() +
-          " failed with no response.");
+        logger.error(
+          "Call to upload encounter " +
+            id.toString() +
+            " failed with no response."
+        );
         throw error;
       }
     }

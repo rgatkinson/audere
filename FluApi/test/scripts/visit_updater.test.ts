@@ -21,7 +21,10 @@ import {
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { VisitDocument } from "audere-lib/snifflesProtocol";
 import { createSplitSql } from "../../src/util/sql";
-import { defineSnifflesModels, VisitAttributes } from "../../src/models/sniffles";
+import {
+  defineSnifflesModels,
+  VisitAttributes
+} from "../../src/models/sniffles";
 
 describe("VisitUpdater", () => {
   let sql;

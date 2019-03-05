@@ -4,23 +4,33 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Model, SplitSql } from "../../util/sql";
-import { SurveyModel, SurveyAttributes, BatchAttributes, BatchItemAttributes, defineSurvey, BatchDiscardAttributes } from "../../models/fever";
+import {
+  SurveyModel,
+  SurveyAttributes,
+  BatchAttributes,
+  BatchItemAttributes,
+  defineSurvey,
+  BatchDiscardAttributes
+} from "../../models/fever";
 import { PIIInfo, SurveyNonPIIDbInfo } from "audere-lib/feverProtocol";
 import Sequelize from "sequelize";
 import logger from "../../util/logger";
-import { GaplessSeqAttributes, defineGaplessSeq } from "../../models/gaplessSeq";
+import {
+  GaplessSeqAttributes,
+  defineGaplessSeq
+} from "../../models/gaplessSeq";
 
 /**
  * A resource tracked as a batch with a consistent id and set of items.
  */
 export interface Batch<T> {
   id: number;
-  items: T[]
+  items: T[];
 }
 
 /**
  * Fever survey batch item descriptor.
- * 
+ *
  * `workflowId` is a unique, monotonically increasing numeric id within a given
  * sequence or workflow that is dense and can be used within transactions to
  * preserve the sequence ordering in case of rollback.
@@ -35,7 +45,7 @@ export interface BatchItem {
  * Accessor for a batch of PII survey data. Explicitly tracks each batch and
  * whether it was processed within a given namespace. Each namespace has a
  * unique mapping of survey ids to batches, referred to as a `workflowId`.
- * 
+ *
  * Each batch has a boolean flag for `uploaded` signifying its status. Each
  * workflow id is seeded from a transaction with a sequence table on batch
  * creation.
@@ -104,41 +114,39 @@ export abstract class SurveyBatchDataAccess {
     SurveyAttributes<SurveyNonPIIDbInfo>
   >;
 
-
   /**
    * Changes the status of the batch to uploaded. After a batch is uploaded it
    * will not be retried.
-   * 
+   *
    * Also tracks discarded batch items in the database so that we retain a
    * record of the attempt to process and subsequent problem to aid in
-   * re-processing or investigation without retrying the entire batch. 
+   * re-processing or investigation without retrying the entire batch.
    */
   public async commitUploadedBatch(
     batchId: number,
     discarded: number[]
   ): Promise<void> {
-    await this.sql.nonPii.transaction(
-      async t => {
-        const updated = await this.batchModel.update(
-          { uploaded: true },
-          { where: { id: batchId }, transaction: t }
+    await this.sql.nonPii.transaction(async t => {
+      const updated = await this.batchModel.update(
+        { uploaded: true },
+        { where: { id: batchId }, transaction: t }
+      );
+
+      if (updated[0] !== 1) {
+        throw Error(
+          updated[0] + " rows updated when committing a batch, 1 " + "expected."
         );
-    
-        if (updated[0] !== 1) {
-          throw Error(updated[0] + " rows updated when committing a batch, 1 " +
-            "expected.");
-        }
-
-        if (discarded != null && discarded.length > 0) {
-          const inserts = discarded.map(id => ({
-            batchId: batchId,
-            workflowId: id
-          }));
-
-          await this.discardModel.bulkCreate(inserts, { transaction: t });
-        }
       }
-    );
+
+      if (discarded != null && discarded.length > 0) {
+        const inserts = discarded.map(id => ({
+          batchId: batchId,
+          workflowId: id
+        }));
+
+        await this.discardModel.bulkCreate(inserts, { transaction: t });
+      }
+    });
   }
 
   /**
@@ -175,7 +183,7 @@ export abstract class SurveyBatchDataAccess {
     });
 
     if (data != null) {
-      const queryResult = <BatchAttributes & HasBatchItems><any>data;
+      const queryResult = <BatchAttributes & HasBatchItems>(<any>data);
 
       const batchId = queryResult.id;
 
@@ -224,7 +232,7 @@ export abstract class SurveyBatchDataAccess {
 
       return batchItems;
     } else {
-      logger.debug("No new incentive recipients to process.")
+      logger.debug("No new incentive recipients to process.");
     }
 
     return null;
@@ -248,7 +256,7 @@ export abstract class SurveyBatchDataAccess {
 
   /**
    * Tracks a proposed set of items as a new batch.
-   * 
+   *
    * Performs the underlying operations in a strict transaction to ensure that
    * id sequences can not have any gaps. It is anticpated that only one active
    * request will occur at a time as part of a batch workflow.
@@ -273,7 +281,7 @@ export abstract class SurveyBatchDataAccess {
         return {
           id: batchId,
           items: trackedItems
-        }
+        };
       }
     );
   }
@@ -287,10 +295,13 @@ export abstract class SurveyBatchDataAccess {
     const prevId = batchSeq.index;
     await batchSeq.increment("index", { transaction: t });
 
-    const created = await this.batchModel.create({
-      id: prevId + 1,
-      uploaded: false
-    }, { transaction: t });
+    const created = await this.batchModel.create(
+      {
+        id: prevId + 1,
+        uploaded: false
+      },
+      { transaction: t }
+    );
 
     return created.id;
   }
@@ -307,7 +318,7 @@ export abstract class SurveyBatchDataAccess {
 
     const nextVal = itemSeq.index + 1;
     await itemSeq.increment("index", { by: items.length, transaction: t });
-    
+
     const assigned = [];
 
     for (let i = 0; i < items.length; i++) {
@@ -328,7 +339,7 @@ export abstract class SurveyBatchDataAccess {
     return tracked.map(x => ({
       workflowId: x.id,
       surveyId: x.surveyId,
-      csruid: items.find(i => i.surveyId === x.surveyId).csruid  
+      csruid: items.find(i => i.surveyId === x.surveyId).csruid
     }));
   }
 }

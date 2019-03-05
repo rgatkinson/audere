@@ -23,13 +23,7 @@ export class Emailer {
   }
 }
 
-export async function sendEmail({
-  subject,
-  body,
-  to,
-  from,
-  replyTo
-}: Email) {
+export async function sendEmail({ subject, body, to, from, replyTo }: Email) {
   if (!isAWS() && !process.env.SEND_EMAIL) {
     logger.debug(
       `Skipped sending email from ${from} to ${to.join(", ")}:` +

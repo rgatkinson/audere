@@ -3,11 +3,20 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { AddressInfoUse, PIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
+import {
+  AddressInfoUse,
+  PIIInfo,
+  TelecomInfoSystem
+} from "audere-lib/feverProtocol";
 import { BatchItem, SurveyBatchDataAccess } from "./surveyBatchData";
 import { UWParticipantReport, Participant } from "./uwParticipantReport";
 import { UWUploader } from "./uwUploader";
-import { defineKitItem, defineKitBatch, SurveyAttributes, defineKitDiscard } from "../../models/fever";
+import {
+  defineKitItem,
+  defineKitBatch,
+  SurveyAttributes,
+  defineKitDiscard
+} from "../../models/fever";
 import { GeocodingService } from "../geocodingService";
 import { SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
@@ -30,15 +39,21 @@ export class KitOrders extends UWParticipantReport {
     item: BatchItem,
     pii: SurveyAttributes<PIIInfo>
   ): Participant {
-    const email = pii.survey.patient.telecom
-      .find(t => t.system === TelecomInfoSystem.Email);
+    const email = pii.survey.patient.telecom.find(
+      t => t.system === TelecomInfoSystem.Email
+    );
 
-    const homeAddress = pii.survey.patient.address
-      .find(a => a.use === AddressInfoUse.Home);
+    const homeAddress = pii.survey.patient.address.find(
+      a => a.use === AddressInfoUse.Home
+    );
 
     if (homeAddress == null) {
-      throw new Error("A survey without a home address can not be converted " +
-        "into an kit order. csruid " + item.csruid + " may be malformed.");
+      throw new Error(
+        "A survey without a home address can not be converted " +
+          "into an kit order. csruid " +
+          item.csruid +
+          " may be malformed."
+      );
     }
 
     const recipient: Participant = {
@@ -51,7 +66,7 @@ export class KitOrders extends UWParticipantReport {
       // for answering questions about the mailing process.
       email: email == null ? "kittrack@uw.edu" : email.value,
       timestamp: pii.survey.workflow.screeningCompletedAt
-    }
+    };
 
     return recipient;
   }

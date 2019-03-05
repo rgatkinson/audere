@@ -3,8 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Incentives, IncentiveRecipientsDataAccess } from "../services/feverApi/incentiveRecipients";
-import { KitOrders, KitRecipientsDataAccess } from "../services/feverApi/kitOrders";
+import {
+  Incentives,
+  IncentiveRecipientsDataAccess
+} from "../services/feverApi/incentiveRecipients";
+import {
+  KitOrders,
+  KitRecipientsDataAccess
+} from "../services/feverApi/kitOrders";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";

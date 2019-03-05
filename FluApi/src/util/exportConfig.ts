@@ -7,10 +7,9 @@ import { SecretConfig } from "./secretsConfig";
 
 export const defaultNumEncounters: number = +process.env.NUM_ENCOUNTERS || 50;
 
-export const hutchConcurrentUploads: number = +process.env.HUTCH_CONCURRENT_UPLOADS || 50;
+export const hutchConcurrentUploads: number =
+  +process.env.HUTCH_CONCURRENT_UPLOADS || 50;
 
-export async function getHashSecret(
-  secrets: SecretConfig
-): Promise<string> {
+export async function getHashSecret(secrets: SecretConfig): Promise<string> {
   return secrets.get("EXPORT_HASH_SECRET");
 }

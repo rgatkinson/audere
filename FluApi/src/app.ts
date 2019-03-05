@@ -27,7 +27,7 @@ export function createPublicApp(sql: SplitSql) {
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(helmet.noCache());
   publicApp.use(helmet.frameguard({ action: "deny" }));
-  publicApp.use(bodyParser.json({limit: '20mb'}));
+  publicApp.use(bodyParser.json({ limit: "20mb" }));
   publicApp.use(defaultErrorHandler(publicApp.get("env")));
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
@@ -55,7 +55,9 @@ export function createPublicApp(sql: SplitSql) {
     "/api/randomBytes/:numBytes",
     wrap(async (req, res) => {
       res.json({
-        bytes: base64url(await generateRandomBytes(parseInt(req.params.numBytes)))
+        bytes: base64url(
+          await generateRandomBytes(parseInt(req.params.numBytes))
+        )
       });
     })
   );
@@ -87,26 +89,22 @@ export function createInternalApp(
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
   if (!isAWS()) {
-    internalApp.get(
-      "/api/export/getEncounters",
-      (req, res, next) => hutchUploader.getEncounters(req, res, next)
+    internalApp.get("/api/export/getEncounters", (req, res, next) =>
+      hutchUploader.getEncounters(req, res, next)
     );
   }
 
-  internalApp.get(
-    "/api/export/sendEncounters",
-    (req, res, next) => hutchUploader.sendEncounters(req, res, next)
-  );
-  
-  const fever = new FeverCronReportEndpoint(sql);
-  internalApp.get(
-    "/api/export/sendIncentives",
-    (req, res, next) => fever.sendIncentives(req, res, next)
+  internalApp.get("/api/export/sendEncounters", (req, res, next) =>
+    hutchUploader.sendEncounters(req, res, next)
   );
 
-  internalApp.get(
-    "/api/export/sendKitOrders",
-    (req, res, next) => fever.sendKitOrders(req, res, next)
+  const fever = new FeverCronReportEndpoint(sql);
+  internalApp.get("/api/export/sendIncentives", (req, res, next) =>
+    fever.sendIncentives(req, res, next)
+  );
+
+  internalApp.get("/api/export/sendKitOrders", (req, res, next) =>
+    fever.sendKitOrders(req, res, next)
   );
 
   const consentEmailer =

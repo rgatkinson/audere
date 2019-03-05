@@ -4,7 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { surveyPIIInDb } from "../endpoints/feverSampleData";
-import { TelecomInfoSystem, AddressInfoUse, PIIInfo } from "audere-lib/feverProtocol";
+import {
+  TelecomInfoSystem,
+  AddressInfoUse,
+  PIIInfo
+} from "audere-lib/feverProtocol";
 import { SurveyAttributes } from "../../src/models/fever";
 import { Batch, BatchItem } from "../../src/services/feverApi/surveyBatchData";
 import { Participant } from "../../src/services/feverApi/uwParticipantReport";
@@ -32,7 +36,7 @@ export function makeBatchData(
 function makePiiData(id: number): SurveyAttributes<PIIInfo> {
   const data = surveyPIIInDb("csruid" + id);
 
-  data.survey.patient.telecom.push({ 
+  data.survey.patient.telecom.push({
     system: TelecomInfoSystem.Email,
     value: "email" + id + "@email.com"
   });
@@ -68,7 +72,7 @@ export function makeRandomGeoResponse(
       longitude: 1,
       censusTract: makeRandomString()
     }
-  }
+  };
 }
 
 export function makeRandomParticipant(num: number): Participant {
@@ -80,9 +84,11 @@ export function makeRandomParticipant(num: number): Participant {
     homeAddress: undefined,
     email: makeRandomString(),
     timestamp: makeRandomString()
-  }
+  };
 }
 
 function makeRandomString(): string {
-  return Math.random().toString(36).substring(6);
+  return Math.random()
+    .toString(36)
+    .substring(6);
 }

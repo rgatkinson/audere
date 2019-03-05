@@ -12,7 +12,11 @@ import {
   querySurveyJoinConsentEmail
 } from "../models/fever";
 import { SplitSql, Inst } from "../util/sql";
-import { PIIInfo, SurveyNonPIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
+import {
+  PIIInfo,
+  SurveyNonPIIInfo,
+  TelecomInfoSystem
+} from "audere-lib/feverProtocol";
 import { Emailer } from "../util/email";
 import logger from "../util/logger";
 
@@ -27,7 +31,7 @@ export class FeverConsentEmailerEndpoint {
 
   public handleGet = async (req, res, next) => {
     res.json(await this.sendEmails());
-  }
+  };
 
   public async sendEmails(): Promise<ConsentEmailAttributes[]> {
     let summary = [];
@@ -38,9 +42,7 @@ export class FeverConsentEmailerEndpoint {
         info("done");
         break;
       }
-      const piisById = new Map(piis.map(
-        x => [x.id, x] as [string, SurveyPii]
-      ));
+      const piisById = new Map(piis.map(x => [x.id, x] as [string, SurveyPii]));
 
       dbg(`loading non-pii for ${piis.length} surveys`);
       const nonPiis = await this.models.surveyNonPii.findAll({
@@ -48,9 +50,9 @@ export class FeverConsentEmailerEndpoint {
           csruid: piis.map(x => x.csruid)
         }
       });
-      const nonPiisByCSRUID = new Map(nonPiis.map(
-        x => [x.csruid, x] as [string, SurveyNonPii]
-      ));
+      const nonPiisByCSRUID = new Map(
+        nonPiis.map(x => [x.csruid, x] as [string, SurveyNonPii])
+      );
 
       info(`processing ${piis.length} surveys`);
       const rows = await this.models.consentEmail.bulkCreate(
@@ -87,12 +89,14 @@ export class FeverConsentEmailerEndpoint {
       }
       const update = {
         survey_id,
-        completed: new Date().toISOString(),
+        completed: new Date().toISOString()
       };
       await this.models.consentEmail.upsert(update);
-      return update
+      return update;
     } catch (err) {
-      logger.error(`${D_PREFIX}[${survey_id}]: not completing because '${err}'`);
+      logger.error(
+        `${D_PREFIX}[${survey_id}]: not completing because '${err}'`
+      );
       return row;
     }
   }
@@ -103,18 +107,18 @@ export async function newSurveys(models: FeverModels) {
     where: {
       survey: {
         isDemo: false,
-        consents: { [Op.ne]: '[]' },
+        consents: { [Op.ne]: "[]" },
         patient: {
-          telecom: { [Op.ne]: '[]' },
+          telecom: { [Op.ne]: "[]" }
         },
         workflow: {
           screeningCompletedAt: { [Op.ne]: null }
-        },
+        }
       },
-      "$fever_consent_emails.id$": null,
+      "$fever_consent_emails.id$": null
     },
     limit: 1,
-    order: [["id", "ASC"]],
+    order: [["id", "ASC"]]
   });
 }
 
@@ -122,16 +126,14 @@ async function emailConsent(emailer: Emailer, survey: SurveyPii) {
   const participantEmail = getEmail(survey);
   const consentDate = getConsentDate(survey);
   const consentTerms = getConsentTerms(survey);
-  const body = (
-`Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
+  const body = `Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
 
 This email is sent from an unmonitored address. Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or contact support@auderenow.org if you have any other questions or concerns.
 
 Here is a copy of the Consent Form you accepted:
 
 Agreed on ${consentDate}:
-${consentTerms}`
-  );
+${consentTerms}`;
   await emailer.send({
     to: [participantEmail],
     from: "noreply@auderenow.org",
@@ -142,7 +144,7 @@ ${consentTerms}`
 
 function didRequestEmail(row: SurveyNonPii): boolean {
   const item = row.survey.responses[0].item.find(r => r.id === "Consent");
-  return item && item.answer.some(a => a.valueBoolean)
+  return item && item.answer.some(a => a.valueBoolean);
 }
 
 function getEmail(row: SurveyPii): string {
@@ -159,10 +161,10 @@ function getConsentTerms(row: SurveyPii): string {
   return row.survey.consents[0].terms;
 }
 
-type SurveyPii =
-  Inst<SurveyAttributes<PIIInfo>> | SurveyAttributes<PIIInfo>;
+type SurveyPii = Inst<SurveyAttributes<PIIInfo>> | SurveyAttributes<PIIInfo>;
 type SurveyNonPii =
-  Inst<SurveyAttributes<SurveyNonPIIInfo>> | SurveyAttributes<SurveyNonPIIInfo>;
+  | Inst<SurveyAttributes<SurveyNonPIIInfo>>
+  | SurveyAttributes<SurveyNonPIIInfo>;
 
 const D_PREFIX = "FeverConsentEmailer";
 

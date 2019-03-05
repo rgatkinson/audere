@@ -9,8 +9,8 @@ import {
   SplitSql,
   integerColumn,
   unique,
-  stringColumn,
-} from "../util/sql"
+  stringColumn
+} from "../util/sql";
 
 export interface GaplessSeqAttributes {
   name: string;
@@ -18,12 +18,8 @@ export interface GaplessSeqAttributes {
 }
 export type GaplessSeqModel = Model<GaplessSeqAttributes>;
 export function defineGaplessSeq(sql: SplitSql): GaplessSeqModel {
-  return defineModel<GaplessSeqAttributes>(
-    sql.nonPii,
-    "gapless_seq",
-    {
-      name: unique(stringColumn()),
-      index: integerColumn(),
-    }
-  )
+  return defineModel<GaplessSeqAttributes>(sql.nonPii, "gapless_seq", {
+    name: unique(stringColumn()),
+    index: integerColumn()
+  });
 }

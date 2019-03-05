@@ -26,7 +26,7 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
-    
+
     await queryInterface.createTable("fever_incentive_item", {
       id: {
         allowNull: false,

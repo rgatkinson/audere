@@ -26,13 +26,18 @@ export function getSharePointConfig(
 }
 
 async function createConfig(secrets: SecretConfig): Promise<SharePointConfig> {
-  const [url, clientId, clientSecret, incentivesFolder, kitsFolder] =
-    await Promise.all([
-      secrets.get("SHAREPOINT_URL"),
-      secrets.get("SHAREPOINT_CLIENT_ID"),
-      secrets.get("SHAREPOINT_CLIENT_SECRET"),
-      secrets.get("SHAREPOINT_INCENTIVES_FOLDER"),
-      secrets.get("SHAREPOINT_KITS_FOLDER")
-    ]);
+  const [
+    url,
+    clientId,
+    clientSecret,
+    incentivesFolder,
+    kitsFolder
+  ] = await Promise.all([
+    secrets.get("SHAREPOINT_URL"),
+    secrets.get("SHAREPOINT_CLIENT_ID"),
+    secrets.get("SHAREPOINT_CLIENT_SECRET"),
+    secrets.get("SHAREPOINT_INCENTIVES_FOLDER"),
+    secrets.get("SHAREPOINT_KITS_FOLDER")
+  ]);
   return { url, clientId, clientSecret, incentivesFolder, kitsFolder };
 }

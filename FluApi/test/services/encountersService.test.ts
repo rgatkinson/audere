@@ -64,8 +64,9 @@ describe("encounters service", () => {
       when(geocoderMock.geocodeAddresses(anything())).thenResolve([]);
 
       const visitsMock = mock(VisitsService);
-      when(visitsMock.retrievePendingDetails(numToRetrieve))
-        .thenResolve(new Map([[details.id, details]]));
+      when(visitsMock.retrievePendingDetails(numToRetrieve)).thenResolve(
+        new Map([[details.id, details]])
+      );
 
       const encountersService = new EncountersService(
         instance(geocoderMock),
@@ -76,16 +77,18 @@ describe("encounters service", () => {
       const result = await encountersService.getEncounters(numToRetrieve);
 
       verify(visitsMock.retrievePendingDetails(numToRetrieve)).called();
-      expect(result.size).toBe(1)
+      expect(result.size).toBe(1);
       expect(result.has(details.id)).toBe(true);
 
-      // Does not contain common 
+      // Does not contain common
       const encounter = result.get(details.id);
       expect(encounter.id).toBe(details.csruid.substr(0, 121));
-      expect(encounter.participant.includes(details.patientInfo.name))
-        .toBe(false);
-      expect(encounter.participant.includes(details.patientInfo.birthDate))
-        .toBe(false);
+      expect(encounter.participant.includes(details.patientInfo.name)).toBe(
+        false
+      );
+      expect(
+        encounter.participant.includes(details.patientInfo.birthDate)
+      ).toBe(false);
     });
 
     it("should scrub address data by geocoding and append census tract", async () => {
@@ -144,14 +147,13 @@ describe("encounters service", () => {
 
       const encounter = result.get(1);
       expect(encounter.household).not.toBeUndefined();
-      const homeId = encounter.household.id
+      const homeId = encounter.household.id;
       expect(homeId.includes(homeAddress.address.canonicalAddress)).toBe(false);
       expect(encounter.household.region).toBe(homeAddress.address.censusTract);
 
       expect(encounter.workplace).not.toBeUndefined();
-      const workId = encounter.workplace.id
-      expect(workId.includes(workAddress.address.canonicalAddress))
-        .toBe(false);
+      const workId = encounter.workplace.id;
+      expect(workId.includes(workAddress.address.canonicalAddress)).toBe(false);
       expect(encounter.workplace.region).toBe(workAddress.address.censusTract);
     });
   });
@@ -159,7 +161,7 @@ describe("encounters service", () => {
   describe("send encounters", () => {
     it("should send encounters to the Hutch endpoint", async () => {
       const numToRetrieve = 20;
-      
+
       const uploaderMock = mock(HutchUploader);
       when(uploaderMock.uploadEncounters(anything())).thenResolve();
       when(uploaderMock.commitUploads(anything())).thenResolve([details.id]);

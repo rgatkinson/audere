@@ -83,8 +83,20 @@ describe("geocoding service", () => {
 
   let visitId = 100;
   let addresses = [homeAddress, workAddress];
-  let homeCoded = makeGeoResponse(visitId, homeAddress, homeLat, homeLng, homeZip);
-  let workCoded = makeGeoResponse(visitId, workAddress, workLat, workLng, workZip);
+  let homeCoded = makeGeoResponse(
+    visitId,
+    homeAddress,
+    homeLat,
+    homeLng,
+    homeZip
+  );
+  let workCoded = makeGeoResponse(
+    visitId,
+    workAddress,
+    workLat,
+    workLng,
+    workZip
+  );
 
   describe("geocode addresses", () => {
     it("should call to format address & get lat/long", async () => {
@@ -97,7 +109,7 @@ describe("geocoding service", () => {
       let result = await geoService.geocodeAddresses(new Map([[1, addresses]]));
 
       expect(result.length).toBe(2);
-      
+
       const homeResponse = result.find(
         a => a.id === visitId && a.use === AddressInfoUse.Home
       );
@@ -115,7 +127,7 @@ describe("geocoding service", () => {
 
     it("should append census tract details if they can be found from coordinates", async () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded, workCoded];
-      
+
       let tracts = new Map();
       let homeRegion = "Census A";
       tracts.set(homeLat + "|" + homeLng, homeRegion);
@@ -138,7 +150,7 @@ describe("geocoding service", () => {
         a => a.id === visitId && a.use === AddressInfoUse.Home
       );
       expect(homeResponse.address.censusTract).toBe(homeRegion);
-      
+
       const workResponse = result.find(
         a => a.id === visitId && a.use === AddressInfoUse.Work
       );

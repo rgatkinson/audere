@@ -3,10 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import {
-  FindOptions,
-  Sequelize,
-} from "sequelize";
+import { FindOptions, Sequelize } from "sequelize";
 import {
   defineModel,
   Inst,
@@ -19,7 +16,7 @@ import {
   unique,
   primaryKey,
   nullable,
-  foreignIdKey,
+  foreignIdKey
 } from "../util/sql";
 import {
   DeviceInfo,
@@ -39,17 +36,14 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
     feedback: defineFeedback(sql),
     photo: definePhoto(sql),
     surveyNonPii: defineSurvey(sql.nonPii),
-    surveyPii: defineSurvey(sql.pii),
+    surveyPii: defineSurvey(sql.pii)
   };
 
-  models.surveyPii.hasOne(
-    models.consentEmail,
-    {
-      as: "fever_consent_emails",
-      foreignKey: "survey_id",
-      onDelete: "CASCADE",
-    }
-  );
+  models.surveyPii.hasOne(models.consentEmail, {
+    as: "fever_consent_emails",
+    foreignKey: "survey_id",
+    onDelete: "CASCADE"
+  });
 
   return models;
 }
@@ -91,14 +85,10 @@ interface AccessKeyAttributes {
   valid: boolean;
 }
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
-  return defineModel<AccessKeyAttributes>(
-    sql.nonPii,
-    "fever_access_keys",
-    {
-      key: stringColumn(),
-      valid: booleanColumn()
-    }
-  );
+  return defineModel<AccessKeyAttributes>(sql.nonPii, "fever_access_keys", {
+    key: stringColumn(),
+    valid: booleanColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -131,15 +121,11 @@ interface FeedbackAttributes {
   body: string;
 }
 export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
-  return defineModel<FeedbackAttributes>(
-    sql.nonPii,
-    "fever_feedback",
-    {
-      device: jsonColumn(),
-      subject: stringColumn(),
-      body: stringColumn(),
-    }
-  );
+  return defineModel<FeedbackAttributes>(sql.nonPii, "fever_feedback", {
+    device: jsonColumn(),
+    subject: stringColumn(),
+    body: stringColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -151,15 +137,11 @@ export interface PhotoAttributes {
   photo: PhotoInfo;
 }
 export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
-  return defineModel<PhotoAttributes>(
-    sql.nonPii,
-    "fever_photos",
-    {
-      device: jsonColumn(),
-      csruid: unique(stringColumn()),
-      photo: jsonColumn()
-    }
-  );
+  return defineModel<PhotoAttributes>(sql.nonPii, "fever_photos", {
+    device: jsonColumn(),
+    csruid: unique(stringColumn()),
+    photo: jsonColumn()
+  });
 }
 
 // ---------------------------------------------------------------
@@ -201,105 +183,79 @@ export interface BatchItemAttributes {
 }
 
 export interface BatchDiscardAttributes {
-  id?: number,
-  batchId: number,
-  workflowId: number
+  id?: number;
+  batchId: number;
+  workflowId: number;
 }
 
 export function defineIncentiveBatch(sql: Sequelize): Model<BatchAttributes> {
-  return defineModel<BatchAttributes>(
-    sql,
-    "fever_incentive_batch",
-    {
-      id: primaryKey(integerColumn()),
-      uploaded: booleanColumn()
-    }
-  );
+  return defineModel<BatchAttributes>(sql, "fever_incentive_batch", {
+    id: primaryKey(integerColumn()),
+    uploaded: booleanColumn()
+  });
 }
 
 export function defineIncentiveItem(
   sql: Sequelize
 ): Model<BatchItemAttributes> {
-  return defineModel<BatchItemAttributes>(
-    sql,
-    "fever_incentive_item",
-    {
-      id: primaryKey(integerColumn()),
-      batchId: integerColumn(),
-      surveyId: integerColumn()
-    }
-  );
+  return defineModel<BatchItemAttributes>(sql, "fever_incentive_item", {
+    id: primaryKey(integerColumn()),
+    batchId: integerColumn(),
+    surveyId: integerColumn()
+  });
 }
 
 export function defineIncentiveDiscard(
   sql: Sequelize
 ): Model<BatchDiscardAttributes> {
-  return defineModel<BatchDiscardAttributes>(
-    sql,
-    "fever_incentive_discard",
-    {
-      batchId: integerColumn(),
-      workflowId: integerColumn()
-    }
-  )
+  return defineModel<BatchDiscardAttributes>(sql, "fever_incentive_discard", {
+    batchId: integerColumn(),
+    workflowId: integerColumn()
+  });
 }
 
 export function defineKitBatch(sql: Sequelize): Model<BatchAttributes> {
-  return defineModel<BatchAttributes>(
-    sql,
-    "fever_kit_batches",
-    {
-      id: primaryKey(integerColumn()),
-      uploaded: booleanColumn()
-    }
-  );
+  return defineModel<BatchAttributes>(sql, "fever_kit_batches", {
+    id: primaryKey(integerColumn()),
+    uploaded: booleanColumn()
+  });
 }
 
-export function defineKitItem(
-  sql: Sequelize
-): Model<BatchItemAttributes> {
-  return defineModel<BatchItemAttributes>(
-    sql,
-    "fever_kit_items",
-    {  
-      id: primaryKey(integerColumn()),
-      batchId: integerColumn(),
-      surveyId: integerColumn()
-    }
-  );
+export function defineKitItem(sql: Sequelize): Model<BatchItemAttributes> {
+  return defineModel<BatchItemAttributes>(sql, "fever_kit_items", {
+    id: primaryKey(integerColumn()),
+    batchId: integerColumn(),
+    surveyId: integerColumn()
+  });
 }
 
 export function defineKitDiscard(
   sql: Sequelize
 ): Model<BatchDiscardAttributes> {
-  return defineModel<BatchDiscardAttributes>(
-    sql,
-    "fever_kit_discards",
-    {
-      batchId: integerColumn(),
-      workflowId: integerColumn()
-    }
-  )
+  return defineModel<BatchDiscardAttributes>(sql, "fever_kit_discards", {
+    batchId: integerColumn(),
+    workflowId: integerColumn()
+  });
 }
 
 export interface ConsentEmailAttributes {
-  id?: number,
-  survey_id: string,
-  completed?: string,
+  id?: number;
+  survey_id: string;
+  completed?: string;
 }
-export function defineConsentEmail(sql: Sequelize): Model<ConsentEmailAttributes> {
-  return defineModel<ConsentEmailAttributes>(
-    sql,
-    "fever_consent_emails",
-    {
-      survey_id: foreignIdKey(stringColumn(), "fever_current_surveys"),
-      completed: nullable(stringColumn()),
-    }
-  )
+export function defineConsentEmail(
+  sql: Sequelize
+): Model<ConsentEmailAttributes> {
+  return defineModel<ConsentEmailAttributes>(sql, "fever_consent_emails", {
+    survey_id: foreignIdKey(stringColumn(), "fever_current_surveys"),
+    completed: nullable(stringColumn())
+  });
 }
 
-export type SurveyWithConsentEmail =
-  (SurveyInstance<PIIInfo> | SurveyAttributes<PIIInfo>) & MightHaveConsentEmail;
+export type SurveyWithConsentEmail = (
+  | SurveyInstance<PIIInfo>
+  | SurveyAttributes<PIIInfo>) &
+  MightHaveConsentEmail;
 
 export interface MightHaveConsentEmail {
   consentEmail?: Inst<ConsentEmailAttributes> | ConsentEmailAttributes;
@@ -319,7 +275,7 @@ export async function querySurveyJoinConsentEmail<TCustom>(
         model: models.consentEmail,
         as: "fever_consent_emails",
         required: false,
-        attributes: ["id", "completed"],
+        attributes: ["id", "completed"]
       }
     ]
   });

@@ -26,13 +26,13 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
   // Revision can be traced back to individual versions to correlate
   // cause/effect with output data.
   let revision: string;
-  
+
   if (buildInfo.version != null) {
     revision = buildInfo.version;
   } else {
     logger.error(
       "Version is not populated in build info so the encounter revision can " +
-      "not be specified"
+        "not be specified"
     );
   }
 
@@ -45,9 +45,10 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     let startTimestamp: string;
 
     if (input.visitInfo.events != null && input.visitInfo.events.length > 0) {
-      const visitEvent = input.visitInfo.events
-        .find(e => e.kind == Model.EventInfoKind.Visit);
-  
+      const visitEvent = input.visitInfo.events.find(
+        e => e.kind == Model.EventInfoKind.Visit
+      );
+
       if (visitEvent != null) {
         startTimestamp = visitEvent.at;
       }
@@ -94,7 +95,7 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
         // TODO: Remove boolean answers from the shared protocol
         logger.error(
           "Boolean formatted answers are deprecated and will be removed " +
-          "from the visit protocol"
+            "from the visit protocol"
         );
 
         throw new Error("Visit contains a boolean response");
@@ -121,7 +122,7 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
       } else if (a.valueAddress != null) {
         logger.error(
           "Address formatted answers are likely to be PII and should not be " +
-          "present in the non-PII response set"
+            "present in the non-PII response set"
         );
 
         throw new Error("Visit contains an address response");

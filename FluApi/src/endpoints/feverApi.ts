@@ -43,8 +43,8 @@ export class FeverEndpoint {
   }
 
   async putFeverDocument(req, res, next) {
-    const query = { where: { key: req.params.key, valid: true }};
-    if (!await this.models.accessKey.findOne(query)) {
+    const query = { where: { key: req.params.key, valid: true } };
+    if (!(await this.models.accessKey.findOne(query))) {
       logger.warn(`Rejected document upload with key: ${req.params.key}`);
       next();
       return;

@@ -4,7 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { DocumentType, SurveyDocument, SurveyInfo } from "audere-lib/feverProtocol";
+import {
+  DocumentType,
+  SurveyDocument,
+  SurveyInfo
+} from "audere-lib/feverProtocol";
 import { createPublicApp } from "../../src/app";
 import {
   PATIENT_INFO,
@@ -58,7 +62,7 @@ describe("putFeverDocument", () => {
       device: { info: "☢" },
       documentType: DocumentType.Survey,
       csruid,
-      survey: SURVEY_INFO,
+      survey: SURVEY_INFO
     };
     const contentsBuffer = Buffer.from(JSON.stringify(contents));
 
@@ -110,19 +114,24 @@ describe("putFeverDocument", () => {
     const csruid = makeCSRUID(
       "updates existing documents in survey table in PII db"
     );
-    const where = { where: { csruid }};
+    const where = { where: { csruid } };
     const contentsPost = surveyPost(csruid);
 
     await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
       .send(contentsPost)
       .expect(200);
-    const originalScreen = (await models.surveyPii.findOne(where)).survey as SurveyInfo;
+    const originalScreen = (await models.surveyPii.findOne(where))
+      .survey as SurveyInfo;
     expect(originalScreen.patient.firstName).toEqual(PATIENT_INFO.firstName);
     expect(originalScreen.patient.lastName).toEqual(PATIENT_INFO.lastName);
     expect(originalScreen).toEqual(PII);
 
-    const newPatient = { ...PATIENT_INFO, firstName: "New", lastName: 'FakeName' };
+    const newPatient = {
+      ...PATIENT_INFO,
+      firstName: "New",
+      lastName: "FakeName"
+    };
     const newProtocolContents: SurveyDocument = {
       ...contentsPost,
       survey: {
@@ -167,7 +176,7 @@ describe("putDocumentWithKey", () => {
 
   it("accepts a docuent with a valid key", async () => {
     const csruid = makeCSRUID("accepts a docuent with a valid key");
-    const where = { where: { csruid }};
+    const where = { where: { csruid } };
     const accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
@@ -189,7 +198,7 @@ describe("putDocumentWithKey", () => {
 
   it("rejects a docuent with a bogus key", async () => {
     const csruid = makeCSRUID("rejects a docuent with a bogus key");
-    const where = { where: { csruid }};
+    const where = { where: { csruid } };
 
     await request(publicApp)
       .put(`/api/fever/documents/notaccesskey2/${csruid}`)
@@ -204,7 +213,7 @@ describe("putDocumentWithKey", () => {
     const csruid = makeCSRUID(
       "rejects a docuent with key that's no longer valid"
     );
-    const where = { where: { csruid }};
+    const where = { where: { csruid } };
     const accessKey = await models.accessKey.create({
       key: "accesskey3",
       valid: false

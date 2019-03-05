@@ -32,10 +32,17 @@ export class SmartyStreetsGeocoder implements Geocoder {
       logger.error("SmartyStreets geocoding encountered an unhandled error.");
       throw response.error;
     } else {
-      logger.error("SmartyStreets geocoding returned an invalid response, " +
-        " status code " + response.statusCode + ".");
-      const e = new Error("SmartyStreets geocoding request failed with " +
-        " status code: " + response.statusCode);
+      logger.error(
+        "SmartyStreets geocoding returned an invalid response, " +
+          " status code " +
+          response.statusCode +
+          "."
+      );
+      const e = new Error(
+        "SmartyStreets geocoding request failed with " +
+          " status code: " +
+          response.statusCode
+      );
       throw e;
     }
   }
@@ -58,12 +65,15 @@ export class SmartyStreetsGeocoder implements Geocoder {
     try {
       const response = await this.client.send(batch);
       return this.formatResponse(response);
-    } catch(error) {
+    } catch (error) {
       this.handleError(error);
     }
   }
 
-  private createLookup(k: number, a: AddressInfo): SmartyStreetsSDK.usStreet.Lookup {
+  private createLookup(
+    k: number,
+    a: AddressInfo
+  ): SmartyStreetsSDK.usStreet.Lookup {
     const lookup = new SmartyStreetsSDK.usStreet.Lookup();
 
     // The input id must encode both the record identifier and address use.
@@ -98,8 +108,9 @@ export class SmartyStreetsGeocoder implements Geocoder {
       const id = +inputIds[0];
 
       // Converts string back to enumeration.
-      const useKey = Object.keys(AddressInfoUse)
-        .find(k => AddressInfoUse[k] === inputIds[1]);
+      const useKey = Object.keys(AddressInfoUse).find(
+        k => AddressInfoUse[k] === inputIds[1]
+      );
       const use = AddressInfoUse[useKey];
 
       // TODO: If there is no geocoded result is the record invalid?
@@ -111,7 +122,9 @@ export class SmartyStreetsGeocoder implements Geocoder {
           result.deliveryLine1,
           result.deliveryLine2,
           result.lastLine
-        ].filter(c => c != null).join(", ");
+        ]
+          .filter(c => c != null)
+          .join(", ");
 
         const latitude = result.metadata.latitude;
         const longitude = result.metadata.longitude;

@@ -20,18 +20,19 @@ describe("S3 uploader", () => {
     // The AWS SDK late-binds functions so we modify the object instead of using
     // a mock.
     const s3 = new AWS.S3();
-    s3.putObject = (params) => {
+    s3.putObject = params => {
       requestParams = params;
       return instance(request);
-    }
+    };
 
     const contents = "A borrowed book is like a guest in the house";
     const uploader = new S3Uploader(s3, s3Config);
     await uploader.sendIncentives(5, contents);
 
     expect(requestParams.Bucket).toBe(s3Config.bucket);
-    expect(requestParams.Key)
-      .toMatch(/gift-card-reports\/Gift\-Card\-Report\-5/);
+    expect(requestParams.Key).toMatch(
+      /gift-card-reports\/Gift\-Card\-Report\-5/
+    );
     expect(requestParams.Body).toBe(contents);
   });
 
@@ -43,19 +44,21 @@ describe("S3 uploader", () => {
     // The AWS SDK late-binds functions so we modify the object instead of using
     // a mock.
     const s3 = new AWS.S3();
-    s3.putObject = (params) => {
+    s3.putObject = params => {
       requestParams = params;
       return instance(request);
-    }
+    };
 
-    const contents = "There are in the body politic, economic and social, " +
+    const contents =
+      "There are in the body politic, economic and social, " +
       "many and grave evils";
     const uploader = new S3Uploader(s3, s3Config);
     await uploader.sendKits(2, contents);
 
     expect(requestParams.Bucket).toBe(s3Config.bucket);
-    expect(requestParams.Key)
-      .toMatch(/fulfillment-order-reports\/Kit\-Fulfillment\-Report\-2/);
+    expect(requestParams.Key).toMatch(
+      /fulfillment-order-reports\/Kit\-Fulfillment\-Report\-2/
+    );
     expect(requestParams.Body).toBe(contents);
   });
 });

@@ -5,7 +5,10 @@
 
 import { anything, deepEqual, instance, mock, when, verify } from "ts-mockito";
 import { makeBatchData } from "./reportTestUtil";
-import { KitOrders, KitRecipientsDataAccess } from "../../src/services/feverApi/kitOrders";
+import {
+  KitOrders,
+  KitRecipientsDataAccess
+} from "../../src/services/feverApi/kitOrders";
 
 describe("kit order recipients", () => {
   it("should replay an existing batch if it wasn't completed", async () => {
@@ -13,8 +16,9 @@ describe("kit order recipients", () => {
 
     const dao = mock(KitRecipientsDataAccess);
     when(dao.getExistingBatch()).thenResolve(batch);
-    when(dao.getPiiData(deepEqual(["csruid0", "csruid1"])))
-      .thenResolve(piiData);
+    when(dao.getPiiData(deepEqual(["csruid0", "csruid1"]))).thenResolve(
+      piiData
+    );
 
     const i = new KitOrders(instance(dao), undefined, undefined);
     const result = await i.getBatch();
@@ -29,8 +33,9 @@ describe("kit order recipients", () => {
     const dao = mock(KitRecipientsDataAccess);
     when(dao.getExistingBatch()).thenResolve(null);
     when(dao.getNewBatchItems()).thenResolve(batch.items);
-    when(dao.getPiiData(deepEqual(["csruid0", "csruid1"])))
-      .thenResolve(piiData);
+    when(dao.getPiiData(deepEqual(["csruid0", "csruid1"]))).thenResolve(
+      piiData
+    );
     when(dao.trackBatch(anything())).thenResolve(batch);
 
     const i = new KitOrders(instance(dao), undefined, undefined);
