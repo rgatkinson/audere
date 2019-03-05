@@ -7,7 +7,12 @@ umask 077
 readonly SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 readonly mode="$1"
 readonly commit="${2:-master}"
-readonly env="$3"
+env="$3"
+
+if [ "$env" == "prod" ]
+then
+  env="production"
+fi
 
 echo "=== api-init begins, mode=$mode commit=$commit env=$env"
 mkdir "$HOME/.ssh"
