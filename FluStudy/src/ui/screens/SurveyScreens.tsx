@@ -131,7 +131,6 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         hideBackButton={true}
-        imageAspectRatio={1.75}
         navigation={this.props.navigation}
         stableImageSrc={require("../../img/welcome.png")}
         title={t("welcomeBack")}
@@ -263,7 +262,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
             />
           </View>
         }
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/barCodeOnBox.png")}
         navigation={this.props.navigation}
         skipButton={true}
@@ -666,7 +664,6 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/whatsNext.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -689,7 +686,6 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/unpackingInstructions.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -726,7 +722,6 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/begin1stTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -747,7 +742,6 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/prepareTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -768,7 +762,6 @@ class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/openNasalSwab.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -789,7 +782,6 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/collectMucus.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -811,7 +803,6 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("startTimer")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/putSwabInTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -890,7 +881,6 @@ class FirstTimerScreen extends React.Component<
             )}
           </View>
         }
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/oneMinuteTimer.png")}
         navigation={this.props.navigation}
         skipButton={true}
@@ -917,7 +907,6 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/removeSwabFromTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -941,7 +930,6 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/openTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -971,7 +959,6 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/openTestStrip_1.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1460,7 +1447,6 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/removeTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1483,7 +1469,6 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/finishWithTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1506,7 +1491,6 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1531,7 +1515,6 @@ class TestStripSurveyScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1591,7 +1574,6 @@ class PictureInstructionsScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/takePictureTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1832,7 +1814,6 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/begin2ndTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1855,7 +1836,6 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/prepareForTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1878,7 +1858,6 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/collectMucus.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1901,7 +1880,6 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/putSwabInRedTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1924,7 +1902,6 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/cleanUpSecondTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1998,7 +1975,6 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/putStickersOnBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2040,7 +2016,6 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/tapeUpBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2064,7 +2039,6 @@ class ShipBoxScreen extends React.Component<
         buttonLabel={t("schedulePickup")}
         canProceed={true}
         desc={t("description")}
-        imageAspectRatio={1.75}
         imageSrc={require("../../img/shippingYourBox.png")}
         footer={
           <Button

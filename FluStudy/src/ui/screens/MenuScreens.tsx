@@ -104,7 +104,6 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -132,7 +131,6 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -154,7 +152,6 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -182,7 +179,6 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -214,7 +210,6 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -242,7 +237,6 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -272,7 +266,6 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -302,7 +295,6 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
@@ -354,7 +346,6 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         desc={aboutContent}
         footer={<Text content={t("copyright")} style={styles.footer} />}
         menuItem={true}
-        imageAspectRatio={4.23}
         shortImage={true}
         navigation={this.props.navigation}
         skipButton={false}

@@ -37,7 +37,6 @@ interface Props {
   dispatch?(action: Action): void;
   footer?: any;
   hideBackButton?: boolean;
-  imageAspectRatio?: number;
   imageSrc?: ImageSourcePropType;
   shortImage?: boolean;
   isDemo?: boolean;
@@ -77,16 +76,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
   _getImage(source: ImageSourcePropType) {
     const image = (
       <Image
-        style={[
-          !!this.props.imageAspectRatio
-            ? {
-                width: this.props.shortImage ? "75%" : "100%",
-                height: undefined,
-                aspectRatio: this.props.imageAspectRatio,
-              }
-            : { height: 150, width: 200 },
-          { alignSelf: "center", marginVertical: GUTTER / 2 },
-        ]}
+        style={[styles.image, this.props.shortImage && styles.shortImage]}
         source={source}
       />
     );
@@ -215,9 +205,20 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     marginHorizontal: GUTTER,
   },
+  image: {
+    alignSelf: "center",
+    aspectRatio: 1.75,
+    height: undefined,
+    marginVertical: GUTTER / 2,
+    width: "100%",
+  },
   innerContainer: {
     alignItems: "center",
     marginHorizontal: GUTTER,
+  },
+  shortImage: {
+    aspectRatio: 4.23,
+    width: "75%",
   },
   scrollContainer: {
     alignSelf: "stretch",
