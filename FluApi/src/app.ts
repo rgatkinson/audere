@@ -122,6 +122,7 @@ function wrap(f: any) {
 
 function defaultErrorHandler(env: string): ErrorRequestHandler {
   return (err, req, res, next) => {
+    logger.error("Request terminated abnormally")
     if (err) {
       logger.error("Uncaught exception:");
       logger.error(err.message);

@@ -200,7 +200,7 @@ export abstract class SurveyBatchDataAccess {
 
       return { id: batchId, items: batchItems };
     } else {
-      logger.debug("No prior batches to process.");
+      logger.debug("No prior batches to process");
     }
 
     return null;

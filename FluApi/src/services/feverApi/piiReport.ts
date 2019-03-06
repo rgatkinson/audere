@@ -19,6 +19,7 @@ export interface RenderResult {
  */
 export abstract class PIIReport<T> {
   private readonly dao: SurveyBatchDataAccess;
+  protected abstract report: string;
 
   constructor(dao: SurveyBatchDataAccess) {
     this.dao = dao;
@@ -30,16 +31,22 @@ export abstract class PIIReport<T> {
    * batch.
    */
   public async generateReport(): Promise<void> {
+    logger.info(`[${this.report}] Querying for new batch items`)
     const batch = await this.getBatch();
 
     if (batch != null) {
+      logger.info(`[${this.report}] Found batch ${batch.id} with ` +
+        `${batch.items.length} items`)
       const result = await this.buildReport(batch);
 
       if (result.report != null) {
+        logger.info(`[${this.report}] Writing summarized report to S3`)
         await this.writeReport(batch.id, result.report);
       }
 
       this.dao.commitUploadedBatch(batch.id, result.discarded);
+    } else {
+      logger.info(`[${this.report}] No new records to process.`)
     }
   }
 

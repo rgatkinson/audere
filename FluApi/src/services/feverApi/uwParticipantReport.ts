@@ -26,6 +26,7 @@ export abstract class UWParticipantReport extends PIIReport<Participant> {
   public async buildReport(batch: Batch<Participant>): Promise<RenderResult> {
     const addresses = new Map();
     batch.items.forEach(i => addresses.set(i.workflowId, [i.homeAddress]));
+    logger.info(`[${this.report}] Validating report addresses`);
     const geocodedAddresses = await this.geocoder.geocodeAddresses(addresses);
 
     const rows = [];
@@ -52,9 +53,8 @@ export abstract class UWParticipantReport extends PIIReport<Participant> {
         rows.push(row);
       } else {
         logger.error(
-          "Discarded a participant because the address for survey " +
-            +i.surveyId +
-            " did not return successfully from geocoding."
+          `[${this.report}] Discarded a participant because the address for ` +
+          `survey ${i.surveyId} did not return successfully from geocoding.`
         );
         discarded.push(i.workflowId);
       }

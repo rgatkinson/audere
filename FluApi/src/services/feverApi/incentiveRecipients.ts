@@ -22,6 +22,7 @@ import { SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
 
 export class Incentives extends UWParticipantReport {
+  protected readonly report = "Incentives";
   protected readonly geocoder;
   private readonly uploader;
 
