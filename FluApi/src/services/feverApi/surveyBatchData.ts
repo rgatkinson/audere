@@ -174,7 +174,12 @@ export abstract class SurveyBatchDataAccess {
           include: [
             {
               model: this.nonPiiSurveys,
-              attributes: ["id", "csruid"]
+              attributes: ["id", "csruid"],
+              where: {
+                survey: {
+                  isDemo: false
+                }
+              }
             }
           ]
         }

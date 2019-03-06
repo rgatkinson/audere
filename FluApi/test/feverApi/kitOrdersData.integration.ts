@@ -86,7 +86,8 @@ describe("survey batch data access", () => {
 
   async function createTestData(
     batchUploaded: boolean = true,
-    screeningComplete: boolean = true
+    screeningComplete: boolean = true,
+    demoRecords: string[] = []
   ): Promise<void> {
     const surveys = [
       JSON.parse(JSON.stringify(surveyNonPIIInDb("0"))),
@@ -99,6 +100,11 @@ describe("survey batch data access", () => {
         s => (s.survey.workflow.screeningCompletedAt = undefined)
       );
     }
+    surveys.forEach(s => {
+      if (demoRecords.includes(s.csruid)) {
+        s.survey.isDemo = true;
+      }
+    });
     const s = await nonPii.bulkCreate(surveys, { returning: true });
 
     await kitBatch.create({
@@ -133,6 +139,20 @@ describe("survey batch data access", () => {
             csruid: key.toString()
           })
         )
+      );
+    });
+
+    it("should filter existing batch items if they are demo", async () => {
+      const dao = new KitRecipientsDataAccess(sql);
+      await createTestData(false, true, ["1"]);
+
+      const out = await dao.getExistingBatch();
+
+      expect(out.items).toHaveLength(1);
+      expect(out.items).toContainEqual(
+        expect.objectContaining({
+          csruid: "0"
+        })
       );
     });
 
