@@ -22,6 +22,27 @@ export const DrawerEvents = {
   CLOSE: "drawer_close",
 };
 
+export const FunnelEvents = {
+  // Screening events
+  MET_SYMPTOMS: "funnel_met_symptoms",
+  DECLINED_CONSENT: "funnel_declined_consent",
+  ADDRESS_COMPLETED: "funnel_address_completed",
+  AGE_INELIGIBLE: "funnel_age_ineligible",
+  SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
+
+  // Survey events
+  RECEIVED_KIT: "funnel_received_kit",
+  EMAIL_COMPLETED: "funnel_email_completed",
+  SCAN_CONFIRMATION: "funnel_scan_confirmation",
+  MANUAL_CODE_CONFIRMATION: "funnel_manual_code_confirmation",
+  SURVIVED_FIRST_SWAB: "funnel_survived_first_swab",
+  PASSED_FIRST_TIMER: "funnel_passed_first_timer",
+  COMPLETED_SURVEY: "funnel_completed_survey",
+  COMPLETED_FIRST_TEST: "funnel_completed_first_test",
+  COMPLETED_SECOND_TEST: "funnel_completed_second_test",
+  COMPLETED_SHIPPING: "funnel_completed_shipping",
+};
+
 // By default, we don't log demo mode and non-production builds.  If you're
 // debugging logging, set this to true on your own machine to bypass all those
 // logging exclusions. Please don't commit true to our codebase unless you're

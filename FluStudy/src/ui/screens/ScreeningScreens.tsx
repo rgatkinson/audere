@@ -5,18 +5,12 @@
 
 import { format } from "date-fns";
 import React from "react";
-import {
-  KeyboardAvoidingView,
-  PushNotificationIOS,
-  View,
-  StyleSheet,
-} from "react-native";
+import { KeyboardAvoidingView, PushNotificationIOS, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
 import {
-  EventInfoKind,
   PushNotificationState,
   PushRegistrationError,
   WorkflowInfo,
@@ -27,7 +21,6 @@ import {
   Address,
   Option,
   StoreState,
-  SurveyResponse,
   setEmail,
   setPushNotificationState,
   setWorkflow,
@@ -51,10 +44,11 @@ import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
 import { findMedHelp, learnMore } from "../externalActions";
-import { GUTTER, SECONDARY_COLOR, SMALL_TEXT } from "../styles";
+import { GUTTER, SMALL_TEXT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
 import { isValidUSZipCode, isNotEmptyString } from "../../util/check";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
+import { tracker, FunnelEvents } from "../../util/tracker";
 
 interface Props {
   dispatch(action: Action): void;
@@ -281,6 +275,10 @@ class ConsentScreen extends React.PureComponent<
     };
   }
 
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.MET_SYMPTOMS);
+  }
+
   _canProceed = (): boolean => {
     return (
       !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
@@ -411,6 +409,10 @@ export const Consent = reduxWriter(
 );
 
 class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.DECLINED_CONSENT);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -526,6 +528,10 @@ export const AddressScreen = reduxWriter(
 );
 
 class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.AGE_INELIGIBLE);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -567,6 +573,10 @@ export const AgeIneligible = withNamespaces("ageIneligibleScreen")<Props>(
 );
 
 class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.SYMPTOMS_INELIGIBLE);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -627,6 +637,10 @@ interface PushProps {
 class ConfirmationScreen extends React.Component<
   Props & PushProps & WithNamespaces
 > {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(

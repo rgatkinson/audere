@@ -18,11 +18,7 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Camera, Permissions } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
-import {
-  EventInfoKind,
-  SampleInfo,
-  WorkflowInfo,
-} from "audere-lib/feverProtocol";
+import { SampleInfo, WorkflowInfo } from "audere-lib/feverProtocol";
 import {
   Action,
   Option,
@@ -106,6 +102,7 @@ import {
 } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
+import { tracker, FunnelEvents } from "../../util/tracker";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -123,6 +120,10 @@ interface Props {
 
 @connect()
 class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.RECEIVED_KIT);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -179,6 +180,7 @@ class WhatsNextScreen extends React.Component<
           onNext={() => {
             this.props.dispatch(setEmail(this.state.email!));
             this.props.navigation.push("Before");
+            tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
           }}
         >
           <EmailInput
@@ -432,6 +434,10 @@ interface BarcodeProps {
 class ScanConfirmationScreen extends React.Component<
   Props & BarcodeProps & WithNamespaces
 > {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.SCAN_CONFIRMATION);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -467,6 +473,10 @@ export const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
 class ManualConfirmationScreen extends React.Component<
   Props & BarcodeProps & WithNamespaces
 > {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.MANUAL_CODE_CONFIRMATION);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -805,6 +815,10 @@ export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
 @connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.SURVIVED_FIRST_SWAB);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -902,6 +916,10 @@ export const FirstTimer = timerWithConfigProps({
 })(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
 class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.PASSED_FIRST_TIMER);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -1378,6 +1396,10 @@ interface ThankYouSurveyProps {
 class ThankYouSurveyScreen extends React.Component<
   Props & DemoModeProps & WithNamespaces & ThankYouSurveyProps & TimerProps
 > {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.COMPLETED_SURVEY);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -1820,6 +1842,10 @@ export const FirstTestFeedback = reduxWriter(
 );
 
 class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.COMPLETED_FIRST_TEST);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -1961,6 +1987,10 @@ export const SecondTestFeedback = reduxWriter(
 );
 
 class PackingScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.COMPLETED_SECOND_TEST);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -2134,6 +2164,10 @@ interface EmailState {
 class EmailOptInScreen extends React.Component<
   Props & WorkflowProps & WithNamespaces & ReduxWriterProps
 > {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.COMPLETED_SHIPPING);
+  }
+
   render() {
     const { t } = this.props;
     return timestampRender(
