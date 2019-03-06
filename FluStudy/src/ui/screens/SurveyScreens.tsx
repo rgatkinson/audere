@@ -752,13 +752,34 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
-          this.props.navigation.push("Mucus");
+          this.props.navigation.push("OpenSwab");
         }}
       />
     );
   }
 }
 export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
+
+class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return timestampRender(
+      "OpenSwabScreen",
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        imageAspectRatio={1.75}
+        imageSrc={require("../../img/openNasalSwab.png")}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={() => {
+          this.props.navigation.push("Mucus");
+        }}
+      />
+    );
+  }
+}
+export const OpenSwab = withNamespaces("openSwabScreen")<Props>(OpenSwabScreen);
 
 class MucusScreen extends React.Component<Props & WithNamespaces> {
   render() {

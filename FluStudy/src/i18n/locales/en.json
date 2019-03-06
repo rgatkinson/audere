@@ -292,7 +292,11 @@
   },
   "swabPrepScreen": {
     "title": "Prepare tube",
-    "description": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube.\n\nNext, remove the nasal swab from the wrapper. Be careful not to drop it, and only touch the handle, not the tip."
+    "description": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
+  },
+  "openSwabScreen": {
+     "title": "Open nasal swab",
+    "description": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\n\nBe careful not to drop it, and only touch the handle, not the tip."
   },
   "mucusScreen": {
     "title": "Collect sample from nose",
