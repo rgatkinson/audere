@@ -79,7 +79,6 @@ import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
 import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
-import ImageText from "../components/ImageText";
 import MonthPicker from "../components/MonthPicker";
 import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
@@ -631,11 +630,23 @@ class ManualEntryScreen extends React.Component<
               onSubmitEditing={() => {}}
             />
           </View>
-          <ImageText
-            imageSrc={require("../../img/barcodeSample.png")}
-            imageWidth={width}
-            text={t("tips")}
-          />
+          <View
+            style={{
+              alignItems: "center",
+              alignSelf: "stretch",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Image
+              style={{ aspectRatio: 2.2, flex: 0.4 }}
+              source={require("../../img/barcode.png")}
+            />
+            <Text
+              content={t("tips")}
+              style={{ flex: 0.6, paddingLeft: GUTTER }}
+            />
+          </View>
         </Screen>
       </KeyboardAvoidingView>
     );
