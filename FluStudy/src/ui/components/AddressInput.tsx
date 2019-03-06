@@ -204,6 +204,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             }}
           />
           <NumberInput
+            maxDigits={5}
             placeholder={
               t("zipcode") + (this.state.keyboardOpen ? "" : t("required"))
             }
