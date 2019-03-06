@@ -80,6 +80,16 @@ yargs
     handler: command(cmdDemo)
   })
   .command({
+    command: "demo1 <release> <kind> <row> [value]",
+    builder: yargs =>
+      yargs
+        .string("release")
+        .string("kind")
+        .string("row")
+        .option("value", { boolean: true }),
+    handler: command(cmdDemo1)
+  })
+  .command({
     command: "generate-random-key [size]",
     builder: yargs => yargs.option("size", {
       number: true
@@ -214,7 +224,7 @@ interface DemoArgs {
 }
 
 async function cmdDemo(argv: DemoArgs): Promise<void> {
-  const isDemo = !!argv.value;
+  const isDemo = argv.value == null ? true : !!argv.value;
 
   switch (argv.release) {
     case Release.Sniffles: {
@@ -238,6 +248,56 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
       ])
       break;
     }
+
+    default:
+      throw new Error(`Unrecognized release: '${argv.release}`);
+  }
+}
+
+interface Demo1Args {
+  release: Release;
+  kind: string;
+  row: string;
+  value: boolean;
+}
+
+async function cmdDemo1(argv: Demo1Args): Promise<void> {
+  const isDemo = argv.value == null ? true : !!argv.value;
+
+  switch (argv.release) {
+    case Release.Sniffles:
+      switch (argv.kind) {
+        case "pii": {
+          const data = await sniffles.pii.load(argv.row);
+          await sniffles.pii.setDemo(data, isDemo);
+          break;
+        }
+        case "nonpii": {
+          const data = await sniffles.nonPii.load(argv.row);
+          await sniffles.nonPii.setDemo(data, isDemo);
+          break;
+        }
+        default:
+          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+      }
+      break;
+
+    case Release.Fever:
+      switch (argv.kind) {
+        case "pii": {
+          const data = await fever.pii.load(argv.row);
+          await fever.pii.setDemo(data, isDemo);
+          break;
+        }
+        case "nonpii": {
+          const data = await fever.nonPii.load(argv.row);
+          await fever.nonPii.setDemo(data, isDemo);
+          break;
+        }
+        default:
+          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+      }
+      break;
 
     default:
       throw new Error(`Unrecognized release: '${argv.release}`);
