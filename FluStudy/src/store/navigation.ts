@@ -66,9 +66,10 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
             `navigation:${action.type}:${currentScreen}:${nextScreen}`
           );
           store.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
-          AppEventsLogger.logEvent(
-            `navigation:${action.type}:${currentScreen}:${nextScreen}`
-          );
+          AppEventsLogger.logEvent(`navigation:${action.type}`, {
+            from: currentScreen,
+            to: nextScreen,
+          });
         }
         return result;
     }

@@ -14,7 +14,6 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import KeyboardListener from "react-native-keyboard-listener";
 import CheckBox from "react-native-check-box";
 import {
   EventInfoKind,
@@ -266,7 +265,6 @@ interface ConsentProps {
 
 interface ConsentState {
   email?: string;
-  keyboardOpen?: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -280,7 +278,6 @@ class ConsentScreen extends React.PureComponent<
     super(props);
     this.state = {
       email: props.email,
-      keyboardOpen: true,
     };
   }
 
@@ -320,14 +317,6 @@ class ConsentScreen extends React.PureComponent<
     return timestampRender(
       "ConsentScreen",
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-        <KeyboardListener
-          onWillShow={() => {
-            this.setState({ keyboardOpen: true });
-          }}
-          onWillHide={() => {
-            this.setState({ keyboardOpen: false });
-          }}
-        />
         <Screen
           buttonLabel={t("accept")}
           canProceed={this._canProceed()}
