@@ -1964,7 +1964,7 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={require("../../img/confirmation.png")}
+        imageSrc={require("../../img/packingThingsUp.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
