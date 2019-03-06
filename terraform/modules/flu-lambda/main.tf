@@ -37,7 +37,7 @@ module "hutch_upload_cron" {
   name = "${local.base_name}-hutch-upload"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "rate(1 hour)"
-  url = "https://${var.fluapi_fqdn}:444/api/export/sendEncounters"
+  url = "http://${var.fluapi_fqdn}:444/api/export/sendEncounters"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
 }
@@ -47,20 +47,9 @@ module "fever_consent_emailer_cron" {
   name = "${local.base_name}-fever-consent-emailer"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "rate(1 hour)"
-  url = "https://${var.fluapi_fqdn}:444/api/sendConsentEmails"
+  url = "http://${var.fluapi_fqdn}:444/api/sendConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
-}
-
-module "fever_incentives_report_cron" {
-  source = "../lambda-cron"
-  name = "${local.base_name}-fever-incentives-report"
-  role_arn = "${aws_iam_role.flu_lambda.arn}"
-  frequency = "${local.cron_daily_before_9AM_and_2PM_PST}"
-  url = "https://${var.fluapi_fqdn}:444/api/sendIncentives"
-  subnet_id = "${var.lambda_subnet_id}"
-  security_group_ids = ["${var.lambda_sg_ids}"]
-  timeout = 300
 }
 
 module "fever_kits_report_cron" {
@@ -68,7 +57,7 @@ module "fever_kits_report_cron" {
   name = "${local.base_name}-fever-kits-report"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "${local.cron_daily_before_9AM_and_2PM_PST}"
-  url = "https://${var.fluapi_fqdn}:444/api/sendKitOrders"
+  url = "http://${var.fluapi_fqdn}:444/api/sendKitOrders"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
   timeout = 300

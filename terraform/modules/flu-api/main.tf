@@ -142,7 +142,6 @@ resource "aws_elb" "flu_api_elb" {
   security_groups = [
     "${aws_security_group.public_http.id}",
     "${module.fluapi_sg.client_id}",
-    "${module.elbinternal_sg.server_id}",
   ]
 
   listener {
@@ -161,17 +160,42 @@ resource "aws_elb" "flu_api_elb" {
     target = "HTTPS:443/api"
   }
 
+  tags {
+    key = "Name"
+    value = "${local.base_name}"
+  }
+
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_elb" "flu_api_internal_elb" {
+  name = "${local.base_name}-internal"
+  subnets = ["${aws_subnet.api.id}"]
+  internal = true
+
+  security_groups = [
+    "${module.fluapi_sg.client_id}",
+    "${module.elbinternal_sg.server_id}",
+  ]
+
   listener {
     lb_port = 444
-    lb_protocol = "https"
+    lb_protocol = "http"
     instance_port = 444
     instance_protocol = "https"
-    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
+  }
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+    target = "HTTP:444/api"
   }
 
   tags {
     key = "Name"
-    value = "${local.base_name}"
+    value = "${local.base_name}-internal"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
