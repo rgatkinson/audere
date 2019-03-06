@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Grid from "./Grid";
@@ -131,11 +137,25 @@ interface ItemProps {
 }
 
 class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
+  _animatedValue = new Animated.Value(0);
+
   _onPress = () => {
     this.props.onPressItem(this.props.id);
+    if (!this.props.selected) {
+      this._animatedValue.setValue(0);
+      Animated.timing(this._animatedValue, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.bezier(0, 0.75, 0.75, 3),
+      }).start();
+    }
   };
 
   render() {
+    const marginLeft = this._animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, GUTTER / 2],
+    });
     return (
       <TouchableOpacity
         style={[
@@ -143,21 +163,21 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
           this.props.selected && styles.selectedItem,
           { width: this.props.width },
         ]}
-        onPress={this._onPress}
+        onPress={() => this._onPress()}
       >
-        <Feather
-          name="check"
-          color={this.props.selected ? SECONDARY_COLOR : DISABLED_COLOR}
-          size={20}
-        />
-        <Text
-          content={this.props.t("surveyOption:" + this.props.id)}
-          style={[
-            styles.itemText,
-            this.props.selected && styles.selectedItemText,
-            { width: this.props.width - 20 - 2 * GUTTER },
-          ]}
-        />
+        {this.props.selected && (
+          <Feather name="check" color={SECONDARY_COLOR} size={20} />
+        )}
+        <Animated.View style={{ marginLeft }}>
+          <Text
+            content={this.props.t("surveyOption:" + this.props.id)}
+            style={[
+              styles.itemText,
+              this.props.selected && styles.selectedItemText,
+              { width: this.props.width - 20 - 2 * GUTTER },
+            ]}
+          />
+        </Animated.View>
       </TouchableOpacity>
     );
   }
@@ -179,7 +199,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontSize: SMALL_TEXT,
     lineHeight: INPUT_HEIGHT - GUTTER,
-    marginLeft: GUTTER / 2,
   },
   selectedItem: {
     borderColor: SECONDARY_COLOR,
