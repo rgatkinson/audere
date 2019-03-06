@@ -112,7 +112,7 @@ const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
-const BARCODE_RE = /[0-9A-Fa-f]{8}/g;
+const BARCODE_RE = /^[0-9A-Fa-f]{8}$/;
 const BARCODE_CHARS = 8;
 const FLUSHOT_START_DATE = new Date(2018, 0);
 
@@ -354,14 +354,18 @@ class ScanScreen extends React.Component<
                 );
                 this.props.navigation.push("ScanConfirmation");
               } else {
-                Alert.alert(t("sorry"), t("invalidBarcode"), [
-                  {
-                    text: t("common:button:ok"),
-                    onPress: () => {
-                      this.setState({ activeScan: false });
+                Alert.alert(
+                  t("sorry"),
+                  t("invalidBarcode", { barcode: data }),
+                  [
+                    {
+                      text: t("common:button:ok"),
+                      onPress: () => {
+                        this.setState({ activeScan: false });
+                      },
                     },
-                  },
-                ]);
+                  ]
+                );
               }
             }
           }}
@@ -524,8 +528,8 @@ class ManualEntryScreen extends React.Component<
   _validBarcode = () => {
     return (
       this.state.barcode1 != null &&
-      this.state.barcode1.length === BARCODE_CHARS &&
-      BARCODE_RE.test(this.state.barcode1)
+      this.state.barcode1.length == BARCODE_CHARS &&
+      BARCODE_RE.test(this.state.barcode1.trim())
     );
   };
 
@@ -533,7 +537,8 @@ class ManualEntryScreen extends React.Component<
     return (
       this.state.barcode1 != null &&
       this.state.barcode2 != null &&
-      this.state.barcode1.toLowerCase() === this.state.barcode2.toLowerCase()
+      this.state.barcode1.toLowerCase().trim() ===
+        this.state.barcode2.toLowerCase().trim()
     );
   };
 
@@ -541,7 +546,7 @@ class ManualEntryScreen extends React.Component<
     this.props.dispatch(
       setKitBarcode({
         sample_type: "manualEntry",
-        code: this.state.barcode1!,
+        code: this.state.barcode1!.trim(),
       })
     );
     this.props.dispatch(
@@ -574,15 +579,19 @@ class ManualEntryScreen extends React.Component<
               Alert.alert("", t("dontMatch"), [
                 { text: t("common:button:ok"), onPress: () => {} },
               ]);
-            } else if (this._validBarcode()) {
-              this._onSave();
+            } else if (!this._validBarcode()) {
+              Alert.alert(
+                t("sorry"),
+                t("invalidBarcode", { barcode: this.state.barcode1 }),
+                [
+                  {
+                    text: t("common:button:ok"),
+                    onPress: () => {},
+                  },
+                ]
+              );
             } else {
-              Alert.alert(t("sorry"), t("invalidBarcode"), [
-                {
-                  text: t("common:button:ok"),
-                  onPress: () => {},
-                },
-              ]);
+              this._onSave();
             }
           }}
         >

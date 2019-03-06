@@ -251,7 +251,7 @@
   },
   "scanScreen": {
     "sorry": "Sorry",
-    "invalidBarcode": "That doesn't look like a flu@home kit barcode. Please try again.",
+    "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "enterManually": "Enter barcode manually",
     "cameraWarning": "\"flu@home\" would like to access your camera",
     "cameraAccess": "Camera access needed to scan barcodes."
@@ -265,7 +265,7 @@
     "sorry": "Sorry",
     "barcodeRequired": "Please enter your kit's barcode to continue.",
     "dontMatch": "Those barcodes don't match. Please try again.",
-    "invalidBarcode": "That doesn't look like a flu@home kit barcode. Please try again.",
+    "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "placeholder": "Enter barcode",
     "secondPlaceholder": "Confirm barcode",
     "enterKit": "Enter barcode manually",
