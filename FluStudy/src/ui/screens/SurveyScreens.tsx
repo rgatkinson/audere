@@ -442,7 +442,7 @@ class ScanConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
-          this.props.navigation.push("TestInstructions");
+          this.props.navigation.push("Unpacking");
         }}
       >
         <BorderView style={{ marginTop: GUTTER }}>
@@ -477,7 +477,7 @@ class ManualConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={() => {
-          this.props.navigation.push("TestInstructions");
+          this.props.navigation.push("Unpacking");
         }}
       >
         <BorderView style={{ marginTop: GUTTER }}>
@@ -645,11 +645,8 @@ export const ManualEntry = withNamespaces("manualEntryScreen")<
   Props & BarcodeProps & WorkflowProps
 >(ManualEntryScreen);
 
+// NOTE this screen has been removed. Leaving in code for redux state versioning.
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Unpacking");
-  };
-
   render() {
     const { t } = this.props;
     return timestampRender(
@@ -658,10 +655,13 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
+        imageAspectRatio={1.75}
         imageSrc={require("../../img/whatsNext.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={this._onNext}
+        onNext={() => {
+          this.props.navigation.push("Unpacking");
+        }}
       />
     );
   }

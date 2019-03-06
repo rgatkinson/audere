@@ -30,7 +30,9 @@ export default class NumberInput extends React.Component<Props, State> {
 
   onChangeText = (text: string) => {
     const numbers = "0123456789";
-    const newText = text.replace(/[^0-9]/g, "").substring(0, this.props.maxDigits);
+    const newText = text
+      .replace(/[^0-9]/g, "")
+      .substring(0, this.props.maxDigits);
     this.setState({ text: newText });
     this.props.onChangeText(newText);
   };

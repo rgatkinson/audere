@@ -282,9 +282,9 @@
     "description": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
   },
   "unpackingScreen": {
-    "title": "Unpacking Instructions",
-    "description": "Let's check to make sure your kit is complete. You should have an introduction card, a box with a number ①①, a bag with a number ②②, a bag with a number ③③, and some bubble wrap. Don't open all the individual bags yet--we'll walk you through each step.\n\n**Keep** the big box you just opened. After the tests are complete you will package everything up in that same box to send back to us.",
-    "kitMissingItems": "Is your kit missing items? Email us"
+    "title": "How the test works",
+    "description": "We'll walk you through all the necessary steps in the following screens. First et's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①①, a bag with a number ②②, a bag with a number ③③, and some bubble wrap.",
+    "kitMissingItems": "Is your kit missing items? Email us."
   },
   "swabScreen": {
     "title": "Begin the first test",
