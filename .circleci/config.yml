@@ -336,7 +336,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
       - run:
           name: flu@home Yarn Install
           command: |
@@ -354,7 +354,7 @@ jobs:
             cd FluStudy
             yarn test
       - save_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
           paths:
             - FluStudy/node_modules
       - run:
