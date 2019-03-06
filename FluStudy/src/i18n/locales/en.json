@@ -283,7 +283,7 @@
   },
   "unpackingScreen": {
     "title": "How the test works",
-    "description": "We'll walk you through all the necessary steps in the following screens. First et's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①①, a bag with a number ②②, a bag with a number ③③, and some bubble wrap.",
+    "description": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①①, a bag with a number ②②, a bag with a number ③③, and some bubble wrap.",
     "kitMissingItems": "Is your kit missing items? Email us."
   },
   "swabScreen": {
