@@ -1225,8 +1225,10 @@ resource "aws_iam_group_membership" "administrators" {
   group = "${aws_iam_group.administrators.name}"
 
   users = [
+    "billy",
     "mmarucheck",
     "philip",
+    "ram",
   ]
 }
 
