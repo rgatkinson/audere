@@ -794,6 +794,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
 }
 export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
 
+@connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -807,6 +808,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         title={t("title")}
         onNext={() => {
+          this.props.dispatch(setOneMinuteStartTime());
           this.props.navigation.push("FirstTimer");
         }}
       />
@@ -827,17 +829,10 @@ interface DemoModeProps {
 
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
-  oneMinuteStartTime: state.survey.oneMinuteStartTime,
 }))
 class FirstTimerScreen extends React.Component<
   Props & DemoModeProps & FirstTimerProps & WithNamespaces & TimerProps
 > {
-  componentDidMount() {
-    if (this.props.oneMinuteStartTime == null) {
-      this.props.dispatch(setOneMinuteStartTime());
-    }
-  }
-
   render() {
     const { t } = this.props;
     return timestampRender(
