@@ -250,6 +250,8 @@
     "inputManually": "Enter barcode manually"
   },
   "scanScreen": {
+    "sorry": "Sorry",
+    "invalidBarcode": "That doesn't look like a flu@home kit barcode. Please try again.",
     "enterManually": "Enter barcode manually",
     "cameraWarning": "\"flu@home\" would like to access your camera",
     "cameraAccess": "Camera access needed to scan barcodes."
@@ -260,7 +262,11 @@
     "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
-    "placeholder": "ex: KIT xxxxxxxx",
+    "sorry": "Sorry",
+    "barcodeRequired": "Please enter your kit's barcode to continue.",
+    "dontMatch": "Those barcodes don't match. Please try again.",
+    "invalidBarcode": "That doesn't look like a flu@home kit barcode. Please try again.",
+    "placeholder": "Enter barcode",
     "secondPlaceholder": "Confirm barcode",
     "enterKit": "Enter barcode manually",
     "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",

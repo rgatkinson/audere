@@ -5,6 +5,7 @@
 
 import React from "react";
 import {
+  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -112,6 +113,7 @@ const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
+const BARCODE_RE = /[0-9A-Fa-f]{8}/g;
 const BARCODE_CHARS = 8;
 const FLUSHOT_START_DATE = new Date(2018, 0);
 
@@ -340,19 +342,30 @@ class ScanScreen extends React.Component<
           onBarCodeScanned={({ type, data }: { type: any; data: string }) => {
             if (!this.state.activeScan) {
               this.setState({ activeScan: true });
-              this.props.dispatch(
-                setKitBarcode({
-                  sample_type: type,
-                  code: data,
-                })
-              );
-              this.props.dispatch(
-                setWorkflow({
-                  ...this.props.workflow,
-                  surveyStartedAt: new Date().toISOString(),
-                })
-              );
-              this.props.navigation.push("ScanConfirmation");
+              if (BARCODE_RE.test(data) && data.length == BARCODE_CHARS) {
+                this.props.dispatch(
+                  setKitBarcode({
+                    sample_type: type,
+                    code: data,
+                  })
+                );
+                this.props.dispatch(
+                  setWorkflow({
+                    ...this.props.workflow,
+                    surveyStartedAt: new Date().toISOString(),
+                  })
+                );
+                this.props.navigation.push("ScanConfirmation");
+              } else {
+                Alert.alert(t("sorry"), t("invalidBarcode"), [
+                  {
+                    text: t("common:button:ok"),
+                    onPress: () => {
+                      this.setState({ activeScan: false });
+                    },
+                  },
+                ]);
+              }
             }
           }}
         />
@@ -511,39 +524,36 @@ class ManualEntryScreen extends React.Component<
 
   confirmInput = React.createRef<TextInput>();
 
-  _extractOnlyBarcode = (text: string | null): string => {
-    if (!text) {
-      return "";
-    }
-    return text
-      .toLowerCase()
-      .replace(/[^a-f0-9]+/g, "")
-      .substring(0, BARCODE_CHARS);
+  _validBarcode = () => {
+    return (
+      this.state.barcode1 != null &&
+      this.state.barcode1.length === BARCODE_CHARS &&
+      BARCODE_RE.test(this.state.barcode1)
+    );
   };
 
-  _validBarcodes = () => {
-    const barcode1 = this._extractOnlyBarcode(this.state.barcode1);
-    const barcode2 = this._extractOnlyBarcode(this.state.barcode2);
-
-    return barcode1.length === BARCODE_CHARS && barcode1 === barcode2;
+  _matchingBarcodes = () => {
+    return (
+      this.state.barcode1 != null &&
+      this.state.barcode2 != null &&
+      this.state.barcode1.toLowerCase() === this.state.barcode2.toLowerCase()
+    );
   };
 
   _onSave = () => {
-    if (this._validBarcodes()) {
-      this.props.dispatch(
-        setKitBarcode({
-          sample_type: "manualEntry",
-          code: this._extractOnlyBarcode(this.state.barcode1!),
-        })
-      );
-      this.props.dispatch(
-        setWorkflow({
-          ...this.props.workflow,
-          surveyStartedAt: new Date().toISOString(),
-        })
-      );
-      this.props.navigation.push("ManualConfirmation");
-    }
+    this.props.dispatch(
+      setKitBarcode({
+        sample_type: "manualEntry",
+        code: this.state.barcode1!,
+      })
+    );
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        surveyStartedAt: new Date().toISOString(),
+      })
+    );
+    this.props.navigation.push("ManualConfirmation");
   };
 
   render() {
@@ -554,40 +564,73 @@ class ManualEntryScreen extends React.Component<
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("common:button:continue")}
-          canProceed={this._validBarcodes()}
+          canProceed={true}
           desc={t("desc")}
           navigation={this.props.navigation}
           title={t("enterKit")}
-          onNext={this._onSave}
+          onNext={() => {
+            if (this.state.barcode1 == null) {
+              Alert.alert("", t("barcodeRequired"), [
+                { text: t("common:button:ok"), onPress: () => {} },
+              ]);
+            } else if (!this._matchingBarcodes()) {
+              Alert.alert("", t("dontMatch"), [
+                { text: t("common:button:ok"), onPress: () => {} },
+              ]);
+            } else if (this._validBarcode()) {
+              this._onSave();
+            } else {
+              Alert.alert(t("sorry"), t("invalidBarcode"), [
+                {
+                  text: t("common:button:ok"),
+                  onPress: () => {},
+                },
+              ]);
+            }
+          }}
         >
-          <TextInput
-            autoFocus={this.props.navigation.isFocused()}
-            autoCorrect={false}
-            placeholder={t("placeholder")}
-            returnKeyType="done"
-            style={{ marginBottom: GUTTER }}
-            value={this.state.barcode1}
-            onChangeText={(text: string) => {
-              const prefixedCode =
-                BARCODE_PREFIX + this._extractOnlyBarcode(text);
-              this.setState({ barcode1: prefixedCode });
+          <View
+            style={{
+              alignSelf: "stretch",
+              flexDirection: "row",
+              marginBottom: GUTTER,
             }}
-            onSubmitEditing={() => this.confirmInput.current!.focus()}
-          />
-          <TextInput
-            autoCorrect={false}
-            placeholder={t("secondPlaceholder")}
-            ref={this.confirmInput}
-            returnKeyType="done"
-            style={{ marginBottom: GUTTER }}
-            value={this.state.barcode2}
-            onChangeText={(text: string) => {
-              const prefixedCode =
-                BARCODE_PREFIX + this._extractOnlyBarcode(text);
-              this.setState({ barcode2: prefixedCode });
+          >
+            <Text content={"KIT "} style={{ paddingVertical: 3 }} />
+            <TextInput
+              autoFocus={this.props.navigation.isFocused()}
+              autoCorrect={false}
+              placeholder={t("placeholder")}
+              returnKeyType="done"
+              style={{ flex: 1 }}
+              value={this.state.barcode1}
+              onChangeText={(text: string) => {
+                this.setState({ barcode1: text });
+              }}
+              onSubmitEditing={() => this.confirmInput.current!.focus()}
+            />
+          </View>
+          <View
+            style={{
+              alignSelf: "stretch",
+              flexDirection: "row",
+              marginBottom: GUTTER,
             }}
-            onSubmitEditing={() => {}}
-          />
+          >
+            <Text content={"KIT "} style={{ paddingVertical: 3 }} />
+            <TextInput
+              autoCorrect={false}
+              placeholder={t("secondPlaceholder")}
+              ref={this.confirmInput}
+              returnKeyType="done"
+              style={{ flex: 1 }}
+              value={this.state.barcode2}
+              onChangeText={(text: string) => {
+                this.setState({ barcode2: text });
+              }}
+              onSubmitEditing={() => {}}
+            />
+          </View>
           <ImageText
             imageSrc={require("../../img/barcodeSample.png")}
             imageWidth={width}
