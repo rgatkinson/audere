@@ -71,7 +71,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toBeGreaterThan(0);
     expect(emails.length).toEqual(1);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does not email consent if request not mentioned", async () => {
@@ -88,7 +88,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(1);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does not email consent if requested not to", async () => {
@@ -104,7 +104,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(1);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does nothing if no consent", async () => {
@@ -121,7 +121,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(0);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does nothing if no email", async () => {
@@ -138,7 +138,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(0);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does not email consent if screening not complete", async () => {
@@ -156,7 +156,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(0);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does not email consent more than once", async () => {
@@ -175,7 +175,7 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(0);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   it("does not email consent if demo mode", async () => {
@@ -192,13 +192,13 @@ describe("FeverConsentEmailer", () => {
     expect(result.body.length).toEqual(0);
     expect(emails.length).toEqual(0);
 
-    await deleteSurveyPii(csruid);
+    await deleteSurvey(csruid);
   });
 
   async function putSurveyAndRunEmailer(document: SurveyDocument) {
     // Clean up beforehand in case a previous test failed and left behind.
     // An existing record can cause these tests to fail.
-    await deleteSurveyPii(document.csruid);
+    await deleteSurvey(document.csruid);
 
     await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${document.csruid}`)
@@ -235,11 +235,9 @@ describe("FeverConsentEmailer", () => {
     });
   }
 
-  async function deleteSurveyPii(csruid: string): Promise<void> {
+  async function deleteSurvey(csruid: string): Promise<void> {
     const piiSurvey = await models.surveyPii.findOne({
-      where: {
-        csruid: { [Op.eq]: csruid }
-      }
+      where: { csruid }
     });
     if (piiSurvey != null) {
       await models.consentEmail.destroy({
@@ -248,6 +246,12 @@ describe("FeverConsentEmailer", () => {
         }
       });
       await piiSurvey.destroy();
+    }
+    const nonPiiSurvey = await models.surveyNonPii.findOne({
+      where: { csruid }
+    });
+    if (nonPiiSurvey != null) {
+      await nonPiiSurvey.destroy();
     }
   }
 });
