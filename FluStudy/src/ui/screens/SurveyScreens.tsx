@@ -857,10 +857,9 @@ class FirstTimerScreen extends React.Component<
               marginBottom: GUTTER,
             }}
           >
-            <Text
-              content={this.props.done() ? t("done") : t("remaining")}
-              style={{ marginBottom: GUTTER }}
-            />
+            {!this.props.done() && (
+              <Text content={t("note")} style={{ marginBottom: GUTTER }} />
+            )}
             {this.props.done() ? (
               <Button
                 enabled={true}
@@ -1394,10 +1393,6 @@ class ThankYouSurveyScreen extends React.Component<
               marginBottom: GUTTER,
             }}
           >
-            <Text
-              content={this.props.done() ? t("done") : t("remaining")}
-              style={{ marginBottom: GUTTER }}
-            />
             {this.props.done() ? (
               <Button
                 enabled={true}
