@@ -21,3 +21,7 @@ export function isNotNull<T>(item: T | null | undefined): item is T {
 export function isValidUSZipCode(zip: string | null | undefined): boolean {
   return zip != null && /^[0-9]{5,5}(-[0-9]{4,4})?$/.test(zip);
 }
+
+export function isNotEmptyString(input: string | null | undefined): boolean {
+  return !!input && input.trim().length > 0;
+}

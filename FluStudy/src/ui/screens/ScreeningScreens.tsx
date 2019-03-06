@@ -53,7 +53,7 @@ import Text from "../components/Text";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SECONDARY_COLOR, SMALL_TEXT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
-import { isValidUSZipCode } from "../../util/check";
+import { isValidUSZipCode, isNotEmptyString } from "../../util/check";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 
 interface Props {
@@ -480,13 +480,13 @@ class AddressInputScreen extends React.Component<
   };
 
   _haveValidAddress = (): boolean => {
-    const address = this.state.address;
+    const { address } = this.state;
     return (
       !!address &&
-      !!address.firstName &&
-      !!address.lastName &&
-      !!address.address &&
-      !!address.city &&
+      isNotEmptyString(address.firstName) &&
+      isNotEmptyString(address.lastName) &&
+      isNotEmptyString(address.address) &&
+      isNotEmptyString(address.city) &&
       !!address.state &&
       isValidUSZipCode(address.zipcode)
     );
