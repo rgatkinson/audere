@@ -1608,7 +1608,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
     );
     this.setState({ spinner: false });
     this.props.navigation.push("TestStripConfirmation", {
-      photo64: photo.base64,
+      photo: photo.uri,
     });
   }
 
@@ -1723,7 +1723,7 @@ class TestStripConfirmationScreen extends React.Component<
 > {
   render() {
     const { navigation, t } = this.props;
-    const photo = navigation.getParam("photo64", null);
+    const photo = navigation.getParam("photo", null);
     const screenWidth = Dimensions.get("window").width;
     const screenHeight = Dimensions.get("window").height;
     return timestampRender(
@@ -1737,16 +1737,18 @@ class TestStripConfirmationScreen extends React.Component<
           this.props.navigation.push("CleanFirstTest");
         }}
       >
-        <Image
-          style={{
-            aspectRatio: screenWidth / screenHeight,
-            width: "50%",
-            marginVertical: GUTTER,
-          }}
-          source={{
-            uri: `data:image/gif;base64,${photo}`,
-          }}
-        />
+        {photo != null && (
+          <Image
+            style={{
+              aspectRatio: screenWidth / screenHeight,
+              width: "50%",
+              marginVertical: GUTTER,
+            }}
+            source={{
+              uri: photo,
+            }}
+          />
+        )}
       </Screen>
     );
   }
