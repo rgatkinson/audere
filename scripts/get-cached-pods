@@ -8,8 +8,8 @@
 
 set -euo pipefail
 
-HASH="92c05ca03d49a093e4c7afcdf056a6af39f042fcfb8072ac042e5c263b8b89b7"
-DATE="2019-02-28"
+HASH="b57fb34935aacc8fa0e4a72e13133f557e732d214a4aed13c0d111d2de36723f"
+DATE="2019-03-06"
 PODS_FILENAME="$DATE.$HASH.Pods.tar.bz2"
 
 PODS_URL="https://s3-us-west-2.amazonaws.com/build-artifacts.auderenow.io/$PODS_FILENAME"
