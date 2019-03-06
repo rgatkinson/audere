@@ -313,6 +313,7 @@ class ScanScreen extends React.Component<
   }
 
   _setTimer() {
+    this.setState({ activeScan: false });
     // Timeout after 30 seconds
     this._clearTimer();
     this._timer = setTimeout(() => {
@@ -351,7 +352,6 @@ class ScanScreen extends React.Component<
                   surveyStartedAt: new Date().toISOString(),
                 })
               );
-              this.setState({ activeScan: false });
               this.props.navigation.push("ScanConfirmation");
             }
           }}
