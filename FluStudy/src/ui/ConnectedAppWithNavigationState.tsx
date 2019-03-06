@@ -26,7 +26,6 @@ import AppNavigator from "./AppNavigator";
 import { registerNavigator } from "./NavigatorRegistry";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
-import { tracker } from "../util/tracker";
 
 const navigator = AppNavigator;
 registerNavigator(navigator);
@@ -67,7 +66,6 @@ class AppWithNavigationState extends React.Component<Props> {
   };
 
   componentDidMount() {
-    tracker.setAnalyticsCollectionEnabled(true);
     AppState.addEventListener("change", this._handleAppStateChange);
     this._handleAppStateChange("launch");
   }

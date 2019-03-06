@@ -11,10 +11,23 @@ jest.mock("react-native-firebase", () => {
   return {
     analytics: jest.fn(() => {
       return {
+        logEvent: jest.fn(),
         setAnalyticsCollectionEnabled: jest.fn(),
         setCurrentScreen: jest.fn(),
-        logEvent: jest.fn(),
+        setUserId: jest.fn(),
       };
     }),
+  };
+});
+
+jest.mock("react-native-device-info", () => {
+  return {
+    getDeviceName: jest.fn(),
+    getIPAddress: jest.fn(() => {
+      return {
+        catch: jest.fn(),
+      };
+    }),
+    getUniqueID: jest.fn(),
   };
 });

@@ -8,6 +8,7 @@ REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 NOTIF_FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
 FIREBASE_FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
+DEVICEINFO_FILE="$REPO_ROOT_DIR/FluStudy/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
 
 if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE";
 then
@@ -32,6 +33,14 @@ replace='HEADER_SEARCH_PATHS = (\
 				);'
 FILEBAK="$FIREBASE_FILE.bak"
 perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
+
+echo "Updating DeviceInfo build search paths"
+match='HEADER_SEARCH_PATHS = .+?;'
+replace='HEADER_SEARCH_PATHS = (\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
+				);'
+FILEBAK="$DEVICEINFO_FILE.bak"
+perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
 EXBUILDCONSTANTS="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/EXBuildConstants.plist"

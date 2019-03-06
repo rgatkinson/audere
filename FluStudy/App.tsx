@@ -23,6 +23,7 @@ import {
   uploadingErrorHandler,
   ErrorProps,
 } from "./src/crashReporter";
+import { startTracking } from "./src/util/tracker";
 
 type AppProps = {
   exp?: {
@@ -41,6 +42,7 @@ export default class App extends React.Component<AppProps> {
       reportPreviousCrash(this.props.exp.errorRecovery);
     }
     setupErrorHandler();
+    startTracking();
   }
 
   componentDidCatch(error: Error) {

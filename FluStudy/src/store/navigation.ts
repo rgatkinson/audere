@@ -107,6 +107,7 @@ export function firebaseNavigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.PUSH:
       case StackActions.RESET:
         const currentScreen = getActiveRouteName(store.getState().navigation);
+        const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
 
         if (nextScreen && nextScreen !== currentScreen) {
@@ -117,7 +118,7 @@ export function firebaseNavigationLoggingMiddleware(store: MiddlewareAPI) {
             tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
           }
         }
-        break;
+        return result;
     }
     return next(action);
   };

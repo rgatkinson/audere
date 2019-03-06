@@ -1,3 +1,5 @@
+import { updateCollectionEnabled } from "../util/tracker";
+
 export type MetaAction = { type: "SET_DEMO"; isDemo: boolean };
 
 export type MetaState = {
@@ -17,6 +19,7 @@ export default function reducer(state = initialState, action: MetaAction) {
 }
 
 export function setDemo(isDemo: boolean): MetaAction {
+  updateCollectionEnabled(isDemo);
   return {
     type: "SET_DEMO",
     isDemo,
