@@ -106,7 +106,7 @@
     "redux-persist": "^5.10.0",
     "redux-persist-transform-encrypt": "^2.0.1",
     "redux-persist-transform-immutable": "^5.0.0",
-    "snyk": "^1.122.3",
+    "snyk": "^1.136.0",
     "url-parse": "^1.4.4",
     "uuid": "^3.3.2"
   }
