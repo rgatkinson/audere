@@ -131,7 +131,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCorrect={false}
           autoFocus={false}
           onFocus={this.removeZipFocus}
-          placeholder={t("streetAddress")}
+          placeholder={t("streetAddress2")}
           ref={this.address2}
           returnKeyType="next"
           style={styles.textInput}
