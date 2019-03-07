@@ -14,7 +14,6 @@ import { AppLoading, Font } from "expo";
 import { getStore, getPersistor } from "./src/store/";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { Feather } from "@expo/vector-icons";
 import ConnectedAppWithNavigationState from "./src/ui/ConnectedAppWithNavigationState";
 import i18n from "./src/i18n";
 import {

@@ -31,3 +31,13 @@ jest.mock("react-native-device-info", () => {
     getUniqueID: jest.fn(),
   };
 });
+
+jest.mock("react-native-fabric", () => {
+  return {
+    Crashlytics: {
+      recordError: jest.fn(),
+      setUserEmail: jest.fn(),
+      setUserIdentifier: jest.fn(),
+    },
+  };
+});

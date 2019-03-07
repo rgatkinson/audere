@@ -11,7 +11,6 @@ import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
-import { ConsentIneligible } from "../ui/screens/ScreeningScreens";
 
 const initialAction = { type: NavigationActions.INIT };
 

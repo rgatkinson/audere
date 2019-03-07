@@ -7,6 +7,7 @@ import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
 import { uploader, uploaderMiddleware } from "./uploader";
+import { crashReportingDetailsMiddleware } from "../crashReporter";
 
 export { uploader, events, logger } from "./uploader";
 
@@ -88,6 +89,7 @@ async function getStoreImpl() {
   return createStore(
     persistReducer(persistConfig, rootReducer),
     applyMiddleware(
+      crashReportingDetailsMiddleware,
       firebaseNavigationLoggingMiddleware,
       navigationMiddleware,
       navigationLoggingMiddleware,

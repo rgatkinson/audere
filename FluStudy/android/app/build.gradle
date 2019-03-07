@@ -97,6 +97,7 @@ apply from: 'expo.gradle'
 
 
 dependencies {
+    compile project(':react-native-fabric')
     compile project(':react-native-fbsdk')
     compile project(':react-native-firebase')
     compile project(':react-native-get-random-values')

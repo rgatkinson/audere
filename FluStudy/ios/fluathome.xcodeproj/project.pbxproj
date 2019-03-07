@@ -21,6 +21,7 @@
 		EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA054781220D289A00AC77FF /* libRCTPushNotification.a */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
+		F08F62492230A8C8008CCF6A /* libSMXCrashlytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F62462230A8A8008CCF6A /* libSMXCrashlytics.a */; };
 		F09B107F222880D0002970AA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F09B107C222880D0002970AA /* GoogleService-Info.plist */; };
 		F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F09B108922288224002970AA /* libRNFirebase.a */; };
 /* End PBXBuildFile section */
@@ -54,6 +55,20 @@
 			remoteGlobalIDString = E72EC1401F7ABB5A0001BC90;
 			remoteInfo = "RNDeviceInfo-tvOS";
 		};
+		F08F62452230A8A8008CCF6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D8D9DB831C6D03DB009FBC0E;
+			remoteInfo = SMXCrashlytics;
+		};
+		F08F62472230A8A8008CCF6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6463C84C1EBA12A60095B8CD;
+			remoteInfo = "SMXCrashlytics-tvOS";
+		};
 		F09B108822288224002970AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F09B108422288224002970AA /* RNFirebase.xcodeproj */;
@@ -86,6 +101,7 @@
 		EA054779220D27CD00AC77FF /* fluathome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fluathome.entitlements; sourceTree = "<group>"; };
 		EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
+		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
 		F09B107C222880D0002970AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F09B108422288224002970AA /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +113,7 @@
 			files = (
 				EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */,
 				EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */,
+				F08F62492230A8C8008CCF6A /* libSMXCrashlytics.a in Frameworks */,
 				F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */,
 				F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */,
 			);
@@ -177,6 +194,7 @@
 		EA05477A220D284100AC77FF /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */,
 				F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */,
 				F09B108422288224002970AA /* RNFirebase.xcodeproj */,
 				EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */,
@@ -198,6 +216,15 @@
 			children = (
 				F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */,
 				F08F61EA222DD184008CCF6A /* libRNDeviceInfo-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F08F62412230A8A8008CCF6A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F08F62462230A8A8008CCF6A /* libSMXCrashlytics.a */,
+				F08F62482230A8A8008CCF6A /* libSMXCrashlytics.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -290,6 +317,10 @@
 					ProductGroup = F09B108522288224002970AA /* Products */;
 					ProjectRef = F09B108422288224002970AA /* RNFirebase.xcodeproj */;
 				},
+				{
+					ProductGroup = F08F62412230A8A8008CCF6A /* Products */;
+					ProjectRef = F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -325,6 +356,20 @@
 			fileType = archive.ar;
 			path = "libRNDeviceInfo-tvOS.a";
 			remoteRef = F08F61E9222DD184008CCF6A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F08F62462230A8A8008CCF6A /* libSMXCrashlytics.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSMXCrashlytics.a;
+			remoteRef = F08F62452230A8A8008CCF6A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F08F62482230A8A8008CCF6A /* libSMXCrashlytics.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSMXCrashlytics.a;
+			remoteRef = F08F62472230A8A8008CCF6A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F09B108922288224002970AA /* libRNFirebase.a */ = {
