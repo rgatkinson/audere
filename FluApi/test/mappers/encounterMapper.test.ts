@@ -9,6 +9,7 @@ import { NonPIIVisitDetails } from "../../src/models/visitDetails";
 import {
   schemaVersion,
   Location,
+  LocationType,
   NumberAnswer,
   OptionAnswer,
   StringAnswer
@@ -27,6 +28,7 @@ describe("encounter mapper", () => {
     private consentDate: string;
     private participant: string;
     private household: Location;
+    private tempLocation: Location;
     private workplace: Location;
 
     withVisitId(visitId) {
@@ -45,12 +47,29 @@ describe("encounter mapper", () => {
     }
 
     withHousehold(homeAddress, homeRegion) {
-      this.household = { id: homeAddress, region: homeRegion };
+      this.household = {
+        use: LocationType.Home,
+        id: homeAddress,
+        region: homeRegion
+      };
+      return this;
+    }
+
+    withTemporaryLocation(tempAddres, tempRegion) {
+      this.tempLocation = {
+        use: LocationType.Temp,
+        id: tempAddres,
+        region: tempRegion
+      };
       return this;
     }
 
     withWorkplace(workAddress, workRegion) {
-      this.workplace = { id: workAddress, region: workRegion };
+      this.workplace = {
+        use: LocationType.Work,
+        id: workAddress,
+        region: workRegion
+      };
       return this;
     }
 
@@ -81,8 +100,9 @@ describe("encounter mapper", () => {
         visitInfo: this.visitInfo,
         consentDate: this.consentDate,
         participant: this.participant,
-        household: this.household,
-        workplace: this.workplace
+        locations: [this.household, this.tempLocation, this.workplace].filter(
+          x => x != null
+        )
       };
     }
   }
@@ -122,6 +142,7 @@ describe("encounter mapper", () => {
       const visit = new VisitBuilder()
         .withVisitId("asdf")
         .withHousehold("beach house", "beach")
+        .withTemporaryLocation("vacation", "europe")
         .withWorkplace("company", "city")
         .withLocation("hospital")
         .withStartTime("Morning")
@@ -132,10 +153,21 @@ describe("encounter mapper", () => {
 
       expect(encounter.schemaVersion).toBe(schemaVersion);
       expect(encounter.id).toBe("asdf");
-      expect(encounter.household.id).toBe("beach house");
-      expect(encounter.household.region).toBe("beach");
-      expect(encounter.workplace.id).toBe("company");
-      expect(encounter.workplace.region).toBe("city");
+      expect(encounter.locations).toContainEqual({
+        use: LocationType.Home,
+        id: "beach house",
+        region: "beach"
+      });
+      expect(encounter.locations).toContainEqual({
+        use: LocationType.Temp,
+        id: "vacation",
+        region: "europe"
+      });
+      expect(encounter.locations).toContainEqual({
+        use: LocationType.Work,
+        id: "company",
+        region: "city"
+      });
       expect(encounter.site).toBe("hospital");
       expect(encounter.startTimestamp).toBe("Morning");
     });

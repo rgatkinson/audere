@@ -98,42 +98,60 @@ export class EncountersService {
     inputAddress: Model.AddressInfo,
     geocodedAddress: GeocodingResponse
   ): Encounter.Location {
-    if (geocodedAddress != null) {
-      return this.deidentifyLocation(
-        geocodedAddress.address.canonicalAddress,
-        geocodedAddress.address.censusTract
-      );
-    } else {
-      if (inputAddress != null) {
-        // If there is no geocoding result then we rely on the user input.
-        // This will be a weaker guarantee of uniqueness.
-        const fullDetails = [
-          ...inputAddress.line,
-          inputAddress.city,
-          inputAddress.state,
-          inputAddress.postalCode,
-          inputAddress.country
-        ];
+    let streetAddress: string;
+    let region: string;
 
-        return this.deidentifyLocation(fullDetails.join(", "), undefined);
+    if (geocodedAddress != null) {
+      streetAddress = geocodedAddress.address.canonicalAddress;
+      region = geocodedAddress.address.censusTract;
+    } else if (inputAddress != null) {
+      // If there is no geocoding result then we rely on the user input.
+      // This will be a weaker guarantee of uniqueness.
+      const input = [
+        ...inputAddress.line,
+        inputAddress.city,
+        inputAddress.state,
+        inputAddress.postalCode,
+        inputAddress.country
+      ];
+
+      streetAddress = input.join(", ");
+    }
+
+    if (streetAddress != null) {
+      let use: Encounter.LocationType;
+      switch (inputAddress.use) {
+        case Model.AddressInfoUse.Home:
+          use = Encounter.LocationType.Home;
+          break;
+        case Model.AddressInfoUse.Temp:
+          use = Encounter.LocationType.Temp;
+          break;
+        case Model.AddressInfoUse.Work:
+          use = Encounter.LocationType.Work;
+          break;
       }
+
+      return {
+        use: use,
+        id: generateSHA256(this.hashSecret, [streetAddress]),
+        region: region
+      };
     }
 
     return undefined;
   }
 
-  private deidentifyLocation(
-    streetAddress: string,
-    censusTract: string
-  ): Encounter.Location {
-    return {
-      id: generateSHA256(this.hashSecret, [streetAddress]),
-      region: censusTract
-    };
-  }
-
   private deidentifyParticipant(name: string, birthDate: string): string {
     return generateSHA256(this.hashSecret, [name, birthDate]);
+  }
+
+  private hasAddressInfo(details: PIIVisitDetails) {
+    return (
+      details.patientInfo != null &&
+      details.patientInfo.address != null &&
+      details.patientInfo.address.length > 0
+    );
   }
 
   /**
@@ -144,28 +162,25 @@ export class EncountersService {
   ): Promise<Map<number, GeocodingResponse[]>> {
     let requests: Map<number, Model.AddressInfo[]> = new Map();
 
-    // Collect supplied addresses regardless of type.
-    visits.forEach((v, k) => {
-      if (
-        v.patientInfo != null &&
-        v.patientInfo.address != null &&
-        v.patientInfo.address.length > 0
-      ) {
-        const homeAddress = v.patientInfo.address.find(
-          a => a.use === Model.AddressInfoUse.Home
-        );
+    visits.forEach((v, id) => {
+      if (this.hasAddressInfo(v)) {
+        // Mobile app logic should not allow for multiple addresses of a given
+        // use type.  Multiple home addresses would complicate our ability to
+        // describe the patient with a unique id.
+        const addressSet = [];
+        const addressTypes = [];
 
-        if (homeAddress != null) {
-          this.multiMapAdd(requests, k, homeAddress);
+        for (let i = 0; i < v.patientInfo.address.length; i++) {
+          const a = v.patientInfo.address[i];
+          if (addressTypes.includes(a.use)) {
+            throw Error(`Visit ${id} addresses contain duplicate use types`);
+          } else {
+            addressSet.push(a);
+            addressTypes.push(a.use);
+          }
         }
 
-        const workAddress = v.patientInfo.address.find(
-          a => a.use === Model.AddressInfoUse.Work
-        );
-
-        if (workAddress != null) {
-          this.multiMapAdd(requests, k, workAddress);
-        }
+        requests.set(id, v.patientInfo.address);
       }
     });
 
@@ -247,65 +262,34 @@ export class EncountersService {
 
   /**
    * Do the actual work to scrub and map an individual visit with PII data into
-   * a summary without. Falls back to input data if the address doesn't have
-   * a geocoded address.
+   * a summary without. Falls back to input data if the address could not be
+   * geocoded.
    */
   private scrubVisit(
     id: number,
     visit: PIIVisitDetails,
     geocodedAddresses: GeocodingResponse[]
   ) {
-    // Try to extract home address and deidentify.
-    const geocodedHomeAddress = (geocodedAddresses || []).find(
-      a => a.use === Model.AddressInfoUse.Home
-    );
-
-    let inputHomeAddress: Model.AddressInfo;
-
-    if (visit.patientInfo.address != null) {
-      inputHomeAddress = visit.patientInfo.address.find(
-        a => a.use === Model.AddressInfoUse.Home
-      );
-    }
-
-    const household = this.deidentifyAddress(
-      inputHomeAddress,
-      geocodedHomeAddress
-    );
-
-    // Try to extract work address and deidentify.
-    const geocodedWorkAddress = (geocodedAddresses || []).find(
-      a => a.use === Model.AddressInfoUse.Work
-    );
-
-    let inputWorkAddress: Model.AddressInfo;
-
-    if (visit.patientInfo.address != null) {
-      inputWorkAddress = visit.patientInfo.address.find(
-        a => a.use === Model.AddressInfoUse.Work
-      );
-    }
-
-    const workplace = this.deidentifyAddress(
-      inputWorkAddress,
-      geocodedWorkAddress
-    );
-
-    // Get the postal code most closely associated with the user's home
-    // address. This will be used for ensuring each participant has a
-    // unique identifier.
+    const locations = [];
     let userPostalCode: string;
 
-    if (
-      geocodedHomeAddress != null &&
-      geocodedHomeAddress.address.postalCode != null
-    ) {
-      userPostalCode = geocodedHomeAddress.address.postalCode;
-    } else if (
-      inputHomeAddress != null &&
-      inputHomeAddress.postalCode != null
-    ) {
-      userPostalCode = inputHomeAddress.postalCode;
+    if (this.hasAddressInfo(visit)) {
+      visit.patientInfo.address.forEach(a => {
+        const geocoded = (geocodedAddresses || []).find(x => x.use === a.use);
+
+        // Get the postal code most closely associated with the user's home
+        // address. This is part of the unique identifier generated for each
+        // participant.
+        if (a.use === Model.AddressInfoUse.Home) {
+          if (geocoded != null) {
+            userPostalCode = geocoded.address.postalCode;
+          } else {
+            userPostalCode = a.postalCode;
+          }
+        }
+
+        locations.push(this.deidentifyAddress(a, geocoded));
+      });
     }
 
     // Deidentify participant to a hash of DOB and postal code. Also
@@ -319,8 +303,7 @@ export class EncountersService {
         visit.patientInfo.birthDate,
         userPostalCode
       ),
-      household: household,
-      workplace: workplace
+      locations: locations
     };
   }
 

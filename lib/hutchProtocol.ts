@@ -71,19 +71,22 @@ export interface Encounter {
   // when the encounter is completed via a user's personal device.
   site?: string;
 
-  // De-identified household location information.  It is optional because the
-  // user may decline to provide a home address.
-  household?: Location;
-
-  // De-identified workplace location information.  It is optional because the
-  // user may decline to provide a work address.
-  workplace?: Location;
+  // De-identified location information.  
+  locations: Location[];
 
   sampleCodes: SampleCode[];
   responses: Response[];
 }
 
+export enum LocationType {
+  Home = "Home",
+  Work = "Work",
+  Temp = "Temp"
+}
+
 export interface Location {
+  use: LocationType;
+
   // Opaque string that corresponds to a particular address, but that cannot be
   // mapped back to that address.
   //
@@ -98,7 +101,13 @@ export interface Location {
   region: string;
 }
 
-export type SampleType = "SelfSwab" | "ClinicSwab" | "Blood" | "Serum" | "PBMC";
+export enum SampleType {
+  SelfSwab = "SelfSwab",
+  ClinicSwab = "ClinicSwab",
+  Blood = "Blood",
+  Serum = "Serum",
+  PBMC = "PBMC"
+}
 
 // The value of a barcode/QR-code from a sample collection container.
 export interface SampleCode {

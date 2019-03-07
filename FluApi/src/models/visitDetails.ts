@@ -20,6 +20,5 @@ export interface NonPIIVisitDetails {
   visitInfo: VisitNonPIIInfo;
   consentDate: string;
   participant: string;
-  household?: Location;
-  workplace?: Location;
+  locations: Location[];
 }

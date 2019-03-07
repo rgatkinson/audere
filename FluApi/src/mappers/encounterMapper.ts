@@ -70,8 +70,7 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     localeLanguageCode: "en", // TODO: ES support
     startTimestamp: getStart(),
     site: site,
-    household: input.household,
-    workplace: input.workplace,
+    locations: input.locations,
     sampleCodes: sampleCodes,
     responses: responses
   };
@@ -199,7 +198,7 @@ function mapSamples(samples: Model.SampleInfo[]): Encounter.SampleCode[] {
   }
 
   return samples.map(s => ({
-    type: s.sample_type as Encounter.SampleType,
+    type: Encounter.SampleType.ClinicSwab,
     code: s.code
   }));
 }

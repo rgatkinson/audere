@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import _ from "lodash";
 import { anything, instance, mock, verify, when } from "ts-mockito";
 import { HutchUploader } from "../../src/external/hutchUploader";
 import { EncountersService } from "../../src/services/encountersService";
@@ -11,6 +12,7 @@ import { VisitsService } from "../../src/services/visitsService";
 import { PIIVisitDetails } from "../../src/models/visitDetails";
 import { AddressInfoUse } from "audere-lib/snifflesProtocol";
 import { GeocodingResponse } from "../../src/models/geocoding";
+import { LocationType } from "audere-lib/hutchProtocol";
 
 describe("encounters service", () => {
   const details: PIIVisitDetails = {
@@ -91,6 +93,41 @@ describe("encounters service", () => {
       ).toBe(false);
     });
 
+    it("should error when multiple addresses of a single type are present", async () => {
+      const numToRetrieve = 20;
+      const detailsClone = _.cloneDeep(details);
+      detailsClone.patientInfo.address.push({
+        use: AddressInfoUse.Work,
+        line: [],
+        city: "Seattle",
+        state: "WA",
+        postalCode: "98101",
+        country: "US"
+      });
+      detailsClone.patientInfo.address.push({
+        use: AddressInfoUse.Work,
+        line: [],
+        city: "Tacoma",
+        state: "WA",
+        postalCode: "98102",
+        country: "US"
+      });
+      const visitsMock = mock(VisitsService);
+      when(visitsMock.retrievePendingDetails(numToRetrieve)).thenResolve(
+        new Map([[1, detailsClone]])
+      );
+
+      const encountersService = new EncountersService(
+        undefined,
+        undefined,
+        instance(visitsMock),
+        "secret"
+      );
+
+      const result = encountersService.getEncounters(numToRetrieve);
+      expect(result).rejects.toThrow();
+    });
+
     it("should scrub address data by geocoding and append census tract", async () => {
       const numToRetrieve = 20;
       const homeAddress: GeocodingResponse = {
@@ -121,16 +158,48 @@ describe("encounters service", () => {
           censusTract: "54321"
         }
       };
+      const tempAddress: GeocodingResponse = {
+        id: details.id,
+        use: AddressInfoUse.Temp,
+        address: {
+          canonicalAddress: "Temp",
+          address1: "123 Place",
+          city: "North Metropolis",
+          state: "EF",
+          latitude: 0,
+          longitude: 100,
+          postalCode: "99997",
+          censusTract: "88888"
+        }
+      };
 
       const geocoderMock = mock(GeocodingService);
       when(geocoderMock.geocodeAddresses(anything())).thenResolve([
         homeAddress,
-        workAddress
+        workAddress,
+        tempAddress
       ]);
 
+      const detailsClone = _.cloneDeep(details);
+      detailsClone.patientInfo.address.push({
+        use: AddressInfoUse.Work,
+        line: [],
+        city: "Seattle",
+        state: "WA",
+        postalCode: "98101",
+        country: "US"
+      });
+      detailsClone.patientInfo.address.push({
+        use: AddressInfoUse.Temp,
+        line: [],
+        city: "Tacoma",
+        state: "WA",
+        postalCode: "98102",
+        country: "US"
+      });
       const visitsMock = mock(VisitsService);
       when(visitsMock.retrievePendingDetails(numToRetrieve)).thenResolve(
-        new Map([[1, details]])
+        new Map([[1, detailsClone]])
       );
 
       const encountersService = new EncountersService(
@@ -146,15 +215,31 @@ describe("encounters service", () => {
       expect(result.has(1)).toBe(true);
 
       const encounter = result.get(1);
-      expect(encounter.household).not.toBeUndefined();
-      const homeId = encounter.household.id;
-      expect(homeId.includes(homeAddress.address.canonicalAddress)).toBe(false);
-      expect(encounter.household.region).toBe(homeAddress.address.censusTract);
+      expect(encounter.locations).toHaveLength(3);
 
-      expect(encounter.workplace).not.toBeUndefined();
-      const workId = encounter.workplace.id;
-      expect(workId.includes(workAddress.address.canonicalAddress)).toBe(false);
-      expect(encounter.workplace.region).toBe(workAddress.address.censusTract);
+      expect(encounter.locations).toContainEqual(
+        expect.objectContaining({
+          use: LocationType.Home,
+          id: expect.not.stringContaining(homeAddress.address.canonicalAddress),
+          region: homeAddress.address.censusTract
+        })
+      );
+
+      expect(encounter.locations).toContainEqual(
+        expect.objectContaining({
+          use: LocationType.Work,
+          id: expect.not.stringContaining(workAddress.address.canonicalAddress),
+          region: workAddress.address.censusTract
+        })
+      );
+
+      expect(encounter.locations).toContainEqual(
+        expect.objectContaining({
+          use: LocationType.Temp,
+          id: expect.not.stringContaining(tempAddress.address.canonicalAddress),
+          region: tempAddress.address.censusTract
+        })
+      );
     });
   });
 
