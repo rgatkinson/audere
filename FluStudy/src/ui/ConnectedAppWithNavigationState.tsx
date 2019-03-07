@@ -70,7 +70,7 @@ class AppWithNavigationState extends React.Component<Props> {
     this._handleAppStateChange("launch");
   }
 
-  componentWillUnMount() {
+  componentWillUnmount() {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 

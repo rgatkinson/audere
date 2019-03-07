@@ -50,7 +50,7 @@ class HomeScreen extends React.Component<Props & WithNamespaces, State> {
     AppState.addEventListener("change", this._handleAppStateChange);
   }
 
-  componentWillUnMount() {
+  componentWillUnmount() {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
