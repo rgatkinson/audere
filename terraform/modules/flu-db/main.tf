@@ -91,7 +91,6 @@ resource "aws_db_instance" "fludb_postgis" {
   instance_class = "db.t2.small"
   license_model = "postgresql-license"
   maintenance_window = "Sun:11:00-Sun:11:59"
-  parameter_group_name = "${aws_db_parameter_group.fludb_parameters.name}"
   password = "${local.db_setup_password}"
   publicly_accessible = false
   skip_final_snapshot = false
