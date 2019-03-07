@@ -2,7 +2,6 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import KeyboardListener from "react-native-keyboard-listener";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
 import Text from "./Text";
@@ -17,12 +16,12 @@ import {
 
 interface Props {
   autoFocus?: boolean;
+  shouldValidate: boolean;
   value?: Address | null;
   onChange(value: Address): void;
 }
 
 interface State {
-  keyboardOpen: boolean;
   stateOpen: boolean;
   focusZip: boolean;
 }
@@ -40,7 +39,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     this.state = {
       focusZip: false,
       stateOpen: false,
-      keyboardOpen: !!props.autoFocus,
     };
   }
 
@@ -60,14 +58,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <KeyboardListener
-          onWillShow={() => {
-            this.setState({ keyboardOpen: true });
-          }}
-          onWillHide={() => {
-            this.setState({ keyboardOpen: false });
-          }}
-        />
         <View style={{ flexDirection: "row" }}>
           <TextInput
             autoCapitalize="words"
@@ -75,10 +65,10 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoFocus={this.props.autoFocus}
             onFocus={this.removeZipFocus}
             placeholder={
-              t("firstName") + (this.state.keyboardOpen ? "" : t("required"))
+              t("firstName") + (this.props.shouldValidate ? t("required") : "")
             }
             placeholderTextColor={
-              this.state.keyboardOpen ? undefined : ERROR_COLOR
+              this.props.shouldValidate ? ERROR_COLOR : undefined
             }
             returnKeyType="next"
             style={styles.firstName}
@@ -95,12 +85,12 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCorrect={false}
             autoFocus={false}
             placeholder={
-              t("lastName") + (this.state.keyboardOpen ? "" : t("required"))
+              t("lastName") + (this.props.shouldValidate ? t("required") : "")
             }
             ref={this.lastName}
             onFocus={this.removeZipFocus}
             placeholderTextColor={
-              this.state.keyboardOpen ? undefined : ERROR_COLOR
+              this.props.shouldValidate ? ERROR_COLOR : undefined
             }
             returnKeyType="next"
             style={styles.inputRowRight}
@@ -119,10 +109,11 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoFocus={false}
           onFocus={this.removeZipFocus}
           placeholder={
-            t("streetAddress") + (this.state.keyboardOpen ? "" : t("required"))
+            t("streetAddress") +
+            (this.props.shouldValidate ? t("required") : "")
           }
           placeholderTextColor={
-            this.state.keyboardOpen ? undefined : ERROR_COLOR
+            this.props.shouldValidate ? ERROR_COLOR : undefined
           }
           ref={this.address}
           returnKeyType="next"
@@ -157,10 +148,10 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCorrect={false}
           onFocus={this.removeZipFocus}
           placeholder={
-            t("city") + (this.state.keyboardOpen ? "" : t("required"))
+            t("city") + (this.props.shouldValidate ? t("required") : "")
           }
           placeholderTextColor={
-            this.state.keyboardOpen ? undefined : ERROR_COLOR
+            this.props.shouldValidate ? ERROR_COLOR : undefined
           }
           ref={this.city}
           returnKeyType="next"
@@ -184,7 +175,8 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               content={
                 this.props.value && this.props.value.state
                   ? this.props.value.state
-                  : t("state")
+                  : t("state") +
+                    (this.props.shouldValidate ? t("required") : "")
               }
               style={styles.text}
             />
@@ -206,10 +198,10 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           <NumberInput
             maxDigits={5}
             placeholder={
-              t("zipcode") + (this.state.keyboardOpen ? "" : t("required"))
+              t("zipcode") + (this.props.shouldValidate ? t("required") : "")
             }
             placeholderTextColor={
-              this.state.keyboardOpen ? undefined : ERROR_COLOR
+              this.props.shouldValidate ? ERROR_COLOR : undefined
             }
             ref={this.zipcode}
             returnKeyType="done"

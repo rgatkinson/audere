@@ -447,6 +447,7 @@ interface WorkflowProps {
 
 interface AddressState {
   address?: Address;
+  triedToProceed: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -462,11 +463,13 @@ class AddressInputScreen extends React.Component<
     super(props);
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
+      triedToProceed: false,
     };
   }
 
   _onNext = () => {
-    if (this._haveValidAddress) {
+    this.setState({ triedToProceed: true });
+    if (this._haveValidAddress()) {
       this.props.updateAnswer(
         { addressInput: this.state.address },
         AddressConfig
@@ -501,7 +504,7 @@ class AddressInputScreen extends React.Component<
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("common:button:submit")}
-          canProceed={this._haveValidAddress()}
+          canProceed={true}
           centerDesc={true}
           desc={t("surveyDescription:" + AddressConfig.description)}
           navigation={this.props.navigation}
@@ -511,6 +514,7 @@ class AddressInputScreen extends React.Component<
         >
           <AddressInput
             autoFocus={this.props.navigation.isFocused()}
+            shouldValidate={this.state.triedToProceed}
             value={this.state.address}
             onChange={(address: Address) => this.setState({ address })}
           />
