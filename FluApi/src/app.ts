@@ -28,7 +28,6 @@ export function createPublicApp(sql: SplitSql) {
   publicApp.use(helmet.noCache());
   publicApp.use(helmet.frameguard({ action: "deny" }));
   publicApp.use(bodyParser.json({ limit: "20mb" }));
-  publicApp.use(defaultErrorHandler(publicApp.get("env")));
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
@@ -66,6 +65,7 @@ export function createPublicApp(sql: SplitSql) {
     res.status(200).send(buildInfo);
   });
 
+  publicApp.use(defaultErrorHandler(publicApp.get("env")));
   return publicApp;
 }
 
@@ -83,7 +83,6 @@ export function createInternalApp(
   internalApp.use(helmet.noCache());
   internalApp.use(helmet.frameguard({ action: "deny" }));
   internalApp.use(bodyParser.json());
-  internalApp.use(defaultErrorHandler(internalApp.get("env")));
 
   internalApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
@@ -111,6 +110,7 @@ export function createInternalApp(
     overrides.consentEmailer || new FeverConsentEmailerEndpoint(sql);
   internalApp.get("/api/sendConsentEmails", consentEmailer.handleGet);
 
+  internalApp.use(defaultErrorHandler(internalApp.get("env")));
   return internalApp;
 }
 
@@ -122,7 +122,7 @@ function wrap(f: any) {
 
 function defaultErrorHandler(env: string): ErrorRequestHandler {
   return (err, req, res, next) => {
-    logger.error("Request terminated abnormally")
+    logger.error("Request terminated abnormally");
     if (err) {
       logger.error("Uncaught exception:");
       logger.error(err.message);

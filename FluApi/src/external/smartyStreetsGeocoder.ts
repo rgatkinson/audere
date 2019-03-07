@@ -14,6 +14,8 @@ import logger from "../util/logger";
  * geocode US addresses.
  */
 export class SmartyStreetsGeocoder implements Geocoder {
+  // SmartyStreets max batch size is 100
+  private readonly BATCH_SIZE: number = 100;
   private readonly client: SmartyStreetsSDK.usStreet.Client;
 
   constructor(client: SmartyStreetsSDK.usStreet.Client) {
@@ -56,12 +58,27 @@ export class SmartyStreetsGeocoder implements Geocoder {
   public async geocode(
     addresses: Map<number, AddressInfo[]>
   ): Promise<GeocodingResponse[]> {
-    const batch = new SmartyStreetsSDK.core.Batch();
+    const lookups: SmartyStreetsSDK.usStreet.Lookup[] = [];
 
     addresses.forEach((v, k) => {
-      v.forEach(a => batch.add(this.createLookup(k, a)));
+      v.forEach(a => lookups.push(this.createLookup(k, a)));
     });
 
+    let responses: GeocodingResponse[] = [];
+
+    for (let i = 0; i < lookups.length; i += this.BATCH_SIZE) {
+      const items = lookups.slice(i, i + this.BATCH_SIZE);
+      const batch = new SmartyStreetsSDK.core.Batch();
+      items.forEach(i => batch.add(i));
+      responses = responses.concat(await this.send(batch));
+    }
+
+    return responses;
+  }
+
+  private async send(
+    batch: SmartyStreetsSDK.core.Batch
+  ): Promise<GeocodingResponse[]> {
     try {
       const response = await this.client.send(batch);
       return this.formatResponse(response);
