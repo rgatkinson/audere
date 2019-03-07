@@ -614,8 +614,9 @@ class ManualEntryScreen extends React.Component<
           >
             <Text content={"KIT "} style={{ paddingVertical: 3 }} />
             <TextInput
-              autoFocus={this.props.navigation.isFocused()}
+              autoCapitalize="none"
               autoCorrect={false}
+              autoFocus={this.props.navigation.isFocused()}
               placeholder={t("placeholder")}
               returnKeyType="done"
               style={{ flex: 1 }}
@@ -635,6 +636,7 @@ class ManualEntryScreen extends React.Component<
           >
             <Text content={"KIT "} style={{ paddingVertical: 3 }} />
             <TextInput
+              autoCapitalize="none"
               autoCorrect={false}
               placeholder={t("secondPlaceholder")}
               ref={this.confirmInput}
