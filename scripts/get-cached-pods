@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-HASH="b57fb34935aacc8fa0e4a72e13133f557e732d214a4aed13c0d111d2de36723f"
+HASH="dcbbe84d9fc4388f8eca8f7098ee001ea7492d5c0b00b8dc88dbfa0d5cebe4e8"
 DATE="2019-03-06"
 PODS_FILENAME="$DATE.$HASH.Pods.tar.bz2"
 

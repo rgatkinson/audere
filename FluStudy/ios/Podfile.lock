@@ -291,6 +291,10 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - ReactNativeFabric (0.5.2):
+    - Crashlytics
+    - Fabric
+    - React
   - yoga (0.57.1.React)
 
 DEPENDENCIES:
@@ -345,6 +349,7 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - ReactNativeFabric (from `../node_modules/react-native-fabric`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -452,6 +457,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fbsdk"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  ReactNativeFabric:
+    :path: "../node_modules/react-native-fabric"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -525,8 +532,9 @@ SPEC CHECKSUMS:
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
   react-native-get-random-values: cb074e4e1781451ad00546d78570a3ab3c4285f0
+  ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: ed000730d278122da44fcb18107f60a639a0d6d3
+PODFILE CHECKSUM: 85091d7e05c08380ba36f74a2ce8a33f4cb7dd39
 
 COCOAPODS: 1.5.3
