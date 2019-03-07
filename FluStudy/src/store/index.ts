@@ -1,4 +1,4 @@
-import { createStore, combineReducers, applyMiddleware, Store } from "redux";
+import { createStore, combineReducers, applyMiddleware, Store, Middleware, Dispatch, AnyAction, MiddlewareAPI } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
 import { NavigationAction } from "react-navigation";
@@ -6,6 +6,7 @@ import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
+import { Crashlytics } from "react-native-fabric";
 import { uploader, uploaderMiddleware } from "./uploader";
 import { crashReportingDetailsMiddleware } from "../crashReporter";
 
@@ -78,6 +79,31 @@ const encryptingTransform = (encryptor: Transform<any, any>) =>
     }
   );
 
+function loggingMiddleware<Ext, S, D extends Dispatch>(label: string, middleware: Middleware<Ext, S, D>): Middleware<Ext, S, D> {
+  return (store: MiddlewareAPI<D, S>) => {
+    const inner0 = middleware(store);
+    return (next: Dispatch) => {
+      const inner1 = inner0(next);
+      return (action: AnyAction) => {
+
+        const before = `middleware[${label}] ${action}`;
+        if (!store) {
+          Crashlytics.log(`${before} (store='${store}')`);
+        } else if (!store.getState()) {
+          Crashlytics.log(`${before} (store.getState()='${store.getState()}')`);
+        } else {
+          Crashlytics.log(before);
+        }
+
+        const result = inner1(action);
+
+        Crashlytics.log(`middleware[${label}] ${action} -> ${result}`);
+        return result;
+      };
+    };
+  };
+}
+
 async function getStoreImpl() {
   const password = await uploader.getEncryptionPassword();
   const encryptor = createEncryptor({ secretKey: password });
@@ -89,11 +115,11 @@ async function getStoreImpl() {
   return createStore(
     persistReducer(persistConfig, rootReducer),
     applyMiddleware(
-      crashReportingDetailsMiddleware,
-      firebaseNavigationLoggingMiddleware,
-      navigationMiddleware,
-      navigationLoggingMiddleware,
-      uploaderMiddleware
+      loggingMiddleware("CrashReport", crashReportingDetailsMiddleware),
+      loggingMiddleware("FirebaseNav", firebaseNavigationLoggingMiddleware),
+      loggingMiddleware("Nav", navigationMiddleware),
+      loggingMiddleware("NavLog", navigationLoggingMiddleware),
+      loggingMiddleware("Upload", uploaderMiddleware)
     )
   );
 }

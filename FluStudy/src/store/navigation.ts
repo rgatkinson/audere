@@ -60,14 +60,6 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
-        if (!store) {
-          Crashlytics.log("Store is " + store + " in nav middleware");
-        } else if (!store.getState()) {
-          Crashlytics.log(
-            "getState is " + store.getState() + " in nav middleware"
-          );
-        }
-
         const currentScreen = getActiveRouteName(store.getState().navigation);
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
@@ -120,14 +112,6 @@ export function firebaseNavigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
-        if (!store) {
-          Crashlytics.log("Store is " + store + " in firebase middleware");
-        } else if (!store.getState()) {
-          Crashlytics.log(
-            "getState is " + store.getState() + " in firebase middleware"
-          );
-        }
-
         const currentScreen = getActiveRouteName(store.getState().navigation);
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
