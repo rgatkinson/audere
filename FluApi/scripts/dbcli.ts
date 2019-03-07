@@ -19,12 +19,25 @@ import bufferXor from "buffer-xor";
 import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
-import { createSplitSql, Inst } from "../src/util/sql";
+import { createSplitSql } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
-import { defineSnifflesModels, LogBatchAttributes, VisitAttributes } from "../src/models/sniffles";
-import { LogRecordInfo, DeviceInfo as SnifflesDevice, VisitNonPIIInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
+import {
+  defineSnifflesModels,
+  VisitAttributes
+} from "../src/models/sniffles";
+import {
+  DeviceInfo as SnifflesDevice,
+  LogRecordInfo,
+  VisitNonPIIInfo,
+  VisitPIIInfo
+} from "audere-lib/snifflesProtocol";
 import { defineFeverModels, SurveyAttributes } from "../src/models/fever";
-import { DeviceInfo as FeverDevice, SurveyNonPIIDbInfo, PIIInfo } from "audere-lib/feverProtocol";
+import {
+  DeviceInfo as FeverDevice,
+  EventInfo,
+  SurveyNonPIIDbInfo,
+  PIIInfo,
+} from "audere-lib/feverProtocol";
 import { SurveyNonPIIUpdater, SurveyPIIUpdater } from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
 
@@ -45,6 +58,7 @@ type SnifflesPiiUpdater = Updater<VisitAttributes<VisitPIIInfo>, VisitPIIInfo, S
 type FeverNonPiiUpdater = Updater<SurveyAttributes<SurveyNonPIIDbInfo>, SurveyNonPIIDbInfo, FeverDevice>;
 type FeverPiiUpdater = Updater<SurveyAttributes<PIIInfo>, PIIInfo, FeverDevice>;
 type SomeUpdater = SnifflesNonPiiUpdater | SnifflesPiiUpdater | FeverNonPiiUpdater | FeverPiiUpdater;
+type SomeDevice = SnifflesDevice | FeverDevice;
 
 type PerReleaseUpdater<TNonPii, TPii> = {
   nonPii: TNonPii;
@@ -112,7 +126,7 @@ yargs
     handler: command(cmdShow)
   })
   .command({
-    command: "edit <kind> <row> <path>",
+    command: "edit <release> <kind> <row> <path>",
     builder: yargs =>
       yargs
         .string("kind")
@@ -121,8 +135,15 @@ yargs
     handler: command(cmdEdit)
   })
   .command({
-    command: "log [since] [device] [text]",
+    // Fever-only
+    command: "docev <csruid>",
+    builder: yargs => yargs.string("crsuid"),
+    handler: command(cmdDocumentEvents)
+  })
+  .command({
+    command: "log <release> [since] [until] [device] [text]",
     builder: yargs => yargs
+      .string("release")
       .positional("since", {
         describe: "earliest timestamp to search",
         default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -160,7 +181,26 @@ function command(cmd: any) {
   };
 }
 
+interface DocumentEventsArgs {
+  csruid: string;
+}
+
+async function cmdDocumentEvents(argv: DocumentEventsArgs): Promise<void> {
+  const { csruid } = argv;
+  const rows = await feverModels.surveyNonPii.findAll({ where: { csruid }});
+  if (rows.length === 0) {
+    throw fail(`Could not find any surveys with csruid '${csruid}'.`);
+  }
+
+  rows.forEach(row => {
+    row.survey.events.forEach(ev => {
+      console.log(`${ev.at}[${ev.kind}]: ${ev.refId}`);
+    });
+  });
+}
+
 interface LogArgs {
+  release: string;
   since: Date;
   until: Date;
   device: string;
@@ -168,6 +208,22 @@ interface LogArgs {
 }
 
 async function cmdLog(argv: LogArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Sniffles:
+      await snifflesLog(argv);
+      break;
+    case Release.Fever:
+      await feverLog(argv);
+      break;
+    default:
+      throw fail(
+        `Unrecognized release: '${argv.release}', ` +
+        `expected one of '${Object.keys(Release).join("', '")}'`
+      );
+  }
+}
+
+async function snifflesLog(argv: LogArgs): Promise<void> {
   const rows = await snifflesModels.clientLogBatch.findAll({
     where: {
       [Op.and]: [
@@ -188,9 +244,50 @@ async function cmdLog(argv: LogArgs): Promise<void> {
     if (reDevice.test(row.device.installation) || reDevice.test(row.device.deviceName)) {
       row.batch.records.forEach(record => {
         if (reText.test(record.text)) {
-          emitter.emit(row, record);
+          emitter.emit(row.device, record);
         }
       });
+    }
+  });
+}
+
+async function feverLog(argv: LogArgs): Promise<void> {
+  const rows = await feverModels.clientLogBatch.findAll({
+    where: {
+      analytics: {
+        [Op.and]: [
+          { timestamp: { [Op.gt]: argv.since }},
+          { timestamp: { [Op.lt]: argv.until }},
+        ]
+      }
+    },
+    order:[
+      literal("analytics->>'timestamp' ASC"),
+    ],
+  });
+
+  const emitter = new LogEmitter();
+  const reDevice = new RegExp(argv.device);
+  const reText = new RegExp(argv.text);
+
+  rows.forEach(row => {
+    if (reDevice.test(row.device.installation)) {
+      const logs = [ ...row.analytics.logs ];
+      const events = [ ...row.analytics.events ];
+
+      row.analytics.logs.forEach(record => {
+        if (reText.test(record.text)) {
+          emitter.emit(row.device, record);
+        }
+      });
+      row.analytics.events.forEach(record => {
+        emitter.emitEvent(record);
+      });
+      if (row.analytics.crash != null) {
+        console.log("===========================================================");
+        console.log(row.analytics.crash);
+        console.log("===========================================================");
+      }
     }
   });
 }
@@ -198,14 +295,15 @@ async function cmdLog(argv: LogArgs): Promise<void> {
 class LogEmitter {
   private previousDevice: string = "";
 
-  emit(row: Inst<LogBatchAttributes>, record: LogRecordInfo): void {
-    this.maybeEmitDevice(row.device);
+  emit(device: SomeDevice, record: LogRecordInfo): void {
+    this.maybeEmitDevice(device);
     this.emitRecord(record);
   }
 
-  maybeEmitDevice(device: SnifflesDevice): void {
+  maybeEmitDevice(device: SomeDevice): void {
     if (device.installation !== this.previousDevice) {
-      console.log(`========== Device: ${device.deviceName} (${device.installation}) ==========`);
+      const name = (<any>device).deviceName || ''
+      console.log(`========== Device: ${name} (${device.installation}) ==========`);
       this.previousDevice = device.installation;
     }
   }
@@ -214,6 +312,11 @@ class LogEmitter {
     const level = (<any>record.level.toString()).padStart(5, " ");
     const text = record.text.replace(/\n/g, "\\n");
     console.log(`${record.timestamp} [${level}]: ${text}`)
+  }
+
+  emitEvent(event: EventInfo): void {
+    const { kind, at, refId } = event;
+    console.log(`${at} [event ${kind}]: ${refId}`);
   }
 }
 
@@ -382,10 +485,10 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
     case Release.Fever:
       switch (argv.kind) {
         case "pii":
-          await feverEditNonPii(argv.row, argv.path);
+          await feverEditPii(argv.row, argv.path);
           break;
         case "nonpii":
-          await feverEditPii(argv.row, argv.path);
+          await feverEditNonPii(argv.row, argv.path);
           break;
         default:
           throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
@@ -402,29 +505,17 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
 
 async function snifflesEditNonPii(row: string, path: string): Promise<void> {
   const original = await sniffles.nonPii.load(row);
-  const merged = await editVisitPart(original, path);
+  const merged = await snifflesEditVisitPart(original, path);
   await sniffles.nonPii.updateItem(original, merged);
 }
 
 async function snifflesEditPii(row: string, path: string): Promise<void> {
   const original = await sniffles.pii.load(row);
-  const merged = await editVisitPart(original, path);
+  const merged = await snifflesEditVisitPart(original, path);
   await sniffles.pii.updateItem(original, merged);
 }
 
-async function feverEditNonPii(row: string, path: string): Promise<void> {
-  const original = await fever.nonPii.load(row);
-  const merged = await editVisitPart(original, path);
-  await fever.nonPii.updateItem(original, merged);
-}
-
-async function feverEditPii(row: string, path: string): Promise<void> {
-  const original = await fever.pii.load(row);
-  const merged = await editVisitPart(original, path);
-  await fever.pii.updateItem(original, merged);
-}
-
-async function editVisitPart(original: any, path: string) {
+async function snifflesEditVisitPart(original: any, path: string) {
   const pathNodes = partPath(path);
   const part = getPart(original.visit, pathNodes);
   const edited = await editJson(part);
@@ -436,6 +527,32 @@ async function editVisitPart(original: any, path: string) {
   await expectYes("Anything besides 'yes' will cancel. Choose wisely: ")
 
   return setPart(original.visit, pathNodes, edited);
+}
+
+async function feverEditNonPii(row: string, path: string): Promise<void> {
+  const original = await fever.nonPii.load(row);
+  const merged = await feverEditVisitPart(original, path);
+  await fever.nonPii.updateItem(original, merged);
+}
+
+async function feverEditPii(row: string, path: string): Promise<void> {
+  const original = await fever.pii.load(row);
+  const merged = await feverEditVisitPart(original, path);
+  await fever.pii.updateItem(original, merged);
+}
+
+async function feverEditVisitPart(original: any, path: string) {
+  const pathNodes = partPath(path);
+  const part = getPart(original.survey, pathNodes);
+  const edited = await editJson(part);
+
+  const uid = original.csruid.substring(0, 21);
+  console.log(`Preparing to update id=${original.id} csruid=${uid}..`);
+  await colordiff(part, edited);
+  console.log("Do you want to write these changes to the database?");
+  await expectYes("Anything besides 'yes' will cancel. Choose wisely: ")
+
+  return setPart(original.survey, pathNodes, edited);
 }
 
 async function editJson(originalValue: any): Promise<any> {
@@ -589,7 +706,7 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
   if (choice == null) {
     throw fail(
       `Unrecognized release: '${release}', ` +
-      `expected one of '${Object.keys(Release).join("', '")}'`
+      `expected one of '${Object.keys(Release).map(x => Release[x]).join("', '")}'`
     );
   }
 
