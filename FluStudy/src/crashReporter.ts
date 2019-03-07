@@ -29,7 +29,9 @@ export function uploadingErrorHandler(e: Error, isFatal?: boolean) {
     const errorProps: ErrorProps = { errorMessage };
     ErrorRecovery.setRecoveryProps(errorProps);
   } else {
+    Crashlytics.log("Audere error log will be saved");
     uploader.saveCrashLog(errorMessage);
+    Crashlytics.log("Audere error log successfully saved");
   }
   defaultErrorHandler(e, isFatal);
 }
@@ -47,7 +49,9 @@ export function reportPreviousCrash(errorProps?: ErrorProps) {
   if (!errorProps) {
     return;
   }
+  Crashlytics.log("Audere error log will be saved");
   uploader.saveCrashLog(errorProps.errorMessage);
+  Crashlytics.log("Audere error log successfully saved");
 }
 
 export function crashReportingDetailsMiddleware(store: MiddlewareAPI) {

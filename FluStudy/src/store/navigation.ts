@@ -11,6 +11,7 @@ import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
+import { Crashlytics } from "react-native-fabric";
 
 const initialAction = { type: NavigationActions.INIT };
 
@@ -24,6 +25,9 @@ export default function reducer(
   }
   if (state == null) {
     state = navigator.router.getStateForAction(initialAction);
+    if (!state) {
+      Crashlytics.log("Invalid state " + state + " in nav reducer");
+    }
   }
   return navigator.router.getStateForAction(action, state);
 }
@@ -56,6 +60,14 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
+        if (!store) {
+          Crashlytics.log("Store is " + store + " in nav middleware");
+        } else if (!store.getState()) {
+          Crashlytics.log(
+            "getState is " + store.getState() + " in nav middleware"
+          );
+        }
+
         const currentScreen = getActiveRouteName(store.getState().navigation);
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);
@@ -65,6 +77,9 @@ export function navigationLoggingMiddleware(store: MiddlewareAPI) {
             from: currentScreen,
             to: nextScreen,
           });
+          Crashlytics.log(
+            "Navigating from " + currentScreen + " to " + nextScreen
+          );
         }
         return result;
     }
@@ -105,6 +120,14 @@ export function firebaseNavigationLoggingMiddleware(store: MiddlewareAPI) {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
+        if (!store) {
+          Crashlytics.log("Store is " + store + " in firebase middleware");
+        } else if (!store.getState()) {
+          Crashlytics.log(
+            "getState is " + store.getState() + " in firebase middleware"
+          );
+        }
+
         const currentScreen = getActiveRouteName(store.getState().navigation);
         const result = next(action);
         const nextScreen = getActiveRouteName(store.getState().navigation);

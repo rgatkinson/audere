@@ -32,6 +32,7 @@ import {
   HouseholdChildrenConfig,
   AssignedSexConfig,
 } from "../resources/ScreenConfig";
+import { Crashlytics } from "react-native-fabric";
 
 export const { uploader, events, logger } = createTransport();
 
@@ -76,6 +77,10 @@ type GenderMapEntry = [string, PatientInfoGender];
 
 export function uploaderMiddleware({ getState }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
+    if (!getState || !getState()) {
+      Crashlytics.log("getState or getState() invalid in uploader middleware");
+    }
+
     const result = next(action);
     const state = getState();
     switch (action.type) {

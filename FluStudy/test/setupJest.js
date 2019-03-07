@@ -38,6 +38,7 @@ jest.mock("react-native-fabric", () => {
       recordError: jest.fn(),
       setUserEmail: jest.fn(),
       setUserIdentifier: jest.fn(),
+      log: jest.fn(),
     },
   };
 });
