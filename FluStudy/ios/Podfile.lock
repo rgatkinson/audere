@@ -294,6 +294,7 @@ PODS:
   - yoga (0.57.1.React)
 
 DEPENDENCIES:
+  - Crashlytics (~> 3.12.0)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../node_modules/expo-ads-admob/ios`)
   - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
@@ -325,6 +326,7 @@ DEPENDENCIES:
   - EXSensors (from `../node_modules/expo-sensors/ios`)
   - EXSensorsInterface (from `../node_modules/expo-sensors-interface/ios`)
   - EXSMS (from `../node_modules/expo-sms/ios`)
+  - Fabric (~> 1.9.0)
   - Firebase/Core
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -525,6 +527,6 @@ SPEC CHECKSUMS:
   react-native-get-random-values: cb074e4e1781451ad00546d78570a3ab3c4285f0
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 7fc68742a9ef79d6476be65e2e1687bb38abcdad
+PODFILE CHECKSUM: ed000730d278122da44fcb18107f60a639a0d6d3
 
 COCOAPODS: 1.5.3

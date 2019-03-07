@@ -6,6 +6,7 @@
 #import <Firebase.h>
 #import "RCTPushNotificationManager.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <Crashlytics/Crashlytics.h>
 
 @interface AppDelegate ()
 
@@ -34,6 +35,17 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     [FBSDKAppEvents activateApp];
+
+    // Uncomment below if you'd like to force a crash to see if it'll show up in Crashlytics on Firebase.
+    // Yes, the rand bit is lame -- you should feel free to use your own method.  But basically, after
+    // a crash, you need a way to get the app to run again WITHOUT crashing, at least during launch,
+    // in order for Crashlytics to upload its data.  If you simply change the code and rebuild, Xcode
+    // will redeploy, thereby deleting your crash data (from device or simulator).
+    //
+    // int r = arc4random_uniform(2);
+    // if (r != 0) {
+    //  [[Crashlytics sharedInstance] crash];
+    // }
 }
 
 #pragma mark - Handling URLs
