@@ -96,7 +96,7 @@ resource "aws_db_instance" "fludb_postgis" {
   skip_final_snapshot = false
   storage_encrypted = true
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
-  username = "${local.my_userid}"
+  username = "postgisa"
   vpc_security_group_ids = [
     "${module.fludb_sg.server_id}",
   ]
