@@ -191,6 +191,18 @@ describe("export controller", () => {
       expect(response.body.sent.length).toBe(0);
     });
 
+    it("should not retrieve demo records", async () => {
+      const visitId1 = "TYU123-_".repeat(8);
+      const visit1 = new VisitInfoBuilder().withDemoMode().build();
+      const c = await createVisit(visitId1, visit1);
+
+      const response = await request(internalApp)
+        .get("/api/export/sendEncounters")
+        .expect(200);
+
+      expect(response.body.sent.length).toBe(0);
+    });
+
     it("should error if geocoding fails", async () => {
       const address: AddressInfo = {
         use: AddressInfoUse.Home,

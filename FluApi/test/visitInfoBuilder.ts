@@ -59,6 +59,8 @@ export class VisitInfoBuilder {
     ]
   };
 
+  private isDemo = false;
+
   withName(name: string) {
     this.patientInfo.name = name;
     return this;
@@ -109,7 +111,16 @@ export class VisitInfoBuilder {
     return this;
   }
 
+  withDemoMode() {
+    this.isDemo = true;
+    return this;
+  }
+
   build(): VisitInfo {
+    if (this.isDemo) {
+      this.visitCommonInfo.isDemo = true;
+    }
+
     return {
       ...this.visitCommonInfo,
       samples: this.samples.length > 0 ? this.samples : [this.defaultSample],

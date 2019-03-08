@@ -34,6 +34,7 @@ export class VisitsService {
     const nonPiiVisits = await this.snifflesModels.visitNonPii.findAll({
       where: {
         visit: {
+          isDemo: false,
           complete: {
             [Sequelize.Op.eq]: "true"
           }
@@ -55,6 +56,7 @@ export class VisitsService {
       where: {
         csruid: nonPiiVisits.map(visit => visit.csruid),
         visit: {
+          isDemo: false,
           complete: {
             [Sequelize.Op.eq]: "true"
           }
