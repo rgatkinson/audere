@@ -37,11 +37,6 @@ export function createSplitSql(): SplitSql {
     operatorsAliases: false
   });
   const nonPii = new Sequelize(nonPiiUrl, {
-    // This globally enables search path options, if not enabled search path
-    // options are deleted from config. This is needed for querying census data.
-    dialectOptions: {
-      prependSearchPath: true
-    },
     operatorsAliases: false,
     logging: false
   });

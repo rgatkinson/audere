@@ -9,6 +9,7 @@ export interface GeocodingConfig {
   baseUrl: string;
   authId: string;
   authToken: string;
+  postgisUrl: string;
 }
 
 let lazy: Promise<GeocodingConfig> | null = null;
@@ -25,9 +26,10 @@ export function getGeocodingConfig(
 
 async function createConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
   const baseUrl = process.env.SMARTYSTREETS_BASE_URL;
-  const [authId, authToken] = await Promise.all([
+  const [authId, authToken, postgisUrl] = await Promise.all([
     secrets.get("SMARTYSTREETS_AUTH_ID"),
-    secrets.get("SMARTYSTREETS_AUTH_TOKEN")
+    secrets.get("SMARTYSTREETS_AUTH_TOKEN"),
+    secrets.get("POSTGIS_DATABASE_URL")
   ]);
-  return { baseUrl, authId, authToken };
+  return { baseUrl, authId, authToken, postgisUrl };
 }

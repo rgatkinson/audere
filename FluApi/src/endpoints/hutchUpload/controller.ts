@@ -97,9 +97,8 @@ function createAxios(baseURL): AxiosInstance {
 async function createEncountersService(
   sql: SplitSql
 ): Promise<EncountersService> {
-  const geocoder = await createGeocoder(sql);
-
   const secrets = new SecretConfig(sql);
+  const geocoder = await createGeocoder(secrets);
   const hutchUploadModel = defineHutchUpload(sql);
   const hutchConfig = await getHutchConfig(secrets);
   const axiosClient = await createAxios(hutchConfig.baseUrl);

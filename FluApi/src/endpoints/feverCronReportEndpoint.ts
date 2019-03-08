@@ -52,9 +52,9 @@ export class FeverCronReportEndpoint {
 }
 
 async function createIncentives(sql: SplitSql): Promise<Incentives> {
-  const geocoder = await createGeocoder(sql);
   const dao = new IncentiveRecipientsDataAccess(sql);
   const secrets = new SecretConfig(sql);
+  const geocoder = await createGeocoder(secrets);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, s3Config);
@@ -62,9 +62,9 @@ async function createIncentives(sql: SplitSql): Promise<Incentives> {
 }
 
 async function createKits(sql: SplitSql): Promise<KitOrders> {
-  const geocoder = await createGeocoder(sql);
   const dao = new KitRecipientsDataAccess(sql);
   const secrets = new SecretConfig(sql);
+  const geocoder = await createGeocoder(secrets);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, s3Config);

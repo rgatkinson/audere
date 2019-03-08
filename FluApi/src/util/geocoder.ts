@@ -6,15 +6,17 @@
 import { CensusTractService } from "../services/censusTractService";
 import { GeocodingService } from "../services/geocodingService";
 import { getGeocodingConfig } from "./geocodingConfig";
+import { isAWS } from "./environment";
 import { SecretConfig } from "./secretsConfig";
 import { SmartyStreetsGeocoder } from "../external/smartyStreetsGeocoder";
-import { SplitSql } from "./sql";
+import Sequelize from "sequelize";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 
-export async function createGeocoder(sql: SplitSql): Promise<GeocodingService> {
-  const secrets = new SecretConfig(sql);
-
+export async function createGeocoder(
+  secrets: SecretConfig
+): Promise<GeocodingService> {
   const geoConfig = await getGeocodingConfig(secrets);
+
   const geo = SmartyStreetsSDK.core;
   const credentials = new geo.StaticCredentials(
     geoConfig.authId,
@@ -24,10 +26,7 @@ export async function createGeocoder(sql: SplitSql): Promise<GeocodingService> {
   let geoClient;
 
   // Specifying base URL is leveraged in tests.
-  if (
-    geoConfig.baseUrl &&
-    (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
-  ) {
+  if (geoConfig.baseUrl && !isAWS()) {
     geoClient = new geo.ClientBuilder(credentials)
       .withBaseUrl(geoConfig.baseUrl)
       .buildUsStreetApiClient();
@@ -35,9 +34,19 @@ export async function createGeocoder(sql: SplitSql): Promise<GeocodingService> {
     geoClient = new geo.ClientBuilder(credentials).buildUsStreetApiClient();
   }
 
+  const postgis = new Sequelize(geoConfig.postgisUrl, {
+    // This globally enables search path options, if not enabled search path
+    // options are deleted from config.
+    dialectOptions: {
+      prependSearchPath: true
+    },
+    logging: false,
+    operatorsAliases: false
+  });
+
   const geocoder: GeocodingService = new GeocodingService(
     new SmartyStreetsGeocoder(geoClient),
-    new CensusTractService(sql.nonPii)
+    new CensusTractService(postgis)
   );
 
   return geocoder;
