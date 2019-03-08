@@ -9,6 +9,7 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import base64url from "base64url";
 import { SnifflesEndpoint } from "./endpoints/snifflesApi";
+import { ConsentEmailerEndpoint } from "./endpoints/snifflesConsentMailer";
 import { HutchUploaderEndpoint } from "./endpoints/hutchUpload/controller";
 import { FeverEndpoint } from "./endpoints/feverApi";
 import { generateRandomKey, generateRandomBytes } from "./util/crypto";
@@ -87,6 +88,7 @@ export function createInternalApp(
   internalApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
+  const snifflesConsentEmailer = new ConsentEmailerEndpoint(sql);
   if (!isAWS()) {
     internalApp.get("/api/export/getEncounters", (req, res, next) =>
       hutchUploader.getEncounters(req, res, next)
@@ -109,6 +111,10 @@ export function createInternalApp(
   const consentEmailer =
     overrides.consentEmailer || new FeverConsentEmailerEndpoint(sql);
   internalApp.get("/api/sendConsentEmails", consentEmailer.handleGet);
+  internalApp.get(
+    "/api/sendSnifflesConsentEmails",
+    snifflesConsentEmailer.sendConsentEmails
+  );
 
   internalApp.use(defaultErrorHandler(internalApp.get("env")));
   return internalApp;

@@ -4,11 +4,10 @@ import { VisitInfoBuilder } from "../visitInfoBuilder";
 
 describe("Visit model", () => {
   describe("emailConsent", () => {
-    it("Sends no email for incomplete records", () => {
+    it("Throws an error for incomplete records", () => {
       const visitPII = new VisitInfoBuilder().build();
       const visitNonPII = new VisitInfoBuilder().withComplete(false).build();
-      const emailParams = getConsentEmailParams(visitPII, visitNonPII);
-      expect(emailParams).toBeNull();
+      expect(() => getConsentEmailParams(visitPII, visitNonPII)).toThrow();
     });
     it("Sends no email if no email requested", () => {
       const visitPII = new VisitInfoBuilder().build();

@@ -6,15 +6,26 @@ import {
   VisitPIIInfo
 } from "audere-lib/snifflesProtocol";
 
+type emailConsentResult = {
+  emailRequsted: boolean;
+  consentsEmailed?: number;
+};
+
 export async function emailConsent(
   visitPII: VisitPIIInfo,
   visitNonPII: VisitNonPIIInfo
-) {
+): Promise<emailConsentResult> {
   const emailParams = getConsentEmailParams(visitPII, visitNonPII);
   if (!emailParams) {
-    return;
+    return {
+      emailRequsted: false
+    };
   }
   await sendEmail(emailParams);
+  return {
+    emailRequsted: true,
+    consentsEmailed: emailParams.consentCount
+  };
 }
 
 const CONSENT_BODY_PREAMBLE = `Thank you for participating in the Seattle Flu Study!  As requested, we are emailing you a copy of the consent form you signed.
@@ -29,7 +40,12 @@ export function getConsentEmailParams(
   visitPII: VisitPIIInfo,
   visitNonPII: VisitNonPIIInfo
 ) {
-  if (!visitNonPII.complete || visitNonPII.isDemo) {
+  if (!visitNonPII.complete) {
+    throw new Error(
+      "Attempting to send consent email before visit is complete."
+    );
+  }
+  if (visitPII.consents.length === 0 || visitNonPII.isDemo) {
     return null;
   }
   const enrolledItem = getResponseItem(visitNonPII, "Enrolled");
@@ -55,7 +71,8 @@ export function getConsentEmailParams(
     subject: "Seattle Flu Study Consent Form",
     body: body,
     to: patientEmailAddresses,
-    from: "noreply@auderenow.org"
+    from: "noreply@auderenow.org",
+    consentCount: visitPII.consents.length
   };
 }
 

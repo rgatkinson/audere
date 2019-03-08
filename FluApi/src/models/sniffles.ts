@@ -23,11 +23,17 @@ import {
   VisitNonPIIDbInfo
 } from "audere-lib/snifflesProtocol";
 import { defineHutchUpload } from "./hutchUpload";
+import { defineConsentEmail } from "./consentEmail";
 
 export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
   const hutchUpload = defineHutchUpload(sql);
+  const consentEmail = defineConsentEmail(sql);
   const visitNonPii = defineVisit<VisitNonPIIDbInfo>(sql.nonPii);
   visitNonPii.hasOne(hutchUpload, {
+    foreignKey: "visitId",
+    onDelete: "CASCADE"
+  });
+  visitNonPii.hasOne(consentEmail, {
     foreignKey: "visitId",
     onDelete: "CASCADE"
   });
