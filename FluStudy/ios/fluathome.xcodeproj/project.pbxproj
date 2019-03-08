@@ -562,7 +562,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -696,7 +696,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -836,7 +836,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
