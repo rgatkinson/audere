@@ -38,10 +38,6 @@ export default class App extends React.Component<AppProps> {
   };
 
   async componentWillMount() {
-    // Super hack!  An attempt to make progress on FEV-309.
-    const password = await uploader.getEncryptionPassword();
-    await AsyncStorage.setItem("encryption_password", password);
-
     this._loadAssets();
     if (this.props.exp) {
       reportPreviousCrash(this.props.exp.errorRecovery);
