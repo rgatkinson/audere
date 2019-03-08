@@ -1,4 +1,13 @@
-import { createStore, combineReducers, applyMiddleware, Store, Middleware, Dispatch, AnyAction, MiddlewareAPI } from "redux";
+import {
+  createStore,
+  combineReducers,
+  applyMiddleware,
+  Store,
+  Middleware,
+  Dispatch,
+  AnyAction,
+  MiddlewareAPI,
+} from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
 import { NavigationAction } from "react-navigation";
@@ -7,7 +16,7 @@ import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
 import { Crashlytics } from "react-native-fabric";
-import { uploader, uploaderMiddleware } from "./uploader";
+import { logger, uploader, uploaderMiddleware } from "./uploader";
 import { crashReportingDetailsMiddleware } from "../crashReporter";
 
 export { uploader, events, logger } from "./uploader";
@@ -69,23 +78,30 @@ export function getStore(): Promise<Store> {
   return (storePromise = getStoreImpl());
 }
 
-const encryptingTransform = (encryptor: Transform<any, any>) =>
+export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
   createTransform(
     (inboundState, key) => {
-      return encryptor.in(JSON.parse(inboundState as string), key);
+      return inboundState;
     },
     (outboundState, key) => {
-      return JSON.stringify(encryptor.out(outboundState, key));
+      const decrypted = encryptor.out(outboundState, key);
+      if (decrypted) {
+        logger.debug(`Persisted redux state "${key}" no longer encrypted.`);
+        return JSON.stringify(decrypted);
+      }
+      return outboundState;
     }
   );
 
-function loggingMiddleware<Ext, S, D extends Dispatch>(label: string, middleware: Middleware<Ext, S, D>): Middleware<Ext, S, D> {
+function loggingMiddleware<Ext, S, D extends Dispatch>(
+  label: string,
+  middleware: Middleware<Ext, S, D>
+): Middleware<Ext, S, D> {
   return (store: MiddlewareAPI<D, S>) => {
     const inner0 = middleware(store);
     return (next: Dispatch) => {
       const inner1 = inner0(next);
       return (action: AnyAction) => {
-
         const before = `middleware[${label}] ${action}`;
         if (!store) {
           Crashlytics.log(`${before} (store='${store}')`);
@@ -108,7 +124,7 @@ async function getStoreImpl() {
   const password = await uploader.getEncryptionPassword();
   const encryptor = createEncryptor({ secretKey: password });
   const persistConfig = {
-    transforms: [immutableTransform(), encryptingTransform(encryptor)],
+    transforms: [immutableTransform(), encryptionRemovalTransform(encryptor)],
     key: "store",
     storage,
   };
