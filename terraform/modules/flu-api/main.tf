@@ -116,7 +116,10 @@ resource "aws_autoscaling_group" "flu_api" {
   availability_zones = "${local.availability_zones}"
   health_check_type = "ELB"
   launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
-  load_balancers = ["${aws_elb.flu_api_elb.name}"]
+  load_balancers = [
+    "${aws_elb.flu_api_elb.name}",
+    "${aws_elb.flu_api_internal_elb.name}",
+  ]
   max_size = 1
   min_size = 1
   vpc_zone_identifier = ["${aws_subnet.api.id}"]
