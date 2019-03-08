@@ -23,6 +23,8 @@ import {
   ErrorProps,
 } from "./src/crashReporter";
 import { startTracking } from "./src/util/tracker";
+import { uploader } from "./src/store/uploader";
+import { AsyncStorage } from "react-native";
 
 type AppProps = {
   exp?: {
@@ -35,7 +37,11 @@ export default class App extends React.Component<AppProps> {
     appReady: false,
   };
 
-  componentWillMount() {
+  async componentWillMount() {
+    // Super hack!  An attempt to make progress on FEV-309.
+    const password = await uploader.getEncryptionPassword();
+    await AsyncStorage.setItem("encryption_password", password);
+
     this._loadAssets();
     if (this.props.exp) {
       reportPreviousCrash(this.props.exp.errorRecovery);
