@@ -72,10 +72,10 @@ export class AnalyticsBatcher implements EventTracker, Logger {
   }
 
   public write(level: LogRecordLevel, text: string): void {
-    const timestamp = new Date().toISOString();
-    this.echo(`${timestamp} [${level}]: ${text}`);
-    this.logs.push({ timestamp, level, text: this.truncate(text) });
-    this.pump.start();
+    // const timestamp = new Date().toISOString();
+    // this.echo(`${timestamp} [${level}]: ${text}`);
+    // this.logs.push({ timestamp, level, text: this.truncate(text) });
+    // this.pump.start();
   }
 
   public fireNow(kind: EventInfoKind, refId?: string): void {
@@ -87,8 +87,8 @@ export class AnalyticsBatcher implements EventTracker, Logger {
   }
 
   public fire(event: EventInfo): void {
-    this.events.push(event);
-    this.pump.start();
+    // this.events.push(event);
+    // this.pump.start();
   }
 
   private echo(text: string) {

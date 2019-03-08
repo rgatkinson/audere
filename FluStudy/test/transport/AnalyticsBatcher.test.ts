@@ -15,59 +15,65 @@ jest.mock("../../src/util/csruid");
 
 describe("AnalyticsBatcher", () => {
 
-  it("saves small logs locally without uploading", async () => {
-    const env = new TestEnv();
-    env.bind();
-    env.logger.error("abc");
-    await ticks(5);
+  if (true) {
+    it("No longer exists", () => {
 
-    expect(env.saves.length).toBeGreaterThan(0);
-    expect(env.uploads).toHaveLength(0);
-  });
+    });
+  } else {
+    it("saves small logs locally without uploading", async () => {
+      const env = new TestEnv();
+      env.bind();
+      env.logger.error("abc");
+      await ticks(5);
 
-  it("saves small events locally without uploading", async () => {
-    const env = new TestEnv();
-    env.bind();
-    env.logger.fire({ kind: EventInfoKind.AppNav, at: "timestamp" });
-    await ticks(5);
+      expect(env.saves.length).toBeGreaterThan(0);
+      expect(env.uploads).toHaveLength(0);
+    });
 
-    expect(env.saves.length).toBeGreaterThan(0);
-    expect(env.uploads).toHaveLength(0);
-  });
+    it("saves small events locally without uploading", async () => {
+      const env = new TestEnv();
+      env.bind();
+      env.logger.fire({ kind: EventInfoKind.AppNav, at: "timestamp" });
+      await ticks(5);
 
-  it("uploads after passing size limit", async () => {
-    const env = new TestEnv({targetBatchSizeInChars: 200});
-    env.bind();
+      expect(env.saves.length).toBeGreaterThan(0);
+      expect(env.uploads).toHaveLength(0);
+    });
 
-    const message = "This is a test.  This is only a test.  Had this been an actual message...";
+    it("uploads after passing size limit", async () => {
+      const env = new TestEnv({targetBatchSizeInChars: 200});
+      env.bind();
 
-    env.logger.fatal(message);
-    env.logger.error(message);
-    env.logger.warn(message);
-    env.logger.info(message);
-    env.logger.debug(message);
-    jest.runAllTimers();
-    await ticks(5);
+      const message = "This is a test.  This is only a test.  Had this been an actual message...";
 
-    env.logger.debug("something else");
-    await ticks(5);
+      env.logger.fatal(message);
+      env.logger.error(message);
+      env.logger.warn(message);
+      env.logger.info(message);
+      env.logger.debug(message);
+      jest.runAllTimers();
+      await ticks(5);
 
-    expect(env.uploads.length).toBeGreaterThan(0);
-    const entries = env.uploads.reduce(
-      (acc: LogRecordInfo[], entry: Analytics) => acc.concat(entry.document.logs),
-      []
-    );
-    expect(entries.map(entry => entry.level)).toEqual([
-      LogRecordLevel.Fatal,
-      LogRecordLevel.Error,
-      LogRecordLevel.Warn,
-      LogRecordLevel.Info,
-      LogRecordLevel.Debug,
-    ]);
-    for (let entry of entries) {
-      expect(entry.text).toEqual(message);
-    }
-  });
+      env.logger.debug("something else");
+      await ticks(5);
+
+      expect(env.uploads.length).toBeGreaterThan(0);
+      const entries = env.uploads.reduce(
+        (acc: LogRecordInfo[], entry: Analytics) => acc.concat(entry.document.logs),
+        []
+      );
+      expect(entries.map(entry => entry.level)).toEqual([
+        LogRecordLevel.Fatal,
+        LogRecordLevel.Error,
+        LogRecordLevel.Warn,
+        LogRecordLevel.Info,
+        LogRecordLevel.Debug,
+      ]);
+      for (let entry of entries) {
+        expect(entry.text).toEqual(message);
+      }
+    });
+  }
 });
 
 class TestEnv {
