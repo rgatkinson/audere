@@ -801,7 +801,7 @@ export function getFeverMetrics(
           SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
               survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
             SUM(CASE WHEN (items->>'id'='FirstTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
-              THEN 1 ELSE 0 END) test1errors
+              THEN 1 END) test1errors
           FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
           WHERE ${dateClause} AND ${demoClause}
           GROUP BY age)
@@ -810,7 +810,7 @@ export function getFeverMetrics(
           SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
               survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
             SUM(CASE WHEN (items->>'id'='SecondTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
-              THEN 1 ELSE 0 END) test2errors
+              THEN 1 END) test2errors
           FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
           WHERE ${dateClause} AND ${demoClause}
           GROUP BY age
@@ -852,7 +852,8 @@ export function getFeverMetrics(
           GROUP BY age
           ORDER BY age
         ) t4
-      ON t.age = t4.age)
+      ON t.age = t4.age
+      ORDER BY age)
       SELECT * FROM agebuckets UNION ALL 
       SELECT 'Total', 
              SUM(test1errors), 
@@ -915,13 +916,8 @@ export function getFeverMetrics(
           fcs.csruid as studyid,
           fcs.device->'installation' as installation,
           fcs.survey->>'workflow' as workflow,
-          CASE survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex'
-            WHEN '0' THEN 'Under 17'
-            WHEN '1' THEN '18-24'
-            WHEN '2' THEN '25-34'
-            WHEN '3' THEN '35-44'
-            WHEN '4' THEN '45-64'
-            ELSE '65+' END as age
+          json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
+            survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age
       FROM t RIGHT JOIN fever_current_surveys fcs
     ON fcs.id=t.id
     WHERE ${dateClause} AND ${demoClause}
@@ -1030,7 +1026,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       ...defaultCell
     },
     surveyscompleted: {
-      displayName: "Completed Questionnaire",
+      displayName: "Completed Survey",
       ...defaultCell
     },
     test1: {
@@ -1072,6 +1068,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     percent: {
       displayName: "%",
       ...defaultCell
+    },
+    lastscreenText: {
+      displayName: "Screen Text",
+      headerStyle: styles.columnHeader,
+      width: 300
     }
   };
 
@@ -1159,7 +1160,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     style: styles.default
   };
   const surveyStatsHeading = [
-    [{ value: "Fever Stats", style: styles.title }],
+    [{ value: "Fever Stats by Age", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
   ];
@@ -1226,6 +1227,12 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "How many said they messed up test 2, thought it was very confusing, or were missing materials"
     ],
     ["Finished", null, "How many made it to the last screen"],
+    [],
+    ["Last Screen sheet columns"],
+    ["ScreenKey", null, "Name of last screen/event recorded"],
+    ["Count", null, "How many people stopped at that screen"],
+    ["%", null, "Percent of users that stopped on that screen"],
+    ["Screen Text", null, "Sample of the text displayed on that screen"],
     [],
     ["Details sheet columns"],
     ["App Start Time", null, "Time user clicked beyond Welcome page"],

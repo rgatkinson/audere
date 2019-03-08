@@ -47,9 +47,9 @@
           <th><label title="How many ordered a kit">Ordered Kit</label></th>
           <th><label title="How many started part 2 of app">Started Part 2</label></th>
           <th><label title="How many scanned/entered a barcode">Barcode Scanned</label></th>
-          <th><label title="How many completed the questionnaire">Completed Questionnaire</label></th>
+          <th><label title="How many completed the questionnaire">Completed Survey</label></th>
           <th><label title="How many completed test 1">Test 1 Complete</label></th>
-          <th><label title="How many mess up on test 1">Test 1 Errors</label></th>
+          <th><label title="How many messed up on test 1">Test 1 Errors</label></th>
           <th><label title="How many completed test 2">Test 2 Completed</label></th>
           <th><label title="How many messed up on test 2">Test 2 Errors</label></th>
           <th><label title="How many made it to the last screen">Finished App</label></th>
@@ -68,7 +68,7 @@
        <tr>
          <% } %> 
           <td><%= row.age %></td>
-          <td class="label"><%= row.total %></td>
+          <td><%= row.total %></td>
           <td><%= row.eligible %></td>
           <td><%= row.consents %></td>
           <td><%= row.kits %></td>
@@ -95,7 +95,7 @@
           <th>Screen Key</th>
           <th class="number">Count</th>
           <th class="number">%</th>
-          <th>Sample Text</th>
+          <th>Screen Text</th>
         </tr>
       </thead>
       <tbody>
