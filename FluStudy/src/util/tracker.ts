@@ -65,7 +65,7 @@ async function shouldTrack(isDemo: boolean): Promise<boolean> {
   }
 
   const isProduction =
-    process.env.REACT_NATIVE_API_SERVER === "https:/api.auderenow.io/api";
+    process.env.REACT_NATIVE_API_SERVER === "https://api.auderenow.io/api";
 
   return !isDemo && isProduction;
 }
