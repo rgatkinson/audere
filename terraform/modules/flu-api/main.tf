@@ -188,14 +188,6 @@ resource "aws_elb" "flu_api_internal_elb" {
     instance_protocol = "https"
   }
 
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-    target = "HTTP:444/api"
-  }
-
   tags {
     key = "Name"
     value = "${local.base_name}-internal"
