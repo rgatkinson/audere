@@ -293,11 +293,13 @@ export class EncountersService {
       const duration = moment.duration(now.diff(birthDate));
       const years = duration.asYears();
 
-      // Ages 90+ can not be reported.
-      if (years < 90) {
-        age = { value: years, ninetyOrAbove: false };
-      } else {
-        age = { ninetyOrAbove: true }
+      if (years >= 0) {
+        // Ages 90+ can not be reported.
+        if (years < 90) {
+          age = { value: years, ninetyOrAbove: false };
+        } else {
+          age = { ninetyOrAbove: true }
+        }
       }
     }
 
