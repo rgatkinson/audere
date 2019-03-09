@@ -7,16 +7,32 @@ export interface Encounter {
     localeLanguageCode: "en" | "es";
     startTimestamp: string;
     site?: string;
-    household?: Location;
-    workplace?: Location;
+    locations: Location[];
     sampleCodes: SampleCode[];
     responses: Response[];
+    age?: Age;
+}
+export interface Age {
+    value?: number;
+    ninetyOrAbove: boolean;
+}
+export declare enum LocationType {
+    Home = "Home",
+    Work = "Work",
+    Temp = "Temp"
 }
 export interface Location {
+    use: LocationType;
     id: string;
     region: string;
 }
-export declare type SampleType = "SelfSwab" | "ClinicSwab" | "Blood" | "Serum" | "PBMC";
+export declare enum SampleType {
+    SelfSwab = "SelfSwab",
+    ClinicSwab = "ClinicSwab",
+    Blood = "Blood",
+    Serum = "Serum",
+    PBMC = "PBMC"
+}
 export interface SampleCode {
     type: SampleType;
     code: string;

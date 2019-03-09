@@ -76,6 +76,17 @@ export interface Encounter {
 
   sampleCodes: SampleCode[];
   responses: Response[];
+
+  // Participant's age when compared to the current time during report
+  // generation.  If the survey lacks a valid birth date then age will not be
+  // supplied.
+  age?: Age;
+}
+
+export interface Age {
+  value?: number;
+
+  ninetyOrAbove: boolean;
 }
 
 export enum LocationType {

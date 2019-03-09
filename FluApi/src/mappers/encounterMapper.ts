@@ -67,12 +67,13 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     id: input.visitId,
     participant: input.participant,
     revision: revision,
-    localeLanguageCode: "en", // TODO: ES support
+    localeLanguageCode: "en", // TODO: "es" support
     startTimestamp: getStart(),
     site: site,
     locations: input.locations,
     sampleCodes: sampleCodes,
-    responses: responses
+    responses: responses,
+    age: input.age
   };
 
   return output;

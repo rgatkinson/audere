@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Location } from "audere-lib/hutchProtocol";
+import { Age, Location } from "audere-lib/hutchProtocol";
 import { PatientInfo, VisitNonPIIInfo } from "audere-lib/snifflesProtocol";
 
 export interface PIIVisitDetails {
@@ -21,4 +21,5 @@ export interface NonPIIVisitDetails {
   consentDate: string;
   participant: string;
   locations: Location[];
+  age?: Age;
 }

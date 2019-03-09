@@ -43,7 +43,7 @@ describe("encounters service", () => {
     consentDate: "2019-04-05",
     patientInfo: {
       name: "Patient Zero",
-      birthDate: "1/1/2000",
+      birthDate: "1960-01-01",
       telecom: [],
       address: [
         {
@@ -82,8 +82,14 @@ describe("encounters service", () => {
       expect(result.size).toBe(1);
       expect(result.has(details.id)).toBe(true);
 
-      // Does not contain common
       const encounter = result.get(details.id);
+
+      const birthDate = new Date(details.patientInfo.birthDate);
+      const expectedAge = new Date().getFullYear() - birthDate.getFullYear();
+      expect(encounter.age.ninetyOrAbove).toBe(false);
+      expect(encounter.age.value).toBeGreaterThanOrEqual(expectedAge - 1);
+      expect(encounter.age.value).toBeLessThanOrEqual(expectedAge + 1);
+
       expect(encounter.id).toBe(details.csruid.substr(0, 121));
       expect(encounter.participant.includes(details.patientInfo.name)).toBe(
         false
@@ -91,6 +97,52 @@ describe("encounters service", () => {
       expect(
         encounter.participant.includes(details.patientInfo.birthDate)
       ).toBe(false);
+    });
+
+    it("should filter ages above 90", async () => {
+        const geocoderMock = mock(GeocodingService);
+        when(geocoderMock.geocodeAddresses(anything())).thenResolve([]);
+  
+        const visitsMock = mock(VisitsService);
+        const olderDetails = _.cloneDeepWith(details);
+        olderDetails.patientInfo.birthDate = "1900-01-01";
+        when(visitsMock.retrievePendingDetails(20)).thenResolve(
+          new Map([[details.id, olderDetails]])
+        );
+
+        const encountersService = new EncountersService(
+          instance(geocoderMock),
+          undefined,
+          instance(visitsMock),
+          "secret"
+        );
+        const result = await encountersService.getEncounters(20);
+
+        const encounter = result.get(details.id);
+        expect(encounter.age.ninetyOrAbove).toBe(true);
+    });
+
+    it("should ignore invalid birth dates", async () => {
+      const geocoderMock = mock(GeocodingService);
+      when(geocoderMock.geocodeAddresses(anything())).thenResolve([]);
+
+      const visitsMock = mock(VisitsService);
+      const badDetails = _.cloneDeepWith(details);
+      badDetails.patientInfo.birthDate = "A long time ago in a galaxy far far away";
+      when(visitsMock.retrievePendingDetails(20)).thenResolve(
+        new Map([[details.id, badDetails]])
+      );
+
+      const encountersService = new EncountersService(
+        instance(geocoderMock),
+        undefined,
+        instance(visitsMock),
+        "secret"
+      );
+      const result = await encountersService.getEncounters(20);
+
+      const encounter = result.get(details.id);
+      expect(encounter.age).toBeUndefined();
     });
 
     it("should error when multiple addresses of a single type are present", async () => {

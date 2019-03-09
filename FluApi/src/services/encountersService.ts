@@ -5,8 +5,9 @@
 
 import * as Encounter from "audere-lib/hutchProtocol";
 import * as Model from "audere-lib/snifflesProtocol";
-import { GeocodingService } from "./geocodingService";
 import * as Mapper from "../mappers/encounterMapper";
+import moment from "moment";
+import { GeocodingService } from "./geocodingService";
 import { HutchUploader } from "../external/hutchUploader";
 import { VisitsService } from "./visitsService";
 import { generateSHA256 } from "../util/crypto";
@@ -236,24 +237,15 @@ export class EncountersService {
         const visit = visits.get(k);
 
         if (visit.patientInfo == null) {
-          throw new Error(
-            "Patient info should exist for all visits but " +
-              "does not exist for visit " +
-              visit.id
+          throw Error(
+            `Patient info does not exist for visit ${visit.id}`
           );
         }
 
         return this.scrubVisit(k, visit, geocodedAddresses.get(k));
       } catch (e) {
-        logger.error(
-          "A problem occurred converting a PII visit to a non-PII visit. " +
-            "Record with id " +
-            k +
-            " will be ommitted",
-          e
-        );
-
-        return undefined;
+        logger.error(`A problem occurred scrubbing visit ${k}: `, e);
+        throw e;
       }
     });
 
@@ -269,7 +261,7 @@ export class EncountersService {
     id: number,
     visit: PIIVisitDetails,
     geocodedAddresses: GeocodingResponse[]
-  ) {
+  ): NonPIIVisitDetails {
     const locations = [];
     let userPostalCode: string;
 
@@ -292,6 +284,23 @@ export class EncountersService {
       });
     }
 
+    let age: Encounter.Age;
+
+    const birthDate = moment(visit.patientInfo.birthDate, "YYYY-MM-DD");
+
+    if (birthDate.isValid()) {
+      const now = moment(new Date());
+      const duration = moment.duration(now.diff(birthDate));
+      const years = duration.asYears();
+
+      // Ages 90+ can not be reported.
+      if (years < 90) {
+        age = { value: years, ninetyOrAbove: false };
+      } else {
+        age = { ninetyOrAbove: true }
+      }
+    }
+
     // Deidentify participant to a hash of DOB and postal code. Also
     // obscure visit id.
     return {
@@ -303,7 +312,8 @@ export class EncountersService {
         visit.patientInfo.birthDate,
         userPostalCode
       ),
-      locations: locations
+      locations: locations,
+      age: age
     };
   }
 
