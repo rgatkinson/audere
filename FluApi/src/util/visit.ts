@@ -28,11 +28,12 @@ export async function emailConsent(
   };
 }
 
-const CONSENT_BODY_PREAMBLE = `Thank you for participating in the Seattle Flu Study!  As requested, we are emailing you a copy of the consent form you signed.
+const getPreamble = formCount =>
+  `Thank you for participating in the Seattle Flu Study!  As requested, we are emailing you a copy of the ${
+    formCount === 1 ? "form" : formCount + " forms"
+  } you signed.
 
-This email is sent from an unmonitored address.  Please contact us at feedback@auderenow.org to unsubscribe from future emails, or if you have any other questions or concerns.
-
-Here are copies of the Consent Forms you accepted:
+This email is sent from an unmonitored address.
 
 `;
 
@@ -62,7 +63,7 @@ export function getConsentEmailParams(
   const patientEmailAddresses = getPatientEmailAddresses(visitPII.patient);
 
   const body =
-    CONSENT_BODY_PREAMBLE +
+    getPreamble(visitPII.consents.length) +
     visitPII.consents
       .map(consent => "Signed on " + consent.date + ":\n" + consent.terms)
       .join("\n\n");
