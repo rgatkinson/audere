@@ -103,6 +103,7 @@ import {
 import { timestampRender, timestampInteraction } from "./analytics";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
+import { isValidEmail } from "../../util/check";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -170,8 +171,7 @@ class WhatsNextScreen extends React.Component<
         <Screen
           canProceed={
             (!!this.props.email && this.state.email == this.props.email) ||
-            (this.emailInput.current != null &&
-              this.emailInput.current!.isValid(this.state.email))
+            isValidEmail(this.state.email)
           }
           desc={t("description")}
           imageSrc={require("../../img/whatsNext.png")}

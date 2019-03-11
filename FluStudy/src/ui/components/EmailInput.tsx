@@ -4,6 +4,7 @@ import KeyboardListener from "react-native-keyboard-listener";
 import Text from "./Text";
 import TextInput from "./TextInput";
 import { ERROR_COLOR, FONT_NORMAL, GUTTER } from "../styles";
+import { isValidEmail } from "../../util/check";
 
 interface Props extends React.Props<EmailInput> {
   autoFocus: boolean;
@@ -58,7 +59,7 @@ export default class EmailInput extends React.Component<Props, State> {
         />
         <Text
           content={
-            !!this.state.email && !this.isValid() && !this.state.keyboardOpen
+            !isValidEmail(this.state.email) && !this.state.keyboardOpen
               ? this.props.validationError
               : ""
           }
@@ -71,12 +72,6 @@ export default class EmailInput extends React.Component<Props, State> {
   focus() {
     this.textInput.current!.focus();
   }
-
-  isValid = (email: string | undefined = this.state.email): boolean => {
-    // Top answer in https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-    const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return email != null && validationPattern.test(email!);
-  };
 }
 
 const styles = StyleSheet.create({

@@ -25,3 +25,9 @@ export function isValidUSZipCode(zip: string | null | undefined): boolean {
 export function isNotEmptyString(input: string | null | undefined): boolean {
   return !!input && input.trim().length > 0;
 }
+
+export function isValidEmail(email: string | undefined): boolean {
+  // Top answer in https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+  const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  return !!email && validationPattern.test(email!);
+}

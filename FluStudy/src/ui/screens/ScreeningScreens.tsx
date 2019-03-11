@@ -46,7 +46,11 @@ import Text from "../components/Text";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { timestampRender, timestampInteraction } from "./analytics";
-import { isValidUSZipCode, isNotEmptyString } from "../../util/check";
+import {
+  isValidUSZipCode,
+  isNotEmptyString,
+  isValidEmail,
+} from "../../util/check";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 
@@ -282,9 +286,7 @@ class ConsentScreen extends React.PureComponent<
   _canProceed = (): boolean => {
     return (
       !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
-      (!!this.state.email &&
-        this.emailInput.current != null &&
-        this.emailInput.current!.isValid(this.state.email))
+      isValidEmail(this.state.email)
     );
   };
 
