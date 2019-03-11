@@ -290,8 +290,7 @@ export class EncountersService {
 
     if (birthDate.isValid()) {
       const now = moment(new Date());
-      const duration = moment.duration(now.diff(birthDate));
-      const years = duration.asYears();
+      const years = now.year() - birthDate.year();
 
       if (years >= 0) {
         // Ages 90+ can not be reported.
