@@ -43,6 +43,12 @@ export const FunnelEvents = {
   COMPLETED_SHIPPING: "funnel_completed_shipping",
 };
 
+export const AppHealthEvents = {
+  REMOTE_CONFIG_ERROR: "remote_config_error",
+  REMOTE_CONFIG_LOADED: "remote_config_loaded",
+  REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
+};
+
 // By default, we don't log demo mode and non-production builds.  If you're
 // debugging logging, set this to true on your own machine to bypass all those
 // logging exclusions. Please don't commit true to our codebase unless you're

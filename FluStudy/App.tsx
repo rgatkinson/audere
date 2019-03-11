@@ -23,8 +23,7 @@ import {
   ErrorProps,
 } from "./src/crashReporter";
 import { startTracking } from "./src/util/tracker";
-import { uploader } from "./src/store/uploader";
-import { AsyncStorage } from "react-native";
+import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
 
 type AppProps = {
   exp?: {
@@ -43,7 +42,8 @@ export default class App extends React.Component<AppProps> {
       reportPreviousCrash(this.props.exp.errorRecovery);
     }
     setupErrorHandler();
-    startTracking();
+    await startTracking();
+    await loadAllRemoteConfigs();
   }
 
   componentDidCatch(error: Error) {
