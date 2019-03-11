@@ -914,6 +914,8 @@ export function getFeverMetrics(
           fcs.survey->'samples'->0->'code' as barcode,
           fcs.survey->'workflow'->'surveyCompletedAt' as finishtime,
           fcs.csruid as studyid,
+          fcs.device->'clientVersion'->'version' as appversion,
+          regexp_matches(fcs.device->>'platform','"model":"(.*)","user') as devicemodel,
           fcs.device->'installation' as installation,
           fcs.survey->>'workflow' as workflow,
           json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
@@ -1105,6 +1107,15 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       headerStyle: styles.columnHeader,
       width: 50
     },
+    appversion: {
+      displayName: "Version",
+      headerStyle: styles.columnHeader,
+      width: 50
+    },
+    devicemodel: {
+      displayName: "Device Model",
+      ...defaultCell
+    },
     installation: {
       displayName: "Installation ID",
       headerStyle: styles.columnHeader,
@@ -1247,6 +1258,8 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "Unique ID for associating this survey with other specimens (longitudinal usage)"
     ],
     ["DB ID", null, "Internal ID for Audere use"],
+    ["Version", null, "Which version of the app the user used"],
+    ["Device Model", null, "What device the user used to complete the app"],
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
     ["Started Part II", null, "Time user reopened app to begin part 2"],
