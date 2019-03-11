@@ -53,7 +53,7 @@ describe("SurveyUpdater", () => {
   beforeAll(async done => {
     log.setVerbose(true);
     sql = createSplitSql();
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",

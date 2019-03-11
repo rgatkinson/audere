@@ -13,10 +13,9 @@ import { FeverEndpoint } from "./endpoints/feverApi";
 import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReportEndpoint";
-import { isAWS } from "./util/environment";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { useOuch, createApp, wrap } from "./util/expressApp";
-import { portalApp } from "./services/webPortal/endpoint";
+import { portalApp } from "./endpoints/webPortal/endpoint";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -30,7 +29,7 @@ export async function createPublicApp(sql: SplitSql) {
   publicApp.get(
     "/favicon.ico",
     async (req, res) => res.sendFile(
-      resolve(__dirname, "services/webPortal/static/favicon.ico")
+      resolve(__dirname, "endpoints/webPortal/static/favicon.ico")
     )
   );
 

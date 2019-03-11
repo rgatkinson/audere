@@ -40,7 +40,7 @@ import {
 } from "audere-lib/feverProtocol";
 import { SurveyNonPIIUpdater, SurveyPIIUpdater } from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
-import { AuthManager } from "../src/services/webPortal/auth"
+import { AuthManager } from "../src/endpoints/webPortal/auth"
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);

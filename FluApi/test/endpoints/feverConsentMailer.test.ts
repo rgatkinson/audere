@@ -35,7 +35,7 @@ describe("FeverConsentEmailer", () => {
       key: "accesskey1",
       valid: true
     });
-    publicApp = createPublicApp(sql);
+    publicApp = await createPublicApp(sql);
     done();
   });
 
