@@ -45,6 +45,7 @@
     "handlebars": "^4.1.0",
     "helmet": "^3.13.0",
     "json2csv": "^4.3.4",
+    "node-excel-export": "^1.4.4",
     "moment": "^2.24.0",
     "nodemailer": "^5.1.1",
     "ouch": "^2.0.0",
