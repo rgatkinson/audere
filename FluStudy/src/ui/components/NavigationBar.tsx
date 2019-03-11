@@ -17,6 +17,7 @@ interface Props {
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
+  onBack?: () => any;
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
@@ -36,7 +37,13 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         ) : (
           <TouchableOpacity
             style={styles.actionContainer}
-            onPress={() => this.props.navigation.pop()}
+            onPress={() => {
+              if (this.props.onBack != null) {
+                this.props.onBack();
+              } else {
+                this.props.navigation.pop();
+              }
+            }}
           >
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>

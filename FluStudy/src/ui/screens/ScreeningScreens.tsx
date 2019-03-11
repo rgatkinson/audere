@@ -25,6 +25,7 @@ import {
   setPushNotificationState,
   setWorkflow,
   setConsent,
+  skipPartOne,
 } from "../../store";
 import {
   AddressConfig,
@@ -68,13 +69,35 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
+        footer={
+          <View style={{ alignSelf: "stretch", marginTop: GUTTER / 2 }}>
+            <Button
+              enabled={true}
+              label={t("common:button:continue")}
+              primary={true}
+              style={{ alignSelf: "center" }}
+              onPress={() => this.props.navigation.push("Why")}
+            />
+            <Links
+              center={true}
+              links={[
+                {
+                  label: t("haveKit"),
+                  onPress: () => {
+                    this.props.dispatch(skipPartOne(true));
+                    this.props.navigation.push("WelcomeBack");
+                  },
+                },
+              ]}
+            />
+          </View>
+        }
         hideBackButton={true}
         navigation={this.props.navigation}
+        skipButton={true}
         stableImageSrc={require("../../img/welcome.png")}
         title={t("welcome")}
-        onNext={() => {
-          this.props.navigation.push("Why");
-        }}
+        onNext={() => {}}
       />
     );
   }
@@ -259,6 +282,7 @@ export const Symptoms = reduxWriter(
 
 interface ConsentProps {
   email?: string;
+  skipPartOne: boolean;
 }
 
 interface ConsentState {
@@ -267,6 +291,7 @@ interface ConsentState {
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
+  skipPartOne: state.meta.skipPartOne,
 }))
 class ConsentScreen extends React.PureComponent<
   Props & ConsentProps & WithNamespaces & ReduxWriterProps,
@@ -307,7 +332,11 @@ class ConsentScreen extends React.PureComponent<
         date: format(new Date(), "YYYY-MM-DD"),
       })
     );
-    this.props.navigation.push("Address");
+    if (this.props.skipPartOne) {
+      this.props.navigation.push("WhatsNext");
+    } else {
+      this.props.navigation.push("Address");
+    }
   };
 
   emailInput = React.createRef<EmailInput>();
@@ -331,7 +360,7 @@ class ConsentScreen extends React.PureComponent<
             />
           }
           navigation={this.props.navigation}
-          step={3}
+          step={this.props.skipPartOne ? undefined : 3}
           title={t("consent")}
           onNext={this._onNext}
         >

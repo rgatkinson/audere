@@ -1,18 +1,25 @@
 import { updateCollectionEnabled } from "../util/tracker";
 
-export type MetaAction = { type: "SET_DEMO"; isDemo: boolean };
+export type MetaAction =
+  | { type: "SET_DEMO"; isDemo: boolean }
+  | { type: "SKIP_PART_ONE"; skipPartOne: boolean };
 
 export type MetaState = {
   isDemo: boolean;
+  skipPartOne: boolean;
 };
 
 const initialState: MetaState = {
   isDemo: false,
+  skipPartOne: false,
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
   if (action.type === "SET_DEMO") {
     return { ...state, isDemo: action.isDemo };
+  }
+  if (action.type === "SKIP_PART_ONE") {
+    return { ...state, skipPartOne: action.skipPartOne };
   }
 
   return state;
@@ -23,5 +30,12 @@ export function setDemo(isDemo: boolean): MetaAction {
   return {
     type: "SET_DEMO",
     isDemo,
+  };
+}
+
+export function skipPartOne(skipPartOne: boolean): MetaAction {
+  return {
+    type: "SKIP_PART_ONE",
+    skipPartOne,
   };
 }

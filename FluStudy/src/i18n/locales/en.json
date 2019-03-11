@@ -186,7 +186,8 @@
   },
   "welcomeScreen": {
     "welcome": "Welcome",
-    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $50 Amazon gift card at the end of the study after we receive your completed test kit in the mail. Let's get started."
+    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $50 Amazon gift card at the end of the study after we receive your completed test kit in the mail. Let's get started.",
+    "haveKit": "I already have my kit"
   },
   "whyScreen": {
     "why": "Why this study?",

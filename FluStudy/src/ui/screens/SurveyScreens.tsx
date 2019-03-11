@@ -29,6 +29,7 @@ import {
   setOneMinuteStartTime,
   setTenMinuteStartTime,
   setWorkflow,
+  skipPartOne,
   uploader,
 } from "../../store";
 import {
@@ -119,8 +120,16 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect()
-class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
+interface SkipProps {
+  skipPartOne: boolean;
+}
+
+@connect((state: StoreState) => ({
+  skipPartOne: state.meta.skipPartOne,
+}))
+class WelcomeBackScreen extends React.Component<
+  Props & SkipProps & WithNamespaces
+> {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.RECEIVED_KIT);
   }
@@ -132,20 +141,28 @@ class WelcomeBackScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        hideBackButton={true}
+        hideBackButton={!this.props.skipPartOne}
         navigation={this.props.navigation}
         stableImageSrc={require("../../img/welcome.png")}
         title={t("welcomeBack")}
+        onBack={() => {
+          this.props.dispatch(skipPartOne(false));
+          this.props.navigation.pop();
+        }}
         onNext={() => {
-          this.props.navigation.push("WhatsNext");
+          if (this.props.skipPartOne) {
+            this.props.navigation.push("Consent");
+          } else {
+            this.props.navigation.push("WhatsNext");
+          }
         }}
       />
     );
   }
 }
-export const WelcomeBack = withNamespaces("welcomeBackScreen")<Props>(
-  WelcomeBackScreen
-);
+export const WelcomeBack = withNamespaces("welcomeBackScreen")<
+  Props & SkipProps
+>(WelcomeBackScreen);
 
 @connect((state: StoreState) => ({
   email: state.survey.email,

@@ -47,6 +47,7 @@ interface Props {
   step?: number;
   title: string;
   onTitlePress?: () => any;
+  onBack?: () => any;
   onNext(): void;
 }
 
@@ -125,6 +126,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
             hideBackButton={this.props.hideBackButton}
             menuItem={this.props.menuItem}
             navigation={this.props.navigation}
+            onBack={this.props.onBack}
           />
           {!!this.props.stableImageSrc &&
             this._getImage(this.props.stableImageSrc)}
