@@ -89,11 +89,9 @@ export function createInternalApp(
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
   const snifflesConsentEmailer = new ConsentEmailerEndpoint(sql);
-  if (!isAWS()) {
-    internalApp.get("/api/export/getEncounters", (req, res, next) =>
-      hutchUploader.getEncounters(req, res, next)
-    );
-  }
+  internalApp.get("/api/export/getEncounters", (req, res, next) =>
+    hutchUploader.getEncounters(req, res, next)
+  );
 
   internalApp.get("/api/export/sendEncounters", (req, res, next) =>
     hutchUploader.sendEncounters(req, res, next)
