@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+watch -n 3 '
+function api_curl_status() {
+  echo "$(curl -Ss "$1" 2>&1) | $1"
+}
+
+api_curl_status "https://api.auderenow.io/api"
+api_curl_status "https://api.staging.auderenow.io/api"
+'
