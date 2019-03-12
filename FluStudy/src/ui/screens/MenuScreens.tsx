@@ -25,7 +25,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Constants } from "expo";
 import { getApiBaseUrl } from "../../transport";
 import { GUTTER, PRIMARY_COLOR, SYSTEM_FONT, SYSTEM_TEXT } from "./../styles";
-import { DEVICE_INFO } from "../../transport/DeviceInfo";
+import { ios, DEVICE_INFO } from "../../transport/DeviceInfo";
 import Text from "../components/Text";
 
 export const Menu = (props: any) => {
@@ -308,6 +308,8 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
     const aboutContent: string =
       t("version") +
       buildInfo.version +
+      t("build") +
+      (ios ? buildInfo.iosBuild : "") +
       t("commit") +
       buildInfo.hash +
       t("date") +

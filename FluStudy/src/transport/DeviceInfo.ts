@@ -5,7 +5,7 @@
 
 import { Constants } from "expo";
 
-const ios = Constants.platform.ios;
+export const ios = Constants.platform.ios;
 
 export const DEVICE_INFO = {
   installation: Constants.installationId,

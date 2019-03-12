@@ -18,6 +18,12 @@ APP_NAME="$(node --eval 'console.log(require("'$APP_DIR'/package.json").name)')"
 APP_VERSION="$(node --eval 'console.log(require("'$APP_DIR'/package.json").version)')"
 HOME_APP_NAME="$(node --eval 'console.log(require("'$HOME_APP_DIR'/package.json").name)')"
 HOME_APP_VERSION="$(node --eval 'console.log(require("'$HOME_APP_DIR'/package.json").version)')"
+# PlistBuddy only exists on Mac, fallback to blank if the command fails
+{
+  HOME_APP_IOS_BUILD="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$HOME_APP_DIR/ios/fluathome/Supporting/Info.plist")"
+} || {
+  HOME_APP_IOS_BUILD=""
+}
 SERVER_NAME="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").name)')"
 SERVER_VERSION="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").version)')"
 
@@ -41,6 +47,7 @@ cat >"$HOME_APP_DIR/$FILENAME" <<EOT
 {
   "name": "$HOME_APP_NAME",
   "version": "$HOME_APP_VERSION",  
+  "iosBuild": "$HOME_APP_IOS_BUILD",
   "buildDate": "$TODAY",
   "hash": "$GITHASH"
 }

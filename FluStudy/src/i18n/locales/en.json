@@ -84,6 +84,7 @@
   "versionScreen": {
     "title": "App Version",
     "version": "**Version:** ",
+    "build": "\n**Build:** ",
     "commit": "\n**Commit:** ",
     "date": "\n**Date:** ",
     "device": "\n**Device:** ",
