@@ -5,7 +5,7 @@
 
 import { SecretConfig } from "./secretsConfig";
 
-export const defaultNumEncounters: number = +process.env.NUM_ENCOUNTERS || 500;
+export const defaultNumEncounters: number = +process.env.NUM_ENCOUNTERS || 100;
 
 export const hutchConcurrentUploads: number =
   +process.env.HUTCH_CONCURRENT_UPLOADS || 50;
