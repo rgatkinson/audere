@@ -117,6 +117,7 @@ resource "aws_instance" "dev_machine" {
     "${aws_security_group.internet_egress.id}",
     "${var.fludev_ssh_client_sg_id}",
     "${var.fludb_client_sg_id}",
+    "${var.fluapi_internal_elb_client_sg_id}",
   ]
 
   lifecycle {

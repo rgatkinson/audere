@@ -33,6 +33,10 @@ variable "fludev_ssh_client_sg_id" {
   description = "Id of client security group to enable ssh access"
 }
 
+variable "fluapi_internal_elb_client_sg_id" {
+  description = "Id of client security group to enable access to internal API"
+}
+
 variable "gateway_id" {
   description = "Gateway id for internet access from VPC"
   type = "string"
