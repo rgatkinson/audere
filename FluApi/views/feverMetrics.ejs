@@ -88,6 +88,26 @@
       </tbody>
     </table>
     <br />
+    <h2>US States Stats</h2>
+    <table class="hor-minimalist">
+      <thead>
+        <tr>
+          <th>State</th>
+          <th class="number">Count</th>
+          <th class="number">%</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% statesData.forEach(function(row) { %>
+        <tr>
+          <td><%= row.state %></td>
+          <td class="number"><%= row.count %></td>
+          <td class="number"><%= row.percent %>%</td>
+        </tr>
+        <% } ); %>
+      </tbody>
+    </table>
+    <br />
     <h2>Last Screen Viewed</h2>
     <table class="hor-minimalist">
       <thead>

@@ -5,8 +5,11 @@ const excel = require("node-excel-export");
 const enStrings = require("../../../FluStudy/src/i18n/locales/en.json");
 const Client = require("pg-native");
 const client = new Client();
+const clientPII = new Client();
 const conString = process.env.NONPII_DATABASE_URL;
+const conStringPII = process.env.PII_DATABASE_URL;
 client.connectSync(conString);
+clientPII.connectSync(conStringPII);
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
 const moment = require("moment-timezone");
@@ -783,7 +786,7 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
 export function getFeverMetrics(
   startDate: string,
   endDate: string
-): [object, object, object] {
+): [object, object, object, object] {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -885,6 +888,16 @@ export function getFeverMetrics(
     client.querySync(lastScreenQuery)
   );
 
+  const statesQuery = `
+    SELECT survey->'patient'->'address'->0->>'state' as state, 
+           COUNT(*),
+           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
+    FROM fever_current_surveys
+    WHERE ${dateClause} AND ${demoClause} AND survey->'patient'->'address'->0->>'state' IS NOT NULL
+    GROUP BY state
+    ORDER BY percent DESC`;
+  const statesData = clientPII.querySync(statesQuery);
+
   const studyIdQuery = `
     WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
       (SELECT events->>'at' as kitordertime
@@ -935,7 +948,7 @@ export function getFeverMetrics(
     studyid: study.studyid.substring(0, 21)
   }));
 
-  return [surveyStatsData, lastScreenData, studyIdData];
+  return [surveyStatsData, lastScreenData, statesData, studyIdData];
 }
 
 function filterLastScreenData(lastScreenData): object {
@@ -977,7 +990,7 @@ function filterLastScreenData(lastScreenData): object {
 }
 
 export function getFeverExcelReport(startDate: string, endDate: string) {
-  const [surveyStatsData, lastScreenData, studyIdData] = getFeverMetrics(
+  const [surveyStatsData, lastScreenData, statesData, studyIdData] = getFeverMetrics(
     startDate,
     endDate
   );
@@ -1080,6 +1093,22 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Screen Text",
       headerStyle: styles.columnHeader,
       width: 300
+    }
+  };
+
+  const statesSpec = {
+    state: {
+      displayName: "State",
+      headerStyle: styles.columnHeader,
+      width: 120
+    },
+    count: {
+      displayName: "Count",
+      ...defaultCell
+    },
+    percent: {
+      displayName: "%",
+      ...defaultCell
     }
   };
 
@@ -1190,6 +1219,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [dateRangeHeading],
     [generatedHeading]
   ];
+  const statesHeading = [
+    [{ value: "US States Stats", style: styles.title }],
+    [dateRangeHeading],
+    [generatedHeading]
+  ];
   const studyIdHeading = [
     [{ value: "Study IDs, Barcodes, Timestamps, etc.", style: styles.title }],
     [dateRangeHeading],
@@ -1255,6 +1289,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["%", null, "Percent of users that stopped on that screen"],
     ["Screen Text", null, "Sample of the text displayed on that screen"],
     [],
+    ["State Stats sheet columns"],
+    ["State", null, "US State abbreviation"],
+    ["Count", null, "How many people ordered a kit from that state"],
+    ["%", null, "Percent of kits that werer ordered from that state"],
+    [],
     ["Details sheet columns"],
     ["App Start Time", null, "Time user clicked beyond Welcome page"],
     [
@@ -1315,6 +1354,13 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       heading: lastScreenHeading,
       specification: lastScreenSpec,
       data: lastScreenData
+    },
+    {
+      name: "State Stats",
+      merges: merges,
+      heading: statesHeading,
+      specification: statesSpec,
+      data: statesData
     },
     {
       name: "Details",

@@ -122,11 +122,13 @@ export async function createPublicApp(config: AppConfig) {
     const [
       surveyStatsData,
       lastQuestionData,
+      statesData,
       studyIdData
     ] = getFeverMetrics(startDate, endDate);
     res.render("feverMetrics", {
       surveyStatsData: surveyStatsData,
       lastQuestionData: lastQuestionData,
+      statesData: statesData,
       studyIdData: studyIdData,
       startDate: startDate,
       endDate: endDate
