@@ -27,11 +27,11 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
   // cause/effect with output data.
   let revision: string;
 
-  if (buildInfo.version != null) {
-    revision = buildInfo.version;
+  if (buildInfo.hash != null) {
+    revision = buildInfo.hash;
   } else {
     logger.error(
-      "Version is not populated in build info so the encounter revision can " +
+      "Hash is not populated in build info so the encounter revision can " +
         "not be specified"
     );
   }
