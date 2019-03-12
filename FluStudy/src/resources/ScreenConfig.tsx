@@ -46,6 +46,13 @@ export const AddressConfig: SurveyQuestionData = {
   buttons: [{ key: "next", primary: true, enabled: true }],
 };
 
+export const MailingAddressConfig: SurveyQuestionData = {
+  id: "Address",
+  title: "mailingAddress",
+  description: "mailingAddressDesc",
+  buttons: [{ key: "next", primary: true, enabled: true }],
+};
+
 export const AgeConfig: SurveyQuestionData = {
   id: "Age",
   title: "ageTitle",

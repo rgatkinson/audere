@@ -129,7 +129,8 @@
     "privacyNotice": "We will not share your personal information with any third party or for purposes other than this study."
   },
   "surveyTitle": {
-    "address": "Your mailing address",
+    "address": "Your home address",
+    "mailingAddress": "Your mailing address",
     "ageTitle": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
     "symptomTitle": "Describe your symptoms",
@@ -163,7 +164,8 @@
     "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
-    "addressDesc": "Please provide a mailing address so we may mail a flu test kit for you to run at home.",
+    "addressDesc": "Please provide your home address.",
+    "mailingAddressDesc": "Please provide a mailing address so we may mail a flu test kit for you to run at home.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",

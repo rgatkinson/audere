@@ -28,6 +28,7 @@ import {
   skipPartOne,
 } from "../../store";
 import {
+  MailingAddressConfig,
   AddressConfig,
   AgeBuckets,
   AgeConfig,
@@ -270,9 +271,12 @@ export const Symptoms = reduxWriter(
   withNamespaces("symptomsScreen")(SymptomsScreen)
 );
 
+interface SkipProps {
+  skipPartOne: boolean;
+}
+
 interface ConsentProps {
   email?: string;
-  skipPartOne: boolean;
 }
 
 interface ConsentState {
@@ -284,10 +288,12 @@ interface ConsentState {
   skipPartOne: state.meta.skipPartOne,
 }))
 class ConsentScreen extends React.PureComponent<
-  Props & ConsentProps & WithNamespaces & ReduxWriterProps,
+  Props & ConsentProps & SkipProps & WithNamespaces & ReduxWriterProps,
   ConsentState
 > {
-  constructor(props: Props & ConsentProps & WithNamespaces & ReduxWriterProps) {
+  constructor(
+    props: Props & ConsentProps & SkipProps & WithNamespaces & ReduxWriterProps
+  ) {
     super(props);
     this.state = {
       email: props.email,
@@ -323,11 +329,7 @@ class ConsentScreen extends React.PureComponent<
         appHash: DEVICE_INFO.clientVersion["hash"],
       })
     );
-    if (this.props.skipPartOne) {
-      this.props.navigation.push("WhatsNext");
-    } else {
-      this.props.navigation.push("Address");
-    }
+    this.props.navigation.push("Address");
   };
 
   emailInput = React.createRef<EmailInput>();
@@ -481,14 +483,15 @@ interface AddressState {
 }
 
 @connect((state: StoreState) => ({
+  skipPartOne: state.meta.skipPartOne,
   workflow: state.survey.workflow,
 }))
 class AddressInputScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces & ReduxWriterProps,
+  Props & SkipProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
   AddressState
 > {
   constructor(
-    props: Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+    props: Props & SkipProps & WorkflowProps & WithNamespaces & ReduxWriterProps
   ) {
     super(props);
     this.state = {
@@ -499,18 +502,22 @@ class AddressInputScreen extends React.Component<
 
   _onNext = () => {
     this.setState({ triedToProceed: true });
+    const config = this.props.skipPartOne
+      ? AddressConfig
+      : MailingAddressConfig;
     if (this._haveValidAddress()) {
-      this.props.updateAnswer(
-        { addressInput: this.state.address },
-        AddressConfig
-      );
+      this.props.updateAnswer({ addressInput: this.state.address }, config);
       this.props.dispatch(
         setWorkflow({
           ...this.props.workflow,
           screeningCompletedAt: new Date().toISOString(),
         })
       );
-      this.props.navigation.push("Confirmation");
+      if (this.props.skipPartOne) {
+        this.props.navigation.push("WhatsNext");
+      } else {
+        this.props.navigation.push("Confirmation");
+      }
     }
   };
 
@@ -533,16 +540,21 @@ class AddressInputScreen extends React.Component<
 
   render() {
     const { t } = this.props;
+    const config = this.props.skipPartOne
+      ? AddressConfig
+      : MailingAddressConfig;
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
-          buttonLabel={t("common:button:submit")}
+          buttonLabel={
+            this.props.skipPartOne ? undefined : t("common:button:submit")
+          }
           canProceed={true}
           centerDesc={true}
-          desc={t("surveyDescription:" + AddressConfig.description)}
+          desc={t("surveyDescription:" + config.description)}
           navigation={this.props.navigation}
-          step={4}
-          title={t("surveyTitle:" + AddressConfig.title)}
+          step={this.props.skipPartOne ? undefined : 4}
+          title={t("surveyTitle:" + config.title)}
           onNext={this._onNext}
         >
           <AddressInput
@@ -551,10 +563,12 @@ class AddressInputScreen extends React.Component<
             value={this.state.address}
             onChange={this._onAddressChange}
           />
-          <Text
-            content={t("addressExceptions")}
-            style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
-          />
+          {!this.props.skipPartOne && (
+            <Text
+              content={t("addressExceptions")}
+              style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
+            />
+          )}
         </Screen>
       </KeyboardAvoidingView>
     );

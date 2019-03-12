@@ -34,6 +34,7 @@ const AppContainer = createReduxContainer(navigator);
 
 interface Props {
   isDemo: boolean;
+  skipPartOne: boolean;
   lastUpdate?: number;
   navigationState: NavigationState;
   workflow: WorkflowInfo;
@@ -150,6 +151,7 @@ class AppWithNavigationState extends React.Component<Props> {
         this.clearState();
       } else if (
         !this.props.workflow.screeningCompletedAt &&
+        !this.props.skipPartOne &&
         (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
       ) {
         // Have not completed screening (not ordered kit) and 2 days have passed, clear state
@@ -229,6 +231,7 @@ const styles = StyleSheet.create({
 export default connect((state: StoreState) => {
   return {
     isDemo: state.meta.isDemo,
+    skipPartOne: state.meta.skipPartOne,
     lastUpdate: state.survey.timestamp,
     navigationState: state.navigation,
     workflow: state.survey.workflow,
