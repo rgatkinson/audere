@@ -899,8 +899,12 @@ export function getFeverMetrics(
         WHERE ${dateClause} AND ${demoClause} AND items->>'id'='FirstTestFeedback'),
       (SELECT json_extract_path(items->'answerOptions',
         items->'answer'->0->>'valueIndex','id') as secondtestfeedback 
-      FROM json_array_elements(survey->'responses'->0->'item') items
-      WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback') 
+        FROM json_array_elements(survey->'responses'->0->'item') items
+        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback'),
+      (SELECT json_extract_path(items->'answerOptions',
+        items->'answer'->0->>'valueIndex','id') as redwhenblue
+        FROM json_array_elements(survey->'responses'->0->'item') items
+        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='RedWhenBlue') 
       FROM fever_current_surveys fcs
       WHERE ${dateClause} AND ${demoClause}
       ORDER BY fcs.id, kitordertime ASC) 
@@ -909,6 +913,7 @@ export function getFeverMetrics(
           t.part2time, 
           t.firsttestfeedback,
           t.secondtestfeedback,
+          t.redwhenblue,
           fcs.id as dbid, 
           fcs."createdAt", 
           fcs.survey->'samples'->0->'code' as barcode,
@@ -1155,6 +1160,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       headerStyle: styles.columnHeader,
       width: 125
     },
+    redwhenblue: {
+      displayName: "Red Line Answer",
+      headerStyle: styles.columnHeader,
+      width: 125
+    },
     workflow: {
       displayName: "Workflow",
       headerStyle: styles.columnHeader,
@@ -1273,6 +1283,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "Second Test Feedback",
       null,
       "User's choice on second test feedback question"
+    ],
+    [
+      "Red When Blue", 
+      null, 
+      "User's answer to whether they can see a red line when they already said they saw a blue line"
     ],
     ["Workflow", null, "Current workflow state of app"]
   ];
