@@ -164,6 +164,9 @@ export class SmartyStreetsGeocoder implements Geocoder {
         };
 
         responses.push(r);
+      } else {
+        logger.info(`[Geocoder] No address matching ${lookup.inputId} found ` +
+          `by the geocoder`);
       }
     });
 

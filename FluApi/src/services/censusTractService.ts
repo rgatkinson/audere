@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
+import logger from "../util/logger";
 
 export interface LatLng {
   latitude: number;
@@ -36,6 +37,8 @@ export class CensusTractService {
       }
     });
 
+    logger.info(`[Census] Querying for ${records.length} locations`);
+
     const dynamicQuery =
       `SELECT
         lat,
@@ -59,6 +62,9 @@ export class CensusTractService {
         tracts.set(key, row.tract);
       }
     });
+
+
+    logger.info(`[Census] Matched ${tracts.size} census tracts`)
 
     return tracts;
   }

@@ -34,7 +34,9 @@ export class GeocodingService {
   public async geocodeAddresses(
     addresses: Map<number, AddressInfo[]>
   ): Promise<GeocodingResponse[]> {
-    return this.geocoder.geocode(addresses);
+    const result = await this.geocoder.geocode(addresses);
+    logger.info(`[Geocoder] Received ${result.length} responses from geocoder`);
+    return result;
   }
 
   /**
@@ -54,6 +56,7 @@ export class GeocodingService {
     const unique = Array.from(new Set(latlng));
 
     if (unique.length > 0) {
+      logger.info(`[Geocoder] Querying coordinates for census data`);
       const tracts = await this.censusTractService.lookupCensusTract(unique);
       const appended = addresses.map(a => {
         if (a.address != null) {
