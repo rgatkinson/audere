@@ -10,6 +10,7 @@ import { spawn } from "child_process";
 import fs from "fs";
 import { promisify } from "util";
 import { createInterface as createReadline } from "readline";
+import Sequelize from "sequelize";
 import { literal, Op } from "sequelize";
 import yargs from "yargs";
 import _ from "lodash";
@@ -23,16 +24,15 @@ import { createSplitSql } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
-  defineSnifflesModels,
-  VisitAttributes
+  defineSnifflesModels, VisitAttributes, VisitInstance, VisitModel
 } from "../src/models/db/sniffles";
 import {
   DeviceInfo as SnifflesDevice,
-  LogRecordInfo,
+  LogRecordInfo, VisitNonPIIDbInfo,
   VisitNonPIIInfo,
   VisitPIIInfo
 } from "audere-lib/snifflesProtocol";
-import { defineFeverModels, SurveyAttributes } from "../src/models/db/fever";
+import { defineFeverModels, SurveyAttributes, SurveyInstance, SurveyModel } from "../src/models/db/fever";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
@@ -84,6 +84,11 @@ type SomeUpdater =
   | FeverPiiUpdater;
 type SomeDevice = SnifflesDevice | FeverDevice;
 
+type SomeSurveyModel = SurveyModel<PIIInfo | SurveyNonPIIDbInfo>;
+type SomeSurveyInstance = SurveyInstance<PIIInfo | SurveyNonPIIDbInfo>;
+type SomeVisitModel = VisitModel<VisitPIIInfo | VisitNonPIIDbInfo>;
+type SomeVisitInstance = VisitInstance<VisitPIIInfo | VisitNonPIIDbInfo>;
+
 type PerReleaseUpdater<TNonPii, TPii> = {
   nonPii: TNonPii;
   pii: TPii;
@@ -116,6 +121,52 @@ yargs
     global: true
   })
   .command({
+    command: "by-created <release> <start> <end>",
+    builder: yargs => yargs
+      .string("release")
+      .string("start")
+      .string("end"),
+    handler: command(cmdByCreated),
+  })
+  .command({
+    command: "by-consent-date <release> <date>",
+    builder: yargs => yargs.string("release").string("date"),
+    handler: command(cmdByConsentDate),
+  })
+  .command({
+    command: "by-email <release> <email>",
+    builder: yargs => yargs.string("email"),
+    handler: command(cmdByEmail),
+  })
+  .command({
+    command: "by-name <release> <first> <last>",
+    builder: yargs => yargs.string("first").string("last"),
+    handler: command(cmdByName),
+  })
+  .command({
+    command: "show-path <release> <kind> <path> <rows>",
+    builder: yargs => yargs
+      .string("release")
+      .string("kind")
+      .string("path")
+      .string("rows"),
+    handler: command(cmdShowPath)
+  })
+  // TODO: This might be subsumed by show-path, remove?
+  .command({
+    command: "survey-path <row> <kind> <path>",
+    builder: yargs => yargs
+      .string("row")
+      .string("kind")
+      .string("path"),
+    handler: command(cmdSurveyPath),
+  })
+  .command({
+    command: "photo <csruid>",
+    builder: yargs => yargs.string("csruid"),
+    handler: command(cmdPhoto),
+  })
+  .command({
     command: "demo <release> <row> [value]",
     builder: yargs => yargs.string("row").boolean("value"),
     handler: command(cmdDemo)
@@ -131,9 +182,9 @@ yargs
     handler: command(cmdDemo1)
   })
   .command({
-    command: "location <row> <value>",
+    command: "set-location <row> <value>",
     builder: yargs => yargs.string("row").string("value"),
-    handler: command(cmdLocation)
+    handler: command(cmdSetSnifflesLocation)
   })
   .command({
     command: "upload <row>",
@@ -281,6 +332,288 @@ async function cmdAdd(argv: UserPasswordArgs): Promise<void> {
 
 async function cmdPasswd(argv: UserPasswordArgs): Promise<void> {
   await auth.setPassword(argv.userid, argv.password);
+}
+
+interface PhotosArgs {
+  csruid: string;
+}
+
+async function cmdPhoto(argv: PhotosArgs): Promise<void> {
+  const csruid = argv.csruid;
+  const rows = await feverModels.photo.findAll(
+    { where: { csruid: { [Op.like]: `${csruid}%`} }}
+  );
+  switch (rows.length) {
+    case 0:
+      throw new Error(`No photo found with csruid '${csruid}'`);
+    case 1:
+      console.log(rows[0].photo.jpegBase64);
+      break;
+    default:
+      throw new Error(`Multiple records found: '${
+        rows.map(row => pubId(row.csruid)).join("', '")
+      }'`);
+  }
+}
+
+interface SurveyPathArgs {
+  csruid: string;
+  kind: string;
+  path: string;
+}
+
+async function cmdSurveyPath(argv: SurveyPathArgs): Promise<void> {
+  const path = partPath(argv.path);
+  switch (argv.kind) {
+    case "pii": return getSurveyPii(argv.csruid, path);
+    case "nonpii": return getSurveyNonPii(argv.csruid, path);
+    default: throw failKind(argv.kind);
+  }
+}
+
+async function getSurveyNonPii(csruid: string, path: string[]): Promise<void> {
+  const rows = await feverModels.surveyNonPii.findAll({
+    where: { csruid: { [Op.like]: `${csruid}%` } }
+  });
+  rows.forEach(row => {
+    const part = getPart(row, path);
+    console.log(typeof part === "object" ? JSON.stringify(part) : part);
+  });
+}
+
+async function getSurveyPii(csruid: string, path: string[]): Promise<void> {
+  const rows = await feverModels.surveyPii.findAll({
+    where: { csruid: { [Op.like]: `${csruid}%` } }
+  });
+  rows.forEach(row => {
+    const part = getPart(row, path);
+    console.log(typeof part === "object" ? JSON.stringify(part) : part);
+  });
+}
+
+interface ByDateArgs {
+  release: Release;
+  date: string;
+}
+
+async function cmdByConsentDate(argv: ByDateArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const rows = await snifflesModels.visitNonPii.findAll({
+        where: {
+          [Op.and]: [
+            { visit: { isDemo: false }},
+            Sequelize.literal(`lower(visit->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`),
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    case Release.Fever: {
+      const rows = await feverModels.surveyNonPii.findAll({
+        where: {
+          [Op.and]: [
+            { survey: { isDemo: false }},
+            Sequelize.literal(`lower(survey->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`),
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface ByEmailArgs {
+  release: Release;
+  email: string;
+}
+
+async function cmdByEmail(argv: ByEmailArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const rows = await snifflesModels.visitPii.findAll({
+        where: {
+          [Op.and]: [
+            { visit: { isDemo: false }},
+            Sequelize.literal(`
+              lower(visit->'patient'->>'telecom')::jsonb @>
+              lower('[{"value":"${argv.email}"}]')
+            `),
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    case Release.Fever: {
+      const rows = await feverModels.surveyPii.findAll({
+        where: {
+          [Op.and]: [
+            { survey: { isDemo: false }},
+            Sequelize.literal(`
+              lower(survey->'patient'->>'telecom')::jsonb @>
+              lower('[{"value":"${argv.email}"}]')
+            `),
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface ByNameArgs {
+  release: string;
+  kind: string;
+  first: string;
+  last: string;
+}
+
+async function cmdByName(argv: ByNameArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const rows = await snifflesModels.visitPii.findAll({
+        where: {
+          visit: {
+            isDemo: false,
+            patient: {
+              name: {
+                [Op.iLike]: `%${argv.first}%${argv.last}%`
+              }
+            }
+          }
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    case Release.Fever: {
+      const rows = await feverModels.surveyPii.findAll({
+        where: {
+          survey: {
+            isDemo: false,
+            patient: {
+              firstName: {
+                [Op.iLike]: `%argv.first%`
+              },
+              lastName: {
+                [Op.iLike]: `%argv.last%`
+              },
+            }
+          }
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface ByCreatedArgs {
+  release: Release;
+  start: string;
+  end: string;
+}
+
+async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const rows = await snifflesModels.visitNonPii.findAll({
+        where: {
+          [Op.and]: [
+            { visit: { isDemo: false }},
+            { createdAt: { [Op.gte]: argv.start}},
+            { createdAt: { [Op.lte]: argv.end}},
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    case Release.Fever: {
+      const rows = await feverModels.surveyNonPii.findAll({
+        where: {
+          [Op.and]: [
+            { survey: { isDemo: false }},
+            { createdAt: { [Op.gte]: argv.start}},
+            { createdAt: { [Op.lte]: argv.end}},
+          ]
+        }
+      });
+      consoleLogRows(rows);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface HasCsruid {
+  csruid: string;
+}
+
+function consoleLogRows(rows: HasCsruid[]): void {
+  rows.forEach(x => console.log(x.csruid.substring(0, 21)));
+}
+
+async function feverSurveys(kind: string, q: any): Promise<SomeSurveyInstance[]> {
+  return await surveyModel(kind).findAll({
+    where: {
+      ...q,
+      survey: {
+        isDemo: false,
+        ...q.survey,
+      }
+    }
+  });
+}
+
+async function snifflesVisits(kind: string, q: any): Promise<SomeVisitInstance[]> {
+  return await visitModel(kind).findAll({
+    where: {
+      ...q,
+      visit: {
+        isDemo: false,
+        ...q.visit,
+      }
+    }
+  });
+}
+
+interface ShowPathArgs {
+  release: Release;
+  kind: string;
+  path: string;
+  rows: string;
+}
+
+async function cmdShowPath(argv: ShowPathArgs): Promise<void> {
+  const pathNodes = partPath(argv.path);
+  const rowLikes = argRowLikes(argv.rows);
+
+  switch (argv.release) {
+    case Release.Sniffles: {
+      const rows = await snifflesVisits(argv.kind, { csruid: { [Op.like]: { [Op.any]: rowLikes }}});
+      console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
+      break;
+    }
+    case Release.Fever: {
+      const rows = await feverSurveys(argv.kind, { csruid: { [Op.like]: { [Op.any]: rowLikes }}});
+      console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
 }
 
 interface DocumentEventsArgs {
@@ -523,7 +856,7 @@ interface LocationArgs {
   value: string;
 }
 
-async function cmdLocation(argv: LocationArgs) {
+async function cmdSetSnifflesLocation(argv: LocationArgs) {
   if (!snifflesLocations[argv.value]) {
     console.log(
       `Unexpected location value '${argv.value}'.  Known locations are:`
@@ -621,6 +954,12 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   console.log(`ACCESS_KEY_A='${components[1]}'`);
   console.log(`ACCESS_KEY_B='${components[2]}'`);
   console.log();
+}
+
+function argRowLikes(rows: string): string[] {
+  return rows.split(/[\s,]/)
+    .filter(x => x !== "")
+    .map(x => `${x}%`);
 }
 
 interface ShowArgs {
@@ -838,6 +1177,17 @@ function runCode(program: string, ...args: string[]): Promise<number> {
   });
 }
 
+function failKind(kind: string): never {
+  throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
+}
+
+function failRelease(release: string | Release): never {
+  throw fail(
+    `Unrecognized release: '${release}', ` +
+    `expected one of '${Object.keys(Release).join("', '")}'`
+  );
+}
+
 function fail(message: string): never {
   const error = new Error(message);
   (<any>error).checked = true;
@@ -851,6 +1201,22 @@ function accessKey(release: Release) {
   });
 }
 
+function surveyModel(kind: string): SomeSurveyModel {
+  switch (kind) {
+    case "pii": return feverModels.surveyPii;
+    case "nonpii": return feverModels.surveyNonPii;
+    default: throw failKind(kind);
+  }
+}
+
+function visitModel(kind: string): SomeVisitModel {
+  switch (kind) {
+    case "pii": return snifflesModels.visitPii;
+    case "nonpii": return snifflesModels.visitNonPii;
+    default: throw failKind(kind);
+  }
+}
+
 function updater(release: Release, kind: string): SomeUpdater {
   switch (kind) {
     case "pii":
@@ -858,7 +1224,7 @@ function updater(release: Release, kind: string): SomeUpdater {
     case "nonpii":
       return nonPiiUpdater(release);
     default:
-      throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
+      throw failKind(kind);
   }
 }
 
@@ -893,12 +1259,7 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
 
   const choice = choices[release];
   if (choice == null) {
-    throw fail(
-      `Unrecognized release: '${release}', ` +
-        `expected one of '${Object.keys(Release)
-          .map(x => Release[x])
-          .join("', '")}'`
-    );
+    throw failRelease(release);
   }
 
   return choice;
