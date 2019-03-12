@@ -15,7 +15,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../../store";
 import { completeFormIfExpired } from "../../../util/formTimeout";
-import { COLLECTION_LOCATIONS } from "../../../resources/LocationConfig";
+import { Locations as COLLECTION_LOCATIONS } from "audere-lib/locations";
 import LanguageModal from "../../components/LanguageModal";
 import { LocaleConfig } from "../../../i18n/LocaleConfig";
 import Text from "../../components/Text";

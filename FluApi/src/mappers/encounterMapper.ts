@@ -5,6 +5,7 @@
 
 import * as Encounter from "audere-lib/hutchProtocol";
 import * as Model from "audere-lib/snifflesProtocol";
+import { Locations as Sites } from "audere-lib/locations";
 import { NonPIIVisitDetails } from "../models/visitDetails";
 import logger from "../util/logger";
 
@@ -38,8 +39,13 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
 
   // Populate survey site then visit start date if that information has been
   // provided.
-  let site: string;
-  site = input.visitInfo.location;
+  let site: Encounter.Site;
+  const administeredAt = Sites[input.visitInfo.location];
+  if (administeredAt != null) {
+    site = { type: administeredAt.type, name: input.visitInfo.location }
+  } else {
+    site = { type: undefined, name: input.visitInfo.location }
+  }
 
   function getStart() {
     let startTimestamp: string;

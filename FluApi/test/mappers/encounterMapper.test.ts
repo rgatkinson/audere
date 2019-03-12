@@ -9,11 +9,12 @@ import { NonPIIVisitDetails } from "../../src/models/visitDetails";
 import {
   schemaVersion,
   Location,
-  LocationType,
+  LocationUse,
   NumberAnswer,
   OptionAnswer,
   StringAnswer
 } from "audere-lib/hutchProtocol";
+import { LocationType } from "audere-lib/locations";
 
 describe("encounter mapper", () => {
   class VisitBuilder {
@@ -48,7 +49,7 @@ describe("encounter mapper", () => {
 
     withHousehold(homeAddress, homeRegion) {
       this.household = {
-        use: LocationType.Home,
+        use: LocationUse.Home,
         id: homeAddress,
         region: homeRegion
       };
@@ -57,7 +58,7 @@ describe("encounter mapper", () => {
 
     withTemporaryLocation(tempAddres, tempRegion) {
       this.tempLocation = {
-        use: LocationType.Temp,
+        use: LocationUse.Temp,
         id: tempAddres,
         region: tempRegion
       };
@@ -66,7 +67,7 @@ describe("encounter mapper", () => {
 
     withWorkplace(workAddress, workRegion) {
       this.workplace = {
-        use: LocationType.Work,
+        use: LocationUse.Work,
         id: workAddress,
         region: workRegion
       };
@@ -144,7 +145,7 @@ describe("encounter mapper", () => {
         .withHousehold("beach house", "beach")
         .withTemporaryLocation("vacation", "europe")
         .withWorkplace("company", "city")
-        .withLocation("hospital")
+        .withLocation("Harborview")
         .withStartTime("Morning")
         .withResponse(response1)
         .build();
@@ -154,21 +155,21 @@ describe("encounter mapper", () => {
       expect(encounter.schemaVersion).toBe(schemaVersion);
       expect(encounter.id).toBe("asdf");
       expect(encounter.locations).toContainEqual({
-        use: LocationType.Home,
+        use: LocationUse.Home,
         id: "beach house",
         region: "beach"
       });
       expect(encounter.locations).toContainEqual({
-        use: LocationType.Temp,
+        use: LocationUse.Temp,
         id: "vacation",
         region: "europe"
       });
       expect(encounter.locations).toContainEqual({
-        use: LocationType.Work,
+        use: LocationUse.Work,
         id: "company",
         region: "city"
       });
-      expect(encounter.site).toBe("hospital");
+      expect(encounter.site.type).toBe(LocationType.Hospital);
       expect(encounter.startTimestamp).toBe("Morning");
     });
 

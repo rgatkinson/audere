@@ -120,16 +120,16 @@ export class EncountersService {
     }
 
     if (streetAddress != null) {
-      let use: Encounter.LocationType;
+      let use: Encounter.LocationUse;
       switch (inputAddress.use) {
         case Model.AddressInfoUse.Home:
-          use = Encounter.LocationType.Home;
+          use = Encounter.LocationUse.Home;
           break;
         case Model.AddressInfoUse.Temp:
-          use = Encounter.LocationType.Temp;
+          use = Encounter.LocationUse.Temp;
           break;
         case Model.AddressInfoUse.Work:
-          use = Encounter.LocationType.Work;
+          use = Encounter.LocationUse.Work;
           break;
       }
 

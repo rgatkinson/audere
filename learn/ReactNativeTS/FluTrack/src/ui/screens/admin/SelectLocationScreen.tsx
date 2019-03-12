@@ -15,8 +15,8 @@ import OptionList, {
 } from "../../components/OptionList";
 import ScreenContainer from "../../components/ScreenContainer";
 
+import { Locations as COLLECTION_LOCATIONS } from "audere-lib/locations";
 import {
-  COLLECTION_LOCATIONS,
   getLocationType,
 } from "../../../resources/LocationConfig";
 

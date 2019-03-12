@@ -12,7 +12,7 @@ import { VisitsService } from "../../src/services/visitsService";
 import { PIIVisitDetails } from "../../src/models/visitDetails";
 import { AddressInfoUse } from "audere-lib/snifflesProtocol";
 import { GeocodingResponse } from "../../src/models/geocoding";
-import { LocationType } from "audere-lib/hutchProtocol";
+import { LocationUse } from "audere-lib/hutchProtocol";
 
 describe("encounters service", () => {
   const details: PIIVisitDetails = {
@@ -271,7 +271,7 @@ describe("encounters service", () => {
 
       expect(encounter.locations).toContainEqual(
         expect.objectContaining({
-          use: LocationType.Home,
+          use: LocationUse.Home,
           id: expect.not.stringContaining(homeAddress.address.canonicalAddress),
           region: homeAddress.address.censusTract
         })
@@ -279,7 +279,7 @@ describe("encounters service", () => {
 
       expect(encounter.locations).toContainEqual(
         expect.objectContaining({
-          use: LocationType.Work,
+          use: LocationUse.Work,
           id: expect.not.stringContaining(workAddress.address.canonicalAddress),
           region: workAddress.address.censusTract
         })
@@ -287,7 +287,7 @@ describe("encounters service", () => {
 
       expect(encounter.locations).toContainEqual(
         expect.objectContaining({
-          use: LocationType.Temp,
+          use: LocationUse.Temp,
           id: expect.not.stringContaining(tempAddress.address.canonicalAddress),
           region: tempAddress.address.censusTract
         })

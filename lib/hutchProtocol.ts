@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import { LocationType } from "./locations";
+
 // Any changes to the Encounter interface should increment the schema version.
 //
 // MAJOR.MINOR.PATCH
@@ -69,7 +71,7 @@ export interface Encounter {
   // Name of the site where the encounter occurred.  In the app, this is
   // in admin settings.  This is optional because it will not be available
   // when the encounter is completed via a user's personal device.
-  site?: string;
+  site?: Site;
 
   // De-identified location information.  
   locations: Location[];
@@ -85,18 +87,22 @@ export interface Encounter {
 
 export interface Age {
   value?: number;
-
   ninetyOrAbove: boolean;
 }
 
-export enum LocationType {
+export enum LocationUse {
   Home = "Home",
   Work = "Work",
   Temp = "Temp"
 }
 
+export interface Site {
+  type: LocationType;
+  name: string;
+}
+
 export interface Location {
-  use: LocationType;
+  use: LocationUse;
 
   // Opaque string that corresponds to a particular address, but that cannot be
   // mapped back to that address.

@@ -1,116 +1,109 @@
-import { Locations as COLLECTION_LOCATIONS, LocationType } from "audere-lib/locations";
-
-export function getLocationType(locationKey: string) {
-  return COLLECTION_LOCATIONS[locationKey].type;
-}
-export function getContactName(locationKey: string) {
-  return !!locationKey && COLLECTION_LOCATIONS[locationKey]
-    ? COLLECTION_LOCATIONS[locationKey].contactName
-    : null;
-}
-export function getContactPhone(locationKey: string) {
-  return !!locationKey && COLLECTION_LOCATIONS[locationKey]
-    ? COLLECTION_LOCATIONS[locationKey].contactPhone
-    : null;
+export enum LocationType {
+  Hospital = "hospital",
+  CollegeCampus = "collegeCampus",
+  HomelessShelter = "homelessShelter",
+  ChildrensHospital = "childrensHospital",
+  ChildrensClinic = "childrensClinic",
+  Clinic = "clinic",
+  Childcare = "childcare",
+  Port = "port",
 }
 
-/*
-export const COLLECTION_LOCATIONS: {
+export const Locations: {
   [key: string]: {
-    type: locationType;
+    type: LocationType;
     contactName: string;
     contactPhone: string;
   };
 } = {
   Harborview: {
-    type: "hospital",
+    type: LocationType.Hospital,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   HarborviewLobby: {
-    type: "homelessShelter",
+    type: LocationType.HomelessShelter,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   ChildrensHospitalSeattle: {
-    type: "childrensHospital",
+    type: LocationType.ChildrensHospital,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   ChildrensHospitalBellevue: {
-    type: "childrensHospital",
+    type: LocationType.ChildrensHospital,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   HUB: {
-    type: "collegeCampus",
+    type: LocationType.CollegeCampus,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   UWHallHealth: {
-    type: "collegeCampus",
+    type: LocationType.CollegeCampus,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   HealthSciencesRotunda: {
-    type: "collegeCampus",
+    type: LocationType.CollegeCampus,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   HealthSciencesLobby: {
-    type: "collegeCampus",
+    type: LocationType.CollegeCampus,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   StMartins: {
-    type: "homelessShelter",
+    type: LocationType.HomelessShelter,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   DESC: {
-    type: "homelessShelter",
+    type: LocationType.HomelessShelter,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   PioneerSquare: {
-    type: "homelessShelter",
+    type: LocationType.HomelessShelter,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   UWSeaMar: {
-    type: "clinic",
+    type: LocationType.Clinic,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   ChildrensSeaMar: {
-    type: "childrensClinic",
+    type: LocationType.ChildrensClinic,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   HutchKids: {
-    type: "childcare",
+    type: LocationType.Childcare,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   UWDaycare: {
-    type: "childcare",
+    type: LocationType.Childcare,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   SeaTacInternational: {
-    type: "port",
+    type: LocationType.Port,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   Costco: {
-    type: "clinic",
+    type: LocationType.Clinic,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
   FredHutchLobby: {
-    type: "clinic",
+    type: LocationType.Clinic,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318",
   },
-};
-*/
+}
