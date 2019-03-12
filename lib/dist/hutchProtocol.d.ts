@@ -1,3 +1,4 @@
+import { LocationType } from "./locations";
 export declare const schemaVersion: string;
 export interface Encounter {
     id: string;
@@ -6,7 +7,7 @@ export interface Encounter {
     revision: string;
     localeLanguageCode: "en" | "es";
     startTimestamp: string;
-    site?: string;
+    site?: Site;
     locations: Location[];
     sampleCodes: SampleCode[];
     responses: Response[];
@@ -16,13 +17,17 @@ export interface Age {
     value?: number;
     ninetyOrAbove: boolean;
 }
-export declare enum LocationType {
+export declare enum LocationUse {
     Home = "Home",
     Work = "Work",
     Temp = "Temp"
 }
+export interface Site {
+    type: LocationType;
+    name: string;
+}
 export interface Location {
-    use: LocationType;
+    use: LocationUse;
     id: string;
     region: string;
 }
