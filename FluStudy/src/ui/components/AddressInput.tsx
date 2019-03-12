@@ -23,7 +23,6 @@ interface Props {
 
 interface State {
   stateOpen: boolean;
-  focusZip: boolean;
 }
 
 class AddressInput extends React.Component<Props & WithNamespaces, State> {
@@ -37,22 +36,9 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
-      focusZip: false,
       stateOpen: false,
     };
   }
-
-  componentWillUpdate(nextProps: any, nextState: any) {
-    if (this.state.focusZip) {
-      this.zipcode.current!.focus();
-    }
-  }
-
-  removeZipFocus = (): void => {
-    if (this.state.focusZip) {
-      this.setState({ focusZip: false });
-    }
-  };
 
   render() {
     const { t } = this.props;
@@ -63,7 +49,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={this.props.autoFocus}
-            onFocus={this.removeZipFocus}
             placeholder={
               t("firstName") + (this.props.shouldValidate ? t("required") : "")
             }
@@ -88,7 +73,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               t("lastName") + (this.props.shouldValidate ? t("required") : "")
             }
             ref={this.lastName}
-            onFocus={this.removeZipFocus}
             placeholderTextColor={
               this.props.shouldValidate ? ERROR_COLOR : undefined
             }
@@ -107,7 +91,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={false}
-          onFocus={this.removeZipFocus}
           placeholder={
             t("streetAddress") +
             (this.props.shouldValidate ? t("required") : "")
@@ -130,7 +113,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={false}
-          onFocus={this.removeZipFocus}
           placeholder={t("streetAddress2")}
           ref={this.address2}
           returnKeyType="next"
@@ -146,7 +128,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          onFocus={this.removeZipFocus}
           placeholder={
             t("city") + (this.props.shouldValidate ? t("required") : "")
           }
@@ -162,13 +143,16 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             address.city = text;
             this.props.onChange(address);
           }}
-          onSubmitEditing={() => this.setState({ stateOpen: true })}
+          onSubmitEditing={() => {
+            this.zipcode.current!.focus();
+            this.setState({ stateOpen: true });
+          }}
         />
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.pickerContainer}
             onPress={() => {
-              this.setState({ stateOpen: true, focusZip: false });
+              this.setState({ stateOpen: true });
             }}
           >
             <Text
@@ -189,10 +173,10 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             }
             visible={this.state.stateOpen}
             onDismiss={(state: string) => {
-              this.setState({ stateOpen: false, focusZip: true });
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
+              this.setState({ stateOpen: false });
             }}
           />
           <NumberInput
@@ -211,10 +195,6 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               const address = this.props.value || {};
               address.zipcode = text;
               this.props.onChange(address);
-              this.setState({ focusZip: false });
-            }}
-            onSubmitEditing={() => {
-              this.setState({ focusZip: false });
             }}
           />
         </View>

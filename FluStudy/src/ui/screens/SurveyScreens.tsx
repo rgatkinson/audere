@@ -74,10 +74,12 @@ import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
+import Chrome from "../components/Chrome";
 import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
-import MonthPicker from "../components/MonthPicker";
 import Links from "../components/Links";
+import MonthPicker from "../components/MonthPicker";
+import NavigationBar from "../components/NavigationBar";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import OptionQuestion from "../components/OptionQuestion";
 import QuestionText from "../components/QuestionText";
@@ -101,7 +103,6 @@ import {
   SMALL_TEXT,
   STATUS_BAR_HEIGHT,
 } from "../styles";
-import { timestampRender, timestampInteraction } from "./analytics";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 import { isValidEmail } from "../../util/check";
@@ -134,10 +135,22 @@ class WelcomeBackScreen extends React.Component<
     tracker.logEvent(FunnelEvents.RECEIVED_KIT);
   }
 
+  _onBack = () => {
+    this.props.dispatch(skipPartOne(false));
+    this.props.navigation.pop();
+  };
+
+  _onNext = () => {
+    if (this.props.skipPartOne) {
+      this.props.navigation.push("Consent");
+    } else {
+      this.props.navigation.push("WhatsNext");
+    }
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WelcomeBackScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -145,17 +158,8 @@ class WelcomeBackScreen extends React.Component<
         navigation={this.props.navigation}
         stableImageSrc={require("../../img/welcome.png")}
         title={t("welcomeBack")}
-        onBack={() => {
-          this.props.dispatch(skipPartOne(false));
-          this.props.navigation.pop();
-        }}
-        onNext={() => {
-          if (this.props.skipPartOne) {
-            this.props.navigation.push("Consent");
-          } else {
-            this.props.navigation.push("WhatsNext");
-          }
-        }}
+        onBack={this._onBack}
+        onNext={this._onNext}
       />
     );
   }
@@ -180,10 +184,19 @@ class WhatsNextScreen extends React.Component<
 
   emailInput = React.createRef<EmailInput>();
 
+  _onNext = () => {
+    this.props.dispatch(setEmail(this.state.email!));
+    this.props.navigation.push("Before");
+    tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
+  };
+
+  _onEmailChange = (email: string) => {
+    this.setState({ email });
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WhatsNextScreen",
+    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           canProceed={
@@ -194,11 +207,7 @@ class WhatsNextScreen extends React.Component<
           imageSrc={require("../../img/whatsNext.png")}
           navigation={this.props.navigation}
           title={t("whatsNext")}
-          onNext={() => {
-            this.props.dispatch(setEmail(this.state.email!));
-            this.props.navigation.push("Before");
-            tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-          }}
+          onNext={this._onNext}
         >
           <EmailInput
             autoFocus={this.props.navigation.isFocused()}
@@ -207,7 +216,7 @@ class WhatsNextScreen extends React.Component<
             returnKeyType="next"
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
-            onChange={email => this.setState({ email })}
+            onChange={this._onEmailChange}
           />
         </Screen>
       </KeyboardAvoidingView>
@@ -219,19 +228,20 @@ export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
 );
 
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("ScanInstructions");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "BeforeScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("flatStep")}
         imageSrc={require("../../img/beforeYouBegin.png")}
         navigation={this.props.navigation}
         title={t("beforeYouBegin")}
-        onNext={() => {
-          this.props.navigation.push("ScanInstructions");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -239,6 +249,11 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
 export const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._onNext = this._onNext.bind(this);
+  }
+
   async _onNext() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === "granted") {
@@ -248,10 +263,13 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     }
   }
 
+  _onManualEntry = () => {
+    this.props.navigation.push("ManualEntry");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ScanInstructionsScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description", {
@@ -264,18 +282,14 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
               label={t("okScan")}
               primary={true}
               style={{ alignSelf: "center" }}
-              onPress={async () => {
-                await this._onNext();
-              }}
+              onPress={this._onNext}
             />
             <Links
               center={true}
               links={[
                 {
                   label: t("inputManually"),
-                  onPress: () => {
-                    this.props.navigation.push("ManualEntry");
-                  },
+                  onPress: this._onManualEntry,
                 },
               ]}
             />
@@ -285,9 +299,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         skipButton={true}
         title={t("scanQrCode")}
-        onNext={async () => {
-          await this._onNext();
-        }}
       >
         <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
       </Screen>
@@ -348,63 +359,65 @@ class ScanScreen extends React.Component<
     }
   }
 
+  _onBarCodeScanned = ({ type, data }: { type: any; data: string }) => {
+    const { t } = this.props;
+    if (!this.state.activeScan) {
+      this.setState({ activeScan: true });
+      if (BARCODE_RE.test(data) && data.length == BARCODE_CHARS) {
+        this.props.dispatch(
+          setKitBarcode({
+            sample_type: type,
+            code: data,
+          })
+        );
+        this.props.dispatch(
+          setWorkflow({
+            ...this.props.workflow,
+            surveyStartedAt: new Date().toISOString(),
+          })
+        );
+        this.props.navigation.push("ScanConfirmation");
+      } else {
+        Alert.alert(t("sorry"), t("invalidBarcode", { barcode: data }), [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {
+              this.setState({ activeScan: false });
+            },
+          },
+        ]);
+      }
+    }
+  };
+
+  _onManualEntry = () => {
+    this.props.navigation.push("ManualEntry");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ScanScreen",
-      <View style={{ flex: 1 }}>
-        <BarCodeScanner
-          style={{ flex: 1, alignSelf: "stretch" }}
-          onBarCodeScanned={({ type, data }: { type: any; data: string }) => {
-            if (!this.state.activeScan) {
-              this.setState({ activeScan: true });
-              if (BARCODE_RE.test(data) && data.length == BARCODE_CHARS) {
-                this.props.dispatch(
-                  setKitBarcode({
-                    sample_type: type,
-                    code: data,
-                  })
-                );
-                this.props.dispatch(
-                  setWorkflow({
-                    ...this.props.workflow,
-                    surveyStartedAt: new Date().toISOString(),
-                  })
-                );
-                this.props.navigation.push("ScanConfirmation");
-              } else {
-                Alert.alert(
-                  t("sorry"),
-                  t("invalidBarcode", { barcode: data }),
-                  [
-                    {
-                      text: t("common:button:ok"),
-                      onPress: () => {
-                        this.setState({ activeScan: false });
-                      },
-                    },
-                  ]
-                );
-              }
-            }
-          }}
-        />
-        <View style={scanStyles.overlayContainer}>
-          <View style={scanStyles.targetBox} />
-          <TouchableOpacity
-            style={scanStyles.overlay}
-            onPress={() => {
-              this.props.navigation.push("ManualEntry");
-            }}
-          >
-            <Text
-              center={true}
-              content={t("enterManually")}
-              style={scanStyles.overlayText}
-            />
-          </TouchableOpacity>
+    return (
+      <Chrome navigation={this.props.navigation}>
+        <View style={{ flex: 1 }}>
+          <BarCodeScanner
+            style={{ flex: 1, alignSelf: "stretch" }}
+            onBarCodeScanned={this._onBarCodeScanned}
+          />
+          <View style={scanStyles.overlayContainer}>
+            <View style={scanStyles.targetBox} />
+            <TouchableOpacity
+              style={scanStyles.overlay}
+              onPress={this._onManualEntry}
+            >
+              <Text
+                center={true}
+                content={t("enterManually")}
+                style={scanStyles.overlayText}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </Chrome>
     );
   }
 }
@@ -422,8 +435,9 @@ const scanStyles = StyleSheet.create({
   },
   overlayContainer: {
     alignItems: "center",
+    backgroundColor: "transparent",
     height: Dimensions.get("window").height,
-    left: 0,
+    left: -GUTTER,
     justifyContent: "center",
     position: "absolute",
     top: 0,
@@ -455,19 +469,20 @@ class ScanConfirmationScreen extends React.Component<
     tracker.logEvent(FunnelEvents.SCAN_CONFIRMATION);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("Unpacking");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ScanConfirmationScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={require("../../img/barCodeSuccess.png")}
         navigation={this.props.navigation}
         title={t("codeSent")}
-        onNext={() => {
-          this.props.navigation.push("Unpacking");
-        }}
+        onNext={this._onNext}
       >
         <BorderView style={{ marginTop: GUTTER }}>
           <Text
@@ -494,19 +509,20 @@ class ManualConfirmationScreen extends React.Component<
     tracker.logEvent(FunnelEvents.MANUAL_CODE_CONFIRMATION);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("Unpacking");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ManualConfirmationScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={require("../../img/barCodeSuccess.png")}
         navigation={this.props.navigation}
         title={t("codeSent")}
-        onNext={() => {
-          this.props.navigation.push("Unpacking");
-        }}
+        onNext={this._onNext}
       >
         <BorderView style={{ marginTop: GUTTER }}>
           <Text
@@ -585,11 +601,48 @@ class ManualEntryScreen extends React.Component<
     this.props.navigation.push("ManualConfirmation");
   };
 
+  _onNext = () => {
+    const { t } = this.props;
+    if (this.state.barcode1 == null) {
+      Alert.alert("", t("barcodeRequired"), [
+        { text: t("common:button:ok"), onPress: () => {} },
+      ]);
+    } else if (!this._matchingBarcodes()) {
+      Alert.alert("", t("dontMatch"), [
+        { text: t("common:button:ok"), onPress: () => {} },
+      ]);
+    } else if (!this._validBarcode()) {
+      Alert.alert(
+        t("sorry"),
+        t("invalidBarcode", { barcode: this.state.barcode1 }),
+        [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {},
+          },
+        ]
+      );
+    } else {
+      this._onSave();
+    }
+  };
+
+  _onBarcodeOneChange = (barcode1: string) => {
+    this.setState({ barcode1 });
+  };
+
+  _onBarcodeTwoChange = (barcode2: string) => {
+    this.setState({ barcode2 });
+  };
+
+  _onBarcodeOneSubmit = () => {
+    this.confirmInput.current!.focus();
+  };
+
   render() {
     const { t } = this.props;
     const width = (Dimensions.get("window").width - 3 * GUTTER) / 3;
-    return timestampRender(
-      "ManualEntryScreen",
+    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("common:button:continue")}
@@ -597,30 +650,7 @@ class ManualEntryScreen extends React.Component<
           desc={t("desc")}
           navigation={this.props.navigation}
           title={t("enterKit")}
-          onNext={() => {
-            if (this.state.barcode1 == null) {
-              Alert.alert("", t("barcodeRequired"), [
-                { text: t("common:button:ok"), onPress: () => {} },
-              ]);
-            } else if (!this._matchingBarcodes()) {
-              Alert.alert("", t("dontMatch"), [
-                { text: t("common:button:ok"), onPress: () => {} },
-              ]);
-            } else if (!this._validBarcode()) {
-              Alert.alert(
-                t("sorry"),
-                t("invalidBarcode", { barcode: this.state.barcode1 }),
-                [
-                  {
-                    text: t("common:button:ok"),
-                    onPress: () => {},
-                  },
-                ]
-              );
-            } else {
-              this._onSave();
-            }
-          }}
+          onNext={this._onNext}
         >
           <View
             style={{
@@ -638,10 +668,8 @@ class ManualEntryScreen extends React.Component<
               returnKeyType="done"
               style={{ flex: 1 }}
               value={this.state.barcode1}
-              onChangeText={(text: string) => {
-                this.setState({ barcode1: text });
-              }}
-              onSubmitEditing={() => this.confirmInput.current!.focus()}
+              onChangeText={this._onBarcodeOneChange}
+              onSubmitEditing={this._onBarcodeOneSubmit}
             />
           </View>
           <View
@@ -660,10 +688,7 @@ class ManualEntryScreen extends React.Component<
               returnKeyType="done"
               style={{ flex: 1 }}
               value={this.state.barcode2}
-              onChangeText={(text: string) => {
-                this.setState({ barcode2: text });
-              }}
-              onSubmitEditing={() => {}}
+              onChangeText={this._onBarcodeTwoChange}
             />
           </View>
           <View
@@ -694,10 +719,13 @@ export const ManualEntry = withNamespaces("manualEntryScreen")<
 
 // NOTE this screen has been removed. Leaving in code for redux state versioning.
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Unpacking");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TestInstructionsScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -705,9 +733,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={require("../../img/whatsNext.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Unpacking");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -717,32 +743,23 @@ export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
 );
 
 class UnpackingScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Swab");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "UnpackingScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/unpackingInstructions.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Swab");
-        }}
+        onNext={this._onNext}
       >
         <Links
-          links={[
-            {
-              label: t("kitMissingItems"),
-              onPress: () => {
-                timestampInteraction(
-                  "UnpackingScreen.kitMissingItemsEmailSupport"
-                );
-                emailSupport();
-              },
-            },
-          ]}
+          links={[{ label: t("kitMissingItems"), onPress: emailSupport }]}
         />
       </Screen>
     );
@@ -753,19 +770,20 @@ export const Unpacking = withNamespaces("unpackingScreen")<Props>(
 );
 
 class SwabScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("SwabPrep");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SwabScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/begin1stTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SwabPrep");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -773,19 +791,20 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
 export const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
 
 class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("OpenSwab");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SwabPrepScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/prepareTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("OpenSwab");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -793,19 +812,20 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
 export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
 
 class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Mucus");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "OpenSwabScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/openNasalSwab.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Mucus");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -813,19 +833,20 @@ class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
 export const OpenSwab = withNamespaces("openSwabScreen")<Props>(OpenSwabScreen);
 
 class MucusScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("SwabInTube");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "MucusScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/collectMucus.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SwabInTube");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -838,10 +859,14 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.SURVIVED_FIRST_SWAB);
   }
 
+  _onNext = () => {
+    this.props.dispatch(setOneMinuteStartTime());
+    this.props.navigation.push("FirstTimer");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SwabInTubeScreen",
+    return (
       <Screen
         buttonLabel={t("startTimer")}
         canProceed={true}
@@ -849,10 +874,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={require("../../img/putSwabInTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.dispatch(setOneMinuteStartTime());
-          this.props.navigation.push("FirstTimer");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -875,10 +897,17 @@ interface DemoModeProps {
 class FirstTimerScreen extends React.Component<
   Props & DemoModeProps & FirstTimerProps & WithNamespaces & TimerProps
 > {
+  _onNext = () => {
+    this.props.navigation.push("RemoveSwabFromTube");
+  };
+
+  _onTitlePress = () => {
+    this.props.isDemo && this.props.onFastForward();
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "FirstTimerScreen",
+    return (
       <Screen
         canProceed={this.props.done()}
         desc={this.props.getRemainingTime() > 30 * 1000 ? t("tip") : t("tip2")}
@@ -898,7 +927,7 @@ class FirstTimerScreen extends React.Component<
                 enabled={true}
                 primary={true}
                 label={t("common:button:continue")}
-                onPress={() => this.props.navigation.push("RemoveSwabFromTube")}
+                onPress={this._onNext}
               />
             ) : (
               <BorderView
@@ -921,10 +950,7 @@ class FirstTimerScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
-        onTitlePress={() => {
-          this.props.isDemo && this.props.onFastForward();
-        }}
-        onNext={() => {}}
+        onTitlePress={this._onTitlePress}
       />
     );
   }
@@ -939,10 +965,13 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.PASSED_FIRST_TIMER);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("OpenTestStrip");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "RemoveSwabFromTubeScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -950,9 +979,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={require("../../img/removeSwabFromTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("OpenTestStrip");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -962,10 +989,13 @@ export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")<
 >(RemoveSwabFromTubeScreen);
 
 class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("StripInTube");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "OpenTestStripScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -973,9 +1003,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={require("../../img/openTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("StripInTube");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -993,8 +1021,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "StripInTubeScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -1027,17 +1054,20 @@ class WhatSymptomsScreen extends React.Component<
       : false;
   };
 
+  _onNext = () => {
+    this.props.navigation.push("WhenSymptoms");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WhatSymptomsScreen",
+    return (
       <Screen
         canProceed={this._haveOption()}
         centerDesc={true}
         desc={t("description")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => this.props.navigation.push("WhenSymptoms")}
+        onNext={this._onNext}
       >
         <Divider style={{ marginBottom: 0 }} />
         <OptionQuestion
@@ -1134,8 +1164,7 @@ class WhenSymptomsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WhenSymptomsScreen",
+    return (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1245,8 +1274,7 @@ class GeneralExposureScreen extends React.Component<
       }
     }
 
-    return timestampRender(
-      "GeneralExposureScreen",
+    return (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1312,13 +1340,16 @@ class GeneralHealthScreen extends React.Component<
     );
   };
 
+  _onUpdateFluShotDate = (dateInput: Date) => {
+    this.props.updateAnswer({ dateInput }, FluShotDateConfig);
+  };
+
   render() {
     const { t } = this.props;
     const gotFluShot =
       this.props.getAnswer("selectedButtonKey", FluShotConfig.id) === "yes";
 
-    return timestampRender(
-      "GeneralHealthScreen",
+    return (
       <Screen
         canProceed={this._canProceed()}
         centerDesc={true}
@@ -1347,9 +1378,7 @@ class GeneralHealthScreen extends React.Component<
             date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
             startDate={FLUSHOT_START_DATE}
             endDate={new Date(Date.now())}
-            onDateChange={dateInput =>
-              this.props.updateAnswer({ dateInput }, FluShotDateConfig)
-            }
+            onDateChange={this._onUpdateFluShotDate}
           />
         )}
         <ButtonGrid
@@ -1419,10 +1448,17 @@ class ThankYouSurveyScreen extends React.Component<
     tracker.logEvent(FunnelEvents.COMPLETED_SURVEY);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("TestStripReady");
+  };
+
+  _onTitlePress = () => {
+    this.props.isDemo && this.props.onFastForward();
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ThankYouSurveyScreen",
+    return (
       <Screen
         canProceed={this.props.done()}
         desc={t("desc")}
@@ -1439,7 +1475,7 @@ class ThankYouSurveyScreen extends React.Component<
                 enabled={true}
                 primary={true}
                 label={t("common:button:continue")}
-                onPress={() => this.props.navigation.push("TestStripReady")}
+                onPress={this._onNext}
               />
             ) : (
               <BorderView
@@ -1462,10 +1498,7 @@ class ThankYouSurveyScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
-        onNext={() => {}}
-        onTitlePress={() => {
-          this.props.isDemo && this.props.onFastForward();
-        }}
+        onTitlePress={this._onTitlePress}
       >
         {!this.props.done() && (
           <Text content={t("waiting")} style={{ alignSelf: "stretch" }} />
@@ -1480,19 +1513,20 @@ export const ThankYouSurvey = timerWithConfigProps({
 })(withNamespaces("thankYouSurveyScreen")(ThankYouSurveyScreen));
 
 class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("FinishTube");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TestStripReadyScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("desc")}
         imageSrc={require("../../img/removeTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("FinishTube");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1502,19 +1536,20 @@ export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
 );
 
 class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("LookAtStrip");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "FinishTubeScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/finishWithTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("LookAtStrip");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1524,19 +1559,20 @@ export const FinishTube = withNamespaces("finishTubeScreen")<Props>(
 );
 
 class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("TestStripSurvey");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "LookAtStripScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("TestStripSurvey");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1548,19 +1584,20 @@ export const LookAtStrip = withNamespaces("lookAtStripScreen")<Props>(
 class TestStripSurveyScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
+  _onNext = () => {
+    this.props.navigation.push("PictureInstructions");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TestStripSurveyScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("desc")}
         imageSrc={require("../../img/lookAtTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("PictureInstructions");
-        }}
+        onNext={this._onNext}
       >
         <ButtonGrid
           buttonStyle={{ width: "50%" }}
@@ -1598,6 +1635,11 @@ export const TestStripSurvey = reduxWriter(
 class PictureInstructionsScreen extends React.Component<
   Props & WithNamespaces
 > {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._onNext = this._onNext.bind(this);
+  }
+
   async _onNext() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === "granted") {
@@ -1609,17 +1651,14 @@ class PictureInstructionsScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "PictureInstructionsScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("desc")}
         imageSrc={require("../../img/takePictureTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={async () => {
-          await this._onNext();
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1632,70 +1671,72 @@ export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
 class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._takePicture = this._takePicture.bind(this);
+  }
+
   state = {
     spinner: false,
   };
 
   async _takePicture() {
-    const photo = await this.camera.current!.takePictureAsync({
-      quality: 0.8,
-      base64: true,
-      orientation: "portrait",
-      fixOrientation: true,
-    });
-    const csruid = await newCSRUID();
-    uploader.savePhoto(csruid, photo.base64);
-    this.props.dispatch(
-      setTestStripImg({
-        sample_type: "TestStripBase64",
-        code: csruid,
-      })
-    );
-    this.setState({ spinner: false });
-    this.props.navigation.push("TestStripConfirmation", {
-      photo: photo.uri,
-    });
+    if (!this.state.spinner) {
+      this.setState({ spinner: true });
+
+      const photo = await this.camera.current!.takePictureAsync({
+        quality: 0.8,
+        base64: true,
+        orientation: "portrait",
+        fixOrientation: true,
+      });
+      const csruid = await newCSRUID();
+      uploader.savePhoto(csruid, photo.base64);
+      this.props.dispatch(
+        setTestStripImg({
+          sample_type: "TestStripBase64",
+          code: csruid,
+        })
+      );
+      this.setState({ spinner: false });
+      this.props.navigation.push("TestStripConfirmation", {
+        photo: photo.uri,
+      });
+    }
   }
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TestStripCameraScreen",
-      <View style={{ flex: 1 }}>
-        <Spinner visible={this.state.spinner} />
-        <Camera ref={this.camera} style={cameraStyles.camera} />
-        <View style={cameraStyles.overlayContainer}>
-          <Text
-            center={true}
-            content={t("title")}
-            style={[cameraStyles.overlayText, { fontSize: LARGE_TEXT }]}
-          />
-          <View style={cameraStyles.targetBox}>
-            <Image
-              style={cameraStyles.testStrip}
-              source={require("../../img/testStripCameraImage.png")}
+    return (
+      <Chrome navigation={this.props.navigation}>
+        <View style={{ flex: 1 }}>
+          <Spinner visible={this.state.spinner} />
+          <Camera ref={this.camera} style={cameraStyles.camera} />
+          <View style={cameraStyles.overlayContainer}>
+            <Text
+              center={true}
+              content={t("title")}
+              style={[cameraStyles.overlayText, { fontSize: LARGE_TEXT }]}
             />
-          </View>
-          <Text
-            center={true}
-            content={t("description")}
-            style={cameraStyles.overlayText}
-          />
-          <TouchableOpacity
-            onPress={async () => {
-              if (!this.state.spinner) {
-                timestampInteraction("TestStripCameraScreen.takePicture");
-                this.setState({ spinner: true });
-                await this._takePicture();
-              }
-            }}
-          >
-            <View style={cameraStyles.outerCircle}>
-              <View style={cameraStyles.circle} />
+            <View style={cameraStyles.targetBox}>
+              <Image
+                style={cameraStyles.testStrip}
+                source={require("../../img/testStripCameraImage.png")}
+              />
             </View>
-          </TouchableOpacity>
+            <Text
+              center={true}
+              content={t("description")}
+              style={cameraStyles.overlayText}
+            />
+            <TouchableOpacity onPress={this._takePicture}>
+              <View style={cameraStyles.outerCircle}>
+                <View style={cameraStyles.circle} />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </Chrome>
     );
   }
 }
@@ -1735,7 +1776,7 @@ const cameraStyles = StyleSheet.create({
     padding: GUTTER,
     right: 0,
     position: "absolute",
-    top: STATUS_BAR_HEIGHT,
+    top: 0,
     bottom: 0,
   },
   targetBox: {
@@ -1749,9 +1790,11 @@ const cameraStyles = StyleSheet.create({
     width: "80%",
   },
   testStrip: {
-    height: 260,
+    aspectRatio: 0.176,
+    justifyContent: "center",
+    height: "95%",
     marginLeft: GUTTER,
-    width: 28,
+    width: undefined,
   },
 });
 
@@ -1766,21 +1809,22 @@ interface TestStripProps {
 class TestStripConfirmationScreen extends React.Component<
   Props & TestStripProps & WithNamespaces
 > {
+  _onNext = () => {
+    this.props.navigation.push("CleanFirstTest");
+  };
+
   render() {
     const { navigation, t } = this.props;
     const photo = navigation.getParam("photo", null);
     const screenWidth = Dimensions.get("window").width;
     const screenHeight = Dimensions.get("window").height;
-    return timestampRender(
-      "TestStripConfirmationScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("desc")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("CleanFirstTest");
-        }}
+        onNext={this._onNext}
       >
         {photo != null && (
           <Image
@@ -1789,9 +1833,7 @@ class TestStripConfirmationScreen extends React.Component<
               width: "50%",
               marginVertical: GUTTER,
             }}
-            source={{
-              uri: photo,
-            }}
+            source={{ uri: photo }}
           />
         )}
       </Screen>
@@ -1803,18 +1845,19 @@ export const TestStripConfirmation = withNamespaces(
 )(TestStripConfirmationScreen);
 
 class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("FirstTestFeedback");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "CleanFirstTestScreen",
+    return (
       <Screen
         canProceed={true}
         imageSrc={require("../../img/cleanUpFirstTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("FirstTestFeedback");
-        }}
+        onNext={this._onNext}
       >
         <BulletPoint content={t("step1")} />
         <BulletPoint content={t("step2")} />
@@ -1832,18 +1875,19 @@ export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")<Props>(
 class FirstTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
+  _onNext = () => {
+    this.props.navigation.push("BeginSecondTest");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "FirstTestFeedbackScreen",
+    return (
       <Screen
         canProceed={true}
         imageSrc={require("../../img/niceJob.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("BeginSecondTest");
-        }}
+        onNext={this._onNext}
       >
         <ButtonGrid
           desc={true}
@@ -1865,19 +1909,20 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.COMPLETED_FIRST_TEST);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("PrepSecondTest");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "BeginSecondTestScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/begin2ndTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("PrepSecondTest");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1887,19 +1932,20 @@ export const BeginSecondTest = withNamespaces("beginSecondTestScreen")<Props>(
 );
 
 class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("MucusSecond");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "PrepSecondTestScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/prepareForTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("MucusSecond");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1909,19 +1955,20 @@ export const PrepSecondTest = withNamespaces("prepSecondTestScreen")<Props>(
 );
 
 class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("SwabInTubeSecond");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "MucusSecondScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/collectMucus.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SwabInTubeSecond");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1931,19 +1978,20 @@ export const MucusSecond = withNamespaces("mucusSecondScreen")<Props>(
 );
 
 class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("CleanSecondTest");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SwabInTubeSecondScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/putSwabInRedTube.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("CleanSecondTest");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1953,19 +2001,20 @@ export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")<Props>(
 );
 
 class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("SecondTestFeedback");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "CleanSecondTestScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/cleanUpSecondTest.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SecondTestFeedback");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -1977,18 +2026,19 @@ export const CleanSecondTest = withNamespaces("cleanSecondTestScreen")<Props>(
 class SecondTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
+  _onNext = () => {
+    this.props.navigation.push("Packing");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SecondTestFeedbackScreen",
+    return (
       <Screen
         canProceed={true}
         imageSrc={require("../../img/niceJob.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Packing");
-        }}
+        onNext={this._onNext}
       >
         <ButtonGrid
           desc={true}
@@ -2010,19 +2060,20 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.COMPLETED_SECOND_TEST);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("Stickers");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "PackingScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/packingThingsUp.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("Stickers");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -2030,19 +2081,20 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
 export const Packing = withNamespaces("packingScreen")<Props>(PackingScreen);
 
 class StickersScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("SecondBag");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "StickersScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/putStickersOnBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SecondBag");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -2050,18 +2102,19 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
 export const Stickers = withNamespaces("stickersScreen")<Props>(StickersScreen);
 
 class SecondBagScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("TapeBox");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SecondBagScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("TapeBox");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -2071,19 +2124,20 @@ export const SecondBag = withNamespaces("secondBagScreen")<Props>(
 );
 
 class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("ShipBox");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TapeBoxScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         imageSrc={require("../../img/tapeUpBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("ShipBox");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -2093,10 +2147,22 @@ export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
 class ShipBoxScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
+  _onNext = () => {
+    this.props.navigation.push("SchedulePickup");
+  };
+
+  _onDropOff = () => {
+    this.props.navigation.push("EmailOptIn");
+  };
+
+  _onShowNearbyUsps = () => {
+    const addressInput = this.props.getAnswer("addressInput", AddressConfig.id);
+    showNearbyShippingLocations(addressInput.zipcode);
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ShipBoxScreen",
+    return (
       <Screen
         buttonLabel={t("schedulePickup")}
         canProceed={true}
@@ -2108,31 +2174,18 @@ class ShipBoxScreen extends React.Component<
             label={t("iWillDropOff")}
             primary={true}
             textStyle={{ fontSize: EXTRA_SMALL_TEXT }}
-            onPress={() => {
-              this.props.navigation.push("EmailOptIn");
-            }}
+            onPress={this._onDropOff}
           />
         }
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.navigation.push("SchedulePickup");
-        }}
+        onNext={this._onNext}
       >
         <Links
           links={[
             {
               label: t("showNearbyUsps"),
-              onPress: () => {
-                timestampInteraction(
-                  "ShipBoxScreen.showNearbyShippingLocations"
-                );
-                const addressInput = this.props.getAnswer(
-                  "addressInput",
-                  AddressConfig.id
-                );
-                showNearbyShippingLocations(addressInput.zipcode);
-              },
+              onPress: this._onShowNearbyUsps,
             },
           ]}
         />
@@ -2145,10 +2198,15 @@ export const ShipBox = reduxWriter(
 );
 
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    scheduleUSPSPickUp(() => {
+      this.props.navigation.push("EmailOptIn");
+    });
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SchedulePickupScreen",
+    return (
       <Screen
         buttonLabel={t("title")}
         canProceed={true}
@@ -2156,11 +2214,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={require("../../img/schedulePickup.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          scheduleUSPSPickUp(() => {
-            this.props.navigation.push("EmailOptIn");
-          });
-        }}
+        onNext={this._onNext}
       >
         <BulletPoint content={t("rule1")} />
         <BulletPoint content={t("rule2")} />
@@ -2187,10 +2241,23 @@ class EmailOptInScreen extends React.Component<
     tracker.logEvent(FunnelEvents.COMPLETED_SHIPPING);
   }
 
+  _onNext = () => {
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        surveyCompletedAt: new Date().toISOString(),
+      })
+    );
+    this.props.navigation.push("Thanks");
+  };
+
+  _onChange = (options: Option[]) => {
+    this.props.updateAnswer({ options }, OptInForMessagesConfig);
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "EmailOptInScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:continue")}
         canProceed={true}
@@ -2198,15 +2265,7 @@ class EmailOptInScreen extends React.Component<
         imageSrc={require("../../img/optInMessages.png")}
         navigation={this.props.navigation}
         title={t("title")}
-        onNext={() => {
-          this.props.dispatch(
-            setWorkflow({
-              ...this.props.workflow,
-              surveyCompletedAt: new Date().toISOString(),
-            })
-          );
-          this.props.navigation.push("Thanks");
-        }}
+        onNext={this._onNext}
       >
         <OptionList
           data={newSelectedOptionsList(
@@ -2215,9 +2274,7 @@ class EmailOptInScreen extends React.Component<
           )}
           multiSelect={true}
           numColumns={1}
-          onChange={options =>
-            this.props.updateAnswer({ options }, OptInForMessagesConfig)
-          }
+          onChange={this._onChange}
         />
       </Screen>
     );
@@ -2239,8 +2296,7 @@ class ThanksScreen extends React.Component<
 > {
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ThanksScreen",
+    return (
       <Screen
         canProceed={false}
         desc={t("description", { email: this.props.email })}
@@ -2248,23 +2304,16 @@ class ThanksScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
-        onNext={() => {}}
       >
         <Links
           links={[
             {
               label: t("links:learnLink"),
-              onPress: () => {
-                timestampInteraction("ThanksScreen.links:learnLink");
-                learnMore();
-              },
+              onPress: learnMore,
             },
             {
               label: t("links:medLink"),
-              onPress: () => {
-                timestampInteraction("ThanksScreen.links:medLink");
-                findMedHelp();
-              },
+              onPress: findMedHelp,
             },
           ]}
         />

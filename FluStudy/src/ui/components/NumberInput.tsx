@@ -11,7 +11,7 @@ interface Props {
   style?: StyleProp<TextStyle>;
   value?: string;
   onChangeText(text: string): void;
-  onSubmitEditing(): void;
+  onSubmitEditing?: () => void;
 }
 
 interface State {

@@ -28,7 +28,7 @@ interface Props {
   value?: string | null;
   onChangeText(text: string): void;
   onFocus?: () => void;
-  onSubmitEditing(): void;
+  onSubmitEditing?: () => void;
 }
 
 export default class TextInput extends React.Component<Props> {

@@ -46,7 +46,6 @@ import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
-import { timestampRender, timestampInteraction } from "./analytics";
 import {
   isValidUSZipCode,
   isNotEmptyString,
@@ -62,10 +61,18 @@ interface Props {
 
 @connect()
 class WelcomeScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Why");
+  };
+
+  _onSkipPartOne = () => {
+    this.props.dispatch(skipPartOne(true));
+    this.props.navigation.push("WelcomeBack");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WelcomeScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -76,19 +83,11 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
               label={t("common:button:continue")}
               primary={true}
               style={{ alignSelf: "center" }}
-              onPress={() => this.props.navigation.push("Why")}
+              onPress={this._onNext}
             />
             <Links
               center={true}
-              links={[
-                {
-                  label: t("haveKit"),
-                  onPress: () => {
-                    this.props.dispatch(skipPartOne(true));
-                    this.props.navigation.push("WelcomeBack");
-                  },
-                },
-              ]}
+              links={[{ label: t("haveKit"), onPress: this._onSkipPartOne }]}
             />
           </View>
         }
@@ -97,7 +96,6 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/welcome.png")}
         title={t("welcome")}
-        onNext={() => {}}
       />
     );
   }
@@ -105,19 +103,20 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
 export const Welcome = withNamespaces("welcomeScreen")<Props>(WelcomeScreen);
 
 class WhyScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("What");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WhyScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         stableImageSrc={require("../../img/whyThisStudy.png")}
         navigation={this.props.navigation}
         title={t("why")}
-        onNext={() => {
-          this.props.navigation.push("What");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -125,19 +124,20 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
 export const Why = withNamespaces("whyScreen")<Props>(WhyScreen);
 
 class WhatScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Age");
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "WhatScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
         stableImageSrc={require("../../img/whatDoIDoNext.png")}
         navigation={this.props.navigation}
         title={t("what")}
-        onNext={() => {
-          this.props.navigation.push("Age");
-        }}
+        onNext={this._onNext}
       />
     );
   }
@@ -157,10 +157,27 @@ class AgeScreen extends React.Component<
     }
   };
 
+  _onAgeButtonPress = (buttonKey: string) => {
+    this.props.updateAnswer({ selectedButtonKey: buttonKey }, AgeConfig);
+    this._onNext(buttonKey);
+  };
+
+  _getAgeButtons = () => {
+    const { t } = this.props;
+    return AgeConfig.buttons.map((button: ButtonConfig) => (
+      <Button
+        enabled={true}
+        key={button.key}
+        label={t("surveyButton:" + button.key)}
+        primary={true}
+        onPress={this._onAgeButtonPress.bind(this, button.key)}
+      />
+    ));
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "AgeScreen",
+    return (
       <Screen
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         navigation={this.props.navigation}
@@ -170,22 +187,7 @@ class AgeScreen extends React.Component<
         onNext={this._onNext}
       >
         <View style={{ marginTop: GUTTER }} />
-        {AgeConfig.buttons.map((button: ButtonConfig) => (
-          <Button
-            enabled={true}
-            key={button.key}
-            label={t("surveyButton:" + button.key)}
-            primary={true}
-            onPress={() => {
-              timestampInteraction("AgeScreen." + button.key);
-              this.props.updateAnswer(
-                { selectedButtonKey: button.key },
-                AgeConfig
-              );
-              this._onNext(button.key);
-            }}
-          />
-        ))}
+        {this._getAgeButtons()}
       </Screen>
     );
   }
@@ -202,19 +204,6 @@ class SymptomsScreen extends React.PureComponent<
     } else {
       this.props.navigation.push("SymptomsIneligible");
     }
-  };
-
-  _haveOption = () => {
-    const symptoms: Option[] = this.props.getAnswer(
-      "options",
-      SymptomsConfig.id
-    );
-    return symptoms
-      ? symptoms.reduce(
-          (result: boolean, option: Option) => result || option.selected,
-          false
-        )
-      : false;
   };
 
   _numSymptoms = () => {
@@ -247,12 +236,15 @@ class SymptomsScreen extends React.PureComponent<
       : false;
   };
 
+  _onChange = (symptoms: Option[]) => {
+    this.props.updateAnswer({ options: symptoms }, SymptomsConfig);
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SymptomsScreen",
+    return (
       <Screen
-        canProceed={this._haveOption()}
+        canProceed={this._numSymptoms() > 0}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
         navigation={this.props.navigation}
@@ -268,9 +260,7 @@ class SymptomsScreen extends React.PureComponent<
           multiSelect={true}
           numColumns={1}
           exclusiveOptions={["noneOfTheAbove"]}
-          onChange={symptoms =>
-            this.props.updateAnswer({ options: symptoms }, SymptomsConfig)
-          }
+          onChange={this._onChange}
         />
       </Screen>
     );
@@ -342,10 +332,26 @@ class ConsentScreen extends React.PureComponent<
 
   emailInput = React.createRef<EmailInput>();
 
+  _onNoThanks = () => {
+    this.props.navigation.push("ConsentIneligible");
+  };
+
+  _onEmailConsent = () => {
+    this.props.updateAnswer(
+      {
+        booleanInput: !this.props.getAnswer("booleanInput", ConsentConfig.id),
+      },
+      ConsentConfig
+    );
+  };
+
+  _onChangeEmail = (email: string) => {
+    this.setState({ email });
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ConsentScreen",
+    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("accept")}
@@ -357,7 +363,7 @@ class ConsentScreen extends React.PureComponent<
               enabled={true}
               primary={false}
               label={t("noThanks")}
-              onPress={() => this.props.navigation.push("ConsentIneligible")}
+              onPress={this._onNoThanks}
             />
           }
           navigation={this.props.navigation}
@@ -402,17 +408,7 @@ class ConsentScreen extends React.PureComponent<
               />
             }
             style={{ alignSelf: "stretch", marginVertical: GUTTER }}
-            onClick={() => {
-              this.props.updateAnswer(
-                {
-                  booleanInput: !this.props.getAnswer(
-                    "booleanInput",
-                    ConsentConfig.id
-                  ),
-                },
-                ConsentConfig
-              );
-            }}
+            onClick={this._onEmailConsent}
           />
           {!!this.props.getAnswer("booleanInput", ConsentConfig.id) && (
             <View style={{ flex: 1 }}>
@@ -423,7 +419,7 @@ class ConsentScreen extends React.PureComponent<
                 returnKeyType="next"
                 validationError={t("validationError")}
                 value={this.state.email}
-                onChange={email => this.setState({ email })}
+                onChange={this._onChangeEmail}
               />
               <Text
                 content={t("privacyNotice")}
@@ -445,10 +441,13 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.DECLINED_CONSENT);
   }
 
+  _onBack = () => {
+    this.props.navigation.pop();
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ConsentIneligibleScreen",
+    return (
       <Screen
         canProceed={false}
         footer={
@@ -456,7 +455,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             enabled={true}
             primary={true}
             label={t("back")}
-            onPress={() => this.props.navigation.pop()}
+            onPress={this._onBack}
           />
         }
         imageSrc={require("../../img/thanksForYourInterest.png")}
@@ -464,7 +463,6 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         title={t("ineligible")}
         desc={t("description")}
-        onNext={() => {}}
       />
     );
   }
@@ -529,10 +527,13 @@ class AddressInputScreen extends React.Component<
     );
   };
 
+  _onAddressChange = (address: Address) => {
+    this.setState({ address });
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "AddressInputScreen",
+    return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("common:button:submit")}
@@ -548,7 +549,7 @@ class AddressInputScreen extends React.Component<
             autoFocus={this.props.navigation.isFocused()}
             shouldValidate={this.state.triedToProceed}
             value={this.state.address}
-            onChange={(address: Address) => this.setState({ address })}
+            onChange={this._onAddressChange}
           />
           <Text
             content={t("addressExceptions")}
@@ -570,8 +571,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "AgeIneligibleScreen",
+    return (
       <Screen
         canProceed={false}
         desc={t("description")}
@@ -580,23 +580,16 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
-        onNext={() => this.props.navigation.popToTop()}
       >
         <Links
           links={[
             {
               label: t("links:learnLink"),
-              onPress: () => {
-                timestampInteraction("AgeIneligibleScreen.links:learnLink");
-                learnMore();
-              },
+              onPress: learnMore,
             },
             {
               label: t("links:medLink"),
-              onPress: () => {
-                timestampInteraction("AgeIneligibleScreen.links:medLink");
-                findMedHelp();
-              },
+              onPress: findMedHelp,
             },
           ]}
         />
@@ -615,8 +608,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "SymptomsIneligibleScreen",
+    return (
       <Screen
         canProceed={false}
         desc={t("description")}
@@ -625,25 +617,16 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
-        onNext={() => this.props.navigation.popToTop()}
       >
         <Links
           links={[
             {
               label: t("links:learnLink"),
-              onPress: () => {
-                timestampInteraction(
-                  "SymptomsIneligibleScreen.links:learnLink"
-                );
-                learnMore();
-              },
+              onPress: learnMore,
             },
             {
               label: t("links:medLink"),
-              onPress: () => {
-                timestampInteraction("SymptomsIneligibleScreen.links:medLink");
-                findMedHelp();
-              },
+              onPress: findMedHelp,
             },
           ]}
         />
@@ -677,10 +660,21 @@ class ConfirmationScreen extends React.Component<
     tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
   }
 
+  _onNext = () => {
+    this.props.navigation.push("ExtraInfo");
+    /*
+     * Not asking about push notifications yet
+    if (this.props.pushState.showedSystemPrompt) {
+      this.props.navigation.push("ExtraInfo");
+    } else {
+      this.props.navigation.push("PushNotifications");
+    }
+    */
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ConfirmationScreen",
+    return (
       <Screen
         canProceed={true}
         desc={t("description", {
@@ -690,33 +684,17 @@ class ConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}
-        onNext={() => {
-          this.props.navigation.push("ExtraInfo");
-          /*
-           * Not asking about push notifications yet
-          if (this.props.pushState.showedSystemPrompt) {
-            this.props.navigation.push("ExtraInfo");
-          } else {
-            this.props.navigation.push("PushNotifications");
-          }
-          */
-        }}
+        onNext={this._onNext}
       >
         <Links
           links={[
             {
               label: t("links:learnLink"),
-              onPress: () => {
-                timestampInteraction("ExtraInfoScreen.links:learnLink");
-                learnMore();
-              },
+              onPress: learnMore,
             },
             {
               label: t("links:medLink"),
-              onPress: () => {
-                timestampInteraction("ExtraInfoScreen.links:medLink");
-                findMedHelp();
-              },
+              onPress: findMedHelp,
             },
           ]}
         />
@@ -773,10 +751,32 @@ class PushNotificationsScreen extends React.Component<
     );
   }
 
+  _onNo = () => {
+    const newPushState = {
+      ...this.props.pushState,
+      softResponse: false,
+    };
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this.props.navigation.push("ExtraInfo");
+  };
+
+  _onYes = () => {
+    if (this.props.pushState.showedSystemPrompt) {
+      this.props.navigation.push("ExtraInfo");
+    } else {
+      const newPushState = {
+        ...this.props.pushState,
+        softResponse: true,
+        showedSystemPrompt: true,
+      };
+      this.props.dispatch(setPushNotificationState(newPushState));
+      PushNotificationIOS.requestPermissions();
+    }
+  };
+
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "PushNotificationsScreen",
+    return (
       <Screen
         buttonLabel={t("common:button:yes")}
         canProceed={true}
@@ -786,35 +786,14 @@ class PushNotificationsScreen extends React.Component<
             enabled={true}
             primary={false}
             label={t("common:button:no")}
-            onPress={() => {
-              timestampInteraction("PushNotificationsScreen.NoButton");
-              const newPushState = {
-                ...this.props.pushState,
-                softResponse: false,
-              };
-              this.props.dispatch(setPushNotificationState(newPushState));
-              this.props.navigation.push("ExtraInfo");
-            }}
+            onPress={this._onNo}
           />
         }
         imageSrc={require("../../img/pushNotifications.png")}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}
-        onNext={() => {
-          timestampInteraction("PushNotificationsScreen.YesButton");
-          if (this.props.pushState.showedSystemPrompt) {
-            this.props.navigation.push("ExtraInfo");
-          } else {
-            const newPushState = {
-              ...this.props.pushState,
-              softResponse: true,
-              showedSystemPrompt: true,
-            };
-            this.props.dispatch(setPushNotificationState(newPushState));
-            PushNotificationIOS.requestPermissions();
-          }
-        }}
+        onNext={this._onYes}
       />
     );
   }

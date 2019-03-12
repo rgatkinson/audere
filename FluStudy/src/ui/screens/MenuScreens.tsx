@@ -24,7 +24,6 @@ import Screen from "./../components/Screen";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Constants } from "expo";
 import { getApiBaseUrl } from "../../transport";
-import { timestampRender, timestampInteraction } from "./analytics";
 import { GUTTER, PRIMARY_COLOR, SYSTEM_FONT, SYSTEM_TEXT } from "./../styles";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Text from "../components/Text";
@@ -98,8 +97,7 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "About",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -109,7 +107,6 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -125,8 +122,7 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "Funding",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -136,7 +132,6 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -146,8 +141,7 @@ export const Funding = withNamespaces("fundingScreen")<Props>(FundingScreen);
 class PartnersScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "Partners",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -157,7 +151,6 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -173,8 +166,7 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "GeneralQuestions",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -184,7 +176,6 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -202,8 +193,7 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "Problems",
+    return (
       <Screen
         canProceed={true}
         desc={t("description", {
@@ -215,7 +205,6 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -231,8 +220,7 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "TestQuestions",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -242,7 +230,6 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -260,8 +247,7 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "GiftcardQuestions",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -271,7 +257,6 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -289,8 +274,7 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    return timestampRender(
-      "ContactSupport",
+    return (
       <Screen
         canProceed={true}
         desc={t("description")}
@@ -300,7 +284,6 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {}}
       />
     );
   }
@@ -338,8 +321,7 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
       t("apiServer") +
       getApiBaseUrl();
 
-    return timestampRender(
-      "About",
+    return (
       <Screen
         buttonLabel={t("copy")}
         canProceed={true}
@@ -351,10 +333,7 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         skipButton={false}
         stableImageSrc={require("../../img/reverseLogo.png")}
         title={t("title")}
-        onNext={() => {
-          timestampInteraction("About.Copy");
-          this.copyToClipboard(aboutContent);
-        }}
+        onNext={() => this.copyToClipboard(aboutContent)}
       />
     );
   }
