@@ -163,6 +163,7 @@ export interface NonPIIConsentInfo {
   signerType: ConsentInfoSignerType;
   date: string; // date only
   localTime?: string; // FHIR:time
+  appHash?: string;    // Used primarily to determine consent version (for $)
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {

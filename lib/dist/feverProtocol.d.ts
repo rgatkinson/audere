@@ -98,6 +98,7 @@ export interface NonPIIConsentInfo {
     signerType: ConsentInfoSignerType;
     date: string;
     localTime?: string;
+    appHash?: string;
 }
 export interface ConsentInfo extends NonPIIConsentInfo {
     firstName?: string;

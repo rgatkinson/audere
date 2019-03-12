@@ -330,6 +330,7 @@ class ConsentScreen extends React.PureComponent<
           t("consentFormText"),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
+        appHash: DEVICE_INFO.clientVersion["hash"],
       })
     );
     if (this.props.skipPartOne) {
