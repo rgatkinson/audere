@@ -284,22 +284,11 @@ export class EncountersService {
       });
     }
 
-    let age: Encounter.Age;
-
+    let birthYear: number;
     const birthDate = moment(visit.patientInfo.birthDate, "YYYY-MM-DD");
 
     if (birthDate.isValid()) {
-      const now = moment(new Date());
-      const years = now.year() - birthDate.year();
-
-      if (years >= 0) {
-        // Ages 90+ can not be reported.
-        if (years < 90) {
-          age = { value: years, ninetyOrAbove: false };
-        } else {
-          age = { ninetyOrAbove: true }
-        }
-      }
+      birthYear = birthDate.year();
     }
 
     // Deidentify participant to a hash of DOB and postal code. Also
@@ -314,7 +303,7 @@ export class EncountersService {
         userPostalCode
       ),
       locations: locations,
-      age: age
+      birthYear: birthYear
     };
   }
 

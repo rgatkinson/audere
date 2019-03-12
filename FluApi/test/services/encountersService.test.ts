@@ -85,7 +85,8 @@ describe("encounters service", () => {
       const encounter = result.get(details.id);
 
       const birthDate = new Date(details.patientInfo.birthDate);
-      const expectedAge = new Date().getFullYear() - birthDate.getFullYear();
+      const expectedAge =
+        new Date(details.consentDate).getFullYear() - birthDate.getFullYear();
       expect(encounter.age.ninetyOrAbove).toBe(false);
       expect(encounter.age.value).toBeGreaterThanOrEqual(expectedAge - 1);
       expect(encounter.age.value).toBeLessThanOrEqual(expectedAge + 1);

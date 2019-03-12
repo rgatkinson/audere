@@ -15,6 +15,7 @@ import {
   StringAnswer
 } from "audere-lib/hutchProtocol";
 import { LocationType } from "audere-lib/locations";
+import moment from "moment";
 
 describe("encounter mapper", () => {
   class VisitBuilder {
@@ -140,13 +141,14 @@ describe("encounter mapper", () => {
     };
 
     it("converts visit details into an encounter", async () => {
+      const now = moment().toISOString();
       const visit = new VisitBuilder()
         .withVisitId("asdf")
         .withHousehold("beach house", "beach")
         .withTemporaryLocation("vacation", "europe")
         .withWorkplace("company", "city")
         .withLocation("Harborview")
-        .withStartTime("Morning")
+        .withStartTime(now)
         .withResponse(response1)
         .build();
 
@@ -170,13 +172,28 @@ describe("encounter mapper", () => {
         region: "city"
       });
       expect(encounter.site.type).toBe(LocationType.Hospital);
-      expect(encounter.startTimestamp).toBe("Morning");
+      expect(encounter.startTimestamp).toBe(now);
+    });
+
+    it("requires a start timestamp", async() => {
+      const visit = new VisitBuilder()
+      .withVisitId("asdf")
+      .withHousehold("beach house", "beach")
+      .withTemporaryLocation("vacation", "europe")
+      .withWorkplace("company", "city")
+      .withLocation("hospital")
+      .withResponse(response1)
+      .build();
+
+      expect(() => mapEncounter(visit)).toThrow();
     });
 
     it("converts visit responses", async () => {
+      const now = moment().toISOString();
       const visit = new VisitBuilder()
         .withResponse(response1)
         .withResponse(response2)
+        .withStartTime(now)
         .build();
       const encounter = mapEncounter(visit);
 
@@ -277,7 +294,11 @@ describe("encounter mapper", () => {
         ]
       };
 
-      const input = new VisitBuilder().withResponse(response).build();
+      const now = moment().toISOString();
+      const input = new VisitBuilder()
+        .withResponse(response)
+        .withStartTime(now)
+        .build();
       const output = mapEncounter(input);
 
       expect(output.responses.length).toBe(1);
@@ -332,7 +353,11 @@ describe("encounter mapper", () => {
         ]
       };
 
-      const input = new VisitBuilder().withResponse(response).build();
+      const now = moment().toISOString();
+      const input = new VisitBuilder()
+        .withResponse(response)
+        .withStartTime(now)
+        .build();
       const output = mapEncounter(input);
 
       expect(output.responses.length).toBe(1);

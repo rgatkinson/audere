@@ -21,5 +21,5 @@ export interface NonPIIVisitDetails {
   consentDate: string;
   participant: string;
   locations: Location[];
-  age?: Age;
+  birthYear?: number;
 }

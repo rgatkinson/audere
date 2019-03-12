@@ -7,6 +7,7 @@ import * as Encounter from "audere-lib/hutchProtocol";
 import * as Model from "audere-lib/snifflesProtocol";
 import { Locations as Sites } from "audere-lib/locations";
 import { NonPIIVisitDetails } from "../models/visitDetails";
+import moment from "moment";
 import logger from "../util/logger";
 
 const buildInfo = require("../../static/buildInfo.json");
@@ -47,25 +48,39 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     site = { type: undefined, name: input.visitInfo.location }
   }
 
-  function getStart() {
-    let startTimestamp: string;
+  let startTimestamp: moment.Moment;
 
-    if (input.visitInfo.events != null && input.visitInfo.events.length > 0) {
-      const visitEvent = input.visitInfo.events.find(
-        e => e.kind == Model.EventInfoKind.Visit
-      );
+  if (input.visitInfo.events != null && input.visitInfo.events.length > 0) {
+    const visitEvent = input.visitInfo.events.find(
+      e => e.kind == Model.EventInfoKind.Visit
+    );
 
-      if (visitEvent != null) {
-        startTimestamp = visitEvent.at;
-      }
-
-      // Fallback to consent date.
-      if (startTimestamp == null && input.consentDate != null) {
-        startTimestamp = new Date(input.consentDate).toISOString();
-      }
+    if (visitEvent != null) {
+      startTimestamp = moment(visitEvent.at);
     }
+  }
 
-    return startTimestamp;
+  // Fallback to consent date.
+  if (startTimestamp == null) {
+    if (input.consentDate != null) {
+      // Note: this value does not contain timezone information so timezone is
+      // inferred while parsing and the resulting value converted to UTC
+      startTimestamp = moment(input.consentDate, "YYYY-MM-DD");
+    } else {
+      throw Error(`Visit should have start timestamp, id ${input.id}`);
+    }
+  }
+
+  let age: Encounter.Age;
+  const years = startTimestamp.year() - input.birthYear;
+
+  if (years >= 0) {
+    // Ages 90+ can not be reported.
+    if (years < 90) {
+      age = { value: years, ninetyOrAbove: false };
+    } else {
+      age = { ninetyOrAbove: true }
+    }
   }
 
   const output: Encounter.Encounter = {
@@ -74,12 +89,12 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     participant: input.participant,
     revision: revision,
     localeLanguageCode: "en", // TODO: "es" support
-    startTimestamp: getStart(),
+    startTimestamp: startTimestamp.toISOString(),
     site: site,
     locations: input.locations,
     sampleCodes: sampleCodes,
     responses: responses,
-    age: input.age
+    age: age
   };
 
   return output;
