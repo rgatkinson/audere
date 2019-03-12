@@ -59,10 +59,15 @@ export class EncountersService {
     maxToSend: number
   ): Promise<SendEncountersResult> {
     const encounters = await this.getEncounters(maxToSend);
+
+    logger.info(`[sendEncounters] Attempt to send ${encounters.size} records`);
     const sent = await this.sendToHutch(encounters);
+
+    logger.info(`[sendEncounters] Sent ${sent.length} records`);
     const erred = Array.from(encounters.keys()).filter(
       id => !sent.includes(id)
     );
+
     return { sent: sent, erred: erred };
   }
 
@@ -74,23 +79,15 @@ export class EncountersService {
   public async getEncounters(
     maxToRetrieve: number
   ): Promise<Map<number, Encounter.Encounter>> {
+    logger.info("[getEncounters] Querying for pending visits");
     const pending = await this.visits.retrievePendingDetails(maxToRetrieve);
+    logger.info(`[getEncounters] ${pending.size} visits found`);
+
     const scrubbed = await this.scrubPIIData(pending);
     const encounters: Map<number, Encounter.Encounter> = new Map();
 
-    scrubbed.forEach(v => {
-      try {
-        encounters.set(v.id, Mapper.mapEncounter(v));
-      } catch (e) {
-        // TODO: This error should be monitored.
-        // Retrying these records is not helpful until the error is fixed. But
-        // presently the record will be retried indefinitely.
-        logger.error(
-          "Unable to map visit " + v.id + ", this record will be ommitted: ",
-          e
-        );
-      }
-    });
+    logger.info("[getEncounters] Mapping output");
+    scrubbed.forEach(v => encounters.set(v.id, Mapper.mapEncounter(v)));
 
     return encounters;
   }
@@ -230,8 +227,10 @@ export class EncountersService {
   private async scrubPIIData(
     visits: Map<number, PIIVisitDetails>
   ): Promise<NonPIIVisitDetails[]> {
+    logger.info("[getEncounters] Geocoding address data");
     const geocodedAddresses = await this.geocodeAddressData(visits);
 
+    logger.info("[getEncounters] Scrubbing PII data");
     const scrubbedVisits = Array.from(visits.keys()).map(k => {
       try {
         const visit = visits.get(k);
