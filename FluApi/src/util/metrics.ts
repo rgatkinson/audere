@@ -881,12 +881,15 @@ export function getFeverMetrics(
            COUNT(*), 
            ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
     FROM fever_current_surveys
-    WHERE ${dateClause} AND ${demoClause} AND json_array_length(survey->'events') > 0
+    WHERE ${dateClause} AND ${demoClause} 
+          AND json_array_length(survey->'events') > 0
+          AND NOT (survey->'events')::jsonb @> '[{"refId":"Thanks"}]'
     GROUP BY lastscreen 
     ORDER BY percent DESC;`;
-  const lastScreenData = filterLastScreenData(
-    client.querySync(lastScreenQuery)
-  );
+  // const lastScreenData = filterLastScreenData(
+  //   client.querySync(lastScreenQuery)
+  // );
+  const lastScreenData = client.querySync(lastScreenQuery);
 
   const statesQuery = `
     SELECT survey->'patient'->'address'->0->>'state' as state, 
@@ -1218,7 +1221,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [generatedHeading]
   ];
   const lastScreenHeading = [
-    [{ value: "Last Screen Viewed", style: styles.title }],
+    [{ value: "Last Screen Viewed for Users Who Did Not Finish the App", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
   ];
