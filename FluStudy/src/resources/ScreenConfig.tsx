@@ -204,7 +204,6 @@ export const HouseholdChildrenConfig: SurveyQuestionData = {
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
   ],
 };
 
