@@ -35,10 +35,11 @@ export class VisitsService {
       where: {
         visit: {
           isDemo: false,
-          complete: {
-            [Sequelize.Op.eq]: "true"
-          }
+          complete: "true"
         },
+        [Sequelize.Op.and]: [
+          Sequelize.literal("(visit->'events')::jsonb @> '[{\"refId\":\"CompletedQuestionnaire\"}]'")
+        ],
         "$hutch_upload.id$": null
       },
       include: [
@@ -56,10 +57,7 @@ export class VisitsService {
       where: {
         csruid: nonPiiVisits.map(visit => visit.csruid),
         visit: {
-          isDemo: false,
-          complete: {
-            [Sequelize.Op.eq]: "true"
-          }
+          complete: "true"
         }
       }
     });

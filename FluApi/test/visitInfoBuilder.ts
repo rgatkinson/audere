@@ -54,7 +54,8 @@ export class VisitInfoBuilder {
       {
         kind: EventInfoKind.Visit,
         at: "2019-01-01T00:00:00Z",
-        until: "2019-01-01T01:00:00Z"
+        until: "2019-01-01T01:00:00Z",
+        refId: "CompletedQuestionnaire"
       }
     ]
   };
