@@ -195,8 +195,10 @@ class WhatsNextScreen extends React.Component<
   };
 
   _canProceed = () => {
-    return (!!this.props.email && this.state.email == this.props.email) ||
-      isValidEmail(this.state.email);
+    return (
+      (!!this.props.email && this.state.email == this.props.email) ||
+      isValidEmail(this.state.email)
+    );
   };
 
   _onSubmit = () => {
