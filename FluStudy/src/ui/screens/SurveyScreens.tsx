@@ -1197,7 +1197,6 @@ class WhenSymptomsScreen extends React.Component<
         {this.state.last48Configs.map((config: SurveyQuestionData) => {
           return (
             <ButtonGrid
-              buttonStyle={{ width: "50%" }}
               key={config.id}
               question={config}
               title={t("surveyDescription:" + config.description) + ":"}
@@ -1382,19 +1381,16 @@ class GeneralHealthScreen extends React.Component<
           />
         )}
         <ButtonGrid
-          buttonStyle={{ width: "67%" }}
           question={TobaccoConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
-          buttonStyle={{ width: "67%" }}
           question={HouseholdTobaccoConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
-          buttonStyle={{ width: "67%" }}
           question={InterferingConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
@@ -1415,7 +1411,6 @@ class GeneralHealthScreen extends React.Component<
           updateAnswer={this.props.updateAnswer}
         />
         <ButtonGrid
-          buttonStyle={{ width: "67%" }}
           question={HispanicConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
@@ -1600,7 +1595,6 @@ class TestStripSurveyScreen extends React.Component<
         onNext={this._onNext}
       >
         <ButtonGrid
-          buttonStyle={{ width: "50%" }}
           desc={true}
           question={BlueLineConfig}
           getAnswer={this.props.getAnswer}

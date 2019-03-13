@@ -19,7 +19,6 @@ import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
-  buttonStyle?: StyleProp<ViewStyle>;
   desc?: boolean;
   question: SurveyQuestionData;
   style?: StyleProp<ViewStyle>;
@@ -66,7 +65,10 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
           }
           itemStyle={styles.buttonContainer}
           rowFencePostStyle={this.props.vertical && styles.verticalFencePost}
-          rowStyle={[{ alignItems: "center" }, this.props.buttonStyle]}
+          rowStyle={[
+            { alignItems: "center" },
+            question.buttons.length < 3 && { width: "67%" },
+          ]}
           keyExtractor={button => button.key}
           renderItem={(button, width) => {
             return (
