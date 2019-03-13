@@ -372,6 +372,7 @@ class ConsentScreen extends React.PureComponent<
               onPress={this._onNoThanks}
             />
           }
+          hideBackButton={true} // Must not allow age-changing
           navigation={this.props.navigation}
           step={this.props.skipPartOne ? undefined : 3}
           title={t("consent")}
