@@ -77,7 +77,7 @@ export class HutchUploader {
       // Anything that does not get to the point of handling a response is a
       // hard error.
       if (error.response != null) {
-        logger.warn(
+        logger.error(
           "Unexpected status code uploading encounter " +
             error.response.status.toString()
         );
@@ -85,10 +85,11 @@ export class HutchUploader {
         logger.error(
           "Call to upload encounter " +
             id.toString() +
-            " failed with no response."
+            " failed with no response"
         );
-        throw error;
       }
+
+      throw error;
     }
   }
 
