@@ -199,7 +199,9 @@
   },
   "whatScreen": {
     "what": "Getting started",
-    "description": "We need to ask a few questions about you and the symptoms you're feeling. In addition, you will need to provide your home or mailing address so we can send the flu test kit to you."
+    "description": "We need to ask a few questions about you and the symptoms you're feeling. In addition, you will need to provide your home or mailing address so we can send the flu test kit to you.",
+    "whatBlockKits": "What do I need to do?",
+    "blockKitsDesc": "Due to high demand, we have stopped taking new orders for the time being. We appreciate your interest and hope you feel better soon!"
   },
   "ageScreen": {
     "welcome": "Welcome",

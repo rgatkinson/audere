@@ -53,6 +53,7 @@ import {
   isNotEmptyString,
   isValidEmail,
 } from "../../util/check";
+import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 
@@ -132,13 +133,15 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
+    const blockKits = getRemoteConfig("blockKitOrders");
     return (
       <Screen
-        canProceed={true}
-        desc={t("description")}
+        canProceed={!blockKits}
+        desc={blockKits ? t("blockKitsDesc") : t("description")}
         stableImageSrc={require("../../img/whatDoIDoNext.png")}
         navigation={this.props.navigation}
-        title={t("what")}
+        title={blockKits ? t("whatBlockKits") : t("what")}
+        skipButton={blockKits}
         onNext={this._onNext}
       />
     );
