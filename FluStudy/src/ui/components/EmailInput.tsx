@@ -13,6 +13,7 @@ interface Props extends React.Props<EmailInput> {
   validationError: string;
   value?: string;
   onChange(email: string): void;
+  onSubmitEditing?: () => void;
 }
 
 interface State {
@@ -55,7 +56,7 @@ export default class EmailInput extends React.Component<Props, State> {
             this.setState({ email: text });
             this.props.onChange(text);
           }}
-          onSubmitEditing={() => {}}
+          onSubmitEditing={this.props.onSubmitEditing}
         />
         <Text
           content={

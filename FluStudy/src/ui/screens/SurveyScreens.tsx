@@ -194,15 +194,23 @@ class WhatsNextScreen extends React.Component<
     this.setState({ email });
   };
 
+  _canProceed = () => {
+    return (!!this.props.email && this.state.email == this.props.email) ||
+      isValidEmail(this.state.email);
+  };
+
+  _onSubmit = () => {
+    if (this._canProceed()) {
+      this._onNext();
+    }
+  };
+
   render() {
     const { t } = this.props;
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
-          canProceed={
-            (!!this.props.email && this.state.email == this.props.email) ||
-            isValidEmail(this.state.email)
-          }
+          canProceed={this._canProceed()}
           desc={t("description")}
           imageSrc={require("../../img/whatsNext.png")}
           navigation={this.props.navigation}
@@ -210,13 +218,14 @@ class WhatsNextScreen extends React.Component<
           onNext={this._onNext}
         >
           <EmailInput
-            autoFocus={this.props.navigation.isFocused()}
+            autoFocus={false}
             placeholder={t("common:placeholder:enterEmail")}
             ref={this.emailInput}
             returnKeyType="next"
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
             onChange={this._onEmailChange}
+            onSubmitEditing={this._onSubmit}
           />
         </Screen>
       </KeyboardAvoidingView>
