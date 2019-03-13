@@ -2,7 +2,7 @@
 import { EventInfo } from "audere-lib/snifflesProtocol";
 const excel = require("node-excel-export");
 
-const enStrings = require("../../../FluStudy/src/i18n/locales/en.json");
+//const enStrings = require("../../../FluStudy/src/i18n/locales/en.json");
 const Client = require("pg-native");
 const client = new Client();
 const clientPII = new Client();
@@ -961,24 +961,26 @@ function filterLastScreenData(lastScreenData): object {
       completedPercent += +row.percent;
     } else {
       let lastscreenText = "";
+      lastScreenFiltered.push(row);
       if (!!row.lastscreen) {
         const screenNamespace =
           row.lastscreen.charAt(0).toLowerCase() +
           row.lastscreen.slice(1) +
           "Screen";
-        if (!!enStrings[screenNamespace]) {
-          lastscreenText = enStrings[screenNamespace].title; // show "title" if exists for this screen
-          if (!lastscreenText) {
-            // else show the content of the first key for this screen
-            lastscreenText =
-              enStrings[screenNamespace][
-                Object.keys(enStrings[screenNamespace])[0]
-              ];
-          }
-        }
+        //if (!!enStrings[screenNamespace]) {
+        //  lastscreenText = enStrings[screenNamespace].title; // show "title" if exists for this screen
+        //  if (!lastscreenText) {
+          //   // else show the content of the first key for this screen
+          //   lastscreenText =
+          //     enStrings[screenNamespace][
+          //       Object.keys(enStrings[screenNamespace])[0]
+          //     ];
+          // }
+        //}
       }
-      const rowWithText = { ...row, lastscreenText };
-      lastScreenFiltered.push(rowWithText);
+      //const rowWithText = { ...row, lastscreenText };
+      //lastScreenFiltered.push(rowWithText);
+      
     }
   }
   lastScreenFiltered.push({
@@ -1088,12 +1090,13 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     percent: {
       displayName: "%",
       ...defaultCell
-    },
-    lastscreenText: {
-      displayName: "Screen Text",
-      headerStyle: styles.columnHeader,
-      width: 300
     }
+    // },
+    // lastscreenText: {
+    //   displayName: "Screen Text",
+    //   headerStyle: styles.columnHeader,
+    //   width: 300
+    // }
   };
 
   const statesSpec = {
@@ -1287,7 +1290,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["ScreenKey", null, "Name of last screen/event recorded"],
     ["Count", null, "How many people stopped at that screen"],
     ["%", null, "Percent of users that stopped on that screen"],
-    ["Screen Text", null, "Sample of the text displayed on that screen"],
+    // ["Screen Text", null, "Sample of the text displayed on that screen"],
     [],
     ["State Stats sheet columns"],
     ["State", null, "US State abbreviation"],
