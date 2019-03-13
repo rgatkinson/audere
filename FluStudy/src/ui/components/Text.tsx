@@ -14,11 +14,11 @@ import {
   FONT_EXTRA_BOLD,
   FONT_ITALIC,
   FONT_NORMAL,
-  GUTTER,
   LINK_COLOR,
   REGULAR_TEXT,
   TEXT_COLOR,
 } from "../styles";
+import i18next from "i18next";
 
 interface Props {
   bold?: boolean;
@@ -178,6 +178,10 @@ export default class Text extends React.Component<Props> {
   }
 
   render() {
+    const content = this.props.content.replace(
+      "$$$",
+      i18next.t("common:giftCardAmount")
+    );
     return (
       <SystemText
         selectable={true}
@@ -190,7 +194,7 @@ export default class Text extends React.Component<Props> {
         ]}
         onPress={this.props.onPress}
       >
-        {this.props.content
+        {content
           .split("**")
           .map((str, i) => this._oneReplace(str, i % 2 == 1, i.toString()))}
       </SystemText>
