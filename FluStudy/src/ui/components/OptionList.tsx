@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontSize: SMALL_TEXT,
     lineHeight: INPUT_HEIGHT - GUTTER,
+    marginLeft: GUTTER / 4,
   },
   selectedItem: {
     borderColor: SECONDARY_COLOR,

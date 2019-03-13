@@ -131,6 +131,7 @@
   "surveyTitle": {
     "address": "Your home address",
     "mailingAddress": "Your mailing address",
+    "whereKit": "Where did you get your kit?",
     "ageTitle": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
     "symptomTitle": "Describe your symptoms",
@@ -460,6 +461,8 @@
     "medLink": "Search Maps for urgent care clinics nearby"
   },
   "surveyOption": {
+    "orderedApp": "Ordered through the app",
+    "fromClinic": "Received from a clinic",
     "doNotEmailMe": "Please do not email me",
     "sendCopyOfMyConsent": "Send me a copy of my consent",
     "askAboutMyIllness": "To ask me questions about my illness/cold",

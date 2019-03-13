@@ -30,6 +30,7 @@ import {
 import {
   MailingAddressConfig,
   AddressConfig,
+  WhereKitConfig,
   AgeBuckets,
   AgeConfig,
   ButtonConfig,
@@ -538,6 +539,23 @@ class AddressInputScreen extends React.Component<
     this.setState({ address });
   };
 
+  _haveOption = () => {
+    const options: Option[] = this.props.getAnswer(
+      "options",
+      WhereKitConfig.id
+    );
+    return options
+      ? options.reduce(
+          (result: boolean, option: Option) => result || option.selected,
+          false
+        )
+      : false;
+  };
+
+  _onChange = (options: Option[]) => {
+    this.props.updateAnswer({ options }, WhereKitConfig);
+  };
+
   render() {
     const { t } = this.props;
     const config = this.props.skipPartOne
@@ -549,7 +567,7 @@ class AddressInputScreen extends React.Component<
           buttonLabel={
             this.props.skipPartOne ? undefined : t("common:button:submit")
           }
-          canProceed={true}
+          canProceed={!this.props.skipPartOne || this._haveOption()}
           centerDesc={true}
           desc={t("surveyDescription:" + config.description)}
           navigation={this.props.navigation}
@@ -568,6 +586,24 @@ class AddressInputScreen extends React.Component<
               content={t("addressExceptions")}
               style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
             />
+          )}
+          {this.props.skipPartOne && (
+            <View style={{ alignSelf: "stretch" }}>
+              <Text
+                center={true}
+                content={t("surveyTitle:" + WhereKitConfig.title)}
+                style={{ marginVertical: GUTTER }}
+              />
+              <OptionList
+                data={newSelectedOptionsList(
+                  WhereKitConfig.optionList!.options,
+                  this.props.getAnswer("options", WhereKitConfig.id)
+                )}
+                multiSelect={false}
+                numColumns={1}
+                onChange={this._onChange}
+              />
+            </View>
           )}
         </Screen>
       </KeyboardAvoidingView>
