@@ -54,7 +54,7 @@ import {
   isValidEmail,
 } from "../../util/check";
 import { getRemoteConfig } from "../../util/remoteConfig";
-import { DEVICE_INFO } from "../../transport/DeviceInfo";
+import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 
 interface Props {
@@ -330,7 +330,7 @@ class ConsentScreen extends React.PureComponent<
           t("consentFormText"),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
-        appHash: DEVICE_INFO.clientVersion["hash"],
+        appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
       })
     );
     this.props.navigation.push("Address");
