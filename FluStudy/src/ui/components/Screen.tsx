@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
-import { connect } from "react-redux";
+import { wrapScrollView } from "react-native-scroll-into-view";
 import { Action } from "../../store";
 import Button from "./Button";
 import Chrome from "./Chrome";
@@ -41,6 +41,8 @@ interface Props {
   onNext?: () => void;
 }
 
+const CustomScrollView = wrapScrollView(ScrollView);
+
 class Screen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
@@ -55,7 +57,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
         onBack={this.props.onBack}
       >
         <View style={styles.scrollContainer}>
-          <ScrollView
+          <CustomScrollView
             contentContainerStyle={{
               flexGrow: 1,
               justifyContent: "space-between",
@@ -103,7 +105,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
               )}
               {this.props.footer}
             </View>
-          </ScrollView>
+          </CustomScrollView>
         </View>
       </Chrome>
     );

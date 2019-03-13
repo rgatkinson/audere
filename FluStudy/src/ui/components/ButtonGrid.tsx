@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { ScrollIntoView } from "react-native-scroll-into-view";
 import { ButtonConfig, SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
   BORDER_WIDTH,
@@ -20,6 +21,7 @@ import Text from "./Text";
 
 interface Props {
   desc?: boolean;
+  onRef?: any;
   question: SurveyQuestionData;
   style?: StyleProp<ViewStyle>;
   title?: string;
@@ -43,7 +45,10 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { question, t } = this.props;
     return (
-      <View style={[styles.container, this.props.style]}>
+      <ScrollIntoView
+        style={[styles.container, this.props.style]}
+        ref={this.props.onRef}
+      >
         <QuestionText
           text={
             !!this.props.title
@@ -102,7 +107,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
             );
           }}
         />
-      </View>
+      </ScrollIntoView>
     );
   }
 }

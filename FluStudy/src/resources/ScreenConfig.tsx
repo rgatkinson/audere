@@ -7,6 +7,7 @@ export interface SurveyQuestionData {
   description?: string;
   optionList?: OptionListConfig;
   title?: string;
+  ref?: any;
   required?: boolean;
 }
 
@@ -161,6 +162,12 @@ export const SymptomSeverityConfig: SurveyQuestionData = {
   required: true,
 };
 
+export const WhenSymptomsScreenConfig = [
+  SymptomsStartConfig,
+  Last48Config,
+  SymptomSeverityConfig,
+];
+
 export const InContactConfig: SurveyQuestionData = {
   id: "InContact",
   title: "inContact",
@@ -239,6 +246,16 @@ export const BedroomsConfig: SurveyQuestionData = {
     { key: "5+", primary: false, enabled: true },
   ],
 };
+
+export const GeneralExposureScreenConfig = [
+  InContactConfig,
+  CoughSneezeConfig,
+  YoungChildrenConfig,
+  HouseholdChildrenConfig,
+  ChildrenWithChildrenConfig,
+  PeopleInHouseholdConfig,
+  BedroomsConfig,
+];
 
 export const MedConditionsConfig: SurveyQuestionData = {
   id: "MedicalCondition",
@@ -366,6 +383,19 @@ export const InsuranceConfig: SurveyQuestionData = {
     exclusiveOptions: ["noInsurance", "doNotKnow"],
   },
 };
+
+export const GeneralHealthScreenConfig = [
+  MedConditionsConfig,
+  FluShotConfig,
+  TobaccoConfig,
+  HouseholdTobaccoConfig,
+  InterferingConfig,
+  AntibioticsConfig,
+  AssignedSexConfig,
+  RaceConfig,
+  HispanicConfig,
+  InsuranceConfig,
+];
 
 export const BlueLineConfig: SurveyQuestionData = {
   id: "BlueLine",
