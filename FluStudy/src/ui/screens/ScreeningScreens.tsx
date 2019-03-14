@@ -224,6 +224,14 @@ class SymptomsScreen extends React.PureComponent<
       : 0;
   };
 
+  _hasSymptoms = () => {
+    const symptoms: Option[] = this.props.getAnswer(
+      "options",
+      SymptomsConfig.id
+    );
+    return symptoms && symptoms.some(symptom => symptom.selected);
+  };
+
   _haveCough = () => {
     const symptoms: Option[] = this.props.getAnswer(
       "options",
@@ -246,7 +254,7 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={this._numSymptoms() > 0}
+        canProceed={this._hasSymptoms()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
         navigation={this.props.navigation}
