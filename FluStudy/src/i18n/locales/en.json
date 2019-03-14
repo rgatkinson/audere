@@ -130,7 +130,8 @@
     "privacyNotice": "We will not share your personal information with any third party or for purposes other than this study."
   },
   "surveyTitle": {
-    "address": "Your mailing address",
+    "address": "Your home address",
+    "emailAndAddress": "Email and home address",
     "whereKit": "Where did you get your kit?",
     "ageTitle": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
@@ -166,7 +167,7 @@
   },
   "surveyDescription": {
     "addressDesc": "Please provide your address so we can reconcile your test kit with our records.",
-    "mailingAddressDesc": "Please provide a mailing address so we may mail a flu test kit for you to run at home.",
+    "mailingAddressDesc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
@@ -209,6 +210,9 @@
     "numMonths": "Number of months"
   },
   "addressScreen": {
+    "emailAddress": "Email address",
+    "validationError": "* Please provide a valid email address",
+    "desc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
     "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included."
   },
   "ageIneligibleScreen": {

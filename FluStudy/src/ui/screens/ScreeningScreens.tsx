@@ -286,12 +286,13 @@ interface SkipProps {
   skipPartOne: boolean;
 }
 
-interface ConsentProps {
+interface EmailProps {
   email?: string;
 }
 
-interface ConsentState {
+interface EmailState {
   email?: string;
+  triedToProceed: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -299,15 +300,16 @@ interface ConsentState {
   skipPartOne: state.meta.skipPartOne,
 }))
 class ConsentScreen extends React.PureComponent<
-  Props & ConsentProps & SkipProps & WithNamespaces & ReduxWriterProps,
-  ConsentState
+  Props & EmailProps & SkipProps & WithNamespaces & ReduxWriterProps,
+  EmailState
 > {
   constructor(
-    props: Props & ConsentProps & SkipProps & WithNamespaces & ReduxWriterProps
+    props: Props & EmailProps & SkipProps & WithNamespaces & ReduxWriterProps
   ) {
     super(props);
     this.state = {
       email: props.email,
+      triedToProceed: false,
     };
   }
 
@@ -315,18 +317,22 @@ class ConsentScreen extends React.PureComponent<
     tracker.logEvent(FunnelEvents.MET_SYMPTOMS);
   }
 
-  _canProceed = (): boolean => {
-    return (
-      !this.props.getAnswer("booleanInput", ConsentConfig.id) ||
-      isValidEmail(this.state.email)
-    );
-  };
-
   _onNext = () => {
     const { t } = this.props;
+    if (
+      this.props.getAnswer("booleanInput", ConsentConfig.id) &&
+      !isValidEmail(this.state.email)
+    ) {
+      if (!this.state.triedToProceed) {
+        this.setState({ triedToProceed: true });
+      }
+      return;
+    }
+
     if (this.props.getAnswer("booleanInput", ConsentConfig.id)) {
       this.props.dispatch(setEmail(this.state.email!));
     }
+
     this.props.dispatch(
       setConsent({
         terms:
@@ -368,7 +374,7 @@ class ConsentScreen extends React.PureComponent<
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={t("accept")}
-          canProceed={this._canProceed()}
+          canProceed={true}
           centerDesc={true}
           desc={t("description")}
           footer={
@@ -431,6 +437,7 @@ class ConsentScreen extends React.PureComponent<
                 placeholder={t("emailAddress")}
                 ref={this.emailInput}
                 returnKeyType="next"
+                shouldValidate={this.state.triedToProceed}
                 validationError={t("validationError")}
                 value={this.state.email}
                 onChange={this._onChangeEmail}
@@ -499,25 +506,42 @@ interface AddressState {
   workflow: state.survey.workflow,
 }))
 class AddressInputScreen extends React.Component<
-  Props & SkipProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
-  AddressState
+  Props &
+    EmailProps &
+    SkipProps &
+    WorkflowProps &
+    WithNamespaces &
+    ReduxWriterProps,
+  AddressState & EmailState
 > {
   constructor(
-    props: Props & SkipProps & WorkflowProps & WithNamespaces & ReduxWriterProps
+    props: Props &
+      EmailProps &
+      SkipProps &
+      WorkflowProps &
+      WithNamespaces &
+      ReduxWriterProps
   ) {
     super(props);
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
+      email: props.email,
       triedToProceed: false,
     };
   }
+
+  emailInput = React.createRef<EmailInput>();
 
   _onNext = () => {
     this.setState({ triedToProceed: true });
     const config = this.props.skipPartOne
       ? AddressConfig
       : MailingAddressConfig;
-    if (this._haveValidAddress()) {
+    if (
+      this._haveValidAddress() &&
+      (this.props.skipPartOne || isValidEmail(this.state.email))
+    ) {
+      this.props.dispatch(setEmail(this.state.email!));
       this.props.updateAnswer({ addressInput: this.state.address }, config);
       this.props.dispatch(
         setWorkflow({
@@ -567,6 +591,10 @@ class AddressInputScreen extends React.Component<
     this.props.updateAnswer({ options }, WhereKitConfig);
   };
 
+  _onChangeEmail = (email: string) => {
+    this.setState({ email });
+  };
+
   render() {
     const { t } = this.props;
     const config = this.props.skipPartOne
@@ -579,7 +607,6 @@ class AddressInputScreen extends React.Component<
             this.props.skipPartOne ? undefined : t("common:button:submit")
           }
           canProceed={!this.props.skipPartOne || this._haveOption()}
-          centerDesc={true}
           desc={t("surveyDescription:" + config.description)}
           navigation={this.props.navigation}
           step={this.props.skipPartOne ? undefined : 4}
@@ -596,6 +623,18 @@ class AddressInputScreen extends React.Component<
             <Text
               content={t("addressExceptions")}
               style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
+            />
+          )}
+          {!this.props.skipPartOne && (
+            <EmailInput
+              autoFocus={false}
+              placeholder={t("emailAddress")}
+              ref={this.emailInput}
+              returnKeyType="next"
+              shouldValidate={this.state.triedToProceed}
+              validationError={t("validationError")}
+              value={this.state.email}
+              onChange={this._onChangeEmail}
             />
           )}
           {this.props.skipPartOne && (

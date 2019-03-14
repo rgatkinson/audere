@@ -49,7 +49,7 @@ export const AddressConfig: SurveyQuestionData = {
 
 export const MailingAddressConfig: SurveyQuestionData = {
   id: "Address",
-  title: "address",
+  title: "emailAndAddress",
   description: "mailingAddressDesc",
   buttons: [{ key: "next", primary: true, enabled: true }],
 };

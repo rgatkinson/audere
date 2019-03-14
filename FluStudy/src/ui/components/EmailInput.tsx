@@ -1,6 +1,5 @@
 import React from "react";
 import { ReturnKeyTypeOptions, StyleSheet, View } from "react-native";
-import KeyboardListener from "react-native-keyboard-listener";
 import Text from "./Text";
 import TextInput from "./TextInput";
 import { ERROR_COLOR, FONT_NORMAL, GUTTER } from "../styles";
@@ -10,6 +9,7 @@ interface Props extends React.Props<EmailInput> {
   autoFocus: boolean;
   placeholder: string;
   returnKeyType: ReturnKeyTypeOptions;
+  shouldValidate: boolean;
   validationError: string;
   value?: string;
   onChange(email: string): void;
@@ -18,7 +18,6 @@ interface Props extends React.Props<EmailInput> {
 
 interface State {
   email?: string;
-  keyboardOpen: boolean;
 }
 
 export default class EmailInput extends React.Component<Props, State> {
@@ -26,7 +25,6 @@ export default class EmailInput extends React.Component<Props, State> {
     super(props);
     this.state = {
       email: props.value,
-      keyboardOpen: props.autoFocus,
     };
   }
 
@@ -35,14 +33,6 @@ export default class EmailInput extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        <KeyboardListener
-          onWillShow={() => {
-            this.setState({ keyboardOpen: true });
-          }}
-          onWillHide={() => {
-            this.setState({ keyboardOpen: false });
-          }}
-        />
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -60,7 +50,7 @@ export default class EmailInput extends React.Component<Props, State> {
         />
         <Text
           content={
-            !isValidEmail(this.state.email) && !this.state.keyboardOpen
+            !isValidEmail(this.state.email) && this.props.shouldValidate
               ? this.props.validationError
               : ""
           }

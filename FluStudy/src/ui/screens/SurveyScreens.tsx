@@ -177,38 +177,35 @@ export const WelcomeBack = withNamespaces("welcomeBackScreen")<
 }))
 class WhatsNextScreen extends React.Component<
   Props & EmailProps & WithNamespaces,
-  EmailState
+  NextState
 > {
   constructor(props: Props & EmailProps & WithNamespaces) {
     super(props);
     this.state = {
       email: props.email,
+      triedToProceed: false,
     };
   }
 
   emailInput = React.createRef<EmailInput>();
 
   _onNext = () => {
-    this.props.dispatch(setEmail(this.state.email!));
-    this.props.navigation.push("Before");
-    tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
+    if (
+      (this.props.email != null && this.state.email == this.props.email) ||
+      isValidEmail(this.state.email)
+    ) {
+      this.props.dispatch(setEmail(this.state.email!));
+      this.props.navigation.push("Before");
+      tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
+    } else {
+      if (!this.state.triedToProceed) {
+        this.setState({ triedToProceed: true });
+      }
+    }
   };
 
   _onEmailChange = (email: string) => {
     this.setState({ email });
-  };
-
-  _canProceed = () => {
-    return (
-      (!!this.props.email && this.state.email == this.props.email) ||
-      isValidEmail(this.state.email)
-    );
-  };
-
-  _onSubmit = () => {
-    if (this._canProceed()) {
-      this._onNext();
-    }
   };
 
   render() {
@@ -216,7 +213,7 @@ class WhatsNextScreen extends React.Component<
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
-          canProceed={this._canProceed()}
+          canProceed={true}
           desc={t("description")}
           imageSrc={require("../../img/whatsNext.png")}
           navigation={this.props.navigation}
@@ -228,10 +225,11 @@ class WhatsNextScreen extends React.Component<
             placeholder={t("common:placeholder:enterEmail")}
             ref={this.emailInput}
             returnKeyType="next"
+            shouldValidate={this.state.triedToProceed}
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
             onChange={this._onEmailChange}
-            onSubmitEditing={this._onSubmit}
+            onSubmitEditing={this._onNext}
           />
         </Screen>
       </KeyboardAvoidingView>
@@ -2239,8 +2237,9 @@ interface EmailProps {
   email?: string;
 }
 
-interface EmailState {
+interface NextState {
   email?: string;
+  triedToProceed: boolean;
 }
 
 class EmailOptInScreen extends React.Component<
