@@ -603,6 +603,7 @@ class AddressInputScreen extends React.Component<
           <QuestionText text={t("surveyTitle:address")} />
           <AddressInput
             autoFocus={this.props.navigation.isFocused()}
+            onSubmitEditing={() => this.emailInput.current!.focus()}
             shouldValidate={this.state.triedToProceed}
             value={this.state.address}
             onChange={this._onAddressChange}

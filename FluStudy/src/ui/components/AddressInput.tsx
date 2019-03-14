@@ -19,6 +19,7 @@ interface Props {
   shouldValidate: boolean;
   value?: Address | null;
   onChange(value: Address): void;
+  onSubmitEditing(): void;
 }
 
 interface State {
@@ -196,6 +197,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               address.zipcode = text;
               this.props.onChange(address);
             }}
+            onSubmitEditing={this.props.onSubmitEditing}
           />
         </View>
       </View>
