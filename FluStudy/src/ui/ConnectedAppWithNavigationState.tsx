@@ -13,6 +13,7 @@ import {
   clearState,
   setCSRUIDIfUnset,
   getActiveRouteName,
+  initialNavState,
 } from "../store/";
 import { connect } from "react-redux";
 import { createReduxContainer } from "react-navigation-redux-helpers";
@@ -229,12 +230,25 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState) => {
+  const defaults = {
+    isDemo: false,
+    skipPartOne: false,
+    lastUpdate: undefined,
+    navigationState: initialNavState,
+    workflow: {},
+    csruid: undefined,
+  };
+
+  if (state == null) {
+    return defaults;
+  }
+
   return {
-    isDemo: state.meta.isDemo,
-    skipPartOne: state.meta.skipPartOne,
-    lastUpdate: state.survey.timestamp,
-    navigationState: state.navigation,
-    workflow: state.survey.workflow,
-    csruid: state.survey.csruid,
+    isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
+    skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
+    lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
+    navigationState: !!state.navigation ? state.navigation : defaults.navigationState,
+    workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
+    csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
   };
 })(AppWithNavigationState);

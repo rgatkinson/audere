@@ -13,7 +13,7 @@ import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
 import { Crashlytics } from "react-native-fabric";
 
-const initialState = {
+export const initialNavState = {
   closeId: 1,
   index: 0,
   isDrawerOpen: false,
@@ -39,11 +39,11 @@ const initialState = {
 };
 
 export default function reducer(
-  state: NavigationState = initialState,
+  state: NavigationState = initialNavState,
   action: NavigationAction
 ) {
   if (state == null) {
-    state = initialState;
+    state = initialNavState;
   }
   const navigator = getAppNavigator();
   if (navigator == null) {
