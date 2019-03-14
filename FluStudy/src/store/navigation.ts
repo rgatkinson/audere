@@ -13,21 +13,41 @@ import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
 import { Crashlytics } from "react-native-fabric";
 
-const initialAction = { type: NavigationActions.INIT };
+const initialState = {
+  closeId: 1,
+  index: 0,
+  isDrawerOpen: false,
+  openId: 0,
+  toggleId: 2,
+  routes: [
+    {
+      index: 0,
+      key: "Home",
+      routeName: "Home",
+      routes: [{ index: 0, routeName: "Welcome" }],
+    },
+    { index: 1, key: "About", routeName: "About" },
+    { index: 2, key: "Funding", routeName: "Funding" },
+    { index: 3, key: "Partners", routeName: "Partners" },
+    { index: 4, key: "GeneralQuestions", routeName: "GeneralQuestions" },
+    { index: 5, key: "Problems", routeName: "Problems" },
+    { index: 6, key: "TestQuestions", routeName: "TestQuestions" },
+    { index: 7, key: "GiftcardQuestions", routeName: "GiftcardQuestions" },
+    { index: 8, key: "ContactSupport", routeName: "ContactSupport" },
+    { index: 9, key: "Version", routeName: "Version" },
+  ],
+};
 
 export default function reducer(
-  state: NavigationState,
+  state: NavigationState = initialState,
   action: NavigationAction
 ) {
+  if (state == null) {
+    state = initialState;
+  }
   const navigator = getAppNavigator();
   if (navigator == null) {
-    return null;
-  }
-  if (state == null) {
-    state = navigator.router.getStateForAction(initialAction);
-    if (!state) {
-      Crashlytics.log("Invalid state " + state + " in nav reducer");
-    }
+    return state;
   }
   return navigator.router.getStateForAction(action, state);
 }
