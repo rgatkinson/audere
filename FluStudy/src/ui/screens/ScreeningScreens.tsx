@@ -149,8 +149,11 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
 }
 export const What = withNamespaces("whatScreen")<Props>(WhatScreen);
 
+@connect((state: StoreState) => ({
+  skipPartOne: state.meta.skipPartOne,
+}))
 class AgeScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
+  Props & SkipProps & WithNamespaces & ReduxWriterProps
 > {
   _onNext = (
     ageBucket: string = this.props.getAnswer("selectedButtonKey", AgeConfig.id)
@@ -158,7 +161,11 @@ class AgeScreen extends React.Component<
     if (ageBucket === AgeBuckets.Under18) {
       this.props.navigation.push("AgeIneligible");
     } else {
-      this.props.navigation.push("Symptoms");
+      if (this.props.skipPartOne) {
+        this.props.navigation.push("Consent");
+      } else {
+        this.props.navigation.push("Symptoms");
+      }
     }
   };
 
@@ -187,7 +194,7 @@ class AgeScreen extends React.Component<
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         navigation={this.props.navigation}
         skipButton={true}
-        step={1}
+        step={this.props.skipPartOne ? undefined : 1}
         title={t("surveyTitle:" + AgeConfig.title)}
         onNext={this._onNext}
       >

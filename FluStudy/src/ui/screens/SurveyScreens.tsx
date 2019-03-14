@@ -146,7 +146,7 @@ class WelcomeBackScreen extends React.Component<
 
   _onNext = () => {
     if (this.props.skipPartOne) {
-      this.props.navigation.push("Consent");
+      this.props.navigation.push("Age");
     } else {
       this.props.navigation.push("WhatsNext");
     }
@@ -1141,24 +1141,27 @@ class WhenSymptomsScreen extends React.Component<
     let requiredQuestions = new Set();
     let firstRequired: any = null;
 
-    questionTypes.forEach((questions) => {
+    questionTypes.forEach(questions => {
       questions.forEach((question: any) => {
-        if(question.required && this.props.getAnswer("selectedButtonKey", question.id) === null) {
-          if(firstRequired === null) {
+        if (
+          question.required &&
+          this.props.getAnswer("selectedButtonKey", question.id) === null
+        ) {
+          if (firstRequired === null) {
             firstRequired = question.ref;
           }
-          requiredQuestions.add(question.id);  
+          requiredQuestions.add(question.id);
         }
       });
     });
-    
-    if(requiredQuestions.size > 0) {
+
+    if (requiredQuestions.size > 0) {
       this.setState({ highlighted: requiredQuestions });
       firstRequired.scrollIntoView(scrollOptions);
       return false;
     }
-    
-    this.setState({ highlighted: new Set() })
+
+    this.setState({ highlighted: new Set() });
     return true;
   };
 
