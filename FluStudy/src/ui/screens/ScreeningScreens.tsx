@@ -502,6 +502,7 @@ interface AddressState {
 }
 
 @connect((state: StoreState) => ({
+  email: state.survey.email,
   skipPartOne: state.meta.skipPartOne,
   workflow: state.survey.workflow,
 }))
