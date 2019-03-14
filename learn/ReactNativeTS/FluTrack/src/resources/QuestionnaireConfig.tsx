@@ -45,6 +45,7 @@ export interface ButtonConfig {
 
 interface ConditionalNextConfig {
   buttonAndLocation?: boolean;
+  locationFirst?: Map<string, string>;
   buttonKeys?: Map<string, string>;
   location?: Map<string, string>;
   options?: Map<string, string>;
@@ -452,6 +453,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "NearChildren",
       nextQuestion: "ChildrenNearChildren",
       conditionalNext: {
+        locationFirst: new Map([["fredHutch", "StaffHutchKids"]]),
         age: new Map([[AgeBuckets.Over18, "HaveChildren"]]),
       },
       title: "contactWithChildren",
@@ -463,6 +465,22 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "done", primary: true, enabled: "withOption" },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "StaffHutchKids",
+      nextQuestion: "ChildrenNearChildren",
+      conditionalNext: {
+        age: new Map([[AgeBuckets.Over18, "HaveChildren"]]),
+      },
+      title: "staffHutchKids",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -489,6 +507,7 @@ export const questionnaire: SurveyQuestion[] = [
       id: "ChildrenNearChildren",
       nextQuestion: "Smoke",
       conditionalNext: {
+        locationFirst: new Map([["fredHutch", "ChildrenHutchKids"]]),
         age: new Map([
           [AgeBuckets.Child, "HouseholdSmoke"],
           [AgeBuckets.Under7, "HouseholdSmoke"],
@@ -499,6 +518,25 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "yes", primary: true, enabled: true },
         { key: "no", primary: true, enabled: true },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "ChildrenHutchKids",
+      nextQuestion: "Smoke",
+      conditionalNext: {
+        age: new Map([
+          [AgeBuckets.Child, "HouseholdSmoke"],
+          [AgeBuckets.Under7, "HouseholdSmoke"],
+        ]),
+      },
+      title: "childrenHutchKids",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -815,6 +853,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "Occupation",
       nextQuestion: "WorkAddress",
+      conditionalNext: {
+        location: new Map([["fredHutch", "FredHutchEmployee"]]),
+      },
       title: "occupation",
       description: {
         label: "occupationDescription",
@@ -825,6 +866,19 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
+      id: "FredHutchEmployee",
+      nextQuestion: "WorkAddress",
+      title: "fredHutchEmployee",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },

@@ -7,9 +7,12 @@ import CountryModal from "./CountryModal";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
 import TextInput from "./TextInput";
+import { connect } from "react-redux";
+import { StoreState } from "../../store";
 
 interface Props {
   showLocationField?: boolean;
+  locationType: string;
   value?: Address | null;
   onChange(value: Address): void;
   onDone(): void;
@@ -21,6 +24,9 @@ interface State {
   stateOpen: boolean;
 }
 
+@connect((state: StoreState) => ({
+  locationType: state.admin!.locationType,
+}))
 class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
@@ -43,7 +49,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, locationType } = this.props;
     return (
       <View style={styles.container}>
         <KeyboardListener
@@ -59,7 +65,11 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={true}
-            placeholder={t("locationName")}
+            placeholder={
+              locationType == "fredHutch"
+                ? t("locationNameFredHutch")
+                : t("locationName")
+            }
             returnKeyType="next"
             style={styles.textInput}
             value={this.props.value ? this.props.value!.location : undefined}

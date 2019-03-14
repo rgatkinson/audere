@@ -6,7 +6,8 @@ export enum LocationType {
   ChildrensClinic = "childrensClinic",
   Clinic = "clinic",
   Childcare = "childcare",
-  Port = "port"
+  Port = "port",
+  FredHutch = "fredHutch"
 }
 
 export const Locations: {
@@ -107,7 +108,7 @@ export const Locations: {
     contactPhone: "(206) 897-5318"
   },
   FredHutchLobby: {
-    type: LocationType.Clinic,
+    type: LocationType.FredHutch,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318"
   }

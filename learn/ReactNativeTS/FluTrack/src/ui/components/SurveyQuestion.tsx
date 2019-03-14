@@ -71,7 +71,19 @@ class SurveyQuestion extends Component<
           return location;
         }
       } else {
-        // First check options
+        // First check locationFirst
+        if (
+          !!this.props.data.conditionalNext!.locationFirst &&
+          this.props.data.conditionalNext!.locationFirst!.has(
+            this.props.locationType
+          )
+        ) {
+          return this.props.data.conditionalNext!.locationFirst!.get(
+            this.props.locationType
+          )!;
+        }
+
+        // Second check options
         if (
           !!this.props.data.conditionalNext!.options &&
           !!this.props.getAnswer("options")
@@ -92,7 +104,7 @@ class SurveyQuestion extends Component<
           }
         }
 
-        // Second check age
+        // Third check age
         if (!!this.props.data.conditionalNext!.age) {
           const ageBucket = this.props.getAnswer(
             "selectedButtonKey",
@@ -103,7 +115,7 @@ class SurveyQuestion extends Component<
           }
         }
 
-        // Third check button key
+        // Fourth check button key
         if (
           !!this.props.data.conditionalNext!.buttonKeys &&
           this.props.data.conditionalNext!.buttonKeys!.has(selectedButtonKey)
@@ -113,7 +125,7 @@ class SurveyQuestion extends Component<
           )!;
         }
 
-        // Fourth check location
+        // Fifth check location
         if (
           !!this.props.data.conditionalNext!.location &&
           this.props.data.conditionalNext!.location!.has(
