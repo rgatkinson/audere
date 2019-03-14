@@ -130,8 +130,7 @@
     "privacyNotice": "We will not share your personal information with any third party or for purposes other than this study."
   },
   "surveyTitle": {
-    "address": "Your home address",
-    "mailingAddress": "Your mailing address",
+    "address": "Your mailing address",
     "whereKit": "Where did you get your kit?",
     "ageTitle": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
@@ -166,7 +165,7 @@
     "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
-    "addressDesc": "Please provide your home address.",
+    "addressDesc": "Please provide your address so we can reconcile your test kit with our records.",
     "mailingAddressDesc": "Please provide a mailing address so we may mail a flu test kit for you to run at home.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
