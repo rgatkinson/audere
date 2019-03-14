@@ -108,7 +108,7 @@
   },
   "giftcardQuestionsScreen": {
     "title": "Gift Card Questions",
-    "description": "**When will I receive my Amazon gift card?**\n\nShortly after you receive your kit and start using the app, we’ll ask for your email address. This is where we'll send your gift card after we receive your completed test kit back in the mail. Look for your gift card in your email inbox within a week after you mail your kit back to us.\n\n**I prefer not to share my email address. Can you send my Amazon gift card to my home address instead?**\n\nUnfortunately, we can only email gift cards at this time. Rest assured we will not share your email address with anyone else if you choose to provide it. Thank you for your understanding.\n\n**I provided my email address, but I still haven’t received my gift card. What should I do?**\n\nWe're sorry you haven't received your gift card yet. If you have already returned your test kit to us more than a few days ago, please email us at [fluhelp@uw.edu](mailto:fluhelp@uw.edu) and we will make sure you get your gift card."
+    "description": "**When will I receive my gift card?**\n\nShortly after you receive your kit and start using the app, we’ll ask for your email address. This is where we'll send your gift card after we receive your completed test kit back in the mail. Look for your gift card in your email inbox within a week after you mail your kit back to us.\n\n**I prefer not to share my email address. Can you send my gift card to my home address instead?**\n\nUnfortunately, we can only email gift cards at this time. Rest assured we will not share your email address with anyone else if you choose to provide it. Thank you for your understanding.\n\n**I provided my email address, but I still haven’t received my gift card. What should I do?**\n\nWe're sorry you haven't received your gift card yet. If you have already returned your test kit to us more than a few days ago, please email us at [fluhelp@uw.edu](mailto:fluhelp@uw.edu) and we will make sure you get your gift card."
   },
   "contactSupportScreen": {
     "title": "Contact Support",
@@ -191,7 +191,7 @@
   },
   "welcomeScreen": {
     "welcome": "Welcome",
-    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $$$ Amazon gift card at the end of the study after we receive your completed test kit in the mail. Let's get started.",
+    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you'll receive a $$$ gift card at the end of the study after we receive your completed test kit in the mail. Let's get started.",
     "haveKit": "I already have my kit"
   },
   "whyScreen": {
@@ -248,7 +248,7 @@
   },
   "whatsNextScreen": {
     "whatsNext": "What's next?",
-    "description": "Both tests involve taking nose swabs, then returning them by mail using a shipping label provided in the box. We will also ask some questions about your illness. As a thank you for all your help, we'll email you an Amazon gift card once we receive your completed test kit."
+    "description": "Both tests involve taking nose swabs, then returning them by mail using a shipping label provided in the box. We will also ask some questions about your illness. As a thank you for all your help, we'll email you a gift card once we receive your completed test kit."
   },
   "beforeScreen": {
     "beforeYouBegin": "Before you begin",
