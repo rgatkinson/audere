@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  Animated,
-  Easing,
+  StyleProp,
   StyleSheet,
   TouchableOpacity,
+  ViewStyle,
   View,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -12,13 +12,11 @@ import Grid from "./Grid";
 import Text from "./Text";
 import {
   BORDER_COLOR,
-  BORDER_RADIUS,
   BORDER_WIDTH,
-  DISABLED_COLOR,
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
-  PRIMARY_COLOR,
+  RADIO_BUTTON_HEIGHT,
   SECONDARY_COLOR,
   SMALL_TEXT,
 } from "../styles";
@@ -110,6 +108,11 @@ class OptionList extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
+    const totalOptions = this.props.data.length;
+    const lastKey =
+      totalOptions > 0
+        ? this.props.data[this.props.data.length - 1].key
+        : undefined;
     return (
       <Grid
         columns={this.props.numColumns}
@@ -119,6 +122,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           <TranslatedListItem
             id={item.key}
             selected={item.selected}
+            style={item.key === lastKey && styles.itemLast}
             width={width}
             onPressItem={this._onPressItem}
           />
@@ -132,77 +136,73 @@ export default withNamespaces("optionList")(OptionList);
 interface ItemProps {
   id: string;
   selected: boolean;
+  style?: StyleProp<ViewStyle>;
   width: number;
   onPressItem(id: string): void;
 }
 
-class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
-  _animatedValue = new Animated.Value(0);
+const featherSize = 20;
 
+class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   _onPress = () => {
     this.props.onPressItem(this.props.id);
-    if (!this.props.selected) {
-      this._animatedValue.setValue(0);
-      Animated.timing(this._animatedValue, {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.bezier(0, 0.75, 0.75, 3),
-      }).start();
-    }
   };
 
   render() {
-    const marginLeft = this._animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, GUTTER / 2],
-    });
+    const { id, selected, t, width } = this.props;
+
     return (
       <TouchableOpacity
-        style={[
-          styles.item,
-          this.props.selected && styles.selectedItem,
-          { width: this.props.width },
-        ]}
-        onPress={() => this._onPress()}
+        style={[styles.item, { width }, this.props.style]}
+        onPress={this._onPress}
       >
-        {this.props.selected && (
-          <Feather name="check" color={SECONDARY_COLOR} size={20} />
-        )}
-        <Animated.View style={{ marginLeft }}>
-          <Text
-            content={this.props.t("surveyOption:" + this.props.id)}
-            style={[
-              styles.itemText,
-              this.props.selected && styles.selectedItemText,
-              { width: this.props.width - 20 - 2 * GUTTER },
-            ]}
-          />
-        </Animated.View>
+        <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
+          {selected && (
+            <Feather name="check" color={"white"} size={featherSize} />
+          )}
+        </View>
+        <Text
+          content={t(`surveyOption:${id}`)}
+          style={[
+            styles.itemText,
+            selected && styles.selectedItemText,
+            { width: width - featherSize - GUTTER - GUTTER / 4 },
+          ]}
+        />
       </TouchableOpacity>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  checkbox: {
+    alignItems: "center",
+    borderColor: BORDER_COLOR,
+    borderWidth: BORDER_WIDTH,
+    height: featherSize + GUTTER / 4,
+    width: featherSize + GUTTER / 4,
+  },
+  checkboxSelected: {
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR,
+  },
   item: {
     alignItems: "center",
     alignSelf: "stretch",
     borderColor: BORDER_COLOR,
-    borderWidth: BORDER_WIDTH,
-    borderRadius: BORDER_RADIUS,
+    borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
     flexGrow: 1,
-    marginBottom: GUTTER / 2,
-    padding: GUTTER / 2,
+    minHeight: RADIO_BUTTON_HEIGHT,
+  },
+  itemLast: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemText: {
     alignSelf: "center",
     fontSize: SMALL_TEXT,
     lineHeight: INPUT_HEIGHT - GUTTER,
-    marginLeft: GUTTER / 4,
-  },
-  selectedItem: {
-    borderColor: SECONDARY_COLOR,
+    marginLeft: GUTTER,
   },
   selectedItemText: {
     color: SECONDARY_COLOR,
