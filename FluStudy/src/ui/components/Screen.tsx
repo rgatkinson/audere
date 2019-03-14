@@ -83,8 +83,8 @@ class Screen extends React.Component<Props & WithNamespaces> {
                   center={!!this.props.centerDesc}
                   style={{
                     alignSelf: "stretch",
-                    paddingBottom: GUTTER,
-                    paddingTop: GUTTER / 2,
+                    marginTop: GUTTER / 2,
+                    marginBottom: GUTTER,
                   }}
                 />
               )}

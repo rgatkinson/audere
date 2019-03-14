@@ -22,6 +22,6 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     flexDirection: "row",
-    paddingBottom: GUTTER / 2,
+    marginBottom: GUTTER / 2,
   },
 });

@@ -57,7 +57,6 @@ export default class App extends React.Component<AppProps> {
   async _loadAssets() {
     await Promise.all([
       Font.loadAsync({
-        circlenumbers: require("./assets/fonts/circlenumbers.ttf"),
         UniSansRegular: require("./assets/fonts/UniSansRegular.otf"),
         Regular: require("./assets/fonts/Roboto-Regular.ttf"),
         SemiBold: require("./assets/fonts/Roboto-Medium.ttf"),
