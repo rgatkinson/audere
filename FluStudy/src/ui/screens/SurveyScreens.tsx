@@ -1145,9 +1145,6 @@ class WhenSymptomsScreen extends React.Component<
       toRender.push(
         answers.map((config: SurveyQuestionData, index: number) => {
           let buttonStyle = [];
-          if (config.buttons.length === 2) {
-            buttonStyle.push({ width: "50%" });
-          }
           if (highlighted.has(config.id)) {
             buttonStyle.push({ borderColor: "red", borderWidth: 1 });
           }
@@ -1246,8 +1243,8 @@ class GeneralExposureScreen extends React.Component<
           .filter(conditionalQuestionFilter)
           .map(
             question =>
-              question.optionList ? (
-                <OptionQuestion
+              question.id === "YoungChildren" ? (
+                <RadioGrid
                   key={question.id}
                   question={question}
                   getAnswer={this.props.getAnswer}

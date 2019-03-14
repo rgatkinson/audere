@@ -191,18 +191,13 @@ export const CoughSneezeConfig: SurveyQuestionData = {
 export const YoungChildrenConfig: SurveyQuestionData = {
   id: "YoungChildren",
   title: "youngChildren",
-  optionList: {
-    options: [
-      "noContactUnderFive",
-      "oneChild",
-      "twoToFiveChildren",
-      "moreThanFiveChildren",
-      "doNotKnow",
-    ],
-    withOther: false,
-    multiSelect: false,
-  },
-  buttons: [],
+  buttons: [
+    { key: "noContactUnderFive", primary: false, enabled: true },
+    { key: "oneChild", primary: false, enabled: true },
+    { key: "twoToFiveChildren", primary: false, enabled: true },
+    { key: "moreThanFiveChildren", primary: false, enabled: true },
+    { key: "doNotKnow", primary: false, enabled: true },
+  ],
 };
 
 export const HouseholdChildrenConfig: SurveyQuestionData = {

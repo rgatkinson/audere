@@ -184,6 +184,7 @@ class AgeScreen extends React.Component<
       >
         <RadioGrid
           desc={false}
+          hideQuestion={true}
           question={AgeConfig}
           style={{ marginTop: GUTTER }}
           getAnswer={this.props.getAnswer}

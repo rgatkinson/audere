@@ -62,7 +62,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
         style={[styles.container, this.props.style]}
         ref={this.props.onRef}
       >
-        {this.props.hideQuestion && (
+        {!this.props.hideQuestion && (
           <QuestionText
             text={
               !!this.props.title
