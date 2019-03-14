@@ -1584,9 +1584,19 @@ export const LookAtStrip = withNamespaces("lookAtStripScreen")<Props>(
 class TestStripSurveyScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _onNext = () => {
-    this.props.navigation.push("PictureInstructions");
-  };
+  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
+    super(props);
+    this._onNext = this._onNext.bind(this);
+  }
+
+  async _onNext() {
+    const { status } = await Permissions.getAsync(Permissions.CAMERA);
+    if (status === "denied") {
+      this.props.navigation.push("CleanFirstTest");
+    } else {
+      this.props.navigation.push("PictureInstructions");
+    }
+  }
 
   render() {
     const { t } = this.props;
