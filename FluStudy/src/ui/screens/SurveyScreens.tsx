@@ -100,6 +100,7 @@ import {
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 import { isValidEmail } from "../../util/check";
+import RadioGrid from "../components/RadioGrid";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -1896,10 +1897,10 @@ class FirstTestFeedbackScreen extends React.Component<
         title={t("title")}
         onNext={this._onNext}
       >
-        <ButtonGrid
+        <RadioGrid
           desc={true}
+          hideQuestion={true}
           question={FirstTestFeedbackConfig}
-          vertical={true}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />
@@ -2047,10 +2048,10 @@ class SecondTestFeedbackScreen extends React.Component<
         title={t("title")}
         onNext={this._onNext}
       >
-        <ButtonGrid
+        <RadioGrid
           desc={true}
+          hideQuestion={true}
           question={SecondTestFeedbackConfig}
-          vertical={true}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
         />

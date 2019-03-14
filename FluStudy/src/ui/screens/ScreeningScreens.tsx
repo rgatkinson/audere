@@ -56,6 +56,7 @@ import {
 import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
+import RadioGrid from "../components/RadioGrid";
 
 interface Props {
   dispatch(action: Action): void;
@@ -155,9 +156,8 @@ export const What = withNamespaces("whatScreen")<Props>(WhatScreen);
 class AgeScreen extends React.Component<
   Props & SkipProps & WithNamespaces & ReduxWriterProps
 > {
-  _onNext = (
-    ageBucket: string = this.props.getAnswer("selectedButtonKey", AgeConfig.id)
-  ) => {
+  _onNext = () => {
+    const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Under18) {
       this.props.navigation.push("AgeIneligible");
     } else {
@@ -169,37 +169,24 @@ class AgeScreen extends React.Component<
     }
   };
 
-  _onAgeButtonPress = (buttonKey: string) => {
-    this.props.updateAnswer({ selectedButtonKey: buttonKey }, AgeConfig);
-    this._onNext(buttonKey);
-  };
-
-  _getAgeButtons = () => {
-    const { t } = this.props;
-    return AgeConfig.buttons.map((button: ButtonConfig) => (
-      <Button
-        enabled={true}
-        key={button.key}
-        label={t("surveyButton:" + button.key)}
-        primary={true}
-        onPress={this._onAgeButtonPress.bind(this, button.key)}
-      />
-    ));
-  };
-
   render() {
     const { t } = this.props;
     return (
       <Screen
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         navigation={this.props.navigation}
-        skipButton={true}
+        skipButton={false}
         step={this.props.skipPartOne ? undefined : 1}
         title={t("surveyTitle:" + AgeConfig.title)}
         onNext={this._onNext}
       >
-        <View style={{ marginTop: GUTTER }} />
-        {this._getAgeButtons()}
+        <RadioGrid
+          desc={false}
+          question={AgeConfig}
+          style={{ marginTop: GUTTER }}
+          getAnswer={this.props.getAnswer}
+          updateAnswer={this.props.updateAnswer}
+        />
       </Screen>
     );
   }
