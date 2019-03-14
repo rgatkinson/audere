@@ -45,7 +45,9 @@ import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
 import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
+import OptionQuestion from "../components/OptionQuestion";
 import Text from "../components/Text";
+import QuestionText from "../components/QuestionText";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import {
@@ -421,11 +423,11 @@ class ConsentScreen extends React.PureComponent<
             <View style={{ flex: 1 }}>
               <EmailInput
                 autoFocus={this.props.navigation.isFocused()}
-                placeholder={t("emailAddress")}
+                placeholder={t("common:placeholder:enterEmail")}
                 ref={this.emailInput}
                 returnKeyType="next"
                 shouldValidate={this.state.triedToProceed}
-                validationError={t("validationError")}
+                validationError={t("common:validationErrors:email")}
                 value={this.state.email}
                 onChange={this._onChangeEmail}
               />
@@ -525,10 +527,7 @@ class AddressInputScreen extends React.Component<
     const config = this.props.skipPartOne
       ? AddressConfig
       : MailingAddressConfig;
-    if (
-      this._haveValidAddress() &&
-      (this.props.skipPartOne || isValidEmail(this.state.email))
-    ) {
+    if (this._haveValidAddress() && isValidEmail(this.state.email)) {
       this.props.dispatch(setEmail(this.state.email!));
       this.props.updateAnswer({ addressInput: this.state.address }, config);
       this.props.dispatch(
@@ -575,10 +574,6 @@ class AddressInputScreen extends React.Component<
       : false;
   };
 
-  _onChange = (options: Option[]) => {
-    this.props.updateAnswer({ options }, WhereKitConfig);
-  };
-
   _onChangeEmail = (email: string) => {
     this.setState({ email });
   };
@@ -595,12 +590,17 @@ class AddressInputScreen extends React.Component<
             this.props.skipPartOne ? undefined : t("common:button:submit")
           }
           canProceed={!this.props.skipPartOne || this._haveOption()}
-          desc={t("surveyDescription:" + config.description)}
+          desc={
+            this.props.skipPartOne
+              ? t("surveyDescription:addressDesc")
+              : t("surveyDescription:mailingAddressDesc")
+          }
           navigation={this.props.navigation}
           step={this.props.skipPartOne ? undefined : 4}
-          title={t("surveyTitle:" + config.title)}
+          title={t("title")}
           onNext={this._onNext}
         >
+          <QuestionText text={t("surveyTitle:address")} />
           <AddressInput
             autoFocus={this.props.navigation.isFocused()}
             shouldValidate={this.state.triedToProceed}
@@ -613,35 +613,23 @@ class AddressInputScreen extends React.Component<
               style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
             />
           )}
-          {!this.props.skipPartOne && (
-            <EmailInput
-              autoFocus={false}
-              placeholder={t("emailAddress")}
-              ref={this.emailInput}
-              returnKeyType="next"
-              shouldValidate={this.state.triedToProceed}
-              validationError={t("validationError")}
-              value={this.state.email}
-              onChange={this._onChangeEmail}
-            />
-          )}
+          <QuestionText text={t("email")} />
+          <EmailInput
+            autoFocus={false}
+            placeholder={t("common:placeholder:emailEx")}
+            ref={this.emailInput}
+            returnKeyType="next"
+            shouldValidate={this.state.triedToProceed}
+            validationError={t("common:validationErrors:email")}
+            value={this.state.email}
+            onChange={this._onChangeEmail}
+          />
           {this.props.skipPartOne && (
-            <View style={{ alignSelf: "stretch" }}>
-              <Text
-                center={true}
-                content={t("surveyTitle:" + WhereKitConfig.title)}
-                style={{ marginVertical: GUTTER }}
-              />
-              <OptionList
-                data={newSelectedOptionsList(
-                  WhereKitConfig.optionList!.options,
-                  this.props.getAnswer("options", WhereKitConfig.id)
-                )}
-                multiSelect={false}
-                numColumns={1}
-                onChange={this._onChange}
-              />
-            </View>
+            <OptionQuestion
+              question={WhereKitConfig}
+              getAnswer={this.props.getAnswer}
+              updateAnswer={this.props.updateAnswer}
+            />
           )}
         </Screen>
       </KeyboardAvoidingView>

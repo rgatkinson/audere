@@ -18,7 +18,8 @@
       "Admin": "Admin"
     },
     "placeholder": {
-      "enterEmail": "Enter your email address"
+      "enterEmail": "Your email address",
+      "emailEx": "e.g. joe@gmail.com"
     },
     "validationErrors": {
       "email": "* Please provide a valid email address"
@@ -115,8 +116,6 @@
     "description": "**I have questions about the test kit contents.**\n\nFor questions about the test kit, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have questions about the study in general.**\n\nFor general study questions, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have a support issue regarding the application.**\n\nFor support with issues with this application, please contact **[flu-support@auderenow.org](mailto:flu-support@auderenow.org)**."
   },
   "consentScreen": {
-    "emailAddress": "Email address",
-    "validationError": "* Please provide a valid email address",
     "required": " (required)",
     "name": "Please enter your full name",
     "todaysDate": "Today's date",
@@ -130,8 +129,7 @@
     "privacyNotice": "We will not share your personal information with any third party or for purposes other than this study."
   },
   "surveyTitle": {
-    "address": "Your home address",
-    "emailAndAddress": "Email and home address",
+    "address": "Your address:",
     "whereKit": "Where did you get your kit?",
     "ageTitle": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
@@ -166,7 +164,7 @@
     "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
-    "addressDesc": "Please provide your address so we can reconcile your test kit with our records.",
+    "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
     "mailingAddressDesc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
@@ -210,9 +208,8 @@
     "numMonths": "Number of months"
   },
   "addressScreen": {
-    "emailAddress": "Email address",
-    "validationError": "* Please provide a valid email address",
-    "desc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
+    "email": "Your email address:",
+    "title": "Email and Address",
     "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included."
   },
   "ageIneligibleScreen": {
