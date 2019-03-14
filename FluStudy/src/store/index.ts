@@ -57,10 +57,12 @@ const reducer = combineReducers({
 });
 
 const rootReducer = (state: StoreState | undefined, action: Action) => {
-  if (state != null && action.type === "CLEAR_STATE") {
-    Object.keys(state).forEach(key => {
-      storage.removeItem(`persist:${key}`);
-    });
+  if (action.type === "CLEAR_STATE") {
+    if (state != null) {
+      Object.keys(state).forEach(key => {
+        storage.removeItem(`persist:${key}`);
+      });
+    }
     state = undefined;
   }
   return reducer(state, action);
