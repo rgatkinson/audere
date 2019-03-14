@@ -247,7 +247,9 @@ export default connect((state: StoreState) => {
     isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
     skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
     lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
-    navigationState: !!state.navigation ? state.navigation : defaults.navigationState,
+    navigationState: !!state.navigation
+      ? state.navigation
+      : defaults.navigationState,
     workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
     csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
   };

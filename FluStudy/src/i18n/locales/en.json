@@ -245,7 +245,7 @@
   },
   "whatsNextScreen": {
     "whatsNext": "What's next?",
-    "description": "Both tests involve taking nose swabs, then returning them by mail using a shipping label provided in the box. We will also ask some questions about your illness. As a thank you for all your help, we'll email you a gift card once we receive your completed test kit."
+    "description": "Both tests involve taking nose swabs, then returning them by mail using a shipping label provided in the box. As a thank you for all your help, we'll email you a $$$ gift card once we receive your completed test kit.\n\nBefore you begin, find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "beforeScreen": {
     "beforeYouBegin": "Before you begin",

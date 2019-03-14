@@ -176,64 +176,22 @@ export const WelcomeBack = withNamespaces("welcomeBackScreen")<
 @connect((state: StoreState) => ({
   email: state.survey.email,
 }))
-class WhatsNextScreen extends React.Component<
-  Props & EmailProps & WithNamespaces,
-  NextState
-> {
-  constructor(props: Props & EmailProps & WithNamespaces) {
-    super(props);
-    this.state = {
-      email: props.email,
-      triedToProceed: false,
-    };
-  }
-
-  emailInput = React.createRef<EmailInput>();
-
+class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    if (
-      (this.props.email != null && this.state.email == this.props.email) ||
-      isValidEmail(this.state.email)
-    ) {
-      this.props.dispatch(setEmail(this.state.email!));
-      this.props.navigation.push("Before");
-      tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-    } else {
-      if (!this.state.triedToProceed) {
-        this.setState({ triedToProceed: true });
-      }
-    }
-  };
-
-  _onEmailChange = (email: string) => {
-    this.setState({ email });
+    this.props.navigation.push("ScanInstructions");
   };
 
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
-        <Screen
-          canProceed={true}
-          desc={t("description")}
-          imageSrc={require("../../img/whatsNext.png")}
-          navigation={this.props.navigation}
-          title={t("whatsNext")}
-          onNext={this._onNext}
-        >
-          <EmailInput
-            autoFocus={false}
-            placeholder={t("common:placeholder:enterEmail")}
-            ref={this.emailInput}
-            returnKeyType="next"
-            shouldValidate={this.state.triedToProceed}
-            validationError={t("common:validationErrors:email")}
-            value={this.state.email}
-            onChange={this._onEmailChange}
-            onSubmitEditing={this._onNext}
-          />
-        </Screen>
-      </KeyboardAvoidingView>
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        imageSrc={require("../../img/whatsNext.png")}
+        navigation={this.props.navigation}
+        title={t("whatsNext")}
+        onNext={this._onNext}
+      />
     );
   }
 }
@@ -241,6 +199,7 @@ export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
   WhatsNextScreen
 );
 
+// NOTE this screen has been removed. Leaving in code for redux state versioning.
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
     this.props.navigation.push("ScanInstructions");
@@ -2236,11 +2195,6 @@ export const SchedulePickup = withNamespaces("schedulePickupScreen")<Props>(
 
 interface EmailProps {
   email?: string;
-}
-
-interface NextState {
-  email?: string;
-  triedToProceed: boolean;
 }
 
 class EmailOptInScreen extends React.Component<

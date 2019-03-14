@@ -536,6 +536,7 @@ class AddressInputScreen extends React.Component<
           screeningCompletedAt: new Date().toISOString(),
         })
       );
+      tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
       if (this.props.skipPartOne) {
         this.props.navigation.push("WhatsNext");
       } else {
