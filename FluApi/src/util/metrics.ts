@@ -931,7 +931,9 @@ export function getFeverMetrics(
           t.redwhenblue,
           fcs.id as dbid, 
           fcs."createdAt", 
-          fcs.survey->'samples'->0->'code' as barcode,
+          CASE WHEN fcs.survey->'samples'->0->>'sample_type' = 'manualEntry' 
+              THEN CONCAT(fcs.survey->'samples'->0->>'code','*')
+              ELSE fcs.survey->'samples'->0->>'code' END as barcode,
           fcs.survey->'workflow'->'surveyCompletedAt' as finishtime,
           fcs.csruid as studyid,
           fcs.device->'clientVersion'->'version' as appversion,
@@ -1398,7 +1400,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "Barcode",
       null,
-      "Barcode that was scanned or manually entered from label on kit"
+      "Barcode that was scanned or manually entered from label on kit (* denotes manual entry)"
     ],
     [
       "Study ID",
