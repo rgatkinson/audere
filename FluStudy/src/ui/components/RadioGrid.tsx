@@ -27,6 +27,7 @@ interface Props {
   hideQuestion?: boolean;
   onRef?: any;
   question: SurveyQuestionData;
+  scrollOnMount?: boolean;
   style?: StyleProp<ViewStyle>;
   title?: string;
   getAnswer(key: string, id: string): any;
@@ -38,6 +39,10 @@ interface State {
 }
 
 class RadioGrid extends React.Component<Props & WithNamespaces, State> {
+  static defaultProps = {
+    scrollOnMount: false,
+  };
+
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
@@ -56,26 +61,30 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { question, t } = this.props;
+    const {
+      desc,
+      hideQuestion,
+      onRef,
+      question,
+      scrollOnMount,
+      style,
+      t,
+      title,
+    } = this.props;
+
     return (
       <ScrollIntoView
-        onMount={false}
-        style={[styles.container, this.props.style]}
-        ref={this.props.onRef}
+        style={[styles.container, style]}
+        ref={onRef}
+        onMount={scrollOnMount}
       >
-        {!this.props.hideQuestion && (
+        {!hideQuestion && (
           <QuestionText
-            text={
-              !!this.props.title
-                ? this.props.title
-                : t("surveyTitle:" + question.title)
-            }
+            text={!!title ? title : t("surveyTitle:" + question.title)}
             subtext={
-              this.props.desc
-                ? t("surveyDescription:" + question.description)
-                : undefined
+              desc ? t("surveyDescription:" + question.description) : undefined
             }
-            required={!this.props.title && question.required}
+            required={!title && question.required}
           />
         )}
         <View>

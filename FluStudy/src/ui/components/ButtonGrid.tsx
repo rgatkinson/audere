@@ -24,6 +24,7 @@ interface Props {
   desc?: boolean;
   onRef?: any;
   question: SurveyQuestionData;
+  scrollOnMount?: boolean;
   style?: StyleProp<ViewStyle>;
   title?: string;
   getAnswer(key: string, id: string): any;
@@ -35,6 +36,10 @@ interface State {
 }
 
 class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
+  static defaultProps = {
+    scrollOnMount: false,
+  };
+
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
@@ -43,25 +48,28 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
   }
 
   render() {
-    const { question, t } = this.props;
+    const {
+      desc,
+      onRef,
+      question,
+      scrollOnMount,
+      style,
+      t,
+      title,
+      updateAnswer,
+    } = this.props;
     return (
       <ScrollIntoView
-        onMount={false}
-        style={[styles.container, this.props.style]}
-        ref={this.props.onRef}
+        style={[styles.container, style]}
+        ref={onRef}
+        onMount={scrollOnMount}
       >
         <QuestionText
-          text={
-            !!this.props.title
-              ? this.props.title
-              : t("surveyTitle:" + question.title)
-          }
+          text={!!title ? title : t("surveyTitle:" + question.title)}
           subtext={
-            this.props.desc
-              ? t("surveyDescription:" + question.description)
-              : undefined
+            desc ? t("surveyDescription:" + question.description) : undefined
           }
-          required={!this.props.title && question.required}
+          required={!title && question.required}
         />
         <View
           style={[
@@ -77,10 +85,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
                   const selected =
                     this.state.selected === button.key ? undefined : button.key;
                   this.setState({ selected });
-                  this.props.updateAnswer(
-                    { selectedButtonKey: selected },
-                    question
-                  );
+                  updateAnswer({ selectedButtonKey: selected }, question);
                 }}
                 style={[
                   styles.button,
