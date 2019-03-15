@@ -33,6 +33,7 @@ export const FONT_BOLD = "Bold";
 export const BORDER_COLOR = "#bbb";
 export const DISABLED_COLOR = "#CAD2D8";
 export const BORDER_RADIUS = 25;
+export const BUTTON_BORDER_RADIUS = 6;
 export const BORDER_WIDTH = 1;
 export const THIN_BORDER_WIDTH = 1;
 export const EXTRA_LARGE_TEXT = 24;

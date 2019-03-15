@@ -8,14 +8,15 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ScrollIntoView } from "react-native-scroll-into-view";
-import { ButtonConfig, SurveyQuestionData } from "../../resources/ScreenConfig";
+import { SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
   BORDER_WIDTH,
+  BUTTON_BORDER_RADIUS,
   GUTTER,
   RADIO_BUTTON_HEIGHT,
   SECONDARY_COLOR,
+  TEXT_COLOR,
 } from "../styles";
-import Grid from "./Grid";
 import QuestionText from "./QuestionText";
 import Text from "./Text";
 
@@ -25,7 +26,6 @@ interface Props {
   question: SurveyQuestionData;
   style?: StyleProp<ViewStyle>;
   title?: string;
-  vertical?: boolean;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -62,20 +62,13 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
           }
           required={!this.props.title && question.required}
         />
-        <Grid
-          columns={this.props.vertical ? 1 : question.buttons.length}
-          items={question.buttons}
-          itemFencePostStyle={
-            !this.props.vertical && styles.horizontalFencePost
-          }
-          itemStyle={styles.buttonContainer}
-          rowFencePostStyle={this.props.vertical && styles.verticalFencePost}
-          rowStyle={[
-            { alignItems: "center" },
+        <View
+          style={[
+            styles.buttonContainer,
             question.buttons.length < 3 && { width: "67%" },
           ]}
-          keyExtractor={button => button.key}
-          renderItem={(button, width) => {
+        >
+          {question.buttons.map((button, index) => {
             return (
               <TouchableOpacity
                 key={button.key}
@@ -90,6 +83,8 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
                 }}
                 style={[
                   styles.button,
+                  index === 0 && styles.buttonFirst,
+                  index === question.buttons.length - 1 && styles.buttonLast,
                   this.state.selected === button.key && styles.selectedButton,
                 ]}
               >
@@ -105,8 +100,8 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
                 />
               </TouchableOpacity>
             );
-          }}
-        />
+          })}
+        </View>
       </ScrollIntoView>
     );
   }
@@ -115,20 +110,29 @@ export default withNamespaces()<Props>(ButtonGrid);
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    borderWidth: BORDER_WIDTH,
-    borderColor: SECONDARY_COLOR,
-    justifyContent: "center",
+    flexDirection: "row",
   },
   button: {
+    borderColor: TEXT_COLOR,
+    borderBottomWidth: BORDER_WIDTH,
+    borderLeftWidth: BORDER_WIDTH,
+    borderTopWidth: BORDER_WIDTH,
+    flex: 1,
     height: RADIO_BUTTON_HEIGHT,
     justifyContent: "center",
   },
-  buttonText: {
-    color: SECONDARY_COLOR,
+  buttonFirst: {
+    borderLeftWidth: BORDER_WIDTH,
+    borderBottomLeftRadius: BUTTON_BORDER_RADIUS,
+    borderTopLeftRadius: BUTTON_BORDER_RADIUS,
   },
-  horizontalFencePost: {
-    borderLeftWidth: 0,
-    marginLeft: 0,
+  buttonLast: {
+    borderBottomRightRadius: BUTTON_BORDER_RADIUS,
+    borderRightWidth: BORDER_WIDTH,
+    borderTopRightRadius: BUTTON_BORDER_RADIUS,
+  },
+  buttonText: {
+    color: TEXT_COLOR,
   },
   container: {
     alignSelf: "stretch",
@@ -136,11 +140,9 @@ const styles = StyleSheet.create({
   },
   selectedButton: {
     backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR,
   },
   selectedButtonText: {
     color: "white",
-  },
-  verticalFencePost: {
-    borderTopWidth: 0,
   },
 });

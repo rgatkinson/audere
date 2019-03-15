@@ -1572,18 +1572,16 @@ class TestStripSurveyScreen extends React.Component<
         />
         {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
           "yes" && (
-          <ButtonGrid
+          <RadioGrid
             question={RedWhenBlueConfig}
-            vertical={true}
             getAnswer={this.props.getAnswer}
             updateAnswer={this.props.updateAnswer}
           />
         )}
         {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
           "no" && (
-          <ButtonGrid
+          <RadioGrid
             question={RedLineConfig}
-            vertical={true}
             getAnswer={this.props.getAnswer}
             updateAnswer={this.props.updateAnswer}
           />
