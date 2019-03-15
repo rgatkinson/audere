@@ -1216,7 +1216,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     style: styles.default
   };
   const surveyStatsHeading = [
-    [{ value: "Fever Stats by Age", style: styles.title }],
+    [{ value: "flu@home Stats by Age", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
   ];
@@ -1226,7 +1226,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     [generatedHeading]
   ];
   const statesHeading = [
-    [{ value: "US States Stats", style: styles.title }],
+    [{ value: "flu@home Stats by U.S. State", style: styles.title }],
     [dateRangeHeading],
     [generatedHeading]
   ];
@@ -1295,7 +1295,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["%", null, "Percent of users that stopped on that screen"],
     // ["Screen Text", null, "Sample of the text displayed on that screen"],
     [],
-    ["State Stats sheet columns"],
+    ["U.S. States sheet columns"],
     ["State", null, "US State abbreviation"],
     ["Count", null, "How many people ordered a kit from that state"],
     ["%", null, "Percent of kits that werer ordered from that state"],
@@ -1362,7 +1362,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       data: lastScreenData
     },
     {
-      name: "State Stats",
+      name: "By U.S. States",
       merges: merges,
       heading: statesHeading,
       specification: statesSpec,
