@@ -939,7 +939,11 @@ export function getFeverMetrics(
           fcs.device->'clientVersion'->'version' as appversion,
           regexp_matches(fcs.device->>'platform','"model":"(.*)","user') as devicemodel,
           fcs.device->'installation' as installation,
-          fcs.survey->>'workflow' as workflow,
+          CASE WHEN (fcs.survey->'workflow')::jsonb ? 'surveyCompletedAt' THEN 'Finisehd App'
+              WHEN (fcs.survey->'workflow')::jsonb ? 'surveyStartedAt' THEN 'Scanned barcode'
+              WHEN (fcs.survey->'workflow')::jsonb ? 'screeningCompletedAt' THEN 'Ordered kit'
+              ELSE ''
+              END as workflow,
           json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
             survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age
       FROM t RIGHT JOIN fever_current_surveys fcs
@@ -1283,9 +1287,9 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       width: 125
     },
     workflow: {
-      displayName: "Workflow",
+      displayName: "Status",
       headerStyle: styles.columnHeader,
-      width: 500
+      width: 125
     }
   };
 
@@ -1429,7 +1433,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       null, 
       "User's answer to whether they can see a red line when they already said they saw a blue line"
     ],
-    ["Workflow", null, "Current workflow state of app"]
+    ["Status", null, "Current workflow state of app"]
   ];
 
   const merges = [
