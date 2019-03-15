@@ -21,6 +21,22 @@ interface Props {
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
+  _goHome = () => {
+    this.props.navigation.navigate("Home");
+  };
+
+  _onBack = () => {
+    if (this.props.onBack != null) {
+      this.props.onBack();
+    } else {
+      this.props.navigation.pop();
+    }
+  };
+
+  _onMenu = () => {
+    this.props.navigation.toggleDrawer();
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -30,20 +46,14 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         ) : !!this.props.menuItem ? (
           <TouchableOpacity
             style={styles.actionContainer}
-            onPress={() => this.props.navigation.navigate("Home")}
+            onPress={this._goHome}
           >
             <Feather color="white" name="x" size={30} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={styles.actionContainer}
-            onPress={() => {
-              if (this.props.onBack != null) {
-                this.props.onBack();
-              } else {
-                this.props.navigation.pop();
-              }
-            }}
+            onPress={this._onBack}
           >
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
@@ -53,10 +63,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
           center={true}
           content={this.props.menuItem || this.props.demoMode ? "" : "flu@home"}
         />
-        <TouchableOpacity
-          style={styles.actionContainer}
-          onPress={() => this.props.navigation.openDrawer()}
-        >
+        <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />
         </TouchableOpacity>
       </View>

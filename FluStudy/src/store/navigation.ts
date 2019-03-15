@@ -11,6 +11,7 @@ import { EventInfoKind } from "audere-lib/feverProtocol";
 import { appendEvent } from "./survey";
 import { getAppNavigator } from "../ui/NavigatorRegistry";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
+import { DEVICE_INFO } from "../transport/DeviceInfo";
 import { Crashlytics } from "react-native-fabric";
 
 export const initialNavState = {
@@ -38,17 +39,43 @@ export const initialNavState = {
   ],
 };
 
+const initialAction = { type: NavigationActions.INIT };
+
 export default function reducer(
-  state: NavigationState = initialNavState,
+  state: NavigationState,
   action: NavigationAction
 ) {
-  if (state == null) {
-    state = initialNavState;
-  }
   const navigator = getAppNavigator();
   if (navigator == null) {
-    return state;
+    Crashlytics.log(
+      "Uninitialized navigator in nav reducer, device: " +
+        JSON.stringify(DEVICE_INFO)
+    );
+
+    if (state == null) {
+      Crashlytics.log(
+        "Invalid state " +
+          state +
+          " in nav reducer, resetting to initial state, device: " +
+          JSON.stringify(DEVICE_INFO)
+      );
+      return initialNavState;
+    } else {
+      return state;
+    }
   }
+
+  if (state == null) {
+    Crashlytics.log(
+      "Invalid state " +
+        state +
+        " in nav reducer, resetting to from initial action, device: " +
+        JSON.stringify(DEVICE_INFO)
+    );
+
+    state = navigator.router.getStateForAction(initialAction);
+  }
+
   return navigator.router.getStateForAction(action, state);
 }
 

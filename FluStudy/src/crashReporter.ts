@@ -21,8 +21,8 @@ function recordErrorToFirebase(e: Error) {
   });
 }
 
-export function uploadingErrorHandler(e: Error, isFatal?: boolean) {
-  const errorMessage = e.message + "\n" + e.stack;
+export function uploadingErrorHandler(e: Error, isFatal?: boolean, prependStr?: string) {
+  const errorMessage = prependStr != null ? (prependStr + "\n") : "" + e.message + "\n" + e.stack;
 
   recordErrorToFirebase(e);
   if (isFatal) {

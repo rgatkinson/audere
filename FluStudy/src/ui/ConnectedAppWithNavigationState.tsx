@@ -27,6 +27,7 @@ import AppNavigator from "./AppNavigator";
 import { registerNavigator } from "./NavigatorRegistry";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
+import { uploadingErrorHandler } from "../crashReporter";
 
 const navigator = AppNavigator;
 registerNavigator(navigator);
@@ -230,27 +231,40 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState) => {
-  const defaults = {
-    isDemo: false,
-    skipPartOne: false,
-    lastUpdate: undefined,
-    navigationState: initialNavState,
-    workflow: {},
-    csruid: undefined,
-  };
+  try {
+    return {
+      isDemo: state.meta.isDemo,
+      skipPartOne: state.meta.skipPartOne,
+      lastUpdate: state.survey.timestamp,
+      navigationState: state.navigation,
+      workflow: state.survey.workflow,
+      csruid: state.survey.csruid,
+    };
+  } catch (e) {
+    uploadingErrorHandler(e, true, "StoreState corrupted");
 
-  if (state == null) {
-    return defaults;
+    const defaults = {
+      isDemo: false,
+      skipPartOne: false,
+      lastUpdate: undefined,
+      navigationState: initialNavState,
+      workflow: {},
+      csruid: undefined,
+    };
+
+    if (state == null) {
+      return defaults;
+    }
+
+    return {
+      isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
+      skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
+      lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
+      navigationState: !!state.navigation
+        ? state.navigation
+        : defaults.navigationState,
+      workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
+      csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
+    };
   }
-
-  return {
-    isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
-    skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
-    lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
-    navigationState: !!state.navigation
-      ? state.navigation
-      : defaults.navigationState,
-    workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
-    csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
-  };
 })(AppWithNavigationState);
