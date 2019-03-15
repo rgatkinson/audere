@@ -2,7 +2,6 @@
 import { EventInfo } from "audere-lib/snifflesProtocol";
 const excel = require("node-excel-export");
 
-//const enStrings = require("../../../FluStudy/src/i18n/locales/en.json");
 const Client = require("pg-native");
 const client = new Client();
 const clientPII = new Client();
@@ -886,10 +885,9 @@ export function getFeverMetrics(
           AND NOT (survey->'events')::jsonb @> '[{"refId":"Thanks"}]'
     GROUP BY lastscreen 
     ORDER BY percent DESC;`;
-  // const lastScreenData = filterLastScreenData(
-  //   client.querySync(lastScreenQuery)
-  // );
-  const lastScreenData = client.querySync(lastScreenQuery);
+  const lastScreenData = filterLastScreenData(
+    client.querySync(lastScreenQuery)
+  );
 
   const statesQuery = `
     SELECT survey->'patient'->'address'->0->>'state' as state, 
@@ -956,41 +954,83 @@ export function getFeverMetrics(
 
 function filterLastScreenData(lastScreenData): object {
   let lastScreenFiltered = [];
-  let completedCount: number = 0;
-  let completedPercent: number = 0.0;
+  const screenDetails = {
+    "Welcome": "Beginning of app (Part 1 - Screen 1)",
+    "Why": "Why this study? (Part 1 - Screen 2)",
+    "What": "Getting started (Part 1 - Screen 3)",
+    "Age": "How old are you? (Part 1 - Screen 4)",
+    "AgeIneligible": "Thanks for your interest (Part 1)",
+    "Symptoms": "Describe your symptoms (Part 1 - Screen 5)",
+    "SymptomsIneligible": "Thanks for your interest (Part 1)",
+    "Consent": "Consent form (Part 1 - Screen 6)",
+    "ConsentIneligible": "Thanks for your interest (Part 1)",
+    "Address": "Email and Address (Part 1 - Screen 7)",
+    "Confirmation": "Thank you! Your flu test kit has been ordered. (Part 1 - Screen 8)",
+    "WelcomeBack": "Welcome back (Part 2 - Screen 1)",
+    "WhatsNext": "What's next? (Part 2 - Screen 2)",
+    "ScanInstructions": "Scan the barcode (Part 2 - Screen 3)",
+    "Scan": "Camera for scanning barcode (Part 2 - Screen 4)",
+    "ScanConfirmation": "Your code was scanned! (Part 2 - Screen 5)",
+    "ManualEntry": "Enter barcode manually (Part 2 - Screen 4)",
+    "ManualConfirmation": "Your code was accepted (Part 2 - Screen 5)",
+    "Unpacking": "How the test works (Part 2 - Screen 6)",
+    "Swab": "Begin the first test (Part 2 - Screen 7)",
+    "SwabPrep": "Prepare tube (Part 2 - Screen 8)",
+    "OpenSwab": "Open nasal swab (Part 2 - Screen 9)",
+    "Mucus": "Collect sample from nose (Part 2 - Screen 10)",
+    "SwabInTube": "Put swab in tube (Part 2 - Screen 11)",
+    "FirstTimer": "Did you know? (Part 2 - Screen 12)",
+    "RemoveSwabFromTube": "Remove swab from tube (Part 2 - Screen 13)",
+    "OpenTestStrip": "Open test strip (Part 2 - Screen 14)",
+    "StripInTube": "Put test strip in tube (Part 2 - Screen 15)",
+    "WhatSymptoms": "Symptom Survey (Part 2 - Screen 16)",
+    "WhenSymptoms": "Symptom Survey (Part 2 - Screen 17)",
+    "GeneralExposure": "General Exposure (Part 2 - Screen 18)",
+    "GeneralHealth": "General Health (Part 2 - Screen 19)",
+    "ThankYouSurvey": "Thank you! (Part 2 - Screen 20)",
+    "TestStripReady": "Remove test strip (Part 2 - Screen 21)",
+    "FinishTube": "Finish with the tube (Part 2 - Screen 22)",
+    "LookAtStrip": "Look at the test strip (Part 2 - Screen 23)",
+    "TestStripSurvey": "What do you see? (Part 2 - Screen 24)",
+    "PictureInstructions": "Take a photo of the strip (Part 2 - Screen 25)",
+    "TestStripCamera": "Camera for test strip (Part 2 - Screen 26)",
+    "TestStripConfirmation": "Photo captured! (Part 2 - Screen 27)",
+    "CleanFirstTest": "Clean up the first test (Part 2 - Screen 28)",
+    "FirstTestFeedBack": "Nice job with the first test! (Part 2 - Screen 29)",
+    "BeginSecondTest": "Begin the second test (Part 2 - Screen 30)",
+    "PrepSecondTest": "Prepare for the test (Part 2 - Screen 31)",
+    "MucusSecond": "Collect sample from nose (Part 2 - Screen 32)",
+    "SwabInTubeSecond": "Put swab in tube (Part 2 - Screen 33)",
+    "CleanSecondTest": "Clean up the second test (Part 2 - Screen 34)",
+    "SecondTestFeedback": "Nice job with the second test! (Part 2 - Screen 35)",
+    "Packing": "Packing things up (Part 2 - Screen 36)",
+    "Stickers": "Put stickers on the box (Part 2 - Screen 37)",
+    "SecondBag": "Put bag 2 in the box (Part 2 - Screen 38)",
+    "TapeBox": "Tape up the box (Part 2 - Screen 39)",
+    "ShipBox": "Shipping your box (Part 2 - Screen 40)",
+    "SchedulePickup": "Schedule a pickup (Part 2 - Screen 41)",
+    "EmailOptIn": "Opt-in for messages (Part 2 - Screen 42)",
+    "About": "About the Study (Menu)",
+    "Funding": "Study Funding (Menu)",
+    "Partners": "Partners (Menu)",
+    "GeneralQuestions": "GeneralQuestions (Menu)",
+    "Problems": "Problems With the App (Menu)",
+    "TestQuestions": "Test Questions (Menu)",
+    "GiftcardQuestions": "Gift Card Questions (Menu)",
+    "ContactSupport": "ContactSupport (Menu)",
+    "Version": "App Version (Menu)"
+  };
   for (let row of lastScreenData) {
-    if (row.lastscreen === "Thanks") {
-      completedCount += +row.count;
-      completedPercent += +row.percent;
-    } else {
-      let lastscreenText = "";
-      lastScreenFiltered.push(row);
-      if (!!row.lastscreen) {
-        const screenNamespace =
-          row.lastscreen.charAt(0).toLowerCase() +
-          row.lastscreen.slice(1) +
-          "Screen";
-        //if (!!enStrings[screenNamespace]) {
-        //  lastscreenText = enStrings[screenNamespace].title; // show "title" if exists for this screen
-        //  if (!lastscreenText) {
-          //   // else show the content of the first key for this screen
-          //   lastscreenText =
-          //     enStrings[screenNamespace][
-          //       Object.keys(enStrings[screenNamespace])[0]
-          //     ];
-          // }
-        //}
+      if (screenDetails[row.lastscreen]){
+        const detail = screenDetails[row.lastscreen];
+        const rowWithDetails = { ...row, detail};
+        lastScreenFiltered.push(rowWithDetails); 
       }
-      //const rowWithText = { ...row, lastscreenText };
-      //lastScreenFiltered.push(rowWithText);
-      
-    }
+      else{
+        lastScreenFiltered.push(row);
+      }
+        
   }
-  lastScreenFiltered.push({
-    lastscreen: "(Finished App)",
-    count: completedCount,
-    percent: (Math.round(completedPercent * 10) / 10).toFixed(1)
-  });
   return lastScreenFiltered;
 }
 
@@ -1093,13 +1133,12 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     percent: {
       displayName: "%",
       ...defaultCell
+    },
+    detail: {
+      displayName: "Detail",
+      headerStyle: styles.columnHeader,
+      width: 400
     }
-    // },
-    // lastscreenText: {
-    //   displayName: "Screen Text",
-    //   headerStyle: styles.columnHeader,
-    //   width: 300
-    // }
   };
 
   const statesSpec = {
@@ -1293,7 +1332,11 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["ScreenKey", null, "Name of last screen/event recorded"],
     ["Count", null, "How many people stopped at that screen"],
     ["%", null, "Percent of users that stopped on that screen"],
-    // ["Screen Text", null, "Sample of the text displayed on that screen"],
+    [
+      "Detail", 
+      null, 
+      "Sample of the text displayed on that screen and location in the app"
+    ],
     [],
     ["U.S. States sheet columns"],
     ["State", null, "US State abbreviation"],
