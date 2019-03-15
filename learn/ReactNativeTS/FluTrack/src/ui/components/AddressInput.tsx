@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Address } from "../../store";
+import { Address, SurveyResponse } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import KeyboardListener from "react-native-keyboard-listener";
 import CountryModal from "./CountryModal";
@@ -12,7 +12,8 @@ import { StoreState } from "../../store";
 
 interface Props {
   showLocationField?: boolean;
-  locationType: string;
+  locationType?: string;
+  responses?: SurveyResponse[];
   value?: Address | null;
   onChange(value: Address): void;
   onDone(): void;
@@ -26,6 +27,7 @@ interface State {
 
 @connect((state: StoreState) => ({
   locationType: state.admin!.locationType,
+  responses: state.form!.responses,
 }))
 class AddressInput extends React.Component<Props & WithNamespaces> {
   address = React.createRef<TextInput>();
@@ -42,6 +44,21 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
     );
   };
 
+  _isFredHutchEmployee = (): boolean => {
+    if (this.props.locationType == "fredHutch" && !!this.props.responses) {
+      const response = this.props.responses.find(
+        response => response.questionId == "FredHutchEmployee"
+      );
+      const key = "selectedButtonKey";
+      if (!!response && response!.answer && !!response!.answer![key]) {
+        if (response!.answer![key] == "yes") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   state = {
     countryOpen: false,
     stateOpen: false,
@@ -49,7 +66,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t, locationType } = this.props;
+    const { t } = this.props;
     return (
       <View style={styles.container}>
         <KeyboardListener
@@ -66,7 +83,7 @@ class AddressInput extends React.Component<Props & WithNamespaces> {
             autoCorrect={false}
             autoFocus={true}
             placeholder={
-              locationType == "fredHutch"
+              this._isFredHutchEmployee()
                 ? t("locationNameFredHutch")
                 : t("locationName")
             }
