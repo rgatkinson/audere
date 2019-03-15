@@ -1853,7 +1853,7 @@ class FirstTestFeedbackScreen extends React.Component<
       >
         <RadioGrid
           desc={true}
-          hideQuestion={true}
+          hideQuestion={false}
           question={FirstTestFeedbackConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
@@ -2004,7 +2004,7 @@ class SecondTestFeedbackScreen extends React.Component<
       >
         <RadioGrid
           desc={true}
-          hideQuestion={true}
+          hideQuestion={false}
           question={SecondTestFeedbackConfig}
           getAnswer={this.props.getAnswer}
           updateAnswer={this.props.updateAnswer}
