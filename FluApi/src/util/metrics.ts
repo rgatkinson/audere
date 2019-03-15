@@ -795,8 +795,7 @@ export function getFeverMetrics(
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
 
-  function getSurveyStatsQuery(): string {
-    return `
+  const surveyStatsQuery = `
       WITH agebuckets AS (
       WITH t AS (
         WITH t1 AS (
@@ -872,8 +871,10 @@ export function getFeverMetrics(
              SUM(finished),
              ''
       FROM agebuckets;`;
-  }
-  const surveyStatsData = client.querySync(getSurveyStatsQuery());
+
+  const surveyStatsData = funnelAgeData(
+    client.querySync(surveyStatsQuery)
+  );
 
   const lastScreenQuery = `
     SELECT survey->'events'->(json_array_length(survey->'events')-1)->>'refId' AS lastscreen, 
@@ -950,6 +951,46 @@ export function getFeverMetrics(
   }));
 
   return [surveyStatsData, lastScreenData, statesData, studyIdData];
+}
+
+function funnelAgeData(ageData): object {
+  const totalRow = ageData[ageData.length - 1];
+  if (totalRow.total > 0){
+    ageData.push({
+      "age": "% of users", 
+      "total": "100%", 
+      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%", 
+      "consents": (totalRow.consents/totalRow.total * 100).toFixed(1) + "%", 
+      "kits": (totalRow.kits/totalRow.total * 100).toFixed(1) + "%",
+      "part2": (totalRow.part2/totalRow.total * 100).toFixed(1) + "%",
+      "scanned": (totalRow.scanned/totalRow.total * 100).toFixed(1) + "%",
+      "surveyscompleted": (totalRow.surveyscompleted/totalRow.total * 100).toFixed(1) + "%",
+      "test1": (totalRow.test1/totalRow.total * 100).toFixed(1) + "%",
+      "test2": (totalRow.test2/totalRow.total * 100).toFixed(1) + "%",
+      "finished": (totalRow.finished/totalRow.total * 100).toFixed(1) + "%",
+      "kitsreturned": "",
+      "test1errors": (totalRow.test1errors/totalRow.total * 100).toFixed(1) + "%",
+      "test2errors": (totalRow.test2errors/totalRow.total * 100).toFixed(1) + "%",
+    });
+    ageData.push({
+      "age": "% retention",
+      "total": "",
+      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%",
+      "consents": (totalRow.consents/totalRow.eligible * 100).toFixed(1) + "%",
+      "kits": (totalRow.kits/totalRow.consents * 100).toFixed(1) + "%",
+      "part2": (totalRow.part2/totalRow.kits * 100).toFixed(1) + "%",
+      "scanned": (totalRow.scanned/totalRow.part2 * 100).toFixed(1) + "%",
+      "surveyscompleted": (totalRow.surveyscompleted/totalRow.scanned * 100).toFixed(1) + "%",
+      "test1": (totalRow.test1/totalRow.surveyscompleted * 100).toFixed(1) + "%",
+      "test2": (totalRow.test2/totalRow.test1 * 100).toFixed(1) + "%",
+      "finished": (totalRow.finished/totalRow.test2 * 100).toFixed(1) + "%",
+      "kitsreturned": "",
+      "test1errors": "",
+      "test2errors": ""
+    });
+  }
+  
+  return ageData;
 }
 
 function filterLastScreenData(lastScreenData): object {
@@ -1098,16 +1139,8 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Test 1 Complete",
       ...defaultCell
     },
-    test1errors: {
-      displayName: "Test 1 Errors",
-      ...defaultCell
-    },
     test2: {
       displayName: "Test 2 Complete",
-      ...defaultCell
-    },
-    test2errors: {
-      displayName: "Test 2 Errors",
       ...defaultCell
     },
     finished: {
@@ -1116,6 +1149,14 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     },
     kitsreturned: {
       displayName: "Kits Returned",
+      ...defaultCell
+    },
+    test1errors: {
+      displayName: "Test 1 Errors",
+      ...defaultCell
+    },
+    test2errors: {
+      displayName: "Test 2 Errors",
       ...defaultCell
     }
   };
@@ -1327,6 +1368,15 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "How many said they messed up test 2, thought it was very confusing, or were missing materials"
     ],
     ["Finished", null, "How many made it to the last screen"],
+    [],
+    ["By Age sheet rows"],
+    ["Total", null, "Sum of all users including those who did not report age"],
+    ["% of users", null, "The percentage of all users who completed each step"],
+    [
+      "% retention", 
+      null, 
+      "What percent of the users who completed the previous step completed the current step"
+    ],
     [],
     ["Last Screen sheet columns"],
     ["ScreenKey", null, "Name of last screen/event recorded"],

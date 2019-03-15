@@ -49,11 +49,11 @@
           <th><label title="How many scanned/entered a barcode">Barcode Scanned</label></th>
           <th><label title="How many completed the questionnaire">Completed Survey</label></th>
           <th><label title="How many completed test 1">Test 1 Complete</label></th>
-          <th><label title="How many messed up on test 1">Test 1 Errors</label></th>
           <th><label title="How many completed test 2">Test 2 Completed</label></th>
-          <th><label title="How many messed up on test 2">Test 2 Errors</label></th>
           <th><label title="How many made it to the last screen">Finished App</label></th>
           <th><label title="How many returned their kit">Kits Returned</label></th>
+          <th><label title="How many messed up on test 1">Test 1 Errors</label></th>
+          <th><label title="How many messed up on test 2">Test 2 Errors</label></th>
         </tr>
       </thead>
       <tbody>
@@ -76,11 +76,11 @@
           <td><%= row.scanned %></td>
           <td><%= row.surveyscompleted %></td>
           <td><%= row.test1 %></td>
-          <td><%= row.test1errors %></td>
           <td><%= row.test2 %></td>
-          <td><%= row.test2errors %></td>
           <td><%= row.finished %></td>
           <td><%= row.kitsreturned %></td>
+          <td><%= row.test1errors %></td>
+          <td><%= row.test2errors %></td>
         </tr>
         <% oddRow = !oddRow; 
           }); %>
@@ -88,7 +88,7 @@
       </tbody>
     </table>
     <br />
-    <h2>flu@home States by U.S. State</h2>
+    <h2>flu@home Stats by U.S. State</h2>
     <table class="hor-minimalist">
       <thead>
         <tr>
