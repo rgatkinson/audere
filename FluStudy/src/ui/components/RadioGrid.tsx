@@ -59,6 +59,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     const { question, t } = this.props;
     return (
       <ScrollIntoView
+        onMount={false}
         style={[styles.container, this.props.style]}
         ref={this.props.onRef}
       >
