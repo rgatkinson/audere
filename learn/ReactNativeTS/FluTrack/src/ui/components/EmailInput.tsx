@@ -52,16 +52,18 @@ export default class EmailInput extends React.Component<Props, State> {
           value={this.state.email}
           onChangeText={(text: string) => {
             this.setState({ email: text });
-            this.props.onChange(text, this._isValid());
+            this.props.onChange(text, this._isValid(text));
           }}
           onSubmitEditing={() => {
             if (this.props.onSubmit != null) {
-              this.props.onSubmit(this._isValid());
+              this.props.onSubmit(this._isValid(this.state.email));
             }
           }}
         />
         <Text style={styles.errorText}>
-          {!!this.state.email && !this._isValid() && !this.state.keyboardOpen
+          {!!this.state.email &&
+          !this._isValid(this.state.email) &&
+          !this.state.keyboardOpen
             ? this.props.validationError
             : ""}
         </Text>
@@ -73,12 +75,10 @@ export default class EmailInput extends React.Component<Props, State> {
     this.textInput.current!.focus();
   }
 
-  _isValid = (): boolean => {
+  _isValid = (email?: string): boolean => {
     // accepts international email addresses
     const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return (
-      this.state.email != null && validationPattern.test(this.state.email!)
-    );
+    return email != null && validationPattern.test(email!);
   };
 }
 
