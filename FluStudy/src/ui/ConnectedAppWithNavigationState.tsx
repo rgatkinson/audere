@@ -14,6 +14,7 @@ import {
   setCSRUIDIfUnset,
   getActiveRouteName,
   initialNavState,
+  setMarketingProperties,
 } from "../store/";
 import { connect } from "react-redux";
 import { createReduxContainer } from "react-navigation-redux-helpers";
@@ -28,6 +29,7 @@ import { registerNavigator } from "./NavigatorRegistry";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../crashReporter";
+import { getMarketingProperties } from "../util/tracker";
 
 const navigator = AppNavigator;
 registerNavigator(navigator);
@@ -71,6 +73,8 @@ class AppWithNavigationState extends React.Component<Props> {
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
     this._handleAppStateChange("launch");
+
+    this.props.dispatch(setMarketingProperties(getMarketingProperties()));
   }
 
   componentWillUnmount() {

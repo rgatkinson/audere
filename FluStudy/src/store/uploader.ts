@@ -115,6 +115,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   const survey = state.survey;
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
+    marketingProperties: state.meta.marketingProperties,
     patient: {
       telecom: [],
       address: [],

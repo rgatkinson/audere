@@ -87,6 +87,8 @@ const marketingUserProperties = [
   "utm_source",
 ];
 
+const parsedMarketingProperties = {};
+
 async function recordMarketingAttributions() {
   const link = await firebase.links().getInitialLink();
   if (!link) {
@@ -98,16 +100,27 @@ async function recordMarketingAttributions() {
     return;
   }
 
-  const filteredProperties = {};
   marketingUserProperties.forEach(property => {
     if (parsed.query[property]) {
       // @ts-ignore
-      filteredProperties[property] = parsed.query[property];
+      parsedMarketingProperties[property] = parsed.query[property];
     }
   });
-  if (Object.keys(filteredProperties).length > 0) {
-    tracker.setUserProperties(filteredProperties);
+
+  if (parsed.query["ref"]) {
+    // @ts-ignore
+    parsedMarketingProperties["install_referrer"] = parsed.query["ref"];
   }
+
+  if (Object.keys(parsedMarketingProperties).length > 0) {
+    tracker.setUserProperties(parsedMarketingProperties);
+  }
+}
+
+// We export this, instead of directly writing these properties into our store,
+// so that this tracking module doesn't end up generating a dependency cycle.
+export function getMarketingProperties() {
+  return parsedMarketingProperties;
 }
 
 export async function startTracking(): Promise<[void, void]> {

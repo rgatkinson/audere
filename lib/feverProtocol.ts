@@ -65,6 +65,7 @@ export interface PIIInfo extends CommonInfo {
 // Common to PII and NonPII visit info.
 export interface CommonInfo {
   isDemo: boolean;
+  marketingProperties?: any;
   events: EventInfo[];
   pushNotificationState?: PushNotificationState;
   workflow: WorkflowInfo;

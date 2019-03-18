@@ -26,6 +26,7 @@ export interface PIIInfo extends CommonInfo {
 }
 export interface CommonInfo {
     isDemo: boolean;
+    marketingProperties: any;
     events: EventInfo[];
     pushNotificationState?: PushNotificationState;
     workflow: WorkflowInfo;
