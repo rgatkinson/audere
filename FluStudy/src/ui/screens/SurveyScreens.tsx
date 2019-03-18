@@ -862,13 +862,21 @@ interface DemoModeProps {
 class FirstTimerScreen extends React.Component<
   Props & DemoModeProps & FirstTimerProps & WithNamespaces & TimerProps
 > {
-  _onNext = () => {
-    this.props.navigation.push("RemoveSwabFromTube");
-  };
-
   _onTitlePress = () => {
     this.props.isDemo && this.props.onFastForward();
   };
+
+  componentWillReceiveProps(
+    nextProps: Props &
+      DemoModeProps &
+      FirstTimerProps &
+      WithNamespaces &
+      TimerProps
+  ) {
+    if (nextProps.done()) {
+      this.props.navigation.push("RemoveSwabFromTube");
+    }
+  }
 
   render() {
     const { t } = this.props;
@@ -887,28 +895,19 @@ class FirstTimerScreen extends React.Component<
             {!this.props.done() && (
               <Text content={t("note")} style={{ marginBottom: GUTTER }} />
             )}
-            {this.props.done() ? (
-              <Button
-                enabled={true}
-                primary={true}
-                label={t("common:button:continue")}
-                onPress={this._onNext}
+            <BorderView
+              style={{
+                alignSelf: "center",
+                borderRadius: BORDER_RADIUS,
+                width: BUTTON_WIDTH,
+              }}
+            >
+              <Text
+                bold={true}
+                content={this.props.getRemainingLabel()}
+                style={{ color: SECONDARY_COLOR }}
               />
-            ) : (
-              <BorderView
-                style={{
-                  alignSelf: "center",
-                  borderRadius: BORDER_RADIUS,
-                  width: BUTTON_WIDTH,
-                }}
-              >
-                <Text
-                  bold={true}
-                  content={this.props.getRemainingLabel()}
-                  style={{ color: SECONDARY_COLOR }}
-                />
-              </BorderView>
-            )}
+            </BorderView>
           </View>
         }
         imageSrc={require("../../img/oneMinuteTimer.png")}
