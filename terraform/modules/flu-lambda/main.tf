@@ -57,7 +57,7 @@ module "fever_kits_report_cron" {
   name = "${local.base_name}-fever-kits-report"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "${local.cron_daily_before_9AM_and_1PM_PST}"
-  url = "http://${var.fluapi_fqdn}:444/api/sendKitOrders"
+  url = "http://${var.fluapi_fqdn}:444/api/export/sendKitOrders"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
   timeout = 300
