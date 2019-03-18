@@ -146,7 +146,32 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
         title={blockKits ? t("whatBlockKits") : t("what")}
         skipButton={blockKits}
         onNext={this._onNext}
-      />
+      >
+        {blockKits && (
+          <View>
+            <Links
+              links={[
+                {
+                  label: t("links:learnLink"),
+                  onPress: learnMore,
+                },
+                {
+                  label: t("links:medLink"),
+                  onPress: findMedHelp,
+                },
+              ]}
+            />
+            <Text
+              content={t("disclaimer")}
+              style={{
+                alignSelf: "stretch",
+                fontSize: SMALL_TEXT,
+                marginBottom: GUTTER,
+              }}
+            />
+          </View>
+        )}
+      </Screen>
     );
   }
 }
