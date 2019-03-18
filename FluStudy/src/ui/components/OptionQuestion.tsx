@@ -40,4 +40,4 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default withNamespaces()<Props>(OptionQuestion);
+export default withNamespaces()(OptionQuestion);

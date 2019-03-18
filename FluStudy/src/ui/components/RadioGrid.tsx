@@ -134,7 +134,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     );
   }
 }
-export default withNamespaces()<Props>(RadioGrid);
+export default withNamespaces()(RadioGrid);
 
 const styles = StyleSheet.create({
   container: {

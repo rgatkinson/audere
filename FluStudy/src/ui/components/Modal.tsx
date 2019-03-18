@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces()<Props>(Modal);
+export default withNamespaces()(Modal);

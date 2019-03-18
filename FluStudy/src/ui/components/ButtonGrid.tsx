@@ -112,7 +112,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
     );
   }
 }
-export default withNamespaces()<Props>(ButtonGrid);
+export default withNamespaces()(ButtonGrid);
 
 const styles = StyleSheet.create({
   buttonContainer: {

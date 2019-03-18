@@ -44,4 +44,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("links")<Props>(Links);
+export default withNamespaces("links")(Links);

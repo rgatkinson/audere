@@ -210,4 +210,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const TranslatedListItem = withNamespaces()<ItemProps>(ListItem);
+const TranslatedListItem = withNamespaces()(ListItem);

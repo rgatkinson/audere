@@ -35,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("step")<Props>(Step);
+export default withNamespaces("step")(Step);

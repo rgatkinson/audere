@@ -111,7 +111,7 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const About = withNamespaces("aboutScreen")<Props>(AboutScreen);
+export const About = withNamespaces("aboutScreen")(AboutScreen);
 
 class FundingScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = () => {
@@ -136,7 +136,7 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Funding = withNamespaces("fundingScreen")<Props>(FundingScreen);
+export const Funding = withNamespaces("fundingScreen")(FundingScreen);
 
 class PartnersScreen extends React.Component<Props & WithNamespaces> {
   render() {
@@ -155,7 +155,7 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Partners = withNamespaces("partnersScreen")<Props>(PartnersScreen);
+export const Partners = withNamespaces("partnersScreen")(PartnersScreen);
 
 class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = () => {
@@ -180,7 +180,7 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const GeneralQuestions = withNamespaces("generalQuestionsScreen")<Props>(
+export const GeneralQuestions = withNamespaces("generalQuestionsScreen")(
   GeneralQuestionsScreen
 );
 
@@ -209,7 +209,7 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Problems = withNamespaces("problemsScreen")<Props>(ProblemsScreen);
+export const Problems = withNamespaces("problemsScreen")(ProblemsScreen);
 
 class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = () => {
@@ -234,7 +234,7 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const TestQuestions = withNamespaces("testQuestionsScreen")<Props>(
+export const TestQuestions = withNamespaces("testQuestionsScreen")(
   TestQuestionsScreen
 );
 
@@ -261,9 +261,9 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const GiftcardQuestions = withNamespaces("giftcardQuestionsScreen")<
-  Props
->(GiftcardQuestionsScreen);
+export const GiftcardQuestions = withNamespaces("giftcardQuestionsScreen")(
+  GiftcardQuestionsScreen
+);
 
 class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
   static navigationOptions = () => {
@@ -288,7 +288,7 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const ContactSupport = withNamespaces("contactSupportScreen")<Props>(
+export const ContactSupport = withNamespaces("contactSupportScreen")(
   ContactSupportScreen
 );
 
@@ -340,4 +340,4 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Version = withNamespaces("versionScreen")<Props>(VersionScreen);
+export const Version = withNamespaces("versionScreen")(VersionScreen);

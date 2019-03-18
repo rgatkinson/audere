@@ -94,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("navigationBar")<Props>(NavigationBar);
+export default withNamespaces("navigationBar")(NavigationBar);

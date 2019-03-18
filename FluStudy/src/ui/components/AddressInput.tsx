@@ -237,4 +237,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("addressInput")<Props>(AddressInput);
+export default withNamespaces("addressInput")(AddressInput);

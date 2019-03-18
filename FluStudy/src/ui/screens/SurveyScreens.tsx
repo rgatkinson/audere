@@ -169,9 +169,9 @@ class WelcomeBackScreen extends React.Component<
     );
   }
 }
-export const WelcomeBack = withNamespaces("welcomeBackScreen")<
-  Props & SkipProps
->(WelcomeBackScreen);
+export const WelcomeBack = withNamespaces("welcomeBackScreen")(
+  WelcomeBackScreen
+);
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
@@ -195,9 +195,7 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const WhatsNext = withNamespaces("whatsNextScreen")<Props>(
-  WhatsNextScreen
-);
+export const WhatsNext = withNamespaces("whatsNextScreen")(WhatsNextScreen);
 
 // NOTE this screen has been removed. Leaving in code for redux state versioning.
 class BeforeScreen extends React.Component<Props & WithNamespaces> {
@@ -219,7 +217,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Before = withNamespaces("beforeScreen")<Props>(BeforeScreen);
+export const Before = withNamespaces("beforeScreen")(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
   constructor(props: Props & WithNamespaces) {
@@ -278,7 +276,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const ScanInstructions = withNamespaces("scanInstructionsScreen")<Props>(
+export const ScanInstructions = withNamespaces("scanInstructionsScreen")(
   ScanInstructionsScreen
 );
 
@@ -424,9 +422,7 @@ const scanStyles = StyleSheet.create({
     width: 250,
   },
 });
-export const Scan = withNamespaces("scanScreen")<Props & WorkflowProps>(
-  ScanScreen
-);
+export const Scan = withNamespaces("scanScreen")(ScanScreen);
 
 interface BarcodeProps {
   kitBarcode: SampleInfo;
@@ -468,9 +464,9 @@ class ScanConfirmationScreen extends React.Component<
     );
   }
 }
-export const ScanConfirmation = withNamespaces("scanConfirmationScreen")<
-  Props & BarcodeProps
->(ScanConfirmationScreen);
+export const ScanConfirmation = withNamespaces("scanConfirmationScreen")(
+  ScanConfirmationScreen
+);
 
 @connect((state: StoreState) => ({
   kitBarcode: state.survey.kitBarcode,
@@ -514,9 +510,9 @@ class ManualConfirmationScreen extends React.Component<
     );
   }
 }
-export const ManualConfirmation = withNamespaces("manualConfirmationScreen")<
-  Props & BarcodeProps
->(ScanConfirmationScreen);
+export const ManualConfirmation = withNamespaces("manualConfirmationScreen")(
+  ScanConfirmationScreen
+);
 
 interface ManualState {
   barcode1: string | null;
@@ -686,9 +682,9 @@ class ManualEntryScreen extends React.Component<
     );
   }
 }
-export const ManualEntry = withNamespaces("manualEntryScreen")<
-  Props & BarcodeProps & WorkflowProps
->(ManualEntryScreen);
+export const ManualEntry = withNamespaces("manualEntryScreen")(
+  ManualEntryScreen
+);
 
 // NOTE this screen has been removed. Leaving in code for redux state versioning.
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
@@ -711,7 +707,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const TestInstructions = withNamespaces("testInstructionsScreen")<Props>(
+export const TestInstructions = withNamespaces("testInstructionsScreen")(
   TestInstructionsScreen
 );
 
@@ -738,9 +734,7 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Unpacking = withNamespaces("unpackingScreen")<Props>(
-  UnpackingScreen
-);
+export const Unpacking = withNamespaces("unpackingScreen")(UnpackingScreen);
 
 class SwabScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -761,7 +755,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Swab = withNamespaces("swabScreen")<Props>(SwabScreen);
+export const Swab = withNamespaces("swabScreen")(SwabScreen);
 
 class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -782,7 +776,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SwabPrep = withNamespaces("swabPrepScreen")<Props>(SwabPrepScreen);
+export const SwabPrep = withNamespaces("swabPrepScreen")(SwabPrepScreen);
 
 class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -803,7 +797,7 @@ class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const OpenSwab = withNamespaces("openSwabScreen")<Props>(OpenSwabScreen);
+export const OpenSwab = withNamespaces("openSwabScreen")(OpenSwabScreen);
 
 class MucusScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -824,7 +818,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Mucus = withNamespaces("mucusScreen")<Props>(MucusScreen);
+export const Mucus = withNamespaces("mucusScreen")(MucusScreen);
 
 @connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
@@ -852,9 +846,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SwabInTube = withNamespaces("swabInTubeScreen")<Props>(
-  SwabInTubeScreen
-);
+export const SwabInTube = withNamespaces("swabInTubeScreen")(SwabInTubeScreen);
 
 interface FirstTimerProps {
   oneMinuteStartTime: number | undefined;
@@ -957,9 +949,9 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")<
-  Props
->(RemoveSwabFromTubeScreen);
+export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")(
+  RemoveSwabFromTubeScreen
+);
 
 class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -981,7 +973,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const OpenTestStrip = withNamespaces("openTestStripScreen")<Props>(
+export const OpenTestStrip = withNamespaces("openTestStripScreen")(
   OpenTestStripScreen
 );
 
@@ -1007,7 +999,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const StripInTube = withNamespaces("stripInTubeScreen")<Props>(
+export const StripInTube = withNamespaces("stripInTubeScreen")(
   StripInTubeScreen
 );
 
@@ -1241,23 +1233,22 @@ class GeneralExposureScreen extends React.Component<
         />
         {this._questions
           .filter(conditionalQuestionFilter)
-          .map(
-            question =>
-              question.id === "YoungChildren" ? (
-                <RadioGrid
-                  key={question.id}
-                  question={question}
-                  getAnswer={this.props.getAnswer}
-                  updateAnswer={this.props.updateAnswer}
-                />
-              ) : (
-                <ButtonGrid
-                  key={question.id}
-                  question={question}
-                  getAnswer={this.props.getAnswer}
-                  updateAnswer={this.props.updateAnswer}
-                />
-              )
+          .map(question =>
+            question.id === "YoungChildren" ? (
+              <RadioGrid
+                key={question.id}
+                question={question}
+                getAnswer={this.props.getAnswer}
+                updateAnswer={this.props.updateAnswer}
+              />
+            ) : (
+              <ButtonGrid
+                key={question.id}
+                question={question}
+                getAnswer={this.props.getAnswer}
+                updateAnswer={this.props.updateAnswer}
+              />
+            )
           )}
       </Screen>
     );
@@ -1486,7 +1477,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const TestStripReady = withNamespaces("testStripReadyScreen")<Props>(
+export const TestStripReady = withNamespaces("testStripReadyScreen")(
   TestStripReadyScreen
 );
 
@@ -1509,9 +1500,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const FinishTube = withNamespaces("finishTubeScreen")<Props>(
-  FinishTubeScreen
-);
+export const FinishTube = withNamespaces("finishTubeScreen")(FinishTubeScreen);
 
 class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -1532,7 +1521,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const LookAtStrip = withNamespaces("lookAtStripScreen")<Props>(
+export const LookAtStrip = withNamespaces("lookAtStripScreen")(
   LookAtStripScreen
 );
 
@@ -1830,7 +1819,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")<Props>(
+export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")(
   CleanFirstTestScreen
 );
 
@@ -1889,7 +1878,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const BeginSecondTest = withNamespaces("beginSecondTestScreen")<Props>(
+export const BeginSecondTest = withNamespaces("beginSecondTestScreen")(
   BeginSecondTestScreen
 );
 
@@ -1912,7 +1901,7 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const PrepSecondTest = withNamespaces("prepSecondTestScreen")<Props>(
+export const PrepSecondTest = withNamespaces("prepSecondTestScreen")(
   PrepSecondTestScreen
 );
 
@@ -1935,7 +1924,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const MucusSecond = withNamespaces("mucusSecondScreen")<Props>(
+export const MucusSecond = withNamespaces("mucusSecondScreen")(
   MucusSecondScreen
 );
 
@@ -1958,7 +1947,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")<Props>(
+export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")(
   SwabInTubeSecondScreen
 );
 
@@ -1981,7 +1970,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const CleanSecondTest = withNamespaces("cleanSecondTestScreen")<Props>(
+export const CleanSecondTest = withNamespaces("cleanSecondTestScreen")(
   CleanSecondTestScreen
 );
 
@@ -2040,7 +2029,7 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Packing = withNamespaces("packingScreen")<Props>(PackingScreen);
+export const Packing = withNamespaces("packingScreen")(PackingScreen);
 
 class StickersScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -2061,7 +2050,7 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Stickers = withNamespaces("stickersScreen")<Props>(StickersScreen);
+export const Stickers = withNamespaces("stickersScreen")(StickersScreen);
 
 class SecondBagScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -2081,9 +2070,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SecondBag = withNamespaces("secondBagScreen")<Props>(
-  SecondBagScreen
-);
+export const SecondBag = withNamespaces("secondBagScreen")(SecondBagScreen);
 
 class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -2104,7 +2091,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const TapeBox = withNamespaces("tapeBoxScreen")<Props>(TapeBoxScreen);
+export const TapeBox = withNamespaces("tapeBoxScreen")(TapeBoxScreen);
 
 class ShipBoxScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -2184,7 +2171,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SchedulePickup = withNamespaces("schedulePickupScreen")<Props>(
+export const SchedulePickup = withNamespaces("schedulePickupScreen")(
   SchedulePickupScreen
 );
 

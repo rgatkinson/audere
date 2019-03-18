@@ -135,4 +135,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces()<Props>(Screen);
+export default withNamespaces()(Screen);

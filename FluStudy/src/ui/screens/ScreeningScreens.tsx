@@ -106,7 +106,7 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Welcome = withNamespaces("welcomeScreen")<Props>(WelcomeScreen);
+export const Welcome = withNamespaces("welcomeScreen")(WelcomeScreen);
 
 class WhyScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -127,7 +127,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const Why = withNamespaces("whyScreen")<Props>(WhyScreen);
+export const Why = withNamespaces("whyScreen")(WhyScreen);
 
 class WhatScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -150,7 +150,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const What = withNamespaces("whatScreen")<Props>(WhatScreen);
+export const What = withNamespaces("whatScreen")(WhatScreen);
 
 @connect((state: StoreState) => ({
   skipPartOne: state.meta.skipPartOne,
@@ -486,9 +486,9 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const ConsentIneligible = withNamespaces("consentIneligibleScreen")<
-  Props
->(ConsentIneligibleScreen);
+export const ConsentIneligible = withNamespaces("consentIneligibleScreen")(
+  ConsentIneligibleScreen
+);
 
 interface WorkflowProps {
   workflow: WorkflowInfo;
@@ -684,7 +684,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const AgeIneligible = withNamespaces("ageIneligibleScreen")<Props>(
+export const AgeIneligible = withNamespaces("ageIneligibleScreen")(
   AgeIneligibleScreen
 );
 
@@ -729,9 +729,9 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")<
-  Props
->(SymptomsIneligibleScreen);
+export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")(
+  SymptomsIneligibleScreen
+);
 
 interface PushProps {
   pushState: PushNotificationState;
@@ -797,9 +797,9 @@ class ConfirmationScreen extends React.Component<
     );
   }
 }
-export const Confirmation = withNamespaces("confirmationScreen")<
-  Props & PushProps
->(ConfirmationScreen);
+export const Confirmation = withNamespaces("confirmationScreen")(
+  ConfirmationScreen
+);
 
 @connect((state: StoreState) => ({
   pushState: state.survey.pushState,
@@ -885,6 +885,6 @@ class PushNotificationsScreen extends React.Component<
     );
   }
 }
-export const PushNotifications = withNamespaces("pushNotificationsScreen")<
-  Props & PushProps
->(PushNotificationsScreen);
+export const PushNotifications = withNamespaces("pushNotificationsScreen")(
+  PushNotificationsScreen
+);

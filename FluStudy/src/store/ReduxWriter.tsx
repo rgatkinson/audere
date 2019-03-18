@@ -16,7 +16,7 @@ import {
 } from "./index";
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
-import { i18n, WithNamespaces, withNamespaces } from "react-i18next";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionData } from "../resources/ScreenConfig";
 import { getStore } from "./index";
 
@@ -26,7 +26,6 @@ interface InnerProps {
   responses: SurveyResponse[];
   t(key: string): string;
   tReady: boolean;
-  i18n: i18n;
 }
 
 export interface ReduxWriterProps {
