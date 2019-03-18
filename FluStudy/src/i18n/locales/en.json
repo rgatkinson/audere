@@ -222,6 +222,10 @@
     "description": "At this time your symptoms do not meet the criteria to continue. If your symptoms change, you can open this app again on a different day.",
     "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
   },
+  "stateIneligibleScreen": {
+    "ineligible": "Thanks for your interest",
+    "description": "We're sorry, but we don't currently ship to Alaska or Hawaii. "
+  },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "We're sorry, but you need to agree to the consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",

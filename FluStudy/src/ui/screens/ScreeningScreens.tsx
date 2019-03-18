@@ -564,6 +564,15 @@ class AddressInputScreen extends React.Component<
     if (this._haveValidAddress() && isValidEmail(this.state.email)) {
       this.props.dispatch(setEmail(this.state.email!));
       this.props.updateAnswer({ addressInput: this.state.address }, config);
+
+      if (
+        this.state.address!.state === "HI" ||
+        this.state.address!.state === "AK"
+      ) {
+        this.props.navigation.push("StateIneligible");
+        return;
+      }
+
       this.props.dispatch(
         setWorkflow({
           ...this.props.workflow,
@@ -756,6 +765,43 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
 }
 export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")(
   SymptomsIneligibleScreen
+);
+
+class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.STATE_INELIGIBLE);
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("description")}
+        hideBackButton={false}
+        imageSrc={require("../../img/thanksForYourInterest.png")}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+      >
+        <Links
+          links={[
+            {
+              label: t("links:learnLink"),
+              onPress: learnMore,
+            },
+            {
+              label: t("links:medLink"),
+              onPress: findMedHelp,
+            },
+          ]}
+        />
+      </Screen>
+    );
+  }
+}
+export const StateIneligible = withNamespaces("stateIneligibleScreen")(
+  StateIneligibleScreen
 );
 
 interface PushProps {
