@@ -128,7 +128,7 @@ async function emailConsent(emailer: Emailer, survey: SurveyPii) {
   const consentTerms = getConsentTerms(survey);
   const body = `Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
 
-This email is sent from an unmonitored address. Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or contact flu-support@auderenow.org if you have any other questions or concerns.
+Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or contact flu-support@auderenow.org if you have any other questions or concerns.
 
 Here is a copy of the Consent Form you accepted:
 
@@ -136,7 +136,7 @@ Agreed on ${consentDate}:
 ${consentTerms}`;
   await emailer.send({
     to: [participantEmail],
-    from: "noreply@auderenow.org",
+    from: "flu-support@auderenow.org",
     subject: "flu@home Research Study Consent Form",
     body
   });
