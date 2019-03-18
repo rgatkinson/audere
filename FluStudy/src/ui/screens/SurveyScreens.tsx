@@ -1233,22 +1233,23 @@ class GeneralExposureScreen extends React.Component<
         />
         {this._questions
           .filter(conditionalQuestionFilter)
-          .map(question =>
-            question.id === "YoungChildren" ? (
-              <RadioGrid
-                key={question.id}
-                question={question}
-                getAnswer={this.props.getAnswer}
-                updateAnswer={this.props.updateAnswer}
-              />
-            ) : (
-              <ButtonGrid
-                key={question.id}
-                question={question}
-                getAnswer={this.props.getAnswer}
-                updateAnswer={this.props.updateAnswer}
-              />
-            )
+          .map(
+            question =>
+              question.id === "YoungChildren" ? (
+                <RadioGrid
+                  key={question.id}
+                  question={question}
+                  getAnswer={this.props.getAnswer}
+                  updateAnswer={this.props.updateAnswer}
+                />
+              ) : (
+                <ButtonGrid
+                  key={question.id}
+                  question={question}
+                  getAnswer={this.props.getAnswer}
+                  updateAnswer={this.props.updateAnswer}
+                />
+              )
           )}
       </Screen>
     );
