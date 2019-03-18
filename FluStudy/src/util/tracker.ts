@@ -5,6 +5,7 @@
 
 import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
+import url from "url";
 
 export const tracker = firebase.analytics();
 
@@ -76,7 +77,39 @@ async function shouldTrack(isDemo: boolean): Promise<boolean> {
   return !isDemo && isProduction;
 }
 
-export async function startTracking(): Promise<void> {
+// These User Properties have been created on our Firebase console as a way to
+// segment users
+const marketingUserProperties = [
+  "utm_campaign",
+  "utm_content",
+  "utm_medium",
+  "utm_source",
+];
+
+async function recordMarketingAttributions() {
+  const link = await firebase.links().getInitialLink();
+  if (!link) {
+    return;
+  }
+
+  const parsed = url.parse(link, true);
+  if (!parsed || !parsed.query) {
+    return;
+  }
+
+  const filteredProperties = {};
+  marketingUserProperties.forEach(property => {
+    if (parsed.query[property]) {
+      // @ts-ignore
+      filteredProperties[property] = parsed.query[property];
+    }
+  });
+  if (Object.keys(filteredProperties).length > 0) {
+    tracker.setUserProperties(filteredProperties);
+  }
+}
+
+export async function startTracking(): Promise<[void, void]> {
   // getUniqueID returns IDFV on iOS (unique ID per install, not per phone),
   // and on Android it'll change per install too after Oreo).  Tracking IDs
   // will allow us not only to correlate events to the same phone, but also to
@@ -88,7 +121,10 @@ export async function startTracking(): Promise<void> {
   // dependencies).  Passing false is fine here because we start tracking at
   // app launch, when isDemo is false anyway, and we always update
   // the collection status whenever isDemo changes...
-  return updateCollectionEnabled(false);
+  return Promise.all([
+    recordMarketingAttributions(),
+    updateCollectionEnabled(false),
+  ]);
 }
 
 export async function updateCollectionEnabled(isDemo: boolean): Promise<void> {

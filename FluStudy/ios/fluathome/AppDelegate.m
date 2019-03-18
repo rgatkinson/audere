@@ -7,6 +7,7 @@
 #import "RCTPushNotificationManager.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <Crashlytics/Crashlytics.h>
+#import "RNFirebaseLinks.h"
 
 @interface AppDelegate ()
 
@@ -18,6 +19,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [FIROptions defaultOptions].deepLinkURLScheme = @"org.auderenow.fluathome.dynlink";
     [FIRApp configure];
     [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
@@ -60,19 +62,27 @@
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-    return [[ExpoKit sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-    
+    BOOL handled = [[ExpoKit sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+
+    if (!handled) {
+        handled = [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    }
+    return handled;
 }
 
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    
-    return [[FBSDKApplicationDelegate sharedInstance] application:application
+    BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application
                                                                   openURL:url
                                                         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
                                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
                     ];
+    if (!handled) {
+        handled = [[RNFirebaseLinks instance] application:application openURL:url options:options];
+    }
+
+    return handled;
 }
 
 #pragma mark - Notifications
@@ -103,5 +113,6 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
+
 
 @end

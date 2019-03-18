@@ -141,6 +141,9 @@ PODS:
     - FirebaseAnalytics (= 5.4.0)
   - Firebase/CoreOnly (5.15.0):
     - FirebaseCore (= 5.1.10)
+  - Firebase/DynamicLinks (5.15.0):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (= 3.3.0)
   - Firebase/Performance (5.15.0):
     - Firebase/Core
     - FirebasePerformance (= 2.2.2)
@@ -156,8 +159,13 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
+  - FirebaseAnalyticsInterop (1.2.0)
   - FirebaseCore (5.1.10):
     - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseDynamicLinks (3.3.0):
+    - FirebaseAnalytics (~> 5.1)
+    - FirebaseAnalyticsInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
   - FirebaseInstanceID (3.3.0):
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
@@ -229,28 +237,28 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.0)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
-  - GoogleUtilities/AppDelegateSwizzler (5.3.7):
+  - GoogleUtilities/AppDelegateSwizzler (5.5.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (5.3.7)
-  - GoogleUtilities/ISASwizzler (5.3.7)
-  - GoogleUtilities/Logger (5.3.7):
+  - GoogleUtilities/Environment (5.5.0)
+  - GoogleUtilities/ISASwizzler (5.5.0)
+  - GoogleUtilities/Logger (5.5.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (5.3.7):
+  - GoogleUtilities/MethodSwizzler (5.5.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (5.3.7):
+  - GoogleUtilities/Network (5.5.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (5.3.7)"
-  - GoogleUtilities/Reachability (5.3.7):
+  - "GoogleUtilities/NSData+zlib (5.5.0)"
+  - GoogleUtilities/Reachability (5.5.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (5.3.7):
+  - GoogleUtilities/UserDefaults (5.5.0):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (2.5.2)
+  - lottie-ios (2.5.3)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -362,6 +370,7 @@ DEPENDENCIES:
   - EXSMS (from `../node_modules/expo-sms/ios`)
   - Fabric (~> 1.9.0)
   - Firebase/Core
+  - Firebase/DynamicLinks (~> 5.15.0)
   - Firebase/Performance (~> 5.15.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -401,7 +410,9 @@ SPEC REPOS:
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
+    - FirebaseAnalyticsInterop
     - FirebaseCore
+    - FirebaseDynamicLinks
     - FirebaseInstanceID
     - FirebasePerformance
     - FirebaseRemoteConfig
@@ -550,7 +561,9 @@ SPEC CHECKSUMS:
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
+  FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
+  FirebaseDynamicLinks: c713da5f75c324f38fb2d57164bbc1c461aa6739
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FirebasePerformance: 6f77b930f982a54ad487d3de5523ce641db9dcc9
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
@@ -562,10 +575,10 @@ SPEC CHECKSUMS:
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
+  GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
+  lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
@@ -574,6 +587,6 @@ SPEC CHECKSUMS:
   ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 176fc11769132c36890c2d4cf9247183df2ce527
+PODFILE CHECKSUM: 0f8c625aff0862f5ee894285bebed3dc02cd5b35
 
 COCOAPODS: 1.5.3

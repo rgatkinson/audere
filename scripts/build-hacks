@@ -25,7 +25,7 @@ FILEBAK="$NOTIF_FILE.bak"
 sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
 fi
 
-echo "Updating Firebase build search paths"
+echo "Updating Firebase build search paths and copying RNFirebaseLinks.h"
 match='HEADER_SEARCH_PATHS = .+?;'
 replace='HEADER_SEARCH_PATHS = (\
 					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
@@ -33,6 +33,12 @@ replace='HEADER_SEARCH_PATHS = (\
 				);'
 FILEBAK="$FIREBASE_FILE.bak"
 perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
+# `pod install` surprisingly does not do this -- move this particular .h to the
+# right place.  Not sure when they will... but in the meantime, we move it
+# manually.  [philipsu]
+cp "$REPO_ROOT_DIR/FluStudy/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
+  "$REPO_ROOT_DIR/FluStudy/ios/Pods/Headers/Public/Firebase/"
+
 
 echo "Updating DeviceInfo build search paths"
 match='HEADER_SEARCH_PATHS = .+?;'

@@ -35,17 +35,34 @@
 				<string>org.auderenow.fluathome</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>dynamicLinkInbound</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>org.auderenow.fluathome.dynlink</string>
+			</array>
+		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>52</string>
 	<key>FacebookAppID</key>
 	<string>270588223842056</string>
 	<key>FacebookDisplayName</key>
 	<string>flu@home</string>
-	<key>CFBundleVersion</key>
-	<string>52</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -68,7 +85,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow flu@home to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow flu@home to access your device&apos;s accelerometer</string>
+	<string>Allow flu@home to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give flu@home permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -93,12 +110,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
 </dict>
 </plist>
