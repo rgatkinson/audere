@@ -866,6 +866,10 @@ class FirstTimerScreen extends React.Component<
     this.props.isDemo && this.props.onFastForward();
   };
 
+  _onNext = () => {
+    this.props.navigation.push("RemoveSwabFromTube");
+  };
+
   componentWillReceiveProps(
     nextProps: Props &
       DemoModeProps &
@@ -874,7 +878,7 @@ class FirstTimerScreen extends React.Component<
       TimerProps
   ) {
     if (nextProps.done()) {
-      this.props.navigation.push("RemoveSwabFromTube");
+      this._onNext();
     }
   }
 
@@ -893,27 +897,33 @@ class FirstTimerScreen extends React.Component<
             }}
           >
             {!this.props.done() && (
-              <Text content={t("note")} style={{ marginBottom: GUTTER }} />
+              <View style={{ alignSelf: "stretch" }}>
+                <Text
+                  content={t("note")}
+                  style={{ alignSelf: "stretch", marginBottom: GUTTER }}
+                />
+                <BorderView
+                  style={{
+                    alignSelf: "center",
+                    borderRadius: BORDER_RADIUS,
+                    width: BUTTON_WIDTH,
+                  }}
+                >
+                  <Text
+                    bold={true}
+                    content={this.props.getRemainingLabel()}
+                    style={{ color: SECONDARY_COLOR }}
+                  />
+                </BorderView>
+              </View>
             )}
-            <BorderView
-              style={{
-                alignSelf: "center",
-                borderRadius: BORDER_RADIUS,
-                width: BUTTON_WIDTH,
-              }}
-            >
-              <Text
-                bold={true}
-                content={this.props.getRemainingLabel()}
-                style={{ color: SECONDARY_COLOR }}
-              />
-            </BorderView>
           </View>
         }
         imageSrc={require("../../img/oneMinuteTimer.png")}
         navigation={this.props.navigation}
-        skipButton={true}
+        skipButton={!this.props.done()}
         title={t("title")}
+        onNext={this._onNext}
         onTitlePress={this._onTitlePress}
       />
     );
