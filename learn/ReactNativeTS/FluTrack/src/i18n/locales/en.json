@@ -190,7 +190,6 @@
     "shelterOtherDrugs": "Do you use any recreational drugs besides marijuana?",
     "shelterWhatDrugs": "What drugs do you use?",
     "shelterInject": "Do you inject any of these drugs?",
-    "arrivedFrom": "Where have you arrived from?",
     "travelledLastMonth": "Where have you traveled in the last month?",
     "whereTravelled": "What state(s) or countries have you traveled to in the past month?",
     "childrensTravelledLastMonth": "Where have you or anyone in your household traveled in the last month?",
@@ -222,7 +221,9 @@
     "whereBorn": "What country were you born in?",
     "timeUS": "How long have you been living in the United States?",
     "medInsurance": "We would like to know about your medical insurance.",
-    "countriesVisited": "In the past 14 days, what countries have you been in?",
+    "whereTravelled14": "Where have you traveled in the past 14 days?",
+    "statesVisited": "What US states have you traveled to in the past 14 days?",
+    "countriesVisited": "What countries have you traveled to in the past 14 days?",
     "airlineFlightNum": "What was your airline and flight number to Seattle?",
     "countryResidence": "What is your country of residence?",
     "addressCountryResidence": "In your country of residence, where do you live?",
@@ -241,8 +242,9 @@
     "expoToSickPeople": "These questions are about being **in contact** with people who seemed to have a cold. **In contact** means being within 6 feet of them for at least 2 minutes. For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
     "top3": "Select your top 3.",
     "selectAll": "Please select all that apply.",
+    "statesVisitedDescription": "Include your state of residence if applicable. Use a comma to separate values if more than one.",
     "countriesVisitedDescription": "This may include your country of residence and countries you were in even if you did not leave the airport. Use a comma to separate values if more than one.",
-    "airlineFlightNumDescription": "Note: This is the same information that you provided on your Customs Declaration.",
+    "airlineFlightNumDescription": "Note: This is the same information that you provided on your Customs Declaration if you arrived from another country.",
     "addressCountryResidenceDescription": "Remember, your address will be used to understand how viruses spread geographically. We will not share this information with any unauthorized third parties, and we will not send you anything in the mail."
   },
   "surveyPlaceholder": {
@@ -264,6 +266,7 @@
     "numPeople": "Number of people",
     "schoolName": "School name",
     "selectMonth": "Select month",
+    "states": "States",
     "countries": "Countries",
     "airlineFlightNum": "Airline and flight number"
   },
@@ -304,7 +307,7 @@
     "validationError": "* Please provide a valid email address"
   },
   "surveyOption": {
-    "sendCopyOfMyConsent": "Send me a copy of my consent",
+    "sendCopyOfMyConsent": "Send me a copy of my consent form(s)",
     "askAboutMyIllness": "To ask me questions about my illness/cold",
     "learnAboutStudy": "To learn more about this study and related topics",
     "allOfTheAbove": "All of the above",

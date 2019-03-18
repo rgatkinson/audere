@@ -45,7 +45,7 @@ export interface ButtonConfig {
 
 interface ConditionalNextConfig {
   buttonAndLocation?: boolean;
-  locationFirst?: Map<string, string>;
+  locationFirst?: Map<string, string>; // HACK to workaround age being higher precedence than location
   buttonKeys?: Map<string, string>;
   location?: Map<string, string>;
   options?: Map<string, string>;
@@ -726,6 +726,7 @@ export const questionnaire: SurveyQuestion[] = [
           ["toAnotherUSState", "WhereTravelled"],
           ["toAnotherCountry", "WhereTravelled"],
         ]),
+        location: new Map([["fredHutch", "FredHutchEmployee"]]),
       },
       title: "travelledLastMonth",
       optionList: {
@@ -770,6 +771,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "WhenTravelled",
       nextQuestion: "TimeSpent",
+      conditionalNext: {
+        location: new Map([["fredHutch", "FredHutchEmployee"]]),
+      },
       title: "whenTravelled",
       buttons: [
         { key: "yes", primary: true, enabled: true },
@@ -830,6 +834,22 @@ export const questionnaire: SurveyQuestion[] = [
   {
     section: expo,
     data: {
+      id: "FredHutchEmployee",
+      nextQuestion: "TimeSpent",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "Occupation"]]),
+      },
+      title: "fredHutchEmployee",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: expo,
+    data: {
       id: "TimeSpent",
       conditionalNext: {
         options: new Map([["work", "Occupation"], ["school", "SchoolType"]]),
@@ -853,9 +873,6 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "Occupation",
       nextQuestion: "WorkAddress",
-      conditionalNext: {
-        location: new Map([["fredHutch", "FredHutchEmployee"]]),
-      },
       title: "occupation",
       description: {
         label: "occupationDescription",
@@ -866,19 +883,6 @@ export const questionnaire: SurveyQuestion[] = [
       },
       buttons: [
         { key: "done", primary: true, enabled: "withText" },
-        { key: "preferNotToSay", primary: false, enabled: true },
-      ],
-    },
-  },
-  {
-    section: expo,
-    data: {
-      id: "FredHutchEmployee",
-      nextQuestion: "WorkAddress",
-      title: "fredHutchEmployee",
-      buttons: [
-        { key: "yes", primary: true, enabled: true },
-        { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },
@@ -1308,7 +1312,7 @@ export const questionnaire: SurveyQuestion[] = [
       conditionalNext: {
         location: new Map([
           ["homelessShelter", "WhereBorn"],
-          ["port", "CountriesVisited"],
+          ["port", "WhereTravelled14"],
         ]),
       },
       title: "hispanicLatino",
@@ -1374,6 +1378,76 @@ export const questionnaire: SurveyQuestion[] = [
       buttons: [
         { key: "done", primary: true, enabled: "withOtherOption" },
         { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "WhereTravelled14",
+      nextQuestion: "AirlineFlightNum",
+      title: "whereTravelled14",
+      conditionalNext: {
+        options: new Map([
+          ["toAnotherUSState+toAnotherCountry", "StatesThenCountriesVisited"], // HACK
+          ["toAnotherUSState", "StatesVisited"],
+          ["toAnotherCountry", "CountriesVisited"],
+        ]),
+      },
+      optionList: {
+        options: [
+          "withinWashingtonStateOnly",
+          "toAnotherUSState",
+          "toAnotherCountry",
+        ],
+        multiSelect: true,
+        withOther: false,
+        exclusiveOption: "withinWashingtonStateOnly",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "doNotKnow", primary: false, enabled: true },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "StatesVisited",
+      nextQuestion: "AirlineFlightNum",
+      title: "statesVisited",
+      description: {
+        label: "statesVisitedDescription",
+        center: true,
+      },
+      textInput: {
+        autoCorrect: false,
+        placeholder: "states",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
+        { key: "preferNotToSay", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "StatesThenCountriesVisited", // HACK for alternate nextQuestion
+      nextQuestion: "CountriesVisited",
+      title: "statesVisited",
+      description: {
+        label: "statesVisitedDescription",
+        center: true,
+      },
+      textInput: {
+        autoCorrect: false,
+        placeholder: "states",
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withText" },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
     },

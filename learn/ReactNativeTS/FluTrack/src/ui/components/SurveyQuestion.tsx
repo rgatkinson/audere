@@ -88,19 +88,30 @@ class SurveyQuestion extends Component<
           !!this.props.data.conditionalNext!.options &&
           !!this.props.getAnswer("options")
         ) {
-          let nextOption = null;
-          this.props.getAnswer("options").forEach((option: Option) => {
-            if (
-              option.selected &&
-              this.props.data.conditionalNext!.options!.has(option.key)
-            ) {
-              nextOption = this.props.data.conditionalNext!.options!.get(
-                option.key
-              )!;
+          for (const option of this.props.data.conditionalNext!.options!.keys()) {
+            // Add support for ANDing options using "+"
+            if (option.indexOf("+") >= 0) {
+              let optionMatched = false;
+              seeIfMatches: for (const optionPart of option.split("+")) {
+                for (const opt of this.props.getAnswer("options")) {
+                  if (opt.key == optionPart) {
+                    optionMatched = opt.selected;
+                    if (!optionMatched) {
+                      break seeIfMatches;
+                    }
+                  }
+                }
+              }
+              if (optionMatched) {
+                return this.props.data.conditionalNext!.options!.get(option)!;
+              }
+            } else {
+              for (const opt of this.props.getAnswer("options")) {
+                if (opt.key == option && opt.selected) {
+                  return this.props.data.conditionalNext!.options!.get(option)!;
+                }
+              }
             }
-          });
-          if (nextOption != null) {
-            return nextOption;
           }
         }
 

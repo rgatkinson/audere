@@ -55,6 +55,9 @@ export default class EmailInput extends React.Component<Props, State> {
             this.props.onChange(text, this._isValid(text));
           }}
           onSubmitEditing={() => {
+            if (!!this.state.email) {
+              this.setState({ email: this.state.email.trim() });
+            }
             if (this.props.onSubmit != null) {
               this.props.onSubmit(this._isValid(this.state.email));
             }
