@@ -908,6 +908,9 @@ export function getFeverMetrics(
       (SELECT events->>'at' as part2time
         FROM json_array_elements(survey->'events') events
         WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1),
+      (SELECT events->>'at' as questionscompletedtime
+        FROM json_array_elements(survey->'events') events
+        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='ThankYouSurvey' LIMIT 1),
       (SELECT json_extract_path(items->'answerOptions',
         items->'answer'->0->>'valueIndex','id') as firsttestfeedback 
         FROM json_array_elements(survey->'responses'->0->'item') items
@@ -926,6 +929,7 @@ export function getFeverMetrics(
     SELECT 
           t.kitordertime, 
           t.part2time, 
+          t.questionscompletedtime,
           t.firsttestfeedback,
           t.secondtestfeedback,
           t.redwhenblue,
@@ -1263,6 +1267,14 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       },
       width: 150
     },
+    questionscompletedtime: {
+      displayName: "Finished Survey Questions (" + getTimezoneAbbrev() + ")",
+      headerStyle: styles.columnHeader,
+      cellFormat: function(value, row) {
+        return !!value ? toStudyDateString(value) : value;
+      },
+      width: 150
+    },
     finishtime: {
       displayName: "Finished App (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
@@ -1417,6 +1429,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
     ["Started Part II", null, "Time user reopened app to begin part 2"],
+    ["Finisehd Survey Questions", null, "Time when user finisehd the questions about their illness"],
     ["Finished App", null, "Time user reached last screen of app"],
     [
       "First Test Feedback",
