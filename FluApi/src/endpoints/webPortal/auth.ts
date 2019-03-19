@@ -24,10 +24,10 @@ export class AuthManager {
     auth.use(new LocalStrategy(
       async (userid, password, done) => {
         try {
-          const user = await this._user.findOne({ where: { userid }}) || false;
+          const user = await this._user.findOne({ where: { userid }});
           if (!user || hash(user.salt, userid, password) !== user.token) {
             const message = "Invalid userid/password combination";
-            return done(null, user, { message });
+            return done(null, false, { message });
           } else {
             return done(null, user);
           }
