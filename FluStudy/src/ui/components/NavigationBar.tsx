@@ -21,11 +21,22 @@ interface Props {
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
+  _debounce = 0;
+
   _goHome = () => {
     this.props.navigation.navigate("Home");
   };
 
   _onBack = () => {
+    if (this._debounce) {
+      return;
+    }
+
+    // @ts-ignore
+    this._debounce = setTimeout(() => {
+      this._debounce = 0;
+    }, 1000);
+
     if (this.props.onBack != null) {
       this.props.onBack();
     } else {

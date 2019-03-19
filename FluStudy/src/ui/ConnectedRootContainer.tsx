@@ -29,7 +29,7 @@ import {
   createAppContainer,
 } from "react-navigation";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
-import AppNavigator from "./AppNavigator";
+import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../crashReporter";
@@ -104,24 +104,6 @@ class ConnectedRootContainer extends React.Component<Props> {
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this._handleAppStateChange);
-  }
-
-  _getActiveRouteName(navigationState: NavigationState): string | null {
-    if (!navigationState) {
-      return null;
-    }
-    try {
-      const route = navigationState.routes[navigationState.index];
-      // dive into nested navigators
-      if (route.routes) {
-        // @ts-ignore
-        return this._getActiveRouteName(route);
-      }
-      return route.routeName;
-    } catch (e) {
-      uploadingErrorHandler(e, true, "NavigationState corrupted");
-      return null;
-    }
   }
 
   _handleAppStateChange = (nextAppState: string) => {
@@ -285,7 +267,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     switch (action.type) {
       case DrawerActions.OPEN_DRAWER:
       case DrawerActions.CLOSE_DRAWER:
-        const screen = this._getActiveRouteName(newState);
+        const screen = getActiveRouteName(newState);
         tracker.logEvent(
           action.type == DrawerActions.OPEN_DRAWER
             ? DrawerEvents.OPEN
@@ -299,8 +281,8 @@ class ConnectedRootContainer extends React.Component<Props> {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
-        const currentScreen = this._getActiveRouteName(prevState);
-        const nextScreen = this._getActiveRouteName(newState);
+        const currentScreen = getActiveRouteName(prevState);
+        const nextScreen = getActiveRouteName(newState);
 
         if (nextScreen && nextScreen !== currentScreen) {
           const navEvent = this._getNavEvent(action);
@@ -328,8 +310,8 @@ class ConnectedRootContainer extends React.Component<Props> {
       case StackActions.POP_TO_TOP:
       case StackActions.PUSH:
       case StackActions.RESET:
-        const currentScreen = this._getActiveRouteName(prevState);
-        const nextScreen = this._getActiveRouteName(newState);
+        const currentScreen = getActiveRouteName(prevState);
+        const nextScreen = getActiveRouteName(newState);
         if (nextScreen != null && nextScreen !== currentScreen) {
           this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
           AppEventsLogger.logEvent(`navigation:${action.type}`, {
@@ -348,7 +330,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     newState: NavigationState,
     action: NavigationAction
   ) {
-    const activeRouteName = this._getActiveRouteName(newState);
+    const activeRouteName = getActiveRouteName(newState);
     if (this.state.activeRouteName != activeRouteName) {
       this.setState({ activeRouteName });
       this._firebaseLogging(prevState, newState, action);
