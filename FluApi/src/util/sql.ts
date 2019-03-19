@@ -7,6 +7,7 @@ import Sequelize, {
   DefineModelAttributes,
   Sequelize as Sql,
   BOOLEAN as SQL_BOOLEAN,
+  DATE as SQL_DATE,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
   STRING as SQL_STRING
@@ -81,6 +82,9 @@ export function jsonColumn<T>(field?: string) {
 }
 export function integerColumn(field?: string) {
   return column(SQL_INTEGER, field);
+}
+export function dateColumn(field?: string) {
+  return column(SQL_DATE, field);
 }
 export function foreignIdKey(column, model) {
   return {

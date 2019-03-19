@@ -34,6 +34,13 @@ function identity(column) {
   };
 }
 
+function primaryKey(column) {
+  return {
+    ...column,
+    primaryKey: true,
+  }
+}
+
 function unique(column) {
   return {
     ...column,
@@ -54,8 +61,9 @@ function foreignIdKey(sql, model) {
 module.exports = {
   baseColumns,
   column,
+  foreignIdKey,
   nullableColumn,
   identity,
+  primaryKey,
   unique,
-  foreignIdKey
 };

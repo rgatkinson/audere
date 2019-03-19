@@ -7,16 +7,17 @@ import fs from "fs";
 import util from "util";
 import crypto from "crypto";
 import uuidv4 from "uuid/v4";
+import { Op } from "sequelize";
 import passport, { Passport } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import {Inst, Model, SplitSql} from "../../util/sql";
-import { defineUser, UserAttributes } from "./models";
+import {Inst, SplitSql} from "../../util/sql";
+import {defineSiteUserModels, SiteUserModels, UserAttributes} from "./models";
 
 export class AuthManager {
-  readonly _user: Model<UserAttributes>;
+  private readonly models: SiteUserModels;
 
   constructor(sql: SplitSql) {
-    this._user = defineUser(sql);
+    this.models = defineSiteUserModels(sql);
   }
 
   makePassport(): passport.Authenticator {
@@ -24,7 +25,7 @@ export class AuthManager {
     auth.use(new LocalStrategy(
       async (userid, password, done) => {
         try {
-          const user = await this._user.findOne({ where: { userid }});
+          const user = await this.models.user.findOne({ where: { userid }});
           if (!user || hash(user.salt, userid, password) !== user.token) {
             const message = "Invalid userid/password combination";
             return done(null, false, { message });
@@ -40,7 +41,7 @@ export class AuthManager {
     auth.serializeUser((user: UserAttributes, done) => done(null, user.uuid));
     auth.deserializeUser(async (uuid: string, done) => {
       try {
-        const user = await this._user.findOne({ where: { uuid }});
+        const user = await this.models.user.findOne({ where: { uuid }});
         done(null, user);
       } catch (err) {
         done(err);
@@ -52,7 +53,7 @@ export class AuthManager {
 
   async createUser(userid: string, password: string): Promise<void> {
     const salt = await makeSecret();
-    await this._user.create({
+    await this.models.user.create({
       uuid: uuidv4(),
       userid,
       salt,
@@ -61,9 +62,9 @@ export class AuthManager {
   }
 
   async setPassword(userid: string, password: string): Promise<void> {
-    const user = await this.find(userid);
+    const user = await this.findUser(userid);
     const salt = await makeSecret();
-    await this._user.update({
+    await this.models.user.update({
       uuid: user.uuid,
       userid,
       salt,
@@ -72,9 +73,9 @@ export class AuthManager {
   }
 
   async disableUser(userid: string): Promise<void> {
-    const user = await this.find(userid);
+    const user = await this.findUser(userid);
     const salt = await makeSecret();
-    await this._user.update({
+    await this.models.user.update({
       uuid: user.uuid,
       userid,
       salt,
@@ -83,12 +84,12 @@ export class AuthManager {
   }
 
   async deleteUser(userid: string): Promise<void> {
-    const user = await this.find(userid);
+    const user = await this.findUser(userid);
     await user.destroy();
   }
 
-  private async find(userid: string): Promise<Inst<UserAttributes>> {
-    const user = await this._user.findOne({ where: { userid }});
+  private async findUser(userid: string): Promise<Inst<UserAttributes>> {
+    const user = await this.models.user.findOne({ where: { userid }});
     if (user == null) {
       throw new Error(`Unrecognized userid`);
     }

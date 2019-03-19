@@ -25,6 +25,7 @@ import {
   VisitPIIInstance
 } from "../../src/models/sniffles";
 import { defineHutchUpload } from "../../src/models/hutchUpload";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("export controller", () => {
   let sql;
@@ -38,8 +39,10 @@ describe("export controller", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
-    internalApp = createInternalApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    const config = { sql, sessionStore };
+    publicApp = await createPublicApp(config);
+    internalApp = createInternalApp(config);
     models = defineSnifflesModels(sql);
     hutchUpload = defineHutchUpload(sql);
     accessKey = await models.accessKey.create({

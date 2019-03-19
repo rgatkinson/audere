@@ -22,6 +22,7 @@ import { ScriptLogger } from "../../scripts/util/script_logger";
 import { SurveyDocument } from "audere-lib/feverProtocol";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels, SurveyAttributes } from "../../src/models/fever";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("SurveyUpdater", () => {
   let sql;
@@ -53,7 +54,8 @@ describe("SurveyUpdater", () => {
   beforeAll(async done => {
     log.setVerbose(true);
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",

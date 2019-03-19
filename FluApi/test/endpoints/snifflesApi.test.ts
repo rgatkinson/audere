@@ -22,6 +22,7 @@ import {
 } from "../util/sample_data";
 import { createSplitSql } from "../../src/util/sql";
 import { defineSnifflesModels } from "../../src/models/sniffles";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("putDocument", () => {
   let sql;
@@ -30,7 +31,8 @@ describe("putDocument", () => {
   let accessKey;
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineSnifflesModels(sql);
 
     accessKey = await models.accessKey.create({
@@ -158,7 +160,8 @@ describe("putDocumentWithKey", () => {
   let models;
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineSnifflesModels(sql);
     done();
   });

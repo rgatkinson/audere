@@ -14,7 +14,9 @@ async function startServer(): Promise<void> {
   sql.nonPii.authenticate();
   sql.pii.authenticate();
 
-  const publicApp = await createPublicApp(sql);
+  const config = {sql};
+
+  const publicApp = await createPublicApp(config);
 
   publicApp.listen(publicApp.get("port"), () => {
     console.log(
@@ -24,7 +26,7 @@ async function startServer(): Promise<void> {
     );
   });
 
-  const internalApp = createInternalApp(sql);
+  const internalApp = createInternalApp(config);
 
   internalApp.listen(internalApp.get("port"), () => {
     console.log(

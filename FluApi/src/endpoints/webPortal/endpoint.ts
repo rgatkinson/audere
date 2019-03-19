@@ -7,6 +7,7 @@ import { join as pjoin, resolve } from "path";
 import passport from "passport";
 import express, { Express } from "express";
 import session from "express-session";
+const SequelizeSessionStore = require("connect-session-sequelize")(session.Store);
 import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
@@ -15,8 +16,22 @@ import { useOuch, createApp, render } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import parseurl from "parseurl";
+import { isAWS } from "../../util/environment";
+import {defineSiteUserModels, SESSION_TABLE_NAME} from "./models";
 
-export async function portalApp(sql: SplitSql) {
+export interface PortalConfig {
+  sql: SplitSql;
+  sessionStore?: session.Store;
+}
+
+export function createTestSessionStore(sql: SplitSql): session.Store {
+  const store = createSessionStore(sql);
+  // Session store normally creates a timer that prevents test process exit.
+  store.stopExpiringSessions();
+  return store;
+}
+
+export async function portalApp(config: PortalConfig) {
   const app = createApp();
 
   // TODO: set up static directory in nginx
@@ -26,13 +41,13 @@ export async function portalApp(sql: SplitSql) {
   app.set('view engine', 'html');
   app.set('views', resolve(__dirname, "templates"));
 
-  const secretConfig = new SecretConfig(sql);
-  await addSession(app, secretConfig);
+  await addSession(app, config);
+
   app.use(bodyParser.urlencoded({ extended: true }));
 
   app.use(csurf({ cookie: false }));
 
-  const auth = new AuthManager(sql).makePassport();
+  const auth = new AuthManager(config.sql).makePassport();
   app.use(auth.initialize());
   app.use(auth.session());
 
@@ -43,18 +58,24 @@ export async function portalApp(sql: SplitSql) {
   return app;
 }
 
-async function addSession(app: Express, secretConfig: SecretConfig): Promise<Express> {
+async function addSession(
+  app: Express,
+  config: PortalConfig,
+): Promise<Express> {
+  const secretConfig = new SecretConfig(config.sql);
   const secret = await secretConfig.getOrCreate("WEB_PORTAL_SESSION_SECRET");
-  const secure = app.get("env") === "production";
-  const sameSite = true;
-  // TODO: store; MemoryStore leaks memory, and resave=true requires touch() support
+  const secure = isAWS();
+  const store = config.sessionStore || createSessionStore(config.sql);
+
   const spec = {
     secret,
     cookie: {
-      sameSite,
+      sameSite: true,
       secure,
     },
-    resave: false,
+    store,
+    proxy: secure,
+    resave: true,
     rolling: true,
     saveUninitialized: true,
   };
@@ -140,4 +161,12 @@ function addErrorHandler(app: Express): void {
     }
     return next(err);
   });
+}
+
+function createSessionStore(sql: SplitSql) {
+  defineSiteUserModels(sql);
+  return new SequelizeSessionStore({
+    db: sql.pii,
+    table: SESSION_TABLE_NAME,
+  })
 }

@@ -21,6 +21,7 @@ import {
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/fever";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("putFeverDocument", () => {
   let sql;
@@ -30,7 +31,8 @@ describe("putFeverDocument", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
@@ -164,7 +166,8 @@ describe("putDocumentWithKey", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);
     done();
   });

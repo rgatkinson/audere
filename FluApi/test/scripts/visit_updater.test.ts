@@ -25,6 +25,7 @@ import {
   defineSnifflesModels,
   VisitAttributes
 } from "../../src/models/sniffles";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("VisitUpdater", () => {
   let sql;
@@ -56,7 +57,8 @@ describe("VisitUpdater", () => {
   beforeAll(async done => {
     log.setVerbose(true);
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     models = defineSnifflesModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",

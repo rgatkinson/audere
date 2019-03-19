@@ -15,23 +15,30 @@ import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReportEndpoint";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { useOuch, createApp, wrap } from "./util/expressApp";
-import { portalApp } from "./endpoints/webPortal/endpoint";
+import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 
 const buildInfo = require("../static/buildInfo.json");
 
-export async function createPublicApp(sql: SplitSql) {
+export interface AppConfig extends PortalConfig {
+  sql: SplitSql;
+  consentEmailer?: FeverConsentEmailerEndpoint;
+}
+
+export async function createPublicApp(config: AppConfig) {
+  const sql = config.sql;
+
   // Public app is internet-facing.
   const publicApp = createApp();
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(bodyParser.json({limit: '20mb'}));
 
-  publicApp.use('/portal', await portalApp(sql));
   publicApp.get(
     "/favicon.ico",
     async (req, res) => res.sendFile(
       resolve(__dirname, "endpoints/webPortal/static/favicon.ico")
     )
   );
+  publicApp.use('/portal', await portalApp(config));
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 
@@ -72,14 +79,9 @@ export async function createPublicApp(sql: SplitSql) {
   return useOuch(publicApp);
 }
 
-interface InternalAppEndpointOverrides {
-  consentEmailer?: FeverConsentEmailerEndpoint;
-}
+export function createInternalApp(config: AppConfig) {
+  const sql = config.sql;
 
-export function createInternalApp(
-  sql: SplitSql,
-  overrides: InternalAppEndpointOverrides = {}
-) {
   // Internal app should be intranet only.
   const internalApp = createApp();
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
@@ -107,7 +109,7 @@ export function createInternalApp(
   );
 
   const feverConsentEmailer =
-    overrides.consentEmailer || new FeverConsentEmailerEndpoint(sql);
+    config.consentEmailer || new FeverConsentEmailerEndpoint(sql);
   // TODO: remove after migrating lambda to sendFeverConsentEmails
   internalApp.get("/api/sendConsentEmails", feverConsentEmailer.handleGet);
   internalApp.get("/api/sendFeverConsentEmails", feverConsentEmailer.handleGet);

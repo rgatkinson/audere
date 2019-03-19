@@ -1,13 +1,20 @@
+// Copyright (c) 2018, 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import request from "supertest";
-import { createPublicApp } from "../src/app";
-import { createSplitSql, SplitSql } from "../src/util/sql";
+import { AppConfig, createPublicApp } from "../src/app";
+import { createSplitSql } from "../src/util/sql";
+import {createTestSessionStore} from "../src/endpoints/webPortal/endpoint";
 
 let publicApp;
-let sql: SplitSql;
+let sql;
 
 beforeAll(async () => {
   sql = createSplitSql();
-  publicApp = await createPublicApp(sql);
+  const sessionStore = createTestSessionStore(sql);
+  publicApp = await createPublicApp({ sql, sessionStore });
 });
 
 afterAll(() => {

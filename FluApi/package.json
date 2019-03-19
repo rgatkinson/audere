@@ -35,6 +35,7 @@
     "base64url": "^3.0.0",
     "body-parser": "^1.18.3",
     "buffer-xor": "^2.0.2",
+    "connect-session-sequelize": "^6.0.0",
     "consolidate": "^0.15.1",
     "csurf": "^1.9.0",
     "dotenv": "^6.0.0",

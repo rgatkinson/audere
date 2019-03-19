@@ -19,9 +19,11 @@ import {
   newSurveys
 } from "../../src/endpoints/feverConsentMailer";
 import { SurveyDocument } from "audere-lib/feverProtocol";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("FeverConsentEmailer", () => {
   let sql;
+  let sessionStore;
   let internalApp;
   let publicApp;
   let models: FeverModels;
@@ -35,7 +37,8 @@ describe("FeverConsentEmailer", () => {
       key: "accesskey1",
       valid: true
     });
-    publicApp = await createPublicApp(sql);
+    sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({sql, sessionStore});
     done();
   });
 
@@ -51,7 +54,9 @@ describe("FeverConsentEmailer", () => {
     when(MockEmailer.send(anything())).thenCall(async email =>
       emails.push(email)
     );
-    internalApp = createInternalApp(sql, {
+    internalApp = createInternalApp({
+      sql,
+      sessionStore,
       consentEmailer: new FeverConsentEmailerEndpoint(
         sql,
         instance(MockEmailer)

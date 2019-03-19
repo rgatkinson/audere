@@ -7,6 +7,7 @@ import request from "supertest";
 import {createSplitSql} from "../../src/util/sql";
 import {createPublicApp} from "../../src/app";
 import {AuthManager} from "../../src/endpoints/webPortal/auth";
+import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
 
 describe("webPortal", () => {
   let sql;
@@ -17,7 +18,8 @@ describe("webPortal", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    publicApp = await createPublicApp(sql);
+    const sessionStore = createTestSessionStore(sql);
+    publicApp = await createPublicApp({ sql, sessionStore });
     auth = new AuthManager(sql);
     await auth.createUser(username, password);
     done();
