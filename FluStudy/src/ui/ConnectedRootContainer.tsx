@@ -37,6 +37,20 @@ import { getMarketingProperties } from "../util/tracker";
 
 const AppContainer = createAppContainer(AppNavigator);
 
+interface SplashProps {
+  onUnmount(): void;
+}
+
+class SplashScreen extends React.Component<SplashProps> {
+  componentWillUnmount() {
+    this.props.onUnmount();
+  }
+
+  render() {
+    return <ActivityIndicator />;
+  }
+}
+
 interface Props {
   isDemo: boolean;
   skipPartOne: boolean;
@@ -54,6 +68,8 @@ class ConnectedRootContainer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this._handleNavChange = this._handleNavChange.bind(this);
+    this._loadingIndicator = this._loadingIndicator.bind(this);
+    this._onLaunch = this._onLaunch.bind(this);
   }
 
   navigator = React.createRef<NavigationContainerComponent>();
@@ -83,8 +99,6 @@ class ConnectedRootContainer extends React.Component<Props> {
 
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
-    this._handleAppStateChange("launch");
-
     this.props.dispatch(setMarketingProperties(getMarketingProperties()));
   }
 
@@ -342,8 +356,12 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   }
 
+  _onLaunch = () => {
+    this._handleAppStateChange("launch");
+  };
+
   _loadingIndicator = () => {
-    return <ActivityIndicator />;
+    return <SplashScreen onUnmount={this._onLaunch} />;
   };
 
   render() {
@@ -362,6 +380,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     );
   }
 }
+
 const styles = StyleSheet.create({
   touchable: {
     height: STATUS_BAR_HEIGHT + NAV_BAR_HEIGHT,
