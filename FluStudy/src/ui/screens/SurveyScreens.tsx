@@ -160,8 +160,8 @@ class WelcomeBackScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         hideBackButton={!this.props.skipPartOne}
+        imageSrc={require("../../img/WelcomeBack.png")}
         navigation={this.props.navigation}
-        stableImageSrc={require("../../img/WelcomeBack.png")}
         title={t("welcomeBack")}
         onBack={this._onBack}
         onNext={this._onNext}

@@ -245,8 +245,8 @@
     "close": "Close flu@home"
   },
   "welcomeBackScreen": {
-    "welcomeBack": "Welcome back",
-    "description": "\n**Preparing to use the kit**\n\nSorry, we know you're feeling bad and appreciate your participation. Today you'll be completing two tests, which allows us to double-check your results. The whole process should take about 20 minutes total.\n\nBefore we get started, find a location with good lighting and make yourself comfortable."
+    "welcomeBack": "Preparing to use the kit",
+    "description": "Sorry, we know you're feeling bad and appreciate your participation. Today you'll be completing two tests, which allows us to double-check your results. The whole process should take about 20 minutes total.\n\nBefore we get started, find a location with good lighting and make yourself comfortable.\n\n**Keep the big box you just opened.** After the tests are complete you will package everything up in the same box to send back to us."
   },
   "whatsNextScreen": {
     "whatsNext": "What's next?",
