@@ -1645,24 +1645,28 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
     if (!this.state.spinner) {
       this.setState({ spinner: true });
 
-      const photo = await this.camera.current!.takePictureAsync({
-        quality: 0.8,
-        base64: true,
-        orientation: "portrait",
-        fixOrientation: true,
-      });
-      const csruid = await newCSRUID();
-      uploader.savePhoto(csruid, photo.base64);
-      this.props.dispatch(
-        setTestStripImg({
-          sample_type: "TestStripBase64",
-          code: csruid,
-        })
-      );
-      this.setState({ spinner: false });
-      this.props.navigation.push("TestStripConfirmation", {
-        photo: photo.uri,
-      });
+      try {
+        const photo = await this.camera.current!.takePictureAsync({
+          quality: 0.8,
+          base64: true,
+          orientation: "portrait",
+          fixOrientation: true,
+        });
+        const csruid = await newCSRUID();
+        uploader.savePhoto(csruid, photo.base64);
+        this.props.dispatch(
+          setTestStripImg({
+            sample_type: "TestStripBase64",
+            code: csruid,
+          })
+        );
+        this.setState({ spinner: false });
+        this.props.navigation.push("TestStripConfirmation", {
+          photo: photo.uri,
+        });
+      } catch (e) {
+        this.setState({ spinner: false });
+      }
     }
   }
 
