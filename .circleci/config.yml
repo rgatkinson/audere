@@ -131,7 +131,7 @@ jobs:
               echo "No new packages have been added to yarn.lock."
             else
               sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high --file=package.json
+              snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
           name: Snyk flu@home Scan
@@ -145,7 +145,7 @@ jobs:
               echo "No new packages have been added to yarn.lock."
             else
               sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high --file=package.json
+              snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
           name: Server Yarn Install
@@ -201,7 +201,7 @@ jobs:
               echo "No new packages have been added to yarn.lock."
             else
               sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high --file=package.json
+              snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
           name: FluLambda Yarn Install
