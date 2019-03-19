@@ -15,7 +15,6 @@ import { AuthManager } from "./auth";
 import { useOuch, createApp, render } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
-import parseurl from "parseurl";
 import { isAWS } from "../../util/environment";
 import {defineSiteUserModels, SESSION_TABLE_NAME} from "./models";
 
@@ -90,7 +89,6 @@ async function addSession(
 }
 
 function addHandlers(app: Express, auth: passport.Authenticator): Express {
-  app.use(debugPageViews);
   app.get("/login", render("login.html", loginContext));
 
   app.post("/login", auth.authenticate('local', {
@@ -120,23 +118,9 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
 
   function loginContext(req) {
     return {
-      requestCount: req.session.requestCount[pathname(req)],
       static: app.mountpath,
       csrf: req.csrfToken(),
     }
-  }
-
-  function debugPageViews(req, res, next) {
-    if (!req.session.requestCount) {
-      req.session.requestCount = {};
-    }
-    const pathkey = pathname(req);
-    req.session.requestCount[pathkey] = (req.session.requestCount[pathkey] || 0) + 1;
-    next();
-  }
-
-  function pathname(req): string {
-    return parseurl(req).pathname;
   }
 
   // Given a portal-relative path, returns a site-wide url path

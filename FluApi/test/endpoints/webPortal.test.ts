@@ -8,6 +8,7 @@ import {createSplitSql} from "../../src/util/sql";
 import {createPublicApp} from "../../src/app";
 import {AuthManager} from "../../src/endpoints/webPortal/auth";
 import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
+import {defineSession} from "../../src/endpoints/webPortal/models";
 
 describe("webPortal", () => {
   let sql;
@@ -27,6 +28,7 @@ describe("webPortal", () => {
 
   afterAll(async done => {
     await auth.deleteUser(username);
+    await defineSession(sql).destroy({ where: {} });
     await sql.close();
     done();
   });
