@@ -246,7 +246,7 @@
   },
   "welcomeBackScreen": {
     "welcomeBack": "Welcome back",
-    "description": "Sorry, we know you're feeling bad and appreciate your participation. Before we get started, find a location with good lighting (we'll need you to take a picture of a test strip later)  and make yourself comfortable. Today you'll be completing two tests, which allows us to double check your results. The whole process should take about 20 minutes total."
+    "description": "\n**Preparing to use the kit**\n\nSorry, we know you're feeling bad and appreciate your participation. Today you'll be completing two tests, which allows us to double-check your results. The whole process should take about 20 minutes total.\n\nBefore we get started, find a location with good lighting and make yourself comfortable."
   },
   "whatsNextScreen": {
     "whatsNext": "What's next?",
