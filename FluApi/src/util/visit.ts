@@ -1,5 +1,6 @@
 import { sendEmail } from "./email";
 import {
+  ConsentInfoSignerType,
   PatientInfo,
   ResponseItemInfo,
   VisitNonPIIInfo,
@@ -13,9 +14,16 @@ type emailConsentResult = {
 
 export async function emailConsent(
   visitPII: VisitPIIInfo,
-  visitNonPII: VisitNonPIIInfo
+  visitNonPII: VisitNonPIIInfo,
+  includeSignatures: boolean,
+  includeResendingMessage: boolean = false
 ): Promise<emailConsentResult> {
-  const emailParams = getConsentEmailParams(visitPII, visitNonPII);
+  const emailParams = getConsentEmailParams(
+    visitPII,
+    visitNonPII,
+    includeSignatures,
+    includeResendingMessage
+  );
   if (!emailParams) {
     return {
       emailRequsted: false
@@ -28,18 +36,37 @@ export async function emailConsent(
   };
 }
 
-const getPreamble = formCount =>
-  `Thank you for participating in the Seattle Flu Study!  As requested, we are emailing you a copy of the ${
+const getResendingMessage = (formCount, resendingWithSignature) => {
+  if (!resendingWithSignature) {
+    return "";
+  }
+  const forms = formCount === 1 ? "form" : "forms";
+  return `<p> We previously sent you an incomplete copy of your ${forms} that did not include your signature. A complete copy of your signed ${forms} is included below.</p>`;
+};
+
+const getPreamble = (formCount, resendingWithSignature) =>
+  `<p>Thank you for participating in the Seattle Flu Study!  As requested, we are emailing you a copy of the ${
     formCount === 1 ? "form" : formCount + " forms"
-  } you signed.
+  } signed during your visit.</p>
+${getResendingMessage(formCount, resendingWithSignature)}
+<p>This email is sent from an unmonitored address.</p>`;
 
-This email is sent from an unmonitored address.
-
-`;
+// Implements the psuedo-markdown we use for rendering consent forms
+function toHTML(text) {
+  text = text.replace(/\n/g, "<br/>");
+  let bold = false;
+  text = text.replace(/\*\*/g, () => {
+    bold = !bold;
+    return bold ? "<strong>" : "</strong>";
+  });
+  return "<p>" + text + "</p>";
+}
 
 export function getConsentEmailParams(
   visitPII: VisitPIIInfo,
-  visitNonPII: VisitNonPIIInfo
+  visitNonPII: VisitNonPIIInfo,
+  includeSignatures: boolean,
+  includeResendingMessage: boolean
 ) {
   if (!visitNonPII.complete) {
     throw new Error(
@@ -62,17 +89,48 @@ export function getConsentEmailParams(
 
   const patientEmailAddresses = getPatientEmailAddresses(visitPII.patient);
 
+  const signatures = [];
   const body =
-    getPreamble(visitPII.consents.length) +
+    getPreamble(visitPII.consents.length, includeResendingMessage) +
     visitPII.consents
-      .map(consent => "Signed on " + consent.date + ":\n" + consent.terms)
-      .join("\n\n");
+      .map((consent, index) => {
+        const cid = `signature_${index}`;
+        signatures.push({
+          filename: `${cid}.png`,
+          content: consent.signature,
+          cid,
+          encoding: "base64"
+        });
+        if (includeSignatures) {
+          return (
+            toHTML(consent.terms) +
+            `<img src="cid:${cid}"/>` +
+            `<p>${consent.name}, ${consent.signerType}</p>` +
+            (consent.signerType === ConsentInfoSignerType.Representative
+              ? `<p>Signed on behalf of ${
+                  visitPII.patient.name
+                }.</p><p>Relationship of representative to participant: ${
+                  consent.relation
+                }</p>`
+              : "") +
+            `<p>Date: ${consent.date}</p>`
+          );
+        } else {
+          return (
+            `<p>Accepted by ${consent.signerType} ${consent.name} on ${
+              consent.date
+            }:</p>` + toHTML(consent.terms)
+          );
+        }
+      })
+      .join("<hr/>");
 
   return {
     subject: "Seattle Flu Study Consent Form",
-    body: body,
+    html: body,
     to: patientEmailAddresses,
     from: "noreply@auderenow.org",
+    attachments: signatures,
     consentCount: visitPII.consents.length
   };
 }

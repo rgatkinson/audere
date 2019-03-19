@@ -3,55 +3,67 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import nodemailer, { SendMailOptions } from "nodemailer";
 import { AWS } from "./aws";
 import logger from "./logger";
 import { isAWS } from "./environment";
 
-const SESClient = new AWS.SES({ apiVersion: "2010-12-01" });
+const SHOULD_SEND_EMAIL = isAWS() || process.env.SEND_EMAIL;
 
-export type Email = {
-  subject: string;
-  body: string;
-  to: string[];
-  from: string;
-  replyTo?: string;
-};
+const SESClient = new AWS.SES({ apiVersion: "2010-12-01" });
+const SESNodemailerTransport = nodemailer.createTransport({
+  SES: SESClient
+});
+
+async function getNodemailerTransport() {
+  if (!SHOULD_SEND_EMAIL) {
+    return await getTestNodeMailer();
+  }
+  return SESNodemailerTransport;
+}
+
+const getTestNodeMailer = memoize(async () => {
+  const account = await nodemailer.createTestAccount();
+  const testTransport = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: account
+  });
+  return {
+    sendMail(config: SendMailOptions) {
+      const to = Array.isArray(config.to) ? config.to.join(",") : config.to;
+      logger.debug(
+        `Sending test email from ${config.from} to ${to}:` +
+          `${config.subject}\nBEGIN EMAIL BODY\n${config.text ||
+            config.html}\nEND EMAIL BODY`
+      );
+      return testTransport.sendMail(config);
+    }
+  };
+});
+
+function memoize<T>(fn: () => T): () => T {
+  let value: T;
+  return () => {
+    if (value) {
+      return value;
+    }
+    return (value = fn());
+  };
+}
 
 export class Emailer {
-  public send(email: Email): Promise<void> {
+  public send(email: SendMailOptions): Promise<void> {
     return sendEmail(email);
   }
 }
 
-export async function sendEmail({ subject, body, to, from, replyTo }: Email) {
-  if (!isAWS() && !process.env.SEND_EMAIL) {
-    logger.debug(
-      `Skipped sending email from ${from} to ${to.join(", ")}:` +
-        `${subject}\nBEGIN EMAIL BODY\n${body}\nEND EMAIL BODY`
-    );
-    return;
+export async function sendEmail(params: SendMailOptions) {
+  const transport = await getNodemailerTransport();
+  const result = await transport.sendMail(params);
+  logger.info("Email sent via nodemailer: " + result.messageId);
+  if (!SHOULD_SEND_EMAIL) {
+    logger.debug("Preview URL: " + nodemailer.getTestMessageUrl(result));
   }
-  const emailParams = {
-    Destination: {
-      ToAddresses: to
-    },
-    Source: from,
-    Message: {
-      Body: {
-        Text: {
-          Charset: "UTF-8",
-          Data: body
-        }
-      },
-      Subject: {
-        Charset: "UTF-8",
-        Data: subject
-      }
-    }
-  };
-  if (replyTo) {
-    emailParams["ReplyToAddresses"] = [replyTo];
-  }
-  const result = await SESClient.sendEmail(emailParams).promise();
-  logger.info(`Sent email: ${JSON.stringify(result)}`);
 }

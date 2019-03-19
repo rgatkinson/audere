@@ -7,8 +7,9 @@ import _ from "lodash";
 import { Op } from "sequelize";
 import request from "supertest";
 import { anything, instance, mock, when } from "ts-mockito";
+import { SendMailOptions } from "nodemailer";
 
-import { Email, Emailer } from "../../src/util/email";
+import { Emailer } from "../../src/util/email";
 import { createPublicApp, createInternalApp } from "../../src/app";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels, FeverModels } from "../../src/models/fever";
@@ -25,7 +26,7 @@ describe("FeverConsentEmailer", () => {
   let publicApp;
   let models: FeverModels;
   let accessKey;
-  let emails: Email[];
+  let emails: SendMailOptions[];
 
   beforeAll(async done => {
     sql = createSplitSql();

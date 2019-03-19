@@ -18,12 +18,14 @@ export interface ConsentEmailAttributes {
   visitId: string;
   emailRequested: boolean;
   consentsSent: number;
+  signaturesSent: boolean;
 }
 export type ConsentEmailModel = Model<ConsentEmailAttributes>;
 export function defineConsentEmail(sql: SplitSql): ConsentEmailModel {
   return defineModel<ConsentEmailAttributes>(sql.nonPii, "consent_email", {
     visitId: unique(integerColumn("visit_id")),
     emailRequested: booleanColumn("email_requested"),
-    consentsSent: integerColumn("consents_sent")
+    consentsSent: integerColumn("consents_sent"),
+    signaturesSent: booleanColumn("signatures_sent")
   });
 }

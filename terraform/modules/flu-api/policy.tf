@@ -81,7 +81,7 @@ resource "aws_iam_policy" "ses_send_email" {
 
 data "aws_iam_policy_document" "ses_send_email" {
   statement = {
-    actions = ["ses:SendEmail"]
+    actions = ["ses:SendEmail", "ses:SendRawEmail"]
     resources = ["*"]
   }
 }

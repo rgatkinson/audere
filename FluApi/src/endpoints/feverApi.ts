@@ -111,7 +111,7 @@ export class FeverEndpoint {
   async sendAndPutFeedback(document: FeedbackDocument): Promise<void> {
     await sendEmail({
       subject: `[In-App Feedback] ${document.feedback.subject}`,
-      body:
+      text:
         document.feedback.body +
         "\n\n" +
         JSON.stringify(document.device, null, 2),

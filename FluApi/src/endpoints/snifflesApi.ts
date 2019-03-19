@@ -101,7 +101,7 @@ export class SnifflesEndpoint {
         const feedbackDocument = req.body as FeedbackDocument;
         await sendEmail({
           subject: `[In-App Feedback] ${feedbackDocument.feedback.subject}`,
-          body:
+          text:
             feedbackDocument.feedback.body +
             "\n\n" +
             JSON.stringify(feedbackDocument.device, null, 2),

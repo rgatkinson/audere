@@ -12,6 +12,7 @@ import Sequelize, {
   STRING as SQL_STRING
 } from "sequelize";
 import "../util/config";
+import logger from "./logger";
 
 export type Inst<Attr> = Sequelize.Instance<Attr> & Attr;
 
@@ -33,12 +34,12 @@ export function createSplitSql(): SplitSql {
   }
 
   const pii = new Sequelize(piiUrl, {
-    logging: false,
+    logging: process.env.LOG_SQL && logger.debug,
     operatorsAliases: false
   });
   const nonPii = new Sequelize(nonPiiUrl, {
     operatorsAliases: false,
-    logging: false
+    logging: process.env.LOG_SQL && logger.debug
   });
   return {
     pii,

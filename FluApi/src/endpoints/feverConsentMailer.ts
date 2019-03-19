@@ -126,7 +126,7 @@ async function emailConsent(emailer: Emailer, survey: SurveyPii) {
   const participantEmail = getEmail(survey);
   const consentDate = getConsentDate(survey);
   const consentTerms = getConsentTerms(survey);
-  const body = `Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
+  const text = `Thank you for participating in the flu@home study! As requested, we are emailing you a copy of the consent form you agreed to.
 
 Please contact us at unsubscribe@auderenow.org to unsubscribe from future emails, or contact flu-support@auderenow.org if you have any other questions or concerns.
 
@@ -138,7 +138,7 @@ ${consentTerms}`;
     to: [participantEmail],
     from: "flu-support@auderenow.org",
     subject: "flu@home Research Study Consent Form",
-    body
+    text
   });
 }
 
