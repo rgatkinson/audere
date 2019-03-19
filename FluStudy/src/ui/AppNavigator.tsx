@@ -56,6 +56,7 @@ import {
   TestStripCamera,
   TestStripConfirmation,
   CleanFirstTest,
+  CleanFirstTest2,
   FirstTestFeedback,
   BeginSecondTest,
   PrepSecondTest,
@@ -132,6 +133,7 @@ const Home = createStackNavigator(
     TestStripCamera,
     TestStripConfirmation,
     CleanFirstTest,
+    CleanFirstTest2,
     FirstTestFeedback,
     BeginSecondTest,
     PrepSecondTest,
@@ -179,7 +181,10 @@ export const getActiveRouteName = (
 
 const withNavigationPreventDuplicate = (getStateForAction: any) => {
   const defaultGetStateForAction = getStateForAction;
-  const getStateForActionWithoutDuplicates = (action: NavigationAction, state: NavigationState) => {
+  const getStateForActionWithoutDuplicates = (
+    action: NavigationAction,
+    state: NavigationState
+  ) => {
     if (
       action.type === NavigationActions.NAVIGATE ||
       action.type === StackActions.PUSH

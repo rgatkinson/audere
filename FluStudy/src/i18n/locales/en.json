@@ -392,12 +392,12 @@
     "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
   },
   "cleanFirstTestScreen": {
-    "title": "Clean up the first test",
-    "step1": "Find the medium-sized bag with a green barcode on it.",
-    "step2": "Put the test strip inside that bag, remove the white strip on the bag and seal it.",
-    "step3": "Open bag ②② and take out the tube with the red top and the swab package. Leave the soft material in the bag.",
-    "step4": "Place the bag with the green barcode and the tube with the grey top into bag ②②. Please ensure the grey stopper is tight on the tube.",
-    "step5": "Keep the box in front of you. You'll need it for the next test."
+    "title": "Seal up the test strip",
+    "desc": "Find the medium-sized bag with a green barcode on it.\n\nPut the test strip inside that bag, remove the white strip on the bag and seal it."
+  },
+  "cleanFirstTest2Screen": {
+    "title": "Put test strip in bag #2",
+    "desc": "Open bag ②② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
   },
   "firstTestFeedbackScreen": {
     "title": "Nice job with the first test! One more to go."

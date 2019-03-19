@@ -1811,6 +1811,29 @@ export const TestStripConfirmation = withNamespaces(
 
 class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
+    this.props.navigation.push("CleanFirstTest2");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("desc")}
+        imageSrc={require("../../img/sealUpTestStrip.png")}
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={this._onNext}
+      />
+    );
+  }
+}
+export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")(
+  CleanFirstTestScreen
+);
+
+class CleanFirstTest2Screen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
     this.props.navigation.push("FirstTestFeedback");
   };
 
@@ -1819,22 +1842,17 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         canProceed={true}
-        imageSrc={require("../../img/cleanUpFirstTest.png")}
+        desc={t("desc")}
+        imageSrc={require("../../img/putTestStripBag2.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
-      >
-        <BulletPoint content={t("step1")} />
-        <BulletPoint content={t("step2")} />
-        <BulletPoint content={t("step3")} />
-        <BulletPoint content={t("step4")} />
-        <BulletPoint content={t("step5")} />
-      </Screen>
+      />
     );
   }
 }
-export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")(
-  CleanFirstTestScreen
+export const CleanFirstTest2 = withNamespaces("cleanFirstTest2Screen")(
+  CleanFirstTest2Screen
 );
 
 class FirstTestFeedbackScreen extends React.Component<
