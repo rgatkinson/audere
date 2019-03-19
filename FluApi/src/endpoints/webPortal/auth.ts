@@ -9,7 +9,7 @@ import crypto from "crypto";
 import uuidv4 from "uuid/v4";
 import passport, { Passport } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Model, SplitSql } from "../../util/sql";
+import {Inst, Model, SplitSql} from "../../util/sql";
 import { defineUser, UserAttributes } from "./models";
 
 export class AuthManager {
@@ -61,18 +61,38 @@ export class AuthManager {
   }
 
   async setPassword(userid: string, password: string): Promise<void> {
-    const user = await this._user.findOne({ where: { userid }});
-    if (user == null) {
-      throw new Error(`Unrecognized userid`);
-    }
-
+    const user = await this.find(userid);
     const salt = await makeSecret();
-    await this._user.upsert({
+    await this._user.update({
       uuid: user.uuid,
       userid,
       salt,
       token: makeToken({ salt, userid, password }),
     });
+  }
+
+  async disableUser(userid: string): Promise<void> {
+    const user = await this.find(userid);
+    const salt = await makeSecret();
+    await this._user.update({
+      uuid: user.uuid,
+      userid,
+      salt,
+      token: "",
+    });
+  }
+
+  async deleteUser(userid: string): Promise<void> {
+    const user = await this.find(userid);
+    await user.destroy();
+  }
+
+  private async find(userid: string): Promise<Inst<UserAttributes>> {
+    const user = await this._user.findOne({ where: { userid }});
+    if (user == null) {
+      throw new Error(`Unrecognized userid`);
+    }
+    return user;
   }
 }
 

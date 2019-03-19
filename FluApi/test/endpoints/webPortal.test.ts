@@ -6,17 +6,25 @@
 import request from "supertest";
 import {createSplitSql} from "../../src/util/sql";
 import {createPublicApp} from "../../src/app";
+import {AuthManager} from "../../src/endpoints/webPortal/auth";
 
 describe("webPortal", () => {
   let sql;
   let publicApp;
+  let auth;
+  let username = "AzureDiamond";
+  let password = "hunter2";
+
   beforeAll(async done => {
     sql = createSplitSql();
     publicApp = await createPublicApp(sql);
+    auth = new AuthManager(sql);
+    await auth.createUser(username, password);
     done();
   });
 
   afterAll(async done => {
+    await auth.deleteUser(username);
     await sql.close();
     done();
   });
@@ -62,8 +70,8 @@ describe("webPortal", () => {
       .set("Cookie", login.headers["set-cookie"])
       .send({
         _csrf: loginCSRF,
-        username: "a",
-        password: "a",
+        username,
+        password,
       })
       .expect(302, /\/portal\/index$/)
       .expect(res => post = res);
@@ -86,8 +94,8 @@ describe("webPortal", () => {
       .set("Cookie", login.headers["set-cookie"])
       .send({
         // _csrf: loginCSRF,
-        username: "a",
-        password: "a",
+        username,
+        password,
       })
       .expect(403)
   });
@@ -110,7 +118,7 @@ describe("webPortal", () => {
       .send({
         _csrf: loginCSRF,
         username: "incorrect",
-        password: "incorrect",
+        password,
       })
       .expect(302, /\/portal\/login$/);
   });
@@ -132,7 +140,7 @@ describe("webPortal", () => {
       .set("Cookie", login.headers["set-cookie"])
       .send({
         _csrf: loginCSRF,
-        username: "a",
+        username,
         password: "incorrect",
       })
       .expect(302, /\/portal\/login$/);
