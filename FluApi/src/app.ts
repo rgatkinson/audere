@@ -106,9 +106,12 @@ export function createInternalApp(
     fever.sendKitOrders(req, res, next)
   );
 
-  const consentEmailer =
+  const feverConsentEmailer =
     overrides.consentEmailer || new FeverConsentEmailerEndpoint(sql);
-  internalApp.get("/api/sendConsentEmails", consentEmailer.handleGet);
+  // TODO: remove after migrating lambda to sendFeverConsentEmails
+  internalApp.get("/api/sendConsentEmails", feverConsentEmailer.handleGet);
+  internalApp.get("/api/sendFeverConsentEmails", feverConsentEmailer.handleGet);
+
   internalApp.get(
     "/api/sendSnifflesConsentEmails",
     snifflesConsentEmailer.sendConsentEmails

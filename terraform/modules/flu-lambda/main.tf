@@ -47,7 +47,17 @@ module "fever_consent_emailer_cron" {
   name = "${local.base_name}-fever-consent-emailer"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "rate(1 hour)"
-  url = "http://${var.fluapi_fqdn}:444/api/sendConsentEmails"
+  url = "http://${var.fluapi_fqdn}:444/api/sendFeverConsentEmails"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.lambda_sg_ids}"]
+}
+
+module "sniffles_consent_emailer_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-sniffles-consent-emailer"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "rate(1 hour)"
+  url = "http://${var.fluapi_fqdn}:444/api/sendSnifflesConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
 }
