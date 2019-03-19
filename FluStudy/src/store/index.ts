@@ -9,8 +9,6 @@ import {
   MiddlewareAPI,
 } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
-import { createReactNavigationReduxMiddleware } from "react-navigation-redux-helpers";
-import { NavigationAction } from "react-navigation";
 import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
@@ -26,13 +24,6 @@ export * from "./types";
 import { default as meta, MetaState, MetaAction } from "./meta";
 export * from "./meta";
 
-import {
-  default as navigation,
-  navigationLoggingMiddleware,
-  firebaseNavigationLoggingMiddleware,
-} from "./navigation";
-export * from "./navigation";
-
 import { default as survey, SurveyState, SurveyAction } from "./survey";
 export * from "./survey";
 
@@ -41,18 +32,14 @@ export function clearState(): ClearStateAction {
   return { type: "CLEAR_STATE" };
 }
 
-export type Action =
-  | MetaAction
-  | SurveyAction
-  | NavigationAction
-  | ClearStateAction;
+export type Action = MetaAction | SurveyAction | ClearStateAction;
 
 import { StoreState } from "./StoreState";
 export { StoreState } from "./StoreState";
 
 const reducer = combineReducers({
   meta,
-  navigation,
+  navigation: (state: any = {}) => null,
   survey,
 });
 
@@ -67,10 +54,6 @@ const rootReducer = (state: StoreState | undefined, action: Action) => {
   }
   return reducer(state, action);
 };
-
-const navigationMiddleware = createReactNavigationReduxMiddleware(
-  (state: StoreState) => state.navigation
-);
 
 let storePromise: Promise<Store>;
 export function getStore(): Promise<Store> {
@@ -134,9 +117,6 @@ async function getStoreImpl() {
     persistReducer(persistConfig, rootReducer),
     applyMiddleware(
       loggingMiddleware("CrashReport", crashReportingDetailsMiddleware),
-      loggingMiddleware("FirebaseNav", firebaseNavigationLoggingMiddleware),
-      loggingMiddleware("Nav", navigationMiddleware),
-      loggingMiddleware("NavLog", navigationLoggingMiddleware),
       loggingMiddleware("Upload", uploaderMiddleware)
     )
   );

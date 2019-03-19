@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ActivityIndicator,
   AppState,
   Dimensions,
   TouchableWithoutFeedback,
@@ -12,41 +13,51 @@ import {
   appendEvent,
   clearState,
   setCSRUIDIfUnset,
-  getActiveRouteName,
-  initialNavState,
   setMarketingProperties,
 } from "../store/";
+import { AppEventsLogger } from "react-native-fbsdk";
+import { Crashlytics } from "react-native-fabric";
+import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
 import { connect } from "react-redux";
-import { createReduxContainer } from "react-navigation-redux-helpers";
 import {
+  DrawerActions,
+  NavigationAction,
   NavigationActions,
+  NavigationContainerComponent,
   NavigationState,
   StackActions,
+  createAppContainer,
 } from "react-navigation";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
 import AppNavigator from "./AppNavigator";
-import { registerNavigator } from "./NavigatorRegistry";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../crashReporter";
 import { getMarketingProperties } from "../util/tracker";
 
-const navigator = AppNavigator;
-registerNavigator(navigator);
-
-const AppContainer = createReduxContainer(navigator);
+const AppContainer = createAppContainer(AppNavigator);
 
 interface Props {
   isDemo: boolean;
   skipPartOne: boolean;
   lastUpdate?: number;
-  navigationState: NavigationState;
   workflow: WorkflowInfo;
   csruid?: string;
   dispatch(action: Action): void;
 }
 
-class AppWithNavigationState extends React.Component<Props> {
+class ConnectedRootContainer extends React.Component<Props> {
+  state = {
+    activeRouteName: "Welcome",
+  };
+
+  constructor(props: Props) {
+    super(props);
+    this._handleNavChange = this._handleNavChange.bind(this);
+  }
+
+  navigator = React.createRef<NavigationContainerComponent>();
+
   QUAD_PRESS_DELAY = 600;
   lastTap: number | null = null;
   secondLastTap: number | null = null;
@@ -81,6 +92,24 @@ class AppWithNavigationState extends React.Component<Props> {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
+  _getActiveRouteName(navigationState: NavigationState): string | null {
+    if (!navigationState) {
+      return null;
+    }
+    try {
+      const route = navigationState.routes[navigationState.index];
+      // dive into nested navigators
+      if (route.routes) {
+        // @ts-ignore
+        return this._getActiveRouteName(route);
+      }
+      return route.routeName;
+    } catch (e) {
+      uploadingErrorHandler(e, true, "NavigationState corrupted");
+      return null;
+    }
+  }
+
   _handleAppStateChange = (nextAppState: string) => {
     // Bleagh.
     //
@@ -98,7 +127,6 @@ class AppWithNavigationState extends React.Component<Props> {
     // here that happen immediately, all require a minimum amount of elapsed time. This could
     // be an issue in the future.
     const currentDate = new Date();
-    const activeRoute = getActiveRouteName(this.props.navigationState);
 
     if (this.props.lastUpdate == null) {
       return;
@@ -133,16 +161,21 @@ class AppWithNavigationState extends React.Component<Props> {
             "app:" + nextAppState + ":screeningCompleteRedirectToSurveyStart"
           )
         );
-        this.props.dispatch(
-          StackActions.reset({
-            index: 0,
-            actions: [NavigationActions.navigate({ routeName: "WelcomeBack" })],
-          })
-        );
+        this.navigator &&
+          this.navigator.current &&
+          this.navigator.current.dispatch(
+            StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: "WelcomeBack" }),
+              ],
+            })
+          );
       } else if (
-        (activeRoute === "AgeIneligible" ||
-          activeRoute === "SymptomsIneligible" ||
-          activeRoute === "ConsentIneligible") &&
+        (this.state.activeRouteName === "AgeIneligible" ||
+          this.state.activeRouteName === "SymptomsIneligible" ||
+          this.state.activeRouteName === "StateIneligible" ||
+          this.state.activeRouteName === "ConsentIneligible") &&
         (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
       ) {
         // Was on ineligible screen for at least 24 hours, clear state
@@ -201,6 +234,14 @@ class AppWithNavigationState extends React.Component<Props> {
   };
 
   clearState() {
+    this.navigator &&
+      this.navigator.current &&
+      this.navigator.current.dispatch(
+        StackActions.reset({
+          index: 0,
+          actions: [NavigationActions.navigate({ routeName: "Welcome" })],
+        })
+      );
     this.props.dispatch(clearState());
     this.initializeCSRUID();
   }
@@ -210,6 +251,101 @@ class AppWithNavigationState extends React.Component<Props> {
     this.props.dispatch(setCSRUIDIfUnset(csruid));
   }
 
+  _getNavEvent(action: NavigationAction): string | undefined {
+    switch (action.type) {
+      case NavigationActions.NAVIGATE:
+      case StackActions.PUSH:
+        return NavEvents.FORWARD;
+
+      case NavigationActions.BACK:
+      case StackActions.POP:
+        return NavEvents.BACKWARD;
+    }
+  }
+
+  _firebaseLogging(
+    prevState: NavigationState,
+    newState: NavigationState,
+    action: NavigationAction
+  ) {
+    switch (action.type) {
+      case DrawerActions.OPEN_DRAWER:
+      case DrawerActions.CLOSE_DRAWER:
+        const screen = this._getActiveRouteName(newState);
+        tracker.logEvent(
+          action.type == DrawerActions.OPEN_DRAWER
+            ? DrawerEvents.OPEN
+            : DrawerEvents.CLOSE,
+          { screen }
+        );
+        break;
+      case NavigationActions.NAVIGATE:
+      case NavigationActions.BACK:
+      case StackActions.POP:
+      case StackActions.POP_TO_TOP:
+      case StackActions.PUSH:
+      case StackActions.RESET:
+        const currentScreen = this._getActiveRouteName(prevState);
+        const nextScreen = this._getActiveRouteName(newState);
+
+        if (nextScreen && nextScreen !== currentScreen) {
+          const navEvent = this._getNavEvent(action);
+
+          tracker.setCurrentScreen(nextScreen);
+          if (navEvent) {
+            tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
+          }
+        }
+    }
+  }
+
+  _navLogging(
+    prevState: NavigationState,
+    newState: NavigationState,
+    action: NavigationAction
+  ) {
+    switch (action.type) {
+      case NavigationActions.NAVIGATE:
+      case NavigationActions.BACK:
+      case DrawerActions.OPEN_DRAWER:
+      case DrawerActions.CLOSE_DRAWER:
+      case DrawerActions.TOGGLE_DRAWER:
+      case StackActions.POP:
+      case StackActions.POP_TO_TOP:
+      case StackActions.PUSH:
+      case StackActions.RESET:
+        const currentScreen = this._getActiveRouteName(prevState);
+        const nextScreen = this._getActiveRouteName(newState);
+        if (nextScreen != null && nextScreen !== currentScreen) {
+          this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
+          AppEventsLogger.logEvent(`navigation:${action.type}`, {
+            from: currentScreen,
+            to: nextScreen,
+          });
+          Crashlytics.log(
+            "Navigating from " + currentScreen + " to " + nextScreen
+          );
+        }
+    }
+  }
+
+  _handleNavChange(
+    prevState: NavigationState,
+    newState: NavigationState,
+    action: NavigationAction
+  ) {
+    const activeRouteName = this._getActiveRouteName(newState);
+    if (this.state.activeRouteName != activeRouteName) {
+      this.setState({ activeRouteName });
+      this._firebaseLogging(prevState, newState, action);
+      this._navLogging(prevState, newState, action);
+    }
+  }
+
+  _loadingIndicator = () => {
+    return <ActivityIndicator />;
+  };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -217,8 +353,10 @@ class AppWithNavigationState extends React.Component<Props> {
           <View style={styles.touchable} />
         </TouchableWithoutFeedback>
         <AppContainer
-          state={this.props.navigationState}
-          dispatch={this.props.dispatch}
+          persistenceKey={"NavigationState"}
+          ref={this.navigator}
+          onNavigationStateChange={this._handleNavChange}
+          renderLoadingExperimental={this._loadingIndicator}
         />
       </View>
     );
@@ -240,7 +378,6 @@ export default connect((state: StoreState) => {
       isDemo: state.meta.isDemo,
       skipPartOne: state.meta.skipPartOne,
       lastUpdate: state.survey.timestamp,
-      navigationState: state.navigation,
       workflow: state.survey.workflow,
       csruid: state.survey.csruid,
     };
@@ -251,7 +388,6 @@ export default connect((state: StoreState) => {
       isDemo: false,
       skipPartOne: false,
       lastUpdate: undefined,
-      navigationState: initialNavState,
       workflow: {},
       csruid: undefined,
     };
@@ -264,11 +400,8 @@ export default connect((state: StoreState) => {
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
       skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
-      navigationState: !!state.navigation
-        ? state.navigation
-        : defaults.navigationState,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
       csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
     };
   }
-})(AppWithNavigationState);
+})(ConnectedRootContainer);

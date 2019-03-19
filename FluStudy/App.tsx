@@ -14,7 +14,7 @@ import { AppLoading, Font } from "expo";
 import { getStore, getPersistor } from "./src/store/";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import ConnectedAppWithNavigationState from "./src/ui/ConnectedAppWithNavigationState";
+import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
 import i18n from "./src/i18n";
 import {
   setupErrorHandler,
@@ -80,7 +80,7 @@ export default class App extends React.Component<AppProps> {
     // We need to wait to reference .connect() until .createStore() is done.
     // This attempts to do that.
     const ReloadAppOnLanguageChange = withNamespaces("common")(
-      ConnectedAppWithNavigationState
+      ConnectedRootContainer
     );
 
     return (
