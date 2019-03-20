@@ -25,7 +25,6 @@ import {
   setPushNotificationState,
   setWorkflow,
   setConsent,
-  skipPartOne,
 } from "../../store";
 import {
   MailingAddressConfig,
@@ -65,14 +64,27 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect()
-class WelcomeScreen extends React.Component<Props & WithNamespaces> {
+interface WorkflowProps {
+  workflow: WorkflowInfo;
+}
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class WelcomeScreen extends React.Component<
+  Props & WorkflowProps & WithNamespaces
+> {
   _onNext = () => {
     this.props.navigation.push("Why");
   };
 
   _onSkipPartOne = () => {
-    this.props.dispatch(skipPartOne(true));
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        skippedScreeningAt: new Date().toISOString(),
+      })
+    );
     this.props.navigation.push("WelcomeBack");
   };
 
@@ -178,17 +190,17 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
 export const What = withNamespaces("whatScreen")(WhatScreen);
 
 @connect((state: StoreState) => ({
-  skipPartOne: state.meta.skipPartOne,
+  workflow: state.survey.workflow,
 }))
 class AgeScreen extends React.Component<
-  Props & SkipProps & WithNamespaces & ReduxWriterProps
+  Props & WorkflowProps & WithNamespaces & ReduxWriterProps
 > {
   _onNext = () => {
     const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Under18) {
       this.props.navigation.push("AgeIneligible");
     } else {
-      if (this.props.skipPartOne) {
+      if (!!this.props.workflow.skippedScreeningAt) {
         this.props.navigation.push("Consent");
       } else {
         this.props.navigation.push("Symptoms");
@@ -203,7 +215,7 @@ class AgeScreen extends React.Component<
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         navigation={this.props.navigation}
         skipButton={false}
-        step={this.props.skipPartOne ? undefined : 1}
+        step={!!this.props.workflow.skippedScreeningAt ? undefined : 1}
         title={t("surveyTitle:" + AgeConfig.title)}
         onNext={this._onNext}
       >
@@ -305,10 +317,6 @@ export const Symptoms = reduxWriter(
   withNamespaces("symptomsScreen")(SymptomsScreen)
 );
 
-interface SkipProps {
-  skipPartOne: boolean;
-}
-
 interface EmailProps {
   email?: string;
 }
@@ -320,14 +328,18 @@ interface EmailState {
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
-  skipPartOne: state.meta.skipPartOne,
+  workflow: state.survey.workflow,
 }))
 class ConsentScreen extends React.PureComponent<
-  Props & EmailProps & SkipProps & WithNamespaces & ReduxWriterProps,
+  Props & EmailProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
   EmailState
 > {
   constructor(
-    props: Props & EmailProps & SkipProps & WithNamespaces & ReduxWriterProps
+    props: Props &
+      EmailProps &
+      WorkflowProps &
+      WithNamespaces &
+      ReduxWriterProps
   ) {
     super(props);
     this.state = {
@@ -410,7 +422,7 @@ class ConsentScreen extends React.PureComponent<
           }
           hideBackButton={true} // Must not allow age-changing
           navigation={this.props.navigation}
-          step={this.props.skipPartOne ? undefined : 3}
+          step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
           title={t("consent")}
           onNext={this._onNext}
         >
@@ -515,10 +527,6 @@ export const ConsentIneligible = withNamespaces("consentIneligibleScreen")(
   ConsentIneligibleScreen
 );
 
-interface WorkflowProps {
-  workflow: WorkflowInfo;
-}
-
 interface AddressState {
   address?: Address;
   triedToProceed: boolean;
@@ -526,22 +534,15 @@ interface AddressState {
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
-  skipPartOne: state.meta.skipPartOne,
   workflow: state.survey.workflow,
 }))
 class AddressInputScreen extends React.Component<
-  Props &
-    EmailProps &
-    SkipProps &
-    WorkflowProps &
-    WithNamespaces &
-    ReduxWriterProps,
+  Props & EmailProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
   AddressState & EmailState
 > {
   constructor(
     props: Props &
       EmailProps &
-      SkipProps &
       WorkflowProps &
       WithNamespaces &
       ReduxWriterProps
@@ -558,7 +559,7 @@ class AddressInputScreen extends React.Component<
 
   _onNext = () => {
     this.setState({ triedToProceed: true });
-    const config = this.props.skipPartOne
+    const config = !!this.props.workflow.skippedScreeningAt
       ? AddressConfig
       : MailingAddressConfig;
     if (this._haveValidAddress() && isValidEmail(this.state.email)) {
@@ -580,7 +581,7 @@ class AddressInputScreen extends React.Component<
         })
       );
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-      if (this.props.skipPartOne) {
+      if (!!this.props.workflow.skippedScreeningAt) {
         this.props.navigation.push("WhatsNext");
       } else {
         this.props.navigation.push("Confirmation");
@@ -624,23 +625,27 @@ class AddressInputScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    const config = this.props.skipPartOne
+    const config = !!this.props.workflow.skippedScreeningAt
       ? AddressConfig
       : MailingAddressConfig;
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={
-            this.props.skipPartOne ? undefined : t("common:button:submit")
+            !!this.props.workflow.skippedScreeningAt
+              ? undefined
+              : t("common:button:submit")
           }
-          canProceed={!this.props.skipPartOne || this._haveOption()}
+          canProceed={
+            !this.props.workflow.skippedScreeningAt || this._haveOption()
+          }
           desc={
-            this.props.skipPartOne
+            !!this.props.workflow.skippedScreeningAt
               ? t("surveyDescription:addressDesc")
               : t("surveyDescription:mailingAddressDesc")
           }
           navigation={this.props.navigation}
-          step={this.props.skipPartOne ? undefined : 4}
+          step={!!this.props.workflow.skippedScreeningAt ? undefined : 4}
           title={t("title")}
           onNext={this._onNext}
         >
@@ -652,7 +657,7 @@ class AddressInputScreen extends React.Component<
             value={this.state.address}
             onChange={this._onAddressChange}
           />
-          {!this.props.skipPartOne && (
+          {!this.props.workflow.skippedScreeningAt && (
             <Text
               content={t("addressExceptions")}
               style={{ fontSize: SMALL_TEXT, marginBottom: GUTTER }}
@@ -669,7 +674,7 @@ class AddressInputScreen extends React.Component<
             value={this.state.email}
             onChange={this._onChangeEmail}
           />
-          {this.props.skipPartOne && (
+          {!!this.props.workflow.skippedScreeningAt && (
             <OptionQuestion
               question={WhereKitConfig}
               getAnswer={this.props.getAnswer}

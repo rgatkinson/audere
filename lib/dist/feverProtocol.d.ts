@@ -26,7 +26,7 @@ export interface PIIInfo extends CommonInfo {
 }
 export interface CommonInfo {
     isDemo: boolean;
-    marketingProperties: any;
+    marketingProperties?: any;
     events: EventInfo[];
     pushNotificationState?: PushNotificationState;
     workflow: WorkflowInfo;
@@ -117,6 +117,7 @@ export interface WorkflowInfo {
     screeningCompletedAt?: string;
     surveyCompletedAt?: string;
     surveyStartedAt?: string;
+    skippedScreeningAt?: string;
 }
 export interface ResponseInfo {
     id: string;

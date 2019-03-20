@@ -29,7 +29,6 @@ import {
   setOneMinuteStartTime,
   setTenMinuteStartTime,
   setWorkflow,
-  skipPartOne,
   uploader,
 } from "../../store";
 import {
@@ -126,27 +125,33 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-interface SkipProps {
-  skipPartOne: boolean;
+interface WorkflowProps {
+  workflow: WorkflowInfo;
 }
 
 @connect((state: StoreState) => ({
-  skipPartOne: state.meta.skipPartOne,
+  workflow: state.survey.workflow,
 }))
 class WelcomeBackScreen extends React.Component<
-  Props & SkipProps & WithNamespaces
+  Props & WorkflowProps & WithNamespaces
 > {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.RECEIVED_KIT);
   }
 
   _onBack = () => {
-    this.props.dispatch(skipPartOne(false));
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        skippedScreeningAt: undefined,
+      })
+    );
+
     this.props.navigation.pop();
   };
 
   _onNext = () => {
-    if (this.props.skipPartOne) {
+    if (!!this.props.workflow.skippedScreeningAt) {
       this.props.navigation.push("Age");
     } else {
       this.props.navigation.push("WhatsNext");
@@ -159,7 +164,7 @@ class WelcomeBackScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("description")}
-        hideBackButton={!this.props.skipPartOne}
+        hideBackButton={!this.props.workflow.skippedScreeningAt}
         imageSrc={require("../../img/WelcomeBack.png")}
         navigation={this.props.navigation}
         title={t("welcomeBack")}
@@ -279,10 +284,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
 export const ScanInstructions = withNamespaces("scanInstructionsScreen")(
   ScanInstructionsScreen
 );
-
-interface WorkflowProps {
-  workflow: WorkflowInfo;
-}
 
 @connect((state: StoreState) => ({
   workflow: state.survey.workflow,

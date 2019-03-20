@@ -53,7 +53,6 @@ class SplashScreen extends React.Component<SplashProps> {
 
 interface Props {
   isDemo: boolean;
-  skipPartOne: boolean;
   lastUpdate?: number;
   workflow: WorkflowInfo;
   csruid?: string;
@@ -186,7 +185,7 @@ class ConnectedRootContainer extends React.Component<Props> {
         this.clearState();
       } else if (
         !this.props.workflow.screeningCompletedAt &&
-        !this.props.skipPartOne &&
+        !this.props.workflow.skippedScreeningAt &&
         (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
       ) {
         // Have not completed screening (not ordered kit) and 2 days have passed, clear state
@@ -377,7 +376,6 @@ export default connect((state: StoreState) => {
   try {
     return {
       isDemo: state.meta.isDemo,
-      skipPartOne: state.meta.skipPartOne,
       lastUpdate: state.survey.timestamp,
       workflow: state.survey.workflow,
       csruid: state.survey.csruid,
@@ -387,7 +385,6 @@ export default connect((state: StoreState) => {
 
     const defaults = {
       isDemo: false,
-      skipPartOne: false,
       lastUpdate: undefined,
       workflow: {},
       csruid: undefined,
@@ -399,7 +396,6 @@ export default connect((state: StoreState) => {
 
     return {
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
-      skipPartOne: !!state.meta ? state.meta.skipPartOne : defaults.skipPartOne,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
       csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
