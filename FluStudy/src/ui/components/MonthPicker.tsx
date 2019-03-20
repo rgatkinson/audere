@@ -48,19 +48,21 @@ class MonthModal extends React.Component<
   MonthModalState
 > {
   state = {
-    date: null,
+    date: this.props.date,
   };
 
-  _getDate = (): Date | null => {
-    if (this.state.date != null) {
-      return this.state.date!;
+  _onValueChange = (selected: number | string) => {
+    if (selected === this.props.t("selectDate")) {
+      this.setState({ date: null });
+    } else {
+      this.setState({ date: new Date(selected) });
     }
-    return this.props.date;
   };
 
   render() {
     const { t } = this.props;
     const { width } = Dimensions.get("window");
+    const selectDate = t("selectDate");
     return (
       <Modal
         height={280}
@@ -68,15 +70,15 @@ class MonthModal extends React.Component<
         submitText={t("common:button:done")}
         visible={this.props.visible}
         onDismiss={() => this.props.onDismiss(this.props.date)}
-        onSubmit={() => this.props.onDismiss(this._getDate())}
+        onSubmit={() => this.props.onDismiss(this.state.date)}
       >
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <Picker
             selectedValue={
-              this._getDate() ? this._getDate()!.getTime() : undefined
+              this.state.date ? this.state.date!.getTime() : selectDate
             }
             style={{ alignSelf: "stretch", justifyContent: "center" }}
-            onValueChange={time => this.setState({ date: new Date(time) })}
+            onValueChange={this._onValueChange}
           >
             {this.props.options.map(date => (
               <Picker.Item
@@ -85,6 +87,11 @@ class MonthModal extends React.Component<
                 key={date.getTime()}
               />
             ))}
+            <Picker.Item
+              label={selectDate}
+              value={selectDate}
+              key={selectDate}
+            />
           </Picker>
         </View>
       </Modal>
@@ -97,7 +104,7 @@ interface Props {
   date?: Date;
   startDate: Date;
   endDate: Date;
-  onDateChange(date: Date): void;
+  onDateChange(date: Date | null): void;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
@@ -158,7 +165,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
           options={this._getOptions()}
           date={!!this.props.date ? this.props.date : null}
           visible={this.state.pickerOpen}
-          onDismiss={(date: Date) => {
+          onDismiss={(date: Date | null) => {
             this.setState({ pickerOpen: false });
             this.props.onDateChange(date);
           }}

@@ -1301,7 +1301,7 @@ class GeneralHealthScreen extends React.Component<
     }
   };
 
-  _onUpdateFluShotDate = (dateInput: Date) => {
+  _onUpdateFluShotDate = (dateInput: Date | null) => {
     this.props.updateAnswer({ dateInput }, FluShotDateConfig);
   };
 
