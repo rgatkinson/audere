@@ -57,12 +57,10 @@ export const MailingAddressConfig: SurveyQuestionData = {
 export const WhereKitConfig: SurveyQuestionData = {
   id: "WhereKit",
   title: "whereKit",
-  optionList: {
-    multiSelect: false,
-    options: ["orderedApp", "fromClinic"],
-    withOther: false,
-  },
-  buttons: [{ key: "next", primary: true, enabled: true }],
+  buttons: [
+    { key: "orderedApp", primary: false, enabled: true },
+    { key: "fromClinic", primary: false, enabled: true },
+  ],
 };
 
 export const AgeConfig: SurveyQuestionData = {

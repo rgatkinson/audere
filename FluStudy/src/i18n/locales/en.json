@@ -22,7 +22,8 @@
       "emailEx": "e.g. joe@gmail.com"
     },
     "validationErrors": {
-      "email": "* Please provide a valid email address"
+      "email": "* Please provide a valid email address",
+      "whereKit": "* Please select where you got the kit"
     },
     "device": {
       "handset": "phone",
@@ -470,8 +471,6 @@
     "medLink": "Search Maps for urgent care clinics nearby"
   },
   "surveyOption": {
-    "orderedApp": "Ordered through the app",
-    "fromClinic": "Received from a clinic",
     "doNotEmailMe": "Please do not email me",
     "sendCopyOfMyConsent": "Send me a copy of my consent",
     "askAboutMyIllness": "To ask me questions about my illness/cold",
@@ -529,6 +528,8 @@
     "under18": "17 and under",
     "submit": "Submit",
     "none": "None",
+    "orderedApp": "Ordered through the app",
+    "fromClinic": "Received from a clinic",
     "1day": "1 day",
     "2days": "2 days",
     "3days": "3 days",

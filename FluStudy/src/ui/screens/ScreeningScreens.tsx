@@ -559,10 +559,16 @@ class AddressInputScreen extends React.Component<
 
   _onNext = () => {
     this.setState({ triedToProceed: true });
-    const config = !!this.props.workflow.skippedScreeningAt
-      ? AddressConfig
-      : MailingAddressConfig;
-    if (this._haveValidAddress() && isValidEmail(this.state.email)) {
+
+    if (
+      this._haveValidAddress() &&
+      isValidEmail(this.state.email) &&
+      (!this.props.workflow.skippedScreeningAt || this._haveOption())
+    ) {
+      const config = !!this.props.workflow.skippedScreeningAt
+        ? AddressConfig
+        : MailingAddressConfig;
+
       this.props.dispatch(setEmail(this.state.email!));
       this.props.updateAnswer({ addressInput: this.state.address }, config);
 
@@ -607,16 +613,11 @@ class AddressInputScreen extends React.Component<
   };
 
   _haveOption = () => {
-    const options: Option[] = this.props.getAnswer(
-      "options",
+    const whereKit = this.props.getAnswer(
+      "selectedButtonKey",
       WhereKitConfig.id
     );
-    return options
-      ? options.reduce(
-          (result: boolean, option: Option) => result || option.selected,
-          false
-        )
-      : false;
+    return !!whereKit;
   };
 
   _onChangeEmail = (email: string) => {
@@ -636,9 +637,7 @@ class AddressInputScreen extends React.Component<
               ? undefined
               : t("common:button:submit")
           }
-          canProceed={
-            !this.props.workflow.skippedScreeningAt || this._haveOption()
-          }
+          canProceed={true}
           desc={
             !!this.props.workflow.skippedScreeningAt
               ? t("surveyDescription:addressDesc")
@@ -675,8 +674,10 @@ class AddressInputScreen extends React.Component<
             onChange={this._onChangeEmail}
           />
           {!!this.props.workflow.skippedScreeningAt && (
-            <OptionQuestion
+            <RadioGrid
               question={WhereKitConfig}
+              shouldValidate={this.state.triedToProceed}
+              validationError={t("common:validationErrors:whereKit")}
               getAnswer={this.props.getAnswer}
               updateAnswer={this.props.updateAnswer}
             />

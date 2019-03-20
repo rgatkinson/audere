@@ -12,6 +12,8 @@ import { SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
   BORDER_WIDTH,
   GUTTER,
+  ERROR_COLOR,
+  FONT_NORMAL,
   RADIO_BUTTON_HEIGHT,
   REGULAR_TEXT,
   SECONDARY_COLOR,
@@ -28,6 +30,8 @@ interface Props {
   onRef?: any;
   question: SurveyQuestionData;
   scrollOnMount?: boolean;
+  shouldValidate?: boolean;
+  validationError?: string;
   style?: StyleProp<ViewStyle>;
   title?: string;
   getAnswer(key: string, id: string): any;
@@ -129,6 +133,14 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
               </TouchableOpacity>
             );
           })}
+          {this.props.shouldValidate &&
+            !this.state.selected &&
+            this.props.validationError && (
+              <Text
+                content={this.props.validationError}
+                style={styles.errorText}
+              />
+            )}
         </View>
       </ScrollIntoView>
     );
@@ -140,6 +152,11 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
+  },
+  errorText: {
+    color: ERROR_COLOR,
+    fontFamily: FONT_NORMAL,
+    marginTop: GUTTER / 4,
   },
   radioButton: {
     borderColor: TEXT_COLOR,
