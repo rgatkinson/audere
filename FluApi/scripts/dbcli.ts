@@ -21,6 +21,7 @@ import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
 import { createSplitSql } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
+import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
   defineSnifflesModels,
   VisitAttributes
@@ -104,6 +105,14 @@ yargs
         .string("row")
         .option("value", { boolean: true }),
     handler: command(cmdDemo1)
+  })
+  .command({
+    command: "location <row> <value>",
+    builder: yargs =>
+      yargs
+        .string("row")
+        .string("value"),
+    handler: command(cmdLocation),
   })
   .command({
     command: "generate-random-key [size]",
@@ -430,6 +439,42 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
 
     default:
       throw new Error(`Unrecognized release: '${argv.release}`);
+  }
+}
+
+interface LocationArgs {
+  row: string;
+  value: string;
+}
+
+async function cmdLocation(argv: LocationArgs) {
+  if (!snifflesLocations[argv.value]) {
+    console.log(`Unexpected location value '${argv.value}'.  Known locations are:`);
+    Object.keys(snifflesLocations).sort().forEach(x => console.log(`  ${x}`));
+    await expectYes(`Update anyway? `);
+  }
+
+  const nonPii = await sniffles.nonPii.load(argv.row);
+  const pii = await sniffles.pii.load(nonPii.csruid);
+
+  console.log(`Updating ${nonPii.csruid.substring(0, 21)} that has events:`);
+  console.log(`${JSON.stringify(nonPii.visit.events, null, 2)}`);
+  if (nonPii.visit.location === pii.visit.location) {
+    console.log(`Current location: '${nonPii.visit.location}'`);
+  } else {
+    console.log(`Current non-pii location: '${nonPii.visit.location}'`);
+    console.log(`Current pii location: '${pii.visit.location}'`);
+    await expectYes(`Update both locations to '${argv.value}'? `);
+  }
+
+  const updates = await Promise.all([
+    sniffles.nonPii.updateItem(nonPii, { ...nonPii.visit, location: argv.value }),
+    sniffles.pii.updateItem(pii, { ...pii.visit, location: argv.value }),
+  ]);
+  if (updates.some(x => x)) {
+    console.log(`Updated location to '${argv.value}'`);
+  } else {
+    console.log("Nothing changed");
   }
 }
 
