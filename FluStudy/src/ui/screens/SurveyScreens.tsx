@@ -106,7 +106,7 @@ const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
-const BARCODE_RE = /^[0-9A-Fa-f]{8}$/;
+const BARCODE_RE = /^[0-9a-f]{8}$/;
 const BARCODE_CHARS = 8;
 const FLUSHOT_START_DATE = new Date(2018, 0);
 
@@ -531,8 +531,8 @@ class ManualEntryScreen extends React.Component<
   constructor(props: Props & BarcodeProps & WorkflowProps & WithNamespaces) {
     super(props);
     this.state = {
-      barcode1: !!props.kitBarcode ? props.kitBarcode.code : null,
-      barcode2: !!props.kitBarcode ? props.kitBarcode.code : null,
+      barcode1: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
+      barcode2: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
     };
   }
 
@@ -550,8 +550,7 @@ class ManualEntryScreen extends React.Component<
     return (
       this.state.barcode1 != null &&
       this.state.barcode2 != null &&
-      this.state.barcode1.toLowerCase().trim() ===
-        this.state.barcode2.toLowerCase().trim()
+      this.state.barcode1.trim() === this.state.barcode2.trim()
     );
   };
 
@@ -598,11 +597,11 @@ class ManualEntryScreen extends React.Component<
   };
 
   _onBarcodeOneChange = (barcode1: string) => {
-    this.setState({ barcode1 });
+    this.setState({ barcode1: barcode1.toLowerCase() });
   };
 
   _onBarcodeTwoChange = (barcode2: string) => {
-    this.setState({ barcode2 });
+    this.setState({ barcode2: barcode2.toLowerCase() });
   };
 
   _onBarcodeOneSubmit = () => {
