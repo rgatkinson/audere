@@ -102,7 +102,6 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -127,7 +126,6 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -146,7 +144,6 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -171,7 +168,6 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -200,7 +196,6 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -225,7 +220,6 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -252,7 +246,6 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -279,7 +272,6 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={require("../../img/reverseLogo.png")}
@@ -330,7 +322,6 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         desc={aboutContent}
         footer={<Text content={t("copyright")} style={styles.footer} />}
         menuItem={true}
-        shortImage={true}
         navigation={this.props.navigation}
         skipButton={false}
         stableImageSrc={require("../../img/reverseLogo.png")}

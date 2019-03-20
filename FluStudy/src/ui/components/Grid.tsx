@@ -24,6 +24,7 @@ interface Props {
   rowStyle?: StyleProp<ViewStyle>;
   keyExtractor(item: any, index: number): string;
   renderItem(item: any, width: number): any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default class Grid extends React.Component<Props> {
@@ -63,7 +64,7 @@ export default class Grid extends React.Component<Props> {
       index = index + this.props.columns;
     }
 
-    return <View style={styles.grid}>{rows}</View>;
+    return <View style={[styles.grid, this.props.style]}>{rows}</View>;
   }
 }
 

@@ -16,7 +16,7 @@ import Chrome from "./Chrome";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
-import { GUTTER } from "../styles";
+import { GUTTER, IMAGE_WIDTH } from "../styles";
 
 interface Props {
   buttonLabel?: string;
@@ -28,7 +28,6 @@ interface Props {
   footer?: any;
   hideBackButton?: boolean;
   imageSrc?: ImageSourcePropType;
-  shortImage?: boolean;
   isDemo?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -50,7 +49,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
       <Chrome
         dispatch={this.props.dispatch}
         hideBackButton={this.props.hideBackButton}
-        shortImage={this.props.shortImage}
         menuItem={this.props.menuItem}
         navigation={this.props.navigation}
         stableImageSrc={this.props.stableImageSrc}
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1.75,
     height: undefined,
     marginVertical: GUTTER / 2,
-    width: "100%",
+    width: IMAGE_WIDTH,
   },
   innerContainer: {
     alignItems: "center",

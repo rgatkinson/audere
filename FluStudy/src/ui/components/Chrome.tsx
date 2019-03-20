@@ -15,7 +15,10 @@ import NavigationBar from "./NavigationBar";
 import Text from "./Text";
 import {
   GUTTER,
+  IMAGE_WIDTH,
   NAV_BAR_HEIGHT,
+  SPLASH_IMAGE,
+  SPLASH_RATIO,
   STATUS_BAR_HEIGHT,
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
@@ -24,7 +27,6 @@ interface Props {
   children?: any;
   dispatch?(action: Action): void;
   hideBackButton?: boolean;
-  shortImage?: boolean;
   isDemo?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -61,11 +63,11 @@ export default class Chrome extends React.Component<Props> {
     }
     const image = (
       <Image
-        style={[styles.image, this.props.shortImage && styles.shortImage]}
+        style={[styles.image, this.props.menuItem && styles.shortImage]}
         source={this.props.stableImageSrc}
       />
     );
-    if (this.props.shortImage) {
+    if (this.props.menuItem) {
       return (
         <TouchableWithoutFeedback
           style={{ alignSelf: "stretch" }}
@@ -83,14 +85,14 @@ export default class Chrome extends React.Component<Props> {
       <View style={styles.container}>
         <ImageBackground
           source={
-            this.props.shortImage
-              ? require("../../img/shortBackground.png")
-              : require("../../img/backgroundCrop.png")
+            this.props.menuItem
+              ? require("../../img/shortSplash.png")
+              : SPLASH_IMAGE
           }
           style={[
             { alignSelf: "stretch" },
             !!this.props.stableImageSrc && {
-              aspectRatio: this.props.shortImage ? 1.61 : 1.05,
+              aspectRatio: this.props.menuItem ? 1.61 : SPLASH_RATIO,
               width: "100%",
             },
           ]}
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1.75,
     height: undefined,
     marginVertical: GUTTER / 2,
-    width: "100%",
+    width: IMAGE_WIDTH,
   },
   shortImage: {
     aspectRatio: 4.23,

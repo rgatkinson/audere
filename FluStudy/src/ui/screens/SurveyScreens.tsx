@@ -667,16 +667,21 @@ class ManualEntryScreen extends React.Component<
               alignSelf: "stretch",
               flexDirection: "row",
               justifyContent: "space-between",
+              marginTop: GUTTER,
             }}
           >
             <Image
               style={{ aspectRatio: 2.2, flex: 0.4 }}
               source={require("../../img/barcode.png")}
             />
-            <Text
-              content={t("tips")}
-              style={{ flex: 0.6, paddingLeft: GUTTER }}
-            />
+            <View style={{ flex: 0.6, paddingLeft: GUTTER }}>
+              <Text
+                bold={true}
+                content={t("tipHeader")}
+                style={{ marginBottom: GUTTER }}
+              />
+              <Text content={t("tips")} />
+            </View>
           </View>
         </Screen>
       </KeyboardAvoidingView>
@@ -2252,6 +2257,7 @@ class EmailOptInScreen extends React.Component<
           )}
           multiSelect={true}
           numColumns={1}
+          style={{ marginBottom: GUTTER }}
           onChange={this._onChange}
         />
       </Screen>

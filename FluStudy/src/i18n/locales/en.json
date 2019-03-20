@@ -284,7 +284,8 @@
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "secondPlaceholder": "Confirm barcode",
     "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tips": "**Tips:**\n\nFind the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
+    "tipHeader": "Tips:",
+    "tips": "Find the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",

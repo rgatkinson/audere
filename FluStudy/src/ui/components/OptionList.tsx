@@ -28,10 +28,11 @@ interface Option {
 
 interface Props {
   data: Option[];
-  multiSelect: boolean;
-  numColumns: number;
   exclusiveOptions?: string[];
   inclusiveOption?: string;
+  multiSelect: boolean;
+  numColumns: number;
+  style?: StyleProp<ViewStyle>;
   onChange(data: Option[]): void;
 }
 
@@ -127,6 +128,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
             onPressItem={this._onPressItem}
           />
         )}
+        style={this.props.style}
       />
     );
   }
