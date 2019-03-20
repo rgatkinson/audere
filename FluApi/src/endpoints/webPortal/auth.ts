@@ -9,6 +9,7 @@ import passport, { Passport } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import {Inst, SplitSql} from "../../util/sql";
 import {defineSiteUserModels, SiteUserModels, UserAttributes} from "./models";
+import logger from "../../util/logger";
 
 export class AuthManager {
   private readonly models: SiteUserModels;
@@ -23,13 +24,20 @@ export class AuthManager {
       async (userid, password, done) => {
         try {
           const user = await this.models.user.findOne({ where: { userid }});
-          if (!user || hash(user.salt, userid, password) !== user.token) {
+          if (!user) {
+            logger.debug(`passport.local: could not find user for '${userid}'`);
+            const message = "Invalid userid/password combination";
+            return done(null, false, { message });
+          } else if (hash(user.salt, userid, password) !== user.token) {
+            logger.debug(`passport.local: password invalid for '${userid}'`);
             const message = "Invalid userid/password combination";
             return done(null, false, { message });
           } else {
+            logger.debug(`passport.local: successfully authenticated '${userid}'`);
             return done(null, user);
           }
         } catch (err) {
+          logger.error(`passport.local: error while authenticating '${userid}': ${err}`);
           return done(err)
         }
       }

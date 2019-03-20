@@ -7,7 +7,6 @@ import { join as pjoin, resolve } from "path";
 import passport from "passport";
 import express, { Express } from "express";
 import session from "express-session";
-const SequelizeSessionStore = require("connect-session-sequelize")(session.Store);
 import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
@@ -17,6 +16,9 @@ import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
 import {defineSiteUserModels, SESSION_TABLE_NAME} from "./models";
+import logger from "../../util/logger";
+
+const SequelizeSessionStore = require("connect-session-sequelize")(session.Store);
 
 export interface PortalConfig {
   sql: SplitSql;
@@ -103,8 +105,10 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
 
   function requireLoggedInUser(req, res, next) {
     if (req.user) {
+      logger.debug(`requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`);
       return next();
     } else {
+      logger.debug("requireLoggedInUser redirecting because no user");
       return res.redirect(sitepath("/login"));
     }
   }
