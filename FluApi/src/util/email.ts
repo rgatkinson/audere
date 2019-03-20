@@ -7,6 +7,7 @@ import nodemailer, { SendMailOptions } from "nodemailer";
 import { AWS } from "./aws";
 import logger from "./logger";
 import { isAWS } from "./environment";
+import { LazyAsync } from "./lazyAsync";
 
 const SHOULD_SEND_EMAIL = isAWS() || process.env.SEND_EMAIL;
 
@@ -15,14 +16,16 @@ const SESNodemailerTransport = nodemailer.createTransport({
   SES: SESClient
 });
 
+const testNodemailerTransport = new LazyAsync(getTestNodeMailer);
+
 async function getNodemailerTransport() {
   if (!SHOULD_SEND_EMAIL) {
-    return await getTestNodeMailer();
+    return await testNodemailerTransport.get();
   }
   return SESNodemailerTransport;
 }
 
-const getTestNodeMailer = memoize(async () => {
+async function getTestNodeMailer() {
   const account = await nodemailer.createTestAccount();
   const testTransport = nodemailer.createTransport({
     host: "smtp.ethereal.email",
@@ -40,16 +43,6 @@ const getTestNodeMailer = memoize(async () => {
       );
       return testTransport.sendMail(config);
     }
-  };
-});
-
-function memoize<T>(fn: () => T): () => T {
-  let value: T;
-  return () => {
-    if (value) {
-      return value;
-    }
-    return (value = fn());
   };
 }
 
