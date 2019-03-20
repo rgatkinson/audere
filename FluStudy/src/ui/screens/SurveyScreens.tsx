@@ -333,13 +333,15 @@ class ScanScreen extends React.Component<
 
   _onBarCodeScanned = ({ type, data }: { type: any; data: string }) => {
     const { t } = this.props;
+    const barcode = data.toLowerCase();
+
     if (!this.state.activeScan) {
       this.setState({ activeScan: true });
-      if (BARCODE_RE.test(data) && data.length == BARCODE_CHARS) {
+      if (BARCODE_RE.test(barcode) && barcode.length == BARCODE_CHARS) {
         this.props.dispatch(
           setKitBarcode({
             sample_type: type,
-            code: data,
+            code: barcode,
           })
         );
         this.props.dispatch(
@@ -350,7 +352,7 @@ class ScanScreen extends React.Component<
         );
         this.props.navigation.push("ScanConfirmation");
       } else {
-        Alert.alert(t("sorry"), t("invalidBarcode", { barcode: data }), [
+        Alert.alert(t("sorry"), t("invalidBarcode", { barcode }), [
           {
             text: t("common:button:ok"),
             onPress: () => {
