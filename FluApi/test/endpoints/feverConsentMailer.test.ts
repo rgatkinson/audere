@@ -19,7 +19,7 @@ import {
   newSurveys
 } from "../../src/endpoints/feverConsentMailer";
 import { SurveyDocument } from "audere-lib/feverProtocol";
-import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
+import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("FeverConsentEmailer", () => {
   let sql;
@@ -38,7 +38,7 @@ describe("FeverConsentEmailer", () => {
       valid: true
     });
     sessionStore = createTestSessionStore(sql);
-    publicApp = await createPublicApp({sql, sessionStore});
+    publicApp = await createPublicApp({ sql, sessionStore });
     done();
   });
 

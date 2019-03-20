@@ -10,7 +10,7 @@ import {
   stringColumn,
   SplitSql,
   primaryKey,
-  dateColumn,
+  dateColumn
 } from "../../util/sql";
 
 export const SESSION_TABLE_NAME = "site_sessions";
@@ -18,7 +18,7 @@ export const SESSION_TABLE_NAME = "site_sessions";
 export function defineSiteUserModels(sql: SplitSql): SiteUserModels {
   return {
     user: defineUser(sql),
-    session: defineSession(sql),
+    session: defineSession(sql)
   };
 }
 
@@ -32,7 +32,7 @@ export function defineUser(sql: SplitSql): Model<UserAttributes> {
     uuid: unique(stringColumn()),
     userid: unique(stringColumn()),
     salt: stringColumn(),
-    token: stringColumn(),
+    token: stringColumn()
   });
 }
 export interface UserAttributes {
@@ -47,7 +47,7 @@ export function defineSession(sql: SplitSql): Model<SessionAttributes> {
   return defineModel<SessionAttributes>(sql.pii, SESSION_TABLE_NAME, {
     sid: primaryKey(stringColumn()),
     expires: dateColumn(),
-    data: stringColumn(),
+    data: stringColumn()
   });
 }
 export interface SessionAttributes {

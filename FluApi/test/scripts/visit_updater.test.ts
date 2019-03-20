@@ -25,7 +25,7 @@ import {
   defineSnifflesModels,
   VisitAttributes
 } from "../../src/models/sniffles";
-import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
+import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("VisitUpdater", () => {
   let sql;

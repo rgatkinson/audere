@@ -6,7 +6,7 @@
 import request from "supertest";
 import { AppConfig, createPublicApp } from "../src/app";
 import { createSplitSql } from "../src/util/sql";
-import {createTestSessionStore} from "../src/endpoints/webPortal/endpoint";
+import { createTestSessionStore } from "../src/endpoints/webPortal/endpoint";
 
 let publicApp;
 let sql;

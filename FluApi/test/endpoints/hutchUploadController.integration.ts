@@ -25,7 +25,7 @@ import {
   VisitPIIInstance
 } from "../../src/models/sniffles";
 import { defineHutchUpload } from "../../src/models/hutchUpload";
-import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
+import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("export controller", () => {
   let sql;

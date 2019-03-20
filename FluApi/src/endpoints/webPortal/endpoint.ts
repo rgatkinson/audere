@@ -15,10 +15,12 @@ import { useOuch, createApp, render } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
-import {defineSiteUserModels, SESSION_TABLE_NAME} from "./models";
+import { defineSiteUserModels, SESSION_TABLE_NAME } from "./models";
 import logger from "../../util/logger";
 
-const SequelizeSessionStore = require("connect-session-sequelize")(session.Store);
+const SequelizeSessionStore = require("connect-session-sequelize")(
+  session.Store
+);
 
 export interface PortalConfig {
   sql: SplitSql;
@@ -36,11 +38,11 @@ export async function portalApp(config: PortalConfig) {
   const app = createApp();
 
   // TODO: set up static directory in nginx
-  app.use(express.static(resolve(__dirname, 'static')));
+  app.use(express.static(resolve(__dirname, "static")));
 
-  app.engine('html', consolidate.handlebars);
-  app.set('view engine', 'html');
-  app.set('views', resolve(__dirname, "templates"));
+  app.engine("html", consolidate.handlebars);
+  app.set("view engine", "html");
+  app.set("views", resolve(__dirname, "templates"));
 
   await addSession(app, config);
 
@@ -61,7 +63,7 @@ export async function portalApp(config: PortalConfig) {
 
 async function addSession(
   app: Express,
-  config: PortalConfig,
+  config: PortalConfig
 ): Promise<Express> {
   const secretConfig = new SecretConfig(config.sql);
   const secret = await secretConfig.getOrCreate("WEB_PORTAL_SESSION_SECRET");
@@ -72,13 +74,13 @@ async function addSession(
     secret,
     cookie: {
       sameSite: true,
-      secure,
+      secure
     },
     store,
     proxy: secure,
     resave: true,
     rolling: true,
-    saveUninitialized: true,
+    saveUninitialized: true
   };
 
   if (secure) {
@@ -93,10 +95,13 @@ async function addSession(
 function addHandlers(app: Express, auth: passport.Authenticator): Express {
   app.get("/login", render("login.html", loginContext));
 
-  app.post("/login", auth.authenticate('local', {
-    successRedirect: "/portal/index",
-    failureRedirect: "/portal/login",
-  }));
+  app.post(
+    "/login",
+    auth.authenticate("local", {
+      successRedirect: "/portal/index",
+      failureRedirect: "/portal/login"
+    })
+  );
 
   app.use(requireLoggedInUser);
   app.get("/index", render("index.html", userContext));
@@ -105,7 +110,9 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
 
   function requireLoggedInUser(req, res, next) {
     if (req.user) {
-      logger.debug(`requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`);
+      logger.debug(
+        `requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`
+      );
       return next();
     } else {
       logger.debug("requireLoggedInUser redirecting because no user");
@@ -116,20 +123,20 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   function userContext(req) {
     return {
       ...loginContext(req),
-      user: req.user,
-    }
+      user: req.user
+    };
   }
 
   function loginContext(req) {
     return {
       static: app.mountpath,
-      csrf: req.csrfToken(),
-    }
+      csrf: req.csrfToken()
+    };
   }
 
   // Given a portal-relative path, returns a site-wide url path
   function sitepath(portalPath) {
-    return pjoin(mountpath(), portalPath)
+    return pjoin(mountpath(), portalPath);
   }
 
   function mountpath(): string {
@@ -155,6 +162,6 @@ function createSessionStore(sql: SplitSql) {
   defineSiteUserModels(sql);
   return new SequelizeSessionStore({
     db: sql.pii,
-    table: SESSION_TABLE_NAME,
-  })
+    table: SESSION_TABLE_NAME
+  });
 }

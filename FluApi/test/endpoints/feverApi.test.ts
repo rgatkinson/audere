@@ -21,7 +21,7 @@ import {
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/fever";
-import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
+import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("putFeverDocument", () => {
   let sql;

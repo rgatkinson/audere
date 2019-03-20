@@ -7,8 +7,8 @@ import crypto from "crypto";
 import uuidv4 from "uuid/v4";
 import passport, { Passport } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import {Inst, SplitSql} from "../../util/sql";
-import {defineSiteUserModels, SiteUserModels, UserAttributes} from "./models";
+import { Inst, SplitSql } from "../../util/sql";
+import { defineSiteUserModels, SiteUserModels, UserAttributes } from "./models";
 import logger from "../../util/logger";
 
 export class AuthManager {
@@ -20,10 +20,10 @@ export class AuthManager {
 
   makePassport(): passport.Authenticator {
     const auth = new Passport();
-    auth.use(new LocalStrategy(
-      async (userid, password, done) => {
+    auth.use(
+      new LocalStrategy(async (userid, password, done) => {
         try {
-          const user = await this.models.user.findOne({ where: { userid }});
+          const user = await this.models.user.findOne({ where: { userid } });
           if (!user) {
             logger.debug(`passport.local: could not find user for '${userid}'`);
             const message = "Invalid userid/password combination";
@@ -33,20 +33,24 @@ export class AuthManager {
             const message = "Invalid userid/password combination";
             return done(null, false, { message });
           } else {
-            logger.debug(`passport.local: successfully authenticated '${userid}'`);
+            logger.debug(
+              `passport.local: successfully authenticated '${userid}'`
+            );
             return done(null, user);
           }
         } catch (err) {
-          logger.error(`passport.local: error while authenticating '${userid}': ${err}`);
-          return done(err)
+          logger.error(
+            `passport.local: error while authenticating '${userid}': ${err}`
+          );
+          return done(err);
         }
-      }
-    ));
+      })
+    );
 
     auth.serializeUser((user: UserAttributes, done) => done(null, user.uuid));
     auth.deserializeUser(async (uuid: string, done) => {
       try {
-        const user = await this.models.user.findOne({ where: { uuid }});
+        const user = await this.models.user.findOne({ where: { uuid } });
         done(null, user);
       } catch (err) {
         done(err);
@@ -62,20 +66,20 @@ export class AuthManager {
       uuid: uuidv4(),
       userid,
       salt,
-      token: makeToken({ salt, userid, password }),
+      token: makeToken({ salt, userid, password })
     });
   }
 
   async setPassword(userid: string, password: string): Promise<void> {
     const user = await this.findUser(userid);
     const salt = await makeSecret();
-    await user.update({ salt, token: makeToken({ salt, userid, password })});
+    await user.update({ salt, token: makeToken({ salt, userid, password }) });
   }
 
   async disableUser(userid: string): Promise<void> {
     const user = await this.findUser(userid);
     const salt = await makeSecret();
-    await user.update({ salt, token: ""});
+    await user.update({ salt, token: "" });
   }
 
   async deleteUser(userid: string): Promise<void> {
@@ -84,7 +88,7 @@ export class AuthManager {
   }
 
   private async findUser(userid: string): Promise<Inst<UserAttributes>> {
-    const user = await this.models.user.findOne({ where: { userid }});
+    const user = await this.models.user.findOne({ where: { userid } });
     if (user == null) {
       throw new Error(`Unrecognized userid`);
     }

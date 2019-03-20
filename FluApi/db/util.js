@@ -37,8 +37,8 @@ function identity(column) {
 function primaryKey(column) {
   return {
     ...column,
-    primaryKey: true,
-  }
+    primaryKey: true
+  };
 }
 
 function unique(column) {
@@ -65,5 +65,5 @@ module.exports = {
   nullableColumn,
   identity,
   primaryKey,
-  unique,
+  unique
 };

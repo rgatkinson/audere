@@ -30,15 +30,12 @@ export async function createPublicApp(config: AppConfig) {
   // Public app is internet-facing.
   const publicApp = createApp();
   publicApp.set("port", process.env.PORT || 3000);
-  publicApp.use(bodyParser.json({limit: '20mb'}));
+  publicApp.use(bodyParser.json({ limit: "20mb" }));
 
-  publicApp.get(
-    "/favicon.ico",
-    async (req, res) => res.sendFile(
-      resolve(__dirname, "endpoints/webPortal/static/favicon.ico")
-    )
+  publicApp.get("/favicon.ico", async (req, res) =>
+    res.sendFile(resolve(__dirname, "endpoints/webPortal/static/favicon.ico"))
   );
-  publicApp.use('/portal', await portalApp(config));
+  publicApp.use("/portal", await portalApp(config));
 
   publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
 

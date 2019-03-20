@@ -40,7 +40,7 @@ export class SecretConfig {
       return envVar;
     }
 
-    const record = await this.secretModel.findOne({ where: { key }});
+    const record = await this.secretModel.findOne({ where: { key } });
     if (record != null) {
       return record.value;
     }

@@ -53,5 +53,5 @@ export function wrap(handler: any) {
 }
 
 export interface ContextBuilder<T> {
-  (req: any): T
+  (req: any): T;
 }

@@ -14,7 +14,7 @@ async function startServer(): Promise<void> {
   sql.nonPii.authenticate();
   sql.pii.authenticate();
 
-  const config = {sql};
+  const config = { sql };
 
   const publicApp = await createPublicApp(config);
 

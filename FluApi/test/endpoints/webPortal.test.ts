@@ -4,11 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import {createSplitSql} from "../../src/util/sql";
-import {createPublicApp} from "../../src/app";
-import {AuthManager} from "../../src/endpoints/webPortal/auth";
-import {createTestSessionStore} from "../../src/endpoints/webPortal/endpoint";
-import {defineSession} from "../../src/endpoints/webPortal/models";
+import { createSplitSql } from "../../src/util/sql";
+import { createPublicApp } from "../../src/app";
+import { AuthManager } from "../../src/endpoints/webPortal/auth";
+import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
+import { defineSession } from "../../src/endpoints/webPortal/models";
 
 describe("webPortal", () => {
   let sql;
@@ -61,26 +61,29 @@ describe("webPortal", () => {
     const req = request(publicApp);
 
     let login;
-    await req.get("/portal/login")
+    await req
+      .get("/portal/login")
       .expect(200)
-      .expect(res => login = res);
+      .expect(res => (login = res));
 
     const loginCSRF = getCSRF(login.text);
     expect(loginCSRF).not.toBeNull();
 
     let post;
-    await req.post("/portal/login")
+    await req
+      .post("/portal/login")
       .type("form")
       .set("Cookie", login.headers["set-cookie"])
       .send({
         _csrf: loginCSRF,
         username,
-        password,
+        password
       })
       .expect(302, /\/portal\/index$/)
-      .expect(res => post = res);
+      .expect(res => (post = res));
 
-    await req.get("/portal/index")
+    await req
+      .get("/portal/index")
       .set("Cookie", post.headers["set-cookie"])
       .expect(200);
   });
@@ -89,40 +92,44 @@ describe("webPortal", () => {
     const req = request(publicApp);
 
     let login;
-    await req.get("/portal/login")
+    await req
+      .get("/portal/login")
       .expect(200)
-      .expect(res => login = res);
+      .expect(res => (login = res));
 
-    await req.post("/portal/login")
+    await req
+      .post("/portal/login")
       .type("form")
       .set("Cookie", login.headers["set-cookie"])
       .send({
         // _csrf: loginCSRF,
         username,
-        password,
+        password
       })
-      .expect(403)
+      .expect(403);
   });
 
   it("Fails if no user in db", async () => {
     const req = request(publicApp);
 
     let login;
-    await req.get("/portal/login")
+    await req
+      .get("/portal/login")
       .expect(200)
-      .expect(res => login = res);
+      .expect(res => (login = res));
 
     const loginCSRF = getCSRF(login.text);
     expect(loginCSRF).not.toBeNull();
 
     let post;
-    await req.post("/portal/login")
+    await req
+      .post("/portal/login")
       .type("form")
       .set("Cookie", login.headers["set-cookie"])
       .send({
         _csrf: loginCSRF,
         username: "incorrect",
-        password,
+        password
       })
       .expect(302, /\/portal\/login$/);
   });
@@ -131,28 +138,32 @@ describe("webPortal", () => {
     const req = request(publicApp);
 
     let login;
-    await req.get("/portal/login")
+    await req
+      .get("/portal/login")
       .expect(200)
-      .expect(res => login = res);
+      .expect(res => (login = res));
 
     const loginCSRF = getCSRF(login.text);
     expect(loginCSRF).not.toBeNull();
 
     let post;
-    await req.post("/portal/login")
+    await req
+      .post("/portal/login")
       .type("form")
       .set("Cookie", login.headers["set-cookie"])
       .send({
         _csrf: loginCSRF,
         username,
-        password: "incorrect",
+        password: "incorrect"
       })
       .expect(302, /\/portal\/login$/);
   });
 });
 
 function getCSRF(text: string): string {
-  const match = /<input type="hidden" name="_csrf" value="([0-9a-zA-Z_-]*)">/.exec(text);
+  const match = /<input type="hidden" name="_csrf" value="([0-9a-zA-Z_-]*)">/.exec(
+    text
+  );
   if (match == null) {
     throw new Error(`Could not locate CSRF control in '${text}'`);
   }
