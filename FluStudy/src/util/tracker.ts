@@ -66,7 +66,7 @@ const forceMeToBeTracked = false; // DO NOT COMMIT `true`!
 // So: to see your debug data online in firebase's debug stream, set
 // forceMeToBeTracked = true AND make sure you're running a debug build
 // (which by default contains -FIRDebugEnabled).
-async function shouldTrack(isDemo: boolean): Promise<boolean> {
+function shouldTrack(): boolean {
   if (forceMeToBeTracked) {
     console.log("[Tracker] Overriding exclusions and sending tracking info!");
     return true;
@@ -75,7 +75,7 @@ async function shouldTrack(isDemo: boolean): Promise<boolean> {
   const isProduction =
     process.env.REACT_NATIVE_API_SERVER === "https://api.auderenow.io/api";
 
-  return !isDemo && isProduction;
+  return isProduction;
 }
 
 // These User Properties have been created on our Firebase console as a way to
@@ -123,7 +123,7 @@ export function getMarketingProperties() {
   return parsedMarketingProperties;
 }
 
-export async function startTracking(): Promise<[void, void]> {
+export async function startTracking(): Promise<void> {
   // getUniqueID returns IDFV on iOS (unique ID per install, not per phone),
   // and on Android it'll change per install too after Oreo).  Tracking IDs
   // will allow us not only to correlate events to the same phone, but also to
@@ -135,15 +135,20 @@ export async function startTracking(): Promise<[void, void]> {
   // dependencies).  Passing false is fine here because we start tracking at
   // app launch, when isDemo is false anyway, and we always update
   // the collection status whenever isDemo changes...
-  return Promise.all([
-    recordMarketingAttributions(),
-    updateCollectionEnabled(false),
-  ]);
+  updateCollectionEnabled(false);
+  await recordMarketingAttributions();
 }
 
-export async function updateCollectionEnabled(isDemo: boolean): Promise<void> {
-  const should = await shouldTrack(isDemo);
+export function updateCollectionEnabled(isDemo: boolean) {
+  const should = shouldTrack();
 
+  // We need to filter out, in Firebase, all the users who've ever toggled
+  // demo mode ON (at least for that instance of the app installation).  Note
+  // that this needs to go _before_ setAnalyticsCollectionEnabled below, because
+  // no events/properties/etc are recorded after that moment.
+  if (isDemo) {
+    tracker.setUserProperty("demo_mode_aware", "true");
+  }
   tracker.logEvent(demoModeEvent, { isDemo });
   tracker.setAnalyticsCollectionEnabled(should);
 }
