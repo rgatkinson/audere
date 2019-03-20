@@ -58,6 +58,8 @@ export function getRemoteConfig(key: string): any {
   return _currentConfig[key];
 }
 
+const SECONDS_IN_HOUR = 60 * 60;
+
 export async function loadAllRemoteConfigs() {
   const config = firebase.config();
 
@@ -69,7 +71,12 @@ export async function loadAllRemoteConfigs() {
   config.setDefaults(DEFAULT_CONFIGS);
 
   try {
-    await config.fetch(0); // Zero means "always pull from network"
+    // We tried fetch(0), which means "always pull from network", but the
+    // problem is that you get throttled by Remote Config if you hit the
+    // servers too often.  Interwebs lore is that the limit is 5 times in
+    // any given hour, throttled from the client side.  To be safe, we cache
+    // for an hour now.
+    await config.fetch(SECONDS_IN_HOUR);
 
     const activated = await config.activateFetched();
 
