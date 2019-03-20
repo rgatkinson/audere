@@ -221,7 +221,7 @@ interface DocumentEventsArgs {
 }
 
 async function cmdDocumentEvents(argv: DocumentEventsArgs): Promise<void> {
-  const { csruid } = argv;
+  const csruid = argv.csruid.trim();
   const rows = await feverModels.surveyNonPii.findAll({ where: { csruid }});
   if (rows.length === 0) {
     throw fail(`Could not find any surveys with csruid '${csruid}'.`);
@@ -366,24 +366,24 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
 
   switch (argv.release) {
     case Release.Sniffles: {
-      const dataNP = await sniffles.nonPii.load(argv.row);
+      const dataNP = await sniffles.nonPii.load(argv.row.trim());
       const { csruid } = dataNP;
       const dataP = await sniffles.pii.load(csruid);
       await Promise.all([
         sniffles.nonPii.setDemo(dataNP, isDemo),
         sniffles.pii.setDemo(dataP, isDemo),
-      ])
+      ]);
       break;
     }
 
     case Release.Fever: {
-      const dataNP = await fever.nonPii.load(argv.row);
+      const dataNP = await fever.nonPii.load(argv.row.trim());
       const { csruid } = dataNP;
       const dataP = await fever.pii.load(csruid);
       await Promise.all([
         fever.nonPii.setDemo(dataNP, isDemo),
         fever.pii.setDemo(dataP, isDemo),
-      ])
+      ]);
       break;
     }
 
@@ -406,12 +406,12 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
     case Release.Sniffles:
       switch (argv.kind) {
         case "pii": {
-          const data = await sniffles.pii.load(argv.row);
+          const data = await sniffles.pii.load(argv.row.trim());
           await sniffles.pii.setDemo(data, isDemo);
           break;
         }
         case "nonpii": {
-          const data = await sniffles.nonPii.load(argv.row);
+          const data = await sniffles.nonPii.load(argv.row.trim());
           await sniffles.nonPii.setDemo(data, isDemo);
           break;
         }
@@ -423,12 +423,12 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
     case Release.Fever:
       switch (argv.kind) {
         case "pii": {
-          const data = await fever.pii.load(argv.row);
+          const data = await fever.pii.load(argv.row.trim());
           await fever.pii.setDemo(data, isDemo);
           break;
         }
         case "nonpii": {
-          const data = await fever.nonPii.load(argv.row);
+          const data = await fever.nonPii.load(argv.row.trim());
           await fever.nonPii.setDemo(data, isDemo);
           break;
         }
@@ -454,7 +454,7 @@ async function cmdLocation(argv: LocationArgs) {
     await expectYes(`Update anyway? `);
   }
 
-  const nonPii = await sniffles.nonPii.load(argv.row);
+  const nonPii = await sniffles.nonPii.load(argv.row.trim());
   const pii = await sniffles.pii.load(nonPii.csruid);
 
   console.log(`Updating ${nonPii.csruid.substring(0, 21)} that has events:`);
@@ -528,7 +528,7 @@ interface ShowArgs {
 
 async function cmdShow(argv: ShowArgs): Promise<void> {
   const upd = updater(argv.release, argv.kind);
-  const data = await upd.load(argv.row);
+  const data = await upd.load(argv.row.trim());
   console.log(JSON.stringify(data));
 }
 
@@ -544,10 +544,10 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
     case Release.Sniffles:
       switch (argv.kind) {
         case "pii":
-          await snifflesEditPii(argv.row, argv.path);
+          await snifflesEditPii(argv.row.trim(), argv.path);
           break;
         case "nonpii":
-          await snifflesEditNonPii(argv.row, argv.path);
+          await snifflesEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
           throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
@@ -556,10 +556,10 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
     case Release.Fever:
       switch (argv.kind) {
         case "pii":
-          await feverEditPii(argv.row, argv.path);
+          await feverEditPii(argv.row.trim(), argv.path);
           break;
         case "nonpii":
-          await feverEditNonPii(argv.row, argv.path);
+          await feverEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
           throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
