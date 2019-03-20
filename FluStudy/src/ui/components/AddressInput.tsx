@@ -12,6 +12,7 @@ import {
   GUTTER,
   INPUT_HEIGHT,
   LINK_COLOR,
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -42,7 +43,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
   }
 
   render() {
-    const { t } = this.props;
+    const { shouldValidate, t } = this.props;
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: "row" }}>
@@ -50,12 +51,8 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={this.props.autoFocus}
-            placeholder={
-              t("firstName") + (this.props.shouldValidate ? t("required") : "")
-            }
-            placeholderTextColor={
-              this.props.shouldValidate ? ERROR_COLOR : undefined
-            }
+            placeholder={t("firstName") + (shouldValidate ? t("required") : "")}
+            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             returnKeyType="next"
             style={styles.firstName}
             value={this.props.value ? this.props.value!.firstName : undefined}
@@ -70,13 +67,9 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={false}
-            placeholder={
-              t("lastName") + (this.props.shouldValidate ? t("required") : "")
-            }
+            placeholder={t("lastName") + (shouldValidate ? t("required") : "")}
             ref={this.lastName}
-            placeholderTextColor={
-              this.props.shouldValidate ? ERROR_COLOR : undefined
-            }
+            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             returnKeyType="next"
             style={styles.inputRowRight}
             value={this.props.value ? this.props.value!.lastName : undefined}
@@ -93,12 +86,9 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCorrect={false}
           autoFocus={false}
           placeholder={
-            t("streetAddress") +
-            (this.props.shouldValidate ? t("required") : "")
+            t("streetAddress") + (shouldValidate ? t("required") : "")
           }
-          placeholderTextColor={
-            this.props.shouldValidate ? ERROR_COLOR : undefined
-          }
+          placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
           ref={this.address}
           returnKeyType="next"
           style={styles.textInput}
@@ -129,12 +119,8 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          placeholder={
-            t("city") + (this.props.shouldValidate ? t("required") : "")
-          }
-          placeholderTextColor={
-            this.props.shouldValidate ? ERROR_COLOR : undefined
-          }
+          placeholder={t("city") + (shouldValidate ? t("required") : "")}
+          placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
           ref={this.city}
           returnKeyType="next"
           style={styles.textInput}
@@ -160,10 +146,15 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               content={
                 this.props.value && this.props.value.state
                   ? this.props.value.state
-                  : t("state") +
-                    (this.props.shouldValidate ? t("required") : "")
+                  : t("state") + (shouldValidate ? t("required") : "")
               }
-              style={styles.text}
+              style={[
+                styles.statePlaceholder,
+                shouldValidate &&
+                  this.props.value &&
+                  !this.props.value.state &&
+                  styles.statePlaceholderError,
+              ]}
             />
           </TouchableOpacity>
           <StateModal
@@ -182,12 +173,8 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           />
           <NumberInput
             maxDigits={5}
-            placeholder={
-              t("zipcode") + (this.props.shouldValidate ? t("required") : "")
-            }
-            placeholderTextColor={
-              this.props.shouldValidate ? ERROR_COLOR : undefined
-            }
+            placeholder={t("zipcode") + (shouldValidate ? t("required") : "")}
+            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             ref={this.zipcode}
             returnKeyType="done"
             style={[styles.inputRowRight, styles.textInput]}
@@ -223,9 +210,12 @@ const styles = StyleSheet.create({
     height: INPUT_HEIGHT,
     padding: GUTTER / 4,
   },
-  text: {
-    color: LINK_COLOR,
+  statePlaceholder: {
+    color: TEXT_COLOR,
     marginVertical: 0,
+  },
+  statePlaceholderError: {
+    color: ERROR_COLOR,
   },
   textInput: {
     height: INPUT_HEIGHT,
