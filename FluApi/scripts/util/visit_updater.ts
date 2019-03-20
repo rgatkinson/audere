@@ -11,30 +11,55 @@ import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/sniffles
 
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
+import { SplitSql } from "../../src/util/sql";
+import { defineHutchUpload, HutchUploadModel } from "../../src/models/hutchUpload";
 
 const Op = Sequelize.Op;
 
+interface Config<T> {
+  sql: SplitSql;
+  log: ScriptLogger;
+  db: Sequelize.Sequelize;
+  label: string;
+}
+
 export abstract class VisitUpdater<T extends object & {isDemo?: boolean}>
 implements Updater<VisitAttributes<T>, T, DeviceInfo> {
+  private readonly sql: SplitSql;
   private readonly data: VisitModel<T>;
   private readonly backup: VisitModel<T>;
+  private readonly nonPii: VisitModel<VisitNonPIIDbInfo>;
+  private readonly upload: HutchUploadModel;
   protected readonly log: ScriptLogger;
   private readonly label: string;
 
-  constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger, label: string) {
-    this.data = defineVisit(sequelize);
-    this.backup = defineVisit(sequelize, VisitTableType.BACKUP);
-    this.log = log;
-    this.label = label;
+  constructor(config: Config<T>) {
+    this.sql = config.sql;
+    this.data = defineVisit(config.db);
+    this.backup = defineVisit(config.db, VisitTableType.BACKUP);
+    this.nonPii = defineVisit(config.sql.nonPii);
+    this.upload = defineHutchUpload(config.sql);
+    this.log = config.log;
+    this.label = config.label;
   }
 
   async cleanupForTesting(...csruids: string[]): Promise<void> {
+    const where = {
+      where: {
+        csruid: csruids
+      }
+    };
     const actions = [];
-    for (let csruid of csruids) {
-      const where = { where: { csruid }};
-      actions.push(this.data.destroy(where));
-      actions.push(this.backup.destroy(where));
+
+    for (let visit of await this.nonPii.findAll(where)) {
+      actions.push(this.upload.destroy({ where: { visit_id: visit.id }}));
     }
+    for (let db of [this.sql.nonPii, this.sql.pii]) {
+      for (let type of [VisitTableType.CURRENT, VisitTableType.BACKUP]) {
+        actions.push(defineVisit(db, type).destroy(where));
+      }
+    }
+
     await Promise.all(actions);
   }
 
@@ -87,9 +112,29 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
       visit: current.visit,
     });
 
+    await this.deleteUploadMarker(current.csruid);
+
     this.log.info(`Writing modified ${this.label} row '${idtxt(current.csruid)}'.`);
     await this.data.upsert(update);
+
     return true;
+  }
+
+  async deleteUploadMarker(csruid: string): Promise<boolean> {
+    const nonPii = this.expectOneMatch(
+      "csruid",
+      await this.nonPii.findAll({ where: { csruid }})
+    );
+
+    const uploads = await this.upload.destroy({ where: { visit_id: nonPii.id }});
+    switch (uploads) {
+      case 0:
+        return false;
+      case 1:
+        return true;
+      default:
+        throw new Error(`Expected to delete 0 or 1 upload markers, but deleted ${uploads}`);
+    }
   }
 
   expectOneMatch<T>(key: string, items: T[]): T {
@@ -101,8 +146,8 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
 }
 
 export class VisitNonPIIUpdater extends VisitUpdater<VisitNonPIIDbInfo> {
-  constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger) {
-    super(sequelize, log, "non-PII");
+  constructor(sql: SplitSql, log: ScriptLogger) {
+    super({ sql, log, db: sql.nonPii, label: "non-PII" });
   }
 
   async setDemo(current: VisitInstance<VisitNonPIIDbInfo>, isDemo: boolean): Promise<boolean> {
@@ -112,8 +157,8 @@ export class VisitNonPIIUpdater extends VisitUpdater<VisitNonPIIDbInfo> {
 }
 
 export class VisitPIIUpdater extends VisitUpdater<VisitPIIInfo> {
-  constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger) {
-    super(sequelize, log, "PII");
+  constructor(sql: SplitSql, log: ScriptLogger) {
+    super({ sql, log, db: sql.pii, label: "PII" });
   }
 
   async setDemo(current: VisitInstance<VisitPIIInfo>, isDemo: boolean): Promise<boolean> {
@@ -124,13 +169,13 @@ export class VisitPIIUpdater extends VisitUpdater<VisitPIIInfo> {
 
 function expectRowId(rowId: string): void {
   if (!looksLikeRowId(rowId)) {
-    throw new Error(`Expected numberic rowId, got '${rowId}'.`);
+    throw new Error(`Expected numeric rowId, got '${rowId}'.`);
   }
 }
 
 function expectCSRUID(csruid: string): void {
   if (looksLikeRowId(csruid)) {
-    throw new Error(`Expected non-numberic csruid, got '${csruid}'.`);
+    throw new Error(`Expected non-numeric csruid, got '${csruid}'.`);
   }
 }
 

@@ -38,7 +38,7 @@ const SAMPLE_INFO = {
 const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
   text: "Is the cake a lie?",
-  answer: [{ valueBoolean: true }]
+  answer: [{ valueString: "yes" }]
 };
 
 const PII_RESPONSE_ITEM = {
@@ -57,7 +57,12 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
       kind: EventInfoKind.Visit,
       at: "2019-01-01T00:00:00Z",
       until: "2019-01-01T01:00:00Z"
-    }
+    },
+    {
+      kind: EventInfoKind.Visit,
+      at: "2019-01-01T01:00:00Z",
+      refId: "CompletedQuestionnaire",
+    },
   ]
 };
 export const VISIT_NONPII: VisitNonPIIDbInfo = {

@@ -70,8 +70,8 @@ type SnifflesUpdater = PerReleaseUpdater<SnifflesNonPiiUpdater, SnifflesPiiUpdat
 type FeverUpdater = PerReleaseUpdater<FeverNonPiiUpdater, FeverPiiUpdater>;
 
 const sniffles: SnifflesUpdater = {
-  nonPii: new VisitNonPIIUpdater(sql.nonPii, log),
-  pii: new VisitPIIUpdater(sql.pii, log),
+  nonPii: new VisitNonPIIUpdater(sql, log),
+  pii: new VisitPIIUpdater(sql, log),
 };
 
 const fever: FeverUpdater = {

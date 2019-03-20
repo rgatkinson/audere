@@ -3,16 +3,15 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { anything, instance, mock, when } from "ts-mockito";
 import request from "supertest";
 import { createPublicApp } from "../../src/app";
-import Sequelize from "sequelize";
 import {
   makeCSRUID,
   documentContentsPost,
   documentContentsNonPII,
   documentContentsPII
 } from "../util/sample_data";
-
 import {
   VisitUpdater,
   VisitNonPIIUpdater,
@@ -26,26 +25,24 @@ import {
   VisitAttributes
 } from "../../src/models/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
+import {VisitsService } from "../../src/services/visitsService";
+import { defineHutchUpload } from "../../src/models/hutchUpload";
+import { GeocodingService } from "../../src/services/geocodingService";
+import { HutchUploader } from "../../src/external/hutchUploader";
+import { EncountersService } from "../../src/services/encountersService";
+import { setPart } from "../../scripts/util/pathEdit";
 
 describe("VisitUpdater", () => {
   let sql;
+  let updaterNonPII;
+  let updaterPII;
   let publicApp;
   let models;
+  let hutchUploadModel;
   let accessKey;
 
   const logs: String[] = [];
   const log = new ScriptLogger(s => logs.push(s));
-  // const log = new ScriptLogger(console.log);
-
-  const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-    logging: false
-  });
-  const updaterNonPII = new VisitNonPIIUpdater(sequelizeNonPII, log);
-
-  const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-    logging: false
-  });
-  const updaterPII = new VisitPIIUpdater(sequelizePII, log);
 
   async function cleanup(...csruids: string[]): Promise<void> {
     await Promise.all([
@@ -59,7 +56,10 @@ describe("VisitUpdater", () => {
     sql = createSplitSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
+    updaterNonPII = new VisitNonPIIUpdater(sql, log);
+    updaterPII = new VisitPIIUpdater(sql, log);
     models = defineSnifflesModels(sql);
+    hutchUploadModel = defineHutchUpload(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
       valid: true
@@ -178,5 +178,85 @@ describe("VisitUpdater", () => {
     expect(backups0[0].visit).toEqual(contentsDb.visit);
 
     await cleanup(csruid);
+  }
+
+  it("clears upload for pii", async () => {
+    const csruid0 = makeCSRUID("0 clears upload for pii");
+    const csruid1 = makeCSRUID("1 clears upload for pii");
+    const contents0 = documentContentsPost(csruid0);
+    const contents1 = documentContentsPost(csruid1);
+    const updater = new VisitPIIUpdater(sql, log);
+    await checkClearUpload(csruid0, contents0, csruid1, contents1, updater);
+  });
+
+  it("clears upload for non-pii", async () => {
+    const csruid0 = makeCSRUID("0 clears upload for non-pii");
+    const csruid1 = makeCSRUID("1 clears upload for non-pii");
+    const contents0 = documentContentsPost(csruid0);
+    const contents1 = documentContentsPost(csruid1);
+    const updater = new VisitNonPIIUpdater(sql, log);
+    await checkClearUpload(csruid0, contents0, csruid1, contents1, updater);
+  });
+
+  // NOTE: contents{0,1} needs:
+  // - complete=true
+  // - events contains something with CompletedQuestionnaire
+  async function checkClearUpload<T extends object>(
+    csruid0: string,
+    contents0: VisitDocument,
+    csruid1: string,
+    contents1: VisitDocument,
+    updater: VisitUpdater<T>
+  ): Promise<void> {
+    await cleanup(csruid0, csruid1);
+
+    await request(publicApp)
+      .put(`/api/documents/${accessKey.key}/${csruid0}`)
+      .send(contents0)
+      .expect(200);
+    await request(publicApp)
+      .put(`/api/documents/${accessKey.key}/${csruid1}`)
+      .send(contents1)
+      .expect(200);
+
+    const encountersService = createDbEncountersService();
+
+    // Since we added two visits, we should send both.
+    const send0 = await encountersService.sendEncounters(10);
+    expect(send0.sent.length).toEqual(2);
+
+    const doc0 = await updater.load(csruid0);
+    expect(doc0.csruid).toEqual(csruid0);
+
+    await updater.updateItem(
+      doc0,
+      setPart(doc0.visit, ["location"], "New Location")
+    );
+
+    // After editing one of the visits, we should resend.
+    const send1 = await encountersService.sendEncounters(10);
+    expect(send1.sent.length).toEqual(1);
+
+    await cleanup(csruid0, csruid1);
+  }
+
+  function createDbEncountersService() {
+    const MockGeocodingService = mock(GeocodingService);
+    when(MockGeocodingService.geocodeAddresses(anything())).thenResolve([]);
+    const api: any = { post: () => Promise.resolve() };
+    const hutchUploader = new HutchUploader(
+      api,
+      20,
+      "User",
+      "Password",
+      hutchUploadModel
+    );
+    const visitsService = new VisitsService(models, hutchUploadModel);
+    return new EncountersService(
+      instance(MockGeocodingService),
+      hutchUploader,
+      visitsService,
+      "abc"
+    );
   }
 });
