@@ -67,7 +67,9 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
   statement {
     actions = [
       "s3:PutObject",
-      "s3:DeleteObject"
+      "s3:DeleteObject",
+      "s3:ListBucket",
+      "s3:GetObject"
     ]
 
     resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}/*"]
