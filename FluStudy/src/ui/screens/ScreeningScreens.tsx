@@ -745,12 +745,6 @@ class AddressConfirmScreen extends React.Component<
       config
     );
     tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        screeningCompletedAt: new Date().toISOString(),
-      })
-    );
 
     if (!!this.props.workflow.skippedScreeningAt) {
       this.props.navigation.push("WhatsNext");
@@ -955,25 +949,20 @@ interface PushProps {
 
 @connect((state: StoreState) => ({
   pushState: state.survey.pushState,
+  workflow: state.survey.workflow,
 }))
 class ConfirmationScreen extends React.Component<
-  Props & PushProps & WithNamespaces
+  Props & WorkflowProps & PushProps & WithNamespaces
 > {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        screeningCompletedAt: new Date().toISOString(),
+      })
+    );
   }
-
-  _onNext = () => {
-    this.props.navigation.push("ExtraInfo");
-    /*
-     * Not asking about push notifications yet
-    if (this.props.pushState.showedSystemPrompt) {
-      this.props.navigation.push("ExtraInfo");
-    } else {
-      this.props.navigation.push("PushNotifications");
-    }
-    */
-  };
 
   render() {
     const { t } = this.props;
@@ -987,7 +976,6 @@ class ConfirmationScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}
-        onNext={this._onNext}
       >
         <Links
           links={[
