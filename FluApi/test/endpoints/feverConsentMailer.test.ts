@@ -12,7 +12,7 @@ import { SendMailOptions } from "nodemailer";
 import { Emailer } from "../../src/util/email";
 import { createPublicApp, createInternalApp } from "../../src/app";
 import { createSplitSql } from "../../src/util/sql";
-import { defineFeverModels, FeverModels } from "../../src/models/fever";
+import { defineFeverModels, FeverModels } from "../../src/models/db/fever";
 import { surveyPost, makeCSRUID } from "./feverSampleData";
 import {
   FeverConsentEmailerEndpoint,

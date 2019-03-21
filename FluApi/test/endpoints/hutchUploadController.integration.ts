@@ -23,8 +23,8 @@ import {
   defineSnifflesModels,
   VisitNonPIIInstance,
   VisitPIIInstance
-} from "../../src/models/sniffles";
-import { defineHutchUpload } from "../../src/models/hutchUpload";
+} from "../../src/models/db/sniffles";
+import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("export controller", () => {

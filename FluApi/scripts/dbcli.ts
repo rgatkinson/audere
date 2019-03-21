@@ -25,14 +25,14 @@ import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
   defineSnifflesModels,
   VisitAttributes
-} from "../src/models/sniffles";
+} from "../src/models/db/sniffles";
 import {
   DeviceInfo as SnifflesDevice,
   LogRecordInfo,
   VisitNonPIIInfo,
   VisitPIIInfo
 } from "audere-lib/snifflesProtocol";
-import { defineFeverModels, SurveyAttributes } from "../src/models/fever";
+import { defineFeverModels, SurveyAttributes } from "../src/models/db/fever";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,

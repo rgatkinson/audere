@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SplitSql, Model } from "./sql";
-import { SecretAttributes, defineSecret } from "../models/secrets";
+import { SecretAttributes, defineSecret } from "../models/db/secrets";
 import { generateRandomKey } from "./crypto";
 
 export class SecretConfig {

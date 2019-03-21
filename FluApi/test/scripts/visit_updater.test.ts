@@ -23,13 +23,13 @@ import { createSplitSql } from "../../src/util/sql";
 import {
   defineSnifflesModels,
   VisitAttributes
-} from "../../src/models/sniffles";
+} from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
-import {VisitsService } from "../../src/services/visitsService";
-import { defineHutchUpload } from "../../src/models/hutchUpload";
+import { VisitsService } from "../../src/services/sniffles/visitsService";
+import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { HutchUploader } from "../../src/external/hutchUploader";
-import { EncountersService } from "../../src/services/encountersService";
+import { EncountersService } from "../../src/services/sniffles/encountersService";
 import { setPart } from "../../scripts/util/pathEdit";
 
 describe("VisitUpdater", () => {

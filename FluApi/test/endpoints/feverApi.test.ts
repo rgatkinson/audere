@@ -20,7 +20,7 @@ import {
   makeCSRUID
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
-import { defineFeverModels } from "../../src/models/fever";
+import { defineFeverModels } from "../../src/models/db/fever";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("putFeverDocument", () => {

@@ -20,7 +20,7 @@ import {
 } from "audere-lib/snifflesProtocol";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
-import { SnifflesModels, defineSnifflesModels } from "../models/sniffles";
+import { SnifflesModels, defineSnifflesModels } from "../models/db/sniffles";
 import { SplitSql } from "../util/sql";
 
 const clientLogger = createLogger({

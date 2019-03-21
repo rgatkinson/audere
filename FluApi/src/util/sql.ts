@@ -8,6 +8,7 @@ import Sequelize, {
   Sequelize as Sql,
   BOOLEAN as SQL_BOOLEAN,
   DATE as SQL_DATE,
+  FLOAT as SQL_FLOAT,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
   STRING as SQL_STRING
@@ -85,6 +86,9 @@ export function integerColumn(field?: string) {
 }
 export function dateColumn(field?: string) {
   return column(SQL_DATE, field);
+}
+export function floatColumn(field?: string) {
+  return column(SQL_FLOAT, field);
 }
 export function foreignIdKey(column, model) {
   return {

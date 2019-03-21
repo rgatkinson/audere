@@ -10,7 +10,7 @@ import {
   SurveyAttributes,
   ConsentEmailAttributes,
   querySurveyJoinConsentEmail
-} from "../models/fever";
+} from "../models/db/fever";
 import { SplitSql, Inst } from "../util/sql";
 import {
   PIIInfo,

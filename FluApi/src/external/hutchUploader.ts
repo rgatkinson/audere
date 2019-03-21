@@ -6,7 +6,7 @@
 import { AxiosInstance } from "axios";
 import { Encounter } from "audere-lib/hutchProtocol";
 import { ThrottledTaskQueue } from "../util/throttledTaskQueue";
-import { HutchUploadModel } from "../models/hutchUpload";
+import { HutchUploadModel } from "../models/db/hutchUpload";
 import logger from "../util/logger";
 
 /**

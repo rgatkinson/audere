@@ -20,6 +20,8 @@ export function getS3Config(secrets: SecretConfig): Promise<S3Config> {
 }
 
 async function createConfig(secrets: SecretConfig): Promise<S3Config> {
-  const [bucket] = await Promise.all([secrets.get("S3_REPORT_BUCKET")]);
+  const [bucket] = await Promise.all([
+    secrets.get("S3_REPORT_BUCKET")
+  ]);
   return { bucket };
 }

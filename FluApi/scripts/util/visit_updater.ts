@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { defineVisit, VisitAttributes, VisitInstance, VisitModel, VisitTableType } from "../../src/models/sniffles";
+import { defineVisit, VisitAttributes, VisitInstance, VisitModel, VisitTableType } from "../../src/models/db/sniffles";
 import _ from "lodash";
 
 import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
@@ -12,7 +12,7 @@ import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/sniffles
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
 import { SplitSql } from "../../src/util/sql";
-import { defineHutchUpload, HutchUploadModel } from "../../src/models/hutchUpload";
+import { defineHutchUpload, HutchUploadModel } from "../../src/models/db/hutchUpload";
 
 const Op = Sequelize.Op;
 

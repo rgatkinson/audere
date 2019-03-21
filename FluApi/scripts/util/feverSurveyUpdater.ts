@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { defineSurvey, SurveyAttributes, SurveyInstance, SurveyModel, EditableTableType } from "../../src/models/fever";
+import { defineSurvey, SurveyAttributes, SurveyInstance, SurveyModel, EditableTableType } from "../../src/models/db/fever";
 import _ from "lodash";
 
 import { DeviceInfo, SurveyNonPIIDbInfo, PIIInfo } from "audere-lib/feverProtocol";

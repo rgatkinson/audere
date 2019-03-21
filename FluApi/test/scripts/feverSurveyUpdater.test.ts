@@ -21,7 +21,7 @@ import {
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { SurveyDocument } from "audere-lib/feverProtocol";
 import { createSplitSql } from "../../src/util/sql";
-import { defineFeverModels, SurveyAttributes } from "../../src/models/fever";
+import { defineFeverModels, SurveyAttributes } from "../../src/models/db/fever";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("SurveyUpdater", () => {

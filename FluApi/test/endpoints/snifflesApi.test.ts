@@ -21,7 +21,7 @@ import {
   makeCSRUID
 } from "../util/sample_data";
 import { createSplitSql } from "../../src/util/sql";
-import { defineSnifflesModels } from "../../src/models/sniffles";
+import { defineSnifflesModels } from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
 describe("putDocument", () => {

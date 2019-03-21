@@ -1,12 +1,13 @@
-import Sequelize, { Op } from "sequelize";
+import { Op } from "sequelize";
 
-import { defineConsentEmail, ConsentEmailModel } from "../models/consentEmail";
+import { defineConsentEmail, ConsentEmailModel } from "../models/db/consentEmail";
 import {
   defineSnifflesModels,
   SnifflesModels,
   VisitPIIInstance,
   VisitNonPIIInstance
-} from "../models/sniffles";
+
+} from "../models/db/sniffles";
 import logger from "../util/logger";
 import { SplitSql } from "../util/sql";
 import { emailConsent } from "../util/visit";

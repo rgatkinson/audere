@@ -6,9 +6,9 @@
 import _ from "lodash";
 import { anything, instance, mock, verify, when } from "ts-mockito";
 import { HutchUploader } from "../../src/external/hutchUploader";
-import { EncountersService } from "../../src/services/encountersService";
+import { EncountersService } from "../../src/services/sniffles/encountersService";
 import { GeocodingService } from "../../src/services/geocodingService";
-import { VisitsService } from "../../src/services/visitsService";
+import { VisitsService } from "../../src/services/sniffles/visitsService";
 import { PIIVisitDetails } from "../../src/models/visitDetails";
 import { AddressInfoUse } from "audere-lib/snifflesProtocol";
 import { GeocodingResponse } from "../../src/models/geocoding";
