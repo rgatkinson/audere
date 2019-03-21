@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { Audio } from "expo";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { StoreState } from "../../store";
@@ -38,6 +39,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       remaining: undefined,
     };
 
+    _timerSound = new Audio.Sound();
     _timer: NodeJS.Timeout | undefined;
     _willFocus: any;
     _fastForwardMillis = 0;
@@ -77,7 +79,13 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
           if (this.props.navigation.isFocused() && !this.state.done) {
             const remaining = this._getRemaining();
             this.setState({ remaining, done: remaining === null });
-            this._setTimer();
+            if (remaining === null) {
+              try {
+                this._timerSound.playAsync();
+              } catch (error) {}
+            } else {
+              this._setTimer();
+            }
           }
         }, 1000);
       }
@@ -96,12 +104,25 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       return this.state.remaining == null ? 0 : this.state.remaining!.getTime();
     }
 
-    componentDidMount() {
+    async componentDidMount() {
       this.setState({ remaining: this._getRemaining() });
       this._setTimer();
       this._willFocus = this.props.navigation.addListener("willFocus", () =>
         this._setTimer()
       );
+      try {
+        await this._timerSound.loadAsync(
+          require("../../../assets/sounds/Popcorn.caf")
+        );
+        Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          allowsRecordingIOS: false,
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+          shouldDuckAndroid: true,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+          playThroughEarpieceAndroid: true,
+        });
+      } catch (error) {}
     }
 
     componentWillUnmount() {

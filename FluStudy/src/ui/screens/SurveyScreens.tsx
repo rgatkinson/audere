@@ -1417,6 +1417,18 @@ class ThankYouSurveyScreen extends React.Component<
     this.props.isDemo && this.props.onFastForward();
   };
 
+  componentWillReceiveProps(
+    nextProps: Props &
+      DemoModeProps &
+      WithNamespaces &
+      ThankYouSurveyProps &
+      TimerProps
+  ) {
+    if (nextProps.done()) {
+      this._onNext();
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
