@@ -87,14 +87,17 @@ import {
   emailSupport,
 } from "../externalActions";
 import {
+  ASPECT_RATIO,
   BORDER_RADIUS,
   BUTTON_WIDTH,
   GUTTER,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
+  NAV_BAR_HEIGHT,
   SECONDARY_COLOR,
   SMALL_TEXT,
   STATUS_BAR_HEIGHT,
+  SYSTEM_PADDING_BOTTOM,
 } from "../styles";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
@@ -1232,14 +1235,9 @@ class GeneralExposureScreen extends React.Component<
         onNext={this._onNext}
       >
         <Divider />
-        <Text content={t("expoDesc")} />
+        <Text content={t("expoDesc")} style={{ marginBottom: GUTTER }} />
         <Image
-          style={{
-            aspectRatio: 1.75,
-            height: undefined,
-            marginVertical: GUTTER,
-            width: "100%",
-          }}
+          style={imageStyles.image}
           source={require("../../img/generalExposure.png")}
         />
         <Text
@@ -1606,6 +1604,11 @@ class PictureInstructionsScreen extends React.Component<
   constructor(props: Props & WithNamespaces) {
     super(props);
     this._onNext = this._onNext.bind(this);
+    this._skip = this._skip.bind(this);
+  }
+
+  _skip() {
+    this.props.navigation.push("CleanFirstTest");
   }
 
   async _onNext() {
@@ -1613,7 +1616,7 @@ class PictureInstructionsScreen extends React.Component<
     if (status === "granted") {
       this.props.navigation.push("TestStripCamera");
     } else {
-      this.props.navigation.push("CleanFirstTest");
+      this._skip();
     }
   }
 
@@ -1623,11 +1626,34 @@ class PictureInstructionsScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
+        footer={
+          <Links
+            center={true}
+            links={[{ label: t("skip"), onPress: this._skip }]}
+          />
+        }
         imageSrc={require("../../img/takePictureTestStrip.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
-      />
+      >
+        <Image
+          style={imageStyles.image}
+          source={require("../../img/testStripCamera1.png")}
+        />
+        <Text
+          content={t("tip2")}
+          style={{ alignSelf: "stretch", marginBottom: GUTTER }}
+        />
+        <Image
+          style={imageStyles.image}
+          source={require("../../img/testStripCamera2.png")}
+        />
+        <Text
+          content={t("tip3")}
+          style={{ alignSelf: "stretch", marginBottom: GUTTER }}
+        />
+      </Screen>
     );
   }
 }
@@ -1681,41 +1707,68 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Chrome navigation={this.props.navigation}>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginBottom: -1 * SYSTEM_PADDING_BOTTOM }}>
           <Spinner visible={this.state.spinner} />
           <Camera ref={this.camera} style={cameraStyles.camera} />
           <View style={cameraStyles.overlayContainer}>
             <Text
               center={true}
               content={t("title")}
-              style={[cameraStyles.overlayText, { fontSize: LARGE_TEXT }]}
-            />
-            <View style={cameraStyles.targetBox}>
-              <Image
-                style={cameraStyles.testStrip}
-                source={require("../../img/testStripCameraImage.png")}
-              />
-            </View>
-            <Text
-              center={true}
-              content={t("description")}
               style={cameraStyles.overlayText}
             />
-            <TouchableOpacity onPress={this._takePicture}>
-              <View style={cameraStyles.outerCircle}>
-                <View style={cameraStyles.circle} />
+            <View style={cameraStyles.innerContainer}>
+              <Image
+                style={cameraStyles.testStrip}
+                source={require("../../img/testStripDetail.png")}
+              />
+              <View style={{ flex: 1, marginLeft: GUTTER }}>
+                <Text
+                  center={true}
+                  content={t("stripHere")}
+                  style={cameraStyles.overlayText}
+                />
+                <View style={cameraStyles.targetBox} />
               </View>
-            </TouchableOpacity>
+            </View>
+            <View style={{ alignItems: "center", alignSelf: "stretch" }}>
+              <Text
+                center={true}
+                content={t("description")}
+                style={cameraStyles.overlayText}
+              />
+              <TouchableOpacity onPress={this._takePicture}>
+                <View style={cameraStyles.outerCircle}>
+                  <View style={cameraStyles.circle} />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Chrome>
     );
   }
 }
+
+const imageStyles = StyleSheet.create({
+  image: {
+    aspectRatio: ASPECT_RATIO,
+    height: undefined,
+    marginBottom: GUTTER,
+    width: "100%",
+  },
+});
+
 const cameraStyles = StyleSheet.create({
   camera: {
     alignSelf: "stretch",
     flex: 1,
+  },
+  innerContainer: {
+    height: "100%",
+    flexDirection: "row",
+    flex: 1,
+    marginHorizontal: GUTTER * 2,
+    marginBottom: GUTTER,
   },
   outerCircle: {
     alignItems: "center",
@@ -1737,6 +1790,8 @@ const cameraStyles = StyleSheet.create({
   },
   overlayText: {
     color: "white",
+    fontSize: LARGE_TEXT,
+    marginVertical: GUTTER,
     textShadowColor: "rgba(0, 0, 0, 0.99)",
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
@@ -1745,26 +1800,29 @@ const cameraStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     left: 0,
-    padding: GUTTER,
     right: 0,
     position: "absolute",
     top: 0,
     bottom: 0,
+    marginBottom: GUTTER + SYSTEM_PADDING_BOTTOM,
   },
   targetBox: {
-    alignItems: "flex-start",
+    alignSelf: "center",
     borderColor: "white",
     borderRadius: 5,
     borderStyle: "dashed",
     borderWidth: 4,
-    height: "45%",
-    justifyContent: "center",
-    width: "80%",
+    flex: 1,
+    shadowColor: "rgba(0, 0, 0, 0.99)",
+    shadowOffset: { width: -1, height: 1 },
+    shadowRadius: 10,
+    width: "65%",
   },
   testStrip: {
-    aspectRatio: 0.176,
-    justifyContent: "center",
+    alignSelf: "center",
+    aspectRatio: 0.135,
     height: "95%",
+    marginTop: GUTTER,
     marginLeft: GUTTER,
     width: undefined,
   },

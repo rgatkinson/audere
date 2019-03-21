@@ -14,6 +14,7 @@ import { Action, StoreState, setDemo } from "../../store";
 import NavigationBar from "./NavigationBar";
 import Text from "./Text";
 import {
+  ASPECT_RATIO,
   GUTTER,
   IMAGE_WIDTH,
   NAV_BAR_HEIGHT,
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   image: {
     alignSelf: "center",
-    aspectRatio: 1.75,
+    aspectRatio: ASPECT_RATIO,
     height: undefined,
     marginVertical: GUTTER / 2,
     width: IMAGE_WIDTH,

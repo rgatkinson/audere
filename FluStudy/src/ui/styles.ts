@@ -62,4 +62,5 @@ export const IMAGE_WIDTH = isIPhoneSE ? "75%" : "100%";
 export const SPLASH_IMAGE = isIPhoneSE
   ? require("../img/mediumSplash.png")
   : require("../img/splash.png");
+export const ASPECT_RATIO = 1.75;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;

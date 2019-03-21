@@ -405,11 +405,15 @@
   },
   "pictureInstructionsScreen": {
     "title": "Take a photo of the strip",
-    "desc": "We know that was a lot of steps and appreciate you hanging in there with us.\n\nNext, take a photo of the test strip. Lay the test strip on box ①① so it's flat with the arrows pointing down towards you. When you're ready, click the Continue button to use the camera."
+    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, take a photo of the test strip.\n\nFirst, lay the test strip on the box with the arrows pointing down towards you:",
+    "tip2": "The app will show you a sample test strip image to use as a guide. Position your test strip inside the dotted lines as shown, holding your camera directly over the test strip. Make sure to focus the image before taking the photo, and try to use good lighting.",
+    "tip3": "Tap **Continue** when you're ready, and we'll take the photo on the next screen.",
+    "skip": "Unable to take a picture? Skip this step"
   },
   "testStripCameraScreen": {
-    "title": "Place test strip next to the sample below, centered in the box.",
-    "description": "Tap the screen to focus the image, and try to use good lighting.\nWhen ready, tap the round button to take a photo.",
+    "title": "Tap the screen to focus the image.",
+    "stripHere": "Your strip here",
+    "description": "Tap the round button to take a photo",
     "loading": "Loading..."
   },
   "testStripConfirmationScreen": {

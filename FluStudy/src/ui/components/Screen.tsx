@@ -16,7 +16,7 @@ import Chrome from "./Chrome";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
-import { GUTTER, IMAGE_WIDTH } from "../styles";
+import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
 
 interface Props {
   buttonLabel?: string;
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   image: {
     alignSelf: "center",
-    aspectRatio: 1.75,
+    aspectRatio: ASPECT_RATIO,
     height: undefined,
     marginVertical: GUTTER / 2,
     width: IMAGE_WIDTH,
