@@ -102,8 +102,8 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTables("fever_incentive_item");
-    await queryInterface.dropTables("fever_incentive_batch");
-    await queryInterface.dropTables("fever_incentive_discard");
+    await queryInterface.dropTable("fever_incentive_item");
+    await queryInterface.dropTable("fever_incentive_batch");
+    await queryInterface.dropTable("fever_incentive_discard");
   }
 };

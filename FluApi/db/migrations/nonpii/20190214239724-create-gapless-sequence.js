@@ -34,6 +34,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTables("gapless_seq");
+    return queryInterface.dropTable("gapless_seq");
   }
 };

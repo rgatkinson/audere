@@ -102,8 +102,8 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTables("fever_kit_items");
-    await queryInterface.dropTables("fever_kit_batches");
-    await queryInterface.dropTables("fever_kit_discards");
+    await queryInterface.dropTable("fever_kit_items");
+    await queryInterface.dropTable("fever_kit_batches");
+    await queryInterface.dropTable("fever_kit_discards");
   }
 };

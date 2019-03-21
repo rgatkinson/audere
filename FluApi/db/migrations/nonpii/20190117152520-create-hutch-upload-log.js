@@ -36,6 +36,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTables("hutch_upload");
+    return queryInterface.dropTable("hutch_upload");
   }
 };
