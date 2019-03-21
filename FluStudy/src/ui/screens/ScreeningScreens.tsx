@@ -386,6 +386,7 @@ class ConsentScreen extends React.PureComponent<
       })
     );
     this.props.navigation.push("Address");
+    tracker.logEvent(FunnelEvents.CONSENT_COMPLETED);
   };
 
   emailInput = React.createRef<EmailInput>();
@@ -498,7 +499,7 @@ export const Consent = reduxWriter(
 
 class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
-    tracker.logEvent(FunnelEvents.DECLINED_CONSENT);
+    tracker.logEvent(FunnelEvents.CONSENT_INELIGIBLE);
   }
 
   _onBack = () => {
@@ -569,6 +570,8 @@ class AddressInputScreen extends React.Component<
     const { address, address2, city, state, zipcode } = this.state.address;
 
     this.setState({ triedToProceed: true });
+    tracker.logEvent(FunnelEvents.ADDRESS_ATTEMPTED);
+
     if (
       isValidAddress(this.state.address) &&
       isValidEmail(this.state.email) &&
@@ -588,6 +591,9 @@ class AddressInputScreen extends React.Component<
         this.props.navigation.push("StateIneligible");
         return;
       }
+
+      tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
+      tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
 
       axios
         .get(getApiBaseUrl() + "/validateAddress", {
@@ -956,13 +962,19 @@ class ConfirmationScreen extends React.Component<
 > {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        screeningCompletedAt: new Date().toISOString(),
-      })
-    );
   }
+  
+  _onNext = () => {
+    this.props.navigation.push("ExtraInfo");
+    /*
+     * Not asking about push notifications yet
+    if (this.props.pushState.showedSystemPrompt) {
+      this.props.navigation.push("ExtraInfo");
+    } else {
+      this.props.navigation.push("PushNotifications");
+    }
+    */
+  };
 
   render() {
     const { t } = this.props;

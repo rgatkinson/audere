@@ -26,7 +26,9 @@ export const DrawerEvents = {
 export const FunnelEvents = {
   // Screening events
   MET_SYMPTOMS: "funnel_met_symptoms",
-  DECLINED_CONSENT: "funnel_declined_consent",
+  CONSENT_INELIGIBLE: "funnel_consent_ineligible",
+  CONSENT_COMPLETED: "funnel_consent_completed",
+  ADDRESS_ATTEMPTED: "funnel_address_attempted",
   ADDRESS_COMPLETED: "funnel_address_completed",
   AGE_INELIGIBLE: "funnel_age_ineligible",
   SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
