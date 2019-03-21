@@ -52,11 +52,7 @@ import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
-import {
-  isValidUSZipCode,
-  isNotEmptyString,
-  isValidEmail,
-} from "../../util/check";
+import { isValidAddress, isValidEmail } from "../../util/check";
 import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
@@ -574,7 +570,7 @@ class AddressInputScreen extends React.Component<
 
     this.setState({ triedToProceed: true });
     if (
-      this._haveValidAddress() &&
+      isValidAddress(this.state.address) &&
       isValidEmail(this.state.email) &&
       (!this.props.workflow.skippedScreeningAt || this._haveOption())
     ) {
@@ -619,19 +615,6 @@ class AddressInputScreen extends React.Component<
           }
         });
     }
-  };
-
-  _haveValidAddress = (): boolean => {
-    const { address } = this.state;
-    return (
-      !!address &&
-      isNotEmptyString(address.firstName) &&
-      isNotEmptyString(address.lastName) &&
-      isNotEmptyString(address.address) &&
-      isNotEmptyString(address.city) &&
-      !!address.state &&
-      isValidUSZipCode(address.zipcode)
-    );
   };
 
   _onAddressChange = (address: Address) => {

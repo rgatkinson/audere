@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { isValidAddress } from "../../util/check";
 import NumberInput from "./NumberInput";
 import StateModal from "./StateModal";
 import Text from "./Text";
@@ -9,6 +10,7 @@ import TextInput from "./TextInput";
 import {
   BORDER_COLOR,
   ERROR_COLOR,
+  FONT_NORMAL,
   GUTTER,
   INPUT_HEIGHT,
   LINK_COLOR,
@@ -51,7 +53,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={this.props.autoFocus}
-            placeholder={t("firstName") + (shouldValidate ? t("required") : "")}
+            placeholder={t("firstName")}
             placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             returnKeyType="next"
             style={styles.firstName}
@@ -67,7 +69,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             autoCapitalize="words"
             autoCorrect={false}
             autoFocus={false}
-            placeholder={t("lastName") + (shouldValidate ? t("required") : "")}
+            placeholder={t("lastName")}
             ref={this.lastName}
             placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             returnKeyType="next"
@@ -85,9 +87,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           autoCapitalize="words"
           autoCorrect={false}
           autoFocus={false}
-          placeholder={
-            t("streetAddress") + (shouldValidate ? t("required") : "")
-          }
+          placeholder={t("streetAddress")}
           placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
           ref={this.address}
           returnKeyType="next"
@@ -119,7 +119,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          placeholder={t("city") + (shouldValidate ? t("required") : "")}
+          placeholder={t("city")}
           placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
           ref={this.city}
           returnKeyType="next"
@@ -146,13 +146,13 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
               content={
                 this.props.value && this.props.value.state
                   ? this.props.value.state
-                  : t("state") + (shouldValidate ? t("required") : "")
+                  : t("state")
               }
               style={[
                 styles.statePlaceholder,
                 shouldValidate &&
-                  this.props.value &&
-                  !this.props.value.state &&
+                  (!this.props.value ||
+                    (this.props.value && !this.props.value.state)) &&
                   styles.statePlaceholderError,
               ]}
             />
@@ -173,7 +173,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           />
           <NumberInput
             maxDigits={5}
-            placeholder={t("zipcode") + (shouldValidate ? t("required") : "")}
+            placeholder={t("zipcode")}
             placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
             ref={this.zipcode}
             returnKeyType="done"
@@ -187,6 +187,14 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             onSubmitEditing={this.props.onSubmitEditing}
           />
         </View>
+        <Text
+          content={
+            !isValidAddress(this.props.value) && this.props.shouldValidate
+              ? t("validationError")
+              : ""
+          }
+          style={styles.errorText}
+        />
       </View>
     );
   }
@@ -224,6 +232,11 @@ const styles = StyleSheet.create({
     flex: 2,
     borderLeftColor: BORDER_COLOR,
     borderLeftWidth: StyleSheet.hairlineWidth,
+  },
+  errorText: {
+    color: ERROR_COLOR,
+    fontFamily: FONT_NORMAL,
+    marginTop: GUTTER / 4,
   },
 });
 

@@ -2,6 +2,7 @@
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
+import { Address } from "../store";
 
 export function checkNotNull<T>(item: T | null | undefined): T {
   if (item == null) {
@@ -16,6 +17,18 @@ export function checkNotNull<T>(item: T | null | undefined): T {
 
 export function isNotNull<T>(item: T | null | undefined): item is T {
   return item != null;
+}
+
+export function isValidAddress(address: Address | null | undefined): boolean {
+  return (
+    address != null &&
+    isNotEmptyString(address.firstName) &&
+    isNotEmptyString(address.lastName) &&
+    isNotEmptyString(address.address) &&
+    isNotEmptyString(address.city) &&
+    !!address.state &&
+    isValidUSZipCode(address.zipcode)
+  );
 }
 
 export function isValidUSZipCode(zip: string | null | undefined): boolean {
