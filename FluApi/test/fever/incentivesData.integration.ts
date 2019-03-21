@@ -44,8 +44,6 @@ describe("survey batch data access", () => {
   let batchSeq: Inst<GaplessSeqAttributes>;
   let itemSeq: Inst<GaplessSeqAttributes>;
 
-  let cleanup: (() => Promise<void>)[] = [];
-
   beforeAll(async done => {
     sql = createSplitSql();
     incentiveBatch = defineIncentiveBatch(sql.nonPii);
@@ -82,17 +80,14 @@ describe("survey batch data access", () => {
   async function cleanupDb() {
     await Promise.all([
       nonPii.destroy({ where: {} }).then(() => {}),
-      incentiveBatch.destroy({ where: {} }).then(() => {}),
-      incentiveItems.destroy({ where: {} }).then(() => {}),
-      incentiveDiscard.destroy({ where: {} }).then(() => {}),
-      receivedKits.destroy({ where: {} }).then(() => {}),
-      receivedKitFiles.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
-      itemSeq.update({ index: 0 }).then(() => {}),
-      ...cleanup.map(x => x())
+      itemSeq.update({ index: 0 }).then(() => {})
     ]);
 
-    cleanup = [];
+    await Promise.all([
+      incentiveBatch.destroy({ where: {} }).then(() => {}),
+      receivedKitFiles.destroy({ where: {} }).then(() => {})
+    ]);
   }
 
   async function createTestData(
@@ -147,8 +142,6 @@ describe("survey batch data access", () => {
       });
       await receivedKits.bulkCreate(received);
     }
-
-    s.forEach(x => cleanup.push(async () => await x.destroy()));
   }
 
   describe("get existing batch", async () => {
@@ -301,8 +294,6 @@ describe("survey batch data access", () => {
           })
         );
       });
-
-      discarded.forEach(d => cleanup.push(async () => await d.destroy()));
     });
   });
 });

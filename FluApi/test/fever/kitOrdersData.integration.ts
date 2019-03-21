@@ -38,8 +38,6 @@ describe("survey batch data access", () => {
   let batchSeq: Inst<GaplessSeqAttributes>;
   let itemSeq: Inst<GaplessSeqAttributes>;
 
-  let cleanup: (() => Promise<void>)[] = [];
-
   beforeAll(async done => {
     sql = createSplitSql();
     kitBatch = defineKitBatch(sql.nonPii);
@@ -74,15 +72,11 @@ describe("survey batch data access", () => {
   async function cleanupDb() {
     await Promise.all([
       nonPii.destroy({ where: {} }).then(() => {}),
-      kitBatch.destroy({ where: {} }).then(() => {}),
-      kitItems.destroy({ where: {} }).then(() => {}),
-      kitDiscard.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
-      itemSeq.update({ index: 0 }).then(() => {}),
-      ...cleanup.map(x => x())
+      itemSeq.update({ index: 0 }).then(() => {})
     ]);
 
-    cleanup = [];
+    await kitBatch.destroy({ where: {} }).then(() => {});
   }
 
   async function createTestData(
@@ -120,8 +114,6 @@ describe("survey batch data access", () => {
       surveyId: +s[i].id
     }));
     await kitItems.bulkCreate(batchItems);
-
-    s.forEach(x => cleanup.push(async () => await x.destroy()));
   }
 
   describe("get existing batch", async () => {
