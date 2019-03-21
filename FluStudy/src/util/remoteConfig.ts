@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import firebase from "react-native-firebase";
-import { Crashlytics } from "react-native-fabric";
+import { crashlytics } from "../crashReporter";
 import { tracker, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
@@ -41,13 +41,13 @@ async function loadConfig() {
     _currentConfig[key] = remoteConfigSnapshots[key].val();
   });
   tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, _currentConfig);
-  Crashlytics.log(`Remote config loaded: ${_currentConfig}`);
+  crashlytics.log(`Remote config loaded: ${_currentConfig}`);
 
   if (process.env.NODE_ENV === "development") {
     _currentConfig = { ..._currentConfig, ...DEV_CONFIG_OVERRIDES };
 
     tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, _currentConfig);
-    Crashlytics.log(`Remote config overridden: ${_currentConfig}`);
+    crashlytics.log(`Remote config overridden: ${_currentConfig}`);
   }
 }
 
@@ -95,6 +95,6 @@ export async function loadAllRemoteConfigs() {
     tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
       errorMessage,
     });
-    Crashlytics.log(errorMessage);
+    crashlytics.log(errorMessage);
   }
 }

@@ -7,7 +7,7 @@ import {
   createDrawerNavigator,
   createStackNavigator,
 } from "react-navigation";
-import { uploadingErrorHandler } from "../crashReporter";
+import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import {
   Welcome,
   Why,

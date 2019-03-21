@@ -13,9 +13,8 @@ import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
-import { Crashlytics } from "react-native-fabric";
 import { logger, uploader, uploaderMiddleware } from "./uploader";
-import { crashReportingDetailsMiddleware } from "../crashReporter";
+import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
 
 export { uploader, events, logger } from "./uploader";
 
@@ -89,16 +88,16 @@ function loggingMiddleware<Ext, S, D extends Dispatch>(
       return (action: AnyAction) => {
         const before = `middleware[${label}] ${action}`;
         if (!store) {
-          Crashlytics.log(`${before} (store='${store}')`);
+          crashlytics.log(`${before} (store='${store}')`);
         } else if (!store.getState()) {
-          Crashlytics.log(`${before} (store.getState()='${store.getState()}')`);
+          crashlytics.log(`${before} (store.getState()='${store.getState()}')`);
         } else {
-          Crashlytics.log(before);
+          crashlytics.log(before);
         }
 
         const result = inner1(action);
 
-        Crashlytics.log(`middleware[${label}] ${action} -> ${result}`);
+        crashlytics.log(`middleware[${label}] ${action} -> ${result}`);
         return result;
       };
     };

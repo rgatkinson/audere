@@ -16,12 +16,12 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
 import i18n from "./src/i18n";
+import { ErrorProps } from "./src/crashReporter";
 import {
-  setupErrorHandler,
   reportPreviousCrash,
+  setupErrorHandler,
   uploadingErrorHandler,
-  ErrorProps,
-} from "./src/crashReporter";
+} from "./src/util/uploadingErrorHandler";
 import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
 

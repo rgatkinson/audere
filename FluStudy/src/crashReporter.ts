@@ -1,63 +1,46 @@
-import { uploader } from "./store/uploader";
-import { ErrorRecovery } from "expo";
-import { Crashlytics } from "react-native-fabric";
-import DeviceInfo from "react-native-device-info";
+// Copyright (c) 2018 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
+// Try not to create a dependency cycle here.  crashReporter should hopefully
+// not need anything else from our project, but instead only pull from third
+// party libraries so that it can be used anywhere in our project.
+
+import firebase from "react-native-firebase";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 
 export type ErrorProps = {
   errorMessage: string;
 };
 
-let defaultErrorHandler = (error: Error, isFatal?: boolean) => {};
+export const crashlytics = firebase.crashlytics();
 
-function recordErrorToFirebase(e: Error) {
+// The latest react-native-firebase uses a different signature than the
+// outdated Fabric version (react-native-fabric).  The firebase version takes
+// a numeric code for bucketing instead of a string.  So we hash the leading
+// line of error messages into a repeatable code in order to retain bucketing.
+function hashCode(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++)
+    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+
+  return h;
+}
+
+export function recordErrorToFirebase(e: Error) {
   const firstNewline = e.message.indexOf("\n");
-  const domain =
-    firstNewline > 0 ? e.message.substr(0, firstNewline) : "JS Error";
+  const domain = hashCode(
+    firstNewline > 0 ? e.message.substr(0, firstNewline) : "JS Error"
+  );
 
-  Crashlytics.recordError({
-    domain,
-    userInfo: e.message,
-  });
-}
-
-export function uploadingErrorHandler(e: Error, isFatal?: boolean, prependStr?: string) {
-  const errorMessage = prependStr != null ? (prependStr + "\n") : "" + e.message + "\n" + e.stack;
-
-  recordErrorToFirebase(e);
-  if (isFatal) {
-    const errorProps: ErrorProps = { errorMessage };
-    ErrorRecovery.setRecoveryProps(errorProps);
-  } else {
-    Crashlytics.log("Audere error log will be saved");
-    uploader.saveCrashLog(errorMessage);
-    Crashlytics.log("Audere error log successfully saved");
-  }
-  defaultErrorHandler(e, isFatal);
-}
-
-export function setupErrorHandler() {
-  defaultErrorHandler = ErrorUtils.getGlobalHandler();
-  if (defaultErrorHandler !== uploadingErrorHandler) {
-    ErrorUtils.setGlobalHandler(uploadingErrorHandler);
-  }
-
-  Crashlytics.setUserIdentifier(DeviceInfo.getUniqueID());
-}
-
-export function reportPreviousCrash(errorProps?: ErrorProps) {
-  if (!errorProps) {
-    return;
-  }
-  Crashlytics.log("Audere error log will be saved");
-  uploader.saveCrashLog(errorProps.errorMessage);
-  Crashlytics.log("Audere error log successfully saved");
+  crashlytics.recordError(domain, e.message);
 }
 
 export function crashReportingDetailsMiddleware(store: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
     if (action.type === "SET_EMAIL" && action.email) {
-      Crashlytics.setUserEmail(action.email);
+      crashlytics.setStringValue("user_email", action.email);
     }
     return next(action);
   };

@@ -16,7 +16,7 @@ import {
   setMarketingProperties,
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
-import { Crashlytics } from "react-native-fabric";
+import { crashlytics } from "../crashReporter";
 import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
 import { connect } from "react-redux";
 import {
@@ -32,7 +32,7 @@ import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
-import { uploadingErrorHandler } from "../crashReporter";
+import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import { getMarketingProperties } from "../util/tracker";
 
 const AppContainer = createAppContainer(AppNavigator);
@@ -317,7 +317,7 @@ class ConnectedRootContainer extends React.Component<Props> {
             from: currentScreen,
             to: nextScreen,
           });
-          Crashlytics.log(
+          crashlytics.log(
             "Navigating from " + currentScreen + " to " + nextScreen
           );
         }

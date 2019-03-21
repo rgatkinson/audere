@@ -17,6 +17,13 @@ jest.mock("react-native-firebase", () => {
         setUserId: jest.fn(),
       };
     }),
+    crashlytics: jest.fn(() => {
+      return {
+        recordError: jest.fn(),
+        setUserIdentifier: jest.fn(),
+        log: jest.fn(),
+      };
+    }),
   };
 });
 
@@ -29,16 +36,5 @@ jest.mock("react-native-device-info", () => {
       };
     }),
     getUniqueID: jest.fn(),
-  };
-});
-
-jest.mock("react-native-fabric", () => {
-  return {
-    Crashlytics: {
-      recordError: jest.fn(),
-      setUserEmail: jest.fn(),
-      setUserIdentifier: jest.fn(),
-      log: jest.fn(),
-    },
   };
 });

@@ -24,6 +24,7 @@ yarn-error.log*
 
 .gradle
 android/app/build
+android/local.properties
 ios/Pods
 xcuserdata
 ios/fluathome/Supporting/EXBuildConstants.*
