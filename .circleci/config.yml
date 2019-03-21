@@ -347,8 +347,8 @@ jobs:
           name: Run setup scripts
           command: |
             scripts/generate-build-info
-            scripts/build-hacks
             scripts/get-cached-pods
+            scripts/build-hacks
       - run:
           name: flu@home Tests
           command: |
