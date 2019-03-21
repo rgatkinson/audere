@@ -52,7 +52,7 @@ export class S3Uploader implements UWUploader {
   public async sendFollowUps(batch: number, contents: string): Promise<void> {
     // YYYY-MM-DD
     const now = new Date().toISOString().substring(0, 10);
-    const file = `FluHome_FollowUpSurveyToSend_-${batch}.${now}.csv`;
+    const file = `FluHome_FollowUpSurveyToSend_${batch}.${now}.csv`;
     const key = `${this.env}/outgoing/fulfillment-order-reports/${file}`;
 
     const params = {
