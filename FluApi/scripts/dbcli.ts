@@ -115,6 +115,15 @@ yargs
     handler: command(cmdLocation),
   })
   .command({
+    command: "upload <row>",
+    describe: "Removes marker that a row is already uploaded to Hutch, " +
+      "hopefully to trigger another upload next time around.",
+    builder: yargs =>
+      yargs
+        .string("row"),
+    handler: command(cmdUpload),
+  })
+  .command({
     command: "generate-random-key [size]",
     builder: yargs => yargs.option("size", {
       number: true
@@ -478,6 +487,22 @@ async function cmdLocation(argv: LocationArgs) {
   }
 }
 
+interface UploadArgs {
+  release: Release;
+  row: string;
+}
+
+async function cmdUpload(argv: UploadArgs): Promise<void> {
+  const updater = nonPiiUpdater(argv.release);
+  const nonPii = await updater.load(argv.row.trim());
+  const csruid = nonPii.csruid;
+  if (await updater.deleteUploadMarker(csruid)) {
+    console.log(`Unmarked ${pubId(csruid)} (${argv.release}) as uploaded.`);
+  } else {
+    console.log(`Nothing changed: ${pubId(csruid)} (${argv.release}) is already unmarked.`);
+  }
+}
+
 interface GenerateRandomKeyArgs {
   size?: number;
 }
@@ -782,4 +807,8 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
   }
 
   return choice;
+}
+
+function pubId(csruid: string): string {
+  return csruid.substring(0, 21);
 }

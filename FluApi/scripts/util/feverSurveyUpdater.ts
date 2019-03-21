@@ -92,6 +92,10 @@ export abstract class SurveyUpdater<T extends object & {isDemo?: boolean}>
     return true;
   }
 
+  async deleteUploadMarker(csruid: string): Promise<boolean> {
+    throw new Error("TODO");
+  }
+
   expectOneMatch<T>(key: string, items: T[]): T {
     if (items.length != 1) {
       throw new Error(`Expected exactly 1 ${this.label} row to match key '${key}', but got ${items.length}`);

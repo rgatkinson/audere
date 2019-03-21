@@ -123,7 +123,7 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
   async deleteUploadMarker(csruid: string): Promise<boolean> {
     const nonPii = this.expectOneMatch(
       "csruid",
-      await this.nonPii.findAll({ where: { csruid }})
+      await this.nonPii.findAll({ where: { csruid: { [Op.like]: `${csruid}%` }}})
     );
 
     const uploads = await this.upload.destroy({ where: { visit_id: nonPii.id }});
