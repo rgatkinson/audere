@@ -214,9 +214,32 @@
     "title": "Email and Address",
     "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included."
   },
+  "addressConfirmScreen": {
+    "title": "Verify your address",
+    "description": "We're having trouble verifying your shipping address. Please select the correct address and tap \"continue.\"",
+    "suggestedAddress": "Suggested address:",
+    "originalAddress": "Original address",
+    "reEnterAddress": "Re-end address"
+  },
+  "addressNotFoundModal": {
+    "dismissText": "Not Correct",
+    "submitText": "Correct",
+    "addressNotFound": "Address not found",
+    "addressConfirm": "Please confirm the address below is correct",
+    "entered": "You entered: "
+  },
+  "radioButtonGroup": {
+    "suggestedAddress": "Suggested address:",
+    "originalAddress": "Original address:"
+  },
   "ageIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "We're sorry, but this study is aimed at adults 18 years and older. "
+  },
+  "ineligibleScreen": {
+    "ineligible": "Thanks for your interest",
+    "descriptionAge": "We're sorry, but this study is aimed at adults 18 years and older. ",
+    "descriptionAddress": "We're sorry, but we could not verify your address."
   },
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",

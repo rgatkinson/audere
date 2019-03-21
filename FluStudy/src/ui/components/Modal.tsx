@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AnimatedModal from "react-native-modal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
+  BORDER_COLOR,
   GUTTER,
   LINK_COLOR,
   STATUS_BAR_COLOR,
@@ -48,8 +49,12 @@ class Modal extends React.Component<Props & WithNamespaces> {
           ]}
         >
           <View style={styles.blur}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={this.props.onDismiss}>
+            {this.props.children}
+            <View style={styles.footer}>
+              <TouchableOpacity
+                onPress={this.props.onDismiss}
+                style={styles.actionButton}
+              >
                 <Text style={styles.actionText}>
                   {this.props.dismissText
                     ? this.props.dismissText
@@ -59,7 +64,10 @@ class Modal extends React.Component<Props & WithNamespaces> {
               {this.props.title ? (
                 <Text style={styles.title}>{this.props.title}</Text>
               ) : null}
-              <TouchableOpacity onPress={this.props.onSubmit}>
+              <TouchableOpacity
+                onPress={this.props.onSubmit}
+                style={styles.actionButton}
+              >
                 <Text style={[styles.actionText, { textAlign: "right" }]}>
                   {this.props.submitText
                     ? this.props.submitText
@@ -67,7 +75,6 @@ class Modal extends React.Component<Props & WithNamespaces> {
                 </Text>
               </TouchableOpacity>
             </View>
-            {this.props.children}
           </View>
         </View>
       </AnimatedModal>
@@ -81,6 +88,16 @@ const styles = StyleSheet.create({
     fontSize: SYSTEM_TEXT,
     color: LINK_COLOR,
   },
+  actionButton: {
+    width: "50%",
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderTopColor: BORDER_COLOR,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderLeftColor: BORDER_COLOR,
+    borderLeftWidth: StyleSheet.hairlineWidth,
+  },
   blur: {
     backgroundColor: "white",
     borderRadius: 13,
@@ -91,14 +108,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
-  header: {
-    backgroundColor: STATUS_BAR_COLOR,
+  footer: {
     alignItems: "center",
+    position: "absolute",
+    bottom: 0,
     opacity: 82,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: GUTTER,
     height: 44,
+    width: "100%",
   },
   modal: {
     alignItems: "center",

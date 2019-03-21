@@ -106,7 +106,8 @@ export class SmartyStreetsGeocoder implements Geocoder {
 
     lookup.city = a.city;
     lookup.state = a.state;
-    lookup.zipcode = a.postalCode;
+    lookup.zipCode = a.postalCode;
+    lookup.maxCandidates = 3;
 
     return lookup;
   }
@@ -165,8 +166,10 @@ export class SmartyStreetsGeocoder implements Geocoder {
 
         responses.push(r);
       } else {
-        logger.info(`[Geocoder] No address matching ${lookup.inputId} found ` +
-          `by the geocoder`);
+        logger.info(
+          `[Geocoder] No address matching ${lookup.inputId} found ` +
+            `by the geocoder`
+        );
       }
     });
 

@@ -10,6 +10,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
+import axios from "axios";
 import {
   PushNotificationState,
   PushRegistrationError,
@@ -38,8 +39,10 @@ import {
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
+import RadioButtonGroup from "../components/RadioButtonGroup";
 import Button from "../components/Button";
 import Divider from "../components/Divider";
+import AddressNotFoundModal from "../components/AddressNotFoundModal";
 import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
 import Links from "../components/Links";
@@ -58,6 +61,7 @@ import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 import RadioGrid from "../components/RadioGrid";
+import { getApiBaseUrl } from "../../transport";
 
 interface Props {
   dispatch(action: Action): void;
@@ -198,7 +202,11 @@ class AgeScreen extends React.Component<
   _onNext = () => {
     const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Under18) {
-      this.props.navigation.push("AgeIneligible");
+      this.props.navigation.push("Ineligible", {
+        description: "descriptionAge",
+        funnelEvent: FunnelEvents.AGE_INELIGIBLE,
+        hideBack: true,
+      });
     } else {
       if (!!this.props.workflow.skippedScreeningAt) {
         this.props.navigation.push("Consent");
@@ -528,7 +536,9 @@ export const ConsentIneligible = withNamespaces("consentIneligibleScreen")(
 );
 
 interface AddressState {
-  address?: Address;
+  address: Address;
+  noResults: boolean;
+  suggestedAddress: Address | null;
   triedToProceed: boolean;
 }
 
@@ -551,6 +561,8 @@ class AddressInputScreen extends React.Component<
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
       email: props.email,
+      suggestedAddress: null,
+      noResults: false,
       triedToProceed: false,
     };
   }
@@ -558,8 +570,9 @@ class AddressInputScreen extends React.Component<
   emailInput = React.createRef<EmailInput>();
 
   _onNext = () => {
-    this.setState({ triedToProceed: true });
+    const { address, address2, city, state, zipcode } = this.state.address;
 
+    this.setState({ triedToProceed: true });
     if (
       this._haveValidAddress() &&
       isValidEmail(this.state.email) &&
@@ -580,18 +593,31 @@ class AddressInputScreen extends React.Component<
         return;
       }
 
-      this.props.dispatch(
-        setWorkflow({
-          ...this.props.workflow,
-          screeningCompletedAt: new Date().toISOString(),
+      axios
+        .get(getApiBaseUrl() + "/validateAddress", {
+          params: {
+            address,
+            address2,
+            city,
+            state,
+            zipcode,
+          },
         })
-      );
-      tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-      if (!!this.props.workflow.skippedScreeningAt) {
-        this.props.navigation.push("WhatsNext");
-      } else {
-        this.props.navigation.push("Confirmation");
-      }
+        .then(response => {
+          const results = response.data;
+
+          if (results.length === 0) {
+            this.setState({
+              noResults: true,
+              suggestedAddress: this.state.address,
+            });
+          } else if (results.length >= 1) {
+            this.props.navigation.push("AddressConfirm", {
+              original: this.state.address,
+              suggestions: results,
+            });
+          }
+        });
     }
   };
 
@@ -629,6 +655,7 @@ class AddressInputScreen extends React.Component<
     const config = !!this.props.workflow.skippedScreeningAt
       ? AddressConfig
       : MailingAddressConfig;
+
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
@@ -654,7 +681,20 @@ class AddressInputScreen extends React.Component<
             onSubmitEditing={() => this.emailInput.current!.focus()}
             shouldValidate={this.state.triedToProceed}
             value={this.state.address}
-            onChange={this._onAddressChange}
+            onChange={(address: Address) => this.setState({ address })}
+          />
+          <AddressNotFoundModal
+            address={this.state.suggestedAddress}
+            visible={this.state.noResults}
+            onDismiss={() => this.setState({ noResults: false })}
+            onSubmit={() => {
+              this.setState({ noResults: false });
+              this.props.navigation.push("Ineligible", {
+                description: "descriptionAddress",
+                funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
+                hideBack: false,
+              });
+            }}
           />
           {!this.props.workflow.skippedScreeningAt && (
             <Text
@@ -689,6 +729,87 @@ class AddressInputScreen extends React.Component<
 }
 export const AddressScreen = reduxWriter(
   withNamespaces("addressScreen")(AddressInputScreen)
+);
+
+interface AddressConfirmState {
+  selectedAddress: Address | null;
+  suggestedAddresses: Address[] | null;
+}
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class AddressConfirmScreen extends React.Component<
+  Props & WorkflowProps & WithNamespaces & ReduxWriterProps,
+  AddressConfirmState
+> {
+  constructor(
+    props: Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+  ) {
+    super(props);
+    this.state = {
+      selectedAddress: this.props.navigation.getParam("original"),
+      suggestedAddresses: this.props.navigation.getParam("suggestions"),
+    };
+  }
+
+  _onNext = () => {
+    const config = !!this.props.workflow.skippedScreeningAt
+      ? AddressConfig
+      : MailingAddressConfig;
+    this.props.updateAnswer(
+      { addressInput: this.state.selectedAddress },
+      config
+    );
+    tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        screeningCompletedAt: new Date().toISOString(),
+      })
+    );
+
+    if (!!this.props.workflow.skippedScreeningAt) {
+      this.props.navigation.push("WhatsNext");
+    } else {
+      this.props.navigation.push("Confirmation");
+    }
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <Screen
+          buttonLabel={
+            !!this.props.workflow.skippedScreeningAt
+              ? undefined
+              : t("common:button:continue")
+          }
+          canProceed={true}
+          centerDesc={true}
+          desc={t("description")}
+          navigation={this.props.navigation}
+          step={!!this.props.workflow.skippedScreeningAt ? undefined : 4}
+          title={t("title")}
+          onNext={this._onNext}
+        >
+          <View>
+            <RadioButtonGroup
+              original={this.props.navigation.getParam("original")}
+              suggestions={this.props.navigation.getParam("suggestions")}
+              onChange={(selectedAddress: Address) =>
+                this.setState({ selectedAddress })
+              }
+            />
+          </View>
+        </Screen>
+      </KeyboardAvoidingView>
+    );
+  }
+}
+export const AddressConfirm = reduxWriter(
+  withNamespaces("addressConfirmScreen")(AddressConfirmScreen)
 );
 
 class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
@@ -727,6 +848,41 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
 export const AgeIneligible = withNamespaces("ageIneligibleScreen")(
   AgeIneligibleScreen
 );
+
+class IneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(this.props.navigation.getParam("funnelEvent"));
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t(this.props.navigation.getParam("description"))}
+        hideBackButton={this.props.navigation.getParam("hideBack")}
+        imageSrc={require("../../img/thanksForYourInterest.png")}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+      >
+        <Links
+          links={[
+            {
+              label: t("links:learnLink"),
+              onPress: learnMore,
+            },
+            {
+              label: t("links:medLink"),
+              onPress: findMedHelp,
+            },
+          ]}
+        />
+      </Screen>
+    );
+  }
+}
+export const Ineligible = withNamespaces("ineligibleScreen")(IneligibleScreen);
 
 class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {

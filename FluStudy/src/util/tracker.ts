@@ -31,6 +31,7 @@ export const FunnelEvents = {
   AGE_INELIGIBLE: "funnel_age_ineligible",
   SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
   STATE_INELIGIBLE: "funnel_state_ineligible",
+  ADDRESS_INELIGIBLE: "funnel_address_ineligible",
 
   // Survey events
   RECEIVED_KIT: "funnel_received_kit",

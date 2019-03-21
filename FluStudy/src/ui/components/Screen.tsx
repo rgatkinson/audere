@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
     width: IMAGE_WIDTH,
   },
   innerContainer: {
-    alignItems: "center",
     marginHorizontal: GUTTER,
   },
   scrollContainer: {

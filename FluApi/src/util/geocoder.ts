@@ -25,7 +25,7 @@ export async function createGeocoder(
 
   let geoClient;
 
-  // Specifying base URL is leveraged in tests.
+  //Specifying base URL is leveraged in tests.
   if (geoConfig.baseUrl && !isAWS()) {
     geoClient = new geo.ClientBuilder(credentials)
       .withBaseUrl(geoConfig.baseUrl)

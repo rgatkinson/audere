@@ -1801,6 +1801,7 @@ class TestStripConfirmationScreen extends React.Component<
         {photo != null && (
           <Image
             style={{
+              alignSelf: "center",
               aspectRatio: screenWidth / screenHeight,
               width: "50%",
               marginVertical: GUTTER,

@@ -14,6 +14,7 @@ import { generateRandomKey, generateRandomBytes } from "./util/crypto";
 import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReport";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
+import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
 import { useOuch, createApp, wrap } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 
@@ -72,6 +73,16 @@ export async function createPublicApp(config: AppConfig) {
   publicApp.get("/about", (req, res) => {
     res.status(200).send(buildInfo);
   });
+
+  const feverAddress = new FeverValidateAddress(sql);
+
+  publicApp.get(
+    "/api/validateAddress",
+    wrap(async (req, res) => {
+      const results = await feverAddress.performRequest(req);
+      res.json(results);
+    })
+  );
 
   return useOuch(publicApp);
 }
