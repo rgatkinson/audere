@@ -213,7 +213,9 @@
   "addressScreen": {
     "email": "Your email address:",
     "title": "Email and Address",
-    "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included."
+    "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included.",
+    "noInternetTitle": "Connection error",
+    "noInternetSubtitle": "Please check your internet connection and try again"
   },
   "addressConfirmScreen": {
     "title": "Verify your address",

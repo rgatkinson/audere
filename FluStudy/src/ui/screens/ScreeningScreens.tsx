@@ -5,7 +5,12 @@
 
 import { format } from "date-fns";
 import React from "react";
-import { KeyboardAvoidingView, PushNotificationIOS, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  PushNotificationIOS,
+  View,
+} from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -606,7 +611,8 @@ class AddressInputScreen extends React.Component<
 
   emailInput = React.createRef<EmailInput>();
 
-  _onNext = () => {
+  _onNext = async () => {
+    const { t } = this.props;
     this.setState({ triedToProceed: true });
     tracker.logEvent(FunnelEvents.ADDRESS_ATTEMPTED);
 
@@ -642,42 +648,46 @@ class AddressInputScreen extends React.Component<
           this.props.navigation
         );
       } else {
-        axios
-          .get(getApiBaseUrl() + "/validateAddress", {
-            params: {
-              address,
-              address2,
-              city,
-              state,
-              zipcode,
-            },
-          })
-          .then(response => {
-            const unfilteredResultCount = response.data.length;
-            const results: Address[] = response.data.filter(
-              (address: Address) =>
-                this._isDifferentAddress(address, this.state.address)
-            );
-
-            if (unfilteredResultCount === 0) {
-              this.setState({
-                noResults: true,
-                suggestedAddress: this.state.address,
-              });
-            } else if (unfilteredResultCount != results.length) {
-              writeAddressAndNavigate(
-                this.state.address,
-                !!this.props.workflow.skippedScreeningAt,
-                this.props.updateAnswer,
-                this.props.navigation
-              );
-            } else if (results.length >= 1) {
-              this.props.navigation.push("AddressConfirm", {
-                original: this.state.address,
-                suggestions: results,
-              });
+        try {
+          const response = await axios.get(
+            getApiBaseUrl() + "/validateAddress",
+            {
+              params: {
+                address,
+                address2,
+                city,
+                state,
+                zipcode,
+              },
             }
-          });
+          );
+
+          const unfilteredResultCount = response.data.length;
+          const results: Address[] = response.data.filter((address: Address) =>
+            this._isDifferentAddress(address, this.state.address)
+          );
+
+          if (unfilteredResultCount === 0) {
+            this.setState({
+              noResults: true,
+              suggestedAddress: this.state.address,
+            });
+          } else if (unfilteredResultCount != results.length) {
+            writeAddressAndNavigate(
+              this.state.address,
+              !!this.props.workflow.skippedScreeningAt,
+              this.props.updateAnswer,
+              this.props.navigation
+            );
+          } else if (results.length >= 1) {
+            this.props.navigation.push("AddressConfirm", {
+              original: this.state.address,
+              suggestions: results,
+            });
+          }
+        } catch (error) {
+          Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
+        }
       }
     }
   };
