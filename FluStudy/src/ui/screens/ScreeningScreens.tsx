@@ -578,8 +578,6 @@ class AddressInputScreen extends React.Component<
   emailInput = React.createRef<EmailInput>();
 
   _onNext = () => {
-    const { address, address2, city, state, zipcode } = this.state.address;
-
     this.setState({ triedToProceed: true });
     tracker.logEvent(FunnelEvents.ADDRESS_ATTEMPTED);
 
@@ -588,6 +586,7 @@ class AddressInputScreen extends React.Component<
       isValidEmail(this.state.email) &&
       (!this.props.workflow.skippedScreeningAt || this._haveOption())
     ) {
+      const { address, address2, city, state, zipcode } = this.state.address;
       const config = !!this.props.workflow.skippedScreeningAt
         ? AddressConfig
         : MailingAddressConfig;
