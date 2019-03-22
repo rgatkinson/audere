@@ -222,6 +222,28 @@ describe("survey batch data access", () => {
     });
   });
 
+  describe("get existing items", async () => {
+    it("should fetch items based on a list of ids", async () => {
+      const dao = new IncentiveRecipientsDataAccess(sql);
+      await createTestData(false);
+
+      const batch = await dao.getExistingBatch();
+      const out = await dao.getExistingItems(batch.items);
+
+      expect(out).toHaveLength(2);
+      expect(out).toContainEqual(
+        expect.objectContaining({
+          boxBarcode: "00000000"
+        })
+      );
+      expect(out).toContainEqual(
+        expect.objectContaining({
+          boxBarcode: "11111111"
+        })
+      );
+    });
+  });
+
   describe("track batch", () => {
     it("creates a new batch and assigns sequential ids to items", async () => {
       const dao = new IncentiveRecipientsDataAccess(sql);

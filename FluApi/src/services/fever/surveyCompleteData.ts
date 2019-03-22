@@ -39,7 +39,7 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
   ): Promise<SurveyCompleteItem[] | null> {
     // TODO: check retrieved items against supplied, if database records have
     // been edited to no longer pass the filter we may skip processing a record
-    // and mark it as complete 
+    // and mark it as complete
     return this.getItems(items);
   }
 
@@ -77,12 +77,16 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
         ...filter,
         ...{ id: items.map(x => x.surveyId) }
       }
+    } else {
+      filter = {
+        ...filter,
+        ...{ "$items.surveyId$": null }
+      }
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({
       where: {
-        ...filter,
-        "$items.surveyId$": null
+        ...filter
       },
       include: [
         {
