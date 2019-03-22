@@ -33,8 +33,8 @@ import {
   WhereKitConfig,
   AgeBuckets,
   AgeConfig,
-  ButtonConfig,
   ConsentConfig,
+  SurveyQuestionData,
   SymptomsConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
@@ -532,6 +532,18 @@ export const ConsentIneligible = withNamespaces("consentIneligibleScreen")(
   ConsentIneligibleScreen
 );
 
+function writeAddressAndNavigate(
+  address: Address | null,
+  didSkipScreening: boolean,
+  updateAnswer: (answer: object, data: SurveyQuestionData) => void,
+  navigation: NavigationScreenProp<any, any>
+) {
+  const config = didSkipScreening ? AddressConfig : MailingAddressConfig;
+  updateAnswer({ addressInput: address }, config);
+
+  navigation.push(didSkipScreening ? "WhatsNext" : "Confirmation");
+}
+
 interface AddressState {
   address: Address;
   noResults: boolean;
@@ -574,6 +586,23 @@ class AddressInputScreen extends React.Component<
       triedToProceed: false,
     };
   }
+
+  _isSameTrimmedString = (
+    str1: string | undefined,
+    str2: string | undefined
+  ) => {
+    return str1 === str2 || (!!str1 && !!str2 && str1.trim() === str2.trim());
+  };
+
+  _isDifferentAddress = (address1: Address, address2: Address) => {
+    return (
+      !this._isSameTrimmedString(address1.address, address2.address) ||
+      !this._isSameTrimmedString(address1.address2, address2.address2) ||
+      !this._isSameTrimmedString(address1.city, address2.city) ||
+      !this._isSameTrimmedString(address1.state, address2.state) ||
+      !this._isSameTrimmedString(address1.zipcode, address2.zipcode)
+    );
+  };
 
   emailInput = React.createRef<EmailInput>();
 
@@ -622,13 +651,24 @@ class AddressInputScreen extends React.Component<
             },
           })
           .then(response => {
-            const results = response.data;
+            const unfilteredResultCount = response.data.length;
+            const results: Address[] = response.data.filter(
+              (address: Address) =>
+                this._isDifferentAddress(address, this.state.address)
+            );
 
-            if (results.length === 0) {
+            if (unfilteredResultCount === 0) {
               this.setState({
                 noResults: true,
                 suggestedAddress: this.state.address,
               });
+            } else if (unfilteredResultCount != results.length) {
+              writeAddressAndNavigate(
+                this.state.address,
+                !!this.props.workflow.skippedScreeningAt,
+                this.props.updateAnswer,
+                this.props.navigation
+              );
             } else if (results.length >= 1) {
               this.props.navigation.push("AddressConfirm", {
                 original: this.state.address,
@@ -760,20 +800,12 @@ class AddressConfirmScreen extends React.Component<
   }
 
   _onNext = () => {
-    const config = !!this.props.workflow.skippedScreeningAt
-      ? AddressConfig
-      : MailingAddressConfig;
-    this.props.updateAnswer(
-      { addressInput: this.state.selectedAddress },
-      config
+    writeAddressAndNavigate(
+      this.state.selectedAddress,
+      !!this.props.workflow.skippedScreeningAt,
+      this.props.updateAnswer,
+      this.props.navigation
     );
-    tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-
-    if (!!this.props.workflow.skippedScreeningAt) {
-      this.props.navigation.push("WhatsNext");
-    } else {
-      this.props.navigation.push("Confirmation");
-    }
   };
 
   render() {
