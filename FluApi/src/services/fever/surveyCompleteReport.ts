@@ -93,11 +93,14 @@ export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem
     const appBuilds = pii.survey.consents
       .map(c => +c.appBuild)
       .filter(build => build != null);
-    const appBuild = Math.min(...appBuilds);
+    const build = Math.min(...appBuilds);
 
-    const incentiveAmount = appBuild === Infinity || appBuild <= 48 ?
-      "50.00" :
-      "25.00";
+    let incentiveAmount;
+    if (Number.isNaN(build) || !Number.isFinite(build) || build <= 48) {
+      incentiveAmount = "50.00";
+    } else {
+      incentiveAmount = "25.00";
+    }
 
     const recipient: SurveyCompleteParticipant = {
       workflowId: item.workflowId,

@@ -3,7 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import _ from "lodash";
 import { instance, mock, when, anyString, capture } from "ts-mockito";
+import { surveyPIIInDb } from "../endpoints/feverSampleData";
 import { Incentives } from "../../src/services/fever/incentiveRecipients";
 import { IncentiveRecipientsDataAccess } from "../../src/services/fever/incentiveRecipientsData";
 import { SurveyCompleteParticipant } from "../../src/services/fever/surveyCompleteReport";
@@ -70,11 +72,38 @@ describe("sending incentives", () => {
           row[9] === item.dateReceived &&
           row[10] === item.boxBarcode &&
           row[11] === item.workflowId.toFixed() &&
-          row[12] === item.surveyId.toFixed()
+          row[12] === item.surveyId.toFixed() &&
+          row[13] === "50.00"
         );
       });
 
       expect(contains).toBe(true);
     });
+  });
+
+  it("should set the correct incentive amount", async () => {
+    const i = new Incentives(undefined, undefined);
+    const item = {
+      workflowId: 1,
+      surveyId: 1,
+      csruid: "1",
+      boxBarcode: "11111111",
+      dateReceived: "2019-03-22"
+    };
+
+    // no app build
+    const survey = surveyPIIInDb(item.csruid);
+    const one = await i.transformSurveyData(item, survey);
+    expect(one.incentiveAmount).toBe("50.00");
+
+    const surveyTwo = _.cloneDeep(survey);
+    surveyTwo.survey.consents[0].appBuild = "50";
+    const two = await i.transformSurveyData(item, surveyTwo);
+    expect(two.incentiveAmount).toBe("25.00");
+
+    const surveyThree = _.cloneDeep(survey);
+    surveyThree.survey.consents[0].appBuild = "25";
+    const three = await i.transformSurveyData(item, surveyThree);
+    expect(three.incentiveAmount).toBe("50.00");
   });
 });
