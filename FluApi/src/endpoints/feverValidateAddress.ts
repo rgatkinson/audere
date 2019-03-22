@@ -64,6 +64,6 @@ export class FeverValidateAddress {
 
 async function initializeGeocoder(sql: SplitSql) {
   const secrets = new SecretConfig(sql);
-  const geocoder = await createGeocoder(secrets);
+  const geocoder = await createGeocoder(secrets, true);
   return geocoder;
 }

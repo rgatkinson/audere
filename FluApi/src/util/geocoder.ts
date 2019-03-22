@@ -13,7 +13,8 @@ import Sequelize from "sequelize";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 
 export async function createGeocoder(
-  secrets: SecretConfig
+  secrets: SecretConfig,
+  bypassBaseUrl?: boolean
 ): Promise<GeocodingService> {
   const geoConfig = await getGeocodingConfig(secrets);
 
@@ -26,7 +27,7 @@ export async function createGeocoder(
   let geoClient;
 
   //Specifying base URL is leveraged in tests.
-  if (geoConfig.baseUrl && !isAWS()) {
+  if (!bypassBaseUrl && geoConfig.baseUrl && !isAWS()) {
     geoClient = new geo.ClientBuilder(credentials)
       .withBaseUrl(geoConfig.baseUrl)
       .buildUsStreetApiClient();
