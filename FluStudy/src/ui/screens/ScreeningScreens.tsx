@@ -1009,17 +1009,14 @@ interface PushProps {
 class ConfirmationScreen extends React.Component<
   Props & WorkflowProps & PushProps & WithNamespaces
 > {
-  _onNext = () => {
-    this.props.navigation.push("ExtraInfo");
-    /*
-     * Not asking about push notifications yet
-    if (this.props.pushState.showedSystemPrompt) {
-      this.props.navigation.push("ExtraInfo");
-    } else {
-      this.props.navigation.push("PushNotifications");
-    }
-    */
-  };
+  componentDidMount() {
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        screeningCompletedAt: new Date().toISOString(),
+      })
+    );
+  }
 
   render() {
     const { t } = this.props;
