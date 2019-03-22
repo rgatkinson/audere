@@ -100,7 +100,8 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
           required: false
         }
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
+      subQuery: false
     });
 
     // Need to cast the result object to access joined data
