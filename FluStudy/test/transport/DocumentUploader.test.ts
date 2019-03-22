@@ -67,9 +67,6 @@ describe("DocumentUploader", () => {
     beforeEach(() => {
       const api = Axios.create();
       mockAxios = spy(api);
-      when(mockAxios.get(match("/randomBytes/.*"))).thenReturn(
-        axiosResponse({ bytes: "" })
-      );
       PouchDB.plugin(CryptoPouch);
       mockPouchDB = mock(PouchDB);
       uploader = new DocumentUploader(instance(mockPouchDB), api, LOGGER);

@@ -1,4 +1,6 @@
 import { NativeModules as RNNativeModules } from "react-native";
+import crypto from 'crypto';
+
 RNNativeModules.UIManager = RNNativeModules.UIManager || {};
 RNNativeModules.UIManager.RCTView = RNNativeModules.UIManager.RCTView || {};
 RNNativeModules.RNGestureHandlerModule = RNNativeModules.RNGestureHandlerModule || {
@@ -12,3 +14,9 @@ RNNativeModules.RNGestureHandlerModule = RNNativeModules.RNGestureHandlerModule 
 RNNativeModules.PlatformConstants = RNNativeModules.PlatformConstants || {
   forceTouchAvailable: false
 };
+
+Object.defineProperty(global, "crypto", {
+  value: {
+    getRandomValues: arr => crypto.randomBytes(arr.length),
+  },
+});

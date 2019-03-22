@@ -142,13 +142,7 @@ export class DocumentUploader {
     if (pouchPassword) {
       return pouchPassword;
     }
-    const result = await this.check200(() => this.api.get("/randomBytes/32"));
-    if (!result) {
-      throw new Error(
-        "Failed to initialize PouchDB, could not fetch a random password"
-      );
-    }
-    pouchPassword = result.data.bytes.trim();
+    pouchPassword = base64url(crypto.getRandomValues(new Buffer(32)));
     await SecureStore.setItemAsync(POUCH_PASS_KEY, pouchPassword);
     return pouchPassword;
   }
