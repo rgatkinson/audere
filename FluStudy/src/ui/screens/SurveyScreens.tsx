@@ -2173,6 +2173,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
+        imageSrc={require("../../img/putBag2inBox.png")}
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
