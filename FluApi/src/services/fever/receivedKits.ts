@@ -33,7 +33,7 @@ export class ReceivedKits {
     const files = await this.retriever.listReceivedKitFiles();
     logger.info(`[Import Kits] ${files.length} total files posted`);
     const toProcess = await this.dao.findFilesToProcess(files);
-    logger.info(`[Import Kits] ${toProcess} files to process`);
+    logger.info(`[Import Kits] ${toProcess.length} files to process`);
 
     if (toProcess.length > 0) {
       const contents = await this.retriever.retrieveReceivedKits(toProcess);
