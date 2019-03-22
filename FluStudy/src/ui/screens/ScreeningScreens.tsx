@@ -539,16 +539,27 @@ interface AddressState {
   triedToProceed: boolean;
 }
 
+interface DemoModeProps {
+  isDemo: boolean;
+}
+
 @connect((state: StoreState) => ({
   email: state.survey.email,
   workflow: state.survey.workflow,
+  isDemo: state.meta.isDemo,
 }))
 class AddressInputScreen extends React.Component<
-  Props & EmailProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
+  Props &
+    DemoModeProps &
+    EmailProps &
+    WorkflowProps &
+    WithNamespaces &
+    ReduxWriterProps,
   AddressState & EmailState
 > {
   constructor(
     props: Props &
+      DemoModeProps &
       EmailProps &
       WorkflowProps &
       WithNamespaces &
@@ -595,31 +606,38 @@ class AddressInputScreen extends React.Component<
       tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
 
-      axios
-        .get(getApiBaseUrl() + "/validateAddress", {
-          params: {
-            address,
-            address2,
-            city,
-            state,
-            zipcode,
-          },
-        })
-        .then(response => {
-          const results = response.data;
-
-          if (results.length === 0) {
-            this.setState({
-              noResults: true,
-              suggestedAddress: this.state.address,
-            });
-          } else if (results.length >= 1) {
-            this.props.navigation.push("AddressConfirm", {
-              original: this.state.address,
-              suggestions: results,
-            });
-          }
+      if (this.props.isDemo) {
+        this.props.navigation.push("AddressConfirm", {
+          original: this.state.address,
+          suggestions: [this.state.address],
         });
+      } else {
+        axios
+          .get(getApiBaseUrl() + "/validateAddress", {
+            params: {
+              address,
+              address2,
+              city,
+              state,
+              zipcode,
+            },
+          })
+          .then(response => {
+            const results = response.data;
+
+            if (results.length === 0) {
+              this.setState({
+                noResults: true,
+                suggestedAddress: this.state.address,
+              });
+            } else if (results.length >= 1) {
+              this.props.navigation.push("AddressConfirm", {
+                original: this.state.address,
+                suggestions: results,
+              });
+            }
+          });
+      }
     }
   };
 
@@ -960,10 +978,6 @@ interface PushProps {
 class ConfirmationScreen extends React.Component<
   Props & WorkflowProps & PushProps & WithNamespaces
 > {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
-  }
-  
   _onNext = () => {
     this.props.navigation.push("ExtraInfo");
     /*
