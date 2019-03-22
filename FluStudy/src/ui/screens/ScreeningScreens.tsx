@@ -635,10 +635,12 @@ class AddressInputScreen extends React.Component<
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
 
       if (this.props.isDemo) {
-        this.props.navigation.push("AddressConfirm", {
-          original: this.state.address,
-          suggestions: [this.state.address],
-        });
+        writeAddressAndNavigate(
+          this.state.address,
+          !!this.props.workflow.skippedScreeningAt,
+          this.props.updateAnswer,
+          this.props.navigation
+        );
       } else {
         axios
           .get(getApiBaseUrl() + "/validateAddress", {
