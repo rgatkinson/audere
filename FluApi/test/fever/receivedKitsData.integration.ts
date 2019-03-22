@@ -24,10 +24,8 @@ describe("received kits data access", () => {
   });
 
   async function cleanupDb() {
-    await Promise.all([
-      fever.surveyNonPii.destroy({ where: {} }).then(() => {}),
-      fever.receivedKitsFile.destroy({ where: {} }).then(() => {}),
-    ]);
+    await fever.surveyNonPii.destroy({ where: {} });
+    await fever.receivedKitsFile.destroy({ where: {} });
   }
 
   it("should filter existing barcodes", async () => {
