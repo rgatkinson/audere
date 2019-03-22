@@ -25,10 +25,20 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
   protected abstract batchModel: Model<BatchAttributes>;
   protected abstract itemModel: Model<BatchItemAttributes>;
   protected abstract discardModel: Model<BatchDiscardAttributes>;
+  protected abstract requireReceivedKit: boolean;
 
-  protected abstract surveyPredicate(): Sequelize.WhereOptions<
-    SurveyAttributes<SurveyNonPIIInfo>
-  >;
+  protected surveyPredicate() {
+    return {
+      survey: {
+        isDemo: false,
+        workflow: {
+          surveyCompletedAt: {
+            [Sequelize.Op.ne]: null
+          }
+        }
+      }
+    };
+  }
 
   /**
    * Retrieves completed surveys based on an input set of previously assigned
@@ -97,11 +107,10 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
         {
           model: this.fever.receivedKit,
           as: "received",
-          required: false
+          required: this.requireReceivedKit
         }
       ],
-      order: [["id", "ASC"]],
-      subQuery: false
+      order: [["id", "ASC"]]
     });
 
     // Need to cast the result object to access joined data

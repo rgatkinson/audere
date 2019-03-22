@@ -31,19 +31,5 @@ export class IncentiveRecipientsDataAccess extends SurveyCompleteDataAccess {
     this.discardModel = this.fever.incentiveDiscard;
   }
 
-  protected surveyPredicate() {
-    return {
-      survey: {
-        isDemo: false,
-        workflow: {
-          surveyCompletedAt: {
-            [Sequelize.Op.ne]: null
-          }
-        }
-      },
-      "$received.id$": {
-        [Sequelize.Op.ne]: null
-      }
-    };
-  }
+  protected requireReceivedKit: boolean = true;
 }

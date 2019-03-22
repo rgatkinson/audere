@@ -31,16 +31,5 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
     this.discardModel = this.fever.followUpDiscard;
   }
 
-  protected surveyPredicate() {
-    return {
-      survey: {
-        isDemo: false,
-        workflow: {
-          surveyCompletedAt: {
-            [Sequelize.Op.ne]: null
-          }
-        }
-      }
-    };
-  }
+  protected requireReceivedKit: boolean = false;
 }
