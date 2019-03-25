@@ -118,8 +118,8 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
     const recipient: KitRecipient = {
       workflowId: item.workflowId,
       surveyId: item.surveyId,
-      firstName: pii.survey.patient.firstName.trim(),
-      lastName: pii.survey.patient.lastName.trim(),
+      firstName: (pii.survey.patient.firstName || "Current").trim(),
+      lastName: (pii.survey.patient.lastName || "Resident").trim(),
       homeAddress: homeAddress,
       // This email address is used by the UW for the fulfillment house and
       // for answering questions about the mailing process.
