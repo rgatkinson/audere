@@ -60,6 +60,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
   protected abstract readonly batchModel: Model<BatchAttributes>;
   protected abstract readonly itemModel: Model<BatchItemAttributes>;
   protected abstract readonly discardModel: Model<BatchDiscardAttributes>;
+  private didHasManyOnBatchId: boolean = false;
 
   // Namespaces for batch id and for items within a batch.
   protected readonly abstract batchSeq: string;
@@ -110,11 +111,14 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
    * `null` if there are no pending batches.
    */
   public async getExistingBatch(): Promise<Batch<BatchItem> | null> {
-    this.batchModel.hasMany(this.itemModel, {
-      foreignKey: "batchId",
-      as: "items",
-      onDelete: "CASCADE"
-    });
+    if (!this.didHasManyOnBatchId) {
+      this.didHasManyOnBatchId = true;
+      this.batchModel.hasMany(this.itemModel, {
+        foreignKey: "batchId",
+        as: "items",
+        onDelete: "CASCADE"
+      });
+    }
 
     interface HasBatchItems {
       items: BatchItemAttributes[];
