@@ -2290,6 +2290,9 @@ interface EmailProps {
   email?: string;
 }
 
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
 class EmailOptInScreen extends React.Component<
   Props & WorkflowProps & WithNamespaces & ReduxWriterProps
 > {
