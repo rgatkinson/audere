@@ -80,12 +80,16 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<BatchItemWith
         ...filter,
         ...{ id: items.map(x => x.surveyId) }
       }
+    } else {
+      filter = {
+        ...filter,
+        ...{ "$items.surveyId$": null }
+      }
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({
       where: {
-        ...filter,
-        "$items.surveyId$": null
+        ...filter
       },
       include: [
         {
