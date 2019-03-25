@@ -663,8 +663,16 @@ class AddressInputScreen extends React.Component<
           );
 
           const unfilteredResultCount = response.data.length;
-          const results: Address[] = response.data.filter((address: Address) =>
-            this._isDifferentAddress(address, this.state.address)
+          const resultsWithoutName: Address[] = response.data.filter(
+            (address: Address) =>
+              this._isDifferentAddress(address, this.state.address)
+          );
+          const results: Address[] = resultsWithoutName.map(
+            (address: Address) => {
+              address.firstName = this.state.address.firstName;
+              address.lastName = this.state.address.lastName;
+              return address;
+            }
           );
 
           if (unfilteredResultCount === 0) {
