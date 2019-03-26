@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import Sequelize from "sequelize";
+import Sequelize, { Op } from "sequelize";
 import logger from "../../util/logger";
 import { HutchUploadModel } from "../../models/db/hutchUpload";
 import { PIIVisitDetails } from "../../models/visitDetails";
@@ -33,14 +33,25 @@ export class VisitsService {
     // HutchUpload exists only in the Non-PII database.
     const nonPiiVisits = await this.snifflesModels.visitNonPii.findAll({
       where: {
-        visit: {
-          isDemo: false,
-          complete: "true"
-        },
-        [Sequelize.Op.and]: [
-          Sequelize.literal("(visit->'events')::jsonb @> '[{\"refId\":\"CompletedQuestionnaire\"}]'")
-        ],
-        "$hutch_upload.id$": null
+        [Op.and]: [
+          {
+            visit: {
+              isDemo: false,
+              complete: "true"
+            }
+          },
+          {
+            [Op.or]: [
+              Sequelize.literal(
+                "(visit->'events')::jsonb @> '[{\"refId\":\"CompletedQuestionnaire\"}]'"
+              ),
+              Sequelize.literal("json_array_length(visit->'samples') > 0")
+            ]
+          },
+          {
+            "$hutch_upload.id$": null
+          }
+        ]
       },
       include: [
         {

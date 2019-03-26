@@ -28,6 +28,16 @@ export interface SplitSql {
   close: () => Promise<void>;
 }
 
+function sequelizeLogger(rawLog: string) {
+  if (rawLog.startsWith("Executing") && rawLog.length > 200) {
+    // Sequelize logs each query it executes, followed by an enormous options object. This
+    // trims the log statements down to just the query to make it less verbose
+    logger.debug(rawLog.split(";")[0] + ";...");
+  } else {
+    logger.debug(rawLog);
+  }
+}
+
 export function createSplitSql(): SplitSql {
   const nonPiiUrl = process.env.NONPII_DATABASE_URL;
   const piiUrl = process.env.PII_DATABASE_URL;
@@ -36,12 +46,12 @@ export function createSplitSql(): SplitSql {
   }
 
   const pii = new Sequelize(piiUrl, {
-    logging: process.env.LOG_SQL && logger.debug,
+    logging: process.env.LOG_SQL && sequelizeLogger,
     operatorsAliases: false
   });
   const nonPii = new Sequelize(nonPiiUrl, {
-    operatorsAliases: false,
-    logging: process.env.LOG_SQL && logger.debug
+    logging: process.env.LOG_SQL && sequelizeLogger,
+    operatorsAliases: false
   });
   return {
     pii,
