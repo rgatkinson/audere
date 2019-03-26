@@ -105,8 +105,8 @@ export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem
     const recipient: SurveyCompleteParticipant = {
       workflowId: item.workflowId,
       surveyId: item.surveyId,
-      firstName: pii.survey.patient.firstName.trim(),
-      lastName: pii.survey.patient.lastName.trim(),
+      firstName: (pii.survey.patient.firstName || "").trim(),
+      lastName: (pii.survey.patient.lastName || "").trim(),
       homeAddress: homeAddress,
       email: email.value,
       timestamp: pii.survey.workflow.surveyCompletedAt,
