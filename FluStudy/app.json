@@ -5,7 +5,7 @@
     "description": "App for Seattle Flu Study project",
     "icon": "./src/img/app-icon.png",
     "slug": "FluAtHome",
-    "sdkVersion": "31.0.0",
+    "sdkVersion": "32.0.0",
     "ios": {
       "bundleIdentifier": "org.auderenow.fluathome",
       "buildNumber": "1",

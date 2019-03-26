@@ -4,11 +4,15 @@ platform :ios, '10.0'
 target 'fluathome' do
   pod 'ExpoKit',
     :git => "http://github.com/expo/expo.git",
-    :tag => "ios/2.9.0",
+    :tag => "ios/2.10.4",
     :subspecs => [
       "Core"
     ],
     :inhibit_warnings => true
+  pod 'EXTaskManagerInterface',
+    :path => "../node_modules/expo-task-manager-interface/ios"
+  pod 'EXAppLoaderProvider',
+    :path => "../node_modules/expo-app-loader-provider/ios"
   pod 'EXAdsAdMob',
     :path => "../node_modules/expo-ads-admob/ios"
   pod 'EXBarCodeScanner',
