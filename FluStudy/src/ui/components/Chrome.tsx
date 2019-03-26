@@ -87,7 +87,7 @@ export default class Chrome extends React.Component<Props> {
         <ImageBackground
           source={
             this.props.menuItem
-              ? require("../../img/shortSplash.png")
+              ? { uri: "img/shortSplash" }
               : SPLASH_IMAGE
           }
           style={[

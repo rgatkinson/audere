@@ -60,7 +60,7 @@ export const NAV_BAR_HEIGHT = 40;
 export const LOGO_HEIGHT = 120;
 export const IMAGE_WIDTH = isIPhoneSE ? "75%" : "100%";
 export const SPLASH_IMAGE = isIPhoneSE
-  ? require("../img/mediumSplash.png")
-  : require("../img/splash.png");
+  ? { uri: "img/mediumSplash" }
+  : { uri: "img/splash" };
 export const ASPECT_RATIO = 1.75;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;

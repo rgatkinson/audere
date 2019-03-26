@@ -117,7 +117,7 @@ class WelcomeScreen extends React.Component<
         hideBackButton={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/welcome.png")}
+        stableImageSrc={{ uri: "img/welcome" }}
         title={t("welcome")}
       />
     );
@@ -136,7 +136,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        stableImageSrc={require("../../img/whyThisStudy.png")}
+        stableImageSrc={{ uri: "img/whyThisStudy" }}
         navigation={this.props.navigation}
         title={t("why")}
         onNext={this._onNext}
@@ -158,7 +158,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={!blockKits}
         desc={blockKits ? t("blockKitsDesc") : t("description")}
-        stableImageSrc={require("../../img/whatDoIDoNext.png")}
+        stableImageSrc={{ uri: "img/whatDoIDoNext" }}
         navigation={this.props.navigation}
         title={blockKits ? t("whatBlockKits") : t("what")}
         skipButton={blockKits}
@@ -524,7 +524,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             onPress={this._onBack}
           />
         }
-        imageSrc={require("../../img/thanksForYourInterest.png")}
+        imageSrc={{ uri: "img/thanksForYourInterest" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -876,7 +876,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={require("../../img/thanksForYourInterest.png")}
+        imageSrc={{ uri: "img/thanksForYourInterest" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -913,7 +913,7 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t(this.props.navigation.getParam("description"))}
         hideBackButton={this.props.navigation.getParam("hideBack")}
-        imageSrc={require("../../img/thanksForYourInterest.png")}
+        imageSrc={{ uri: "img/thanksForYourInterest" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -948,7 +948,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={require("../../img/thanksForYourInterest.png")}
+        imageSrc={{ uri: "img/thanksForYourInterest" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -993,7 +993,7 @@ class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={false}
-        imageSrc={require("../../img/thanksForYourInterest.png")}
+        imageSrc={{ uri: "img/thanksForYourInterest" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1046,7 +1046,7 @@ class ConfirmationScreen extends React.Component<
         desc={t("description", {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
-        imageSrc={require("../../img/fluKitOrdered.png")}
+        imageSrc={{ uri: "img/fluKitOrdered" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}
@@ -1154,7 +1154,7 @@ class PushNotificationsScreen extends React.Component<
             onPress={this._onNo}
           />
         }
-        imageSrc={require("../../img/pushNotifications.png")}
+        imageSrc={{ uri: "img/pushNotifications" }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}

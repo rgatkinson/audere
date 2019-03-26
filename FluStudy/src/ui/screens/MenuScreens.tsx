@@ -104,7 +104,7 @@ class AboutScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -128,7 +128,7 @@ class FundingScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -146,7 +146,7 @@ class PartnersScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -170,7 +170,7 @@ class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -198,7 +198,7 @@ class ProblemsScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -222,7 +222,7 @@ class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -248,7 +248,7 @@ class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -274,7 +274,7 @@ class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
       />
     );
@@ -324,7 +324,7 @@ class VersionScreen extends React.Component<Props & WithNamespaces> {
         menuItem={true}
         navigation={this.props.navigation}
         skipButton={false}
-        stableImageSrc={require("../../img/reverseLogo.png")}
+        stableImageSrc={{ uri: "img/reverseLogo" }}
         title={t("title")}
         onNext={() => this.copyToClipboard(aboutContent)}
       />
