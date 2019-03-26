@@ -33,9 +33,9 @@ describe("webPortal", () => {
     done();
   });
 
-  it("Allows getting favicon.ico", async () => {
+  it("Allows getting favicon", async () => {
     await request(publicApp)
-      .get("/favicon.ico")
+      .get("/portal/favicon-32x32.png")
       .expect(200);
   });
 

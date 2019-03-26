@@ -2,8 +2,8 @@
   <head>
     <title>SFS Metrics</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <link rel="icon" type="image/x-icon" href="favicon-32x32.png" />
+    <link rel="stylesheet" type="text/css" href="<%= static %>/css/metrics.css"/>
+    <link rel="icon" type="image/x-icon" href="<%= static %>/favicon-32x32.png" />
   </head>
   <body>
     <form action="/metrics" method="get">
@@ -19,7 +19,7 @@
         </tr>
       </table>
     </form>
-    <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a> 
+    <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a>
     <br />
     <br />
     <a href="/saveDataSummary?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel data summary report</a>
@@ -48,7 +48,7 @@
       </thead>
       <tbody>
         <% oddRow = true;
-           queryType.data.forEach(function(row) { 
+           queryType.data.forEach(function(row) {
             if (row.grouping === "Total") {
           %>
         <tr class="sum">
@@ -56,7 +56,7 @@
         <tr class="odd">
           <% } else { %>
         <tr>
-          <% } %> 
+          <% } %>
           <td class="label"><%= row.grouping %></td>
           <td><%= row.formstarts %></td>
           <td><%= row.eligible %></td>
@@ -70,7 +70,7 @@
           <td><%= row.declinedresponses %></td>
           <% } %>
         </tr>
-        <% oddRow = !oddRow; 
+        <% oddRow = !oddRow;
           }); %>
         </tr>
       </tbody>

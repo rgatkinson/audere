@@ -16,6 +16,15 @@ import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
 import { defineSiteUserModels, SESSION_TABLE_NAME } from "./models";
+import {
+  getMetrics,
+  getExcelDataSummary,
+  getLastMonday,
+  getThisSunday,
+  getExcelReport,
+  getFeverMetrics,
+  getFeverExcelReport
+} from "./metrics";
 import logger from "../../util/logger";
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
@@ -42,6 +51,9 @@ export async function portalApp(config: PortalConfig) {
 
   app.engine("html", consolidate.handlebars);
   app.set("view engine", "html");
+  app.engine("ejs", consolidate.ejs);
+  app.set("view engine", "ejs");
+
   app.set("views", resolve(__dirname, "templates"));
 
   await addSession(app, config);
@@ -105,6 +117,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
 
   app.use(requireLoggedInUser);
   app.get("/index", render("index.html", userContext));
+  addMetricsHandlers(app);
 
   return app;
 
@@ -117,6 +130,73 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     } else {
       logger.debug("requireLoggedInUser redirecting because no user");
       return res.redirect(sitepath("/login"));
+    }
+  }
+
+  function addMetricsHandlers(app: Express): void {
+    app.get("/metrics", (req, res) => {
+      const startDate = req.query.startDate || getLastMonday();
+      const endDate = req.query.endDate || getThisSunday();
+      const [
+        surveyStatsData,
+        surveyStatsByAdminData,
+        lastQuestionData,
+        studyIdData,
+        feedbackData
+      ] = getMetrics(startDate, endDate);
+      res.render("metrics.ejs", {
+        static: app.mountpath,
+        surveyStatsData: surveyStatsData,
+        surveyStatsByAdminData: surveyStatsByAdminData,
+        lastQuestionData: lastQuestionData,
+        feedbackData: feedbackData,
+        startDate: startDate,
+        endDate: endDate
+      });
+    });
+
+    app.get("/feverMetrics", (req, res) => {
+      const startDate = req.query.startDate || getLastMonday();
+      const endDate = req.query.endDate || getThisSunday();
+      const [
+        surveyStatsData,
+        lastQuestionData,
+        statesData,
+        studyIdData
+      ] = getFeverMetrics(startDate, endDate);
+      res.render("feverMetrics.ejs", {
+        static: app.mountpath,
+        surveyStatsData: surveyStatsData,
+        lastQuestionData: lastQuestionData,
+        statesData: statesData,
+        studyIdData: studyIdData,
+        startDate: startDate,
+        endDate: endDate
+      });
+    });
+
+    app.get("/saveMetrics", excelHandler("sfs", getExcelReport));
+    app.get("/saveFeverMetrics", excelHandler("fever", getFeverExcelReport));
+    app.get("/saveDataSummary", excelHandler("sfsData", getExcelDataSummary));
+
+    type DateRangeQuery = (start: string, end: string) => Buffer;
+
+    function excelHandler(prefix: string, query: DateRangeQuery): express.Handler {
+      return (req, res) => {
+        const start = req.query.startDate || getLastMonday();
+        const end = req.query.endDate || getThisSunday();
+        const data = query(start, end);
+
+        const range = start === end ? start : `${start}_${end}`;
+        const filename = `${prefix}-${range}.xlsx`;
+        sendExcel(res, filename, data);
+      };
+    }
+
+    function sendExcel(res: any, name: string, data: Buffer): void {
+      res.setHeader("Content-Type", "application/vnd.openxmlformats");
+      res.setHeader("Content-Disposition", `attachment; filename=${name}`);
+      res.end(data, "binary");
     }
   }
 

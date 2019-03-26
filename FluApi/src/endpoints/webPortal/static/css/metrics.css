@@ -1,0 +1,119 @@
+body {
+  margin: 0px;
+  padding: 20px;
+  font-size: 14px;
+  color: #224;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  color: #4b2e83;
+}
+h1 {
+  margin: 10px;
+  font-size: 30px;
+}
+h2 {
+  font-size: 22px;
+  margin: 7px 10px;
+}
+h3 {
+  margin: 10px;
+}
+hr {
+  border: 0px;
+  width: 60%;
+  margin: 30px 10px;
+  background: #ddd;
+  height: 2px;
+  text-align: left;
+}
+a {
+  margin: 15px;
+}
+
+#date-form td {
+  white-space: nowrap;
+  padding: 5px 5px 0;
+}
+#date-form input {
+  font-size: 14px;
+}
+#date-form button {
+  font-size: 14px;
+}
+#date-form {
+  margin: 5px 10px;
+}
+.hor-minimalist {
+  background: #fff;
+}
+.hor-minimalist th {
+  border-bottom: 2px solid #6678b1;
+}
+.hor-minimalist td {
+  padding: 9px 8px 0;
+}
+.hor-minimalist tbody tr:hover td {
+  color: #4b2e83;
+}
+
+.hor-zebra td {
+  padding: 8px;
+  text-align: right;
+}
+.hor-zebra .label {
+  text-align: left;
+}
+.hor-zebra .odd {
+  background: #f3f0df;
+}
+.hor-zebra .sectionbreak {
+  border-left: 1px dotted #96a8d1;
+  padding-left: 10px;
+}
+.hor-zebra {
+  width: 480px;
+}
+
+.sum {
+  border-top: 2px solid #6678b1;
+}
+.number {
+  text-align: right;
+}
+.questiontext {
+  max-width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #779;
+  font-size: 12px;
+  padding-left: 20px !important;
+}
+.questiontextth {
+  padding-left: 20px;
+}
+
+td {
+  color: #224;
+  min-width: 50px;
+  font-size: 14px;
+}
+th {
+  font-size: 15px;
+  font-weight: normal;
+  color: #4b2e83;
+  padding: 10px 8px;
+}
+table {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  text-align: left;
+  border-collapse: collapse;
+  margin: 15px;
+  padding-left: 40px;
+  padding-top: 10px;
+}
