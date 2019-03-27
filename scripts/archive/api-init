@@ -38,6 +38,7 @@ yarn global add pm2
   cd "$HOME/FluApi"
   yarn install --frozen-lockfile
   yarn build
+  pm2 install typescript
   pm2 start process.json --env production
   pm2 save
 )
