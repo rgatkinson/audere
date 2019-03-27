@@ -642,6 +642,7 @@ class AddressInputScreen extends React.Component<
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
 
       if (this.props.isDemo) {
+        this.setState({ triedToProceed: false });
         writeAddressAndNavigate(
           this.state.address,
           !!this.props.workflow.skippedScreeningAt,
@@ -675,7 +676,7 @@ class AddressInputScreen extends React.Component<
               return address;
             }
           );
-
+          this.setState({ triedToProceed: false });
           if (unfilteredResultCount === 0) {
             this.setState({
               noResults: true,
