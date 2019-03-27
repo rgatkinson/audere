@@ -29,6 +29,28 @@ resource "aws_lambda_function" "cron" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "execution_errors" {
+  alarm_name = "${var.name}-execution-errors"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = "1"
+  metric_name = "Errors"
+  namespace = "AWS/Lambda"
+  period = "60"
+  statistic = "Maximum"
+  threshold = "1"
+  treat_missing_data = "ignore"
+  alarm_description = "This monitors ${var.name} execution failures"
+
+  alarm_actions = [
+    "${var.notification_topic}",
+  ]
+
+  dimensions {
+    FunctionName = "${aws_lambda_function.cron.function_name}"
+    Resource = "${aws_lambda_function.cron.function_name}"
+  }
+}
+
 resource "aws_cloudwatch_event_rule" "cron" {
   name = "${var.name}-cron-events"
   description = "Fires at ${var.frequency}"

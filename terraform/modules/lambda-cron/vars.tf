@@ -38,3 +38,8 @@ variable "security_group_ids" {
   description = "Security group ids that allow the lambda to access the specified URL"
   type = "list"
 }
+
+variable "notification_topic" {
+  description = "SNS topic for CloudWatch alarms"
+  type = "string"
+}

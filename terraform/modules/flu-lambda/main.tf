@@ -32,6 +32,10 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+resource "aws_sns_topic" "flu_lambda_notifications" {
+  name = "${local.base_name}-notifications"
+}
+
 module "hutch_upload_cron" {
   source = "../lambda-cron"
   name = "${local.base_name}-hutch-upload"
@@ -40,6 +44,7 @@ module "hutch_upload_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/export/sendEncounters"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
 
 module "fever_consent_emailer_cron" {
@@ -50,6 +55,7 @@ module "fever_consent_emailer_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/sendFeverConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
 
 module "sniffles_consent_emailer_cron" {
@@ -60,6 +66,7 @@ module "sniffles_consent_emailer_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/sendSnifflesConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
 
 module "fever_kits_report_cron" {
@@ -71,4 +78,5 @@ module "fever_kits_report_cron" {
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.lambda_sg_ids}"]
   timeout = 300
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
