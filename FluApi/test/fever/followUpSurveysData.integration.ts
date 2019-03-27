@@ -40,6 +40,7 @@ describe("survey batch data access", () => {
   let receivedKits: Model<ReceivedKitAttributes>;
   let nonPii: SurveyModel<SurveyNonPIIInfo>;
   let seq: Model<GaplessSeqAttributes>;
+  let dao: FollowUpDataAccess;
 
   let batchSeq: Inst<GaplessSeqAttributes>;
   let itemSeq: Inst<GaplessSeqAttributes>;
@@ -53,6 +54,12 @@ describe("survey batch data access", () => {
     receivedKits = defineReceivedKits(sql.nonPii);
     nonPii = defineSurvey(sql.nonPii);
     seq = defineGaplessSeq(sql);
+    dao = new FollowUpDataAccess(
+      sql,
+      seq,
+      followUpBatch,
+      followUpItems,
+      followUpDiscard);
 
     batchSeq = await seq.find({
       where: { name: FOLLOWUP_BATCH_NAMESPACE }
@@ -146,7 +153,6 @@ describe("survey batch data access", () => {
 
   describe("get existing batch", async () => {
     it("should retrieve existing batches", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(false);
 
       const out = await dao.getExistingBatch();
@@ -163,7 +169,6 @@ describe("survey batch data access", () => {
     });
 
     it("should return null if no pending batch is present", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData();
 
       const out = await dao.getExistingBatch();
@@ -174,7 +179,6 @@ describe("survey batch data access", () => {
 
   describe("get new batch items", () => {
     it("should retrieve unassigned items", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData();
 
       const out = await dao.getNewItems();
@@ -190,7 +194,6 @@ describe("survey batch data access", () => {
     });
 
     it("should not retrieve surveys that are incomplete", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(true, false);
 
       const out = await dao.getNewItems();
@@ -199,7 +202,6 @@ describe("survey batch data access", () => {
     });
 
     it("should return surveys that don't have a received kit", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(true, true, false);
 
       const out = await dao.getNewItems();
@@ -215,7 +217,6 @@ describe("survey batch data access", () => {
     });
 
     it("should filter demo surveys", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(true, true, true, ["3"]);
 
       const out = await dao.getNewItems();
@@ -231,7 +232,6 @@ describe("survey batch data access", () => {
 
   describe("track batch", () => {
     it("creates a new batch and assigns sequential ids to items", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData();
 
       // Modify the sequences to offset the expected output ids.
@@ -258,7 +258,6 @@ describe("survey batch data access", () => {
 
   describe("commit batch upload", () => {
     it("marks a batch as uploaded", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(false);
 
       await dao.commitUploadedBatch(1, []);
@@ -272,7 +271,6 @@ describe("survey batch data access", () => {
     });
 
     it("records discarded items", async () => {
-      const dao = new FollowUpDataAccess(sql);
       await createTestData(false);
 
       await batchSeq.update({ index: 1 });

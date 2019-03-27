@@ -3,10 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { PIIInfo, SurveyNonPIIDbInfo, SurveyNonPIIInfo } from "audere-lib/feverProtocol";
+import { PIIInfo, SurveyNonPIIDbInfo } from "audere-lib/feverProtocol";
 import { BatchItem, SurveyBatchDataAccess, BatchItemWithCsruid } from "./surveyBatchData";
 import { BatchAttributes, BatchDiscardAttributes, BatchItemAttributes, SurveyAttributes, FeverModels, defineFeverModels, ReceivedKitAttributes } from "../../models/db/fever";
-import { Model } from "../../util/sql";
+import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
+import { Model, SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
 import logger from "../../util/logger";
 
@@ -21,11 +22,31 @@ export interface SurveyCompleteItem extends BatchItemWithCsruid {
  * returned.
  */
 export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<SurveyCompleteItem> {
-  protected abstract fever: FeverModels;
-  protected abstract batchModel: Model<BatchAttributes>;
-  protected abstract itemModel: Model<BatchItemAttributes>;
-  protected abstract discardModel: Model<BatchDiscardAttributes>;
+  protected fever: FeverModels;
   protected abstract requireReceivedKit: boolean;
+
+  constructor(
+    sql: SplitSql,
+    gaplessSeq: Model<GaplessSeqAttributes>,
+    batchModel: Model<BatchAttributes>,
+    itemModel: Model<BatchItemAttributes>,
+    discardModel: Model<BatchDiscardAttributes>
+  ) {
+    super(sql, gaplessSeq, batchModel, itemModel, discardModel);
+    this.fever = defineFeverModels(sql);
+
+    this.fever.surveyNonPii.hasOne(this.itemModel, {
+      foreignKey: "surveyId",
+      as: "items",
+      onDelete: "CASCADE"
+    });
+
+    this.fever.surveyNonPii.hasOne(this.fever.receivedKit, {
+      foreignKey: "surveyId",
+      as: "received",
+      onDelete: "CASCADE"
+    });
+  }
 
   protected surveyPredicate() {
     return {
@@ -66,18 +87,6 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
   private async getItems(
     items?: BatchItem[]
   ): Promise<SurveyCompleteItem[] | null> {
-    this.fever.surveyNonPii.hasOne(this.itemModel, {
-      foreignKey: "surveyId",
-      as: "items",
-      onDelete: "CASCADE"
-    });
-
-    this.fever.surveyNonPii.hasOne(this.fever.receivedKit, {
-      foreignKey: "surveyId",
-      as: "received",
-      onDelete: "CASCADE"
-    });
-
     let filter = this.surveyPredicate();
 
     // If a list of items were passed it is an existing batch and we retrieve

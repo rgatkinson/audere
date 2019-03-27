@@ -57,18 +57,32 @@ export interface BatchItemWithCsruid extends BatchItem {
 export abstract class SurveyBatchDataAccess<T extends BatchItem> {
   protected readonly sql: SplitSql;
   protected readonly gaplessSeq: Model<GaplessSeqAttributes>;
-  protected abstract readonly batchModel: Model<BatchAttributes>;
-  protected abstract readonly itemModel: Model<BatchItemAttributes>;
-  protected abstract readonly discardModel: Model<BatchDiscardAttributes>;
-  private didHasManyOnBatchId: boolean = false;
+  protected readonly batchModel: Model<BatchAttributes>;
+  protected readonly itemModel: Model<BatchItemAttributes>;
+  protected readonly discardModel: Model<BatchDiscardAttributes>;
 
   // Namespaces for batch id and for items within a batch.
   protected readonly abstract batchSeq: string;
   protected readonly abstract itemSeq: string;
 
-  constructor(sql: SplitSql) {
+  constructor(
+    sql: SplitSql,
+    gaplessSeq: Model<GaplessSeqAttributes>,
+    batchModel: Model<BatchAttributes>,
+    itemModel: Model<BatchItemAttributes>,
+    discardModel: Model<BatchDiscardAttributes>
+  ) {
     this.sql = sql;
-    this.gaplessSeq = defineGaplessSeq(sql);
+    this.gaplessSeq = gaplessSeq;
+    this.batchModel = batchModel;
+    this.itemModel = itemModel;
+    this.discardModel = discardModel;
+
+    this.batchModel.hasMany(this.itemModel, {
+      foreignKey: "batchId",
+      as: "items",
+      onDelete: "CASCADE"
+    });
   }
 
   /**
@@ -91,7 +105,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
 
       if (updated[0] !== 1) {
         throw Error(
-          updated[0] + " rows updated when committing a batch, 1 " + "expected."
+          updated[0] + " rows updated when committing a batch, 1 expected."
         );
       }
 
@@ -111,15 +125,6 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
    * `null` if there are no pending batches.
    */
   public async getExistingBatch(): Promise<Batch<BatchItem> | null> {
-    if (!this.didHasManyOnBatchId) {
-      this.didHasManyOnBatchId = true;
-      this.batchModel.hasMany(this.itemModel, {
-        foreignKey: "batchId",
-        as: "items",
-        onDelete: "CASCADE"
-      });
-    }
-
     interface HasBatchItems {
       items: BatchItemAttributes[];
     }

@@ -34,6 +34,7 @@ describe("survey batch data access", () => {
   let kitDiscard: Model<BatchDiscardAttributes>;
   let nonPii: SurveyModel<SurveyNonPIIInfo>;
   let seq: Model<GaplessSeqAttributes>;
+  let dao: KitRecipientsDataAccess;
 
   let batchSeq: Inst<GaplessSeqAttributes>;
   let itemSeq: Inst<GaplessSeqAttributes>;
@@ -45,6 +46,7 @@ describe("survey batch data access", () => {
     kitDiscard = defineKitDiscard(sql.nonPii);
     nonPii = defineSurvey(sql.nonPii);
     seq = defineGaplessSeq(sql);
+    dao = new KitRecipientsDataAccess(sql, seq, kitBatch, kitItems, kitDiscard);
 
     batchSeq = await seq.find({
       where: { name: KIT_BATCH_NAMESPACE }
@@ -118,7 +120,6 @@ describe("survey batch data access", () => {
 
   describe("get existing batch", async () => {
     it("should retrieve existing batches", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       const out = await dao.getExistingBatch();
@@ -135,7 +136,6 @@ describe("survey batch data access", () => {
     });
 
     it("should return null if no pending batch is present", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       const out = await dao.getExistingBatch();
@@ -146,7 +146,6 @@ describe("survey batch data access", () => {
 
   describe("get new batch items", () => {
     it("should retrieve unassigned items", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       const out = await dao.getNewItems();
@@ -162,7 +161,6 @@ describe("survey batch data access", () => {
     });
 
     it("should not retrieve surveys that are incomplete", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(true, false);
 
       const out = await dao.getNewItems();
@@ -171,7 +169,6 @@ describe("survey batch data access", () => {
     });
 
     it("should filter demo surveys", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(true, true, ["3"]);
 
       const out = await dao.getNewItems();
@@ -187,7 +184,6 @@ describe("survey batch data access", () => {
 
   describe("get existing items", () => {
     it("should fetch items based on a list of ids", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       const batch = await dao.getExistingBatch();
@@ -209,7 +205,6 @@ describe("survey batch data access", () => {
 
   describe("track batch", () => {
     it("creates a new batch and assigns sequential ids to items", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData();
 
       // Modify the sequences to offset the expected output ids.
@@ -236,7 +231,6 @@ describe("survey batch data access", () => {
 
   describe("commit batch upload", () => {
     it("marks a batch as uploaded", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       await dao.commitUploadedBatch(1, []);
@@ -250,7 +244,6 @@ describe("survey batch data access", () => {
     });
 
     it("records discarded items", async () => {
-      const dao = new KitRecipientsDataAccess(sql);
       await createTestData(false);
 
       await batchSeq.update({ index: 1 });

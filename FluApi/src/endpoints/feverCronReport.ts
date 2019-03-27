@@ -17,6 +17,8 @@ import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
 import { SplitSql } from "../util/sql";
+import { defineFeverModels } from "../models/db/fever";
+import { defineGaplessSeq } from "../models/db/gaplessSeq";
 import { S3Uploader } from "../external/s3Uploader";
 import * as AWS from "aws-sdk";
 
@@ -77,7 +79,14 @@ export class FeverCronReportEndpoint {
 }
 
 async function createIncentives(sql: SplitSql): Promise<Incentives> {
-  const dao = new IncentiveRecipientsDataAccess(sql);
+  const fever = defineFeverModels(sql);
+  const seq = defineGaplessSeq(sql);
+  const dao = new IncentiveRecipientsDataAccess(
+    sql,
+    seq,
+    fever.followUpBatch,
+    fever.followUpItem,
+    fever.followUpDiscard);
   const secrets = new SecretConfig(sql);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
@@ -86,7 +95,14 @@ async function createIncentives(sql: SplitSql): Promise<Incentives> {
 }
 
 async function createKits(sql: SplitSql): Promise<KitOrders> {
-  const dao = new KitRecipientsDataAccess(sql);
+  const fever = defineFeverModels(sql);
+  const seq = defineGaplessSeq(sql);
+  const dao = new KitRecipientsDataAccess(
+    sql,
+    seq,
+    fever.followUpBatch,
+    fever.followUpItem,
+    fever.followUpDiscard);
   const secrets = new SecretConfig(sql);
   const geocoder = await createGeocoder(secrets);
   const s3Config = await getS3Config(secrets);
@@ -96,7 +112,14 @@ async function createKits(sql: SplitSql): Promise<KitOrders> {
 }
 
 async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
-  const dao = new FollowUpDataAccess(sql);
+  const fever = defineFeverModels(sql);
+  const seq = defineGaplessSeq(sql);
+  const dao = new FollowUpDataAccess(
+    sql,
+    seq,
+    fever.followUpBatch,
+    fever.followUpItem,
+    fever.followUpDiscard);
   const secrets = new SecretConfig(sql);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });

@@ -6,6 +6,7 @@
 import { PIIInfo } from "audere-lib/feverProtocol";
 import { BatchItem, SurveyBatchDataAccess, BatchItemWithCsruid } from "./surveyBatchData";
 import { BatchAttributes, BatchDiscardAttributes, BatchItemAttributes, SurveyAttributes, FeverModels, defineFeverModels } from "../../models/db/fever";
+import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
 import logger from "../../util/logger";
@@ -22,12 +23,15 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<BatchItemWith
   protected batchSeq: string = KIT_BATCH_NAMESPACE;
   protected itemSeq: string = KIT_ITEMS_NAMESPACE;
 
-  constructor(sql: SplitSql) {
-    super(sql);
+  constructor(
+    sql: SplitSql,
+    gaplessSeq: Model<GaplessSeqAttributes>,
+    batchModel: Model<BatchAttributes>,
+    itemModel: Model<BatchItemAttributes>,
+    discardModel: Model<BatchDiscardAttributes>
+  ) {
+    super(sql, gaplessSeq, batchModel, itemModel, discardModel);
     this.fever = defineFeverModels(sql);
-    this.batchModel = this.fever.kitBatch;
-    this.itemModel = this.fever.kitItem;
-    this.discardModel = this.fever.kitDiscard;
 
     this.fever.surveyNonPii.hasOne(this.itemModel, {
       foreignKey: "surveyId",
