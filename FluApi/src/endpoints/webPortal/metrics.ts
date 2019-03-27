@@ -1,4 +1,8 @@
-"use strict";
+// Copyright (c) 2018, 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import { EventInfo } from "audere-lib/snifflesProtocol";
 const excel = require("node-excel-export");
 
@@ -967,10 +971,10 @@ function funnelAgeData(ageData): object {
   const totalRow = ageData[ageData.length - 1];
   if (totalRow.total > 0){
     ageData.push({
-      "age": "% of users", 
-      "total": "100%", 
-      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%", 
-      "consents": (totalRow.consents/totalRow.total * 100).toFixed(1) + "%", 
+      "age": "% of users",
+      "total": "100%",
+      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%",
+      "consents": (totalRow.consents/totalRow.total * 100).toFixed(1) + "%",
       "kits": (totalRow.kits/totalRow.total * 100).toFixed(1) + "%",
       "part2": (totalRow.part2/totalRow.total * 100).toFixed(1) + "%",
       "scanned": (totalRow.scanned/totalRow.total * 100).toFixed(1) + "%",
@@ -999,7 +1003,7 @@ function funnelAgeData(ageData): object {
       "test2errors": ""
     });
   }
-  
+
   return ageData;
 }
 
@@ -1075,12 +1079,12 @@ function filterLastScreenData(lastScreenData): object {
       if (screenDetails[row.lastscreen]){
         const detail = screenDetails[row.lastscreen];
         const rowWithDetails = { ...row, detail};
-        lastScreenFiltered.push(rowWithDetails); 
+        lastScreenFiltered.push(rowWithDetails);
       }
       else{
         lastScreenFiltered.push(row);
       }
-        
+
   }
   return lastScreenFiltered;
 }
@@ -1391,8 +1395,8 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["Total", null, "Sum of all users including those who did not report age"],
     ["% of users", null, "The percentage of all users who completed each step"],
     [
-      "% retention", 
-      null, 
+      "% retention",
+      null,
       "What percent of the users who completed the previous step completed the current step"
     ],
     [],
@@ -1401,8 +1405,8 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["Count", null, "How many people stopped at that screen"],
     ["%", null, "Percent of users that stopped on that screen"],
     [
-      "Detail", 
-      null, 
+      "Detail",
+      null,
       "Sample of the text displayed on that screen and location in the app"
     ],
     [],
@@ -1442,8 +1446,8 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
       "User's choice on second test feedback question"
     ],
     [
-      "Red When Blue", 
-      null, 
+      "Red When Blue",
+      null,
       "User's answer to whether they can see a red line when they already said they saw a blue line"
     ],
     ["Status", null, "Current workflow state of app"]
