@@ -42,6 +42,7 @@ import {
   SurveyQuestionData,
   SymptomsConfig,
 } from "../../resources/ScreenConfig";
+import { ERROR_COLOR } from "../styles";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import RadioButtonGroup from "../components/RadioButtonGroup";
@@ -741,6 +742,12 @@ class AddressInputScreen extends React.Component<
           title={t("title")}
           onNext={this._onNext}
         >
+          {this.state.triedToProceed && (
+            <Text
+              style={{ color: ERROR_COLOR }}
+              content={t("validationError")}
+            />
+          )}
           <QuestionText text={t("surveyTitle:address")} />
           <AddressInput
             autoFocus={this.props.navigation.isFocused()}

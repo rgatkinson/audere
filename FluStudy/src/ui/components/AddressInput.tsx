@@ -189,8 +189,11 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         </View>
         <Text
           content={
-            !isValidAddress(this.props.value) && this.props.shouldValidate
-              ? t("validationError")
+            this.props.value &&
+            this.props.value.zipcode &&
+            this.props.value.zipcode.length < 5 &&
+            this.props.shouldValidate
+              ? t("common:validationErrors:zipcode")
               : ""
           }
           style={styles.errorText}
@@ -236,7 +239,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: ERROR_COLOR,
     fontFamily: FONT_NORMAL,
-    marginTop: GUTTER / 4,
+    marginTop: GUTTER / 2,
+    alignSelf: "flex-end",
   },
 });
 
