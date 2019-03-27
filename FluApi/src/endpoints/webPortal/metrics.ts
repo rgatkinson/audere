@@ -67,7 +67,7 @@ export function getMetrics(
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause =
-    "(id > 351 and (visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE))";
+    "(visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE)";
 
   function getSurveyStatsQuery(byField: string): string {
     return `
@@ -209,7 +209,7 @@ export function getDataSummary(
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause =
-    "(id > 351 and (visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE))";
+    "(visit->'isDemo' IS NULL OR (visit->>'isDemo')::boolean IS FALSE)";
 
   const piiClient = new Client();
   const piiConString = process.env.PII_DATABASE_URL;
