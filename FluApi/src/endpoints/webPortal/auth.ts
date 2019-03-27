@@ -22,6 +22,7 @@ export class AuthManager {
     const auth = new Passport();
     auth.use(
       new LocalStrategy(async (userid, password, done) => {
+        logger.debug(`passport.local: looking up '${userid}'`);
         try {
           const user = await this.models.user.findOne({ where: { userid } });
           if (!user) {
@@ -47,12 +48,19 @@ export class AuthManager {
       })
     );
 
-    auth.serializeUser((user: UserAttributes, done) => done(null, user.uuid));
+    auth.serializeUser((user: UserAttributes, done) => {
+      logger.debug(`AuthManager: serialize ${user.userid} (${user.uuid})`);
+      done(null, user.uuid);
+    });
+
     auth.deserializeUser(async (uuid: string, done) => {
+      logger.debug(`AuthManager: deserializing ${uuid}`);
       try {
         const user = await this.models.user.findOne({ where: { uuid } });
+        logger.debug(`AuthManager: deserialized ${user.userid} (${user.uuid})`);
         done(null, user);
       } catch (err) {
+        logger.error(`AuthManager: failed deserializing user for ${uuid}: ${err}`);
         done(err);
       }
     });

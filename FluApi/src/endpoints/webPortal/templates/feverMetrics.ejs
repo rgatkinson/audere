@@ -18,7 +18,7 @@
       return t.toISOString().slice(0, 10);
     }
     %>
-    <form action="/feverMetrics" method="get">
+    <form action="./feverMetrics" method="get">
       <table id="date-form">
         <tr>
           <td>Show data from</td>
@@ -33,7 +33,7 @@
         </tr>
       </table>
     </form>
-    <a href="/saveFeverMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a>
+    <a href="./saveFeverMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a>
     <br />
     <br />
     <h2>flu@home Stats by Age</h2>

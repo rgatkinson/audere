@@ -6,7 +6,7 @@
     <link rel="icon" type="image/x-icon" href="<%= static %>/favicon-32x32.png" />
   </head>
   <body>
-    <form action="/metrics" method="get">
+    <form action="./metrics" method="get">
       <table id="date-form">
         <tr>
           <td>Show data from</td>
@@ -19,10 +19,10 @@
         </tr>
       </table>
     </form>
-    <a href="/saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a>
+    <a href="./saveMetrics?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel metrics report</a>
     <br />
     <br />
-    <a href="/saveDataSummary?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel data summary report</a>
+    <a href="./saveDataSummary?startDate=<%=startDate%>&endDate=<%=endDate%>">Download Excel data summary report</a>
     <br />
     <br />
     <h1>SFS Survey Stats</h1>

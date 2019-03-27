@@ -79,12 +79,12 @@ describe("webPortal", () => {
         username,
         password
       })
-      .expect(302, /\/portal\/index$/)
+      .expect(302, /\.\/index$/)
       .expect(res => (post = res));
 
     await req
       .get("/portal/index")
-      .set("Cookie", post.headers["set-cookie"])
+      .set("Cookie", login.headers["set-cookie"])
       .expect(200);
   });
 
@@ -131,7 +131,7 @@ describe("webPortal", () => {
         username: "incorrect",
         password
       })
-      .expect(302, /\/portal\/login$/);
+      .expect(302, /\.\/login$/);
   });
 
   it("Fails if incorrect password", async () => {
@@ -156,7 +156,7 @@ describe("webPortal", () => {
         username,
         password: "incorrect"
       })
-      .expect(302, /\/portal\/login$/);
+      .expect(302, /\.\/login$/);
   });
 });
 

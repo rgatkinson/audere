@@ -90,9 +90,8 @@ async function addSession(
     },
     store,
     proxy: secure,
-    resave: true,
-    rolling: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: false,
   };
 
   if (secure) {
@@ -106,20 +105,42 @@ async function addSession(
 
 function addHandlers(app: Express, auth: passport.Authenticator): Express {
   app.get("/login", render("login.html", loginContext));
-
-  app.post(
-    "/login",
-    auth.authenticate("local", {
-      successRedirect: "/portal/index",
-      failureRedirect: "/portal/login"
-    })
-  );
+  app.post("/login", login);
 
   app.use(requireLoggedInUser);
   app.get("/index", render("index.html", userContext));
+
   addMetricsHandlers(app);
 
   return app;
+
+  function login(req, res, next) {
+    auth.authenticate(
+      "local",
+      // Ideally we would not pass a callback and could just use options.
+      // However, the implementation of authenticate-with-options does not play
+      // well with connect-session-sequelize, and redirects before the successful
+      // login is reflected in the session.  To work around this, we implement
+      // the callback ourselves so we can login, then save, then redirect.
+      (err, user, info) => {
+        if (err) {
+          logger.debug(`post/login: error '${err}'`);
+          return next(err);
+        }
+        if (!user) {
+          logger.debug(`post/login: no user`);
+          return res.redirect("./login");
+        }
+        logger.debug(`post/login: logging in as '${user.userid}'`);
+        req.login(user, () => {
+          req.session.save(() => {
+            logger.debug(`post/login: logged in as '${user.userid}', redirecting`);
+            res.redirect("./index");
+          });
+        });
+      }
+    )(req, res, next);
+  }
 
   function requireLoggedInUser(req, res, next) {
     if (req.user) {
