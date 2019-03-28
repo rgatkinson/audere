@@ -9,7 +9,7 @@
     "migration:new": "sequelize migration:generate",
     "migration:undo": "sequelize db:migrate:undo --config ./build/src/util/piiDbConfig.js && sequelize db:migrate:undo --config ./build/src/util/nonPiiDbConfig.js",
     "migration:postgis": "sequelize db:migrate --config ./build/src/util/nonPiiDbConfig.js --migrations-path db/migrations/postgis",
-    "build": "../scripts/generate-build-info && tsc && rsync -a {,build/}static/ && rsync -a ./src/endpoints/webPortal/static ./src/endpoints/webPortal/templates ./build/src/endpoints/webPortal/",
+    "build": "../scripts/generate-build-info && tsc && rsync -a static build/ && rsync -a ./src/endpoints/webPortal/static ./src/endpoints/webPortal/templates ./build/src/endpoints/webPortal/",
     "start": "NODE_ENV=development concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "start-prod": "yarn run build && NODE_ENV=production node .",
     "test1": "           jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1",
