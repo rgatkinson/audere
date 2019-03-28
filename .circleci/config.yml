@@ -188,6 +188,7 @@ jobs:
             yarn setup
             yarn "migration:postgis"
             yarn typecheck
+            yarn build
             yarn test
             yarn test-integration
       - run:
