@@ -114,8 +114,8 @@ export default class VideoPlayer extends React.Component<Props> {
         )}
         <Video
           controls={true}
+          ignoreSilentSwitch="ignore"
           paused={this.state.paused}
-          ignoreSilentSwitch="obey"
           playInBackground={false}
           progressUpdateInterval={THREE_SECONDS_MS}
           rate={this.state.rate}

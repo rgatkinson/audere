@@ -271,6 +271,8 @@ PODS:
   - Protobuf (3.7.0)
   - React (0.57.1):
     - React/Core (= 0.57.1)
+  - react-native-background-timer (2.1.1):
+    - React
   - react-native-fbsdk (0.8.0):
     - React
     - react-native-fbsdk/Core (= 0.8.0)
@@ -342,6 +344,11 @@ PODS:
     - Crashlytics
     - Fabric
     - React
+  - RNSound (0.10.12):
+    - React/Core
+    - RNSound/Core (= 0.10.12)
+  - RNSound/Core (0.10.12):
+    - React/Core
   - yoga (0.57.1.React)
 
 DEPENDENCIES:
@@ -385,6 +392,7 @@ DEPENDENCIES:
   - Firebase/Performance (~> 5.15.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-video (from `../node_modules/react-native-video/react-native-video.podspec`)
@@ -402,6 +410,7 @@ DEPENDENCIES:
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - ReactNativeFabric (from `../node_modules/react-native-fabric`)
+  - RNSound (from `../node_modules/react-native-sound`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -515,6 +524,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
+  react-native-background-timer:
+    :path: "../node_modules/react-native-background-timer"
   react-native-fbsdk:
     :path: "../node_modules/react-native-fbsdk"
   react-native-get-random-values:
@@ -523,6 +534,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-video/react-native-video.podspec"
   ReactNativeFabric:
     :path: "../node_modules/react-native-fabric"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -602,12 +615,14 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  react-native-background-timer: bb7a98c8e97fc7c290de2d423dd09ddb73dcbcbb
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
   react-native-get-random-values: cb074e4e1781451ad00546d78570a3ab3c4285f0
   react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
   ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
+  RNSound: b360b3862d3118ed1c74bb9825696b5957686ac4
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: cb9348751558edc08400e7385e4d40d5569dab5c
+PODFILE CHECKSUM: 4e31519b0b32c076224378534fd92a8117404584
 
 COCOAPODS: 1.5.3

@@ -97,6 +97,8 @@ apply from: 'expo.gradle'
 
 
 dependencies {
+    compile project(':react-native-background-timer')
+    compile project(':react-native-sound')
     compile project(':react-native-fabric')
     compile project(':react-native-fbsdk')
     compile project(':react-native-firebase')

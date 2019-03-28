@@ -15,7 +15,12 @@
         "usesNonExemptEncryption": false
       },
       "publishBundlePath": "ios/fluathome/Supporting/shell-app.bundle",
-      "publishManifestPath": "ios/fluathome/Supporting/shell-app-manifest.json"
+      "publishManifestPath": "ios/fluathome/Supporting/shell-app-manifest.json",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "android": {
       "package": "org.auderenow.fluathome",
