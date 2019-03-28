@@ -9,7 +9,7 @@ locals {
 
   // This is 8:30 AM and 1:30 PM local in PST
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 * * MON-FRI *)"
+  cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 ? * MON-FRI *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
