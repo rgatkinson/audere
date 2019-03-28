@@ -132,7 +132,7 @@ export class EncountersService {
 
       return {
         use: use,
-        id: generateSHA256(this.hashSecret, [streetAddress]),
+        id: generateSHA256(this.hashSecret, streetAddress),
         region: region
       };
     }
@@ -140,8 +140,12 @@ export class EncountersService {
     return undefined;
   }
 
-  private deidentifyParticipant(name: string, birthDate: string): string {
-    return generateSHA256(this.hashSecret, [name, birthDate]);
+  private deidentifyParticipant({name, gender, birthDate, postalCode}: ParticipantIdentifierParts): string {
+    const canonicalName = name
+      .replace(/[`~!@#$%^&*()\-_=+[{\]}\\|;:'",<.>\/?\u2000-\u206F\u2E00-\u2E7F]/g, "")
+      .replace(/\s+/g, " ")
+      .toUpperCase();
+    return generateSHA256(this.hashSecret, canonicalName, gender, birthDate, postalCode);
   }
 
   private hasAddressInfo(details: PIIVisitDetails) {
@@ -262,7 +266,7 @@ export class EncountersService {
     geocodedAddresses: GeocodingResponse[]
   ): NonPIIVisitDetails {
     const locations = [];
-    let userPostalCode: string;
+    let userPostalCode: string = "";
 
     if (this.hasAddressInfo(visit)) {
       visit.patientInfo.address.forEach(a => {
@@ -297,10 +301,12 @@ export class EncountersService {
       visitId: this.obscureCsruid(visit.csruid),
       visitInfo: visit.visitInfo,
       consentDate: visit.consentDate,
-      participant: this.deidentifyParticipant(
-        visit.patientInfo.birthDate,
-        userPostalCode
-      ),
+      participant: this.deidentifyParticipant({
+        name: visit.patientInfo.name,
+        gender: visit.patientInfo.gender,
+        birthDate: visit.patientInfo.birthDate,
+        postalCode: userPostalCode
+      }),
       locations: locations,
       birthYear: birthYear
     };
@@ -320,3 +326,10 @@ export class EncountersService {
     return await this.uploader.commitUploads(uploads);
   }
 }
+
+type ParticipantIdentifierParts = {
+  name: string,
+  gender: string,
+  birthDate: string,
+  postalCode: string,
+};
