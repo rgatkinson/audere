@@ -1,5 +1,10 @@
 import React from "react";
-import { Image, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { NavigationEvents } from "react-navigation";
 import { Ionicons } from "@expo/vector-icons";
 import Video from "react-native-video";
@@ -86,11 +91,19 @@ export default class VideoPlayer extends React.Component<Props> {
           onWillBlur={this._pauseVideo}
         />
         <Divider />
-        {this.state.showThumbnail &&
-          <TouchableWithoutFeedback onPress={this._playVideo} style={styles.thumbnail}>
+        {this.state.showThumbnail && (
+          <TouchableWithoutFeedback
+            onPress={this._playVideo}
+            style={styles.thumbnail}
+          >
             <View style={styles.thumbnail}>
               <View style={styles.iconContainer}>
-                <Ionicons color="white" name="ios-play" size={45} style={styles.icon} />
+                <Ionicons
+                  color="white"
+                  name="ios-play"
+                  size={45}
+                  style={styles.icon}
+                />
               </View>
               <Image
                 source={{ uri: this.props.source.uri + "Thumb" }}
@@ -98,7 +111,7 @@ export default class VideoPlayer extends React.Component<Props> {
               />
             </View>
           </TouchableWithoutFeedback>
-        }
+        )}
         <Video
           controls={true}
           paused={this.state.paused}
@@ -130,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 60,
     justifyContent: "center",
-    opacity: .8,
+    opacity: 0.8,
     position: "absolute",
     width: 60,
     zIndex: 3,
