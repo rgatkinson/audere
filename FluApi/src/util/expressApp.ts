@@ -15,6 +15,7 @@ export function createApp(): Express {
   const app = express();
   app.use(helmet.noCache());
   app.use(helmet.frameguard({ action: "deny" }));
+
   return app;
 }
 

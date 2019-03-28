@@ -5,6 +5,7 @@
 
 import bodyParser from "body-parser";
 import base64url from "base64url";
+import morgan from "morgan";
 import { SnifflesEndpoint } from "./endpoints/snifflesApi";
 import { ConsentEmailerEndpoint } from "./endpoints/snifflesConsentMailer";
 import { HutchUploaderEndpoint } from "./endpoints/hutchUpload";
@@ -18,8 +19,15 @@ import { useOuch, createApp, wrap } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
+import logger from "./util/logger";
 
 const buildInfo = require("../static/buildInfo.json");
+
+const MORGAN_FORMAT =
+  ":req[X-Forwarded-For](:remote-addr) :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
+const MORGAN_STREAM = {
+  write: (message) => logger.info(message),
+};
 
 export interface AppConfig extends PortalConfig {
   sql: SplitSql;
@@ -46,6 +54,7 @@ export async function createPublicApp(config: AppConfig) {
 
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(bodyParser.json({ limit: "20mb" }));
+  publicApp.use(morgan(MORGAN_FORMAT, { stream: MORGAN_STREAM }));
 
   publicApp.use("/portal", stats("portal"), await portalApp(config));
 
@@ -123,6 +132,7 @@ export function createInternalApp(config: AppConfig) {
 
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
   internalApp.use(bodyParser.json());
+  internalApp.use(morgan(MORGAN_FORMAT, { stream: MORGAN_STREAM }));
 
   internalApp.get(
     "/api",
