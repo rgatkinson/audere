@@ -162,7 +162,8 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={!blockKits}
         desc={blockKits ? t("blockKitsDesc") : t("description")}
-        stableImageSrc={{ uri: "img/whatDoIDoNext" }}
+        imageSrc={blockKits ? { uri: "img/thanksForYourInterest" } : undefined}
+        stableImageSrc={blockKits ? undefined : { uri: "img/whatDoIDoNext" }}
         navigation={this.props.navigation}
         title={blockKits ? t("whatBlockKits") : t("what")}
         skipButton={blockKits}
