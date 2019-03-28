@@ -120,7 +120,6 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
             require("../../../assets/sounds/Popcorn.caf"),
             error => {}
           );
-          this._sound.setNumberOfLoops(0);
         }
         this._audioTimer = BackgroundTimer.setTimeout(() => {
           if (this.state.appState != "active") {
@@ -129,7 +128,11 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
             Sound.setCategory("SoloAmbient", true);
           }
 
-          if (this._sound != null && this._sound.isLoaded()) {
+          if (
+            this._sound != null &&
+            this._sound.isLoaded() &&
+            this.props.navigation.isFocused()
+          ) {
             try {
               this._sound.play();
             } catch (error) {}
