@@ -80,7 +80,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
   render() {
     const showVideos = getRemoteConfig("showVideos");
-    if (!showVideos) {
+    if (true) {
       return <View />;
     }
 
