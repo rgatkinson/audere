@@ -171,6 +171,7 @@ jobs:
       - run:
           name: Server Tests
           command: |
+            sudo apt-get install -y rsync
             cd FluApi
             (
               echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
