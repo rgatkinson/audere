@@ -48,7 +48,6 @@ case "$mode" in
   service)
     echo "Running pm2 because '$mode'==service"
     yarn global add pm2
-    pm2 install typescript
     pm2 start process.json --env $env
     pm2 save
     ;;
