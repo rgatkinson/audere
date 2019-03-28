@@ -355,7 +355,7 @@ class PreConsentScreen extends React.PureComponent<
           buttonLabel={t("common:button:continue")}
           canProceed={true}
           centerDesc={true}
-          hideBackButton={false}
+          hideBackButton={true}
           imageSrc={{ uri: "img/preConsent" }}
           navigation={this.props.navigation}
           onNext={() => this.props.navigation.push("Consent")}
@@ -488,7 +488,7 @@ class ConsentScreen extends React.PureComponent<
               onPress={this._onNoThanks}
             />
           }
-          hideBackButton={true} // Must not allow age-changing
+          hideBackButton={false}
           navigation={this.props.navigation}
           step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
           title={t("consent")}
