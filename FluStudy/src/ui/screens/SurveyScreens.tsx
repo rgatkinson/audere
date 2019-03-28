@@ -760,6 +760,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/begin1stTest" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/beginFirstTest", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -781,6 +782,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/prepareTube" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/prepareTube", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -823,6 +825,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/collectMucus" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/collectSample", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -851,6 +854,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/putSwabInTube" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/putSwabInTube", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -963,6 +967,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/removeSwabFromTube" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/removeSwabFromTube", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -987,6 +992,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/openTestStrip" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/openTestStrip", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1013,6 +1019,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/openTestStrip_1" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/putTestStripInTube", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1499,6 +1506,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/removeTestStrip" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/removeTestStrip", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1522,6 +1530,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/finishWithTube" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/finishWithTube", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1543,6 +1552,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/lookAtTestStrip" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/lookAtTestStrip", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1647,6 +1657,7 @@ class PictureInstructionsScreen extends React.Component<
         imageSrc={{ uri: "img/takePictureTestStrip" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/takePhotoOfStrip", type: "mp4" }}
         onNext={this._onNext}
       >
         <Image
@@ -1901,6 +1912,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/sealUpTestStrip" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/cleanUpFirstTest1", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1924,6 +1936,7 @@ class CleanFirstTest2Screen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/putTestStripBag2" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/cleanUpFirstTest2", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -1983,6 +1996,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/begin2ndTest" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/beginSecondTest", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2006,6 +2020,7 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/prepareForTest" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/prepareForTest", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2029,6 +2044,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/collectMucus" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/collectSampleFromNose", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2052,6 +2068,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/putSwabInRedTube" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/putSwabInTube2", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2075,6 +2092,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/cleanUpSecondTest" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/cleanUpSecondTest", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2155,6 +2173,7 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/putStickersOnBox" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/putStickersOnBox", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2176,6 +2195,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/putBag2inBox" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/putBag2InBox", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2197,6 +2217,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{ uri: "img/tapeUpBox" }}
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/tapeUpBox", type: "mp4" }}
         onNext={this._onNext}
       />
     );
@@ -2239,6 +2260,7 @@ class ShipBoxScreen extends React.Component<
         }
         navigation={this.props.navigation}
         title={t("title")}
+        videoSource={{ uri: "videos/shipBox", type: "mp4" }}
         onNext={this._onNext}
       >
         <Links

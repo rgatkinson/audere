@@ -19,6 +19,7 @@
 		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
 		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
 		EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA054781220D289A00AC77FF /* libRCTPushNotification.a */; };
+		EA26704C2249AB460056A6C1 /* videos in Resources */ = {isa = PBXBuildFile; fileRef = EA26704B2249AB460056A6C1 /* videos */; };
 		EAB7924822499DD300760539 /* img in Resources */ = {isa = PBXBuildFile; fileRef = EAB7924722499DD300760539 /* img */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
@@ -101,6 +102,7 @@
 		C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fluathome.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA054779220D27CD00AC77FF /* fluathome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fluathome.entitlements; sourceTree = "<group>"; };
 		EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
+		EA26704B2249AB460056A6C1 /* videos */ = {isa = PBXFileReference; lastKnownFileType = folder; name = videos; path = ../../../assets/videos; sourceTree = "<group>"; };
 		EAB7924722499DD300760539 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../../src/img; sourceTree = "<group>"; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				EA26704B2249AB460056A6C1 /* videos */,
 				EAB7924722499DD300760539 /* img */,
 				B5693E8F1FABD46800307FA4 /* launch_background_image.png */,
 				B5693E901FABD46800307FA4 /* launch_icon.png */,
@@ -401,6 +404,7 @@
 				B5693E8E1FABD16A00307FA4 /* LaunchScreen.xib in Resources */,
 				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
 				EAB7924822499DD300760539 /* img in Resources */,
+				EA26704C2249AB460056A6C1 /* videos in Resources */,
 				F09B107F222880D0002970AA /* GoogleService-Info.plist in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,

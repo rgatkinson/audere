@@ -63,4 +63,5 @@ export const SPLASH_IMAGE = isIPhoneSE
   ? { uri: "img/mediumSplash" }
   : { uri: "img/splash" };
 export const ASPECT_RATIO = 1.75;
+export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;

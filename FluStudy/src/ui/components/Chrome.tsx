@@ -86,9 +86,7 @@ export default class Chrome extends React.Component<Props> {
       <View style={styles.container}>
         <ImageBackground
           source={
-            this.props.menuItem
-              ? { uri: "img/shortSplash" }
-              : SPLASH_IMAGE
+            this.props.menuItem ? { uri: "img/shortSplash" } : SPLASH_IMAGE
           }
           style={[
             { alignSelf: "stretch" },

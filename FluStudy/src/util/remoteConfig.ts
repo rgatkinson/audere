@@ -9,6 +9,7 @@ import { tracker, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
   blockKitOrders: boolean;
+  showVideos: boolean;
 }
 
 // Every config you load should have a default set here.  Remember that the
@@ -20,12 +21,14 @@ interface RemoteConfig {
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
   blockKitOrders: true, // Pessimistically assume we have no kits
+  showVideos: true,
 };
 
 // Values you put into here will always be applied on top of remote config
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {
   blockKitOrders: false,
+  showVideos: true,
 };
 
 let _currentConfig: RemoteConfig = Object.assign({}, DEFAULT_CONFIGS);

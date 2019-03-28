@@ -113,6 +113,8 @@ target 'fluathome' do
 
   pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
 
+  pod 'react-native-video', :path => '../node_modules/react-native-video/react-native-video.podspec'
+
   pod 'ReactNativeFabric', :path => '../node_modules/react-native-fabric'
 
   post_install do |installer|

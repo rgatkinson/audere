@@ -16,6 +16,7 @@ import Chrome from "./Chrome";
 import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
+import VideoPlayer from "./VideoPlayer";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
 
 interface Props {
@@ -35,6 +36,7 @@ interface Props {
   stableImageSrc?: ImageSourcePropType;
   step?: number;
   title?: string;
+  videoSource?: { uri: string; type: string };
   onTitlePress?: () => void;
   onBack?: () => void;
   onNext?: () => void;
@@ -87,6 +89,9 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 />
               )}
               {this.props.children}
+              {this.props.videoSource != null && (
+                <VideoPlayer source={this.props.videoSource} />
+              )}
             </View>
             <View style={styles.footerContainer}>
               {!this.props.skipButton && (
