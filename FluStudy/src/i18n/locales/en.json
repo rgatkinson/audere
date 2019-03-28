@@ -117,6 +117,13 @@
     "title": "Contact Support",
     "description": "**I have questions about the test kit contents.**\n\nFor questions about the test kit, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have questions about the study in general.**\n\nFor general study questions, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have a support issue regarding the application.**\n\nFor support with issues with this application, please contact **[flu-support@auderenow.org](mailto:flu-support@auderenow.org)**."
   },
+  "preConsentScreen": {
+    "title": "Consent to join the study",
+    "description": "Based on your symptoms, you qualify to participate in the research study. On the next screen you will see a consent document explaining how we will keep your data safe throughout the study. In short, the document days:",
+    "bullets": "Your record will be kept confidential.\nYou will not be personally identified in any report or publication about this study.\nYour data will be assigned a number the researchers will see. They will not see your personal information such as your name, address and email.\nTaking part in this study is voluntary. You can stop at any time.\nYour test samples may be used for other research. However, no personal data will be linked to those test samples.",
+    "questions": "If you have questions about this study, please contact [fluhelp@uw.edu](mailto:fluhelp@uw.edu) or call **(509) 593-3964**.",
+    "instructions": "Please scroll to the bottom of the next page and click \"I consent\" to participate in the study."
+  },
   "consentScreen": {
     "required": " (required)",
     "name": "Please enter your full name",
@@ -200,7 +207,7 @@
   },
   "whatScreen": {
     "what": "Getting started",
-    "description": "We need to ask a few questions about you and the symptoms you're feeling. In addition, you will need to provide your home or mailing address so we can send the flu test kit to you.",
+    "description": "To participate, we will ask you for the following:\n\n**Your current symptoms** – a quick survey.\n\n**Your home address** – to ship the test kit to you.\n\n**Your email address** – so we may send you your gift card and a follow-up survey (optional).\n\nFinally, you will be asked to provide your consent to participate in a medical study.",
     "whatBlockKits": "What do I need to do?",
     "blockKitsDesc": "Due to high demand, we have stopped taking new orders for the time being. We appreciate your interest and hope you feel better soon!",
     "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."

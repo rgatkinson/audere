@@ -9,6 +9,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   PushNotificationIOS,
+  ScrollView,
+  StyleSheet,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
@@ -47,6 +49,7 @@ import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import RadioButtonGroup from "../components/RadioButtonGroup";
 import Button from "../components/Button";
+import BulletPoint from "../components/BulletPoint";
 import Divider from "../components/Divider";
 import AddressNotFoundModal from "../components/AddressNotFoundModal";
 import EmailInput from "../components/EmailInput";
@@ -211,7 +214,7 @@ class AgeScreen extends React.Component<
       });
     } else {
       if (!!this.props.workflow.skippedScreeningAt) {
-        this.props.navigation.push("Consent");
+        this.props.navigation.push("PreConsent");
       } else {
         this.props.navigation.push("Symptoms");
       }
@@ -249,7 +252,7 @@ class SymptomsScreen extends React.PureComponent<
   _onNext = () => {
     const { t } = this.props;
     if (this._numSymptoms() > 1 && this._haveCough()) {
-      this.props.navigation.push("Consent");
+      this.props.navigation.push("PreConsent");
     } else {
       this.props.navigation.push("SymptomsIneligible");
     }
@@ -325,6 +328,60 @@ class SymptomsScreen extends React.PureComponent<
 }
 export const Symptoms = reduxWriter(
   withNamespaces("symptomsScreen")(SymptomsScreen)
+);
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class PreConsentScreen extends React.PureComponent<
+  Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+> {
+  _renderBullets = (arr: string[]) => {
+    const { t } = this.props;
+    return (
+      <View>
+        {arr.map((bullet, index) => {
+          return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+        })}
+      </View>
+    );
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+        <Screen
+          buttonLabel={t("common:button:continue")}
+          canProceed={true}
+          centerDesc={true}
+          hideBackButton={false}
+          imageSrc={{ uri: "img/preConsent" }}
+          navigation={this.props.navigation}
+          onNext={() => this.props.navigation.push("Consent")}
+          step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
+          title={t("title")}
+        >
+          <ScrollView>
+            <Text
+              style={{ marginTop: GUTTER, marginBottom: GUTTER }}
+              content={t("description")}
+            />
+            {this._renderBullets(t("bullets").split("\n"))}
+            <Text style={{ marginVertical: GUTTER }} content={t("questions")} />
+            <Text
+              italic={true}
+              style={{ marginBottom: GUTTER * 2 }}
+              content={t("instructions")}
+            />
+          </ScrollView>
+        </Screen>
+      </KeyboardAvoidingView>
+    );
+  }
+}
+export const PreConsent = reduxWriter(
+  withNamespaces("preConsentScreen")(PreConsentScreen)
 );
 
 interface EmailProps {
