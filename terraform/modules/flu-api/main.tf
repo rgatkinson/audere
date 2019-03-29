@@ -126,6 +126,7 @@ resource "aws_autoscaling_group" "flu_api" {
   max_size = 1
   min_size = 1
   vpc_zone_identifier = ["${aws_subnet.api.id}"]
+  wait_for_elb_capacity = 1
 
   tag {
     key = "Name"
@@ -141,7 +142,7 @@ resource "aws_autoscaling_group" "flu_api" {
 }
 
 resource "aws_elb" "flu_api_elb" {
-  name = "${local.base_name}"
+  name = "${replace("${aws_launch_configuration.flu_api_instance.name}", "terraform-", "")}-ext"
   # availability_zones = "${local.availability_zones}"
   subnets = ["${aws_subnet.api.id}"]
 
@@ -167,15 +168,19 @@ resource "aws_elb" "flu_api_elb" {
   }
 
   tags {
-    key = "Name"
-    value = "${local.base_name}"
+    Name = "${local.base_name}"
+    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
 }
 
 resource "aws_elb" "flu_api_internal_elb" {
-  name = "${local.base_name}-internal"
+  name = "${replace("${aws_launch_configuration.flu_api_instance.name}", "terraform-", "")}-int"
   subnets = ["${aws_subnet.api.id}"]
   internal = true
 
@@ -200,8 +205,12 @@ resource "aws_elb" "flu_api_internal_elb" {
   }
 
   tags {
-    key = "Name"
-    value = "${local.base_name}-internal"
+    Name = "${local.base_name}-internal"
+    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
