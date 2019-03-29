@@ -50,7 +50,8 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
     actions = [
       "cloudwatch:ListMetrics",
       "cloudwatch:PutMetricData",
-      "cloudwatch:PutEvents"
+      "cloudwatch:PutEvents",
+      "ec2:DescribeTags"
     ]
 
     resources = ["*"]
