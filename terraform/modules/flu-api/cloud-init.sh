@@ -11,7 +11,7 @@ function main() {
   adduser --gecos "Audere Api" --disabled-password api
   chown -R "api:api" /creds/{github,db}
 
-  apt-get -y install git jq postgresql-client-common python libpq-dev build-essential
+  apt-get -y install git jq postgresql-client-common python libpq-dev build-essential unzip
 
   add_developer_accounts
   install_cloudwatch_agent
