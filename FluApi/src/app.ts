@@ -16,9 +16,8 @@ import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
 import { useOuch, createApp, wrap } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
-import { StatsD } from "hot-shots";
 import { isAWS } from "./util/environment";
-import * as expressStats from "express-hot-shots";
+import * as routeStats from "express-hot-shots";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -42,7 +41,8 @@ export async function createPublicApp(config: AppConfig) {
   const publicApp = createApp();
 
   if (isAWS()) {
-    publicApp.use(expressStats.expressStatsd(new StatsD({ port: 8125 })));
+    const statsHandler = routeStats.default();
+    publicApp.use(statsHandler());
   }
 
   publicApp.set("port", process.env.PORT || 3000);
@@ -119,7 +119,8 @@ export function createInternalApp(config: AppConfig) {
   const internalApp = createApp();
 
   if (isAWS()) {
-    internalApp.use(expressStats.expressStatsd(new StatsD({ port: 8125 })));
+    const statsHandler = routeStats.default();
+    internalApp.use(statsHandler());
   }
 
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
