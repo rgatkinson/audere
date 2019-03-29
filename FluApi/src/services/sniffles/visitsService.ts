@@ -7,7 +7,9 @@ import Sequelize, { Op } from "sequelize";
 import logger from "../../util/logger";
 import { HutchUploadModel } from "../../models/db/hutchUpload";
 import { PIIVisitDetails } from "../../models/visitDetails";
-import { SnifflesModels } from "../../models/db/sniffles";
+import { SnifflesModels, VisitNonPIIInstance, VisitPIIInstance } from "../../models/db/sniffles";
+import { ResponseInfo, ResponseItemInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/dist/snifflesProtocol";
+import { filterResponsePII } from "./piiFilter";
 
 /**
  * Consolidates the view of a visit across PII & non-PII storage.
@@ -76,8 +78,8 @@ export class VisitsService {
     const zipped: Map<number, PIIVisitDetails> = new Map();
 
     // Discard records missing complementary PII data.
-    nonPiiVisits.forEach(v => {
-      const pii = piiVisits.find(p => p.csruid == v.csruid);
+    nonPiiVisits.forEach(nonPii => {
+      const pii = piiVisits.find(p => p.csruid == nonPii.csruid);
       if (pii != null && pii.visit != null) {
         let consentDate: string;
         if (pii.visit.consents != null && pii.visit.consents.length > 0) {
@@ -86,22 +88,42 @@ export class VisitsService {
             .reduce((prev, curr) => (prev > curr ? curr : prev));
         }
 
-        zipped.set(+v.id, {
-          id: +v.id,
-          csruid: v.csruid,
+        zipped.set(+nonPii.id, {
+          id: +nonPii.id,
+          csruid: nonPii.csruid,
           consentDate: consentDate,
-          visitInfo: v.visit,
+          visitInfo: {
+            ...nonPii.visit,
+            responses: nonPiiResponses(nonPii, pii),
+          },
           patientInfo: pii.visit.patient
         });
       } else {
         logger.error(
           "A completed visit was found without corresponding PII " +
             " completion data, csruid " +
-            v.csruid
+            nonPii.csruid
         );
       }
     });
 
     return zipped;
+  }
+}
+
+function nonPiiResponses(nonPii: VisitNonPIIInstance, pii: VisitPIIInstance): ResponseInfo[] {
+  if (nonPii.visit.responses.length === 1 && pii.visit.responses.length === 1) {
+    // There have been changes over time in the definition of what is PII or not, so
+    // re-combine all responses and re-filter.
+    return [{
+      ...nonPii.visit.responses,
+      item: [
+        ...nonPii.visit.responses[0].item,
+        ...pii.visit.responses[0].item,
+      ]
+    }].map(filterResponsePII(false));
+  } else {
+    logger.warn(`Unexpected responses format on ${nonPii.csruid}, returning existing nonPii`);
+    return nonPii.visit.responses;
   }
 }

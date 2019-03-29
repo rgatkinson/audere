@@ -22,6 +22,7 @@ import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 import { SnifflesModels, defineSnifflesModels } from "../models/db/sniffles";
 import { SplitSql } from "../util/sql";
+import { filterResponsePII } from "../services/sniffles/piiFilter";
 
 const clientLogger = createLogger({
   transports: [
@@ -155,30 +156,4 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
     date: consent.date,
     ...(consent.relation == null ? {} : { relation: consent.relation })
   };
-}
-
-const PII_RESPONSE_KEYS = new Set([
-  "Address",
-  "AddressCampus",
-  "AddressOtherShelter",
-  "AddressCountryResidence",
-  "AddressNextWeek",
-  "BedAssignment",
-  "BirthDate",
-  "WorkAddress"
-]);
-
-function filterResponsePII(allowPII: boolean) {
-  function matchResponseItem(item: ResponseItemInfo): boolean {
-    return PII_RESPONSE_KEYS.has(item.id) === allowPII;
-  }
-
-  function mapResponse(response: ResponseInfo): ResponseInfo {
-    return {
-      id: response.id,
-      item: (response.item || []).filter(matchResponseItem)
-    };
-  }
-
-  return mapResponse;
 }
