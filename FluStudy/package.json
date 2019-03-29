@@ -1,6 +1,6 @@
 {
   "name": "FluAtHome",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "private": true,
   "devDependencies": {
     "@types/axios": "^0.14.0",
