@@ -16,6 +16,9 @@ import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
 import { useOuch, createApp, wrap } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
+import { StatsD } from "hot-shots";
+import { expressStatsd } from "express-hot-shots";
+import { isAWS } from "./util/environment";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -25,31 +28,47 @@ export interface AppConfig extends PortalConfig {
 }
 
 export async function createPublicApp(config: AppConfig) {
+  function stats(path: string) {
+    return function(req, res, next) {
+      const method = req.method || "unknown_method";
+      req.statsDKey = ["public", method.toLowerCase(), path].join(".");
+      next();
+    }
+  }
+
   const sql = config.sql;
 
   // Public app is internet-facing.
   const publicApp = createApp();
+
+  if (isAWS()) {
+    publicApp.use(expressStatsd(new StatsD({ port: 8125 })));
+  }
+
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(bodyParser.json({ limit: "20mb" }));
 
-  publicApp.use("/portal", await portalApp(config));
+  publicApp.use("/portal", stats("portal"), await portalApp(config));
 
-  publicApp.get("/api", (req, res) => res.json({ Status: "OK" }));
+  publicApp.get("/api", stats("api"), (req, res) => res.json({ Status: "OK" }));
 
   const sniffles = new SnifflesEndpoint(sql);
   publicApp.put(
     "/api/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
+    stats("docwithkey"),
     (req, res, next) => sniffles.putDocumentWithKey(req, res, next)
   );
 
   const fever = new FeverEndpoint(sql);
   publicApp.put(
     "/api/fever/documents/:key([A-Za-z0-9-_]{0,})/:documentId([A-Za-z0-9-_]{0,})",
+    stats("feverdoc"),
     (req, res, next) => fever.putFeverDocument(req, res, next)
   );
 
   publicApp.get(
     "/api/documentId",
+    stats("getdoc"),
     wrap(async (req, res) => {
       res.json({ id: await generateRandomKey() });
     })
@@ -57,6 +76,7 @@ export async function createPublicApp(config: AppConfig) {
 
   publicApp.get(
     "/api/randomBytes/:numBytes",
+    stats("random"),
     wrap(async (req, res) => {
       res.json({
         bytes: base64url(
@@ -66,7 +86,7 @@ export async function createPublicApp(config: AppConfig) {
     })
   );
 
-  publicApp.get("/about", (req, res) => {
+  publicApp.get("/about", stats("about"), (req, res) => {
     res.status(200).send(buildInfo);
   });
 
@@ -74,6 +94,7 @@ export async function createPublicApp(config: AppConfig) {
 
   publicApp.get(
     "/api/validateAddress",
+    stats("validateaddress"),
     wrap(async (req, res) => {
       const results = await feverAddress.performRequest(req);
       res.json(results);
@@ -84,50 +105,88 @@ export async function createPublicApp(config: AppConfig) {
 }
 
 export function createInternalApp(config: AppConfig) {
+  function stats(path: string) {
+    return function(req, res, next) {
+      const method = req.method || "unknown_method";
+      req.statsDKey = ["internal", method.toLowerCase(), path].join(".");
+      next();
+    }
+  }
+
   const sql = config.sql;
 
   // Internal app should be intranet only.
   const internalApp = createApp();
+
+  if (isAWS()) {
+    internalApp.use(expressStatsd(new StatsD({ port: 8125 })));
+  }
+
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
   internalApp.use(bodyParser.json());
 
-  internalApp.get("/api", (req, res) => res.json({ Status: "OK" }));
+  internalApp.get(
+    "/api",
+    stats("api"),
+    (req, res) => res.json({ Status: "OK" })
+  );
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
   const snifflesConsentEmailer = new ConsentEmailerEndpoint(sql);
-  internalApp.get("/api/export/getEncounters", (req, res, next) =>
-    hutchUploader.getEncounters(req, res, next)
+  internalApp.get(
+    "/api/export/getEncounters",
+    stats("getencounters"),
+    (req, res, next) => hutchUploader.getEncounters(req, res, next)
   );
 
-  internalApp.get("/api/export/sendEncounters", (req, res, next) =>
-    hutchUploader.sendEncounters(req, res, next)
+  internalApp.get(
+    "/api/export/sendEncounters",
+    stats("sendencounters"),
+    (req, res, next) => hutchUploader.sendEncounters(req, res, next)
   );
 
   const fever = new FeverCronReportEndpoint(sql);
-  internalApp.get("/api/export/sendIncentives", (req, res, next) =>
-    fever.sendIncentives(req, res, next)
+  internalApp.get(
+    "/api/export/sendIncentives",
+    stats("sendincentives"),
+    (req, res, next) => fever.sendIncentives(req, res, next)
   );
 
-  internalApp.get("/api/export/sendKitOrders", (req, res, next) =>
-    fever.sendKitOrders(req, res, next)
+  internalApp.get(
+    "/api/export/sendKitOrders",
+    stats("sendkitorders"),
+    (req, res, next) => fever.sendKitOrders(req, res, next)
   );
 
-  internalApp.get("/api/export/sendFollowUps", (req, res, next) =>
-    fever.sendSurveys(req, res, next)
+  internalApp.get(
+    "/api/export/sendFollowUps",
+    stats("sendfollowups"),
+    (req, res, next) => fever.sendSurveys(req, res, next)
   );
 
-  internalApp.get("/api/import/receivedKits", (req, res, next) =>
-    fever.importReceivedKits(req, res, next)
+  internalApp.get(
+    "/api/import/receivedKits",
+    stats("importreceivedkits"),
+    (req, res, next) => fever.importReceivedKits(req, res, next)
   );
 
   const feverConsentEmailer =
     config.consentEmailer || new FeverConsentEmailerEndpoint(sql);
   // TODO: remove after migrating lambda to sendFeverConsentEmails
-  internalApp.get("/api/sendConsentEmails", feverConsentEmailer.handleGet);
-  internalApp.get("/api/sendFeverConsentEmails", feverConsentEmailer.handleGet);
+  internalApp.get(
+    "/api/sendConsentEmails",
+    stats("sendconsents"),
+    feverConsentEmailer.handleGet
+  );
+  internalApp.get(
+    "/api/sendFeverConsentEmails",
+    stats("sendfeverconsents"),
+    feverConsentEmailer.handleGet
+  );
 
   internalApp.get(
     "/api/sendSnifflesConsentEmails",
+    stats("sendSnifflesConsents"),
     snifflesConsentEmailer.sendConsentEmails
   );
 

@@ -2093,6 +2093,14 @@ expect@^23.6.0:
     jest-message-util "^23.4.0"
     jest-regex-util "^23.3.0"
 
+express-hot-shots@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/express-hot-shots/-/express-hot-shots-1.0.2.tgz#570c2d5f7c18b6e2c6d3fb48a0736e92af5ddc1d"
+  integrity sha512-EW/HoBhpTSaO0QCwcIHSQ2M39ugKr/l2jtH4+qRSCbFAc31qLsOlFt5TGXIGUmMyyb1ffv0kiFHDbaWCd21kzA==
+  dependencies:
+    hot-shots "^5.9.2"
+    obj-extend "~0.1.0"
+
 express-session@^1.15.6:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.6.tgz#47b4160c88f42ab70fe8a508e31cbff76757ab0a"
@@ -2746,6 +2754,16 @@ hosted-git-info@^2.1.4, hosted-git-info@^2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"
   integrity sha512-7T/BxH19zbcCTa8XkMlbK5lTo1WtgkFi3GvdWEyNuc4Vex7/9Dqbnpsf4JMydcfj9HCg4zUWFTL3Za6lapg5/w==
+
+hot-shots@^5.9.2:
+  version "5.9.2"
+  resolved "https://registry.yarnpkg.com/hot-shots/-/hot-shots-5.9.2.tgz#1cff097706f40ba2c1350d4806deebbd16a5e8c8"
+  integrity sha512-ruHZvHaxZRVUCoCleiwwCcjdr9A2/Y97C7oc9LpyMg9ae39blHvsJJQQ0QtMtxKX+i4lig/7/BqZBjUUZPUp3A==
+
+hot-shots@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/hot-shots/-/hot-shots-6.1.1.tgz#56954749852b64851de81ce828210c2dbae5467b"
+  integrity sha512-ayS0pzxAFQaKw5dcuOMbonIuBnnVsrbEUC5udVZhZFHCo+97f+eBXlcxqNUrW7UZ1UY0zbq9CKrwthVt5nSLHw==
 
 hpkp@2.0.0:
   version "2.0.0"
@@ -4627,6 +4645,11 @@ oauth-sign@~0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
+
+obj-extend@~0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/obj-extend/-/obj-extend-0.1.0.tgz#bb448a4775fb95eb34a781f908bbac2df23dbb5b"
+  integrity sha1-u0SKR3X7les0p4H5CLusLfI9u1s=
 
 object-assign@^4.1.0:
   version "4.1.1"

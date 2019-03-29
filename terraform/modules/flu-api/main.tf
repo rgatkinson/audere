@@ -14,6 +14,7 @@ locals {
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
   util_sh = "${file("${path.module}/../assets/util.sh")}"
+  cloudwatch_config_json = "${file("${path.module}/../assets/cloudwatch-agent-config.json")}"
 
   availability_zones = ["us-west-2a"]
 
@@ -59,6 +60,7 @@ data "template_file" "service_init_sh" {
     ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
     util_sh = "${local.util_sh}"
+    cloudwatch_config_json = "${local.cloudwatch_config_json}"
   }
 }
 

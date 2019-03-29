@@ -7,6 +7,7 @@ ${util_sh}
 
 function main() {
   install_updates
+  install_cloudwatch_agent
   mount_creds
   adduser --gecos "Audere Api" --disabled-password api
   chown -R "api:api" /creds/{github,db}
@@ -114,13 +115,32 @@ EOF
 }
 
 function init_nginx() {
-
   apt-get -y install nginx
   rm /etc/nginx/sites-enabled/default
   echo_nginx_config |  sudo tee "/etc/nginx/sites-enabled/${domain}"
   # Check the config before restarting
   nginx -t
   sudo service nginx restart
+}
+
+echo_cloudwatch_agent_config() {
+  cat <<EOF
+${cloudwatch_config_json}
+EOF
+}
+
+function install_cloudwatch_agent() {
+  mkdir /tmp/cw-agent
+  (cd /tmp/cw-agent
+  wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+  unzip AmazonCloudWatchAgent.zip
+  dpkg -i amazon-cloudwatch-agent.deb
+  rm *)
+  echo_cloudwatch_agent_config | sudo tee "/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json"
+  /opt/aws/amazon-cloudwatch-agent/bin/config-translator \
+    --input /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\
+    --output /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.toml
+  systemctl enable amazon-cloudwatch-agent
 }
 
 (umask 022;touch /setup.log)
