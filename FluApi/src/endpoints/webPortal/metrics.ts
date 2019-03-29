@@ -948,8 +948,8 @@ export function getFeverMetrics(
           regexp_matches(fcs.device->>'platform','"model":"(.*)","user') as devicemodel,
           fcs.device->'installation' as installation,
           CASE WHEN (fcs.survey->'workflow')::jsonb ? 'surveyCompletedAt' THEN 'Finisehd App'
-              WHEN (fcs.survey->'workflow')::jsonb ? 'surveyStartedAt' THEN 'Scanned barcode'
-              WHEN (fcs.survey->'workflow')::jsonb ? 'screeningCompletedAt' THEN 'Ordered kit'
+              WHEN (fcs.survey->'workflow')::jsonb ? 'surveyStartedAt' THEN 'Scanned Barcode'
+              WHEN (fcs.survey->'workflow')::jsonb ? 'screeningCompletedAt' THEN 'Ordered Kit'
               ELSE ''
               END as workflow,
           json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
@@ -1413,7 +1413,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["U.S. States sheet columns"],
     ["State", null, "US State abbreviation"],
     ["Count", null, "How many people ordered a kit from that state"],
-    ["%", null, "Percent of kits that werer ordered from that state"],
+    ["%", null, "Percent of kits that were ordered from that state"],
     [],
     ["Details sheet columns"],
     ["App Start Time", null, "Time user clicked beyond Welcome page"],
@@ -1433,7 +1433,7 @@ export function getFeverExcelReport(startDate: string, endDate: string) {
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
     ["Started Part II", null, "Time user reopened app to begin part 2"],
-    ["Finisehd Survey Questions", null, "Time when user finisehd the questions about their illness"],
+    ["Finished Survey Questions", null, "Time when user finished the questions about their illness"],
     ["Finished App", null, "Time user reached last screen of app"],
     [
       "First Test Feedback",

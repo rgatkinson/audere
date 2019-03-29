@@ -197,7 +197,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     });
 
     app.get("/saveMetrics", excelHandler("sfs", getExcelReport));
-    app.get("/saveFeverMetrics", excelHandler("fever", getFeverExcelReport));
+    app.get("/saveFeverMetrics", excelHandler("fluAtHome", getFeverExcelReport));
     app.get("/saveDataSummary", excelHandler("sfsData", getExcelDataSummary));
 
     type DateRangeQuery = (start: string, end: string) => Buffer;
