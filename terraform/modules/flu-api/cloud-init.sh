@@ -123,7 +123,7 @@ function init_nginx() {
   sudo service nginx restart
 }
 
-echo_cloudwatch_agent_config() {
+function echo_cloudwatch_agent_config() {
   cat <<EOF
 ${cloudwatch_config_json}
 EOF
