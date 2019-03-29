@@ -44,13 +44,15 @@ async function loadConfig() {
     _currentConfig[key] = remoteConfigSnapshots[key].val();
   });
   tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, _currentConfig);
-  crashlytics.log(`Remote config loaded: ${_currentConfig}`);
+  crashlytics.log(`Remote config loaded: ${JSON.stringify(_currentConfig)}`);
 
   if (process.env.NODE_ENV === "development") {
     _currentConfig = { ..._currentConfig, ...DEV_CONFIG_OVERRIDES };
 
     tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, _currentConfig);
-    crashlytics.log(`Remote config overridden: ${_currentConfig}`);
+    crashlytics.log(
+      `Remote config overridden: ${JSON.stringify(_currentConfig)}`
+    );
   }
 }
 
@@ -82,14 +84,9 @@ export async function loadAllRemoteConfigs() {
     await config.fetch(SECONDS_IN_HOUR);
 
     const activated = await config.activateFetched();
-
-    if (!activated) {
-      tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
-        message: "Remote Config not activated",
-      });
+    if (activated) {
+      await loadConfig();
     }
-
-    await loadConfig();
   } catch (error) {
     const errorMessage = `Remote Config Load Error: ${
       error && error.message ? error.message : error

@@ -66,7 +66,7 @@ import { GUTTER, SMALL_TEXT } from "../styles";
 import { isValidAddress, isValidEmail } from "../../util/check";
 import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
-import { tracker, FunnelEvents } from "../../util/tracker";
+import { tracker, FunnelEvents, AppHealthEvents } from "../../util/tracker";
 import RadioGrid from "../components/RadioGrid";
 import { getApiBaseUrl } from "../../transport";
 
@@ -160,6 +160,10 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     const blockKits = getRemoteConfig("blockKitOrders");
+
+    if (blockKits) {
+      tracker.logEvent(AppHealthEvents.KIT_ORDER_BLOCKED);
+    }
     return (
       <Screen
         canProceed={!blockKits}
