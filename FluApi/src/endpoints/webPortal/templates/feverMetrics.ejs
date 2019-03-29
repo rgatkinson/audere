@@ -24,6 +24,11 @@ can be found in the LICENSE file distributed with this file.
       t.setDate(t.getDate() - t.getDay() + 7);
       return t.toISOString().slice(0, 10);
     }
+    function getToday() {
+      var t = new Date();
+      t.setDate(t.getDate());
+      return t.toISOString().slice(0, 10);
+    }
     %>
     <form action="./feverMetrics" method="get">
       <table id="date-form">
@@ -35,8 +40,8 @@ can be found in the LICENSE file distributed with this file.
           <td>to</td>
           <td><input name="endDate" type="text" value="<%= endDate %>" /></td>
           <td><button type="submit">Go</button></td>
-          <td><input type="button" onClick="location.href='/feverMetrics';" value="Today"></td>
-          <td><input type="button" onClick="location.href='/feverMetrics?startDate=<%=getLastMonday()%>&amp;endDate=<%=getThisSunday()%>';" value="This Week"></td>
+          <td><input type="button" onClick="location.href='/portal/feverMetrics?startDate=<%=getToday()%>&amp;endDate=<%=getToday()%>';"value="Today"></td>
+          <td><input type="button" onClick="location.href='/portal/feverMetrics?startDate=<%=getLastMonday()%>&amp;endDate=<%=getThisSunday()%>';" value="This Week"></td>
         </tr>
       </table>
     </form>
