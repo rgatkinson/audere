@@ -45,6 +45,7 @@ data "template_file" "sequelize_migrate_sh" {
     ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
     util_sh = "${local.util_sh}"
+    cloudwatch_config_json = "${local.cloudwatch_config_json}"
   }
 }
 
