@@ -1572,6 +1572,31 @@ class TestStripSurveyScreen extends React.Component<
 
   async _onNext() {
     const { status } = await Permissions.getAsync(Permissions.CAMERA);
+    const getAnswer = this.props.getAnswer;
+    const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
+
+    switch (blueAnswer) {
+      case "yes":
+        const redAnswer = getAnswer("selectedButtonKey", RedWhenBlueConfig.id);
+
+        tracker.logEvent(FunnelEvents.RESULT_BLUE);
+        switch (redAnswer) {
+          case "yesAboveBlue":
+          case "yesBelowBlue":
+          case "yesAboveBelowBlue":
+            tracker.logEvent(FunnelEvents.RESULT_BLUE_ANY_RED);
+            break;
+          case "noRed":
+            tracker.logEvent(FunnelEvents.RESULT_BLUE_NO_RED);
+            break;
+        }
+        break;
+
+      case "no":
+        tracker.logEvent(FunnelEvents.RESULT_NO_BLUE);
+        break;
+    }
+
     if (status === "denied") {
       this.props.navigation.push("CleanFirstTest");
     } else {

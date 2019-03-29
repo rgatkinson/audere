@@ -17,7 +17,7 @@ import {
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
 import { crashlytics } from "../crashReporter";
-import { tracker, NavEvents, DrawerEvents } from "../util/tracker";
+import { tracker, NavEvents, DrawerEvents, AppEvents } from "../util/tracker";
 import { connect } from "react-redux";
 import {
   DrawerActions,
@@ -56,12 +56,14 @@ interface Props {
   lastUpdate?: number;
   workflow: WorkflowInfo;
   csruid?: string;
+  appState: string;
   dispatch(action: Action): void;
 }
 
 class ConnectedRootContainer extends React.Component<Props> {
   state = {
     activeRouteName: "Welcome",
+    appState: "active",
   };
 
   constructor(props: Props) {
@@ -125,6 +127,20 @@ class ConnectedRootContainer extends React.Component<Props> {
 
     if (this.props.lastUpdate == null) {
       return;
+    }
+
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      tracker.logEvent(AppEvents.APP_FOREGROUNDED);
+      this.setState({ appState: nextAppState });
+    } else if (
+      this.state.appState === "active" &&
+      nextAppState.match(/inactive|background/)
+    ) {
+      tracker.logEvent(AppEvents.APP_BACKGROUNDED);
+      this.setState({ appState: nextAppState });
     }
 
     const MILLIS_IN_SECOND = 1000.0;

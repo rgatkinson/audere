@@ -43,6 +43,10 @@ export const FunnelEvents = {
   SURVIVED_FIRST_SWAB: "funnel_survived_first_swab",
   PASSED_FIRST_TIMER: "funnel_passed_first_timer",
   COMPLETED_SURVEY: "funnel_completed_survey",
+  RESULT_NO_BLUE: "funnel_result_no_blue",
+  RESULT_BLUE: "funnel_result_blue",
+  RESULT_BLUE_NO_RED: "funnel_result_blue_no_red",
+  RESULT_BLUE_ANY_RED: "funnel_result_blue_any_red",
   COMPLETED_FIRST_TEST: "funnel_completed_first_test",
   COMPLETED_SECOND_TEST: "funnel_completed_second_test",
   COMPLETED_SHIPPING: "funnel_completed_shipping",
@@ -60,6 +64,11 @@ export const AppHealthEvents = {
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
+};
+
+export const AppEvents = {
+  APP_FOREGROUNDED: "app_foregrounded",
+  APP_BACKGROUNDED: "app_backgrounded",
 };
 
 // By default, we don't log demo mode and non-production builds.  If you're
