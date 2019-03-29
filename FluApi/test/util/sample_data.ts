@@ -41,7 +41,13 @@ const NONPII_RESPONSE_ITEM = {
   answer: [{ valueString: "yes" }]
 };
 
-const PII_RESPONSE_ITEM = {
+export const BED_ASSIGNMENT_RESPONSE_ITEM = {
+  id: "BedAssignment",
+  text: "Bed Assignment",
+  answer: [{ valueString: "yes" }]
+};
+
+export const PII_RESPONSE_ITEM = {
   id: "BirthDate",
   text: "What is your birth date?",
   answer: [{ valueString: "1900-01-01" }]
