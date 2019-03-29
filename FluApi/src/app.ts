@@ -41,8 +41,7 @@ export async function createPublicApp(config: AppConfig) {
   const publicApp = createApp();
 
   if (isAWS()) {
-    const statsHandler = routeStats.default();
-    publicApp.use(statsHandler());
+    publicApp.use(routeStats.default());
   }
 
   publicApp.set("port", process.env.PORT || 3000);
@@ -119,8 +118,7 @@ export function createInternalApp(config: AppConfig) {
   const internalApp = createApp();
 
   if (isAWS()) {
-    const statsHandler = routeStats.default();
-    internalApp.use(statsHandler());
+    internalApp.use(routeStats.default());
   }
 
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
