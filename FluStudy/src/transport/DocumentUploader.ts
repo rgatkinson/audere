@@ -26,6 +26,7 @@ import {
   PouchDoc,
   PouchAttachmentObject,
 } from "./Types";
+import { createAccessKey } from "../util/accessKey";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -77,7 +78,7 @@ export class DocumentUploader {
     this.db = db;
     this.api = api;
     this.logger = logger;
-    this.documentUploadKey = this.getDocumentUploadKey();
+    this.documentUploadKey = createAccessKey();
     this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.pump = new Pump(() => this.pumpEvents(), logger);
@@ -362,23 +363,6 @@ export class DocumentUploader {
       }
     } catch (e) {}
     return null;
-  }
-
-  private getDocumentUploadKey(): string {
-    if (!process.env.ACCESS_KEY_A || !process.env.ACCESS_KEY_B) {
-      this.logger.warn(
-        "Both ACCESS_KEY_A and ACCESS_KEY_B should be defined in your .env file. " +
-          "Copy .env.example to .env if you have not yet done so."
-      );
-    }
-    const components = [
-      "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
-      process.env.ACCESS_KEY_A || "",
-      process.env.ACCESS_KEY_B || "",
-    ];
-    const buffers = components.map(base64url.toBuffer);
-    const buffer = buffers.reduce(bufferXor, new Buffer(0));
-    return base64url(buffer);
   }
 }
 

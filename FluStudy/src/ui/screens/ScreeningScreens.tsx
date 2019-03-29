@@ -18,6 +18,8 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
 import axios from "axios";
+import { createAccessKey } from "../../util/accessKey";
+
 import {
   PushNotificationState,
   PushRegistrationError,
@@ -670,6 +672,14 @@ class AddressInputScreen extends React.Component<
 
   emailInput = React.createRef<EmailInput>();
 
+  _mapAddName = (results: any) => {
+    return results.map((address: Address) => {
+      address.firstName = this.state.address.firstName;
+      address.lastName = this.state.address.lastName;
+      return address;
+    });
+  };
+
   _onNext = async () => {
     const { t } = this.props;
     this.setState({ triedToProceed: true });
@@ -698,9 +708,8 @@ class AddressInputScreen extends React.Component<
 
       tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-
+      this.setState({ triedToProceed: false });
       if (this.props.isDemo) {
-        this.setState({ triedToProceed: false });
         writeAddressAndNavigate(
           this.state.address,
           !!this.props.workflow.skippedScreeningAt,
@@ -709,6 +718,7 @@ class AddressInputScreen extends React.Component<
         );
       } else {
         try {
+          const key = createAccessKey();
           const response = await axios.get(
             getApiBaseUrl() + "/validateAddress",
             {
@@ -716,42 +726,34 @@ class AddressInputScreen extends React.Component<
                 address,
                 address2,
                 city,
+                key,
                 state,
                 zipcode,
               },
             }
           );
 
-          const unfilteredResultCount = response.data.length;
-          const resultsWithoutName: Address[] = response.data.filter(
-            (address: Address) =>
-              this._isDifferentAddress(address, this.state.address)
-          );
-          const results: Address[] = resultsWithoutName.map(
-            (address: Address) => {
-              address.firstName = this.state.address.firstName;
-              address.lastName = this.state.address.lastName;
-              return address;
-            }
-          );
-          this.setState({ triedToProceed: false });
-          if (unfilteredResultCount === 0) {
+          const current = this.state.address;
+          const suggestions = response.data;
+          if (suggestions.length === 0) {
             this.setState({
               noResults: true,
-              suggestedAddress: this.state.address,
+              suggestedAddress: current,
             });
-          } else if (unfilteredResultCount != results.length) {
+          } else if (
+            suggestions.every((x: any) => this._isDifferentAddress(x, current))
+          ) {
+            this.props.navigation.push("AddressConfirm", {
+              original: current,
+              suggestions: this._mapAddName(suggestions),
+            });
+          } else {
             writeAddressAndNavigate(
               this.state.address,
               !!this.props.workflow.skippedScreeningAt,
               this.props.updateAnswer,
               this.props.navigation
             );
-          } else if (results.length >= 1) {
-            this.props.navigation.push("AddressConfirm", {
-              original: this.state.address,
-              suggestions: results,
-            });
           }
         } catch (error) {
           Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
