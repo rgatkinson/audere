@@ -40,10 +40,6 @@ export async function createPublicApp(config: AppConfig) {
   // Public app is internet-facing.
   const publicApp = createApp();
 
-  if (isAWS()) {
-    publicApp.use(routeStats.default());
-  }
-
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(bodyParser.json({ limit: "20mb" }));
 
@@ -100,6 +96,10 @@ export async function createPublicApp(config: AppConfig) {
     })
   );
 
+  if (isAWS()) {
+    publicApp.use(routeStats.default());
+  }
+
   return useOuch(publicApp);
 }
 
@@ -116,10 +116,6 @@ export function createInternalApp(config: AppConfig) {
 
   // Internal app should be intranet only.
   const internalApp = createApp();
-
-  if (isAWS()) {
-    internalApp.use(routeStats.default());
-  }
 
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
   internalApp.use(bodyParser.json());
@@ -188,6 +184,10 @@ export function createInternalApp(config: AppConfig) {
     stats("sendSnifflesConsents"),
     snifflesConsentEmailer.sendConsentEmails
   );
+
+  if (isAWS()) {
+    internalApp.use(routeStats.default());
+  }
 
   return useOuch(internalApp);
 }
