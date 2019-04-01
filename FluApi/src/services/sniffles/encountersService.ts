@@ -141,11 +141,7 @@ export class EncountersService {
   }
 
   private deidentifyParticipant({name, gender, birthDate, postalCode}: ParticipantIdentifierParts): string {
-    const canonicalName = name
-      .replace(/[`~!@#$%^&*()\-_=+[{\]}\\|;:'",<.>\/?\u2000-\u206F\u2E00-\u2E7F]/g, "")
-      .replace(/\s+/g, " ")
-      .toUpperCase();
-    return generateSHA256(this.hashSecret, canonicalName, gender, birthDate, postalCode);
+    return generateSHA256(this.hashSecret, canonicalizeName(name), gender, birthDate, postalCode);
   }
 
   private hasAddressInfo(details: PIIVisitDetails) {
@@ -333,3 +329,10 @@ type ParticipantIdentifierParts = {
   birthDate: string,
   postalCode: string,
 };
+
+export function canonicalizeName(name: string): string {
+  return name
+    .replace(/[^\s\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]/ug, "")
+    .replace(/\s+/ug, " ")
+    .toUpperCase();
+}
