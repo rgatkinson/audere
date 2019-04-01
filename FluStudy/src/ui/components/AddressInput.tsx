@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { isValidAddress } from "../../util/check";
@@ -42,6 +48,51 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     this.state = {
       stateOpen: false,
     };
+
+    this._getRef = this._getRef.bind(this);
+  }
+
+  _getRef(propName: string) {
+    if ((this as any).hasOwnProperty(propName)) {
+      return (this as any)[propName];
+    } else {
+      return null;
+    }
+  }
+
+  renderTextInput(
+    placeholder: string,
+    property: string,
+    focusNext: string,
+    style?: StyleProp<ViewStyle>
+  ) {
+    const { autoFocus, shouldValidate, t } = this.props;
+    return (
+      <TextInput
+        autoCapitalize="words"
+        autoCorrect={false}
+        autoFocus={autoFocus}
+        placeholder={placeholder}
+        placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
+        ref={this._getRef(property)}
+        returnKeyType="next"
+        style={style}
+        value={
+          this.props.value ? (this.props.value! as any)[property] : undefined
+        }
+        onChangeText={(text: string) => {
+          const address = this.props.value || {};
+          (address as any)[property] = text;
+          this.props.onChange(address);
+        }}
+        onSubmitEditing={() => {
+          if (focusNext === "zipcode") {
+            this.setState({ stateOpen: true });
+          }
+          this._getRef(focusNext).current!.focus();
+        }}
+      />
+    );
   }
 
   render() {
@@ -49,92 +100,32 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: "row" }}>
-          <TextInput
-            autoCapitalize="words"
-            autoCorrect={false}
-            autoFocus={this.props.autoFocus}
-            placeholder={t("firstName")}
-            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
-            returnKeyType="next"
-            style={styles.firstName}
-            value={this.props.value ? this.props.value!.firstName : undefined}
-            onChangeText={(text: string) => {
-              const address = this.props.value || {};
-              address.firstName = text;
-              this.props.onChange(address);
-            }}
-            onSubmitEditing={() => this.lastName.current!.focus()}
-          />
-          <TextInput
-            autoCapitalize="words"
-            autoCorrect={false}
-            autoFocus={false}
-            placeholder={t("lastName")}
-            ref={this.lastName}
-            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
-            returnKeyType="next"
-            style={styles.inputRowRight}
-            value={this.props.value ? this.props.value!.lastName : undefined}
-            onChangeText={(text: string) => {
-              const address = this.props.value || {};
-              address.lastName = text;
-              this.props.onChange(address);
-            }}
-            onSubmitEditing={() => this.address.current!.focus()}
-          />
+          {this.renderTextInput(
+            t("firstName"),
+            "firstName",
+            "lastName",
+            styles.firstName
+          )}
+          {this.renderTextInput(
+            t("lastName"),
+            "lastName",
+            "address",
+            styles.inputRowRight
+          )}
         </View>
-        <TextInput
-          autoCapitalize="words"
-          autoCorrect={false}
-          autoFocus={false}
-          placeholder={t("streetAddress")}
-          placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
-          ref={this.address}
-          returnKeyType="next"
-          style={styles.textInput}
-          value={this.props.value ? this.props.value!.address : undefined}
-          onChangeText={(text: string) => {
-            const address = this.props.value || {};
-            address.address = text;
-            this.props.onChange(address);
-          }}
-          onSubmitEditing={() => this.address2.current!.focus()}
-        />
-        <TextInput
-          autoCapitalize="words"
-          autoCorrect={false}
-          autoFocus={false}
-          placeholder={t("streetAddress2")}
-          ref={this.address2}
-          returnKeyType="next"
-          style={styles.textInput}
-          value={this.props.value ? this.props.value!.address2 : undefined}
-          onChangeText={(text: string) => {
-            const address = this.props.value || {};
-            address.address2 = text;
-            this.props.onChange(address);
-          }}
-          onSubmitEditing={() => this.city.current!.focus()}
-        />
-        <TextInput
-          autoCapitalize="words"
-          autoCorrect={false}
-          placeholder={t("city")}
-          placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
-          ref={this.city}
-          returnKeyType="next"
-          style={styles.textInput}
-          value={this.props.value ? this.props.value!.city : undefined}
-          onChangeText={(text: string) => {
-            const address = this.props.value || {};
-            address.city = text;
-            this.props.onChange(address);
-          }}
-          onSubmitEditing={() => {
-            this.zipcode.current!.focus();
-            this.setState({ stateOpen: true });
-          }}
-        />
+        {this.renderTextInput(
+          t("streetAddress"),
+          "address",
+          "address2",
+          styles.textInput
+        )}
+        {this.renderTextInput(
+          t("streetAddress2"),
+          "address2",
+          "city",
+          styles.textInput
+        )}
+        {this.renderTextInput(t("city"), "city", "zipcode", styles.textInput)}
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.pickerContainer}
