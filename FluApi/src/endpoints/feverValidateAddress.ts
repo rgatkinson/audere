@@ -9,34 +9,26 @@ import { SplitSql } from "../util/sql";
 import { GeocodingService } from "../../src/services/geocodingService";
 import * as Model from "audere-lib/snifflesProtocol";
 import { GeocodingResponse } from "../../src/models/geocoding";
-import { defineFeverModels, FeverModels } from "../models/db/fever";
-import logger from "../util/logger";
 
 export class FeverValidateAddress {
   private readonly sql: SplitSql;
   private readonly geocoder: LazyAsync<GeocodingService>;
-  private readonly models: FeverModels;
 
   constructor(sql: SplitSql) {
     this.sql = sql;
     this.geocoder = new LazyAsync(() => initializeGeocoder(sql));
-    this.models = defineFeverModels(sql);
   }
 
   async performRequest(req: any) {
-    const keyQuery = { where: { key: req.query.key, valid: true } };
-    if (!(await this.models.accessKey.findOne(keyQuery))) {
-      logger.warn(`Rejected address verification with key: ${req.query.key}`);
-      return [];
-    }
-    const formattedRequest = await this.createRequest(req);
+    const formattedRequest = this.createRequest(req);
     const geocoder = await this.geocoder.get();
     const geocoded = await geocoder.geocodeAddresses(formattedRequest);
     return this.formatResults(geocoded);
   }
 
-  async createRequest({ query }) {
+  createRequest({ query }) {
     const { address, address2, city, state, zipcode } = query;
+
     return new Map([
       [
         1,
