@@ -10,6 +10,7 @@ import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
 import logger from "../../util/logger";
+import sequelize = require("sequelize");
 
 export interface SurveyCompleteItem extends BatchItemWithCsruid {
   boxBarcode: string;
@@ -24,6 +25,7 @@ export interface SurveyCompleteItem extends BatchItemWithCsruid {
 export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<SurveyCompleteItem> {
   protected fever: FeverModels;
   protected abstract requireReceivedKit: boolean;
+  protected abstract requireSurveyComplete: boolean;
 
   constructor(
     sql: SplitSql,
@@ -49,16 +51,24 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
   }
 
   protected surveyPredicate() {
-    return {
-      survey: {
-        isDemo: false,
-        workflow: {
-          surveyCompletedAt: {
-            [Sequelize.Op.ne]: null
+    if (this.requireSurveyComplete) {
+      return {
+        survey: {
+          isDemo: false,
+          workflow: {
+            surveyCompletedAt: {
+              [Sequelize.Op.ne]: null
+            }
           }
         }
       }
-    };
+    } else {
+      return {
+        survey: {
+          isDemo: false,
+        }
+      };
+    }
   }
 
   /**

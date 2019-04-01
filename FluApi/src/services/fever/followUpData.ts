@@ -30,4 +30,5 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
   }
 
   protected requireReceivedKit: boolean = false;
+  protected requireSurveyComplete: boolean = true;
 }

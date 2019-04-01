@@ -7,6 +7,7 @@ import { defineFeverModels, FeverModels } from "../../models/db/fever";
 import { KitRecord } from "../../models/kitRecord";
 import { SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
+import sequelize = require("sequelize");
 
 export class ReceivedKitsData {
   private readonly fever: FeverModels;
@@ -42,14 +43,6 @@ export class ReceivedKitsData {
   public async findSurveyByBarcode(barcode: string): Promise<number | null> {
     const survey = await this.fever.surveyNonPii.findOne({
       where: {
-        survey: {
-          isDemo: false,
-          workflow: {
-            surveyCompletedAt: {
-              [Sequelize.Op.ne]: null
-            }
-          }
-        },
         [Sequelize.Op.and]: [
           Sequelize.literal(`lower(survey->>'samples')::jsonb @> '[{\"code\":\"${barcode.toLowerCase()}\"}]'`)
         ]

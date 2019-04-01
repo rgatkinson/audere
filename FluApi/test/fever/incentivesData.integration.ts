@@ -193,12 +193,19 @@ describe("survey batch data access", () => {
       );
     });
 
-    it("should not retrieve surveys that are incomplete", async () => {
+    it("should retrieve surveys that have not completed if they returned a received kit", async () => {
       await createTestData(true, false);
 
       const out = await dao.getNewItems();
 
-      expect(out).toBeNull();
+      expect(out).toHaveLength(2);
+      [2, 3].forEach(key =>
+        expect(out).toContainEqual(
+          expect.objectContaining({
+            csruid: key.toString()
+          })
+        )
+      );
     });
 
     it("should filter surveys that don't have a received kit", async () => {

@@ -30,4 +30,5 @@ export class IncentiveRecipientsDataAccess extends SurveyCompleteDataAccess {
   }
 
   protected requireReceivedKit: boolean = true;
+  protected requireSurveyComplete: boolean = false;
 }
