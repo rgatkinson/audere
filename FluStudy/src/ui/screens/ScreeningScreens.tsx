@@ -46,7 +46,7 @@ import {
   SurveyQuestionData,
   SymptomsConfig,
 } from "../../resources/ScreenConfig";
-import { ERROR_COLOR } from "../styles";
+import { ERROR_COLOR, LARGE_TEXT } from "../styles";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import RadioButtonGroup from "../components/RadioButtonGroup";
@@ -616,6 +616,7 @@ function writeAddressAndNavigate(
 
 interface AddressState {
   address: Address;
+  showValidationError: boolean;
   noResults: boolean;
   suggestedAddress: Address | null;
   triedToProceed: boolean;
@@ -651,10 +652,12 @@ class AddressInputScreen extends React.Component<
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
       email: props.email,
-      suggestedAddress: null,
       noResults: false,
+      showValidationError: false,
+      suggestedAddress: null,
       triedToProceed: false,
     };
+    this._onAddressChange = this._onAddressChange.bind(this);
   }
 
   _isSameTrimmedString = (
@@ -712,7 +715,6 @@ class AddressInputScreen extends React.Component<
 
       tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
-      this.setState({ triedToProceed: false });
       if (this.props.isDemo) {
         writeAddressAndNavigate(
           this.state.address,
@@ -763,11 +765,20 @@ class AddressInputScreen extends React.Component<
           Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
         }
       }
+    } else {
+      this.setState({ showValidationError: true });
     }
   };
 
-  _onAddressChange = (address: Address) => {
-    this.setState({ address });
+  _onAddressChange = (newAddress: Address) => {
+    const { email, showValidationError, triedToProceed } = this.state;
+    const currentShowValidationError =
+      !isValidAddress(newAddress) || !isValidEmail(email) || !triedToProceed;
+
+    this.setState({
+      address: newAddress,
+      showValidationError: currentShowValidationError,
+    });
   };
 
   _haveOption = () => {
@@ -778,13 +789,27 @@ class AddressInputScreen extends React.Component<
     return !!whereKit;
   };
 
-  _onChangeEmail = (email: string) => {
-    this.setState({ email });
+  _onEmailChange = (newEmail: string) => {
+    const { address, showValidationError, triedToProceed } = this.state;
+    const newShowValidationError =
+      !isValidAddress(address) || !isValidEmail(newEmail) || !triedToProceed;
+
+    this.setState({
+      email: newEmail,
+      showValidationError: newShowValidationError,
+    });
   };
 
   render() {
-    const { t } = this.props;
-    const config = !!this.props.workflow.skippedScreeningAt
+    const { navigation, t, workflow } = this.props;
+    const {
+      address,
+      noResults,
+      showValidationError,
+      suggestedAddress,
+      triedToProceed,
+    } = this.state;
+    const config = !!workflow.skippedScreeningAt
       ? AddressConfig
       : MailingAddressConfig;
 
@@ -792,38 +817,40 @@ class AddressInputScreen extends React.Component<
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         <Screen
           buttonLabel={
-            !!this.props.workflow.skippedScreeningAt
+            !!workflow.skippedScreeningAt
               ? undefined
               : t("common:button:submit")
           }
           canProceed={true}
           desc={
-            !!this.props.workflow.skippedScreeningAt
+            !!workflow.skippedScreeningAt
               ? t("surveyDescription:addressDesc")
               : t("surveyDescription:mailingAddressDesc")
           }
-          navigation={this.props.navigation}
-          step={!!this.props.workflow.skippedScreeningAt ? undefined : 4}
+          navigation={navigation}
+          step={!!workflow.skippedScreeningAt ? undefined : 4}
           title={t("title")}
           onNext={this._onNext}
         >
-          {this.state.triedToProceed && (
+          {triedToProceed && showValidationError ? (
             <Text
               style={{ color: ERROR_COLOR }}
               content={t("validationError")}
             />
+          ) : (
+            <View style={{ height: LARGE_TEXT }} />
           )}
           <QuestionText text={t("surveyTitle:address")} />
           <AddressInput
-            autoFocus={this.props.navigation.isFocused()}
+            autoFocus={navigation.isFocused()}
             onSubmitEditing={() => this.emailInput.current!.focus()}
-            shouldValidate={this.state.triedToProceed}
-            value={this.state.address}
-            onChange={(address: Address) => this.setState({ address })}
+            shouldValidate={triedToProceed}
+            value={address}
+            onChange={this._onAddressChange}
           />
           <AddressNotFoundModal
-            address={this.state.suggestedAddress}
-            visible={this.state.noResults}
+            address={suggestedAddress}
+            visible={noResults}
             onDismiss={() => this.setState({ noResults: false })}
             onSubmit={() => {
               this.setState({ noResults: false });
@@ -846,15 +873,15 @@ class AddressInputScreen extends React.Component<
             placeholder={t("common:placeholder:emailEx")}
             ref={this.emailInput}
             returnKeyType="next"
-            shouldValidate={this.state.triedToProceed}
+            shouldValidate={triedToProceed}
             validationError={t("common:validationErrors:email")}
             value={this.state.email}
-            onChange={this._onChangeEmail}
+            onChange={this._onEmailChange}
           />
-          {!!this.props.workflow.skippedScreeningAt && (
+          {!!workflow.skippedScreeningAt && (
             <RadioGrid
               question={WhereKitConfig}
-              shouldValidate={this.state.triedToProceed}
+              shouldValidate={triedToProceed}
               validationError={t("common:validationErrors:whereKit")}
               getAnswer={this.props.getAnswer}
               updateAnswer={this.props.updateAnswer}
