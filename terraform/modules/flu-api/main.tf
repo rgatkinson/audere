@@ -116,12 +116,13 @@ resource "aws_route53_record" "api_record" {
 }
 
 resource "aws_autoscaling_group" "flu_api" {
+  name = "${aws_launch_configuration.flu_api_instance.name}"
   availability_zones = "${local.availability_zones}"
   health_check_type = "ELB"
   launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
   load_balancers = [
     "${aws_elb.flu_api_elb.name}",
-    "${aws_elb.flu_api_internal_elb.name}",  
+    "${aws_elb.flu_api_internal_elb.name}",
   ]
   max_size = 1
   min_size = 1
@@ -142,8 +143,7 @@ resource "aws_autoscaling_group" "flu_api" {
 }
 
 resource "aws_elb" "flu_api_elb" {
-  name = "${replace("${aws_launch_configuration.flu_api_instance.name}", "terraform-", "")}-ext"
-  # availability_zones = "${local.availability_zones}"
+  name = "${local.base_name}-public"
   subnets = ["${aws_subnet.api.id}"]
 
   security_groups = [
@@ -172,15 +172,11 @@ resource "aws_elb" "flu_api_elb" {
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-
   count = "${var.service == "elb" ? 1 : 0}"
 }
 
 resource "aws_elb" "flu_api_internal_elb" {
-  name = "${replace("${aws_launch_configuration.flu_api_instance.name}", "terraform-", "")}-int"
+  name = "${local.base_name}-internal"
   subnets = ["${aws_subnet.api.id}"]
   internal = true
 
@@ -209,14 +205,11 @@ resource "aws_elb" "flu_api_internal_elb" {
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
-
   count = "${var.service == "elb" ? 1 : 0}"
 }
 
 resource "aws_launch_configuration" "flu_api_instance" {
+  name_prefix = "${local.base_name}-"
   iam_instance_profile = "${aws_iam_instance_profile.flu_api.name}"
   image_id = "${module.ami.ubuntu}"
   instance_type = "t2.micro"
