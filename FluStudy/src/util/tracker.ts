@@ -6,9 +6,10 @@
 import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
 import url from "url";
-import branch from "react-native-branch";
+import { DangerZone } from "expo";
 
 export const tracker = firebase.analytics();
+let { Branch } = DangerZone;
 
 const demoModeEvent = "app_demo_mode_change";
 
@@ -187,7 +188,7 @@ export async function startTracking(): Promise<void> {
   // the collection status whenever isDemo changes...
   updateCollectionEnabled(false);
 
-  branch.subscribe(onBranchData);
+  Branch.subscribe(onBranchData);
   await recordMarketingAttributions();
 }
 

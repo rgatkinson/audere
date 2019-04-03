@@ -94,11 +94,10 @@ configurations.all {
 apply from: 'expo.gradle'
 
 dependencies {
-  implementation(':react-native-branch')
-  implementation(':react-native-fabric')
-  implementation(':react-native-fbsdk')
-  implementation(':react-native-firebase')
-  implementation(':react-native-get-random-values')
+  implementation(project(':react-native-fbsdk'))
+  implementation(project(':react-native-firebase'))
+  implementation(project(':react-native-get-random-values'))
+
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
   implementation 'com.google.firebase:firebase-core:16.0.8'
