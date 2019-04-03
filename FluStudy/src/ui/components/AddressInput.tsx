@@ -64,16 +64,20 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     placeholder: string,
     property: string,
     focusNext: string,
-    style?: StyleProp<ViewStyle>
+    required: boolean,
+    style?: StyleProp<ViewStyle>,
+    autoFocus?: boolean
   ) {
-    const { autoFocus, shouldValidate, t } = this.props;
+    const { shouldValidate, t } = this.props;
     return (
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
-        autoFocus={autoFocus}
+        autoFocus={!!autoFocus}
         placeholder={placeholder}
-        placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
+        placeholderTextColor={
+          !!required && shouldValidate ? ERROR_COLOR : undefined
+        }
         ref={this._getRef(property)}
         returnKeyType="next"
         style={style}
@@ -104,12 +108,15 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             t("firstName"),
             "firstName",
             "lastName",
-            styles.firstName
+            true,
+            styles.firstName,
+            true
           )}
           {this.renderTextInput(
             t("lastName"),
             "lastName",
             "address",
+            true,
             styles.inputRowRight
           )}
         </View>
@@ -117,15 +124,23 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           t("streetAddress"),
           "address",
           "address2",
+          true,
           styles.textInput
         )}
         {this.renderTextInput(
           t("streetAddress2"),
           "address2",
           "city",
+          false,
           styles.textInput
         )}
-        {this.renderTextInput(t("city"), "city", "zipcode", styles.textInput)}
+        {this.renderTextInput(
+          t("city"),
+          "city",
+          "zipcode",
+          true,
+          styles.textInput
+        )}
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.pickerContainer}
