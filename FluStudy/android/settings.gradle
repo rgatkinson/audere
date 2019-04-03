@@ -1,9 +1,9 @@
 include ':app'
-include ':react-native-fabric'
-project(':react-native-fabric').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fabric/android')
 include ':react-native-fbsdk'
 project(':react-native-fbsdk').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fbsdk/android')
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 include ':react-native-get-random-values'
 project(':react-native-get-random-values').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-get-random-values/android')
+include ':react-native-device-info'
+project(':react-native-device-info').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-device-info/android')

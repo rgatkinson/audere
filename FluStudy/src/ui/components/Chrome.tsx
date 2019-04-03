@@ -3,6 +3,7 @@ import {
   Image,
   ImageBackground,
   ImageSourcePropType,
+  Platform,
   StatusBar,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -86,7 +87,14 @@ export default class Chrome extends React.Component<Props> {
       <View style={styles.container}>
         <ImageBackground
           source={
-            this.props.menuItem ? { uri: "img/shortSplash" } : SPLASH_IMAGE
+            this.props.menuItem
+              ? {
+                  uri:
+                    Platform.OS === "ios"
+                      ? "img/shortSplash"
+                      : "asset:/short_splash.png",
+                }
+              : SPLASH_IMAGE
           }
           style={[
             { alignSelf: "stretch" },

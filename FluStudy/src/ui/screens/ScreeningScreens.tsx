@@ -8,6 +8,7 @@ import React from "react";
 import {
   Alert,
   KeyboardAvoidingView,
+  Platform,
   PushNotificationIOS,
   ScrollView,
   StyleSheet,
@@ -123,7 +124,9 @@ class WelcomeScreen extends React.Component<
         hideBackButton={true}
         navigation={this.props.navigation}
         skipButton={true}
-        stableImageSrc={{ uri: "img/welcome" }}
+        stableImageSrc={{
+          uri: Platform.OS === "ios" ? "img/welcome" : "asset:/img/welcome.png",
+        }}
         title={t("welcome")}
       />
     );
@@ -142,7 +145,12 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        stableImageSrc={{ uri: "img/whyThisStudy" }}
+        stableImageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/whyThisStudy"
+              : "asset:/img/why_this_study.png",
+        }}
         navigation={this.props.navigation}
         title={t("why")}
         onNext={this._onNext}
@@ -168,8 +176,26 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={!blockKits}
         desc={blockKits ? t("blockKitsDesc") : t("description")}
-        imageSrc={blockKits ? { uri: "img/thanksForYourInterest" } : undefined}
-        stableImageSrc={blockKits ? undefined : { uri: "img/whatDoIDoNext" }}
+        imageSrc={
+          blockKits
+            ? {
+                uri:
+                  Platform.OS === "ios"
+                    ? "img/thanksForYourInterest"
+                    : "asset:/img/thanks_for_your_interest.png",
+              }
+            : undefined
+        }
+        stableImageSrc={
+          blockKits
+            ? undefined
+            : {
+                uri:
+                  Platform.OS === "ios"
+                    ? "img/whatDoIDoNext"
+                    : "asset:/img/what_do_i_do_next.png",
+              }
+        }
         navigation={this.props.navigation}
         title={blockKits ? t("whatBlockKits") : t("what")}
         skipButton={blockKits}
@@ -363,7 +389,12 @@ class PreConsentScreen extends React.PureComponent<
           canProceed={true}
           centerDesc={true}
           hideBackButton={true}
-          imageSrc={{ uri: "img/preConsent" }}
+          imageSrc={{
+            uri:
+              Platform.OS === "ios"
+                ? "img/preConsent"
+                : "asset:/img/pre_consent.png",
+          }}
           navigation={this.props.navigation}
           onNext={() => this.props.navigation.push("Consent")}
           step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
@@ -589,7 +620,12 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
             onPress={this._onBack}
           />
         }
-        imageSrc={{ uri: "img/thanksForYourInterest" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -976,7 +1012,12 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={{ uri: "img/thanksForYourInterest" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1013,7 +1054,12 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t(this.props.navigation.getParam("description"))}
         hideBackButton={this.props.navigation.getParam("hideBack")}
-        imageSrc={{ uri: "img/thanksForYourInterest" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1048,7 +1094,12 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={{ uri: "img/thanksForYourInterest" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1093,7 +1144,12 @@ class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={false}
-        imageSrc={{ uri: "img/thanksForYourInterest" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1146,7 +1202,12 @@ class ConfirmationScreen extends React.Component<
         desc={t("description", {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
-        imageSrc={{ uri: "img/fluKitOrdered" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/fluKitOrdered"
+              : "asset:/img/flu_kit_ordered.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("confirmed")}
@@ -1254,7 +1315,12 @@ class PushNotificationsScreen extends React.Component<
             onPress={this._onNo}
           />
         }
-        imageSrc={{ uri: "img/pushNotifications" }}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/oneMinuteTimer"
+              : "asset:/img/one_minute_timer.png",
+        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}

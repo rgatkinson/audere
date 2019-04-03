@@ -20,10 +20,10 @@ export { uploader, events, logger } from "./uploader";
 
 export * from "./types";
 
-import { default as meta, MetaState, MetaAction } from "./meta";
+import { default as meta, MetaAction } from "./meta";
 export * from "./meta";
 
-import { default as survey, SurveyState, SurveyAction } from "./survey";
+import { default as survey, SurveyAction } from "./survey";
 export * from "./survey";
 
 type ClearStateAction = { type: "CLEAR_STATE" };

@@ -81,7 +81,7 @@
     "date-fns": "^1.29.0",
     "events": "^3.0.0",
     "expo": "^32.0.0",
-    "expokit": "32.0.0",
+    "expokit": "32.0.7",
     "i18next": "^11.10.0",
     "immutable": "^4.0.0-rc.12",
     "node-libs-react-native": "^1.0.3",

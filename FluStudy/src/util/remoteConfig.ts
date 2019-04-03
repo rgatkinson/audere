@@ -6,6 +6,7 @@
 import firebase from "react-native-firebase";
 import { crashlytics } from "../crashReporter";
 import { tracker, AppHealthEvents } from "../util/tracker";
+import { Constants } from "expo";
 
 interface RemoteConfig {
   blockKitOrders: boolean;
@@ -20,7 +21,10 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
-  blockKitOrders: true, // Pessimistically assume we have no kits
+  // Pessimistically assume we have no kits.  Currently only on iOS because
+  // we're busy getting remoteConfig working on Android (struggling with 403
+  // Forbidden issues).
+  blockKitOrders: !!Constants.platform.ios,
   showVideos: true,
 };
 
