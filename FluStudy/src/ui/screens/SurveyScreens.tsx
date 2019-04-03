@@ -950,18 +950,6 @@ class FirstTimerScreen extends React.Component<
     this.props.navigation.push("RemoveSwabFromTube");
   };
 
-  componentWillReceiveProps(
-    nextProps: Props &
-      DemoModeProps &
-      FirstTimerProps &
-      WithNamespaces &
-      TimerProps
-  ) {
-    if (nextProps.done()) {
-      this._onNext();
-    }
-  }
-
   render() {
     const { t } = this.props;
     return (
@@ -1509,18 +1497,6 @@ class ThankYouSurveyScreen extends React.Component<
   _onTitlePress = () => {
     this.props.isDemo && this.props.onFastForward();
   };
-
-  componentWillReceiveProps(
-    nextProps: Props &
-      DemoModeProps &
-      WithNamespaces &
-      ThankYouSurveyProps &
-      TimerProps
-  ) {
-    if (nextProps.done()) {
-      this._onNext();
-    }
-  }
 
   render() {
     const { t } = this.props;

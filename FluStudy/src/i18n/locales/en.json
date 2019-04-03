@@ -56,6 +56,10 @@
     "back": "Back",
     "next": "Next"
   },
+  "pushNotificationModal": {
+    "pushNotificationTitle": "May we send you notifications?",
+    "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
+  },
   "addressInput": {
     "firstName": "First Name",
     "lastName": "Last Name",

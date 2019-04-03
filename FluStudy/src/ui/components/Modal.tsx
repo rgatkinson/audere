@@ -4,6 +4,7 @@ import AnimatedModal from "react-native-modal";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   BORDER_COLOR,
+  EXTRA_SMALL_TEXT,
   GUTTER,
   LINK_COLOR,
   STATUS_BAR_COLOR,
@@ -23,6 +24,7 @@ interface Props {
   dismissText?: string;
   submitText?: string;
   title?: string;
+  body?: string;
   visible: boolean;
   onDismiss(): void;
   onSubmit(): void;
@@ -49,6 +51,12 @@ class Modal extends React.Component<Props & WithNamespaces> {
           ]}
         >
           <View style={styles.blur}>
+            {this.props.title ? (
+              <Text style={styles.title}>{this.props.title}</Text>
+            ) : null}
+            {this.props.body ? (
+              <Text style={styles.body}>{this.props.body}</Text>
+            ) : null}
             {this.props.children}
             <View style={styles.footer}>
               <TouchableOpacity
@@ -61,9 +69,6 @@ class Modal extends React.Component<Props & WithNamespaces> {
                     : t("common:button:cancel")}
                 </Text>
               </TouchableOpacity>
-              {this.props.title ? (
-                <Text style={styles.title}>{this.props.title}</Text>
-              ) : null}
               <TouchableOpacity
                 onPress={this.props.onSubmit}
                 style={styles.actionButton}
@@ -125,9 +130,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
+    alignSelf: "center",
     fontFamily: SYSTEM_FONT,
     fontSize: SYSTEM_TEXT,
-    fontWeight: "bold",
+    fontWeight: "600",
+    paddingTop: GUTTER,
+    paddingHorizontal: GUTTER,
+    paddingBottom: GUTTER / 2,
+    textAlign: "center",
+  },
+  body: {
+    alignSelf: "center",
+    fontFamily: SYSTEM_FONT,
+    fontSize: EXTRA_SMALL_TEXT,
+    paddingHorizontal: GUTTER,
+    paddingBottom: GUTTER,
+    textAlign: "center",
   },
 });
 

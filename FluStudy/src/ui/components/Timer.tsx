@@ -4,16 +4,22 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Audio } from "expo";
+import { PushNotificationIOS, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { StoreState } from "../../store";
+import { setPushNotificationState, Action, StoreState } from "../../store";
+import PushNotificationModal from "./PushNotificationModal";
+import {
+  PushNotificationState,
+  PushRegistrationError,
+} from "audere-lib/feverProtocol";
 
 const SECOND_MS = 1000;
 
 interface TimerState {
   done: boolean;
   remaining: Date | null | undefined;
+  showPushModal: boolean;
 }
 
 export interface ConfigProps {
@@ -22,8 +28,10 @@ export interface ConfigProps {
 }
 
 export interface TimerProps {
-  startTimeMs: number;
   navigation: NavigationScreenProp<any, any>;
+  pushState: PushNotificationState;
+  startTimeMs: number;
+  dispatch(action: Action): void;
   done(): boolean;
   getRemainingLabel(): string;
   getRemainingTime(): number;
@@ -37,9 +45,17 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     state = {
       done: false,
       remaining: undefined,
+      showPushModal: false,
     };
 
-    _timerSound = new Audio.Sound();
+    constructor(props: TimerProps) {
+      super(props);
+      this._isDone = this._isDone.bind(this);
+      this.getRemainingLabel = this.getRemainingLabel.bind(this);
+      this.getRemainingTime = this.getRemainingTime.bind(this);
+      this._onFastForward = this._onFastForward.bind(this);
+    }
+
     _timer: NodeJS.Timeout | undefined;
     _willFocus: any;
     _fastForwardMillis = 0;
@@ -50,6 +66,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
         configProps.totalTimeMs -
         new Date().getTime() -
         5 * SECOND_MS;
+      this._scheduleNotification();
     }
 
     _getRemaining(): Date | null {
@@ -79,11 +96,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
           if (this.props.navigation.isFocused() && !this.state.done) {
             const remaining = this._getRemaining();
             this.setState({ remaining, done: remaining === null });
-            if (remaining === null) {
-              try {
-                this._timerSound.playAsync();
-              } catch (error) {}
-            } else {
+            if (remaining != null) {
               this._setTimer();
             }
           }
@@ -99,48 +112,125 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       return this.state.remaining!.toISOString().substr(14, 5);
     }
 
-    getRemainingTime(): Date | null {
-      // @ts-ignore
-      return this.state.remaining == null ? 0 : this.state.remaining!.getTime();
+    getRemainingTime(): number | null {
+      if (this.state.remaining == null) {
+        return 0;
+      } else {
+        // @ts-ignore
+        return this.state.remaining.getTime();
+      }
     }
 
-    async componentDidMount() {
-      this.setState({ remaining: this._getRemaining() });
-      this._setTimer();
+    _scheduleNotification(): void {
+      const remaining = this._getRemaining();
+      if (remaining != null) {
+        PushNotificationIOS.cancelAllLocalNotifications();
+        PushNotificationIOS.scheduleLocalNotification({
+          fireDate: new Date(Date.now() + remaining.getTime()),
+          alertBody:
+            configProps.startTimeConfig === "oneMinuteStartTime"
+              ? "Timer is complete! Come back to the app and remove your swab from the tube."
+              : "Timer is complete! Return to the app and remove your test strip from the tube.",
+          alertAction: "view",
+        });
+      }
+    }
+
+    _registrationEvent = (token: string) => {
+      const newPushState = { ...this.props.pushState, token };
+      this.props.dispatch(setPushNotificationState(newPushState));
+      this._scheduleNotification();
+    };
+
+    _registrationErrorEvent = (result: PushRegistrationError) => {
+      const newPushState = {
+        ...this.props.pushState,
+        registrationError: result,
+      };
+      this.props.dispatch(setPushNotificationState(newPushState));
+    };
+
+    componentDidMount() {
+      PushNotificationIOS.addEventListener("register", this._registrationEvent);
+      PushNotificationIOS.addEventListener(
+        "registrationError",
+        this._registrationErrorEvent
+      );
+
+      const remaining = this._getRemaining();
+      this.setState({ remaining, done: remaining === null });
       this._willFocus = this.props.navigation.addListener("willFocus", () =>
         this._setTimer()
       );
-      try {
-        await this._timerSound.loadAsync(
-          require("../../../assets/sounds/Popcorn.caf")
-        );
-        Audio.setAudioModeAsync({
-          playsInSilentModeIOS: false,
-          allowsRecordingIOS: false,
-          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
-          shouldDuckAndroid: true,
-          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
-          playThroughEarpieceAndroid: true,
-        });
-      } catch (error) {}
+      this._scheduleNotification();
+      if (this.props.navigation.isFocused() && remaining != null) {
+        this._setTimer();
+
+        if (!this.props.pushState.showedSystemPrompt) {
+          setTimeout(() => {
+            this.setState({ showPushModal: true });
+          }, 3000);
+        }
+      }
     }
 
     componentWillUnmount() {
+      PushNotificationIOS.removeEventListener(
+        "register",
+        this._registrationEvent
+      );
+
+      PushNotificationIOS.removeEventListener(
+        "registrationError",
+        this._registrationErrorEvent
+      );
+
       if (this._willFocus != null) {
         this._willFocus.remove();
         this._willFocus = null;
       }
     }
 
+    _onNo = () => {
+      const newPushState = {
+        ...this.props.pushState,
+        softResponse: false,
+      };
+      this.props.dispatch(setPushNotificationState(newPushState));
+      this.setState({ showPushModal: false });
+    };
+
+    _onYes = () => {
+      PushNotificationIOS.requestPermissions();
+      const newPushState = {
+        ...this.props.pushState,
+        softResponse: true,
+        showedSystemPrompt: true,
+      };
+      this.props.dispatch(setPushNotificationState(newPushState));
+      this.setState({ showPushModal: false });
+    };
+
+    _isDone = () => {
+      return this.state.done;
+    };
+
     render() {
       return (
-        <WrappedComponent
-          {...this.props}
-          done={() => this.state.done}
-          getRemainingLabel={() => this.getRemainingLabel()}
-          getRemainingTime={() => this.getRemainingTime()}
-          onFastForward={() => this._onFastForward()}
-        />
+        <View style={{ alignSelf: "stretch", flex: 1 }}>
+          <PushNotificationModal
+            visible={this.state.showPushModal}
+            onDismiss={this._onNo}
+            onSubmit={this._onYes}
+          />
+          <WrappedComponent
+            {...this.props}
+            done={this._isDone}
+            getRemainingLabel={this.getRemainingLabel}
+            getRemainingTime={this.getRemainingTime}
+            onFastForward={this._onFastForward}
+          />
+        </View>
       );
     }
   }
@@ -148,7 +238,9 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
   return connect((state: StoreState) => {
     return {
       startTimeMs: state.survey[configProps.startTimeConfig],
+      pushState: state.survey.pushState,
     };
   })(Timer);
 };
+
 export default timerWithConfigProps;

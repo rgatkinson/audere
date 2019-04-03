@@ -21,6 +21,7 @@
 		EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA054781220D289A00AC77FF /* libRCTPushNotification.a */; };
 		EA26704C2249AB460056A6C1 /* videos in Resources */ = {isa = PBXBuildFile; fileRef = EA26704B2249AB460056A6C1 /* videos */; };
 		EAB7924822499DD300760539 /* img in Resources */ = {isa = PBXBuildFile; fileRef = EAB7924722499DD300760539 /* img */; };
+		EAFF191B2254121D0027CBE8 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFF19132254121D0027CBE8 /* UserNotifications.framework */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
 		F08F62492230A8C8008CCF6A /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -104,6 +105,7 @@
 		EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		EA26704B2249AB460056A6C1 /* videos */ = {isa = PBXFileReference; lastKnownFileType = folder; name = videos; path = ../../../assets/videos; sourceTree = "<group>"; };
 		EAB7924722499DD300760539 /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../../src/img; sourceTree = "<group>"; };
+		EAFF19132254121D0027CBE8 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
 		F09B107C222880D0002970AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAFF191B2254121D0027CBE8 /* UserNotifications.framework in Frameworks */,
 				EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */,
 				EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */,
 				F08F62492230A8C8008CCF6A /* (null) in Frameworks */,
@@ -129,6 +132,7 @@
 		1A42804E64B7E9E0AB8B6799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EAFF19132254121D0027CBE8 /* UserNotifications.framework */,
 				C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */,
 			);
 			name = Frameworks;

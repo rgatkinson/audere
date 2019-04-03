@@ -90,19 +90,23 @@ export default function reducer(state = initialState, action: SurveyAction) {
     };
   }
   if (action.type === "SET_ONE_MINUTE_START_TIME") {
-    return {
-      ...state,
-      oneMinuteStartTime: new Date().getTime(),
-      timestamp: new Date().getTime(),
-    };
+    if (state.oneMinuteStartTime == null) {
+      return {
+        ...state,
+        oneMinuteStartTime: new Date().getTime(),
+        timestamp: new Date().getTime(),
+      };
+    }
   }
 
   if (action.type === "SET_TEN_MINUTE_START_TIME") {
-    return {
-      ...state,
-      tenMinuteStartTime: new Date().getTime(),
-      timestamp: new Date().getTime(),
-    };
+    if (state.tenMinuteStartTime == null) {
+      return {
+        ...state,
+        tenMinuteStartTime: new Date().getTime(),
+        timestamp: new Date().getTime(),
+      };
+    }
   }
   if (action.type === "SET_PUSH_STATE") {
     return {
