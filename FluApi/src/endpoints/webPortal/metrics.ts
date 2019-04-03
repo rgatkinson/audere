@@ -803,6 +803,7 @@ export async function getFeverMetrics(
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
 
+  //Get all non-demo mode data out of database for specified date range
   const sql = createSplitSql();
   const feverModels = defineFeverModels(sql);
   const rows = await feverModels.surveyPii.findAll({
@@ -817,6 +818,7 @@ export async function getFeverMetrics(
     raw: true
   });
 
+  //Aggregate data by U. S. State
   const validRows = rows.filter(row => row.survey.patient.address[0] != null);
   const getState = (row) => row.survey.patient.address[0].state;
   const counts = aggregate(
@@ -829,7 +831,7 @@ export async function getFeverMetrics(
     .sort((a, b) => b.count - a.count)
     .map(x => ({
       ...x,
-      percent: (x.count / validRows.length * 100).toFixed()
+      percent: (x.count / validRows.length * 100).toFixed(1)
     }));
 
   const surveyStatsQuery = `
@@ -913,19 +915,22 @@ export async function getFeverMetrics(
     client.querySync(surveyStatsQuery)
   );
 
-  const lastScreenQuery = `
-    SELECT survey->'events'->(json_array_length(survey->'events')-1)->>'refId' AS lastscreen, 
-           COUNT(*), 
-           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
-    FROM fever_current_surveys
-    WHERE ${dateClause} AND ${demoClause} 
-          AND json_array_length(survey->'events') > 0
-          AND NOT (survey->'events')::jsonb @> '[{"refId":"Thanks"}]'
-    GROUP BY lastscreen 
-    ORDER BY percent DESC;`;
-  const lastScreenData = filterLastScreenData(
-    client.querySync(lastScreenQuery)
+  //Aggregate data by last screen viewed
+  const rowsWithEvents = rows.filter(row => row.survey.events != null);
+  const getLastScreen = (row) => row.survey.events[row.survey.events.length - 1].refId;
+  const screenCounts = aggregate(
+    rowsWithEvents,
+    getLastScreen,
+    (row) => ({ lastscreen: getLastScreen(row), count: 0}),
+    (acc, row) => ({ ...acc, count: acc.count + 1})
   );
+
+  const lastScreenData = filterLastScreenData(screenCounts
+    .sort((a, b) => b.count - a.count)
+    .map(x => ({
+      ...x,
+      percent: (x.count / rowsWithEvents.length * 100).toFixed(1),
+    })));
 
   const studyIdQuery = `
     WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
