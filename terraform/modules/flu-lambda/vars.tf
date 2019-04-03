@@ -9,13 +9,18 @@ variable "environment" {
 }
 
 variable "lambda_subnet_id" {
-  description = "Subnet in which the Lambda should be deployed."
+  description = "Subnet in which the Lambda should be deployed"
   type = "string"
 }
 
-variable "lambda_sg_ids" {
-  description = "Security groups to apply to the Lambda function."
-  type = "list"
+variable "internal_elb_access_sg" {
+  description = "Security group to open internal ELB traffic"
+  type = "string"
+}
+
+variable "internet_egress_sg" {
+  description = "Security group to open internet egress"
+  type = "string"
 }
 
 variable "fluapi_fqdn" {

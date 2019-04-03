@@ -42,7 +42,11 @@ resource "aws_cloudwatch_metric_alarm" "execution_errors" {
   alarm_description = "This monitors ${var.name} execution failures"
 
   alarm_actions = [
-    "${var.notification_topic}",
+    "${var.notification_topic}"
+  ]
+
+  ok_actions = [
+    "${var.notification_topic}"
   ]
 
   dimensions {

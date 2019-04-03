@@ -7,6 +7,10 @@ output "transient_subnet_id" {
   value = "${aws_subnet.transient.id}"
 }
 
+output "internet_egress_sg" {
+  value = "${aws_security_group.internet_egress.arn}"
+}
+
 output "elbinternal_sg_client_id" {
   value = "${module.elbinternal_sg.client_id}"
 }

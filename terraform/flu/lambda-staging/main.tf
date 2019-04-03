@@ -27,9 +27,8 @@ module "flu_lambda" {
 
   fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_internal_fqdn}"
   lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
-  lambda_sg_ids = [
-    "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
-  ]
+  internal_elb_access_sg = "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
+  internet_egress_sg = "${data.terraform_remote_state.flu_api.internet_egress_sg}"
 }
 
 data "terraform_remote_state" "flu_api" {

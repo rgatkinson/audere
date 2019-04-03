@@ -1,0 +1,41 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+umask 077
+readonly SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function echorun() {
+  BRIGHT='\033[1m'
+  NORMAL='\033[0m'
+  echo -e "$ ${BRIGHT}${*}${NORMAL}" 1>&2
+  "$@"
+}
+
+function package_slack_lambda() {
+  curl -L https://github.com/assertible/lambda-cloudwatch-slack/archive/v0.3.0.zip --output v0.3.0.zip
+  local checksum="cce7a34e561c4d7f5598a69146cd0a0642cb43e9c664c7d081857d843c4cfef5"
+  if ! shasum -a 256 -c <<< "${checksum} *v0.3.0.zip"; then
+    echo "lambda-cloudwatch-slack checksum failed"
+    exit 1
+  fi
+  unzip v0.3.0.zip
+  cd lambda-cloudwatch-slack-0.3.0
+  npm install
+  cd ..
+  zip -r cloudwatch-slack.zip lambda-cloudwatch-slack-0.3.0
+}
+
+readonly DIR_="$SELF_DIR/../../../local/lambda"
+rm -rf "$DIR_"
+mkdir -p "$DIR_"
+readonly DIR="$(cd "$DIR_" && pwd)"
+
+(
+  cd $DIR
+  echorun package_slack_lambda
+  pwd
+  echorun ls -l
+)
