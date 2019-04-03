@@ -2,6 +2,7 @@
 
 declare module "react-native-video";
 declare module "react-native-fbsdk";
+declare module "react-native-branch";
 declare module "react-native-loading-spinner-overlay";
 declare module "redux-persist-transform-encrypt";
 declare module "redux-persist-transform-immutable";

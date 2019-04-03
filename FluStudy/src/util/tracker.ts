@@ -6,6 +6,7 @@
 import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
 import url from "url";
+import branch from "react-native-branch";
 
 export const tracker = firebase.analytics();
 
@@ -61,6 +62,7 @@ export const VideoEvents = {
 };
 
 export const AppHealthEvents = {
+  BRANCH_DATA_ERROR: "branch_data_error",
   KIT_ORDER_BLOCKED: "kit_order_blocked",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
@@ -110,6 +112,47 @@ const marketingUserProperties = [
 
 const parsedMarketingProperties = {};
 
+type BranchData = {
+  error: string | null;
+  uri?: string | null;
+  params: Object | null;
+};
+
+// Called by Branch.io's RN integration when it successfully loads deep link
+// information.
+function onBranchData(data: BranchData) {
+  const { error, params } = data;
+
+  if (error) {
+    tracker.logEvent(AppHealthEvents.BRANCH_DATA_ERROR, { error });
+    return;
+  }
+
+  // @ts-ignore
+  if (params && params["+is_first_session"]) {
+    storeMarketingAttributes(params);
+  }
+}
+
+function storeMarketingAttributes(params: Object) {
+  marketingUserProperties.forEach(property => {
+    if (params.hasOwnProperty(property)) {
+      // @ts-ignore
+      parsedMarketingProperties[property] = params[property];
+    }
+  });
+
+  // @ts-ignore
+  if (params["ref"]) {
+    // @ts-ignore
+    parsedMarketingProperties["install_referrer"] = params["ref"];
+  }
+
+  if (Object.keys(parsedMarketingProperties).length > 0) {
+    tracker.setUserProperties(parsedMarketingProperties);
+  }
+}
+
 async function recordMarketingAttributions() {
   const link = await firebase.links().getInitialLink();
   if (!link) {
@@ -121,21 +164,7 @@ async function recordMarketingAttributions() {
     return;
   }
 
-  marketingUserProperties.forEach(property => {
-    if (parsed.query[property]) {
-      // @ts-ignore
-      parsedMarketingProperties[property] = parsed.query[property];
-    }
-  });
-
-  if (parsed.query["ref"]) {
-    // @ts-ignore
-    parsedMarketingProperties["install_referrer"] = parsed.query["ref"];
-  }
-
-  if (Object.keys(parsedMarketingProperties).length > 0) {
-    tracker.setUserProperties(parsedMarketingProperties);
-  }
+  storeMarketingAttributes(parsed.query);
 }
 
 // We export this, instead of directly writing these properties into our store,
@@ -157,6 +186,8 @@ export async function startTracking(): Promise<void> {
   // app launch, when isDemo is false anyway, and we always update
   // the collection status whenever isDemo changes...
   updateCollectionEnabled(false);
+
+  branch.subscribe(onBranchData);
   await recordMarketingAttributions();
 }
 

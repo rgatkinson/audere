@@ -38,3 +38,9 @@ jest.mock("react-native-device-info", () => {
     getUniqueID: jest.fn(),
   };
 });
+
+jest.mock("react-native-branch", () => {
+  return {
+    subscribe: jest.fn(),
+  };
+});

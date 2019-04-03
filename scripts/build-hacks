@@ -25,9 +25,10 @@ FILEBAK="$NOTIF_FILE.bak"
 sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
 fi
 
-echo "Updating Firebase build search paths and copying RNFirebaseLinks.h"
+echo "Updating Firebase/Branch build search paths and copying headers"
 match='HEADER_SEARCH_PATHS = .+?;'
 replace='HEADER_SEARCH_PATHS = (\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/Branch\/**",\
 					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
 					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/**",\
 				);'
@@ -38,7 +39,9 @@ perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
 # manually.  [philipsu]
 cp "$REPO_ROOT_DIR/FluStudy/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
   "$REPO_ROOT_DIR/FluStudy/ios/Pods/Headers/Public/Firebase/"
-
+# Sadly, same deal with Branch.io...
+cp "$REPO_ROOT_DIR/FluStudy/node_modules/react-native-branch/ios/RNBranch.h" \
+  "$REPO_ROOT_DIR/FluStudy/ios/Pods/Headers/Public/Branch/"
 
 echo "Updating DeviceInfo build search paths"
 match='HEADER_SEARCH_PATHS = .+?;'

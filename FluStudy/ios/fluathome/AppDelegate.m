@@ -9,6 +9,7 @@
 #import "RNFirebaseLinks.h"
 #import "RCTPushNotificationManager.h"
 #import <UserNotifications/UserNotifications.h>
+#import "RNBranch.h"
 
 @interface AppDelegate ()
 
@@ -29,6 +30,9 @@
     
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
+
+    [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
+
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -59,8 +63,11 @@
 #pragma mark - Handling URLs
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
 {
-    BOOL handled = [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    BOOL handled = [RNBranch continueUserActivity:userActivity];
 
+    if (!handled) {
+        handled = [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    }
     if (!handled) {
         handled = [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
     }
@@ -77,6 +84,10 @@
                                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
                     ];
     
+    if (!handled) {
+        handled = [RNBranch.branch application:app openURL:url options:options];
+    }
+
     if (!handled) {
         handled = [[RNFirebaseLinks instance] application:app openURL:url options:options];
     }
