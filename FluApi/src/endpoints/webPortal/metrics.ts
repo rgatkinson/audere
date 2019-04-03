@@ -14,6 +14,10 @@ const conStringPII = process.env.PII_DATABASE_URL;
 client.connectSync(conString);
 clientPII.connectSync(conStringPII);
 
+import { Op } from "sequelize";
+import { createSplitSql } from "../../util/sql";
+import { defineFeverModels } from "../../models/db/fever";
+
 const STUDY_TIMEZONE = "America/Los_Angeles";
 const moment = require("moment-timezone");
 
@@ -786,10 +790,10 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
   return report;
 }
 
-export function getFeverMetrics(
+export async function getFeverMetrics(
   startDate: string,
   endDate: string
-): [object, object, object, object] {
+): Promise<[object, object, object, object]> {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -798,6 +802,35 @@ export function getFeverMetrics(
   const offset = getStudyTimezoneOffset();
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
+
+  const sql = createSplitSql();
+  const feverModels = defineFeverModels(sql);
+  const rows = await feverModels.surveyPii.findAll({
+    where: {
+      survey: {
+        isDemo: false
+      },
+      createdAt: {
+        [Op.between]: [new Date(startDate),new Date(endDate)]
+      }
+    },
+    raw: true
+  });
+
+  const validRows = rows.filter(row => row.survey.patient.address[0] != null);
+  const getState = (row) => row.survey.patient.address[0].state;
+  const counts = aggregate(
+    validRows,
+    getState,
+    (row) => ({ state: getState(row), count: 0 }),
+    (acc, row) => ({ ...acc, count: acc.count + 1 })
+  );
+  const statesData = counts
+    .sort((a, b) => b.count - a.count)
+    .map(x => ({
+      ...x,
+      percent: (x.count / validRows.length * 100).toFixed()
+    }));
 
   const surveyStatsQuery = `
       WITH agebuckets AS (
@@ -894,16 +927,6 @@ export function getFeverMetrics(
     client.querySync(lastScreenQuery)
   );
 
-  const statesQuery = `
-    SELECT survey->'patient'->'address'->0->>'state' as state, 
-           COUNT(*),
-           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
-    FROM fever_current_surveys
-    WHERE ${dateClause} AND ${demoClause} AND survey->'patient'->'address'->0->>'state' IS NOT NULL
-    GROUP BY state
-    ORDER BY percent DESC`;
-  const statesData = clientPII.querySync(statesQuery);
-
   const studyIdQuery = `
     WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
       (SELECT events->>'at' as kitordertime
@@ -965,6 +988,22 @@ export function getFeverMetrics(
   }));
 
   return [surveyStatsData, lastScreenData, statesData, studyIdData];
+}
+
+function aggregate<Row, Key, Value>(
+  items: Row[],
+  keyOf: (row: Row) => Key,
+  zero: (row: Row) => Value,
+  bind: (acc: Value, row: Row) => Value
+): Value[] {
+  const map = new Map<Key, Value>();
+  items.forEach(row => {
+    const key = keyOf(row);
+    const current = map.has(key) ? map.get(key) : zero(row);
+    const updated = bind(current, row);
+    map.set(key, updated);
+  });
+  return [...map.values()];
 }
 
 function funnelAgeData(ageData): object {
@@ -1089,8 +1128,8 @@ function filterLastScreenData(lastScreenData): object {
   return lastScreenFiltered;
 }
 
-export function getFeverExcelReport(startDate: string, endDate: string) {
-  const [surveyStatsData, lastScreenData, statesData, studyIdData] = getFeverMetrics(
+export async function getFeverExcelReport(startDate: string, endDate: string) {
+  const [surveyStatsData, lastScreenData, statesData, studyIdData] = await getFeverMetrics(
     startDate,
     endDate
   );

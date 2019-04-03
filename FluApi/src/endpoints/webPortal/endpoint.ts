@@ -176,7 +176,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
       });
     });
 
-    app.get("/feverMetrics", (req, res) => {
+    app.get("/feverMetrics", async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
       const [
@@ -184,7 +184,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         lastQuestionData,
         statesData,
         studyIdData
-      ] = getFeverMetrics(startDate, endDate);
+      ] = await getFeverMetrics(startDate, endDate);
       res.render("feverMetrics.ejs", {
         static: app.mountpath,
         surveyStatsData: surveyStatsData,
@@ -200,13 +200,13 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     app.get("/saveFeverMetrics", excelHandler("fluAtHome", getFeverExcelReport));
     app.get("/saveDataSummary", excelHandler("sfsData", getExcelDataSummary));
 
-    type DateRangeQuery = (start: string, end: string) => Buffer;
+    type DateRangeQuery = (start: string, end: string) => (Buffer|Promise<Buffer>);
 
     function excelHandler(prefix: string, query: DateRangeQuery): express.Handler {
-      return (req, res) => {
+      return async (req, res) => {
         const start = req.query.startDate || getLastMonday();
         const end = req.query.endDate || getThisSunday();
-        const data = query(start, end);
+        const data = await query(start, end);
 
         const range = start === end ? start : `${start}_${end}`;
         const filename = `${prefix}-${range}.xlsx`;
