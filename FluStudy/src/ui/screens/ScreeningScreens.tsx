@@ -715,6 +715,7 @@ class AddressInputScreen extends React.Component<
 
       tracker.logEvent(FunnelEvents.ADDRESS_COMPLETED);
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
+      this.setState({ triedToProceed: false, showValidationError: false });
       if (this.props.isDemo) {
         writeAddressAndNavigate(
           this.state.address,
