@@ -66,16 +66,20 @@ class HipaaConsentScreen extends React.Component<
   };
 
   _proceed = () => {
-    const ageBucket = this.props.getAnswer(
-      "selectedButtonKey",
-      AgeBucketConfig.id
-    );
-    if (ageBucket === AgeBuckets.Over18 && this.props.bloodCollection) {
-      this.props.navigation.push("Blood", { data: BloodConfig });
-    } else if (ageBucket === AgeBuckets.Child) {
-      this.props.navigation.push("Assent");
+    if (this.props.i18n.language == "es") {
+      this.props.navigation.push("ResearcherEnglishHipaa");
     } else {
-      this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+      const ageBucket = this.props.getAnswer(
+        "selectedButtonKey",
+        AgeBucketConfig.id
+      );
+      if (ageBucket === AgeBuckets.Over18 && this.props.bloodCollection) {
+        this.props.navigation.push("Blood", { data: BloodConfig });
+      } else if (ageBucket === AgeBuckets.Child) {
+        this.props.navigation.push("Assent");
+      } else {
+        this.props.navigation.push("Enrolled", { data: EnrolledConfig });
+      }
     }
   };
 
@@ -114,7 +118,10 @@ class HipaaConsentScreen extends React.Component<
       />
     );
 
-    if (this.props.locationType == "hospital") {
+    if (
+      this.props.locationType == "hospital" ||
+      this.props.i18n.language == "es"
+    ) {
       return participantSig;
     } else {
       return (
@@ -151,12 +158,14 @@ class HipaaConsentScreen extends React.Component<
   }
 
   render() {
-    const { t, locationType } = this.props;
+    const { i18n, t, locationType } = this.props;
     return (
       <ConsentChrome
         canProceed={
           !!this.props.hipaaConsent &&
-          (locationType == "hospital" || !!this.props.hipaaResearcherConsent)
+          (locationType == "hospital" ||
+            i18n.language == "es" ||
+            !!this.props.hipaaResearcherConsent)
         }
         progressNumber="70%"
         navigation={this.props.navigation}
