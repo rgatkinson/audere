@@ -32,6 +32,23 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+resource "aws_kms_key" "lambda_key" {
+  description = "Encryption key for ${local.base_name}"
+}
+
+resource "aws_iam_role_policy" "lambda_decrypt_policy" {
+  name = "${local.base_name}-decrypt-policy"
+  role = "${aws_iam_role.flu_lambda.id}"
+  policy = "${data.aws_iam_policy_document.lambda_decrypt_policy.json}"
+}
+
+data "aws_iam_policy_document" "lambda_decrypt_policy" {
+  statement {
+    actions = ["kms:Decrypt"]
+    resources = ["${aws_kms_key.lambda_key.arn}"]
+  }
+}
+
 resource "aws_sns_topic" "flu_lambda_notifications" {
   name = "${local.base_name}-notifications"
 }

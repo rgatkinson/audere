@@ -133,13 +133,13 @@ class ConnectedRootContainer extends React.Component<Props> {
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-      tracker.logEvent(AppEvents.APP_FOREGROUNDED);
+      tracker.logEvent(AppEvents.APP_FOREGROUNDED, {screen: this.state.activeRouteName});
       this.setState({ appState: nextAppState });
     } else if (
       this.state.appState === "active" &&
       nextAppState.match(/inactive|background/)
     ) {
-      tracker.logEvent(AppEvents.APP_BACKGROUNDED);
+      tracker.logEvent(AppEvents.APP_BACKGROUNDED, {screen: this.state.activeRouteName});
       this.setState({ appState: nextAppState });
     }
 
