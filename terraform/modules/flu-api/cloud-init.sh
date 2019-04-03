@@ -7,14 +7,17 @@ ${util_sh}
 
 function main() {
   install_updates
+
+  apt-get -y install unzip
+
+  install_cloudwatch_agent
   mount_creds
   adduser --gecos "Audere Api" --disabled-password api
   chown -R "api:api" /creds/{github,db}
 
-  apt-get -y install git jq postgresql-client-common python libpq-dev build-essential unzip
+  apt-get -y install git jq postgresql-client-common python libpq-dev build-essential
 
   add_developer_accounts
-  install_cloudwatch_agent
 
   [[ "${mode}" != service ]] || init_nginx
   configure_api
