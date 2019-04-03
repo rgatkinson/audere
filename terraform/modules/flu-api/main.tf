@@ -142,8 +142,19 @@ resource "aws_autoscaling_group" "flu_api" {
   }
 }
 
+resource "aws_s3_bucket" "elb_logs" {
+  bucket = "${local.base_name}-elb-logs"
+  force_destroy = true
+}
+
 resource "aws_elb" "flu_api_elb" {
   name = "${local.base_name}-public"
+
+  access_logs {
+    bucket = "${aws_s3_bucket.elb_logs.id}"
+    bucket_prefix = "public"
+  }
+
   subnets = ["${aws_subnet.api.id}"]
 
   security_groups = [
@@ -177,6 +188,12 @@ resource "aws_elb" "flu_api_elb" {
 
 resource "aws_elb" "flu_api_internal_elb" {
   name = "${local.base_name}-internal"
+
+  access_logs {
+    bucket = "${aws_s3_bucket.elb_logs.id}"
+    bucket_prefix = "internal"
+  }
+
   subnets = ["${aws_subnet.api.id}"]
   internal = true
 
