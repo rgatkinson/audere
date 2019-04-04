@@ -61,7 +61,7 @@ data "aws_ssm_parameter" "notifications_hook_url" {
 resource "aws_lambda_function" "flu_lambda_slack_notifications" {
   function_name = "${local.base_name}-slack-notifications"
   filename = "${local.slack_archive_path}"
-  handler = "handler"
+  handler = "index.handler"
   runtime = "nodejs8.10"
   source_code_hash = "${base64sha256(file("${local.slack_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
