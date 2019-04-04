@@ -68,7 +68,7 @@ resource "aws_lambda_function" "flu_lambda_slack_notifications" {
 
   environment {
     variables = {
-      ENCRYPTED_HOOK_URL = "${data.aws_ssm_parameter.notifications_hook_url.value}"
+      KMS_ENCRYPTED_HOOK_URL = "${data.aws_ssm_parameter.notifications_hook_url.value}"
     }
   }
 
