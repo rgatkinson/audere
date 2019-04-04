@@ -124,8 +124,8 @@ jobs:
           command: |
             cd learn/ReactNativeTS/FluTrack
             yarn list --json > ~/current_packages
-            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
-            git show $(git rev-parse origin/master):./package.json > package.json
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
             yarn list --json > ~/master_packages
             if cmp --silent ~/{current,master}_packages; then
               echo "No new packages have been added to yarn.lock."
@@ -138,8 +138,8 @@ jobs:
           command: |
             cd FluStudy
             yarn list --json > ~/current_packages
-            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
-            git show $(git rev-parse origin/master):./package.json > package.json
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
             yarn list --json > ~/master_packages
             if cmp --silent ~/{current,master}_packages; then
               echo "No new packages have been added to yarn.lock."
@@ -196,8 +196,8 @@ jobs:
           command: |
             cd FluApi
             yarn list --json > ~/current_packages
-            git show $(git rev-parse origin/master):./yarn.lock > yarn.lock
-            git show $(git rev-parse origin/master):./package.json > package.json
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
             yarn list --json > ~/master_packages
             if cmp --silent ~/{current,master}_packages; then
               echo "No new packages have been added to yarn.lock."
