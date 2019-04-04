@@ -62,7 +62,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
               flexGrow: 1,
               justifyContent: "space-between",
             }}
-            keyboardShouldPersistTaps="always"
+            keyboardShouldPersistTaps="handled"
           >
             <View style={styles.innerContainer}>
               {!!this.props.step && (
