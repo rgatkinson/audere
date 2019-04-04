@@ -7,8 +7,8 @@ output "elbinternal_sg_client_id" {
   value = "${module.flu_api.elbinternal_sg_client_id}"
 }
 
-output "internet_egress_sg" {
-  value = "${module.flu_api.internet_egress_sg}"
+output "internet_egress_sg_id" {
+  value = "${module.flu_api.internet_egress_sg_id}"
 }
 
 output "transient_subnet_id" {
