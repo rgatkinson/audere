@@ -55,7 +55,6 @@ resource "aws_sns_topic" "flu_lambda_notifications" {
 
 data "aws_ssm_parameter" "notifications_hook_url" {
   name = "${var.environment}-cw-infra-slack-hook-url"
-  with_decryption = false // Do not allow unencrypted value in TF state
 }
 
 resource "aws_lambda_function" "flu_lambda_slack_notifications" {
@@ -71,17 +70,20 @@ resource "aws_lambda_function" "flu_lambda_slack_notifications" {
       KMS_ENCRYPTED_HOOK_URL = "${data.aws_ssm_parameter.notifications_hook_url.value}"
     }
   }
-
-  vpc_config {
-    subnet_ids = ["${var.lambda_subnet_id}"]
-    security_group_ids = ["${var.internet_egress_sg}"]
-  }
 }
 
 resource "aws_sns_topic_subscription" "flu_lambda_notifications" {
   topic_arn = "${aws_sns_topic.flu_lambda_notifications.arn}"
   protocol = "lambda"
   endpoint = "${aws_lambda_function.flu_lambda_slack_notifications.arn}"
+}
+
+resource "aws_lambda_permission" "flu_lambda_sns_permission" {
+  statement_id = "AllowExecutionFromSNS"
+  action = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.flu_lambda_slack_notifications.arn}"
+  principal = "sns.amazonaws.com"
+  source_arn = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
 
 module "hutch_upload_cron" {
