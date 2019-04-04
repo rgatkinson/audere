@@ -116,7 +116,7 @@ resource "aws_route53_record" "api_record" {
 }
 
 resource "aws_autoscaling_group" "flu_api" {
-  name = "${aws_launch_configuration.flu_api_instance.name}"
+  name_prefix = "${local.base_name}-"
   availability_zones = "${local.availability_zones}"
   health_check_type = "ELB"
   launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
