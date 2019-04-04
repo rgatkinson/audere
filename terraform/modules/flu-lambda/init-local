@@ -24,6 +24,7 @@ function package_slack_lambda() {
   unzip v0.3.0.zip
   cd lambda-cloudwatch-slack-0.3.0
   npm install
+  chmod -R 644 *
   zip -r ../cloudwatch-slack.zip *
 }
 
