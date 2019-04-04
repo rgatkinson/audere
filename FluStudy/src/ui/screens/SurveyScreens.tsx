@@ -1005,6 +1005,7 @@ class FirstTimerScreen extends React.Component<
 export const FirstTimer = timerWithConfigProps({
   totalTimeMs: MINUTE_MS,
   startTimeConfig: "oneMinuteStartTime",
+  nextScreen: "RemoveSwabFromTube",
 })(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
 class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
@@ -1557,6 +1558,7 @@ class ThankYouSurveyScreen extends React.Component<
 export const ThankYouSurvey = timerWithConfigProps({
   totalTimeMs: TEST_STRIP_MS,
   startTimeConfig: "tenMinuteStartTime",
+  nextScreen: "TestStripReady",
 })(withNamespaces("thankYouSurveyScreen")(ThankYouSurveyScreen));
 
 class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {

@@ -12,6 +12,7 @@ export const tracker = firebase.analytics();
 let { Branch } = DangerZone;
 
 const demoModeEvent = "app_demo_mode_change";
+export const notificationEvent = "push_notification_event";
 
 // You should include { from: <screenname>, to: <screenname> } with these events
 export const NavEvents = {

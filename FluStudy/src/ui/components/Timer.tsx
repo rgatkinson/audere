@@ -7,12 +7,15 @@ import React from "react";
 import { PushNotificationIOS, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
+import { withNavigation } from "react-navigation";
+import i18n from "i18next";
 import { setPushNotificationState, Action, StoreState } from "../../store";
 import PushNotificationModal from "./PushNotificationModal";
 import {
   PushNotificationState,
   PushRegistrationError,
 } from "audere-lib/feverProtocol";
+import { tracker, notificationEvent } from "../../util/tracker";
 
 const SECOND_MS = 1000;
 
@@ -23,6 +26,7 @@ interface TimerState {
 }
 
 export interface ConfigProps {
+  nextScreen: string;
   startTimeConfig: string;
   totalTimeMs: number;
 }
@@ -37,6 +41,17 @@ export interface TimerProps {
   getRemainingTime(): number;
   onFastForward(): void;
 }
+
+PushNotificationIOS.getInitialNotification().then(notification => {
+  // Executed with non null notification when the app is launched (not from background) with
+  // the notification
+  if (notification != null) {
+    tracker.logEvent(notificationEvent, {
+      appLaunch: true,
+      message: notification.getMessage(),
+    });
+  }
+});
 
 const timerWithConfigProps = (configProps: ConfigProps) => (
   WrappedComponent: any
@@ -129,8 +144,8 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
           fireDate: new Date(Date.now() + remaining.getTime()),
           alertBody:
             configProps.startTimeConfig === "oneMinuteStartTime"
-              ? "Timer is complete! Come back to the app and remove your swab from the tube."
-              : "Timer is complete! Return to the app and remove your test strip from the tube.",
+              ? i18n.t("common:notifications:oneMinuteStartTime")
+              : i18n.t("common:notifications:tenMinuteStartTime"),
           alertAction: "view",
         });
       }
@@ -155,6 +170,18 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       PushNotificationIOS.addEventListener(
         "registrationError",
         this._registrationErrorEvent
+      );
+      PushNotificationIOS.addEventListener(
+        "localNotification",
+        notification => {
+          this.props.navigation.push(configProps.nextScreen);
+          tracker.logEvent(notificationEvent, {
+            appLaunch: false,
+            message: notification.getMessage(),
+            // @ts-ignore
+            appStatus: notification.getCategory(),
+          });
+        }
       );
 
       const remaining = this._getRemaining();
@@ -235,12 +262,14 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     }
   }
 
+  const timerWithNavigation = withNavigation(Timer);
+
   return connect((state: StoreState) => {
     return {
       startTimeMs: state.survey[configProps.startTimeConfig],
       pushState: state.survey.pushState,
     };
-  })(Timer);
+  })(timerWithNavigation);
 };
 
 export default timerWithConfigProps;

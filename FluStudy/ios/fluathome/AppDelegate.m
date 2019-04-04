@@ -28,12 +28,14 @@
     [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
     _rootViewController = [ExpoKit sharedInstance].rootViewController;
     
+    bool handled = [super application:application didFinishLaunchingWithOptions:launchOptions];
+    
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
-
+    
     [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
-
-    return [super application:application didFinishLaunchingWithOptions:launchOptions];
+    
+    return handled;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -118,23 +120,31 @@
     [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
 }
 
-// Required for the notification event. You must call the completion handler after handling the remote notification.
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-    [RCTPushNotificationManager didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler {
 
-// Required for the localNotification event.
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.fireDate = nil;
+    notification.timeZone = [NSTimeZone systemTimeZone];
+    notification.alertBody = response.notification.request.content.body;
+    notification.soundName = nil;
+    notification.applicationIconBadgeNumber = nil;
+    
+    if([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive ||
+       [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        notification.category = @"Background";
+    } else {
+        notification.category = @"Foreground";
+    }
+    
     [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
 
-//Called when a notification is delivered to a foreground app.
--(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-{
-    completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+- (void)userNotificationCenter:(UNUserNotificationCenter* )center
+       willPresentNotification:(UNNotification* )notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert);
 }
 
 @end

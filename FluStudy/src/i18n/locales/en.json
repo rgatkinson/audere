@@ -21,6 +21,10 @@
       "enterEmail": "Your email address",
       "emailEx": "e.g. joe@gmail.com"
     },
+    "notifications": {
+      "oneMinuteStartTime": "Timer is complete! Next you'll remove your swab from the tube.",
+      "tenMinuteStartTime": "Timer is complete! Next you'll remove your test strip from the tube."
+    },
     "validationErrors": {
       "email": "* Please provide a valid email address",
       "whereKit": "* Please select where you got the kit",
