@@ -59,7 +59,7 @@ data "aws_ssm_parameter" "notifications_hook_url" {
 }
 
 resource "aws_lambda_function" "flu_lambda_slack_notifications" {
-  function_name = "flu-lambda-slack-notifications"
+  function_name = "${local.base_name}-slack-notifications"
   filename = "${local.slack_archive_path}"
   handler = "handler"
   runtime = "nodejs8.10"
