@@ -110,7 +110,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             "lastName",
             true,
             styles.firstName,
-            true
+            this.props.autoFocus
           )}
           {this.renderTextInput(
             t("lastName"),
