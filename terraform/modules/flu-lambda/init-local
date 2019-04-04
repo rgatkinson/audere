@@ -24,8 +24,7 @@ function package_slack_lambda() {
   unzip v0.3.0.zip
   cd lambda-cloudwatch-slack-0.3.0
   npm install
-  cd ..
-  zip -r cloudwatch-slack.zip lambda-cloudwatch-slack-0.3.0
+  zip -r ../cloudwatch-slack.zip *
 }
 
 readonly DIR_="$SELF_DIR/../../../local/lambda"
