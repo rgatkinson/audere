@@ -147,6 +147,24 @@ resource "aws_s3_bucket" "elb_logs" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_policy" "elb_s3" {
+  bucket = "${aws_s3_bucket.elb_logs.id}"
+  policy = "${data.aws_iam_policy_document.allow_us_west_2_elb.json}"
+}
+
+data "aws_iam_policy_document" "allow_us_west_2_elb" {
+  statement {
+    sid       = "ELBWriteToS3"
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.elb_logs.arn}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["797873946194"]
+    }
+  }
+}
+
 resource "aws_elb" "flu_api_elb" {
   name = "${local.base_name}-public"
 
