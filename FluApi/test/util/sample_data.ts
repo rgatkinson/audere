@@ -14,7 +14,7 @@ import {
   EventInfoKind
 } from "audere-lib/snifflesProtocol";
 
-const DEVICE = {
+export const DEVICE = {
   installation: "uuid",
   clientVersion: "1.2.3-testing",
   deviceName: "My Phone",

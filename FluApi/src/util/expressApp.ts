@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import uuidv4 from "uuid/v4";
 import express, { Express } from "express";
 import { ErrorRequestHandler } from "express-serve-static-core";
 import Ouch from "ouch";
@@ -10,6 +11,7 @@ import helmet from "helmet";
 
 import { isAWS } from "./environment";
 import logger from "./logger";
+import { RequestContext } from "./requestContext";
 
 export function createApp(): Express {
   const app = express();
@@ -27,9 +29,9 @@ export function useOuch(app: Express): Express {
 function defaultErrorHandler(env: string): ErrorRequestHandler {
   return (err, req, res, next) => {
     if (err) {
-      logger.error("Uncaught exception:");
-      logger.error(err.message);
-      logger.error(err.stack);
+      logger.error(
+        `${requestId(req)} uncaught exception: '${err.message}'\n${err.stack}`
+      );
     }
 
     if (isAWS()) {
@@ -55,4 +57,12 @@ export function wrap(handler: any) {
 
 export interface ContextBuilder<T> {
   (req: any): T;
+}
+
+export function requestId(req: express.Request): string {
+  const casted: RequestContext = <any>req;
+  if (!casted.uuid) {
+    casted.uuid = uuidv4();
+  }
+  return casted.uuid;
 }

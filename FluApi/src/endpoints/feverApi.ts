@@ -22,6 +22,8 @@ import { defineFeverModels, FeverModels } from "../models/db/fever";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 import { SplitSql } from "../util/sql";
+import { requestId } from "../util/expressApp";
+import { ProtocolDocument } from "audere-lib/dist/feverProtocol";
 
 const clientLogger = createLogger({
   transports: [
@@ -45,7 +47,7 @@ export class FeverEndpoint {
   async putFeverDocument(req, res, next) {
     const query = { where: { key: req.params.key, valid: true } };
     if (!(await this.models.accessKey.findOne(query))) {
-      logger.warn(`Rejected document upload with key: ${req.params.key}`);
+      logger.warn(`${requestId(req)} rejected document upload with key: ${req.params.key}`);
       next();
       return;
     }
@@ -57,18 +59,28 @@ export class FeverEndpoint {
   }
 
   async putDocument(req, res) {
-    switch (req.body.documentType) {
+    const document = req.body as ProtocolDocument;
+    logger.info(
+      `${requestId(req)} put ${
+        guard(() => document.documentType)
+      } ${
+        guard(() => document.csruid)
+      } from ${
+        guard(() => document.device.installation)
+      } @fever`
+    );
+    switch (document.documentType) {
       case DocumentType.Survey:
-        await this.putSurvey(req.body as SurveyDocument);
+        await this.putSurvey(document as SurveyDocument);
         break;
       case DocumentType.Feedback:
-        await this.sendAndPutFeedback(req.body as FeedbackDocument);
+        await this.sendAndPutFeedback(document as FeedbackDocument);
         break;
       case DocumentType.Analytics:
-        await this.putAnalytics(req.body as AnalyticsDocument);
+        await this.putAnalytics(document as AnalyticsDocument);
         break;
       case DocumentType.Photo:
-        await this.putPhoto(req.body as PhotoDocument);
+        await this.putPhoto(document as PhotoDocument);
         break;
       default:
         throw new Error("Invalid document type");
@@ -173,4 +185,12 @@ function filterResponsePII(allowPII: boolean) {
   }
 
   return mapResponse;
+}
+
+function guard(get: () => string): string {
+  try {
+    return get();
+  } catch (err) {
+    return `guard caught ${err.message}`;
+  }
 }

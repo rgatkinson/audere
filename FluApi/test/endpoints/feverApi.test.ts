@@ -1,4 +1,4 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2018, 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
@@ -17,17 +17,20 @@ import {
   SURVEY_NONPII,
   surveyPost,
   surveyNonPIIInDb,
-  makeCSRUID
+  makeCSRUID, DEVICE
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/db/fever";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
+import logger from "../../src/util/logger";
+import { WinstonBuffer } from "../util/winstonBuffer";
 
 describe("putFeverDocument", () => {
   let sql;
   let publicApp;
   let models;
   let accessKey;
+  let logBuffer;
 
   beforeAll(async done => {
     sql = createSplitSql();
@@ -44,6 +47,17 @@ describe("putFeverDocument", () => {
   afterAll(async done => {
     await accessKey.destroy();
     await sql.close();
+    done();
+  });
+
+  beforeEach(done => {
+    logBuffer = new WinstonBuffer();
+    logger.add(logBuffer);
+    done();
+  });
+
+  afterEach(done => {
+    logger.remove(logBuffer);
     done();
   });
 
@@ -156,6 +170,53 @@ describe("putFeverDocument", () => {
     const dbNonPII = await models.surveyNonPii.findOne(where);
     expect(dbNonPII.survey).toEqual(surveyNonPIIInDb(csruid).survey);
     await dbNonPII.destroy();
+  });
+
+  it("logs http interactions", async () => {
+    const csruid = makeCSRUID("logs http interactions");
+    const contentsPost = surveyPost(csruid);
+
+    await request(publicApp)
+      .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
+      .send(contentsPost)
+      .expect(200);
+
+    const logs = logBuffer.consume();
+    const lines = logs
+      .map(x => x.message)
+      .filter(x => x.indexOf("@fever") >= 0)
+      .filter(x => x.indexOf(csruid) >= 0);
+    expect(lines).toHaveLength(1);
+    const line: string = lines[0];
+    expect(line.indexOf(DocumentType.Survey)).toBeGreaterThan(0);
+    expect(line.indexOf(DEVICE.installation)).toBeGreaterThan(0);
+
+    const where = { where: { csruid } };
+    await Promise.all([
+      models.surveyNonPii.destroy(where),
+      models.surveyPii.destroy(where),
+    ])
+  });
+
+  it("logs invalid http interactions", async () => {
+    const csruid = makeCSRUID("logs invalid http interactions");
+    const contentsPost = surveyPost(csruid);
+    delete contentsPost.device;
+
+    await request(publicApp)
+      .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
+      .send(contentsPost)
+      .expect(500);
+
+    const logs = logBuffer.consume();
+    const lines = logs
+      .map(x => x.message)
+      .filter(x => x.indexOf("@fever") >= 0)
+      .filter(x => x.indexOf(csruid) >= 0);
+    expect(lines).toHaveLength(1);
+    const line: string = lines[0];
+    expect(line.indexOf(DocumentType.Survey)).toBeGreaterThan(0);
+    expect(line.indexOf("guard caught")).toBeGreaterThan(0);
   });
 });
 

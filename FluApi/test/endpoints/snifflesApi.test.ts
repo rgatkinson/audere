@@ -11,6 +11,7 @@ import {
 } from "audere-lib/snifflesProtocol";
 import { createPublicApp } from "../../src/app";
 import {
+  DEVICE,
   PATIENT_INFO,
   VISIT_INFO,
   VISIT_NONPII,
@@ -23,12 +24,16 @@ import {
 import { createSplitSql } from "../../src/util/sql";
 import { defineSnifflesModels } from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
+import { WinstonBuffer } from "../util/winstonBuffer";
+import logger from "../../src/util/logger";
 
 describe("putDocument", () => {
   let sql;
   let publicApp;
   let models;
   let accessKey;
+  let logBuffer;
+
   beforeAll(async done => {
     sql = createSplitSql();
     const sessionStore = createTestSessionStore(sql);
@@ -45,6 +50,17 @@ describe("putDocument", () => {
   afterAll(async done => {
     await accessKey.destroy();
     await sql.close();
+    done();
+  });
+
+  beforeEach(done => {
+    logBuffer = new WinstonBuffer();
+    logger.add(logBuffer);
+    done();
+  });
+
+  afterEach(done => {
+    logger.remove(logBuffer);
     done();
   });
 
@@ -151,6 +167,53 @@ describe("putDocument", () => {
     });
     expect(newNonPIIVisit.visit).toEqual(contentsNonPII.visit);
     await newNonPIIVisit.destroy();
+  });
+
+  it("logs http interactions", async () => {
+    const csruid = makeCSRUID("logs http interactions");
+    const contentsPost = documentContentsPost(csruid);
+
+    await request(publicApp)
+      .put(`/api/documents/${accessKey.key}/${csruid}`)
+      .send(contentsPost)
+      .expect(200);
+
+    const logs = logBuffer.consume();
+    const lines = logs
+      .map(x => x.message)
+      .filter(x => x.indexOf("@sniffles") >= 0)
+      .filter(x => x.indexOf(csruid) >= 0);
+    expect(lines).toHaveLength(1);
+    const line: string = lines[0];
+    expect(line.indexOf(DocumentType.Visit)).toBeGreaterThan(0);
+    expect(line.indexOf(DEVICE.installation)).toBeGreaterThan(0);
+
+    const where = { where: { csruid } };
+    await Promise.all([
+      models.visitNonPii.destroy(where),
+      models.visitPii.destroy(where),
+    ])
+  });
+
+  it("logs invalid http interactions", async () => {
+    const csruid = makeCSRUID("logs invalid http interactions");
+    const contentsPost = documentContentsPost(csruid);
+    delete contentsPost.device;
+
+    await request(publicApp)
+      .put(`/api/documents/${accessKey.key}/${csruid}`)
+      .send(contentsPost)
+      .expect(500);
+
+    const logs = logBuffer.consume();
+    const lines = logs
+      .map(x => x.message)
+      .filter(x => x.indexOf("@sniffles") >= 0)
+      .filter(x => x.indexOf(csruid) >= 0);
+    expect(lines).toHaveLength(1);
+    const line: string = lines[0];
+    expect(line.indexOf(DocumentType.Visit)).toBeGreaterThan(0);
+    expect(line.indexOf("guard caught")).toBeGreaterThan(0);
   });
 });
 

@@ -16,13 +16,15 @@ import {
   NonPIIConsentInfo,
   ResponseInfo,
   ResponseItemInfo,
-  LogBatchDocument
+  LogBatchDocument,
+  ProtocolDocument
 } from "audere-lib/snifflesProtocol";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 import { SnifflesModels, defineSnifflesModels } from "../models/db/sniffles";
 import { SplitSql } from "../util/sql";
 import { filterResponsePII } from "../services/sniffles/piiFilter";
+import { requestId } from "../util/expressApp";
 
 const clientLogger = createLogger({
   transports: [
@@ -46,7 +48,7 @@ export class SnifflesEndpoint {
     });
 
     if (!matchingKey) {
-      logger.warn(`Rejected document upload with key: ${req.params.key}`);
+      logger.warn(`${requestId(req)} rejected document upload with key: ${req.params.key}`);
       next();
       return;
     }
@@ -58,10 +60,20 @@ export class SnifflesEndpoint {
   }
 
   async putDocument(req, res) {
-    switch (req.body.documentType) {
-      case DocumentType.Visit:
+    const document = req.body as ProtocolDocument;
+    logger.info(
+      `${requestId(req)} put ${
+        guard(() => document.documentType)
+        } ${
+        guard(() => document.csruid)
+        } from ${
+        guard(() => document.device.installation)
+        } @sniffles`
+    );
+    switch (document.documentType) {
+      case DocumentType.Visit: {
         const csruid = req.params.documentId;
-        const visitDocument = req.body as VisitDocument;
+        const visitDocument = document as VisitDocument;
         const responses = visitDocument.visit.responses;
         const visitCommon: VisitCommonInfo = {
           isDemo: !!visitDocument.visit.isDemo,
@@ -97,9 +109,10 @@ export class SnifflesEndpoint {
           })
         ]);
         break;
+      }
 
-      case DocumentType.Feedback:
-        const feedbackDocument = req.body as FeedbackDocument;
+      case DocumentType.Feedback: {
+        const feedbackDocument = document as FeedbackDocument;
         await sendEmail({
           subject: `[In-App Feedback] ${feedbackDocument.feedback.subject}`,
           text:
@@ -116,24 +129,25 @@ export class SnifflesEndpoint {
           device: feedbackDocument.device
         });
         break;
+      }
 
       case DocumentType.Log: {
-        const document = req.body as LogDocument;
-        const log = document.log;
+        const logDocument = document as LogDocument;
+        const log = logDocument.log;
         clientLogger.info(JSON.stringify(log));
         await this.models.clientLog.create({
           log: log.logentry,
           level: log.level,
-          device: document.device
+          device: logDocument.device
         });
         break;
       }
 
       case DocumentType.LogBatch: {
-        const doc = req.body as LogBatchDocument;
-        const csruid = doc.csruid;
-        const device = doc.device;
-        const batch = doc.batch;
+        const logBatchDocument = document as LogBatchDocument;
+        const csruid = logBatchDocument.csruid;
+        const device = logBatchDocument.device;
+        const batch = logBatchDocument.batch;
         await this.models.clientLogBatch.upsert({ csruid, device, batch });
         break;
       }
@@ -156,4 +170,12 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
     date: consent.date,
     ...(consent.relation == null ? {} : { relation: consent.relation })
   };
+}
+
+function guard(get: () => string): string {
+  try {
+    return get();
+  } catch (err) {
+    return `guard caught ${err.message}`;
+  }
 }

@@ -32,9 +32,7 @@ const logger = createLogger({
   ]
 });
 
-if (!isAWS()) {
-  logger.debug("Logging initialized at debug level");
-} else {
+if (isAWS()) {
   const env = process.env.NODE_ENV.toLowerCase();
 
   // AWS resources such as the log group name use prod instead of production.

@@ -15,19 +15,13 @@ import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReport";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
-import { useOuch, createApp, wrap } from "./util/expressApp";
+import { useOuch, createApp, wrap, requestId } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
 import logger from "./util/logger";
 
 const buildInfo = require("../static/buildInfo.json");
-
-const MORGAN_FORMAT =
-  ":req[X-Forwarded-For](:remote-addr) :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
-const MORGAN_STREAM = {
-  write: (message) => logger.info(message),
-};
 
 export interface AppConfig extends PortalConfig {
   sql: SplitSql;
@@ -54,7 +48,7 @@ export async function createPublicApp(config: AppConfig) {
 
   publicApp.set("port", process.env.PORT || 3000);
   publicApp.use(bodyParser.json({ limit: "20mb" }));
-  publicApp.use(morgan(MORGAN_FORMAT, { stream: MORGAN_STREAM }));
+  publicApp.use(morganMiddleware());
 
   publicApp.use("/portal", stats("portal"), await portalApp(config));
 
@@ -132,7 +126,7 @@ export function createInternalApp(config: AppConfig) {
 
   internalApp.set("port", process.env.INTERNAL_PORT || 3200);
   internalApp.use(bodyParser.json());
-  internalApp.use(morgan(MORGAN_FORMAT, { stream: MORGAN_STREAM }));
+  internalApp.use(morganMiddleware());
 
   internalApp.get(
     "/api",
@@ -200,4 +194,19 @@ export function createInternalApp(config: AppConfig) {
   );
 
   return useOuch(internalApp);
+}
+
+const MORGAN_FORMAT =
+  ":request-id :req[X-Forwarded-For](:remote-addr) :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
+
+const MORGAN_STREAM = {
+  write: (message) => logger.info(message),
+};
+
+morgan.token("request-id", (req: any, res) => requestId(req));
+
+function morganMiddleware() {
+  return morgan(MORGAN_FORMAT, {
+    stream: MORGAN_STREAM
+  });
 }

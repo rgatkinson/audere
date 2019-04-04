@@ -1,4 +1,4 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2018, 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
@@ -8,8 +8,9 @@ import logger from "../../util/logger";
 import { HutchUploadModel } from "../../models/db/hutchUpload";
 import { PIIVisitDetails } from "../../models/visitDetails";
 import { SnifflesModels, VisitNonPIIInstance, VisitPIIInstance } from "../../models/db/sniffles";
-import { ResponseInfo, ResponseItemInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/dist/snifflesProtocol";
+import { ResponseInfo } from "audere-lib/dist/snifflesProtocol";
 import { filterResponsePII } from "./piiFilter";
+import { RequestContext } from "../../util/requestContext";
 
 /**
  * Consolidates the view of a visit across PII & non-PII storage.
