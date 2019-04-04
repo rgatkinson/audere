@@ -125,6 +125,7 @@ function init_nginx() {
 }
 
 function echo_cloudwatch_agent_config() {
+  local environment="${environment}"
   cat <<EOF
 ${cloudwatch_config_json}
 EOF
