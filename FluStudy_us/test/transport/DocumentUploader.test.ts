@@ -42,7 +42,7 @@ const FAKE_SURVEY_CONTENTS: SurveyInfo = {
   workflow: {},
 };
 
-const FAKE_CSRUID = "abc123";
+const FAKE_CSRUID = "45beb2c6-5754-11e9-b1c7-3f550bc9a013";
 
 const FAKE_POUCH_DOC: PouchDoc = {
   _id: `documents/1/${FAKE_CSRUID}`,

@@ -242,11 +242,15 @@ export class DocumentUploader {
     this.timer.start();
 
     if (pouch.body) {
-      pouch.body.csruid = await this.getCSRUID(pouch._id);
       const body = pouch.body;
+
+      // Previously we used to get the csruid from the server, and we used this value to
+      // to mark records that did not yet have a server csruid.  If we find any of these
+      // left over, extract the local uid from the Pouch key and use that as csruid.
       if (body.csruid === CSRUID_PLACEHOLDER) {
-        throw new Error("Expected body.csruid to be initialized by this point");
+        body.csruid = pouch._id.substring(pouch._id.lastIndexOf("/") + 1);
       }
+
       const url = `/documents/${this.documentUploadKey}/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
@@ -282,41 +286,14 @@ export class DocumentUploader {
       );
       return results.reduce((map, result) => {
         if (result != null) {
-          map.set(result._id.substring(CSRUID_PREFIX.length), result.csruid);
+          const uid = result._id.substring(CSRUID_PREFIX.length);
+          map.set(uid, uid);
         }
         return map;
       }, new Map<string, string>());
     } catch (e) {
       return new Map<string, string>();
     }
-  }
-
-  private async getCSRUID(localUid: string) {
-    this.logger.debug(`getCSRUID(${localUid})`);
-    const pouchId = "csruid/" + localUid;
-    try {
-      const pouchResult = await this.db.get(pouchId);
-      this.logger.debug(`getCSRUID(${localUid}) read ${pouchResult.csruid}`);
-      return pouchResult.csruid;
-    } catch {}
-    this.logger.debug(`getCSRUID(${localUid}) getting documentId`);
-    const apiResult = await this.check200(() => this.api.get(`/documentId`));
-    if (apiResult === null) {
-      this.logger.debug(`getCSRUID(${localUid}) got null`);
-      throw new Error("Unable to retrieve CSRUID");
-    }
-    const csruid = apiResult.data.id.trim();
-    this.logger.debug(`getCSRUID(${localUid}) saving ${csruid}`);
-    await loadRandomBytes(this.api, 44, this.logger);
-    await this.db.put({
-      _id: pouchId,
-      csruid,
-    });
-
-    //TODO(ram): clean up old csruids
-
-    this.logger.debug(`getCSRUID(${localUid}) returning ${csruid}`);
-    return csruid;
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
@@ -378,11 +355,8 @@ export class DocumentUploader {
       const docs = items.rows.filter((row: any) =>
         row.id.startsWith("documents/")
       ).length;
-      const csruids = items.rows.filter((row: any) =>
-        row.id.startsWith("csruid/documents/")
-      ).length;
       this.logger.debug(
-        `Pouch contents: ${total} entries, of which ${docs} docs and ${csruids} csruids`
+        `Pouch contents: ${total} entries, of which ${docs} docs`
       );
       if (IS_NODE_ENV_DEVELOPMENT) {
         console.log(items.rows.map((row: any) => `\n  ${row.id}`));
@@ -433,7 +407,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
       return {
         documentType: save.documentType,
         schemaId: 1,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.localUid,
         device: DEVICE_INFO,
         visit: asVisitInfo(save.document),
       };
@@ -442,7 +416,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
       return {
         documentType: save.documentType,
         schemaId: 1,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.localUid,
         device: DEVICE_INFO,
         visit: asVisitInfo(save.document),
       };
@@ -452,7 +426,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.localUid,
         feedback: asFeedbackInfo(save.document),
       };
 
@@ -461,7 +435,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.localUid,
         log: asLogInfo(save.document),
       };
 
@@ -470,7 +444,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: CSRUID_PLACEHOLDER,
+        csruid: save.localUid,
         batch: asLogBatchInfo(save.document),
       };
   }

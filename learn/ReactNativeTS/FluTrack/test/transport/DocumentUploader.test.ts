@@ -18,10 +18,7 @@ import {
   when,
 } from "ts-mockito";
 import { DocumentType, VisitInfo } from "audere-lib/snifflesProtocol";
-import {
-  DocumentUploader,
-  CSRUID_PLACEHOLDER,
-} from "../../src/transport/DocumentUploader";
+import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
@@ -45,14 +42,14 @@ const FAKE_VISIT_CONTENTS: VisitInfo = {
   events: [],
 };
 
-const FAKE_CSRUID = "abc123";
+const FAKE_CSRUID = "25d80a84-5754-11e9-b8fa-8332d0a52643";
 
 const FAKE_POUCH_DOC: PouchDoc = {
   _id: "documents/random_id",
   body: {
     documentType: DocumentType.Visit,
     schemaId: 1,
-    csruid: CSRUID_PLACEHOLDER,
+    csruid: FAKE_CSRUID,
     device: DEVICE_INFO,
     visit: JSON.parse(JSON.stringify(FAKE_VISIT_CONTENTS)),
   },
