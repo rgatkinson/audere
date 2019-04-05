@@ -11,6 +11,7 @@ import Sequelize, {
   FLOAT as SQL_FLOAT,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
+  JSONB as SQL_JSONB,
   STRING as SQL_STRING
 } from "sequelize";
 import "../util/config";
@@ -90,6 +91,9 @@ export function booleanColumn(field?: string) {
 }
 export function jsonColumn<T>(field?: string) {
   return column(SQL_JSON, field);
+}
+export function jsonbColumn<T>(field?: string) {
+  return column(SQL_JSONB, field);
 }
 export function integerColumn(field?: string) {
   return column(SQL_INTEGER, field);

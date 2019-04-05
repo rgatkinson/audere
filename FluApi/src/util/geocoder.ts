@@ -9,12 +9,16 @@ import { getGeocodingConfig } from "./geocodingConfig";
 import { isAWS } from "./environment";
 import { SecretConfig } from "./secretsConfig";
 import { SmartyStreetsGeocoder } from "../external/smartyStreetsGeocoder";
+import { defineSmartyStreetsResponse } from "../models/db/smartyStreetsResponses";
+import { SplitSql } from "./sql";
 import Sequelize from "sequelize";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 
 export async function createGeocoder(
   secrets: SecretConfig,
-  bypassBaseUrl?: boolean
+  sql: SplitSql,
+  bypassBaseUrl?: boolean,
+  smartyStreetsGeocoder?: SmartyStreetsGeocoder
 ): Promise<GeocodingService> {
   const geoConfig = await getGeocodingConfig(secrets);
 
@@ -46,8 +50,9 @@ export async function createGeocoder(
   });
 
   const geocoder: GeocodingService = new GeocodingService(
-    new SmartyStreetsGeocoder(geoClient),
-    new CensusTractService(postgis)
+    smartyStreetsGeocoder || new SmartyStreetsGeocoder(geoClient),
+    new CensusTractService(postgis),
+    defineSmartyStreetsResponse(sql)
   );
 
   return geocoder;

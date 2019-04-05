@@ -40,6 +40,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
           response.statusCode +
           "."
       );
+      logger.error(JSON.stringify(response, null, 2));
       const e = new Error(
         "SmartyStreets geocoding request failed with " +
           " status code: " +

@@ -8,7 +8,7 @@ import { FollowUpDataAccess } from "../services/fever/followUpData";
 import { Incentives } from "../services/fever/incentiveRecipients";
 import { IncentiveRecipientsDataAccess } from "../services/fever/incentiveRecipientsData";
 import { KitOrders } from "../services/fever/kitOrders";
-import { KitRecipientsDataAccess} from "../services/fever/kitOrdersData";
+import { KitRecipientsDataAccess } from "../services/fever/kitOrdersData";
 import { ReceivedKits } from "../services/fever/receivedKits";
 import { ReceivedKitsData } from "../services/fever/receivedKitsData";
 import { S3Retriever } from "../external/s3Retriever";
@@ -104,7 +104,7 @@ async function createKits(sql: SplitSql): Promise<KitOrders> {
     fever.kitItem,
     fever.kitDiscard);
   const secrets = new SecretConfig(sql);
-  const geocoder = await createGeocoder(secrets);
+  const geocoder = await createGeocoder(secrets, sql);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, s3Config);
