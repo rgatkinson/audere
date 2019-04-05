@@ -9,6 +9,7 @@ import {
   WorkflowInfo,
 } from "audere-lib/feverProtocol";
 import { SurveyResponse } from "./types";
+import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
@@ -213,6 +214,7 @@ export function setWorkflow(workflow: WorkflowInfo): SurveyAction {
 }
 
 export function setCSRUIDIfUnset(csruid: string): SurveyAction {
+  onCSRUIDEstablished(csruid);
   return {
     type: "SET_CSRUID_IF_UNSET",
     csruid,

@@ -74,6 +74,7 @@ export const AppHealthEvents = {
 export const AppEvents = {
   APP_FOREGROUNDED: "app_foregrounded",
   APP_BACKGROUNDED: "app_backgrounded",
+  CSRUID_ESTABLISHED: "csruid_established",
 };
 
 // By default, we don't log demo mode and non-production builds.  If you're
@@ -205,4 +206,8 @@ export function updateCollectionEnabled(isDemo: boolean) {
   }
   tracker.logEvent(demoModeEvent, { isDemo });
   tracker.setAnalyticsCollectionEnabled(should);
+}
+
+export function onCSRUIDEstablished(csruid: string) {
+  tracker.logEvent(AppEvents.CSRUID_ESTABLISHED, { csruid });
 }

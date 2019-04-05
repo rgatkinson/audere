@@ -17,7 +17,13 @@ import {
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
 import { crashlytics } from "../crashReporter";
-import { tracker, NavEvents, DrawerEvents, AppEvents } from "../util/tracker";
+import {
+  tracker,
+  onCSRUIDEstablished,
+  NavEvents,
+  DrawerEvents,
+  AppEvents,
+} from "../util/tracker";
 import { connect } from "react-redux";
 import {
   DrawerActions,
@@ -101,6 +107,9 @@ class ConnectedRootContainer extends React.Component<Props> {
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
     this.props.dispatch(setMarketingProperties(getMarketingProperties()));
+    if (this.props.csruid) {
+      onCSRUIDEstablished(this.props.csruid);
+    }
   }
 
   componentWillUnmount() {
