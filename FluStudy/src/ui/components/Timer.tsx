@@ -160,6 +160,8 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       this._scheduleNotification();
     };
 
+    _localNotificationEvent = () => {};
+
     _registrationErrorEvent = (result: PushRegistrationError) => {
       const newPushState = {
         ...this.props.pushState,
@@ -181,7 +183,10 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
             return;
           }
           handledNotification = true;
-
+          PushNotificationIOS.removeEventListener(
+            "localNotification",
+            this._localNotificationEvent
+          );
           this.props.navigation.push(configProps.nextScreen);
           tracker.logEvent(notificationEvent, {
             appLaunch: false,
