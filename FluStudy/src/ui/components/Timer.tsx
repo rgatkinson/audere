@@ -53,6 +53,8 @@ PushNotificationIOS.getInitialNotification().then(notification => {
   }
 });
 
+let handledNotification = false;
+
 const timerWithConfigProps = (configProps: ConfigProps) => (
   WrappedComponent: any
 ) => {
@@ -139,6 +141,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     _scheduleNotification(): void {
       const remaining = this._getRemaining();
       if (remaining != null) {
+        handledNotification = false;
         PushNotificationIOS.cancelAllLocalNotifications();
         PushNotificationIOS.scheduleLocalNotification({
           fireDate: new Date(Date.now() + remaining.getTime()),
@@ -174,6 +177,11 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       PushNotificationIOS.addEventListener(
         "localNotification",
         notification => {
+          if (handledNotification) {
+            return;
+          }
+          handledNotification = true;
+
           this.props.navigation.push(configProps.nextScreen);
           tracker.logEvent(notificationEvent, {
             appLaunch: false,
