@@ -40,6 +40,7 @@ export interface TimerProps {
   getRemainingLabel(): string;
   getRemainingTime(): number;
   onFastForward(): void;
+  removeEventListener(): void;
 }
 
 PushNotificationIOS.getInitialNotification().then(notification => {
@@ -52,8 +53,6 @@ PushNotificationIOS.getInitialNotification().then(notification => {
     });
   }
 });
-
-let handledNotification = false;
 
 const timerWithConfigProps = (configProps: ConfigProps) => (
   WrappedComponent: any
@@ -71,6 +70,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       this.getRemainingLabel = this.getRemainingLabel.bind(this);
       this.getRemainingTime = this.getRemainingTime.bind(this);
       this._onFastForward = this._onFastForward.bind(this);
+      this._removeEventListener = this._removeEventListener.bind(this);
     }
 
     _timer: NodeJS.Timeout | undefined;
@@ -141,7 +141,6 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     _scheduleNotification(): void {
       const remaining = this._getRemaining();
       if (remaining != null) {
-        handledNotification = false;
         PushNotificationIOS.cancelAllLocalNotifications();
         PushNotificationIOS.scheduleLocalNotification({
           fireDate: new Date(Date.now() + remaining.getTime()),
@@ -179,10 +178,6 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       PushNotificationIOS.addEventListener(
         "localNotification",
         notification => {
-          if (handledNotification) {
-            return;
-          }
-          handledNotification = true;
           PushNotificationIOS.removeEventListener(
             "localNotification",
             this._localNotificationEvent
@@ -255,6 +250,13 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       return this.state.done;
     };
 
+    _removeEventListener = () => {
+      PushNotificationIOS.removeEventListener(
+        "localNotification",
+        this._localNotificationEvent
+      );
+    };
+
     render() {
       return (
         <View style={{ alignSelf: "stretch", flex: 1 }}>
@@ -269,6 +271,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
             getRemainingLabel={this.getRemainingLabel}
             getRemainingTime={this.getRemainingTime}
             onFastForward={this._onFastForward}
+            removeEventListener={this._removeEventListener}
           />
         </View>
       );
