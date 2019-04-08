@@ -64,7 +64,7 @@ import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
-import { isValidAddress, isValidEmail } from "../../util/check";
+import { isPOBox, isValidAddress, isValidEmail } from "../../util/check";
 import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents, AppHealthEvents } from "../../util/tracker";
@@ -746,6 +746,16 @@ class AddressInputScreen extends React.Component<
         this.state.address!.state === "AK"
       ) {
         this.props.navigation.push("StateIneligible");
+        return;
+      }
+
+      if (isPOBox(address)) {
+        this.setState({ showValidationError: false });
+        this.props.navigation.push("Ineligible", {
+          description: "descriptionPOBox",
+          funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
+          hideBack: false,
+        });
         return;
       }
 

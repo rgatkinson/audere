@@ -261,7 +261,8 @@
   "ineligibleScreen": {
     "ineligible": "Thanks for your interest",
     "descriptionAge": "We're sorry, but this study is aimed at adults 18 years and older. ",
-    "descriptionAddress": "We're sorry, but we could not verify your address."
+    "descriptionAddress": "We're sorry, but we could not verify your address.",
+    "descriptionPOBox": "We're sorry, but due to the time sensitivity of the test we do not shop to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
   },
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",

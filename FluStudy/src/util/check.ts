@@ -44,3 +44,9 @@ export function isValidEmail(email: string | undefined): boolean {
   const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
   return !!email && validationPattern.test(email!);
 }
+
+export function isPOBox(address: string | undefined): boolean {
+  // https://stackoverflow.com/questions/5680050/po-box-regular-expression-validation
+  const validationPattern = /^ *((#\d+)|((box|bin)[-. \/\\]?\d+)|(.*p[ \.]? ?(o|0)[-. \/\\]? *-?((box|bin)|b|(#|num)?\d+))|(p(ost)? *(o(ff(ice)?)?)? *((box|bin)|b)? *\d+)|(p *-?\/?(o)? *-?box)|post office box|((box|bin)|b) *(number|num|#)? *\d+|(num|number|#) *\d+)/i;
+  return !!address && validationPattern.test(address);
+}
