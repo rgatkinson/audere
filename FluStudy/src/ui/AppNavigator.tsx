@@ -76,18 +76,8 @@ import {
   EmailOptIn,
   Thanks,
 } from "./screens/SurveyScreens";
-import {
-  Menu,
-  About,
-  Funding,
-  Partners,
-  GeneralQuestions,
-  Problems,
-  TestQuestions,
-  GiftcardQuestions,
-  ContactSupport,
-  Version,
-} from "./screens/MenuScreens";
+import { Menu, generateMenuScreen } from "./screens/MenuScreens";
+import { menuScreens } from "../resources/MenuConfig";
 
 const Home = createStackNavigator(
   {
@@ -212,21 +202,15 @@ Home.router.getStateForAction = withNavigationPreventDuplicate(
   Home.router.getStateForAction
 );
 
-export default createDrawerNavigator(
-  {
-    Home,
-    About,
-    Funding,
-    Partners,
-    GeneralQuestions,
-    Problems,
-    TestQuestions,
-    GiftcardQuestions,
-    ContactSupport,
-    Version,
-  },
-  {
-    contentComponent: Menu,
-    drawerPosition: "right",
-  }
+const routeConfig = menuScreens.reduce(
+  (routeConfig, menuConfig) => ({
+    ...routeConfig,
+    [menuConfig.key]: { screen: generateMenuScreen(menuConfig) },
+  }),
+  { Home }
 );
+
+export default createDrawerNavigator(routeConfig, {
+  contentComponent: Menu,
+  drawerPosition: "right",
+});

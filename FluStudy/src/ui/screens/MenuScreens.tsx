@@ -5,13 +5,11 @@
 
 import React from "react";
 import {
-  Clipboard,
   Platform,
   ScrollView,
   StyleSheet,
   Text as SystemText,
   TouchableOpacity,
-  View,
 } from "react-native";
 import {
   DrawerItems,
@@ -19,14 +17,14 @@ import {
   SafeAreaView,
 } from "react-navigation";
 import { Feather } from "@expo/vector-icons";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Divider from "./../components/Divider";
 import Screen from "./../components/Screen";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Constants } from "expo";
-import { getApiBaseUrl } from "../../transport";
+import i18n from "i18next";
 import { GUTTER, PRIMARY_COLOR, SYSTEM_FONT, SYSTEM_TEXT } from "./../styles";
-import { ios, DEVICE_INFO } from "../../transport/DeviceInfo";
-import Text from "../components/Text";
+import BuildInfo from "../components/BuildInfo";
+import { menuScreens, MenuConfig } from "../../resources/MenuConfig";
 
 export const Menu = (props: any) => {
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
@@ -68,9 +66,6 @@ const styles = StyleSheet.create({
     marginTop: GUTTER / 2,
     marginRight: GUTTER,
   },
-  footer: {
-    marginBottom: GUTTER,
-  },
   header: {
     fontFamily: SYSTEM_FONT,
     fontSize: SYSTEM_TEXT,
@@ -86,294 +81,38 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-const buildInfo = require("../../../buildInfo.json");
-
-class AboutScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "About the Study",
+export const generateMenuScreen = (config: MenuConfig) => {
+  class MenuScreen extends React.Component<Props & WithNamespaces> {
+    static navigationOptions = () => {
+      return {
+        title: i18n.t(config.key + ":title"),
+      };
     };
-  };
 
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
+    render() {
+      const { t } = this.props;
+      return (
+        <Screen
+          canProceed={true}
+          desc={t("description", {
+            device: t("common:device:" + DEVICE_INFO.idiomText),
+          })}
+          menuItem={true}
+          navigation={this.props.navigation}
+          skipButton={true}
+          stableImageSrc={{
+            uri:
+              Platform.OS === "ios"
+                ? "img/reverseLogo"
+                : "asset:/img/reverse_logo.png",
+          }}
+          title={t("title")}
+        >
+          {!!config.showBuildInfo && <BuildInfo />}
+        </Screen>
+      );
+    }
   }
-}
-export const About = withNamespaces("aboutScreen")(AboutScreen);
 
-class FundingScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "Study Funding",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const Funding = withNamespaces("fundingScreen")(FundingScreen);
-
-class PartnersScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const Partners = withNamespaces("partnersScreen")(PartnersScreen);
-
-class GeneralQuestionsScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "General Questions",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const GeneralQuestions = withNamespaces("generalQuestionsScreen")(
-  GeneralQuestionsScreen
-);
-
-class ProblemsScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "Problems With the App",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description", {
-          device: t("common:device:" + DEVICE_INFO.idiomText),
-        })}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const Problems = withNamespaces("problemsScreen")(ProblemsScreen);
-
-class TestQuestionsScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "Test Questions",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const TestQuestions = withNamespaces("testQuestionsScreen")(
-  TestQuestionsScreen
-);
-
-class GiftcardQuestionsScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "Gift Card Questions",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const GiftcardQuestions = withNamespaces("giftcardQuestionsScreen")(
-  GiftcardQuestionsScreen
-);
-
-class ContactSupportScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "Contact Support",
-    };
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const ContactSupport = withNamespaces("contactSupportScreen")(
-  ContactSupportScreen
-);
-
-class VersionScreen extends React.Component<Props & WithNamespaces> {
-  static navigationOptions = () => {
-    return {
-      title: "App Version",
-    };
-  };
-
-  copyToClipboard = async (text: string) => {
-    await Clipboard.setString(text);
-  };
-
-  render() {
-    const { t } = this.props;
-    const aboutContent: string =
-      t("version") +
-      buildInfo.version +
-      t("build") +
-      (ios ? buildInfo.iosBuild : "") +
-      t("commit") +
-      buildInfo.hash +
-      t("date") +
-      buildInfo.buildDate +
-      t("device") +
-      Platform.OS +
-      " " +
-      Platform.Version +
-      t("installation") +
-      Constants.installationId +
-      t("apiServer") +
-      getApiBaseUrl();
-
-    return (
-      <Screen
-        buttonLabel={t("copy")}
-        canProceed={true}
-        desc={aboutContent}
-        footer={<Text content={t("copyright")} style={styles.footer} />}
-        menuItem={true}
-        navigation={this.props.navigation}
-        skipButton={false}
-        stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/reverseLogo"
-              : "asset:/img/reverse_logo.png",
-        }}
-        title={t("title")}
-        onNext={() => this.copyToClipboard(aboutContent)}
-      />
-    );
-  }
-}
-export const Version = withNamespaces("versionScreen")(VersionScreen);
+  return withNamespaces(config.key)(MenuScreen);
+};
