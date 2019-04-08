@@ -120,34 +120,6 @@ jobs:
             yarn typecheck
             yarn test
       - run:
-          name: Snyk App Scan
-          command: |
-            cd learn/ReactNativeTS/FluTrack
-            yarn list --json > ~/current_packages
-            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
-            git show $(git merge-base HEAD origin/master):./package.json > package.json
-            yarn list --json > ~/master_packages
-            if cmp --silent ~/{current,master}_packages; then
-              echo "No new packages have been added to yarn.lock."
-            else
-              sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high
-            fi
-      - run:
-          name: Snyk flu@home Scan
-          command: |
-            cd FluStudy
-            yarn list --json > ~/current_packages
-            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
-            git show $(git merge-base HEAD origin/master):./package.json > package.json
-            yarn list --json > ~/master_packages
-            if cmp --silent ~/{current,master}_packages; then
-              echo "No new packages have been added to yarn.lock."
-            else
-              sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high
-            fi
-      - run:
           name: Server Yarn Install
           command: |
             cd FluApi
@@ -192,20 +164,6 @@ jobs:
             yarn test
             yarn test-integration
       - run:
-          name: Snyk Server Scan
-          command: |
-            cd FluApi
-            yarn list --json > ~/current_packages
-            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
-            git show $(git merge-base HEAD origin/master):./package.json > package.json
-            yarn list --json > ~/master_packages
-            if cmp --silent ~/{current,master}_packages; then
-              echo "No new packages have been added to yarn.lock."
-            else
-              sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high
-            fi
-      - run:
           name: FluLambda Yarn Install
           command: |
             cd FluLambda
@@ -239,6 +197,112 @@ jobs:
           paths:
             - learn/ReactNativeTS/FluTrack
             - lib
+
+  snyk_scan:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Update yarn
+          command: "sudo npm install -g yarn@latest"
+      - restore_cache:
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+      - restore_cache:
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+      - restore_cache:
+          key: server-node-cache-{{ checksum "FluApi/package.json" }}
+      - run:
+          name: FluTrack Yarn Install
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Snyk FluTrack Scan
+          command: |
+            cd learn/ReactNativeTS/FluTrack
+            yarn list --json > ~/current_packages
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - run:
+          name: flu@home Yarn Install
+          command: |
+            cd FluStudy
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Run setup scripts
+          command: |
+            scripts/generate-build-info
+            scripts/build-hacks
+      - run:
+          name: Snyk flu@home Scan
+          command: |
+            cd FluStudy
+            yarn list --json > ~/current_packages
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - run:
+          name: Server Yarn Install
+          command: |
+            cd FluApi
+            yarn install --frozen-lockfile
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Snyk Server Scan
+          command: |
+            cd FluApi
+            yarn list --json > ~/current_packages
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - save_cache:
+          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          paths:
+            - learn/ReactNativeTS/FluTrack/node_modules
+      - save_cache:
+          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
+      - save_cache:
+          key: server-node-cache-{{ checksum "FluApi/package.json" }}
+          paths:
+            - FluApi/node_modules
 
   publish_sniffles: &publish_sniffles
     <<: *defaults
@@ -408,3 +472,13 @@ workflows:
           requires:
             - build
           filters: *filter_sniffles_tag_prod
+  weekly:
+    triggers:
+      - schedule:
+          cron: "10 12 * * 4" # Every Thurs 4:10am PST / 5:10am PDT
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - snyk_scan
