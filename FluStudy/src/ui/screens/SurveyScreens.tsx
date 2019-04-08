@@ -947,7 +947,7 @@ class FirstTimerScreen extends React.Component<
   };
 
   _onNext = () => {
-    this.props.removeEventListener();
+    this.props.onNext();
     this.props.navigation.push("RemoveSwabFromTube");
   };
 
@@ -1492,10 +1492,8 @@ class ThankYouSurveyScreen extends React.Component<
     tracker.logEvent(FunnelEvents.COMPLETED_SURVEY);
   }
 
-  _localNotificationEvent = () => {};
-
   _onNext = () => {
-    this.props.removeEventListener();
+    this.props.onNext();
     this.props.navigation.push("TestStripReady");
   };
 

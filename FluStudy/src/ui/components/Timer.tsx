@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { PushNotificationIOS, View } from "react-native";
+import { PushNotification, PushNotificationIOS, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { withNavigation } from "react-navigation";
@@ -40,7 +40,7 @@ export interface TimerProps {
   getRemainingLabel(): string;
   getRemainingTime(): number;
   onFastForward(): void;
-  removeEventListener(): void;
+  onNext(): void;
 }
 
 PushNotificationIOS.getInitialNotification().then(notification => {
@@ -70,9 +70,12 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       this.getRemainingLabel = this.getRemainingLabel.bind(this);
       this.getRemainingTime = this.getRemainingTime.bind(this);
       this._onFastForward = this._onFastForward.bind(this);
-      this._removeEventListener = this._removeEventListener.bind(this);
+      this._removeNotificationListeners = this._removeNotificationListeners.bind(
+        this
+      );
     }
 
+    _userInfo = { id: configProps.startTimeConfig };
     _timer: NodeJS.Timeout | undefined;
     _willFocus: any;
     _fastForwardMillis = 0;
@@ -141,14 +144,14 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     _scheduleNotification(): void {
       const remaining = this._getRemaining();
       if (remaining != null) {
-        PushNotificationIOS.cancelAllLocalNotifications();
+        PushNotificationIOS.cancelLocalNotifications(this._userInfo);
         PushNotificationIOS.scheduleLocalNotification({
           fireDate: new Date(Date.now() + remaining.getTime()),
-          alertBody:
-            configProps.startTimeConfig === "oneMinuteStartTime"
-              ? i18n.t("common:notifications:oneMinuteStartTime")
-              : i18n.t("common:notifications:tenMinuteStartTime"),
+          alertBody: i18n.t(
+            "common:notifications:" + configProps.startTimeConfig
+          ),
           alertAction: "view",
+          userInfo: this._userInfo,
         });
       }
     }
@@ -159,8 +162,6 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       this._scheduleNotification();
     };
 
-    _localNotificationEvent = () => {};
-
     _registrationErrorEvent = (result: PushRegistrationError) => {
       const newPushState = {
         ...this.props.pushState,
@@ -170,34 +171,40 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
     };
 
     componentDidMount() {
+      PushNotificationIOS.removeEventListener(
+        "register",
+        this._registrationEvent
+      );
       PushNotificationIOS.addEventListener("register", this._registrationEvent);
-      PushNotificationIOS.addEventListener(
+      PushNotificationIOS.removeEventListener(
         "registrationError",
         this._registrationErrorEvent
       );
       PushNotificationIOS.addEventListener(
-        "localNotification",
-        notification => {
-          PushNotificationIOS.removeEventListener(
-            "localNotification",
-            this._localNotificationEvent
-          );
-          this.props.navigation.push(configProps.nextScreen);
-          tracker.logEvent(notificationEvent, {
-            appLaunch: false,
-            message: notification.getMessage(),
-            // @ts-ignore
-            appStatus: notification.getCategory(),
-          });
-        }
+        "registrationError",
+        this._registrationErrorEvent
+      );
+
+      this._willFocus = this.props.navigation.addListener("willFocus", () =>
+        this._setTimer()
       );
 
       const remaining = this._getRemaining();
       this.setState({ remaining, done: remaining === null });
-      this._willFocus = this.props.navigation.addListener("willFocus", () =>
-        this._setTimer()
-      );
+
+      if (remaining != null) {
+        PushNotificationIOS.removeEventListener(
+          "localNotification",
+          this._handleNotification
+        );
+        PushNotificationIOS.addEventListener(
+          "localNotification",
+          this._handleNotification
+        );
+      }
+
       this._scheduleNotification();
+
       if (this.props.navigation.isFocused() && remaining != null) {
         this._setTimer();
 
@@ -209,17 +216,38 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       }
     }
 
-    componentWillUnmount() {
+    _handleNotification = (notification: PushNotification) => {
+      if (
+        JSON.stringify(notification.getData()) ===
+        JSON.stringify(this._userInfo)
+      ) {
+        this.props.navigation.push(configProps.nextScreen);
+        tracker.logEvent(notificationEvent, {
+          appLaunch: false,
+          message: notification.getMessage(),
+          // @ts-ignore
+          appStatus: notification.getCategory(),
+        });
+        this._removeNotificationListeners();
+      }
+    };
+
+    _removeNotificationListeners = () => {
+      PushNotificationIOS.removeEventListener(
+        "localNotification",
+        this._handleNotification
+      );
       PushNotificationIOS.removeEventListener(
         "register",
         this._registrationEvent
       );
-
       PushNotificationIOS.removeEventListener(
         "registrationError",
         this._registrationErrorEvent
       );
+    };
 
+    componentWillUnmount() {
       if (this._willFocus != null) {
         this._willFocus.remove();
         this._willFocus = null;
@@ -250,13 +278,6 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
       return this.state.done;
     };
 
-    _removeEventListener = () => {
-      PushNotificationIOS.removeEventListener(
-        "localNotification",
-        this._localNotificationEvent
-      );
-    };
-
     render() {
       return (
         <View style={{ alignSelf: "stretch", flex: 1 }}>
@@ -271,7 +292,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
             getRemainingLabel={this.getRemainingLabel}
             getRemainingTime={this.getRemainingTime}
             onFastForward={this._onFastForward}
-            removeEventListener={this._removeEventListener}
+            onNext={this._removeNotificationListeners}
           />
         </View>
       );

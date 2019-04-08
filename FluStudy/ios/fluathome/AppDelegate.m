@@ -130,6 +130,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     notification.alertBody = response.notification.request.content.body;
     notification.soundName = nil;
     notification.applicationIconBadgeNumber = nil;
+    notification.userInfo = response.notification.request.content.userInfo;
     
     if([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive ||
        [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
