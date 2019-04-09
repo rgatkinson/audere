@@ -13,14 +13,17 @@ import {
 } from "../../src/models/db/smartyStreetsResponses";
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { createGeocoder } from "../../src/util/geocoder";
-import { GeocodingService } from "../../src/services/geocodingService";
+import {
+  GeocodingService,
+  canonicalizeAddressInfo
+} from "../../src/services/geocodingService";
 import { SecretConfig } from "../../src/util/secretsConfig";
 import exampleResponse from "../resources/geocodingObjectResponse.json";
 
 describe("geocoder cache", () => {
   const address1 = {
     use: AddressInfoUse.Home,
-    line: ["42 FAKE ADDRESS LN"],
+    line: ["42 Fake Address Ln."],
     city: "CITYVILLE",
     state: "CA",
     postalCode: "99999",
@@ -59,7 +62,7 @@ describe("geocoder cache", () => {
     try {
       const result = await smartyStreetsResponses.destroy({
         where: {
-          inputAddress: [address1Key, address2Key]
+          inputAddress: [address1Key, address2Key].map(canonicalizeAddressInfo)
         }
       });
     } catch (e) {
@@ -85,7 +88,7 @@ describe("geocoder cache", () => {
         smartyStreetsResponses.find({
           where: {
             inputAddress: {
-              [Op.eq]: key
+              [Op.eq]: canonicalizeAddressInfo(key)
             }
           }
         })

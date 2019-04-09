@@ -100,7 +100,10 @@ export class GeocodingService {
       const uncachedAddresses = [];
       addressInfos.forEach(addressInfo => {
         const cachedResponse = cachedResponses.find(response => {
-          return addressInfosEqual(response.inputAddress, addressInfo);
+          return addressInfosEqual(
+            response.inputAddress,
+            canonicalizeAddressInfo(addressInfo)
+          );
         });
         if (cachedResponse) {
           if (cachedResponse.responseAddresses.length > 0) {
@@ -217,7 +220,7 @@ export function cleanAddressString(str: string): string {
   return str.toUpperCase().replace(/[,.]/g, "");
 }
 
-function canonicalizeAddressInfo(address: AddressInfo): AddressInfo {
+export function canonicalizeAddressInfo(address: AddressInfo): AddressInfo {
   address = { ...address };
   delete address.use;
   for (let part in address) {

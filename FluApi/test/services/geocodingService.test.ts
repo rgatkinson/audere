@@ -10,7 +10,8 @@ import { SmartyStreetsResponseModel } from "../../src/models/db/smartyStreetsRes
 import {
   Geocoder,
   GeocodingService,
-  cleanAddressString
+  cleanAddressString,
+  canonicalizeAddressInfo
 } from "../../src/services/geocodingService";
 import { CensusTractService } from "../../src/services/censusTractService";
 
@@ -179,7 +180,7 @@ describe("geocoding service", () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded];
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
-          inputAddress: workAddress,
+          inputAddress: canonicalizeAddressInfo(workAddress),
           responseAddresses: [workCoded.address]
         }
       ]);
@@ -212,7 +213,7 @@ describe("geocoding service", () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded];
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
-          inputAddress: workAddress,
+          inputAddress: canonicalizeAddressInfo(workAddress),
           responseAddresses: [workCoded.address]
         }
       ]);
