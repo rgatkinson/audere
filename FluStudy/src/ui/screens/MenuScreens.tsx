@@ -46,10 +46,14 @@ export const Menu = (props: any) => {
         >
           <Feather color={PRIMARY_COLOR} name="x" size={30} />
         </TouchableOpacity>
-        <SystemText style={styles.header}>ABOUT FLU@HOME</SystemText>
+        <SystemText style={styles.header}>
+          {i18n.t("menu:aboutFluAtHome")}
+        </SystemText>
         <Divider style={styles.divider} />
         <DrawerItems {...aboutItems} />
-        <SystemText style={styles.header}>HELP & SUPPORT</SystemText>
+        <SystemText style={styles.header}>
+          {i18n.t("menu:helpAndSupport")}
+        </SystemText>
         <Divider style={styles.divider} />
         <DrawerItems {...helpItems} />
       </SafeAreaView>

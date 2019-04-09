@@ -81,6 +81,10 @@
   "optionList": {
     "pleaseSpecify": "Please specify:"
   },
+  "menu": {
+    "aboutFluAtHome": "ABOUT FLU@HOME",
+    "helpAndSupport": "HELP & SUPPORT"
+  },
   "About": {
     "title": "About the Study",
     "description": "The goal of this study is to determine if you can test yourself for influenza (the 'flu') at home. The first test involves taking a swab from inside your nose, swishing that swab in a tube of liquid, putting a test strip in the tube for 10 minutes, and then removing it and telling us what you see on the test strip. The second test is just taking a swab from inside your nose and putting that swab in a tube of liquid. As one of the first people to try these tests, you'll play an important role in helping us find ways to better manage and understand the flu in the future.\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the flu@home app."
