@@ -23,7 +23,7 @@ import exampleResponse from "../resources/geocodingObjectResponse.json";
 describe("geocoder cache", () => {
   const address1 = {
     use: AddressInfoUse.Home,
-    line: ["42 Fake Address Ln."],
+    line: ["42 Fake Address Ln.", null],
     city: "CITYVILLE",
     state: "CA",
     postalCode: "99999",
@@ -31,19 +31,23 @@ describe("geocoder cache", () => {
   };
   const address2 = {
     use: AddressInfoUse.Work,
-    line: ["99 THIS IS NOT A PLACE"],
+    line: ["99 THIS IS NOT A PLACE", "Apt. 42"],
     city: "TOWNOPOLIS",
     state: "WA",
     postalCode: "00000",
     country: "US"
   };
-  const address1Key = { ...address1 };
-  delete address1Key.use;
-  const address2Key = { ...address2 };
-  delete address2Key.use;
+  const address3 = {
+    use: AddressInfoUse.Temp,
+    line: ["123 Some Street", ""],
+    city: "Village",
+    state: "MT",
+    postalCode: "12345",
+    country: "US"
+  };
 
   const addressInfo: Map<number, AddressInfo[]> = new Map([
-    [1, [address1, address2]]
+    [1, [address1, address2, address3]]
   ]);
 
   let smartyStreetsResponses: SmartyStreetsResponseModel;
@@ -62,7 +66,9 @@ describe("geocoder cache", () => {
     try {
       const result = await smartyStreetsResponses.destroy({
         where: {
-          inputAddress: [address1Key, address2Key].map(canonicalizeAddressInfo)
+          inputAddress: [address1, address2, address3].map(
+            canonicalizeAddressInfo
+          )
         }
       });
     } catch (e) {
@@ -83,8 +89,8 @@ describe("geocoder cache", () => {
     geocoder = await createGeocoder(secrets, sql, false, smartyStreets);
     await geocoder.geocodeAddresses(addressInfo);
 
-    const [cachedResult1, cachedResult2] = await Promise.all(
-      [address1Key, address2Key].map(key =>
+    const [cachedResult1, cachedResult2, cachedResult3] = await Promise.all(
+      [address1, address2, address3].map(key =>
         smartyStreetsResponses.find({
           where: {
             inputAddress: {
@@ -97,6 +103,7 @@ describe("geocoder cache", () => {
 
     expect(cachedResult1).not.toBeNull();
     expect(cachedResult2).not.toBeNull();
+    expect(cachedResult3).not.toBeNull();
     expect(smartyStreetsCalls).toEqual(1);
   });
 

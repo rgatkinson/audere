@@ -217,6 +217,9 @@ function addressInfosEqual(addr1: AddressInfo, addr2: AddressInfo): boolean {
 }
 
 export function cleanAddressString(str: string): string {
+  if (!str || !str.toUpperCase) {
+    return str;
+  }
   return str.toUpperCase().replace(/[,.]/g, "");
 }
 
