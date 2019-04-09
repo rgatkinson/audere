@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Camera, Permissions } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
+import DeviceInfo from "react-native-device-info";
 import { SampleInfo, WorkflowInfo } from "audere-lib/feverProtocol";
 import {
   Action,
@@ -1815,7 +1816,11 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
   }
 
   state = {
-    spinner: false,
+    spinner: !DeviceInfo.isEmulator(),
+  };
+
+  _cameraReady = () => {
+    this.setState({ spinner: false });
   };
 
   async _takePicture() {
@@ -1853,7 +1858,11 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
       <Chrome navigation={this.props.navigation}>
         <View style={{ flex: 1, marginBottom: -1 * SYSTEM_PADDING_BOTTOM }}>
           <Spinner visible={this.state.spinner} />
-          <Camera ref={this.camera} style={cameraStyles.camera} />
+          <Camera
+            ref={this.camera}
+            style={cameraStyles.camera}
+            onCameraReady={this._cameraReady}
+          />
           <View style={cameraStyles.overlayContainer}>
             <Text
               center={true}
