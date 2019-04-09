@@ -13,8 +13,7 @@ locals {
   base_name = "flu-${var.environment}-api"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
-  util_sh = "${file("${path.module}/../assets/util.sh")}"
-  cloudwatch_config_json = "${file("${path.module}/../assets/cloudwatch-agent-config.json")}"
+  assets_sha256 = "${chomp(file("${path.module}/../../../local/terraform-assets/sha256sum.txt"))}"
 
   availability_zones = ["us-west-2a"]
 
@@ -36,6 +35,7 @@ data "aws_acm_certificate" "auderenow_io" {
 data "template_file" "sequelize_migrate_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
+    assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
     domain = "${local.full_domain}"
     environment = "${var.environment}"
@@ -44,14 +44,13 @@ data "template_file" "sequelize_migrate_sh" {
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
-    util_sh = "${local.util_sh}"
-    cloudwatch_config_json = "${local.cloudwatch_config_json}"
   }
 }
 
 data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
+    assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
     domain = "${local.full_domain}"
     environment = "${var.environment}"
@@ -60,8 +59,6 @@ data "template_file" "service_init_sh" {
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
     subdomain = "${local.subdomain}"
-    util_sh = "${local.util_sh}"
-    cloudwatch_config_json = "${local.cloudwatch_config_json}"
   }
 }
 

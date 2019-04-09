@@ -46,6 +46,7 @@ API_MODULE_DIR="$(cd "$SELF_DIR/../terraform/modules/flu-api" && pwd)"
 LOCAL_DIR="$(cd "$SELF_DIR/../local" && pwd)"
 API_INIT_TAR="$LOCAL_DIR/flu-api-staging-init.tar.bz2.base64"
 
+# TODO: move to assets
 if [[ \
   "$API_MODULE_DIR/init/api-init" -nt "$API_INIT_TAR" || \
   "$API_MODULE_DIR/init/bash_profile" -nt "$API_INIT_TAR"
@@ -56,6 +57,8 @@ if [[ \
   echo "Updated $API_INIT_TAR"
   echo "=================================================="
 fi
+
+"$SELF_DIR/../terraform/modules/assets/push.sh"
 
 set -x
 

@@ -84,10 +84,10 @@
       "statsd":{}
     },
     "append_dimensions": {
-      "ImageId": "\${aws:ImageId}",
-      "InstanceId": "\${aws:InstanceId}",
-      "InstanceType": "\${aws:InstanceType}",
-      "AutoScalingGroupName": "\${aws:AutoScalingGroupName}"
+      "ImageId": "${aws:ImageId}",
+      "InstanceId": "${aws:InstanceId}",
+      "InstanceType": "${aws:InstanceType}",
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
     },
     "aggregation_dimensions" : [["AutoScalingGroupName"], ["InstanceId", "InstanceType"],[]]
   },
@@ -97,43 +97,43 @@
         "collect_list": [
           {
             "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
-            "log_group_name": "${environment}/flu-api/amazon-cloudwatch-agent.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/amazon-cloudwatch-agent.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/var/log/nginx/access.log",
-            "log_group_name": "${environment}/flu-api/nginx-access.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/nginx-access.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/var/log/nginx/error.log",
-            "log_group_name": "${environment}/flu-api/nginx-error.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/nginx-error.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/setup.log",
-            "log_group_name": "${environment}/flu-api/terraform-setup.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/terraform-setup.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/home/api/.pm2/pm2.log",
-            "log_group_name": "${environment}/flu-api/pm2.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/pm2.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/home/api/.pm2/logs/api-out.log",
-            "log_group_name": "${environment}/flu-api/pm2.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/pm2.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           },
           {
             "file_path": "/home/api/.pm2/logs/api-error.log",
-            "log_group_name": "${environment}/flu-api/pm2.log",
+            "log_group_name": "TF_ENVIRONMENT/flu-api/pm2.log",
             "log_stream_name": "{local_hostname}/{instance_id}",
             "timezone": "UTC"
           }

@@ -1,0 +1,58 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euxo pipefail
+umask 077
+readonly SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+readonly mode="$1"
+readonly commit="${2:-master}"
+env="$3"
+
+if [ "$env" == "prod" ]
+then
+  env="production"
+fi
+
+echo "=== api-init begins, mode=$mode commit=$commit env=$env"
+mkdir "$HOME/.ssh"
+ln -s /creds/github/id_rsa "$HOME/.ssh/id_rsa"
+ln -s /creds/github/id_rsa.pub "$HOME/.ssh/id_rsa.pub"
+git config --global user.name "Audere Service Account"
+git config --global user.email "test@auderenow.org"
+ssh-keyscan -t rsa github.com >> "$HOME/.ssh/known_hosts"
+ssh -T -oStrictHostKeyChecking=accept-new git@github.com || true
+git clone git@github.com:AudereNow/learn.git audere
+
+cp "$SELF_DIR/bash_profile" ~/.bash_profile
+. ~/.bash_profile
+
+set +x
+nvm-upd
+nvm install v10
+set -x
+npm install --global yarn
+
+cd ~/audere/FluApi
+ln -s /creds/db/env .env
+
+git checkout "$commit"
+yarn install --frozen-lockfile
+yarn build
+
+case "$mode" in
+  migrate)
+    echo "Running sequelize because '$mode'==migrate"
+    yarn setup
+    ;;
+  service)
+    echo "Running pm2 because '$mode'==service"
+    yarn global add pm2
+    pm2 start process.json --env $env
+    pm2 save
+    ;;
+  *)
+    echo 1>&2 "Unknown mode '$mode'"
+    exit 1
+    ;;
+esac

@@ -3,9 +3,33 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
-${util_sh}
+function download_assets() {
+  local hash="${assets_sha256}"
+
+  mkdir /audere
+  (
+    cd /audere
+    curl "http://build-artifacts.auderenow.io.s3.amazonaws.com/terraform-assets/$hash.tar.bz2" \
+      | tar xj
+    h="$(
+      find assets -type f -exec sha256sum '{}' '+' \
+      | sort \
+      | sha256sum - \
+      | awk '{print $1}'
+    )"
+    if [[ "$h" != "$hash" ]]; then
+      echo 1>&2 "Corrupted asset archive: exiting"
+      exit 1
+    fi
+  )
+  export TF_ASSETS="/audere/assets"
+
+  . "$TF_ASSETS/util.sh"
+}
 
 function main() {
+  download_assets
+
   install_updates
 
   mount_creds
@@ -125,10 +149,9 @@ function init_nginx() {
 }
 
 function echo_cloudwatch_agent_config() {
-  local environment="${environment}"
-  cat <<EOF
-${cloudwatch_config_json}
-EOF
+  sed \
+    -e 's/TF_ENVIRONMENT/${environment}/' \
+    "$TF_ASSETS/cloudwatch-agent-config.json"
 }
 
 function install_cloudwatch_agent() {
