@@ -1213,6 +1213,10 @@ data "aws_iam_user" "ram" {
   user_name = "ram"
 }
 
+data "aws_iam_user" "sam" {
+  user_name = "sam"
+}
+
 data "aws_iam_user" "terri" {
   user_name = "terri"
 }
@@ -1241,6 +1245,7 @@ resource "aws_iam_group_membership" "infrastructurers" {
     "mmarucheck",
     "ram",
     "mpomarole",
+    "sam",
     "terri",
   ]
 }
