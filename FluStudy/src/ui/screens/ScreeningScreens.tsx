@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import React from "react";
 import {
   Alert,
+  AppState,
   KeyboardAvoidingView,
   Platform,
   PushNotificationIOS,
@@ -65,7 +66,7 @@ import QuestionText from "../components/QuestionText";
 import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { isPOBox, isValidAddress, isValidEmail } from "../../util/check";
-import { getRemoteConfig } from "../../util/remoteConfig";
+import { getRemoteConfig, loadAllRemoteConfigs } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents, AppHealthEvents } from "../../util/tracker";
 import RadioGrid from "../components/RadioGrid";
@@ -160,18 +161,52 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
 }
 export const Why = withNamespaces("whyScreen")(WhyScreen);
 
-class WhatScreen extends React.Component<Props & WithNamespaces> {
+interface KitStatusState {
+  blockKits: boolean;
+}
+
+class WhatScreen extends React.Component<
+  Props & WithNamespaces,
+  KitStatusState
+> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = { blockKits: this._getBlockKitOrderStatus() };
+    this._handleAppStateChange = this._handleAppStateChange.bind(this);
+  }
+
   _onNext = () => {
     this.props.navigation.push("Age");
   };
 
-  render() {
-    const { t } = this.props;
+  _getBlockKitOrderStatus = (currentStatus: boolean = false) => {
     const blockKits = getRemoteConfig("blockKitOrders");
-
-    if (blockKits) {
+    if (blockKits != currentStatus) {
       tracker.logEvent(AppHealthEvents.KIT_ORDER_BLOCKED);
     }
+    return blockKits;
+  };
+
+  async _handleAppStateChange(nextAppState: string) {
+    if (nextAppState === "active" && this.props.navigation.isFocused()) {
+      await loadAllRemoteConfigs();
+      this.setState({
+        blockKits: this._getBlockKitOrderStatus(this.state.blockKits),
+      });
+    }
+  }
+
+  componentDidMount() {
+    AppState.addEventListener("change", this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  render() {
+    const { t } = this.props;
+    const { blockKits } = this.state;
     return (
       <Screen
         canProceed={!blockKits}

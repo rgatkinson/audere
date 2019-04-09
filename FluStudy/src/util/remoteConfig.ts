@@ -11,6 +11,7 @@ import { Constants } from "expo";
 interface RemoteConfig {
   blockKitOrders: boolean;
   showVideos: boolean;
+  [key: string]: boolean;
 }
 
 // Every config you load should have a default set here.  Remember that the
@@ -37,27 +38,26 @@ const DEV_CONFIG_OVERRIDES = {
 
 let _currentConfig: RemoteConfig = Object.assign({}, DEFAULT_CONFIGS);
 
-async function loadConfig() {
+async function loadConfig(): Promise<RemoteConfig> {
   const config = firebase.config();
   const remoteConfigSnapshots = await config.getValues(
     Object.getOwnPropertyNames(DEFAULT_CONFIGS)
   );
 
+  let localConfig: RemoteConfig = Object.assign({}, DEFAULT_CONFIGS);
   Object.keys(remoteConfigSnapshots).map(key => {
-    // @ts-ignore
-    _currentConfig[key] = remoteConfigSnapshots[key].val();
+    localConfig[key] = remoteConfigSnapshots[key].val();
   });
-  tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, _currentConfig);
-  crashlytics.log(`Remote config loaded: ${JSON.stringify(_currentConfig)}`);
+  tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, localConfig);
+  crashlytics.log(`Remote config loaded: ${JSON.stringify(localConfig)}`);
 
   if (process.env.NODE_ENV === "development") {
-    _currentConfig = { ..._currentConfig, ...DEV_CONFIG_OVERRIDES };
+    localConfig = { ...localConfig, ...DEV_CONFIG_OVERRIDES };
 
-    tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, _currentConfig);
-    crashlytics.log(
-      `Remote config overridden: ${JSON.stringify(_currentConfig)}`
-    );
+    tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, localConfig);
+    crashlytics.log(`Remote config overridden: ${JSON.stringify(localConfig)}`);
   }
+  return localConfig;
 }
 
 // As long as you've awaited loadAllRemoteConfigs, you can call getRemoteConfig
@@ -89,7 +89,7 @@ export async function loadAllRemoteConfigs() {
 
     const activated = await config.activateFetched();
     if (activated) {
-      await loadConfig();
+      _currentConfig = await loadConfig();
     }
   } catch (error) {
     const errorMessage = `Remote Config Load Error: ${
