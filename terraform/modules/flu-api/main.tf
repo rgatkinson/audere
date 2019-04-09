@@ -53,8 +53,8 @@ data "template_file" "service_init_sh" {
   template = "${file("${path.module}/cloud-init.sh")}"
   vars {
     commit = "${var.commit}"
-    environment = "${var.environment}"
     domain = "${local.full_domain}"
+    environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "service"
     service_url = "${local.service_url}"
@@ -247,7 +247,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
   name_prefix = "${local.base_name}-"
   iam_instance_profile = "${aws_iam_instance_profile.flu_api.name}"
   image_id = "${module.ami.ubuntu}"
-  instance_type = "t2.small"
+  instance_type = "t3.small"
   user_data = "${data.template_file.service_init_sh.rendered}"
 
   security_groups = [

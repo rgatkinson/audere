@@ -64,7 +64,8 @@ function write_sshkey() {
 
 function parted_mkfs_mount() {
   local dev="$(device_by_letter "$1")" label="$2" dir="$3" part uuid
-  if part="$(wait_for_device "$dev"1 "$dev"p1)"; then
+  local part="$(wait_for_device "$dev"1 "$dev"p1)"
+  if [[ "$?" == 0 && -n "$part" ]]; then
     uuid=$(partition_uuid "$part")
   else
     1>&2 retry parted "$dev" mklabel gpt
@@ -117,6 +118,10 @@ function device_by_letter() {
   [[ -b "$xvd" ]] && echo "$xvd" && return 0
   for dev in /dev/nvme?n?; do
     if nvme id-ctrl -v "$dev" | 1>&2 grep " \"/dev/sd$letter\.\."; then
+      echo "$dev"
+      return 0
+    fi
+    if nvme id-ctrl -v "$dev" | 1>&2 grep " \"sd$letter\.\."; then
       echo "$dev"
       return 0
     fi

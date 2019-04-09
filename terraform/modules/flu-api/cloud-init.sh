@@ -34,16 +34,16 @@ EOF
 }
 
 function mount_creds() {
-  local readonly dev="$(device_by_letter f)"
-  local readonly part="$(wait_for_device "$dev"1 "$dev"p1)"
+  local dev="$(device_by_letter f)"
+  local part="$(wait_for_device "$dev"1 "$dev"p1)"
   mkdir -p /creds
   retry mount "$part" "/creds"
-  uuid="$(partition_uuid "/dev/xvdf1")"
+  uuid="$(partition_uuid "$part")"
   printf "UUID=%s\t/creds\text4\tdefaults,nofail\t0\t2\n" "$uuid" >>/etc/fstab
 }
 
 function configure_api() {
-  local readonly API=/home/api
+  local API=/home/api
   (base64 -d | tar xj --directory "$API") <<EOF
 ${init_tar_bz2_base64}
 EOF
