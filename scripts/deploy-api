@@ -61,6 +61,7 @@ set -x
 
 cd "$API_DIR"
 terraform init
+terraform taint -module=flu_api aws_launch_configuration.flu_api_instance
 terraform apply -var "commit=$commit" -var "migrate=true"
 set +x
 
