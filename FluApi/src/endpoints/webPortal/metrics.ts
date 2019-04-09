@@ -812,7 +812,10 @@ export async function getFeverMetrics(
         isDemo: false
       },
       createdAt: {
-        [Op.between]: [new Date(startDate),new Date(endDate)]
+        [Op.between]: [
+          new Date(`${startDate} 00:00:00.000${offset}`), 
+          new Date(`${endDate} 23:59:59.999${offset}`)
+        ]
       }
     },
     raw: true
@@ -916,10 +919,12 @@ export async function getFeverMetrics(
   );
 
   //Aggregate data by last screen viewed
-  const rowsWithEvents = rows.filter(row => row.survey.events != null);
+  const rowsUnfinishedSurveys = rows
+    .filter(row => row.survey.events != null)
+    .filter(row => !('surveyCompletedAt' in row.survey.workflow));
   const getLastScreen = (row) => row.survey.events[row.survey.events.length - 1].refId;
   const screenCounts = aggregate(
-    rowsWithEvents,
+    rowsUnfinishedSurveys,
     getLastScreen,
     (row) => ({ lastscreen: getLastScreen(row), count: 0}),
     (acc, row) => ({ ...acc, count: acc.count + 1})
@@ -929,7 +934,7 @@ export async function getFeverMetrics(
     .sort((a, b) => b.count - a.count)
     .map(x => ({
       ...x,
-      percent: (x.count / rowsWithEvents.length * 100).toFixed(1),
+      percent: (x.count / rowsUnfinishedSurveys.length * 100).toFixed(1),
     })));
 
   const studyIdQuery = `
