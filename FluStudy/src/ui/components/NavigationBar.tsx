@@ -45,7 +45,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
   };
 
   _onMenu = () => {
-    this.props.navigation.toggleDrawer();
+    this.props.navigation.openDrawer();
   };
 
   render() {
