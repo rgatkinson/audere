@@ -71,7 +71,7 @@ data "template_file" "service_init_sh" {
 
 resource "aws_instance" "migrate_instance" {
   ami = "${module.ami.ubuntu}"
-  instance_type = "t2.micro"
+  instance_type = "t2.small"
   subnet_id = "${aws_subnet.transient.id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
@@ -247,7 +247,7 @@ resource "aws_launch_configuration" "flu_api_instance" {
   name_prefix = "${local.base_name}-"
   iam_instance_profile = "${aws_iam_instance_profile.flu_api.name}"
   image_id = "${module.ami.ubuntu}"
-  instance_type = "t2.micro"
+  instance_type = "t2.small"
   user_data = "${data.template_file.service_init_sh.rendered}"
 
   security_groups = [
