@@ -14,6 +14,7 @@ const conStringPII = process.env.PII_DATABASE_URL;
 client.connectSync(conString);
 clientPII.connectSync(conStringPII);
 
+import { promisify } from "util";
 import { Op } from "sequelize";
 import { createSplitSql } from "../../util/sql";
 import { defineFeverModels } from "../../models/db/fever";
@@ -24,6 +25,8 @@ const sql = createSplitSql();
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
 const moment = require("moment-timezone");
+
+const clientQuery = promisify(client.query.bind(client));
 
 // Returns yyyy-MM-dd string
 export function getLastMonday(): string {
@@ -134,9 +137,9 @@ export async function getMetrics(
              SUM(declinedresponses)
       FROM t;`;
   }
-  const surveyStatsData = await client.query(getSurveyStatsQuery("location"));
+  const surveyStatsData = await clientQuery(getSurveyStatsQuery("location"));
 
-  const surveyStatsByAdminData = await client.query(
+  const surveyStatsByAdminData = await clientQuery(
     getSurveyStatsQuery("administrator")
   );
 
@@ -150,7 +153,7 @@ export async function getMetrics(
     GROUP BY lastquestion
     ORDER BY percent DESC;`;
   const lastQuestionData = filterLastQuestionData(
-    await client.query(lastQuestionQuery)
+    await clientQuery(lastQuestionQuery)
   );
 
   const studyIdQuery = `
@@ -193,7 +196,7 @@ export async function getMetrics(
     ) t2
     ON t1.studyid = t2.studyid
     ORDER BY t1.location, t1.appstarttime, t1.createdat;`;
-  const studyIdData = await client.query(studyIdQuery).map(study => ({
+  const studyIdData = (await clientQuery(studyIdQuery)).map(study => ({
     ...study,
     studyid: study.studyid.substring(0, 21)
   }));
@@ -202,7 +205,7 @@ export async function getMetrics(
     SELECT COUNT(*)
     FROM feedback
     WHERE ${dateClause};`;
-  const feedbackData = await client.query(feedbackQuery);
+  const feedbackData = await clientQuery(feedbackQuery);
 
   return {
     surveyStatsData,
@@ -246,7 +249,7 @@ export async function getDataSummary(
     WHERE ${dateClause} AND ${demoClause} AND items->>'id'='AgeBucket'
     GROUP BY bucket
     ORDER BY n DESC, bucket;`;
-  const ageData = await client.query(ageQuery);
+  const ageData = await clientQuery(ageQuery);
 
   const symptomsQuery = `
     SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS symptom,
@@ -257,7 +260,7 @@ export async function getDataSummary(
     WHERE ${dateClause} AND ${demoClause} AND items->>'id'='Symptoms'
     GROUP BY symptom
     ORDER BY n DESC, symptom;`;
-  const symptomsData = await client.query(symptomsQuery);
+  const symptomsData = await clientQuery(symptomsQuery);
 
   const zipcodeQuery = `
     SELECT addresses->>'postalCode' AS zipcode,
@@ -939,7 +942,7 @@ export async function getFeverMetrics(
       FROM agebuckets;`;
 
   const surveyStatsData = funnelAgeData(
-    await client.query(surveyStatsQuery)
+    await clientQuery(surveyStatsQuery)
   );
 
   //Aggregate data by last screen viewed
@@ -1016,7 +1019,7 @@ export async function getFeverMetrics(
     WHERE ${dateClause} AND ${demoClause}
     ORDER BY fcs."createdAt";`;
 
-  const studyIdData = await client.query(studyIdQuery).map(study => ({
+  const studyIdData = (await clientQuery(studyIdQuery)).map(study => ({
     ...study,
     studyid: study.studyid.substring(0, 21)
   }));
