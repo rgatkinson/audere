@@ -9,10 +9,10 @@ import {
   Alert,
   AppState,
   KeyboardAvoidingView,
+  NetInfo,
   Platform,
   PushNotificationIOS,
   ScrollView,
-  StyleSheet,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
@@ -37,7 +37,9 @@ import {
   setPushNotificationState,
   setWorkflow,
   setConsent,
+  logger,
 } from "../../store";
+import { Logger } from "../../transport/LogUtil";
 import {
   MailingAddressConfig,
   AddressConfig,
@@ -687,8 +689,9 @@ function writeAddressAndNavigate(
 
 interface AddressState {
   address: Address;
-  showValidationError: boolean;
+  isConnected: boolean;
   noResults: boolean;
+  showValidationError: boolean;
   suggestedAddress: Address | null;
   triedToProceed: boolean;
 }
@@ -723,6 +726,7 @@ class AddressInputScreen extends React.Component<
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
       email: props.email,
+      isConnected: false,
       noResults: false,
       showValidationError: false,
       suggestedAddress: null,
@@ -757,23 +761,41 @@ class AddressInputScreen extends React.Component<
     });
   };
 
+  _handleConnectivityChange = (isConnected: boolean) => {
+    this.setState({ isConnected });
+  };
+
+  componentDidMount() {
+    NetInfo.isConnected.addEventListener(
+      "connectionChange",
+      this._handleConnectivityChange
+    );
+  }
+
+  componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener(
+      "connectionChange",
+      this._handleConnectivityChange
+    );
+  }
+
   _onNext = async () => {
-    const { t } = this.props;
+    const { dispatch, navigation, t, updateAnswer, workflow } = this.props;
     this.setState({ triedToProceed: true });
     tracker.logEvent(FunnelEvents.ADDRESS_ATTEMPTED);
 
     if (
       isValidAddress(this.state.address) &&
       isValidEmail(this.state.email) &&
-      (!this.props.workflow.skippedScreeningAt || this._haveOption())
+      (!workflow.skippedScreeningAt || this._haveOption())
     ) {
       const { address, city, state, zipcode } = this.state.address;
       const config = !!this.props.workflow.skippedScreeningAt
         ? AddressConfig
         : MailingAddressConfig;
 
-      this.props.dispatch(setEmail(this.state.email!));
-      this.props.updateAnswer({ addressInput: this.state.address }, config);
+      dispatch(setEmail(this.state.email!));
+      updateAnswer({ addressInput: this.state.address }, config);
 
       if (
         this.state.address!.state === "HI" ||
@@ -800,10 +822,10 @@ class AddressInputScreen extends React.Component<
         writeAddressAndNavigate(
           this.state.address,
           !!this.props.workflow.skippedScreeningAt,
-          this.props.updateAnswer,
-          this.props.navigation
+          updateAnswer,
+          navigation
         );
-      } else {
+      } else if (this.state.isConnected) {
         try {
           const key = createAccessKey();
           const response = await axios.get(
@@ -842,8 +864,18 @@ class AddressInputScreen extends React.Component<
             );
           }
         } catch (error) {
-          Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
+          tracker.logEvent(AppHealthEvents.SMARTY_STREETS_ERROR, {
+            error: JSON.stringify(error),
+          });
+          writeAddressAndNavigate(
+            this.state.address,
+            !!this.props.workflow.skippedScreeningAt,
+            this.props.updateAnswer,
+            this.props.navigation
+          );
         }
+      } else {
+        Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
       }
     } else {
       this.setState({ showValidationError: true });
@@ -851,7 +883,7 @@ class AddressInputScreen extends React.Component<
   };
 
   _onAddressChange = (newAddress: Address) => {
-    const { email, showValidationError, triedToProceed } = this.state;
+    const { email, triedToProceed } = this.state;
     const currentShowValidationError =
       !isValidAddress(newAddress) || !isValidEmail(email) || !triedToProceed;
 

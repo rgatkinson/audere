@@ -70,6 +70,7 @@ export const AppHealthEvents = {
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
+  SMARTY_STREETS_ERROR: "smarty_streets_error",
 };
 
 export const AppEvents = {
