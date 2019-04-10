@@ -156,16 +156,16 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   }
 
   function addMetricsHandlers(app: Express): void {
-    app.get("/metrics", (req, res) => {
+    app.get("/metrics", async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
-      const [
+      const {
         surveyStatsData,
         surveyStatsByAdminData,
         lastQuestionData,
         studyIdData,
         feedbackData
-      ] = getMetrics(startDate, endDate);
+      } = await getMetrics(startDate, endDate);
       res.render("metrics.ejs", {
         static: app.mountpath,
         surveyStatsData: surveyStatsData,
@@ -180,16 +180,16 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     app.get("/feverMetrics", async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
-      const [
+      const {
         surveyStatsData,
-        lastQuestionData,
+        lastScreenData,
         statesData,
         studyIdData
-      ] = await getFeverMetrics(startDate, endDate);
+      } = await getFeverMetrics(startDate, endDate);
       res.render("feverMetrics.ejs", {
         static: app.mountpath,
         surveyStatsData: surveyStatsData,
-        lastQuestionData: lastQuestionData,
+        lastQuestionData: lastScreenData,
         statesData: statesData,
         studyIdData: studyIdData,
         startDate: startDate,
@@ -215,7 +215,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     app.get("/saveFeverMetrics", excelHandler("fluAtHome", getFeverExcelReport));
     app.get("/saveDataSummary", excelHandler("sfsData", getExcelDataSummary));
 
-    type DateRangeQuery = (start: string, end: string) => (Buffer|Promise<Buffer>);
+    type DateRangeQuery = (start: string, end: string) => Promise<Buffer>;
 
     function excelHandler(prefix: string, query: DateRangeQuery): express.Handler {
       return async (req, res) => {

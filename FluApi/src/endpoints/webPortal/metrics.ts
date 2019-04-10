@@ -63,10 +63,18 @@ function getTimezoneAbbrev(): string {
     .format("z");
 }
 
-export function getMetrics(
+export interface SnifflesMetrics {
+  surveyStatsData: object;
+  surveyStatsByAdminData: object;
+  lastQuestionData: object;
+  studyIdData: object;
+  feedbackData: object;
+}
+
+export async function getMetrics(
   startDate: string,
   endDate: string
-): [object, object, object, object, object] {
+): Promise<SnifflesMetrics> {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -82,12 +90,12 @@ export function getMetrics(
     WITH t AS (
       SELECT t1.grouping, t1.formstarts, t2.eligible, t1.consented, t2.completed, t1.specimenscanned, t3.giftcards, t2.adverseevents, t1.questionsanswered, t2.declinedresponses
       FROM (
-        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
-               COUNT(*) AS formstarts, 
-               SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented, 
-               SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned, 
-               SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered 
-        FROM visits 
+        SELECT TRIM(COALESCE(visit->>'${byField}','')) AS grouping,
+               COUNT(*) AS formstarts,
+               SUM(CASE WHEN visit->'consents'->0->'terms' IS NOT NULL THEN 1 END) AS consented,
+               SUM(CASE WHEN visit->'samples'->0->'code' IS NOT NULL THEN 1 END) AS specimenscanned,
+               SUM(json_array_length(visit->'responses'->0->'item')) AS questionsanswered
+        FROM visits
         WHERE ${dateClause} AND ${demoClause} AND visit->>'location' IS NOT NULL
         GROUP BY grouping
         ORDER BY grouping) t1
@@ -97,64 +105,64 @@ export function getMetrics(
                SUM(CASE WHEN items->>'id'='WhichProcedures' THEN 1 END) AS adverseevents,
                SUM(CASE WHEN (items->'answer'->0)::jsonb ? 'valueDeclined' THEN 1 END) AS declinedresponses,
                SUM(CASE WHEN (items->>'id'='Symptoms' AND json_array_length(items->'answer') >= 2) THEN 1 END) AS eligible
-        FROM visits v, json_array_elements(v.visit->'responses'->0->'item') items 
+        FROM visits v, json_array_elements(v.visit->'responses'->0->'item') items
         WHERE ${dateClause} AND ${demoClause}
         GROUP BY grouping) t2
       ON (t1.grouping = t2.grouping)
       LEFT JOIN (
-        SELECT grouping, 
-               COUNT(*) AS giftcards 
+        SELECT grouping,
+               COUNT(*) AS giftcards
         FROM (
-          SELECT DISTINCT TRIM(COALESCE(visit->>'${byField}','')) AS grouping, 
-                 csruid, 
-                 json_array_elements(visit->'giftcards')->>'code' AS code 
+          SELECT DISTINCT TRIM(COALESCE(visit->>'${byField}','')) AS grouping,
+                 csruid,
+                 json_array_elements(visit->'giftcards')->>'code' AS code
           FROM visits
           WHERE ${dateClause} AND ${demoClause}
-        ) sub 
+        ) sub
         GROUP BY grouping) t3
       ON (t1.grouping = t3.grouping)
-    ) SELECT * FROM t UNION ALL 
-      SELECT 'Total', 
-             SUM(formstarts), 
-             SUM(eligible), 
-             SUM(consented), 
-             SUM(completed), 
-             SUM(specimenscanned), 
-             SUM(giftcards), 
-             SUM(adverseevents), 
-             SUM(questionsanswered), 
-             SUM(declinedresponses) 
+    ) SELECT * FROM t UNION ALL
+      SELECT 'Total',
+             SUM(formstarts),
+             SUM(eligible),
+             SUM(consented),
+             SUM(completed),
+             SUM(specimenscanned),
+             SUM(giftcards),
+             SUM(adverseevents),
+             SUM(questionsanswered),
+             SUM(declinedresponses)
       FROM t;`;
   }
-  const surveyStatsData = client.querySync(getSurveyStatsQuery("location"));
+  const surveyStatsData = await client.query(getSurveyStatsQuery("location"));
 
-  const surveyStatsByAdminData = client.querySync(
+  const surveyStatsByAdminData = await client.query(
     getSurveyStatsQuery("administrator")
   );
 
   const lastQuestionQuery = `
-    SELECT visit->'responses'->0->'item'->(json_array_length(visit->'responses'->0->'item')-1)->>'id' AS lastquestion, 
-           MODE() WITHIN GROUP (ORDER BY visit->'responses'->0->'item'->(json_array_length(visit->'responses'->0->'item')-1)->>'text') AS lastquestiontext, 
-           COUNT(*), 
-           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent 
-    FROM visits 
-    WHERE ${dateClause} AND ${demoClause} AND json_array_length(visit->'responses'->0->'item') > 0 
-    GROUP BY lastquestion 
+    SELECT visit->'responses'->0->'item'->(json_array_length(visit->'responses'->0->'item')-1)->>'id' AS lastquestion,
+           MODE() WITHIN GROUP (ORDER BY visit->'responses'->0->'item'->(json_array_length(visit->'responses'->0->'item')-1)->>'text') AS lastquestiontext,
+           COUNT(*),
+           ROUND(COUNT(*)*100 / CAST( SUM(COUNT(*)) OVER () AS FLOAT)::NUMERIC, 1) AS percent
+    FROM visits
+    WHERE ${dateClause} AND ${demoClause} AND json_array_length(visit->'responses'->0->'item') > 0
+    GROUP BY lastquestion
     ORDER BY percent DESC;`;
   const lastQuestionData = filterLastQuestionData(
-    client.querySync(lastQuestionQuery)
+    await client.query(lastQuestionQuery)
   );
 
   const studyIdQuery = `
     SELECT t1.*, t2.giftcardcode, t2.giftcardtype FROM (
     SELECT id AS dbid,
-           visit->>'location' AS location, 
+           visit->>'location' AS location,
            device->>'deviceName' AS devicename,
-           "createdAt" AS createdat, 
-           visit->'consents'->0->>'date' AS consentdate, 
-           (CASE WHEN visit->'samples'->0->>'sample_type' = 'manualBarcodeEntry' 
+           "createdAt" AS createdat,
+           visit->'consents'->0->>'date' AS consentdate,
+           (CASE WHEN visit->'samples'->0->>'sample_type' = 'manualBarcodeEntry'
              THEN CONCAT (visit->'samples'->0->>'code', '*')
-             ELSE visit->'samples'->0->>'code' END) AS specimencode, 
+             ELSE visit->'samples'->0->>'code' END) AS specimencode,
            csruid AS studyid,
            TRIM(visit->>'administrator') AS administrator,
            COALESCE(visit->'events'->0->>'at', '') AS appstarttime,
@@ -162,53 +170,59 @@ export function getMetrics(
     FROM visits
     WHERE ${dateClause} AND ${demoClause}) t1
     LEFT JOIN (
-      SELECT 
-        csruid AS studyid, 
+      SELECT
+        csruid AS studyid,
         string_agg(code, ',') AS giftcardcode,
         string_agg(type, ',') AS giftcardtype
       FROM (
-        SELECT DISTINCT 
-          csruid, 
-          (CASE WHEN barcodeType = 'manualGiftCardEntry' THEN CONCAT(code, '*') ELSE code END) AS code, 
-          type 
+        SELECT DISTINCT
+          csruid,
+          (CASE WHEN barcodeType = 'manualGiftCardEntry' THEN CONCAT(code, '*') ELSE code END) AS code,
+          type
         FROM (
-          SELECT 
-            csruid, 
+          SELECT
+            csruid,
             json_array_elements(visit->'giftcards')->>'code' AS code,
             json_array_elements(visit->'giftcards')->>'barcodeType' AS barcodeType,
             json_array_elements(visit->'giftcards')->>'giftcardType' AS type
-          FROM visits 
+          FROM visits
           WHERE ${dateClause} AND ${demoClause}
         ) innermost
       ) sub
       GROUP BY studyid
-    ) t2 
+    ) t2
     ON t1.studyid = t2.studyid
     ORDER BY t1.location, t1.appstarttime, t1.createdat;`;
-  const studyIdData = client.querySync(studyIdQuery).map(study => ({
+  const studyIdData = await client.query(studyIdQuery).map(study => ({
     ...study,
     studyid: study.studyid.substring(0, 21)
   }));
 
   const feedbackQuery = `
-    SELECT COUNT(*) 
+    SELECT COUNT(*)
     FROM feedback
     WHERE ${dateClause};`;
-  const feedbackData = client.querySync(feedbackQuery);
+  const feedbackData = await client.query(feedbackQuery);
 
-  return [
+  return {
     surveyStatsData,
     surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
     feedbackData
-  ];
+  };
 }
 
-export function getDataSummary(
+export interface SnifflesDataSummary {
+  ageData: object;
+  symptomsData: object;
+  zipcodeData: object;
+}
+
+export async function getDataSummary(
   startDate: string,
   endDate: string
-): [object, object, object] {
+): Promise<SnifflesDataSummary> {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -224,38 +238,38 @@ export function getDataSummary(
   piiClient.connectSync(piiConString);
 
   const ageQuery = `
-    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS bucket, 
-           COUNT(*) AS n 
-    FROM visits v, 
-         json_array_elements(v.visit->'responses'->0->'item') items, 
-         json_array_elements(items->'answer') answers 
-    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='AgeBucket' 
-    GROUP BY bucket 
+    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS bucket,
+           COUNT(*) AS n
+    FROM visits v,
+         json_array_elements(v.visit->'responses'->0->'item') items,
+         json_array_elements(items->'answer') answers
+    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='AgeBucket'
+    GROUP BY bucket
     ORDER BY n DESC, bucket;`;
-  const ageData = client.querySync(ageQuery);
+  const ageData = await client.query(ageQuery);
 
   const symptomsQuery = `
-    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS symptom, 
-           COUNT(*) AS n 
-    FROM visits v, 
-         json_array_elements(v.visit->'responses'->0->'item') items, 
-         json_array_elements(items->'answer') answers 
-    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='Symptoms' 
-    GROUP BY symptom 
+    SELECT json_extract_path_text(items, 'answerOptions', answers->>'valueIndex', 'id') AS symptom,
+           COUNT(*) AS n
+    FROM visits v,
+         json_array_elements(v.visit->'responses'->0->'item') items,
+         json_array_elements(items->'answer') answers
+    WHERE ${dateClause} AND ${demoClause} AND items->>'id'='Symptoms'
+    GROUP BY symptom
     ORDER BY n DESC, symptom;`;
-  const symptomsData = client.querySync(symptomsQuery);
+  const symptomsData = await client.query(symptomsQuery);
 
   const zipcodeQuery = `
-    SELECT addresses->>'postalCode' AS zipcode, 
+    SELECT addresses->>'postalCode' AS zipcode,
            COUNT(*) AS n
-    FROM visits v, 
-         json_array_elements(v.visit->'patient'->'address') addresses 
-    WHERE ${dateClause} AND ${demoClause} 
-    GROUP BY zipcode 
+    FROM visits v,
+         json_array_elements(v.visit->'patient'->'address') addresses
+    WHERE ${dateClause} AND ${demoClause}
+    GROUP BY zipcode
     ORDER BY n DESC, zipcode;`;
-  const zipcodeData = piiClient.querySync(zipcodeQuery);
+  const zipcodeData = await piiClient.query(zipcodeQuery);
 
-  return [ageData, symptomsData, zipcodeData];
+  return {ageData, symptomsData, zipcodeData};
 }
 
 function filterLastQuestionData(lastQuestionData): object {
@@ -285,14 +299,14 @@ function filterLastQuestionData(lastQuestionData): object {
   return lastQuestionFiltered;
 }
 
-export function getExcelReport(startDate: string, endDate: string) {
-  const [
+export async function getExcelReport(startDate: string, endDate: string) {
+  const {
     surveyStatsData,
     surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
     feedbackData
-  ] = getMetrics(startDate, endDate);
+  } = await getMetrics(startDate, endDate);
 
   const styles = {
     small: {
@@ -672,8 +686,8 @@ export function getExcelReport(startDate: string, endDate: string) {
   return report;
 }
 
-export function getExcelDataSummary(startDate: string, endDate: string) {
-  const [ageData, symptomsData, zipcodeData] = getDataSummary(
+export async function getExcelDataSummary(startDate: string, endDate: string) {
+  const {ageData, symptomsData, zipcodeData} = await getDataSummary(
     startDate,
     endDate
   );
@@ -794,10 +808,17 @@ export function getExcelDataSummary(startDate: string, endDate: string) {
   return report;
 }
 
+export interface FeverMetrics {
+  surveyStatsData: object;
+  lastScreenData: object;
+  statesData: object;
+  studyIdData: object;
+}
+
 export async function getFeverMetrics(
   startDate: string,
   endDate: string
-): Promise<[object, object, object, object]> {
+): Promise<FeverMetrics> {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -816,7 +837,7 @@ export async function getFeverMetrics(
       },
       createdAt: {
         [Op.between]: [
-          new Date(`${startDate} 00:00:00.000${offset}`), 
+          new Date(`${startDate} 00:00:00.000${offset}`),
           new Date(`${endDate} 23:59:59.999${offset}`)
         ]
       }
@@ -863,12 +884,12 @@ export async function getFeverMetrics(
         ) t2
         ON t1.age=t2.age
       )
-      SELECT 
+      SELECT
         t.age,
-        t.test1errors, 
-        t.test2errors, 
-        t4.total, 
-        t4.eligible, 
+        t.test1errors,
+        t.test2errors,
+        t4.total,
+        t4.eligible,
         t4.consents,
         t4.kits,
         t4.part2,
@@ -882,7 +903,7 @@ export async function getFeverMetrics(
         SELECT
           json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
             survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
-          COUNT(*) as total, 
+          COUNT(*) as total,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Consent"}]' THEN 1 END) as eligible,
           SUM(CASE WHEN survey->'consents'->0->'date' IS NOT NULL THEN 1 END) as consents,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Confirmation"}]' THEN 1 END) as kits,
@@ -891,7 +912,7 @@ export async function getFeverMetrics(
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"ThankYouSurvey"}]' THEN 1 END) as surveyscompleted,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"FirstTestFeedback"}]' THEN 1 END) as test1,
           SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"SecondTestFeedback"}]' THEN 1 END) as test2,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished, 
+          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished,
           '' as kitsreturned
           FROM fever_current_surveys fcs
           WHERE ${dateClause} AND ${demoClause}
@@ -900,25 +921,25 @@ export async function getFeverMetrics(
         ) t4
       ON t.age = t4.age
       ORDER BY age)
-      SELECT * FROM agebuckets UNION ALL 
-      SELECT 'Total', 
-             SUM(test1errors), 
+      SELECT * FROM agebuckets UNION ALL
+      SELECT 'Total',
+             SUM(test1errors),
              SUM(test2errors),
              SUM(total),
-             SUM(eligible), 
-             SUM(consents), 
-             SUM(kits), 
-             SUM(part2), 
-             SUM(scanned), 
-             SUM(surveyscompleted), 
-             SUM(test1), 
+             SUM(eligible),
+             SUM(consents),
+             SUM(kits),
+             SUM(part2),
+             SUM(scanned),
+             SUM(surveyscompleted),
+             SUM(test1),
              SUM(test2),
              SUM(finished),
              ''
       FROM agebuckets;`;
 
   const surveyStatsData = funnelAgeData(
-    client.querySync(surveyStatsQuery)
+    await client.query(surveyStatsQuery)
   );
 
   //Aggregate data by last screen viewed
@@ -941,7 +962,7 @@ export async function getFeverMetrics(
     })));
 
   const studyIdQuery = `
-    WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id, 
+    WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id,
       (SELECT events->>'at' as kitordertime
         FROM json_array_elements(survey->'events') events
         WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='Confirmation' LIMIT 1),
@@ -952,30 +973,30 @@ export async function getFeverMetrics(
         FROM json_array_elements(survey->'events') events
         WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='ThankYouSurvey' LIMIT 1),
       (SELECT json_extract_path(items->'answerOptions',
-        items->'answer'->0->>'valueIndex','id') as firsttestfeedback 
+        items->'answer'->0->>'valueIndex','id') as firsttestfeedback
         FROM json_array_elements(survey->'responses'->0->'item') items
         WHERE ${dateClause} AND ${demoClause} AND items->>'id'='FirstTestFeedback'),
       (SELECT json_extract_path(items->'answerOptions',
-        items->'answer'->0->>'valueIndex','id') as secondtestfeedback 
+        items->'answer'->0->>'valueIndex','id') as secondtestfeedback
         FROM json_array_elements(survey->'responses'->0->'item') items
         WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback'),
       (SELECT json_extract_path(items->'answerOptions',
         items->'answer'->0->>'valueIndex','id') as redwhenblue
         FROM json_array_elements(survey->'responses'->0->'item') items
-        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='RedWhenBlue') 
+        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='RedWhenBlue')
       FROM fever_current_surveys fcs
       WHERE ${dateClause} AND ${demoClause}
-      ORDER BY fcs.id, kitordertime ASC) 
-    SELECT 
-          t.kitordertime, 
-          t.part2time, 
+      ORDER BY fcs.id, kitordertime ASC)
+    SELECT
+          t.kitordertime,
+          t.part2time,
           t.questionscompletedtime,
           t.firsttestfeedback,
           t.secondtestfeedback,
           t.redwhenblue,
-          fcs.id as dbid, 
-          fcs."createdAt", 
-          CASE WHEN fcs.survey->'samples'->0->>'sample_type' = 'manualEntry' 
+          fcs.id as dbid,
+          fcs."createdAt",
+          CASE WHEN fcs.survey->'samples'->0->>'sample_type' = 'manualEntry'
               THEN CONCAT(fcs.survey->'samples'->0->>'code','*')
               ELSE fcs.survey->'samples'->0->>'code' END as barcode,
           fcs.survey->'workflow'->'surveyCompletedAt' as finishtime,
@@ -995,12 +1016,12 @@ export async function getFeverMetrics(
     WHERE ${dateClause} AND ${demoClause}
     ORDER BY fcs."createdAt";`;
 
-  const studyIdData = client.querySync(studyIdQuery).map(study => ({
+  const studyIdData = await client.query(studyIdQuery).map(study => ({
     ...study,
     studyid: study.studyid.substring(0, 21)
   }));
 
-  return [surveyStatsData, lastScreenData, statesData, studyIdData];
+  return {surveyStatsData, lastScreenData, statesData, studyIdData};
 }
 
 function aggregate<Row, Key, Value>(
@@ -1142,7 +1163,7 @@ function filterLastScreenData(lastScreenData): object {
 }
 
 export async function getFeverExcelReport(startDate: string, endDate: string) {
-  const [surveyStatsData, lastScreenData, statesData, studyIdData] = await getFeverMetrics(
+  const {surveyStatsData, lastScreenData, statesData, studyIdData} = await getFeverMetrics(
     startDate,
     endDate
   );
@@ -1566,16 +1587,16 @@ export async function getFeverFirebase(
 
   const secrets = new SecretConfig(sql);
   const bigqueryConfig = await getBigqueryConfig(secrets);
-  
+
   const bigquery = new BigQuery({
     projectId: 'flu-at-home-app',
     credentials: JSON.parse(bigqueryConfig.authToken)
   });
 
-  const query = `SELECT COUNT(DISTINCT user_id) count, 
+  const query = `SELECT COUNT(DISTINCT user_id) count,
     (SELECT value.string_value FROM UNNEST(user_properties) WHERE key="utm_content") as ad
     FROM \`flu-at-home-app.analytics_195485168.events_*\`
-    WHERE user_id NOT IN 
+    WHERE user_id NOT IN
       (SELECT DISTINCT user_id
       FROM \`flu-at-home-app.analytics_195485168.events_*\`
       WHERE EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key="demo_mode_aware")) AND
