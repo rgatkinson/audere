@@ -32,6 +32,14 @@ export const FunnelEvents = {
   CONSENT_INELIGIBLE: "funnel_consent_ineligible",
   CONSENT_COMPLETED: "funnel_consent_completed",
   ADDRESS_ATTEMPTED: "funnel_address_attempted",
+  ADDRESS_STATE_INVALID: "funnel_address_state_invalid",
+  ADDRESS_PO_BOX_EXCLUDED: "funnel_address_po_box_excluded",
+  ADDRESS_VERIFICATION_RESULTS_OBTAINED:
+    "funnel_address_verification_results_obtained",
+  ADDRESS_VERIFICATION_SKIPPED_DEMO: "funnel_address_verification_skipped_demo",
+  ADDRESS_VERIFICATION_SKIPPED_NO_INTERNET:
+    "funnel_address_verification_skipped_no_internet",
+  ADDRESS_CORRECTION_CHOSEN: "funnel_address_correction_chosen",
   ADDRESS_COMPLETED: "funnel_address_completed",
   AGE_INELIGIBLE: "funnel_age_ineligible",
   SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
@@ -66,6 +74,9 @@ export const VideoEvents = {
 
 export const AppHealthEvents = {
   BRANCH_DATA_ERROR: "branch_data_error",
+  BRANCH_GOT_ATTRIBUTION: "branch_got_attribution",
+  BRANCH_NO_ATTRIBUTION: "branch_no_attribution",
+  BRANCH_NOT_FIRST_SESSION: "branch_not_first_session",
   KIT_ORDER_BLOCKED: "kit_order_blocked",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
@@ -133,9 +144,17 @@ function onBranchData(data: BranchData) {
     return;
   }
 
-  // @ts-ignore
-  if (params && params["+is_first_session"]) {
-    storeMarketingAttributes(params);
+  if (params) {
+    // @ts-ignore
+    if (params["+is_first_session"]) {
+      storeMarketingAttributes(params);
+    } else {
+      tracker.logEvent(AppHealthEvents.BRANCH_NOT_FIRST_SESSION, {
+        params: JSON.stringify(params),
+      });
+    }
+  } else {
+    tracker.logEvent(AppHealthEvents.BRANCH_DATA_ERROR, { error: "no params" });
   }
 }
 
@@ -154,7 +173,12 @@ function storeMarketingAttributes(params: Object) {
   }
 
   if (Object.keys(parsedMarketingProperties).length > 0) {
+    tracker.logEvent(AppHealthEvents.BRANCH_GOT_ATTRIBUTION, {
+      marketing: JSON.stringify(parsedMarketingProperties),
+    });
     tracker.setUserProperties(parsedMarketingProperties);
+  } else {
+    tracker.logEvent(AppHealthEvents.BRANCH_NO_ATTRIBUTION);
   }
 }
 

@@ -801,11 +801,15 @@ class AddressInputScreen extends React.Component<
         this.state.address!.state === "HI" ||
         this.state.address!.state === "AK"
       ) {
+        tracker.logEvent(FunnelEvents.ADDRESS_STATE_INVALID, {
+          state: this.state.address!.state,
+        });
         this.props.navigation.push("StateIneligible");
         return;
       }
 
       if (isPOBox(address)) {
+        tracker.logEvent(FunnelEvents.ADDRESS_PO_BOX_EXCLUDED);
         this.setState({ showValidationError: false });
         this.props.navigation.push("Ineligible", {
           description: "descriptionPOBox",
@@ -819,6 +823,7 @@ class AddressInputScreen extends React.Component<
       tracker.logEvent(FunnelEvents.EMAIL_COMPLETED);
       this.setState({ triedToProceed: false, showValidationError: false });
       if (this.props.isDemo) {
+        tracker.logEvent(FunnelEvents.ADDRESS_VERIFICATION_SKIPPED_DEMO);
         writeAddressAndNavigate(
           this.state.address,
           !!this.props.workflow.skippedScreeningAt,
@@ -844,6 +849,10 @@ class AddressInputScreen extends React.Component<
           const current = this.state.address;
           const suggestions = response.data;
           if (suggestions.length === 0) {
+            tracker.logEvent(
+              FunnelEvents.ADDRESS_VERIFICATION_RESULTS_OBTAINED,
+              { count: suggestions.length }
+            );
             this.setState({
               noResults: true,
               suggestedAddress: current,
@@ -851,11 +860,19 @@ class AddressInputScreen extends React.Component<
           } else if (
             suggestions.every((x: any) => this._isDifferentAddress(x, current))
           ) {
+            tracker.logEvent(
+              FunnelEvents.ADDRESS_VERIFICATION_RESULTS_OBTAINED,
+              { count: suggestions.length, hasDifferent: true }
+            );
             this.props.navigation.push("AddressConfirm", {
               original: current,
               suggestions: this._mapAddName(suggestions),
             });
           } else {
+            tracker.logEvent(
+              FunnelEvents.ADDRESS_VERIFICATION_RESULTS_OBTAINED,
+              { count: suggestions.length }
+            );
             writeAddressAndNavigate(
               this.state.address,
               !!this.props.workflow.skippedScreeningAt,
@@ -875,6 +892,7 @@ class AddressInputScreen extends React.Component<
           );
         }
       } else {
+        tracker.logEvent(FunnelEvents.ADDRESS_VERIFICATION_SKIPPED_NO_INTERNET);
         Alert.alert(t("noInternetTitle"), t("noInternetSubtitle"));
       }
     } else {
@@ -1031,6 +1049,11 @@ class AddressConfirmScreen extends React.Component<
   }
 
   _onNext = () => {
+    if (
+      this.state.selectedAddress != this.props.navigation.getParam("original")
+    ) {
+      tracker.logEvent(FunnelEvents.ADDRESS_CORRECTION_CHOSEN);
+    }
     writeAddressAndNavigate(
       this.state.selectedAddress,
       !!this.props.workflow.skippedScreeningAt,

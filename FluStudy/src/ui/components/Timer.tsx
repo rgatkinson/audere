@@ -224,6 +224,7 @@ const timerWithConfigProps = (configProps: ConfigProps) => (
         this.props.navigation.push(configProps.nextScreen);
         tracker.logEvent(notificationEvent, {
           appLaunch: false,
+          timerConfig: configProps.startTimeConfig,
           message: notification.getMessage(),
           // @ts-ignore
           appStatus: notification.getCategory(),
