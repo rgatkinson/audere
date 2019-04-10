@@ -787,7 +787,7 @@ class AddressInputScreen extends React.Component<
         this.setState({ showValidationError: false });
         this.props.navigation.push("Ineligible", {
           description: "descriptionPOBox",
-          funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
+          funnelEvent: FunnelEvents.PO_BOX_INELIGIBLE,
           hideBack: false,
         });
         return;
