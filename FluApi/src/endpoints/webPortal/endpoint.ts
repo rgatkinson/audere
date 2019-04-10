@@ -23,7 +23,8 @@ import {
   getThisSunday,
   getExcelReport,
   getFeverMetrics,
-  getFeverExcelReport
+  getFeverExcelReport,
+  getFeverFirebase
 } from "./metrics";
 import logger from "../../util/logger";
 
@@ -191,6 +192,20 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         lastQuestionData: lastQuestionData,
         statesData: statesData,
         studyIdData: studyIdData,
+        startDate: startDate,
+        endDate: endDate
+      });
+    });
+
+    app.get("/feverFirebase", async (req, res) => {
+      const startDate = req.query.startDate || getLastMonday();
+      const endDate = req.query.endDate || getThisSunday();
+      const [
+        adReferralData
+      ] = await getFeverFirebase(startDate, endDate);
+      res.render("feverFirebase.ejs", {
+        static: app.mountpath,
+        adReferralData: adReferralData,
         startDate: startDate,
         endDate: endDate
       });

@@ -17,6 +17,10 @@ clientPII.connectSync(conStringPII);
 import { Op } from "sequelize";
 import { createSplitSql } from "../../util/sql";
 import { defineFeverModels } from "../../models/db/fever";
+import { SecretConfig } from "../../util/secretsConfig";
+import { getBigqueryConfig } from "../../util/bigqueryConfig";
+const {BigQuery} = require('@google-cloud/bigquery');
+const sql = createSplitSql();
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
 const moment = require("moment-timezone");
@@ -804,7 +808,6 @@ export async function getFeverMetrics(
   const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
 
   //Get all non-demo mode data out of database for specified date range
-  const sql = createSplitSql();
   const feverModels = defineFeverModels(sql);
   const rows = await feverModels.surveyPii.findAll({
     where: {
@@ -1550,4 +1553,44 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
   ]);
 
   return report;
+}
+
+export async function getFeverFirebase(
+  startDate: string,
+  endDate: string
+): Promise<[object]> {
+  const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+  if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
+    throw new Error("Dates must be specified as yyyy-MM-dd");
+  }
+
+  const secrets = new SecretConfig(sql);
+  const bigqueryConfig = await getBigqueryConfig(secrets);
+  
+  const bigquery = new BigQuery({
+    projectId: 'flu-at-home-app',
+    credentials: JSON.parse(bigqueryConfig.authToken)
+  });
+
+  const query = `SELECT COUNT(DISTINCT user_id) count, 
+    (SELECT value.string_value FROM UNNEST(user_properties) WHERE key="utm_content") as ad
+    FROM \`flu-at-home-app.analytics_195485168.events_*\`
+    WHERE user_id NOT IN 
+      (SELECT DISTINCT user_id
+      FROM \`flu-at-home-app.analytics_195485168.events_*\`
+      WHERE EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key="demo_mode_aware")) AND
+      EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key="install_referrer") AND
+      event_date >= ? AND
+      event_date <= ?
+    GROUP BY ad
+    HAVING ad IS NOT NULL
+    ORDER by count DESC`;
+  const options = {
+    query: query,
+    location: 'US',
+    params: [startDate.replace(/-/g, ""), endDate.replace(/-/g, "")],
+  };
+  const [job] = await bigquery.createQueryJob(options);
+  const [addData] = await job.getQueryResults();
+  return [addData];
 }

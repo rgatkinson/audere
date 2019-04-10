@@ -24,6 +24,7 @@
   },
   "main": "build/src/server.js",
   "dependencies": {
+    "@google-cloud/bigquery": "^3.0.0",
     "@pnp/common": "^1.2.9",
     "@pnp/logging": "^1.2.9",
     "@pnp/nodejs": "^1.2.9",
@@ -116,7 +117,8 @@
     },
     "moduleFileExtensions": [
       "ts",
-      "js"
+      "js",
+      "json"
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/build/"
