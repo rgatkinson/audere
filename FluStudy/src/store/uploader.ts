@@ -211,9 +211,7 @@ function addressValueInfo(
     const state = addressInput.state || "";
     const zipcode = addressInput.zipcode || "";
     const country = "";
-    const line: string[] = [addressInput.address, addressInput.address2].filter(
-      isNotNull
-    );
+    const line: string[] = [addressInput.address].filter(isNotNull);
     return {
       firstName,
       lastName,

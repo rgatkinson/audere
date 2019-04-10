@@ -38,7 +38,6 @@ interface State {
 class AddressInput extends React.Component<Props & WithNamespaces, State> {
   lastName = React.createRef<TextInput>();
   address = React.createRef<TextInput>();
-  address2 = React.createRef<TextInput>();
   city = React.createRef<TextInput>();
   stateProvince = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
@@ -123,15 +122,8 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
         {this.renderTextInput(
           t("streetAddress"),
           "address",
-          "address2",
-          true,
-          styles.textInput
-        )}
-        {this.renderTextInput(
-          t("streetAddress2"),
-          "address2",
           "city",
-          false,
+          true,
           styles.textInput
         )}
         {this.renderTextInput(

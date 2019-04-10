@@ -21,7 +21,7 @@ class AddressNotFoundModal extends React.Component<Props & WithNamespaces> {
     }
     const { t } = this.props;
     const { width } = Dimensions.get("window");
-    const { address, address2, city, state, zipcode } = this.props.address;
+    const { address, city, state, zipcode } = this.props.address;
 
     return (
       <Modal
@@ -42,7 +42,6 @@ class AddressNotFoundModal extends React.Component<Props & WithNamespaces> {
           </Text>
           <View style={styles.addressContainer}>
             <Text style={styles.address}>{address}</Text>
-            <Text style={styles.address}>{address2}</Text>
             <Text style={styles.address}>{`${city}, ${state} ${zipcode}`}</Text>
           </View>
         </View>

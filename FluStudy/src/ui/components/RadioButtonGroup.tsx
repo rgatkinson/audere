@@ -29,7 +29,7 @@ const RadioInput = (props: any) => {
 };
 
 const RadioButton = (props: any) => {
-  const { address, address2, city, state, zipcode } = props.address;
+  const { address, city, state, zipcode } = props.address;
   return (
     <TouchableOpacity
       onPress={props.onSelect}
@@ -54,13 +54,6 @@ const RadioButton = (props: any) => {
             props.selected && styles.selectedRadioColor,
           ]}
           content={address}
-        />
-        <Text
-          style={[
-            styles.radioText,
-            props.selected && styles.selectedRadioColor,
-          ]}
-          content={!!address2 ? address2 : ""}
         />
         <Text
           style={[

@@ -70,7 +70,6 @@
     "required": " (required)",
     "locationName": "Location name or neighborhood",
     "streetAddress": "Street Address",
-    "streetAddress2": "Address Line 2 (Apt, building, etc.)",
     "city": "City",
     "state": "State",
     "stateProvince": "State/Province",
@@ -242,7 +241,7 @@
   },
   "addressConfirmScreen": {
     "title": "Verify your address",
-    "description": "We're having trouble verifying your shipping address. Please select the correct address and tap \"continue.\"",
+    "description": "The USPS suggests the following changes to your address. Please select the correct address from the choices below:",
     "suggestedAddress": "Suggested address:",
     "originalAddress": "Original address",
     "reEnterAddress": "Re-end address"

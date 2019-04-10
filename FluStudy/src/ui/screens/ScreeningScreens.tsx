@@ -741,7 +741,6 @@ class AddressInputScreen extends React.Component<
   _isDifferentAddress = (address1: Address, address2: Address) => {
     return (
       !this._isSameTrimmedString(address1.address, address2.address) ||
-      !this._isSameTrimmedString(address1.address2, address2.address2) ||
       !this._isSameTrimmedString(address1.city, address2.city) ||
       !this._isSameTrimmedString(address1.state, address2.state) ||
       !this._isSameTrimmedString(address1.zipcode, address2.zipcode)
@@ -768,7 +767,7 @@ class AddressInputScreen extends React.Component<
       isValidEmail(this.state.email) &&
       (!this.props.workflow.skippedScreeningAt || this._haveOption())
     ) {
-      const { address, address2, city, state, zipcode } = this.state.address;
+      const { address, city, state, zipcode } = this.state.address;
       const config = !!this.props.workflow.skippedScreeningAt
         ? AddressConfig
         : MailingAddressConfig;
@@ -812,7 +811,6 @@ class AddressInputScreen extends React.Component<
             {
               params: {
                 address,
-                address2,
                 city,
                 key,
                 state,
