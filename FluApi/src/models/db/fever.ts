@@ -299,6 +299,7 @@ export function defineFollowUpDiscard(
 // ---------------------------------------------------------------
 
 export interface ReceivedKitAttributes {
+  id?: number,
   surveyId: number,
   fileId: number,
   boxBarcode: string,

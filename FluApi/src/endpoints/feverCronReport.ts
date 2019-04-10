@@ -11,9 +11,11 @@ import { KitOrders } from "../services/fever/kitOrders";
 import { KitRecipientsDataAccess } from "../services/fever/kitOrdersData";
 import { ReceivedKits } from "../services/fever/receivedKits";
 import { ReceivedKitsData } from "../services/fever/receivedKitsData";
-import { S3Retriever } from "../external/s3Retriever";
+import { REDCapRetriever } from "../external/redCapRetriever";
+import { createAxios } from "../util/axios";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
+import { getREDCapConfig } from "../util/redCapConfig";
 import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
 import { SplitSql } from "../util/sql";
@@ -130,9 +132,11 @@ async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
 async function createReceivedKits(sql: SplitSql): Promise<ReceivedKits> {
   const dao = new ReceivedKitsData(sql);
   const secrets = new SecretConfig(sql);
+  const redCapConfig = await getREDCapConfig(secrets);
+  const axios = createAxios(redCapConfig.apiUrl);
+  const retriever = new REDCapRetriever(axios, redCapConfig);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
-  const retriever = new S3Retriever(s3, s3Config);
   const uploader = new S3Uploader(s3, s3Config);
   return new ReceivedKits(dao, retriever, uploader);
 }

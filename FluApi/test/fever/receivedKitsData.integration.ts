@@ -5,8 +5,8 @@
 
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { FeverModels, defineFeverModels } from "../../src/models/db/fever";
-import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
+import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 
 describe("received kits data access", () => {
   let sql: SplitSql;
@@ -29,38 +29,31 @@ describe("received kits data access", () => {
   }
 
   it("should filter existing barcodes", async () => {
+    const barcode = "12345678";
+    const db = surveyNonPIIInDb("asdf");
+    db.survey.samples.push({ sample_type: "scan", code: barcode });
+    const survey = await fever.surveyNonPii.create(db, { returning: true });
+
     const file = await fever.receivedKitsFile.create(
       { file: "test.json" },
       { returning: true}
     );
 
-    const db = surveyNonPIIInDb("asdf");
-    const survey = await fever.surveyNonPii.create(db, { returning: true });
-
-    await fever.receivedKit.create({
+    const kit = await fever.receivedKit.create({
       surveyId: +survey.id,
       fileId: file.id,
-      boxBarcode: "12345678",
+      boxBarcode: barcode,
       dateReceived: "2018-09-19"
+    }, {
+      returning: true
     });
 
     const dao = new ReceivedKitsData(sql);
-    const codes = await dao.filterExistingBarcodes(["12345678", "987654"]);
+    const matches = await dao.matchBarcodes([barcode]);
 
-    expect(codes).toHaveLength(1);
-    expect(codes[0]).toBe("987654");
-  });
-
-  it("should filter files based on files already processed", async () => {
-    await fever.receivedKitsFile.create({
-      file: "one.json"
-    });
-
-    const dao = new ReceivedKitsData(sql);
-    const toProcess = await dao.findFilesToProcess(["one.json", "two.json"]);
-
-    expect(toProcess).toHaveLength(1);
-    expect(toProcess[0]).toBe("two.json");
+    expect(matches).toHaveLength(1);
+    expect(matches[0].id).toBe(+survey.id);
+    expect(matches[0].kitId).toBe(kit.id);
   });
 
   it("should match barcodes to sample code", async () => {
@@ -71,9 +64,11 @@ describe("received kits data access", () => {
     const survey = await fever.surveyNonPii.create(db, { returning: true });
 
     const dao = new ReceivedKitsData(sql);
-    const surveyId = await dao.findSurveyByBarcode(barcode);
+    const matches = await dao.matchBarcodes([barcode]);
     
-    expect(surveyId).toBe(survey.id);
+    expect(matches).toHaveLength(1);
+    expect(matches[0].id).toBe(survey.id);
+    expect(matches[0].kitId).toBeNull();
   });
 
   it("should case-insensitive match barcodes to sample code", async () => {
@@ -84,9 +79,17 @@ describe("received kits data access", () => {
     const survey = await fever.surveyNonPii.create(db, { returning: true });
 
     const dao = new ReceivedKitsData(sql);
-    const surveyId = await dao.findSurveyByBarcode(barcode.toLowerCase());
+    const matches = await dao.matchBarcodes([barcode.toLowerCase()]);
     
-    expect(surveyId).toBe(survey.id);
+    expect(matches).toHaveLength(1);
+    expect(matches[0].id).toBe(survey.id);
+    expect(matches[0].kitId).toBeNull();
+  });
+
+  it("should error when attempting to match invalid barcodes", async () => {
+    const dao = new ReceivedKitsData(sql);
+    const result = dao.matchBarcodes(["ASDF"]);
+    expect(result).rejects.toThrow();
   });
 
   it("should write file and kit data", async () => {

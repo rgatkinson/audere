@@ -12,7 +12,7 @@ import {
 import { Batch, BatchItemWithCsruid } from "./surveyBatchData";
 import { PIIReport, RenderResult } from "./piiReport";
 import { KitRecipientsDataAccess } from "./kitOrdersData";
-import { UWUploader } from "../../external/uwUploader";
+import { S3Uploader } from "../../external/s3Uploader";
 import { SurveyAttributes } from "../../models/db/fever";
 import { GeocodingService } from "../geocodingService";
 import { parse } from "json2csv";
@@ -39,7 +39,7 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
   constructor(
     dao: KitRecipientsDataAccess,
     geocoder: GeocodingService,
-    uploader: UWUploader
+    uploader: S3Uploader
   ) {
     super(dao);
     this.geocoder = geocoder;

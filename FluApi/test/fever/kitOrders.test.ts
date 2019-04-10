@@ -5,7 +5,7 @@
 
 import { instance, mock, when, anything, anyString, capture } from "ts-mockito";
 import { GeocodingService } from "../../src/services/geocodingService";
-import { SharePointUploader } from "../../src/external/sharePointUploader";
+import { S3Uploader } from "../../src/external/s3Uploader";
 import { Batch } from "../../src/services/fever/surveyBatchData";
 import { makeRandomKitReceipient, makeRandomGeoResponse } from "./reportTestUtil";
 import parse from "csv-parse/lib/sync";
@@ -19,7 +19,7 @@ export class TestKitOrders extends KitOrders {
     batch: Batch<KitRecipient>,
     dao: KitRecipientsDataAccess,
     geocoder: GeocodingService,
-    uploader: SharePointUploader
+    uploader: S3Uploader
   ) {
     super(dao, geocoder, uploader);
     this.batch = batch;
@@ -47,7 +47,7 @@ describe("sending kit orders", () => {
     const geocoder = mock(GeocodingService);
     when(geocoder.geocodeAddresses(anything())).thenResolve(geoResponses);
 
-    const uploader = mock(SharePointUploader);
+    const uploader = mock(S3Uploader);
     when(uploader.sendKits(batch.id, anyString())).thenResolve();
 
     const i = new TestKitOrders(

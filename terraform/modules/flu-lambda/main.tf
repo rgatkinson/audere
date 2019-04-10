@@ -10,6 +10,7 @@ locals {
   // This is 8:30 AM and 1:30 PM local in PST
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 ? * MON-FRI *)"
+  cron_weekdays_at_4AM_PST = "cron(0 10 ? * MON-FRI *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -125,6 +126,18 @@ module "fever_kits_report_cron" {
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   frequency = "${local.cron_weekdays_before_9AM_and_1PM_PST}"
   url = "http://${var.fluapi_fqdn}:444/api/export/sendKitOrders"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  timeout = 300
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+}
+
+module "fever_received_kits_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-received-kits"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_weekdays_at_4AM_PST}"
+  url = "http://${var.fluapi_fqdn}:444/api/import/receivedKits"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300

@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { UWUploader } from "../../external/uwUploader";
+import { S3Uploader } from "../../external/s3Uploader";
 import { SurveyCompletedReport } from "./surveyCompleteReport";
 import { FollowUpDataAccess } from "./followUpData";
 
@@ -14,11 +14,11 @@ import { FollowUpDataAccess } from "./followUpData";
  */
 export class FollowUpSurveys extends SurveyCompletedReport {
   protected readonly report = "FollowUp";
-  private readonly uploader;
+  private readonly uploader: S3Uploader;
 
   constructor(
     dao: FollowUpDataAccess,
-    uploader: UWUploader
+    uploader: S3Uploader
   ) {
     super(dao);
     this.uploader = uploader;

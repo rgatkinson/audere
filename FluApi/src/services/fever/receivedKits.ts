@@ -3,26 +3,41 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { S3Retriever } from "../../external/s3Retriever";
-import { UWUploader } from "../../external/uwUploader";
 import { ReceivedKitsData } from "./receivedKitsData";
 import { KitRecord } from "../../models/kitRecord";
+import { S3Uploader } from "../../external/s3Uploader";
+import { REDCapRetriever } from "../../external/redCapRetriever";
 import { parse } from "json2csv";
 import logger from "../../util/logger";
 
+/**
+ * Retrieves lab data to identify kits that have been successfully returned and
+ * processed & associates them to their corresponding survey.
+ */
 export class ReceivedKits {
   private readonly dao: ReceivedKitsData;
-  private readonly retriever: S3Retriever;
-  private readonly uploader: UWUploader;
+  private readonly retriever: REDCapRetriever;
+  private readonly uploader: S3Uploader;
 
   constructor(
     dao: ReceivedKitsData,
-    retriever: S3Retriever,
-    uploader: UWUploader
+    retriever: REDCapRetriever,
+    uploader: S3Uploader
   ) {
     this.dao = dao;
     this.retriever = retriever;
     this.uploader = uploader;
+  }
+
+  private getDateAndTimeString(): string {
+    const pad2 = (n: number) => n.toFixed().padStart(2, "0");
+    const now = new Date();
+    return now.getFullYear() +
+      pad2(now.getMonth()) +
+      pad2(now.getDate()) +
+      pad2(now.getHours()) +
+      pad2(now.getMinutes()) +
+      pad2(now.getSeconds());
   }
 
   /**
@@ -30,68 +45,68 @@ export class ReceivedKits {
    * previously processed files by name to find new files for import.
    */
   public async importReceivedKits() {
-    const files = await this.retriever.listReceivedKitFiles();
-    logger.info(`[Import Kits] ${files.length} total files posted`);
-    const toProcess = await this.dao.findFilesToProcess(files);
-    logger.info(`[Import Kits] ${toProcess.length} files to process`);
+    const data = await this.retriever.getAtHomeData();
 
-    if (toProcess.length > 0) {
-      const contents = await this.retriever.retrieveReceivedKits(toProcess);
-      const keys = Array.from(contents.keys());
+    if (data.length > 0) {
+      const timestamp = this.getDateAndTimeString();
+      const labFile = `FluHome_Lab_Data_${timestamp}.json`;
+      const s3File = await this.uploader
+        .writeAtHomeData(labFile, JSON.stringify(data));
 
-      for (let i = 0; i < keys.length; i++) {
-        logger.info(`[Import Kits] Processing ${keys[i]}...`);
-        const records = contents.get(keys[i]);
-        const errors = [];
-        const barcodeRecords: Map<string, KitRecord> = new Map();
-        const kitsBySurvey: Map<number, KitRecord> = new Map();
+      const errors = [];
+      const validBarcodes: Map<string, KitRecord> = new Map();
+      const kitsBySurvey: Map<number, KitRecord> = new Map();
 
-        // Check that the box barcode is a valid format - a combination of 8
-        // numbers and letters
-        records.forEach(r => {
-          if (r.boxBarcode != null && /^[0-9a-zA-Z]{8}$/.test(r.boxBarcode)) {
-            barcodeRecords.set(r.boxBarcode, r);
+      data.forEach(r => {
+        if (r.boxBarcode != null && /^[0-9a-zA-Z]{8}$/.test(r.boxBarcode)) {
+          r.boxBarcode = r.boxBarcode.toLowerCase();
+          r.rdtBarcode = r.rdtBarcode.toLowerCase();
+          r.stripBarcode = r.stripBarcode.toLowerCase();
+          r.utmBarcode = r.utmBarcode.toLowerCase();
+          validBarcodes.set(r.boxBarcode, r);
+        } else {
+          logger.error(`[Import Kits] Box barcode has invalid format: ` +
+            r.boxBarcode);
+          errors.push(this.createBarcodeError(r, "InvalidBarcode"));
+        }
+      });
+
+      if (validBarcodes.size > 0) {
+        const codes = Array.from(validBarcodes.keys());
+        const matches = await this.dao.matchBarcodes(codes) || [];
+
+        // Check that the box barcode can be associated to a survey
+        codes.forEach(code => {
+          const match = matches.find(m => m.code === code);
+          const r = validBarcodes.get(code);
+
+          if (match == null) {
+            logger.error(`[Import Kits] Barcode doesn't match any survey: ` +
+              r.boxBarcode);
+            errors.push(this.createBarcodeError(r, "NoMatch"));
+          } else if (match.kitId != null) {
+            logger.debug(`[Import Kits] Barcode ${code} was already ` +
+              `matched and can be ignored`);
           } else {
-            logger.error(`[Import Kits] Box barcode has invalid format: ${r.boxBarcode}`);
-            errors.push(this.createBarcodeError(r, "InvalidBarcode"));
+            kitsBySurvey.set(match.id, r);
           }
         });
-
-        if (barcodeRecords.size > 0) {
-          // Filter out previously assigned barcodes, this view of the data may
-          // not be accurate if the db is servicing simultaneous requests
-          const barcodes = Array.from(barcodeRecords.keys());
-          const newBarcodes = await this.dao
-            .filterExistingBarcodes(barcodes);
-
-          // Check that the box barcode can be associated to a survey
-          for (let j = 0; newBarcodes != null && j < newBarcodes.length; j++) {
-            const r = barcodeRecords.get(newBarcodes[j]);
-            const surveyId = await this.dao
-              .findSurveyByBarcode(r.boxBarcode);
-
-            if (surveyId != null) {
-              kitsBySurvey.set(surveyId, r);
-            } else {
-              logger.error(`[Import Kits] Barcode doesn't match any survey: ${r.boxBarcode}`);
-              errors.push(this.createBarcodeError(r, "NoMatch"));
-            }
-          }
-        } else {
-          logger.info(`[Import Kits] No new barcodes to process`);
-        }
-
-        // Write errors for tracking
-        if (errors.length > 0) {
-          logger.info(`[Import Kits] Posting ${errors.length} errors`);
-          const csv = parse(errors, { header: true });
-          this.uploader.writeBarcodeErrors(csv);
-        }
-
-        // Insert the file metadata and barcode mappings
-        logger.info(`[Import Kits] Committing ${keys[i]} as processed with ${kitsBySurvey.size} new barcodes`);
-        await this.dao.importReceivedKits(keys[i], kitsBySurvey);
+      } else {
+        logger.info(`[Import Kits] No new barcodes to process`);
       }
+
+      // Write errors for tracking
+      if (errors.length > 0) {
+        logger.info(`[Import Kits] Posting ${errors.length} errors`);
+        const csv = parse(errors, { header: true });
+        const errorFile = `FluHome_BarcodeErrors_${timestamp}.csv`;
+        this.uploader.writeBarcodeErrors(errorFile, csv);
+      }
+
+      // Insert the file metadata and barcode mappings
+      logger.info(`[Import Kits] Committing ${s3File} as processed with `
+        + `${kitsBySurvey.size} new barcodes`);
+      await this.dao.importReceivedKits(s3File, kitsBySurvey);
     } else {
       logger.info(`[Import Kits] No files to process`);
     }

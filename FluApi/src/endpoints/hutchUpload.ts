@@ -9,13 +9,12 @@ import {
   hutchConcurrentUploads,
   getHashSecret
 } from "../util/exportConfig";
-import logger from "../util/logger";
-import axios, { AxiosInstance } from "axios";
 import { HutchUploader } from "../external/hutchUploader";
 import { VisitsService } from "../services/sniffles/visitsService";
 import { defineHutchUpload } from "../models/db/hutchUpload";
 import { getHutchConfig } from "../util/hutchUploadConfig";
 import { defineSnifflesModels } from "../models/db/sniffles";
+import { createAxios } from "../util/axios";
 import { SplitSql } from "../util/sql";
 import { SecretConfig } from "../util/secretsConfig";
 import { createGeocoder } from "../util/geocoder";
@@ -68,30 +67,6 @@ export class HutchUploaderEndpoint {
       next(e);
     }
   }
-}
-
-function createAxios(baseURL): AxiosInstance {
-  const api = axios.create({ baseURL });
-
-  if (process.env.NODE_ENV === "development") {
-    // TODO: "data" field doesn't log anything
-    const REQUEST_FIELDS = ["method", "baseURL", "url", "data"];
-    api.interceptors.request.use(request => {
-      logger.debug(
-        `HTTP request:\n${JSON.stringify(request, REQUEST_FIELDS, 2)}`
-      );
-      return request;
-    });
-    const RESPONSE_FIELDS = ["status", "headers", "data"];
-    api.interceptors.response.use(response => {
-      logger.debug(
-        `HTTP response: "${JSON.stringify(response, RESPONSE_FIELDS, 2)}"`
-      );
-      return response;
-    });
-  }
-
-  return api;
 }
 
 async function createEncountersService(
