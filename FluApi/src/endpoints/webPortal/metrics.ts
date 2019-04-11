@@ -831,9 +831,123 @@ export async function getFeverMetrics(
   const dateClause = `"createdAt" > \'${startDate} 00:00:00.000${offset}\' and "createdAt" < \'${endDate} 23:59:59.999${offset}\'`;
   const demoClause = "((survey->>'isDemo')::boolean IS FALSE)";
 
-  //Get all non-demo mode data out of database for specified date range
+  //Get all non-demo mode data out of nonpii database for specified date range
   const feverModels = defineFeverModels(sql);
-  const rows = await feverModels.surveyPii.findAll({
+  const rowsNonPii = await feverModels.surveyNonPii.findAll({
+    where: {
+      survey: {
+        isDemo: false
+      },
+      createdAt: {
+        [Op.between]: [
+          new Date(`${startDate} 00:00:00.000${offset}`),
+          new Date(`${endDate} 00:00:00.000${offset}`)
+        ]
+      }
+    },
+    raw: true
+  });
+
+  //Aggregate by age
+  const validNonPii = rowsNonPii.filter(row => row.survey.responses[0].item[0] != null);
+  const getAge = (row) => {
+    const age = row.survey.responses[0].item[0].answer[0].valueIndex;
+    return row.survey.responses[0].item[0].answerOptions[age].text;
+  };
+  const isEligible = (row) => {
+    const hasSymptoms = row.survey.events.some(item => 
+      item.refId == "PreConsent" || item.refId == "Consent");
+    return hasSymptoms ? 1 : 0;
+  };
+  const didConsent = (row) => row.survey.consents.length > 0 ? 1 : 0;
+  const orderedKit = (row) => row.survey.workflow.screeningCompletedAt ? 1 : 0;
+  const startedPart2 = (row) => {
+    const part2 = row.survey.events.some(item => item.refId == "WelcomeBack");
+    return part2 ? 1 : 0;
+  };
+  const scannedBarcode = (row) => row.survey.samples.length > 0 ? 1 : 0;
+  const completedSurvey = (row) => {
+    const survey = row.survey.events.some(item => item.refId == "ThankYouSurvey");
+    return survey ? 1 : 0;
+  };
+  const completedTest1 = (row) => {
+    const test1 = row.survey.events.some(item => item.refId == "FirstTestFeedback");
+    return test1 ? 1 : 0;
+  };
+  const completedTest2 = (row) => {
+    const test2 = row.survey.events.some(item => item.refId == "SecondTestFeedback");
+    return test2 ? 1 : 0;
+  };
+  const finishedApp = (row) => row.survey.workflow.surveyCompletedAt ? 1 : 0;
+  const test1Errors = (row) => {
+    const error = row.survey.responses[0].item.some(item => 
+      item.id == "FirstTestFeedback" && item.answer[0].valueIndex >= 2)
+    return error ? 1 : 0
+  };
+  const test2Errors = (row) => {
+    const error = row.survey.responses[0].item.some(item => 
+      item.id == "SecondTestFeedback" && item.answer[0].valueIndex >= 2)
+    return error ? 1 : 0
+  };
+  const ageCounts = aggregate(
+    validNonPii,
+    getAge,
+    (row) => ({ age: getAge(row), 
+      count: 0, 
+      eligible: 0,
+      consents: 0,
+      kits: 0,
+      part2: 0,
+      scanned: 0,
+      surveyscompleted: 0,
+      test1: 0,
+      test2: 0,
+      finished: 0,
+      kitsreturned: "",
+      test1errors: 0,
+      test2errors: 0
+     }),
+    (acc, row) => ({ ...acc, 
+      count: acc.count + 1, 
+      eligible: acc.eligible + isEligible(row),
+      consents: acc.consents + didConsent(row),
+      kits: acc.kits + orderedKit(row),
+      part2: acc.part2 + startedPart2(row),
+      scanned: acc.scanned + scannedBarcode(row),
+      surveyscompleted: acc.surveyscompleted + completedSurvey(row),
+      test1: acc.test1 + completedTest1(row),
+      test2: acc.test2 + completedTest2(row),
+      finished: acc.finished + finishedApp(row),
+      test1errors: acc.test1errors + test1Errors(row),
+      test2errors: acc.test2errors + test2Errors(row)
+    })
+  );
+  let ageData = ageCounts.sort((a, b) => a.age.localeCompare(b.age));
+  if (ageData.length > 0) {
+    const total = ageData.reduce( (previousValue, currentValue) => {
+      return {
+        age: "Total",
+        count: previousValue.count + currentValue.count,
+        eligible: previousValue.eligible + currentValue.eligible,
+        consents: previousValue.consents + currentValue.consents,
+        kits: previousValue.kits + currentValue.kits,
+        part2: previousValue.part2 + currentValue.part2,
+        scanned: previousValue.scanned + currentValue.scanned,
+        surveyscompleted: previousValue.surveyscompleted + currentValue.surveyscompleted,
+        test1: previousValue.test1 + currentValue.test1,
+        test2: previousValue.test2 + currentValue.test2,
+        finished: previousValue.finished + currentValue.finished,
+        kitsreturned: "",
+        test1errors: previousValue.test1errors + currentValue.test1errors,
+        test2errors: previousValue.test2errors + currentValue.test2errors
+      }
+    });
+    ageData.push(total);
+  }
+  const surveyStatsData = funnelAgeData(ageData);
+  
+  //Get all non-demo mode data out of pii database for specified date range
+  const rowsPii = await feverModels.surveyPii.findAll({
     where: {
       survey: {
         isDemo: false
@@ -847,12 +961,12 @@ export async function getFeverMetrics(
     },
     raw: true
   });
-
+  
   //Aggregate data by U. S. State
-  const validRows = rows.filter(row => row.survey.patient.address[0] != null);
+  const validPii = rowsPii.filter(row => row.survey.patient.address[0] != null);
   const getState = (row) => row.survey.patient.address[0].state;
   const counts = aggregate(
-    validRows,
+    validPii,
     getState,
     (row) => ({ state: getState(row), count: 0 }),
     (acc, row) => ({ ...acc, count: acc.count + 1 })
@@ -861,92 +975,11 @@ export async function getFeverMetrics(
     .sort((a, b) => b.count - a.count)
     .map(x => ({
       ...x,
-      percent: (x.count / validRows.length * 100).toFixed(1)
+      percent: (x.count / validPii.length * 100).toFixed(1)
     }));
 
-  const surveyStatsQuery = `
-      WITH agebuckets AS (
-      WITH t AS (
-        WITH t1 AS (
-          SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
-              survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
-            SUM(CASE WHEN (items->>'id'='FirstTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
-              THEN 1 END) test1errors
-          FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
-          WHERE ${dateClause} AND ${demoClause}
-          GROUP BY age)
-        SELECT t1.age, t1.test1errors, t2.test2errors
-        FROM t1 LEFT JOIN (
-          SELECT json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
-              survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
-            SUM(CASE WHEN (items->>'id'='SecondTestFeedback' AND (items->'answer'->0->>'valueIndex')::int >= 2)
-              THEN 1 END) test2errors
-          FROM fever_current_surveys, json_array_elements(survey->'responses'->0->'item') items
-          WHERE ${dateClause} AND ${demoClause}
-          GROUP BY age
-        ) t2
-        ON t1.age=t2.age
-      )
-      SELECT
-        t.age,
-        t.test1errors,
-        t.test2errors,
-        t4.total,
-        t4.eligible,
-        t4.consents,
-        t4.kits,
-        t4.part2,
-        t4.scanned,
-        t4.surveyscompleted,
-        t4.test1,
-        t4.test2,
-        t4.finished,
-        t4.kitsreturned
-       FROM t RIGHT JOIN (
-        SELECT
-          json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
-            survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age,
-          COUNT(*) as total,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Consent"}]' THEN 1 END) as eligible,
-          SUM(CASE WHEN survey->'consents'->0->'date' IS NOT NULL THEN 1 END) as consents,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Confirmation"}]' THEN 1 END) as kits,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"WelcomeBack"}]' THEN 1 END) as part2,
-          SUM(CASE WHEN survey->'samples'->0->'code' IS NOT NULL THEN 1 END) as scanned,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"ThankYouSurvey"}]' THEN 1 END) as surveyscompleted,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"FirstTestFeedback"}]' THEN 1 END) as test1,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"SecondTestFeedback"}]' THEN 1 END) as test2,
-          SUM(CASE WHEN (survey->'events')::jsonb @> '[{"refId":"Thanks"}]' THEN 1 END) as finished,
-          '' as kitsreturned
-          FROM fever_current_surveys fcs
-          WHERE ${dateClause} AND ${demoClause}
-          GROUP BY age
-          ORDER BY age
-        ) t4
-      ON t.age = t4.age
-      ORDER BY age)
-      SELECT * FROM agebuckets UNION ALL
-      SELECT 'Total',
-             SUM(test1errors),
-             SUM(test2errors),
-             SUM(total),
-             SUM(eligible),
-             SUM(consents),
-             SUM(kits),
-             SUM(part2),
-             SUM(scanned),
-             SUM(surveyscompleted),
-             SUM(test1),
-             SUM(test2),
-             SUM(finished),
-             ''
-      FROM agebuckets;`;
-
-  const surveyStatsData = funnelAgeData(
-    await clientQuery(surveyStatsQuery)
-  );
-
   //Aggregate data by last screen viewed
-  const rowsUnfinishedSurveys = rows
+  const rowsUnfinishedSurveys = rowsPii
     .filter(row => row.survey.events != null)
     .filter(row => !('surveyCompletedAt' in row.survey.workflow));
   const getLastScreen = (row) => row.survey.events[row.survey.events.length - 1].refId;
@@ -1045,27 +1078,27 @@ function aggregate<Row, Key, Value>(
 
 function funnelAgeData(ageData): object {
   const totalRow = ageData[ageData.length - 1];
-  if (totalRow.total > 0){
+  if (totalRow){
     ageData.push({
       "age": "% of users",
-      "total": "100%",
-      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%",
-      "consents": (totalRow.consents/totalRow.total * 100).toFixed(1) + "%",
-      "kits": (totalRow.kits/totalRow.total * 100).toFixed(1) + "%",
-      "part2": (totalRow.part2/totalRow.total * 100).toFixed(1) + "%",
-      "scanned": (totalRow.scanned/totalRow.total * 100).toFixed(1) + "%",
-      "surveyscompleted": (totalRow.surveyscompleted/totalRow.total * 100).toFixed(1) + "%",
-      "test1": (totalRow.test1/totalRow.total * 100).toFixed(1) + "%",
-      "test2": (totalRow.test2/totalRow.total * 100).toFixed(1) + "%",
-      "finished": (totalRow.finished/totalRow.total * 100).toFixed(1) + "%",
+      "count": "100%",
+      "eligible": (totalRow.eligible/totalRow.count * 100).toFixed(1) + "%",
+      "consents": (totalRow.consents/totalRow.count * 100).toFixed(1) + "%",
+      "kits": (totalRow.kits/totalRow.count * 100).toFixed(1) + "%",
+      "part2": (totalRow.part2/totalRow.count * 100).toFixed(1) + "%",
+      "scanned": (totalRow.scanned/totalRow.count * 100).toFixed(1) + "%",
+      "surveyscompleted": (totalRow.surveyscompleted/totalRow.count * 100).toFixed(1) + "%",
+      "test1": (totalRow.test1/totalRow.count * 100).toFixed(1) + "%",
+      "test2": (totalRow.test2/totalRow.count * 100).toFixed(1) + "%",
+      "finished": (totalRow.finished/totalRow.count * 100).toFixed(1) + "%",
       "kitsreturned": "",
-      "test1errors": (totalRow.test1errors/totalRow.total * 100).toFixed(1) + "%",
-      "test2errors": (totalRow.test2errors/totalRow.total * 100).toFixed(1) + "%",
+      "test1errors": (totalRow.test1errors/totalRow.count * 100).toFixed(1) + "%",
+      "test2errors": (totalRow.test2errors/totalRow.count * 100).toFixed(1) + "%",
     });
     ageData.push({
       "age": "% retention",
-      "total": "",
-      "eligible": (totalRow.eligible/totalRow.total * 100).toFixed(1) + "%",
+      "count": "",
+      "eligible": (totalRow.eligible/totalRow.count * 100).toFixed(1) + "%",
       "consents": (totalRow.consents/totalRow.eligible * 100).toFixed(1) + "%",
       "kits": (totalRow.kits/totalRow.consents * 100).toFixed(1) + "%",
       "part2": (totalRow.part2/totalRow.kits * 100).toFixed(1) + "%",
@@ -1197,7 +1230,7 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Age",
       ...defaultCell
     },
-    total: {
+    count: {
       displayName: "Started Part 1",
       ...defaultCell
     },
