@@ -69,6 +69,10 @@ allprojects {
   }
 }
 
+ext {
+    supportLibVersion = '27.1.1'
+}
+
 subprojects {
     afterEvaluate {project ->
         if (project.hasProperty("android")) {

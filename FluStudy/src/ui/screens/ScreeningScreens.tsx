@@ -11,7 +11,6 @@ import {
   KeyboardAvoidingView,
   NetInfo,
   Platform,
-  PushNotificationIOS,
   ScrollView,
   View,
 } from "react-native";
@@ -22,19 +21,13 @@ import CheckBox from "react-native-check-box";
 import axios from "axios";
 import { createAccessKey } from "../../util/accessKey";
 
-import {
-  PushNotificationState,
-  PushRegistrationError,
-  WorkflowInfo,
-  ConsentInfoSignerType,
-} from "audere-lib/feverProtocol";
+import { WorkflowInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import {
   Action,
   Address,
   Option,
   StoreState,
   setEmail,
-  setPushNotificationState,
   setWorkflow,
   setConsent,
   logger,
@@ -1272,16 +1265,11 @@ export const StateIneligible = withNamespaces("stateIneligibleScreen")(
   StateIneligibleScreen
 );
 
-interface PushProps {
-  pushState: PushNotificationState;
-}
-
 @connect((state: StoreState) => ({
-  pushState: state.survey.pushState,
   workflow: state.survey.workflow,
 }))
 class ConfirmationScreen extends React.Component<
-  Props & WorkflowProps & PushProps & WithNamespaces
+  Props & WorkflowProps & WithNamespaces
 > {
   componentDidMount() {
     this.props.dispatch(
@@ -1338,66 +1326,7 @@ export const Confirmation = withNamespaces("confirmationScreen")(
   ConfirmationScreen
 );
 
-@connect((state: StoreState) => ({
-  pushState: state.survey.pushState,
-}))
-class PushNotificationsScreen extends React.Component<
-  Props & PushProps & WithNamespaces
-> {
-  _registrationEvent = (token: string) => {
-    const newPushState = { ...this.props.pushState, token };
-    this.props.dispatch(setPushNotificationState(newPushState));
-    this.props.navigation.push("ExtraInfo");
-  };
-
-  _registrationErrorEvent = (result: PushRegistrationError) => {
-    const newPushState = { ...this.props.pushState, registrationError: result };
-    this.props.dispatch(setPushNotificationState(newPushState));
-    this.props.navigation.push("ExtraInfo");
-  };
-
-  componentWillMount() {
-    PushNotificationIOS.addEventListener("register", this._registrationEvent);
-    PushNotificationIOS.addEventListener(
-      "registrationError",
-      this._registrationErrorEvent
-    );
-  }
-
-  componentWillUnmount() {
-    PushNotificationIOS.removeEventListener(
-      "register",
-      this._registrationEvent
-    );
-    PushNotificationIOS.removeEventListener(
-      "registrationError",
-      this._registrationErrorEvent
-    );
-  }
-
-  _onNo = () => {
-    const newPushState = {
-      ...this.props.pushState,
-      softResponse: false,
-    };
-    this.props.dispatch(setPushNotificationState(newPushState));
-    this.props.navigation.push("ExtraInfo");
-  };
-
-  _onYes = () => {
-    if (this.props.pushState.showedSystemPrompt) {
-      this.props.navigation.push("ExtraInfo");
-    } else {
-      const newPushState = {
-        ...this.props.pushState,
-        softResponse: true,
-        showedSystemPrompt: true,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      PushNotificationIOS.requestPermissions();
-    }
-  };
-
+class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
@@ -1405,24 +1334,9 @@ class PushNotificationsScreen extends React.Component<
         buttonLabel={t("common:button:yes")}
         canProceed={true}
         desc={t("description")}
-        footer={
-          <Button
-            enabled={true}
-            primary={false}
-            label={t("common:button:no")}
-            onPress={this._onNo}
-          />
-        }
-        imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/oneMinuteTimer"
-              : "asset:/img/one_minute_timer.png",
-        }}
         navigation={this.props.navigation}
         skipButton={true}
         title={t("pushNotifications")}
-        onNext={this._onYes}
       />
     );
   }

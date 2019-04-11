@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { PushNotification, PushNotificationIOS, View } from "react-native";
+import { Platform, PushNotification, PushNotificationIOS, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { withNavigation } from "react-navigation";
@@ -43,16 +43,18 @@ export interface TimerProps {
   onNext(): void;
 }
 
-PushNotificationIOS.getInitialNotification().then(notification => {
-  // Executed with non null notification when the app is launched (not from background) with
-  // the notification
-  if (notification != null) {
-    tracker.logEvent(notificationEvent, {
-      appLaunch: true,
-      message: notification.getMessage(),
-    });
-  }
-});
+if (Platform.OS === "ios") {
+  PushNotificationIOS.getInitialNotification().then(notification => {
+    // Executed with non null notification when the app is launched (not from background) with
+    // the notification
+    if (notification != null) {
+      tracker.logEvent(notificationEvent, {
+        appLaunch: true,
+        message: notification.getMessage(),
+      });
+    }
+  });
+}
 
 const timerWithConfigProps = (configProps: ConfigProps) => (
   WrappedComponent: any

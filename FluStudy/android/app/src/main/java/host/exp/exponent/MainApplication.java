@@ -11,6 +11,7 @@ import expolib_v1.okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
@@ -53,6 +54,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
 
         // Needed for `react-native link`
         // new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
             new FBSDKPackage(mCallbackManager),
             new RNDeviceInfo(),
             new RNFirebasePackage(),
