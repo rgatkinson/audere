@@ -13,6 +13,8 @@ import {
   VisitCommonInfo,
   EventInfoKind
 } from "audere-lib/snifflesProtocol";
+import { SurveyAttributes } from "../../src/models/db/fever";
+import { PIIInfo } from "audere-lib/feverProtocol";
 
 export const DEVICE = {
   installation: "uuid",
@@ -128,4 +130,22 @@ export function makeCSRUID(seed: string): string {
   const hash = crypto.createHash("sha256");
   hash.update(seed);
   return hash.digest("hex").toString();
+}
+
+export function feverSurveyPii(csruid: string): SurveyAttributes<PIIInfo> {
+  return {
+    device: DEVICE,
+    csruid: csruid,
+    survey: {
+      patient: {
+        telecom: [],
+        address: []
+      },
+      consents: [],
+      responses: [],
+      isDemo: false,
+      events: [],
+      workflow: {}
+    }
+  };
 }

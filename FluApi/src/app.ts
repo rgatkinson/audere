@@ -34,7 +34,7 @@ export async function createPublicApp(config: AppConfig) {
       const method = req.method || "unknown_method";
       req.statsdKey = ["public", method.toLowerCase(), path].join(".");
       next();
-    }
+    };
   }
 
   const sql = config.sql;
@@ -94,11 +94,24 @@ export async function createPublicApp(config: AppConfig) {
 
   const feverAddress = new FeverValidateAddress(sql);
 
+  // Remove once all clients are updated to use /api/validateUniqueAddress
   publicApp.get(
     "/api/validateAddress",
     stats("validateaddress"),
     wrap(async (req, res) => {
-      const results = await feverAddress.performRequest(req);
+      const results = await feverAddress.validate(req.query);
+      res.json(results);
+    })
+  );
+
+  publicApp.get(
+    "/api/validateUniqueAddress",
+    stats("validateaddress"),
+    wrap(async (req, res) => {
+      const results = await feverAddress.validateAndCheckDuplicates(
+        JSON.parse(req.query.address),
+        req.query.csruid
+      );
       res.json(results);
     })
   );
@@ -112,7 +125,7 @@ export function createInternalApp(config: AppConfig) {
       const method = req.method || "unknown_method";
       req.statsdKey = ["internal", method.toLowerCase(), path].join(".");
       next();
-    }
+    };
   }
 
   const sql = config.sql;
@@ -128,10 +141,8 @@ export function createInternalApp(config: AppConfig) {
   internalApp.use(bodyParser.json());
   internalApp.use(morganMiddleware());
 
-  internalApp.get(
-    "/api",
-    stats("api"),
-    (req, res) => res.json({ Status: "OK" })
+  internalApp.get("/api", stats("api"), (req, res) =>
+    res.json({ Status: "OK" })
   );
 
   const hutchUploader = new HutchUploaderEndpoint(sql);
@@ -200,7 +211,7 @@ const MORGAN_FORMAT =
   ":request-id :req[X-Forwarded-For](:remote-addr) :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
 
 const MORGAN_STREAM = {
-  write: (message) => logger.info(message),
+  write: message => logger.info(message)
 };
 
 morgan.token("request-id", (req: any, res) => requestId(req));

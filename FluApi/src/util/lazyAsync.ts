@@ -7,8 +7,8 @@ export class LazyAsync<T> {
   private readonly init: () => Promise<T>;
   private instance: Promise<T>;
 
-  constructor(fn: () => Promise<T>) {
-    this.init = fn;
+  constructor(init: () => Promise<T>) {
+    this.init = init;
   }
 
   public get(): Promise<T> {
