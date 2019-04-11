@@ -3,7 +3,7 @@ To get going on this project:
 1. Download and install Android Studio
 2. In Android Studio, open ./build.gradle.  A bunch of things will start downloading/processing in
 your build folder when this happens.
-3. Install Android SDK 27 (Oreo) by opening Tools -> SDK Manager.  Check the SDK 27 (Oreo) box and
+3. Install Android SDK 27 (Oreo) by opening Tools -> SDK Manager or from the starting window choose Configure -> SDK Manager at the bottom.  Check the SDK 27 (Oreo) box and
 OK/accept the dialog.
 4. Run `git update-index --assume-unchanged FluStudy/android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java`
     This file is updated by Android Studio whenever you build, with your IP address, so shouldn't be
