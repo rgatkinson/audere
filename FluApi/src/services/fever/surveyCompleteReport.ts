@@ -29,9 +29,9 @@ export interface SurveyCompleteParticipant {
 }
 
 /**
- * Generates a common report for 
+ * Generates a common report for data from the end of the survey lifecycle. The
+ * logic to retrieve rows may be customized but the output format is shared.
  */
-
 export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem, SurveyCompleteParticipant> {
   protected abstract report: string;
 
