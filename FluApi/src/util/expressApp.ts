@@ -51,7 +51,18 @@ export function render<T>(template: string, builder: ContextBuilder<T>) {
 
 export function wrap(handler: any) {
   return function(req: any, res: any, next: any) {
-    handler(req, res).catch(next);
+    try {
+      const maybePromise = handler(req, res, next);
+
+      if (maybePromise != null &&
+        typeof maybePromise.then === "function" &&
+        typeof maybePromise.catch === "function") {
+          maybePromise.catch(next);
+      }
+    } catch (err) {
+      // Make sure any synchronous errors are also exposed
+      next(err);
+    }
   };
 }
 

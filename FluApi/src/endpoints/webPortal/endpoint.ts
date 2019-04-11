@@ -11,7 +11,7 @@ import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
 import { AuthManager } from "./auth";
-import { useOuch, createApp, render } from "../../util/expressApp";
+import { useOuch, createApp, render, wrap } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
@@ -106,9 +106,9 @@ async function addSession(
 
 function addHandlers(app: Express, auth: passport.Authenticator): Express {
   app.get("/login", render("login.html", loginContext));
-  app.post("/login", login);
+  app.post("/login", wrap(login));
 
-  app.use(requireLoggedInUser);
+  app.use(wrap(requireLoggedInUser));
   app.get("/index", render("index.html", userContext));
 
   addMetricsHandlers(app);
@@ -156,7 +156,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   }
 
   function addMetricsHandlers(app: Express): void {
-    app.get("/metrics", async (req, res) => {
+    app.get("/metrics", wrap(async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
       const {
@@ -175,9 +175,9 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         startDate: startDate,
         endDate: endDate
       });
-    });
+    }));
 
-    app.get("/feverMetrics", async (req, res) => {
+    app.get("/feverMetrics", wrap(async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
       const {
@@ -195,9 +195,9 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         startDate: startDate,
         endDate: endDate
       });
-    });
+    }));
 
-    app.get("/feverFirebase", async (req, res) => {
+    app.get("/feverFirebase", wrap(async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
       const [
@@ -209,7 +209,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         startDate: startDate,
         endDate: endDate
       });
-    });
+    }));
 
     app.get("/saveMetrics", excelHandler("sfs", getExcelReport));
     app.get("/saveFeverMetrics", excelHandler("fluAtHome", getFeverExcelReport));
@@ -218,7 +218,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     type DateRangeQuery = (start: string, end: string) => Promise<Buffer>;
 
     function excelHandler(prefix: string, query: DateRangeQuery): express.Handler {
-      return async (req, res) => {
+      return wrap(async (req, res) => {
         const start = req.query.startDate || getLastMonday();
         const end = req.query.endDate || getThisSunday();
         const data = await query(start, end);
@@ -226,7 +226,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         const range = start === end ? start : `${start}_${end}`;
         const filename = `${prefix}-${range}.xlsx`;
         sendExcel(res, filename, data);
-      };
+      });
     }
 
     function sendExcel(res: any, name: string, data: Buffer): void {
