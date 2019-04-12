@@ -6,8 +6,7 @@ import {
   BORDER_COLOR,
   EXTRA_SMALL_TEXT,
   GUTTER,
-  LINK_COLOR,
-  STATUS_BAR_COLOR,
+  TEXT_COLOR,
   SYSTEM_FONT,
   SYSTEM_TEXT,
 } from "../styles";
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: SYSTEM_FONT,
     fontSize: SYSTEM_TEXT,
-    color: LINK_COLOR,
+    color: TEXT_COLOR,
   },
   actionButton: {
     width: "50%",
