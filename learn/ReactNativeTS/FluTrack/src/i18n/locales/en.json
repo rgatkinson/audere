@@ -161,7 +161,7 @@
   "surveyTitle": {
     "ageTitle": "What is the age of the participant?",
     "symptomTitle": "What symptoms have you experienced in the last week?",
-    "bloodTitle": "Would you like to take part in a blood collection?",
+    "bloodTitle": "Would you like to take part in blood collection and/or repeat nasal swabs?",
     "consent": "Consent",
     "enrolledTitle": "We would like to email you.",
     "birth": "What is your date of birth?",
@@ -238,7 +238,7 @@
     "6feet": "6 Feet",
     "comma": "Use a comma to separate values if more than one.",
     "occupationDescription": "Enter the occupation that you spend most of your time at.",
-    "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect a blood sample from you. To do this, a phlebotomist would collect some extra tubes of blood from you during your morning blood draw.",
+    "bloodDescription": "You have the choice to join an extra part of the study. If you join this extra part, we would collect up to two blood samples and/or repeat nasal swabs from you while you are in the hospital. For the blood draw, a phlebotomist would collect some extra tubes of blood from you during your morning blood draw.",
     "enrolledDescription": "Please provide your email address and select when we may email you (optional).",
     "expoToSickPeople": "These questions are about being **in contact** with people who seemed to have a cold. **In contact** means being within 6 feet of them for at least 2 minutes. For reference, 6 feet is about the distance between you and someone sitting 2 rows ahead of you on the bus.",
     "top3": "Select your top 3.",
@@ -290,8 +290,8 @@
   },
   "bloodScreen": {
     "optIn": "Optional Blood Sample",
-    "yesBloodButtonSubtext": "I would like to join the extra part of the study. I understand I will have my blood collected.",
-    "noBloodButtonSubtext": "I do not want any blood collected from me."
+    "yesBloodButtonSubtext": "I would like to join the extra part of the study. I understand this includes having my blood drawn and/or repeat nasal swabs.",
+    "noBloodButtonSubtext": "I do not want any blood or repeat nasal swabs collected from me."
   },
   "welcomeScreen": {
     "welcomeTo": "Welcome to the Seattle Flu Study",
