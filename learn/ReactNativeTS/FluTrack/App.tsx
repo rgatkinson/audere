@@ -20,6 +20,7 @@ import {
   uploadingErrorHandler,
   ErrorProps,
 } from "./src/crashReporter";
+import { initializeFirebase } from "./src/util/firebase";
 
 import HomeScreen from "./src/ui/screens/survey/HomeScreen";
 import WelcomeScreen from "./src/ui/screens/survey/WelcomeScreen";
@@ -163,6 +164,7 @@ export default class App extends React.Component<AppProps> {
       reportPreviousCrash(this.props.exp.errorRecovery);
     }
     setupErrorHandler();
+    initializeFirebase();
   }
 
   componentDidCatch(error: Error) {
