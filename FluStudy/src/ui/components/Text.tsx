@@ -226,6 +226,5 @@ const styles = StyleSheet.create({
   },
   linkStyle: {
     color: LINK_COLOR,
-    fontFamily: FONT_BOLD,
   },
 });

@@ -35,11 +35,7 @@
       "tablet": "iPad",
       "unknown": "device"
     },
-    "giftCardAmount": "$25",
-    "menu": {
-      "about": "ABOUT FLU@HOME",
-      "help": "HELP & SUPPORT"
-    }
+    "giftCardAmount": "$25"
   },
   "step": {
     "step": "**Step {{step}}** of {{total}}"

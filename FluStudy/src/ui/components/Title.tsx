@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
-    marginTop: GUTTER / 2,
+    marginTop: GUTTER,
   },
 });

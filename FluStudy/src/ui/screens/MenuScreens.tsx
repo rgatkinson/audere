@@ -22,13 +22,7 @@ import Divider from "./../components/Divider";
 import Screen from "./../components/Screen";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import i18n from "i18next";
-import {
-  GUTTER,
-  PRIMARY_COLOR,
-  SYSTEM_FONT,
-  SYSTEM_TEXT,
-  SECONDARY_COLOR,
-} from "./../styles";
+import { GUTTER, PRIMARY_COLOR, SYSTEM_FONT, SYSTEM_TEXT } from "./../styles";
 import BuildInfo from "../components/BuildInfo";
 import { menuScreens, MenuConfig } from "../../resources/MenuConfig";
 
@@ -56,20 +50,12 @@ export const Menu = (props: any) => {
           {i18n.t("menu:aboutFluAtHome")}
         </SystemText>
         <Divider style={styles.divider} />
-        <DrawerItems
-          activeTintColor={SECONDARY_COLOR}
-          inactiveTintColor={SECONDARY_COLOR}
-          {...aboutItems}
-        />
+        <DrawerItems {...aboutItems} />
         <SystemText style={styles.header}>
           {i18n.t("menu:helpAndSupport")}
         </SystemText>
         <Divider style={styles.divider} />
-        <DrawerItems
-          activeTintColor={SECONDARY_COLOR}
-          inactiveTintColor={SECONDARY_COLOR}
-          {...helpItems}
-        />
+        <DrawerItems {...helpItems} />
       </SafeAreaView>
     </ScrollView>
   );
@@ -115,17 +101,15 @@ export const generateMenuScreen = (config: MenuConfig) => {
           desc={t("description", {
             device: t("common:device:" + DEVICE_INFO.idiomText),
           })}
-          images={config.images}
           menuItem={true}
           navigation={this.props.navigation}
           skipButton={true}
-          imageSrc={{
+          stableImageSrc={{
             uri:
               Platform.OS === "ios"
-                ? "img/colorLogo"
-                : "asset:/img/colorLogo.png",
+                ? "img/reverseLogo"
+                : "asset:/img/reverse_logo.png",
           }}
-          subTitle={t(`common:menu:${config.subTitle}`)}
           title={t("title")}
         >
           {!!config.showBuildInfo && <BuildInfo />}
