@@ -201,7 +201,10 @@ const ADDRESS_EQUALITY_KEYS = [
   "country"
 ];
 
-function addressInfosEqual(addr1: AddressInfo, addr2: AddressInfo): boolean {
+export function addressInfosEqual(
+  addr1: AddressInfo,
+  addr2: AddressInfo
+): boolean {
   return ADDRESS_EQUALITY_KEYS.every(keyToCheck => {
     if (!Array.isArray(addr1[keyToCheck])) {
       return addr1[keyToCheck] === addr2[keyToCheck];
@@ -210,9 +213,10 @@ function addressInfosEqual(addr1: AddressInfo, addr2: AddressInfo): boolean {
     if (addr1[keyToCheck].length !== addr2[keyToCheck].length) {
       return false;
     }
-    return addr1[keyToCheck].every(
-      (value, index) => addr2[keyToCheck][index] === value
-    );
+    return addr1[keyToCheck].every((value, index) => {
+      const value2 = addr2[keyToCheck][index];
+      return value == null ? value2 == null : value === value2;
+    });
   });
 }
 

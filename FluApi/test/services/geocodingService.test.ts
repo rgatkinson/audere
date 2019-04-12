@@ -11,7 +11,8 @@ import {
   Geocoder,
   GeocodingService,
   cleanAddressString,
-  canonicalizeAddressInfo
+  canonicalizeAddressInfo,
+  addressInfosEqual
 } from "../../src/services/geocodingService";
 import { CensusTractService } from "../../src/services/censusTractService";
 
@@ -242,6 +243,28 @@ describe("geocoding service", () => {
 
     it("Accepts ZIP+4", () => {
       expect(cleanAddressString("98109-3858")).toEqual("98109-3858");
+    });
+  });
+  describe("addressInfosEqual", () => {
+    it("says equal addresses are equal", () => {
+      const addr1 = {
+        use: AddressInfoUse.Home,
+        city: "IRVINE",
+        line: ["8 VILLANOVA", null],
+        state: "CA",
+        country: "US",
+        postalCode: "92606"
+      };
+      const addr2 = {
+        use: AddressInfoUse.Home,
+        line: ["8 VILLANOVA", undefined],
+        city: "IRVINE",
+        state: "CA",
+        postalCode: "92606",
+        country: "US"
+      };
+
+      expect(addressInfosEqual(addr1, addr2)).toBe(true);
     });
   });
 });
