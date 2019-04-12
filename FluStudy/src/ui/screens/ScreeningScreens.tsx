@@ -693,10 +693,15 @@ interface DemoModeProps {
   isDemo: boolean;
 }
 
+interface AddressValidatorProps {
+  csruid: string;
+}
+
 @connect((state: StoreState) => ({
   email: state.survey.email,
   workflow: state.survey.workflow,
   isDemo: state.meta.isDemo,
+  csruid: state.survey.csruid,
 }))
 class AddressInputScreen extends React.Component<
   Props &
@@ -704,7 +709,8 @@ class AddressInputScreen extends React.Component<
     EmailProps &
     WorkflowProps &
     WithNamespaces &
-    ReduxWriterProps,
+    ReduxWriterProps &
+    AddressValidatorProps,
   AddressState & EmailState
 > {
   constructor(
@@ -713,7 +719,8 @@ class AddressInputScreen extends React.Component<
       EmailProps &
       WorkflowProps &
       WithNamespaces &
-      ReduxWriterProps
+      ReduxWriterProps &
+      AddressValidatorProps
   ) {
     super(props);
     this.state = {
@@ -782,7 +789,6 @@ class AddressInputScreen extends React.Component<
       isValidEmail(this.state.email) &&
       (!workflow.skippedScreeningAt || this._haveOption())
     ) {
-      const { address, city, state, zipcode } = this.state.address;
       const config = !!this.props.workflow.skippedScreeningAt
         ? AddressConfig
         : MailingAddressConfig;
@@ -801,7 +807,7 @@ class AddressInputScreen extends React.Component<
         return;
       }
 
-      if (isPOBox(address)) {
+      if (isPOBox(this.state.address.address)) {
         tracker.logEvent(FunnelEvents.ADDRESS_PO_BOX_EXCLUDED);
         this.setState({ showValidationError: false });
         this.props.navigation.push("Ineligible", {
@@ -827,20 +833,21 @@ class AddressInputScreen extends React.Component<
         try {
           const key = createAccessKey();
           const response = await axios.get(
-            getApiBaseUrl() + "/validateAddress",
+            getApiBaseUrl() + "/validateUniqueAddress",
             {
               params: {
-                address,
-                city,
                 key,
-                state,
-                zipcode,
+                csruid: this.props.csruid,
+                address: this.state.address,
               },
             }
           );
 
           const current = this.state.address;
-          const suggestions = response.data;
+          const { suggestions, duplicate } = response.data;
+          if (duplicate) {
+            // Duplicate address entered
+          }
           if (suggestions.length === 0) {
             tracker.logEvent(
               FunnelEvents.ADDRESS_VERIFICATION_RESULTS_OBTAINED,
