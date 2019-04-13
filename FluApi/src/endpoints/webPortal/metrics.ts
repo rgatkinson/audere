@@ -881,12 +881,12 @@ export async function getFeverMetrics(
   const finishedApp = (row) => row.survey.workflow.surveyCompletedAt ? 1 : 0;
   const test1Errors = (row) => {
     const error = row.survey.responses[0].item.some(item => 
-      item.id == "FirstTestFeedback" && item.answer[0].valueIndex >= 2)
+      item.id == "FirstTestFeedback" && item.answer.length > 0 && item.answer[0].valueIndex >= 2)
     return error ? 1 : 0
   };
   const test2Errors = (row) => {
     const error = row.survey.responses[0].item.some(item => 
-      item.id == "SecondTestFeedback" && item.answer[0].valueIndex >= 2)
+      item.id == "SecondTestFeedback" && item.answer.length > 0 && item.answer[0].valueIndex >= 2)
     return error ? 1 : 0
   };
   const ageCounts = aggregate(
