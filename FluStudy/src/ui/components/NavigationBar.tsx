@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -10,6 +16,7 @@ import {
   STATUS_BAR_HEIGHT,
   SYSTEM_FONT,
   SYSTEM_TEXT,
+  SPLASH_IMAGE,
 } from "../styles";
 
 interface Props {
@@ -72,7 +79,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         <Text
           style={styles.title}
           center={true}
-          content={this.props.menuItem || this.props.demoMode ? "" : "flu@home"}
+          content={this.props.demoMode ? "Demo Mode" : "flu@home"}
         />
         <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />

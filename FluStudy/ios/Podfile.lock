@@ -287,6 +287,8 @@ PODS:
     - React
   - react-native-get-random-values (1.2.0-pre2):
     - React
+  - react-native-netinfo (2.0.0):
+    - React
   - react-native-video (4.4.0):
     - React
     - react-native-video/Video (= 4.4.0)
@@ -387,6 +389,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-video (from `../node_modules/react-native-video/react-native-video.podspec`)
   - React/ART (from `../node_modules/react-native`)
   - React/Core (from `../node_modules/react-native`)
@@ -519,6 +522,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fbsdk"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-video:
     :path: "../node_modules/react-native-video/react-native-video.podspec"
   ReactNativeFabric:
@@ -604,10 +609,11 @@ SPEC CHECKSUMS:
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
   react-native-get-random-values: cb074e4e1781451ad00546d78570a3ab3c4285f0
+  react-native-netinfo: f4039dc64d3a55da59d6d03d4bd667d0a9f5450e
   react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
   ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: cb9348751558edc08400e7385e4d40d5569dab5c
+PODFILE CHECKSUM: c15648bd36d8353354259489fff507a3e99c89fe
 
 COCOAPODS: 1.5.3
