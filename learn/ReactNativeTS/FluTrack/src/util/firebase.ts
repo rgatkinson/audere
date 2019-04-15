@@ -8,6 +8,7 @@
 
 import firebase from "firebase";
 import "firebase/firestore";
+import { DEVICE_INFO } from "../transport/DeviceInfo";
 
 export const FirestoreCollection = {
   BARCODES: "barcodes",
@@ -29,14 +30,20 @@ export function initializeFirebase() {
   }
 }
 
-export function writeFirestore(
-  collection: string,
-  document: firebase.firestore.DocumentData
-) {
-  try {
-    const col = firebase.firestore().collection(collection);
+export async function writeBarcodeToFirebase(barcode: string, uid: string) {
+  const data = {
+    barcode,
+    uid,
+    installation_id: DEVICE_INFO.installation,
+    client_version: DEVICE_INFO.clientVersion,
+  };
 
-    col.add(document);
+  try {
+    firebase
+      .firestore()
+      .collection(FirestoreCollection.BARCODES)
+      .doc(barcode)
+      .set(data);
   } catch (e) {
     // ...
   }
