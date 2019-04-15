@@ -423,7 +423,6 @@ class PreConsentScreen extends React.PureComponent<
           }}
           navigation={this.props.navigation}
           onNext={() => this.props.navigation.push("Consent")}
-          step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
           title={t("title")}
         >
           <ScrollView>
