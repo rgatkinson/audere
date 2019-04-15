@@ -1,0 +1,34 @@
+{
+    "Ad Referrals": [
+      "SELECT (SELECT value.string_value FROM UNNEST(user_properties) WHERE key=\"utm_content\") AS Ad, ",
+      "COUNT(DISTINCT user_id) AS Count ",
+      "FROM `flu-at-home-app.analytics_195485168.events_*` ",
+      "WHERE user_id NOT IN ",
+        "(SELECT DISTINCT user_id ",
+        "FROM `flu-at-home-app.analytics_195485168.events_*` ",
+        "WHERE EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key=\"demo_mode_aware\")) AND ",
+        "EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key=\"install_referrer\") AND ",
+        "event_date >= ? AND ",
+        "event_date <= ? ",
+      "GROUP BY Ad ",
+      "HAVING Ad IS NOT NULL ",
+      "ORDER by Count DESC "
+    ],
+    "Engagement Time by Screen": [
+      "SELECT (SELECT value.string_value FROM UNNEST(event_params) WHERE key=\"firebase_screen\") as Screen, ",
+      "ROUND(SUM((SELECT value.int_value/1000 FROM UNNEST(event_params) WHERE key=\"engagement_time_msec\"))/",
+      "COUNT(DISTINCT user_id), 1) as Average_Time_Spent_In_Seconds ",
+      "FROM `flu-at-home-app.analytics_195485168.events_*` ",
+      "WHERE user_id NOT IN ",
+        "(SELECT DISTINCT user_id ",
+        "FROM `flu-at-home-app.analytics_195485168.events_*` ",
+        "WHERE EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key=\"demo_mode_aware\")) ",
+        "AND event_name = \"user_engagement\" AND ",
+        "(SELECT value.int_value/1000 FROM UNNEST(event_params) WHERE key=\"engagement_time_msec\") < 700 AND ",
+        "event_date >= ? AND ",
+        "event_date <= ? ",
+      "GROUP BY Screen ",
+      "HAVING Screen IS NOT NULL ",
+      "ORDER BY Average_Time_Spent_In_Seconds DESC "
+    ]
+}

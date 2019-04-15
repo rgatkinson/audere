@@ -43,22 +43,41 @@ can be found in the LICENSE file distributed with this file.
           <td><input type="button" onClick="location.href='/portal/feverFirebase?startDate=<%=getToday()%>&amp;endDate=<%=getToday()%>';"value="Today"></td>
           <td><input type="button" onClick="location.href='/portal/feverFirebase?startDate=<%=getLastMonday()%>&amp;endDate=<%=getThisSunday()%>';" value="This Week"></td>
         </tr>
+        <tr>
+          <td>Query</td>
+          <td>
+            <select name="queryName">
+              <% queryList.forEach( (query) => { %>
+                <% if (query == queryName) { %>
+                  <option value="<%= query %>" selected><%= query %></option>
+                <% } else { %>
+                  <option value="<%= query %>"><%= query %></option>
+                <% } %>
+              <% }); %>
+            </select>
+          </td>
+        </tr>
       </table>
     </form>
     <br />
     <br />
-    <h2>flu@home Ad Referrals</h2>
+    <% if (queryName) { %>
+      <h2>flu@home <%= queryName %></h2>
+    <% } else { %>
+      <h2>flu@home <%= queryList[0] %></h2>
+    <% } %>
     <table class="hor-zebra">
       <thead>
         <tr>
-          <th><label title="Ad content summary">Ad</label></th>
-          <th><label title="Number of app installs for the ad">Number of Installs</label></th>
+          <% Object.keys(queryData[0]).forEach( (key) => { %>
+            <th align="right"><%= key.replace(/_/g," ") %></th>
+          <% }); %>
         </tr>
       </thead>
       <tbody>
         <% oddRow = true;
-            adReferralData.forEach(function(row) {
-           if (row.age === "Total") {
+           queryData.forEach(function(row) {
+           if (row[Object.keys(row)[0]] === "Total") {
          %>
        <tr class="sum">
          <% } else if (oddRow) { %>
@@ -66,8 +85,9 @@ can be found in the LICENSE file distributed with this file.
          <% } else { %>
        <tr>
          <% } %>
-          <td><%= row.ad %></td>
-          <td><%= row.count %></td>
+         <% Object.keys(row).forEach( (key) => { %>
+          <td><%= row[key] %></td>
+         <% }); %>
         </tr>
         <% oddRow = !oddRow;
           }); %>

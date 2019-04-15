@@ -200,14 +200,18 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
     app.get("/feverFirebase", wrap(async (req, res) => {
       const startDate = req.query.startDate || getLastMonday();
       const endDate = req.query.endDate || getThisSunday();
+      const queryName = req.query.queryName || "";
       const [
-        adReferralData
-      ] = await getFeverFirebase(startDate, endDate);
+        queryList,
+        queryData
+      ] = await getFeverFirebase(startDate, endDate, queryName);
       res.render("feverFirebase.ejs", {
         static: app.mountpath,
-        adReferralData: adReferralData,
+        queryList: queryList,
+        queryData: queryData,
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
+        queryName: queryName
       });
     }));
 

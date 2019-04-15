@@ -20,6 +20,7 @@ import { createSplitSql } from "../../util/sql";
 import { defineFeverModels } from "../../models/db/fever";
 import { SecretConfig } from "../../util/secretsConfig";
 import { getBigqueryConfig } from "../../util/bigqueryConfig";
+import bigQueries from "./bigQueries.json";
 const {BigQuery} = require('@google-cloud/bigquery');
 const sql = createSplitSql();
 
@@ -1619,8 +1620,9 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
 
 export async function getFeverFirebase(
   startDate: string,
-  endDate: string
-): Promise<[object]> {
+  endDate: string,
+  queryName: string
+): Promise<[object, object]> {
   const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
@@ -1628,31 +1630,23 @@ export async function getFeverFirebase(
 
   const secrets = new SecretConfig(sql);
   const bigqueryConfig = await getBigqueryConfig(secrets);
+  const queryList = Object.keys(bigQueries);
 
   const bigquery = new BigQuery({
     projectId: 'flu-at-home-app',
     credentials: JSON.parse(bigqueryConfig.authToken)
   });
 
-  const query = `SELECT COUNT(DISTINCT user_id) count,
-    (SELECT value.string_value FROM UNNEST(user_properties) WHERE key="utm_content") as ad
-    FROM \`flu-at-home-app.analytics_195485168.events_*\`
-    WHERE user_id NOT IN
-      (SELECT DISTINCT user_id
-      FROM \`flu-at-home-app.analytics_195485168.events_*\`
-      WHERE EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key="demo_mode_aware")) AND
-      EXISTS (SELECT 1 FROM UNNEST(user_properties) WHERE key="install_referrer") AND
-      event_date >= ? AND
-      event_date <= ?
-    GROUP BY ad
-    HAVING ad IS NOT NULL
-    ORDER by count DESC`;
+  if (!queryName){
+    queryName = queryList[0];
+  }
+  const query = bigQueries[queryName].join("\n");
   const options = {
     query: query,
     location: 'US',
     params: [startDate.replace(/-/g, ""), endDate.replace(/-/g, "")],
   };
   const [job] = await bigquery.createQueryJob(options);
-  const [addData] = await job.getQueryResults();
-  return [addData];
+  const [queryData] = await job.getQueryResults();
+  return [queryList, queryData];
 }
