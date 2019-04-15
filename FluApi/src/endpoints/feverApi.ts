@@ -58,7 +58,7 @@ export class FeverEndpoint {
     }
   }
 
-  async putDocument(req, res) {
+  async   putDocument(req, res) {
     const document = req.body as ProtocolDocument;
     logger.info(
       `${requestId(req)} put ${

@@ -20,6 +20,7 @@ import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
 import logger from "./util/logger";
+import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -91,6 +92,14 @@ export async function createPublicApp(config: AppConfig) {
   publicApp.get("/about", stats("about"), (req, res) => {
     res.status(200).send(buildInfo);
   });
+
+  const deviceSettings = new DeviceSettingsEndpoint(sql);
+  publicApp.get(
+    "/api/settings/:device([A-Z0-9-]+)/:key([a-zA-Z0-9-_]+)",
+    wrap(async (req, res) => {
+      return deviceSettings.getSetting(req, res);
+    })
+  );
 
   const feverAddress = new FeverValidateAddress(sql);
 
