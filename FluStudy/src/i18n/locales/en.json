@@ -313,10 +313,16 @@
     "tips": "**Tips:**\n\nHold the camera so the barcode is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
     "inputManually": "Enter barcode manually"
   },
-  "scanScreen": {
-    "cameraAccess": "Camera access needed to scan barcodes.",
+  "barcode": {
     "sorry": "Sorry",
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
+    "notVerified": "Your barcode was not verified",
+    "pleaseRetry": "Please re-{{action}} your kit bar code (the blue on on the inner lid of the box), being careful not to insert spaces or extra characters",
+    "tryAgain": "Try Again"
+  },
+  "scanScreen": {
+    "scan": "scan",
+    "cameraAccess": "Camera access needed to scan barcodes.",
     "enterManually": "Enter barcode manually",
     "cameraWarning": "\"flu@home\" would like to access your camera"
   },
@@ -326,12 +332,11 @@
     "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
+    "enter": "enter",
     "enterKit": "Enter barcode manually",
     "placeholder": "Enter barcode",
-    "sorry": "Sorry",
     "barcodeRequired": "Please enter your kit's barcode to continue.",
     "dontMatch": "Those barcodes don't match. Please try again.",
-    "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "secondPlaceholder": "Confirm barcode",
     "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
     "tipHeader": "Tips:",
@@ -341,6 +346,13 @@
     "codeSent": "Your code was accepted",
     "yourCode": "Your code: ",
     "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+  },
+  "barcodeContactSupportScreen": {
+    "title": "Please Contact Support",
+    "description": "We're sorry but the kit barcode you entered did not match our records.\n\nPlease take a picture of your blue kit barcode and email the picture to **[flu-support@auderenow.org](mailto:flu-support@auderenow.org?subject=Invalid barcode)** for help.",
+    "supportVerification": "flu@home Support Verification",
+    "enterCode": "Please enter the code you receieved from the flu@home support team",
+    "invalidCode": "Sorry, that code is not valid."
   },
   "testInstructionsScreen": {
     "title": "How the test works",
@@ -521,7 +533,8 @@
   "links": {
     "recommendLink": "Recommend flu@home to a friend who's not feeling well",
     "learnLink": "Learn more about this flu study",
-    "medLink": "Search Maps for urgent care clinics nearby"
+    "medLink": "Search Maps for urgent care clinics nearby",
+    "supportCode": "I have a support code"
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",

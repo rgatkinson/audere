@@ -32,6 +32,6 @@ export function showNearbyShippingLocations(zipcode: string) {
   Linking.openURL(linkUrl);
 }
 
-export function emailSupport() {
-  Linking.openURL("mailto:flu-support@auderenow.org?subject=Kit missing items");
+export function emailSupport(params: string = "") {
+  Linking.openURL("mailto:flu-support@auderenow.org" + params);
 }

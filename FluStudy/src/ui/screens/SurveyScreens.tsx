@@ -25,11 +25,13 @@ import {
   Action,
   Option,
   StoreState,
+  appendInvalidBarcode,
   setEmail,
   setKitBarcode,
   setTestStripImg,
   setOneMinuteStartTime,
   setTenMinuteStartTime,
+  setSupportCode,
   setWorkflow,
   uploader,
 } from "../../store";
@@ -70,11 +72,14 @@ import BulletPoint from "../components/BulletPoint";
 import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
 import Chrome from "../components/Chrome";
+import DigitInput from "../components/DigitInput";
 import Divider from "../components/Divider";
 import EmailInput from "../components/EmailInput";
 import Links from "../components/Links";
+import Modal from "../components/Modal";
 import MonthPicker from "../components/MonthPicker";
 import NavigationBar from "../components/NavigationBar";
+import NumberInput from "../components/NumberInput";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import OptionQuestion from "../components/OptionQuestion";
 import QuestionText from "../components/QuestionText";
@@ -89,9 +94,17 @@ import {
   emailSupport,
 } from "../externalActions";
 import {
+  invalidBarcodeShapeAlert,
+  validBarcodeShape,
+  verifiedBarcode,
+  verifiedSupportCode,
+  unverifiedBarcodeAlert,
+} from "../../util/barcodeVerification";
+import {
   ASPECT_RATIO,
   BORDER_RADIUS,
   BUTTON_WIDTH,
+  ERROR_COLOR,
   GUTTER,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
@@ -111,8 +124,6 @@ const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
-const BARCODE_RE = /^[0-9a-f]{8}$/;
-const BARCODE_CHARS = 8;
 const FLUSHOT_START_DATE = new Date(2018, 0);
 
 const scrollOptions = {
@@ -310,11 +321,16 @@ export const ScanInstructions = withNamespaces("scanInstructionsScreen")(
   ScanInstructionsScreen
 );
 
+interface InvalidBarcodeProps {
+  invalidBarcodes: SampleInfo[];
+}
+
 @connect((state: StoreState) => ({
+  invalidBarcodes: state.survey.invalidBarcodes,
   workflow: state.survey.workflow,
 }))
 class ScanScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces
+  Props & InvalidBarcodeProps & WorkflowProps & WithNamespaces
 > {
   state = {
     activeScan: false,
@@ -362,7 +378,24 @@ class ScanScreen extends React.Component<
 
     if (!this.state.activeScan) {
       this.setState({ activeScan: true });
-      if (BARCODE_RE.test(barcode) && barcode.length == BARCODE_CHARS) {
+      if (!validBarcodeShape(barcode)) {
+        invalidBarcodeShapeAlert(barcode, this._setTimer);
+      } else if (!verifiedBarcode(barcode)) {
+        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
+          ? this.props.invalidBarcodes.length
+          : 0;
+        this.props.dispatch(
+          appendInvalidBarcode({
+            sample_type: type,
+            code: barcode,
+          })
+        );
+        if (priorUnverifiedAttempts > 2) {
+          this.props.navigation.push("BarcodeContactSupport");
+        } else {
+          unverifiedBarcodeAlert(t("scan"), this._setTimer);
+        }
+      } else {
         this.props.dispatch(
           setKitBarcode({
             sample_type: type,
@@ -376,15 +409,6 @@ class ScanScreen extends React.Component<
           })
         );
         this.props.navigation.push("ScanConfirmation");
-      } else {
-        Alert.alert(t("sorry"), t("invalidBarcode", { barcode }), [
-          {
-            text: t("common:button:ok"),
-            onPress: () => {
-              this.setState({ activeScan: false });
-            },
-          },
-        ]);
       }
     }
   };
@@ -552,20 +576,38 @@ export const ManualConfirmation = withNamespaces("manualConfirmationScreen")(
   ScanConfirmationScreen
 );
 
+interface SupportCodeProps {
+  supportCode?: string;
+}
+
 interface ManualState {
   barcode1: string | null;
   barcode2: string | null;
 }
 
 @connect((state: StoreState) => ({
+  invalidBarcodes: state.survey.invalidBarcodes,
   kitBarcode: state.survey.kitBarcode,
+  supportCode: state.survey.supportCode,
   workflow: state.survey.workflow,
 }))
 class ManualEntryScreen extends React.Component<
-  Props & BarcodeProps & WorkflowProps & WithNamespaces,
+  Props &
+    InvalidBarcodeProps &
+    SupportCodeProps &
+    BarcodeProps &
+    WorkflowProps &
+    WithNamespaces,
   ManualState
 > {
-  constructor(props: Props & BarcodeProps & WorkflowProps & WithNamespaces) {
+  constructor(
+    props: Props &
+      InvalidBarcodeProps &
+      SupportCodeProps &
+      BarcodeProps &
+      WorkflowProps &
+      WithNamespaces
+  ) {
     super(props);
     this.state = {
       barcode1: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
@@ -574,14 +616,6 @@ class ManualEntryScreen extends React.Component<
   }
 
   confirmInput = React.createRef<TextInput>();
-
-  _validBarcode = () => {
-    return (
-      this.state.barcode1 != null &&
-      this.state.barcode1.length == BARCODE_CHARS &&
-      BARCODE_RE.test(this.state.barcode1.trim())
-    );
-  };
 
   _matchingBarcodes = () => {
     return (
@@ -617,17 +651,23 @@ class ManualEntryScreen extends React.Component<
       Alert.alert("", t("dontMatch"), [
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
-    } else if (!this._validBarcode()) {
-      Alert.alert(
-        t("sorry"),
-        t("invalidBarcode", { barcode: this.state.barcode1 }),
-        [
-          {
-            text: t("common:button:ok"),
-            onPress: () => {},
-          },
-        ]
+    } else if (!validBarcodeShape(this.state.barcode1)) {
+      invalidBarcodeShapeAlert(this.state.barcode1);
+    } else if (!verifiedBarcode(this.state.barcode1)) {
+      const priorUnverifiedAttempts = !!this.props.invalidBarcodes
+        ? this.props.invalidBarcodes.length
+        : 0;
+      this.props.dispatch(
+        appendInvalidBarcode({
+          sample_type: "manualEntry",
+          code: this.state.barcode1,
+        })
       );
+      if (priorUnverifiedAttempts > 2 && !this.props.supportCode) {
+        this.props.navigation.push("BarcodeContactSupport");
+      } else {
+        unverifiedBarcodeAlert(t("enter"));
+      }
     } else {
       this._onSave();
     }
@@ -728,6 +768,102 @@ export const ManualEntry = withNamespaces("manualEntryScreen")(
   ManualEntryScreen
 );
 
+@connect()
+class BarcodeContactSupportScreen extends React.Component<
+  Props & WithNamespaces
+> {
+  state = {
+    invalidCode: false,
+    modalVisible: false,
+    supportCode: "",
+  };
+
+  _updateSupportCode = (supportCode: string) => {
+    this.setState({ supportCode });
+    this._onSupportCodeSubmit();
+  };
+
+  _toggleModal = () => {
+    this.setState({ modalVisible: !this.state.modalVisible });
+  };
+
+  _onSupportCodeSubmit = () => {
+    if (verifiedSupportCode(this.state.supportCode)) {
+      this.setState({ invalidCode: false });
+      this.props.dispatch(setSupportCode(this.state.supportCode));
+      this._toggleModal();
+      this.props.navigation.push("ManualEntry");
+    } else {
+      this.setState({ invalidCode: true });
+    }
+  };
+
+  render() {
+    const { t } = this.props;
+    const width = Dimensions.get("window").width;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("description")}
+        footer={
+          <Links
+            center={true}
+            links={[
+              {
+                label: t("links:supportCode"),
+                onPress: this._toggleModal,
+              },
+            ]}
+          />
+        }
+        hideBackButton={true}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/contactSupport"
+              : "asset:/img/contact_support.png",
+        }}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("title")}
+      >
+        <Modal
+          height={280}
+          width={width * 0.8}
+          title={t("supportVerification")}
+          visible={this.state.modalVisible}
+          onDismiss={this._toggleModal}
+          onSubmit={this._onSupportCodeSubmit}
+        >
+          <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+            <View style={{ justifyContent: "space-between", padding: GUTTER }}>
+              <Text
+                content={t("enterCode")}
+                style={{ paddingBottom: GUTTER }}
+              />
+              <DigitInput
+                digits={5}
+                style={
+                  this.state.invalidCode ? { color: ERROR_COLOR } : undefined
+                }
+                onSubmitEditing={this._updateSupportCode}
+              />
+              <Text
+                center={true}
+                content={this.state.invalidCode ? t("invalidCode") : ""}
+                style={{ color: ERROR_COLOR, paddingVertical: GUTTER }}
+              />
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </Screen>
+    );
+  }
+}
+export const BarcodeContactSupport = withNamespaces(
+  "barcodeContactSupportScreen"
+)(BarcodeContactSupportScreen);
+
 // NOTE this screen has been removed. Leaving in code for redux state versioning.
 class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -763,6 +899,10 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
     this.props.navigation.push("Swab");
   };
 
+  _emailSupport = () => {
+    emailSupport("?subject=Kit missing items");
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -780,7 +920,7 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
         onNext={this._onNext}
       >
         <Links
-          links={[{ label: t("kitMissingItems"), onPress: emailSupport }]}
+          links={[{ label: t("kitMissingItems"), onPress: this._emailSupport }]}
         />
       </Screen>
     );

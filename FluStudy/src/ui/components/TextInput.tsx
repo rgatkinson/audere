@@ -28,6 +28,7 @@ interface Props {
   value?: string | null;
   onChangeText(text: string): void;
   onFocus?: () => void;
+  onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
 
@@ -37,6 +38,7 @@ export default class TextInput extends React.Component<Props> {
   render() {
     return (
       <SystemTextInput
+        selectTextOnFocus
         autoCapitalize={this.props.autoCapitalize}
         autoCorrect={this.props.autoCorrect}
         autoFocus={this.props.autoFocus}
@@ -52,6 +54,7 @@ export default class TextInput extends React.Component<Props> {
         style={[styles.textInput, this.props.style && this.props.style]}
         value={this.props.value !== null ? this.props.value : undefined}
         onChangeText={this.props.onChangeText}
+        onKeyPress={this.props.onKeyPress}
         onSubmitEditing={() =>
           !!this.props.onSubmitEditing && this.props.onSubmitEditing()
         }

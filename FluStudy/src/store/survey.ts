@@ -13,6 +13,7 @@ import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
+  | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
   | { type: "SET_CONSENT"; consent: ConsentInfo }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
@@ -22,17 +23,20 @@ export type SurveyAction =
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
-  | { type: "SET_CSRUID_IF_UNSET"; csruid: string };
+  | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
+  | { type: "SET_SUPPORT_CODE"; supportCode: string };
 
 export type SurveyState = {
   consent?: ConsentInfo;
   email?: string;
   events: EventInfo[];
   csruid?: string;
+  invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   testStripImg?: SampleInfo;
   pushState: PushNotificationState;
   responses: SurveyResponse[];
+  supportCode?: string;
   oneMinuteStartTime?: number;
   tenMinuteStartTime?: number;
   timestamp?: number;
@@ -41,6 +45,7 @@ export type SurveyState = {
     | ConsentInfo
     | string
     | EventInfo[]
+    | SampleInfo[]
     | SampleInfo
     | PushNotificationState
     | SurveyResponse[]
@@ -63,6 +68,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
     return {
       ...state,
       events: pushEvent(state, action.kind, action.event),
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "APPEND_INVALID_BARCODE") {
+    return {
+      ...state,
+      invalidBarcodes: pushInvalidBarcode(state, action.barcode),
       timestamp: new Date().getTime(),
     };
   }
@@ -138,6 +150,12 @@ export default function reducer(state = initialState, action: SurveyAction) {
       };
     }
   }
+  if (action.type === "SET_SUPPORT_CODE") {
+    return {
+      ...state,
+      supportCode: action.supportCode,
+    };
+  }
 
   return state;
 }
@@ -147,6 +165,13 @@ export function appendEvent(kind: EventInfoKind, event: string): SurveyAction {
     type: "APPEND_EVENT",
     kind,
     event,
+  };
+}
+
+export function appendInvalidBarcode(barcode: SampleInfo): SurveyAction {
+  return {
+    type: "APPEND_INVALID_BARCODE",
+    barcode,
   };
 }
 
@@ -221,6 +246,13 @@ export function setCSRUIDIfUnset(csruid: string): SurveyAction {
   };
 }
 
+export function setSupportCode(supportCode: string): SurveyAction {
+  return {
+    type: "SET_SUPPORT_CODE",
+    supportCode,
+  };
+}
+
 function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {
   let newEvents = state.events.slice(0);
   newEvents.push({
@@ -229,4 +261,11 @@ function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {
     refId,
   });
   return newEvents;
+}
+
+function pushInvalidBarcode(state: SurveyState, barcode: SampleInfo) {
+  let newInvalidBarcodes =
+    state.invalidBarcodes == null ? [] : state.invalidBarcodes.slice(0);
+  newInvalidBarcodes.push(barcode);
+  return newInvalidBarcodes;
 }

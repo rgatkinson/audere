@@ -4,13 +4,14 @@ import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
-  maxDigits?: number;
+  maxDigits: number;
   placeholder: string;
   placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string;
   onChangeText(text: string): void;
+  onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
 
@@ -50,6 +51,7 @@ export default class NumberInput extends React.Component<Props, State> {
         style={this.props.style}
         value={this.state.text}
         onChangeText={this.onChangeText}
+        onKeyPress={this.props.onKeyPress}
         onSubmitEditing={this.props.onSubmitEditing}
       />
     );

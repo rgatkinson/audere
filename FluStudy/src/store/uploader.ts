@@ -151,6 +151,10 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     pouch.samples.push(survey.kitBarcode);
   }
 
+  if (!!survey.invalidBarcodes) {
+    pouch.invalidBarcodes = survey.invalidBarcodes;
+  }
+
   if (!!survey.testStripImg) {
     pouch.samples.push(survey.testStripImg);
   }
