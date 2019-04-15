@@ -34,7 +34,7 @@ const POUCH_PASS_KEY = "FluTrack.PouchDbEncryptionPassword";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
-type Event = DecryptDBEvent | SaveEvent | UploadNextEvent;
+type Event = DecryptDBEvent | SaveEvent | UploadNextEvent | BackupEvent;
 
 type DocumentContents = VisitInfo | FeedbackInfo | LogInfo | LogBatchInfo;
 
@@ -43,6 +43,13 @@ interface SaveEvent {
   localUid: string;
   document: DocumentContents;
   priority: number;
+  documentType: DocumentType;
+}
+
+interface BackupEvent {
+  type: "Backup";
+  localUid: string;
+  document: DocumentContents;
   documentType: DocumentType;
 }
 
@@ -73,6 +80,15 @@ export class DocumentUploader {
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.pump = new Pump(() => this.pumpEvents(), logger);
     process.nextTick(() => this.pump.start());
+  }
+
+  public backup(localUid: string, document: DocumentContents): void {
+    this.fireEvent({
+      type: "Backup",
+      localUid,
+      document,
+      documentType: DocumentType.Backup,
+    });
   }
 
   public save(
@@ -112,6 +128,9 @@ export class DocumentUploader {
         const event = running[i];
         this.logger.info(`pumpEvents: running[${i}]: ${summarize(event)}`);
         switch (event.type) {
+          case "Backup":
+            await this.handleBackup(event);
+            break;
           case "Save":
             await this.handleSave(event);
             break;
@@ -146,6 +165,24 @@ export class DocumentUploader {
     this.db.crypto(await this.getEncryptionPassword(), {
       algorithm: "chacha20",
     });
+  }
+
+  private async handleBackup(backup: BackupEvent): Promise<void> {
+    const key = `backups/${backup.localUid}`;
+    let pouch: PouchDoc;
+    try {
+      pouch = await this.db.get(key);
+      pouch.body = protocolDocument(backup);
+    } catch (e) {
+      pouch = {
+        _id: key,
+        body: protocolDocument(backup),
+      };
+      this.logger.debug(`Saving new backup '${key}`);
+    }
+    await loadRandomBytes(this.api, 44, this.logger);
+    await this.db.put(pouch);
+    this.logger.debug(`Saved backup ${key}`);
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
@@ -356,9 +393,18 @@ function idleness(): Promise<void> {
   return new Promise(InteractionManager.runAfterInteractions);
 }
 
-function protocolDocument(save: SaveEvent): ProtocolDocument {
+function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
   switch (save.documentType) {
     case DocumentType.Visit:
+      return {
+        documentType: save.documentType,
+        schemaId: 1,
+        csruid: CSRUID_PLACEHOLDER,
+        device: DEVICE_INFO,
+        visit: asVisitInfo(save.document),
+      };
+
+    case DocumentType.Backup:
       return {
         documentType: save.documentType,
         schemaId: 1,

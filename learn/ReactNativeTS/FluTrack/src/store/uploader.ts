@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import {
-  Address,
-  FormState,
-  Option,
-  Sample,
-  SurveyResponse,
-} from "./form";
+import { Address, FormState, Option, Sample, SurveyResponse } from "./form";
 import { StoreState } from "./StoreState";
 import { createTransport } from "../transport";
 import { format } from "date-fns";
@@ -36,7 +30,12 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     const result = next(action);
     const state = getState();
     if (state.form != null && state.form.formId != null) {
-      uploader.saveVisit(state.form.formId, redux_to_pouch(state));
+      const visitInfo = redux_to_pouch(state);
+      uploader.saveVisit(state.form.formId, visitInfo);
+      if (action.type === "SET_SAMPLES") {
+        const barcode = action.samples[action.samples.length - 1].code;
+        uploader.saveBackup(state.form.formId, visitInfo, barcode);
+      }
     }
     return result;
   };

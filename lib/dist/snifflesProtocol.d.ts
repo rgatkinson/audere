@@ -8,9 +8,10 @@ export declare enum DocumentType {
     Visit = "VISIT",
     Feedback = "FEEDBACK",
     Log = "LOG",
-    LogBatch = "LOG_BATCH"
+    LogBatch = "LOG_BATCH",
+    Backup = "BACKUP"
 }
-export declare type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument | LogBatchDocument;
+export declare type ProtocolDocument = FeedbackDocument | LogDocument | VisitDocument | LogBatchDocument | BackupDocument;
 export interface DeviceInfo {
     installation: string;
     clientVersion: string;
@@ -200,4 +201,9 @@ export declare enum LogRecordLevel {
     Warn = "WARN",
     Error = "ERROR",
     Fatal = "FATAL"
+}
+export interface BackupDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Backup;
+    schemaId: 1;
+    visit: VisitInfo;
 }

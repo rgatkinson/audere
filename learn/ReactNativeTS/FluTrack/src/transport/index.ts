@@ -52,6 +52,11 @@ class TypedDocumentUploader {
     this.uploader.save(localUid, visit, DocumentType.Visit, 1);
   }
 
+  public saveBackup(localUid: string, visit: VisitInfo, barcode: string) {
+    // TODO: save barcode and localUid to durable storage
+    this.uploader.backup(localUid, visit);
+  }
+
   public saveFeedback(subject: string, body: string) {
     this.uploader.save(uuidv4(), { subject, body }, DocumentType.Feedback, 2);
   }
