@@ -6,12 +6,10 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import { connect } from "react-redux";
-import { Action, StoreState, setDemo } from "../../store";
+import { Action } from "../../store";
 import NavigationBar from "./NavigationBar";
 import Text from "./Text";
 import {
@@ -36,52 +34,7 @@ interface Props {
   onBack?: () => void;
 }
 
-const TRIPLE_PRESS_DELAY = 500;
-
-@connect((state: StoreState) => ({
-  isDemo: state.meta.isDemo,
-}))
 export default class Chrome extends React.Component<Props> {
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-
-  handleTripleTap = () => {
-    const now = Date.now();
-    if (
-      this.lastTap != null &&
-      this.secondLastTap != null &&
-      now - this.secondLastTap! < TRIPLE_PRESS_DELAY
-    ) {
-      this.props.dispatch!(setDemo(!this.props.isDemo));
-    } else {
-      this.secondLastTap = this.lastTap;
-      this.lastTap = now;
-    }
-  };
-
-  _getImage() {
-    if (this.props.stableImageSrc == null) {
-      return null;
-    }
-    const image = (
-      <Image
-        style={[styles.image, this.props.menuItem && styles.shortImage]}
-        source={this.props.stableImageSrc}
-      />
-    );
-    if (this.props.menuItem) {
-      return (
-        <TouchableWithoutFeedback
-          style={{ alignSelf: "stretch" }}
-          onPress={this.handleTripleTap}
-        >
-          <View>{image}</View>
-        </TouchableWithoutFeedback>
-      );
-    }
-    return image;
-  }
-
   render() {
     return (
       <View style={styles.container}>
@@ -120,7 +73,9 @@ export default class Chrome extends React.Component<Props> {
             navigation={this.props.navigation}
             onBack={this.props.onBack}
           />
-          {this._getImage()}
+          {!!this.props.stableImageSrc && (
+            <Image style={styles.image} source={this.props.stableImageSrc} />
+          )}
         </ImageBackground>
         {this.props.children}
       </View>
