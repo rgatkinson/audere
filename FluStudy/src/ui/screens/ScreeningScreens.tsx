@@ -270,11 +270,7 @@ class AgeScreen extends React.Component<
   _onNext = () => {
     const ageBucket = this.props.getAnswer("selectedButtonKey", AgeConfig.id);
     if (ageBucket === AgeBuckets.Under18) {
-      this.props.navigation.push("Ineligible", {
-        description: "descriptionAge",
-        funnelEvent: FunnelEvents.AGE_INELIGIBLE,
-        hideBack: true,
-      });
+      this.props.navigation.push("AgeIneligible");
     } else {
       if (!!this.props.workflow.skippedScreeningAt) {
         this.props.navigation.push("PreConsent");
@@ -813,11 +809,7 @@ class AddressInputScreen extends React.Component<
       if (isPOBox(this.state.address.address)) {
         tracker.logEvent(FunnelEvents.ADDRESS_PO_BOX_EXCLUDED);
         this.setState({ showValidationError: false });
-        this.props.navigation.push("Ineligible", {
-          description: "descriptionPOBox",
-          funnelEvent: FunnelEvents.PO_BOX_INELIGIBLE,
-          hideBack: false,
-        });
+        this.props.navigation.push("POBoxIneligible");
         return;
       }
 
@@ -987,11 +979,7 @@ class AddressInputScreen extends React.Component<
             onDismiss={() => this.setState({ noResults: false })}
             onSubmit={() => {
               this.setState({ noResults: false });
-              this.props.navigation.push("Ineligible", {
-                description: "descriptionAddress",
-                funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
-                hideBack: false,
-              });
+              this.props.navigation.push("AddressIneligible");
             }}
           />
           {!this.props.workflow.skippedScreeningAt && (
@@ -1182,6 +1170,90 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
   }
 }
 export const Ineligible = withNamespaces("ineligibleScreen")(IneligibleScreen);
+
+class AddressIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.ADDRESS_INELIGIBLE);
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("description")}
+        hideBackButton={false}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+      >
+        <Links
+          links={[
+            {
+              label: t("links:learnLink"),
+              onPress: learnMore,
+            },
+            {
+              label: t("links:medLink"),
+              onPress: findMedHelp,
+            },
+          ]}
+        />
+      </Screen>
+    );
+  }
+}
+export const AddressIneligible = withNamespaces("addressIneligibleScreen")(
+  AddressIneligibleScreen
+);
+
+class POBoxIneligibleScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.PO_BOX_INELIGIBLE);
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("description")}
+        hideBackButton={false}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForYourInterest"
+              : "asset:/img/thanks_for_your_interest.png",
+        }}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("ineligible")}
+      >
+        <Links
+          links={[
+            {
+              label: t("links:learnLink"),
+              onPress: learnMore,
+            },
+            {
+              label: t("links:medLink"),
+              onPress: findMedHelp,
+            },
+          ]}
+        />
+      </Screen>
+    );
+  }
+}
+export const POBoxIneligible = withNamespaces("poBoxIneligibleScreen")(
+  POBoxIneligibleScreen
+);
 
 class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
