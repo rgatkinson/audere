@@ -1,18 +1,16 @@
 import React from "react";
-import { connect } from "react-redux";
 import {
   Dimensions,
   Image,
   ImageSourcePropType,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { wrapScrollView } from "react-native-scroll-into-view";
-import { Action, setDemo, StoreState } from "../../store";
+import { Action } from "../../store";
 import Button from "./Button";
 import Chrome from "./Chrome";
 import Step from "./Step";
@@ -46,36 +44,13 @@ interface Props {
 
 const CustomScrollView = wrapScrollView(ScrollView);
 
-const TRIPLE_PRESS_DELAY = 500;
-
-@connect((state: StoreState) => ({
-  isDemo: state.meta.isDemo,
-}))
 class Screen extends React.Component<Props & WithNamespaces> {
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-
-  handleTripleTap = () => {
-    const now = Date.now();
-    if (
-      this.lastTap != null &&
-      this.secondLastTap != null &&
-      now - this.secondLastTap! < TRIPLE_PRESS_DELAY
-    ) {
-      this.props.dispatch!(setDemo(!this.props.isDemo));
-    } else {
-      this.secondLastTap = this.lastTap;
-      this.lastTap = now;
-    }
-  };
-
   render() {
     const { t } = this.props;
     return (
       <Chrome
         dispatch={this.props.dispatch}
         hideBackButton={this.props.hideBackButton}
-        isDemo={this.props.isDemo}
         menuItem={this.props.menuItem}
         navigation={this.props.navigation}
         stableImageSrc={this.props.stableImageSrc}
