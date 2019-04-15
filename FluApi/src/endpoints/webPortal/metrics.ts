@@ -834,6 +834,9 @@ export async function getFeverMetrics(
   //Get all non-demo mode data out of nonpii database for specified date range
   const feverModels = defineFeverModels(sql);
   const rowsNonPii = await feverModels.surveyNonPii.findAll({
+    include: [{
+      model: feverModels.receivedKit
+    }],
     where: {
       survey: {
         isDemo: false
@@ -841,7 +844,7 @@ export async function getFeverMetrics(
       createdAt: {
         [Op.between]: [
           new Date(`${startDate} 00:00:00.000${offset}`),
-          new Date(`${endDate} 00:00:00.000${offset}`)
+          new Date(`${endDate} 23:59:59.999${offset}`)
         ]
       }
     },
@@ -879,6 +882,7 @@ export async function getFeverMetrics(
     return test2 ? 1 : 0;
   };
   const finishedApp = (row) => row.survey.workflow.surveyCompletedAt ? 1 : 0;
+  const returnedKit = (row) => row["fever_received_kit.dateReceived"] ? 1 : 0;
   const test1Errors = (row) => {
     const error = row.survey.responses[0].item.some(item => 
       item.id == "FirstTestFeedback" && item.answer.length > 0 && item.answer[0].valueIndex >= 2)
@@ -903,7 +907,7 @@ export async function getFeverMetrics(
       test1: 0,
       test2: 0,
       finished: 0,
-      kitsreturned: "",
+      kitsreturned: 0,
       test1errors: 0,
       test2errors: 0
      }),
@@ -918,6 +922,7 @@ export async function getFeverMetrics(
       test1: acc.test1 + completedTest1(row),
       test2: acc.test2 + completedTest2(row),
       finished: acc.finished + finishedApp(row),
+      kitsreturned: acc.kitsreturned + returnedKit(row),
       test1errors: acc.test1errors + test1Errors(row),
       test2errors: acc.test2errors + test2Errors(row)
     })
@@ -937,7 +942,7 @@ export async function getFeverMetrics(
         test1: previousValue.test1 + currentValue.test1,
         test2: previousValue.test2 + currentValue.test2,
         finished: previousValue.finished + currentValue.finished,
-        kitsreturned: "",
+        kitsreturned: previousValue.kitsreturned+ currentValue.kitsreturned,
         test1errors: previousValue.test1errors + currentValue.test1errors,
         test2errors: previousValue.test2errors + currentValue.test2errors
       }
@@ -1091,7 +1096,7 @@ function funnelAgeData(ageData): object {
       "test1": (totalRow.test1/totalRow.count * 100).toFixed(1) + "%",
       "test2": (totalRow.test2/totalRow.count * 100).toFixed(1) + "%",
       "finished": (totalRow.finished/totalRow.count * 100).toFixed(1) + "%",
-      "kitsreturned": "",
+      "kitsreturned": (totalRow.kitsreturned/totalRow.count * 100).toFixed(1) + "%",
       "test1errors": (totalRow.test1errors/totalRow.count * 100).toFixed(1) + "%",
       "test2errors": (totalRow.test2errors/totalRow.count * 100).toFixed(1) + "%",
     });
@@ -1107,7 +1112,7 @@ function funnelAgeData(ageData): object {
       "test1": (totalRow.test1/totalRow.surveyscompleted * 100).toFixed(1) + "%",
       "test2": (totalRow.test2/totalRow.test1 * 100).toFixed(1) + "%",
       "finished": (totalRow.finished/totalRow.test2 * 100).toFixed(1) + "%",
-      "kitsreturned": "",
+      "kitsreturned": (totalRow.kitsreturned/totalRow.finished * 100).toFixed(1) + "%",
       "test1errors": "",
       "test2errors": ""
     });
