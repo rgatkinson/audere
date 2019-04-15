@@ -94,6 +94,7 @@ configurations.all {
 apply from: 'expo.gradle'
 
 dependencies {
+    compile project(':@react-native-community_netinfo')
   compile project(':react-native-push-notification')
   implementation(project(':react-native-fbsdk'))
   implementation(project(':react-native-firebase'))

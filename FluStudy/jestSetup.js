@@ -20,3 +20,10 @@ Object.defineProperty(global, "crypto", {
     getRandomValues: arr => crypto.randomBytes(arr.length),
   },
 });
+
+RNNativeModules.RNCNetInfo = {
+  getCurrentConnectivity: jest.fn(),
+  isConnectionMetered: jest.fn(),
+  addListener: jest.fn(),
+  removeListeners: jest.fn(),
+};

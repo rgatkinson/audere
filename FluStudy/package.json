@@ -64,10 +64,11 @@
       "<rootDir>/node_modules/"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|pouchdb-adapter-asyncstorage))"
+      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|pouchdb-adapter-asyncstorage|@react-native-community/netinfo))"
     ]
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^2.0.0",
     "@types/buffer-xor": "^2.0.0",
     "@types/expo-localization": "^1.0.0",
     "@types/expo__vector-icons": "^6.2.3",

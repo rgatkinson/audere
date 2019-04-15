@@ -9,11 +9,11 @@ import {
   Alert,
   AppState,
   KeyboardAvoidingView,
-  NetInfo,
   Platform,
   ScrollView,
   View,
 } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -766,6 +766,9 @@ class AddressInputScreen extends React.Component<
   };
 
   componentDidMount() {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      this.setState({ isConnected });
+    });
     NetInfo.isConnected.addEventListener(
       "connectionChange",
       this._handleConnectivityChange
