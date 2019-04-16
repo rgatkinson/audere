@@ -1,7 +1,10 @@
 import React from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Constants } from "expo";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
+import axios from "axios";
+import { getApiBaseUrl } from "../../../transport";
 import { FormState, StoreState } from "../../../store";
 import reduxWriter, { ReduxWriterProps } from "../../../store/ReduxWriter";
 import { AgeBuckets, AgeBucketConfig } from "../../../resources/ScreenConfig";
@@ -45,6 +48,17 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
     const numDocs = await uploader.documentsAwaitingUpload();
     if (numDocs != null) {
       this.setState({ documentsAwaitingUpload: numDocs });
+    }
+    try {
+      const response = await axios.get(
+        getApiBaseUrl() + "/settings/" + Constants.installationId + "/" + "COUCH_DB_SYNC",
+      );
+      if (response.status === 200) {
+        console.log(response.data);
+        // TODO sync pouch to couch with url response.data
+      }
+    } catch (e) {
+      // Expected most of the time
     }
   }
 
