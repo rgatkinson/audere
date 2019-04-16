@@ -947,7 +947,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/beginFirstTest", type: "mp4" }}
+        videoId="beginFirstTest"
         onNext={this._onNext}
       />
     );
@@ -974,7 +974,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/prepareTube", type: "mp4" }}
+        videoId="prepareTube"
         onNext={this._onNext}
       />
     );
@@ -1027,7 +1027,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/collectSample", type: "mp4" }}
+        videoId="collectSample"
         onNext={this._onNext}
       />
     );
@@ -1061,7 +1061,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/putSwabInTube", type: "mp4" }}
+        videoId="putSwabInTube"
         onNext={this._onNext}
       />
     );
@@ -1174,7 +1174,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/removeSwabFromTube", type: "mp4" }}
+        videoId="removeSwabFromTube"
         onNext={this._onNext}
       />
     );
@@ -1204,7 +1204,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/openTestStrip", type: "mp4" }}
+        videoId="openTestStrip"
         onNext={this._onNext}
       />
     );
@@ -1236,7 +1236,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/putTestStripInTube", type: "mp4" }}
+        videoId="putTestStripInTube"
         onNext={this._onNext}
       />
     );
@@ -1723,7 +1723,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/removeTestStrip", type: "mp4" }}
+        videoId="removeTestStrip"
         onNext={this._onNext}
       />
     );
@@ -1752,7 +1752,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/finishWithTube", type: "mp4" }}
+        videoId="finishWithTube"
         onNext={this._onNext}
       />
     );
@@ -1779,7 +1779,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/lookAtTestStrip", type: "mp4" }}
+        videoId="lookAtTestStrip"
         onNext={this._onNext}
       />
     );
@@ -1919,7 +1919,7 @@ class PictureInstructionsScreen extends React.Component<
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/takePhotoOfStrip", type: "mp4" }}
+        videoId="takePhotoOfStrip"
         onNext={this._onNext}
       >
         <Image
@@ -2187,7 +2187,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/cleanUpFirstTest1", type: "mp4" }}
+        videoId="cleanUpFirstTest1"
         onNext={this._onNext}
       />
     );
@@ -2216,7 +2216,7 @@ class CleanFirstTest2Screen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/cleanUpFirstTest2", type: "mp4" }}
+        videoId="cleanUpFirstTest2"
         onNext={this._onNext}
       />
     );
@@ -2284,7 +2284,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/beginSecondTest", type: "mp4" }}
+        videoId="beginSecondTest"
         onNext={this._onNext}
       />
     );
@@ -2313,7 +2313,7 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/prepareForTest", type: "mp4" }}
+        videoId="prepareForTest"
         onNext={this._onNext}
       />
     );
@@ -2342,7 +2342,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/collectSampleFromNose", type: "mp4" }}
+        videoId="collectSampleFromNose"
         onNext={this._onNext}
       />
     );
@@ -2371,7 +2371,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/putSwabInTube2", type: "mp4" }}
+        videoId="putSwabInTube2"
         onNext={this._onNext}
       />
     );
@@ -2400,7 +2400,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/cleanUpSecondTest", type: "mp4" }}
+        videoId="cleanUpSecondTest"
         onNext={this._onNext}
       />
     );
@@ -2494,7 +2494,7 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/putStickersOnBox", type: "mp4" }}
+        videoId="putStickersOnBox"
         onNext={this._onNext}
       />
     );
@@ -2521,7 +2521,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/putBag2InBox", type: "mp4" }}
+        videoId="putBag2InBox"
         onNext={this._onNext}
       />
     );
@@ -2548,7 +2548,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
         }}
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/tapeUpBox", type: "mp4" }}
+        videoId="tapeUpBox"
         onNext={this._onNext}
       />
     );
@@ -2596,7 +2596,7 @@ class ShipBoxScreen extends React.Component<
         }
         navigation={this.props.navigation}
         title={t("title")}
-        videoSource={{ uri: "videos/shipBox", type: "mp4" }}
+        videoId="shipBox"
         onNext={this._onNext}
       >
         <Links

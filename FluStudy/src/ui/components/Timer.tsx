@@ -4,7 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Platform, PushNotification, PushNotificationIOS, View } from "react-native";
+import {
+  Platform,
+  PushNotification,
+  PushNotificationIOS,
+  View,
+} from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { withNavigation } from "react-navigation";

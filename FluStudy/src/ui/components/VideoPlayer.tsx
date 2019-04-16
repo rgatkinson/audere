@@ -12,9 +12,10 @@ import Divider from "./Divider";
 import { BORDER_COLOR, GUTTER, VIDEO_ASPECT_RATIO } from "../styles";
 import { getRemoteConfig } from "../../util/remoteConfig";
 import { tracker, VideoEvents } from "../../util/tracker";
+import { videoConfig, VideoConfig } from "../../resources/VideoConfig";
 
 interface Props extends React.Props<VideoPlayer> {
-  source: { uri: string; type: string };
+  id: string;
 }
 
 const THREE_SECONDS_MS = 3000;
@@ -26,6 +27,13 @@ export default class VideoPlayer extends React.Component<Props> {
     rate: 1.0,
     showThumbnail: true,
   };
+
+  _config: VideoConfig | undefined;
+
+  constructor(props: Props) {
+    super(props);
+    this._config = videoConfig.get(props.id);
+  }
 
   _videoPlayer = React.createRef<any>();
 
@@ -42,13 +50,13 @@ export default class VideoPlayer extends React.Component<Props> {
       if (currentTime == 0) {
         if (!this.state.loggedFirstPlay) {
           tracker.logEvent(VideoEvents.START_VIDEO, {
-            video: this.props.source.uri,
+            video: this.props.id,
           });
           this.setState({ loggedFirstPlay: true });
         }
       } else {
         tracker.logEvent(VideoEvents.VIDEO_PROGRESS, {
-          video: this.props.source.uri,
+          video: this.props.id,
           currentTime: Math.round(currentTime),
           totalTime: Math.round(seekableDuration),
         });
@@ -58,7 +66,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
   _onEnd = () => {
     tracker.logEvent(VideoEvents.COMPLETE_VIDEO, {
-      video: this.props.source.uri,
+      video: this.props.id,
     });
     this._pauseVideo();
     this.setState({ showThumbnail: true });
@@ -80,7 +88,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
   render() {
     const showVideos = getRemoteConfig("showVideos");
-    if (true) {
+    if (!showVideos || this._config == null) {
       return <View />;
     }
 
@@ -106,7 +114,7 @@ export default class VideoPlayer extends React.Component<Props> {
                 />
               </View>
               <Image
-                source={{ uri: this.props.source.uri + "Thumb" }}
+                source={{ uri: this._config.thumbnail }}
                 style={styles.thumbnail}
               />
             </View>
@@ -121,7 +129,7 @@ export default class VideoPlayer extends React.Component<Props> {
           rate={this.state.rate}
           ref={this._videoPlayer}
           repeat={true}
-          source={this.props.source}
+          source={{ uri: this._config.uri }}
           style={styles.video}
           onEnd={this._onEnd}
           onProgress={this._onProgress}

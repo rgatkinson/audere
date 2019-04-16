@@ -43,7 +43,7 @@ interface Props {
   step?: number;
   subTitle?: string;
   title?: string;
-  videoSource?: { uri: string; type: string };
+  videoId?: string;
   onTitlePress?: () => void;
   onBack?: () => void;
   onNext?: () => void;
@@ -158,8 +158,8 @@ class Screen extends React.Component<Props & WithNamespaces> {
                 <ScreenImages images={this.props.images} />
               )}
               {this.props.children}
-              {this.props.videoSource != null && (
-                <VideoPlayer source={this.props.videoSource} />
+              {this.props.videoId != null && (
+                <VideoPlayer id={this.props.videoId} />
               )}
             </View>
             <View style={styles.footerContainer}>
