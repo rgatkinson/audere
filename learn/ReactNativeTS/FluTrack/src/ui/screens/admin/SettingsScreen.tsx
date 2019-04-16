@@ -15,6 +15,7 @@ import FeedbackModal from "../../components/FeedbackModal";
 import EditSettingButton from "../../components/EditSettingButton";
 import ScreenContainer from "../../components/ScreenContainer";
 import Text from "../../components/Text";
+import { syncToCouch } from "../../../transport/index";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -42,6 +43,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
   state = {
     feedbackVisible: false,
     documentsAwaitingUpload: -1,
+    refreshMessage: "",
   };
 
   async _loadNumDocs() {
@@ -49,16 +51,34 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
     if (numDocs != null) {
       this.setState({ documentsAwaitingUpload: numDocs });
     }
+  }
+
+  async _refresh() {
+    this._loadNumDocs();
+
+    let response;
     try {
-      const response = await axios.get(
-        getApiBaseUrl() + "/settings/" + Constants.installationId + "/" + "COUCH_DB_SYNC",
+      response = await axios.get(
+        getApiBaseUrl() +
+          "/settings/" +
+          Constants.installationId +
+          "/" +
+          "COUCH_DB_SYNC"
       );
-      if (response.status === 200) {
-        console.log(response.data);
-        // TODO sync pouch to couch with url response.data
-      }
     } catch (e) {
       // Expected most of the time
+      return;
+    }
+    try {
+      if (response.status === 200) {
+        console.log(response.data);
+        this.setState({ refreshMessage: `Syncing to ${response.data}...` });
+        await syncToCouch(response.data);
+        this.setState({ refreshMessage: `Synced to ${response.data}` });
+      }
+    } catch (e) {
+      this.setState({ refreshMessage: `Failed to sync to ${response.data}` });
+      console.log(e);
     }
   }
 
@@ -185,8 +205,9 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
             label="Refresh"
             primary={true}
             style={{ width: 200, marginVertical: 0 }}
-            onPress={() => this._loadNumDocs()}
+            onPress={() => this._refresh()}
           />
+          <Text center={true} content={this.state.refreshMessage} />
         </View>
         <View style={styles.supportContainer}>
           <Text

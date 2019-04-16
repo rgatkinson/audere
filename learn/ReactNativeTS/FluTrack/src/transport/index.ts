@@ -22,8 +22,10 @@ interface Transport {
   logger: LogBatcher;
 }
 
+let db: PouchDB.Database;
+
 export function createTransport(): Transport {
-  const db = new PouchDB("clientDB", { auto_compaction: true });
+  db = new PouchDB("clientDB", { auto_compaction: true });
   const lazyUploader = new LazyUploader();
   const logger = new LogBatcher(lazyUploader, <any>db, { uploadPriority: 3 });
   const api = createAxios(logger);
@@ -116,4 +118,17 @@ export function getApiBaseUrl(): string {
   }
   console.log(`API server: '${api}'`);
   return api;
+}
+
+export async function syncToCouch(address: string) {
+  if (!db) {
+    throw new Error("Could not find pouch database, not yet initialized?");
+  }
+  const remoteDB = new PouchDB(address);
+  await new Promise((res, rej) => {
+    db.replicate
+      .to(remoteDB)
+      .on("complete", res)
+      .on("error", rej);
+  });
 }
