@@ -77,6 +77,8 @@ export const AppHealthEvents = {
   BRANCH_GOT_ATTRIBUTION: "branch_got_attribution",
   BRANCH_NO_ATTRIBUTION: "branch_no_attribution",
   BRANCH_NOT_FIRST_SESSION: "branch_not_first_session",
+  FIREBASE_GOT_ATTRIBUTION: "firebase_got_attribution",
+  FIREBASE_NO_ATTRIBUTION: "firebase_no_attribution",
   KIT_ORDER_BLOCKED: "kit_order_blocked",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
@@ -147,7 +149,7 @@ function onBranchData(data: BranchData) {
   if (params) {
     // @ts-ignore
     if (params["+is_first_session"]) {
-      storeMarketingAttributes(params);
+      storeMarketingAttributes(params, false);
     } else {
       tracker.logEvent(AppHealthEvents.BRANCH_NOT_FIRST_SESSION, {
         params: JSON.stringify(params),
@@ -158,7 +160,7 @@ function onBranchData(data: BranchData) {
   }
 }
 
-function storeMarketingAttributes(params: Object) {
+function storeMarketingAttributes(params: Object, fromFirebase: boolean) {
   marketingUserProperties.forEach(property => {
     if (params.hasOwnProperty(property)) {
       // @ts-ignore
@@ -173,12 +175,19 @@ function storeMarketingAttributes(params: Object) {
   }
 
   if (Object.keys(parsedMarketingProperties).length > 0) {
-    tracker.logEvent(AppHealthEvents.BRANCH_GOT_ATTRIBUTION, {
-      marketing: JSON.stringify(parsedMarketingProperties),
-    });
     tracker.setUserProperties(parsedMarketingProperties);
+    tracker.logEvent(
+      fromFirebase
+        ? AppHealthEvents.FIREBASE_GOT_ATTRIBUTION
+        : AppHealthEvents.BRANCH_GOT_ATTRIBUTION,
+      parsedMarketingProperties
+    );
   } else {
-    tracker.logEvent(AppHealthEvents.BRANCH_NO_ATTRIBUTION);
+    tracker.logEvent(
+      fromFirebase
+        ? AppHealthEvents.FIREBASE_NO_ATTRIBUTION
+        : AppHealthEvents.BRANCH_NO_ATTRIBUTION
+    );
   }
 }
 
@@ -193,7 +202,7 @@ async function recordMarketingAttributions() {
     return;
   }
 
-  storeMarketingAttributes(parsed.query);
+  storeMarketingAttributes(parsed.query, true);
 }
 
 // We export this, instead of directly writing these properties into our store,
