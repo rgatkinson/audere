@@ -26,6 +26,8 @@ import { writeBarcodeToFirebase } from "../util/firebase";
 export const { uploader, logger } = createTransport();
 
 export const BARCODE_PREFIX = "fluTrackBarcode:";
+export const DEMO_TRUE_PREFIX = "1:";
+export const DEMO_FALSE_PREFIX = "0:";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -40,8 +42,14 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
         const barcode = action.samples[action.samples.length - 1].code;
         writeBarcodeToFirebase(barcode, state.form.formId);
         uploader.saveBackup(state.form.formId, visitInfo);
+        let demoPrefix = !!state.form.isDemo
+          ? DEMO_TRUE_PREFIX
+          : DEMO_FALSE_PREFIX;
         try {
-          AsyncStorage.setItem(BARCODE_PREFIX + barcode, state.form.formId);
+          AsyncStorage.setItem(
+            BARCODE_PREFIX + demoPrefix + barcode,
+            state.form.formId
+          );
         } catch (error) {}
       }
     }

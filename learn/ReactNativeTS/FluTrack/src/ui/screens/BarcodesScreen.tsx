@@ -13,12 +13,18 @@ import ContentContainer from "../components/ContentContainer";
 import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
 import Button from "../components/Button";
-import { BARCODE_PREFIX, uploader } from "../../store/uploader";
+import {
+  BARCODE_PREFIX,
+  DEMO_TRUE_PREFIX,
+  DEMO_FALSE_PREFIX,
+  uploader,
+} from "../../store/uploader";
 
 interface BarcodeInfo {
   barcode: string;
   guid: string;
   csruid?: string;
+  isDemo: boolean;
 }
 
 export default class ExportBarcodesScreen extends React.Component {
@@ -38,10 +44,17 @@ export default class ExportBarcodesScreen extends React.Component {
         const barcodeKeys = keys.filter(key => key.startsWith(BARCODE_PREFIX));
         await AsyncStorage.multiGet(barcodeKeys, (err, stores) => {
           if (stores != null) {
-            stores.map((store) => {
+            stores.map(store => {
               guids.push(store[1]);
               barcodes.push({
-                barcode: store[0].substring(BARCODE_PREFIX.length),
+                isDemo:
+                  store[0].substr(
+                    BARCODE_PREFIX.length,
+                    DEMO_TRUE_PREFIX.length
+                  ) == DEMO_TRUE_PREFIX,
+                barcode: store[0].substring(
+                  BARCODE_PREFIX.length + DEMO_TRUE_PREFIX.length
+                ),
                 guid: store[1],
               });
             });
@@ -50,7 +63,7 @@ export default class ExportBarcodesScreen extends React.Component {
         const csruids = await uploader.getExistingCSRUIDs(guids);
         barcodes = barcodes.map(barcodeInfo => {
           if (csruids.has(barcodeInfo.guid)) {
-            return {...barcodeInfo, csruid: csruids.get(barcodeInfo.guid)};
+            return { ...barcodeInfo, csruid: csruids.get(barcodeInfo.guid) };
           }
           return barcodeInfo;
         });
@@ -67,19 +80,16 @@ export default class ExportBarcodesScreen extends React.Component {
     return (
       <View style={styles.row}>
         <View style={[{ width: "20%" }, styles.textContainer]}>
-          <Text style={styles.text}>
-            {item.barcode}
-          </Text>
+          <Text style={styles.text}>{item.barcode}</Text>
         </View>
-        <View style={[{ width: "40%" }, styles.textContainer]}>
-          <Text style={styles.text}>
-            {item.guid}
-          </Text>
+        <View style={[{ width: "30%" }, styles.textContainer]}>
+          <Text style={styles.text}>{item.guid}</Text>
         </View>
         <View style={[{ flex: 1 }, styles.textContainer]}>
-          <Text style={styles.text}>
-            {item.csruid}
-          </Text>
+          <Text style={styles.text}>{item.csruid}</Text>
+        </View>
+        <View style={[{ width: "3%" }, styles.textContainer]}>
+          <Text style={styles.text}>{item.isDemo ? "*" : ""}</Text>
         </View>
       </View>
     );
@@ -93,16 +103,21 @@ export default class ExportBarcodesScreen extends React.Component {
     return (
       <ScreenContainer>
         <ContentContainer>
-          <Text style={styles.headerText as TextStyle}>
-            Barcode Log
-          </Text>
+          <Text style={styles.headerText as TextStyle}>Barcode Log</Text>
           <View style={styles.container}>
-            {this._renderItem({ item: {
-              barcode: "BARCODE",
-              guid: "GUID",
-              csruid: "CSRUID",
-            }})}
-            <FlatList data={this.state.barcodes} keyExtractor={this._keyExtractor} renderItem={this._renderItem} />
+            {this._renderItem({
+              item: {
+                barcode: "BARCODE",
+                guid: "GUID",
+                csruid: "CSRUID",
+                isDemo: false,
+              },
+            })}
+            <FlatList
+              data={this.state.barcodes}
+              keyExtractor={this._keyExtractor}
+              renderItem={this._renderItem}
+            />
           </View>
           <Button
             label="Copy"
@@ -119,7 +134,7 @@ export default class ExportBarcodesScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    margin: 20,
+    margin: 10,
   },
   headerText: {
     fontSize: 24,
