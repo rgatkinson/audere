@@ -67,6 +67,16 @@ export function getRemoteConfig(key: string): any {
   return _currentConfig[key];
 }
 
+// Do this only if you really know what you're doing.  You're programmatically
+// bypassing our Awesome Web-Based Config Setter™.
+export function overrideRemoteConfig(key: string, value: boolean) {
+  let newConfig = { ..._currentConfig };
+
+  newConfig[key] = value;
+  _currentConfig = newConfig; // We do this because the object is immutable
+  tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, newConfig);
+}
+
 const SECONDS_IN_HOUR = 60 * 60;
 
 export async function loadAllRemoteConfigs() {

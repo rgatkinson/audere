@@ -22,6 +22,7 @@ import Title from "./Title";
 import VideoPlayer from "./VideoPlayer";
 import ScreenImages from "./ScreenImages";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
+import { getRemoteConfig, overrideRemoteConfig } from "../../util/remoteConfig";
 
 interface Props {
   buttonLabel?: string;
@@ -51,6 +52,7 @@ interface Props {
 const CustomScrollView = wrapScrollView(ScrollView);
 
 const TRIPLE_PRESS_DELAY = 500;
+const LONG_PRESS_DELAY_MS = 3 * 1000;
 
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
@@ -71,6 +73,17 @@ class Screen extends React.Component<Props & WithNamespaces> {
       this.secondLastTap = this.lastTap;
       this.lastTap = now;
     }
+  };
+
+  handleLongPress = () => {
+    if (!this.props.isDemo) {
+      return;
+    }
+
+    const blockKitOrders = getRemoteConfig("blockKitOrders");
+
+    overrideRemoteConfig("blockKitOrders", !blockKitOrders);
+    alert(`blockKitOrders is now ${!blockKitOrders}`);
   };
 
   render() {
@@ -101,7 +114,9 @@ class Screen extends React.Component<Props & WithNamespaces> {
               {!!this.props.imageSrc && (
                 <TouchableWithoutFeedback
                   style={{ alignSelf: "stretch" }}
+                  delayLongPress={LONG_PRESS_DELAY_MS}
                   onPress={this.handleTripleTap}
+                  onLongPress={this.handleLongPress}
                 >
                   <Image
                     style={[
