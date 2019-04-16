@@ -8,6 +8,7 @@ import {
 } from "react-navigation";
 import { AppLoading, Font } from "expo";
 import AboutScreen from "./src/ui/screens/AboutScreen";
+import BarcodesScreen from "./src/ui/screens/BarcodesScreen";
 import { store, persistor } from "./src/store/";
 import { Provider, connect } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -119,6 +120,7 @@ const Admin = createStackNavigator(
 const AdminDrawer = createDrawerNavigator({
   Admin,
   About: { screen: AboutScreen },
+  Barcodes: { screen: BarcodesScreen },
 });
 
 const tabBarVisible = (navigation: NavigationScreenProp<any, any>) => {

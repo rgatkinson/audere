@@ -257,6 +257,26 @@ export class DocumentUploader {
     this.uploadNext();
   }
 
+  public async getExistingCSRUIDs(localUids: string[]) {
+    const CSRUID_PREFIX = "csruid/documents/1/";
+    const pouchIds = localUids.map(id => CSRUID_PREFIX + id);
+    try {
+      const promises = pouchIds.map(id => this.db.get(id));
+      const results = await Promise.all(
+        promises.map(p => p.catch(() => undefined))
+      )
+      return results.reduce((map, result) => {
+        if (result != null) {
+          map.set(result._id.substring(CSRUID_PREFIX.length), result.csruid);
+        }
+        return map;
+      }, new Map<string, string>());
+
+    } catch (e) {
+      return new Map<string, string>();
+    }
+  }
+
   private async getCSRUID(localUid: string) {
     this.logger.debug(`getCSRUID(${localUid})`);
     const pouchId = "csruid/" + localUid;

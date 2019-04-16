@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { AsyncStorage } from "react-native";
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { Address, FormState, Option, Sample, SurveyResponse } from "./form";
 import { StoreState } from "./StoreState";
@@ -24,6 +25,8 @@ import { writeBarcodeToFirebase } from "../util/firebase";
 
 export const { uploader, logger } = createTransport();
 
+export const BARCODE_PREFIX = "fluTrackBarcode:";
+
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
 export function uploaderMiddleware({ getState }: MiddlewareAPI) {
@@ -35,9 +38,11 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       uploader.saveVisit(state.form.formId, visitInfo);
       if (action.type === "SET_SAMPLES") {
         const barcode = action.samples[action.samples.length - 1].code;
-
         writeBarcodeToFirebase(barcode, state.form.formId);
-        uploader.saveBackup(state.form.formId, visitInfo, barcode);
+        uploader.saveBackup(state.form.formId, visitInfo);
+        try {
+          AsyncStorage.setItem(BARCODE_PREFIX + barcode, state.form.formId);
+        } catch (error) {}
       }
     }
     return result;

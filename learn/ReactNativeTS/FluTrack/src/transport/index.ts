@@ -48,12 +48,17 @@ class TypedDocumentUploader {
     return this.uploader.documentsAwaitingUpload();
   }
 
+  public async getExistingCSRUIDs(
+    localUids: string[]
+  ): Promise<Map<string, string>> {
+    return this.uploader.getExistingCSRUIDs(localUids);
+  }
+
   public saveVisit(localUid: string, visit: VisitInfo) {
     this.uploader.save(localUid, visit, DocumentType.Visit, 1);
   }
 
-  public saveBackup(localUid: string, visit: VisitInfo, barcode: string) {
-    // TODO: save barcode and localUid to durable storage
+  public saveBackup(localUid: string, visit: VisitInfo) {
     this.uploader.backup(localUid, visit);
   }
 
