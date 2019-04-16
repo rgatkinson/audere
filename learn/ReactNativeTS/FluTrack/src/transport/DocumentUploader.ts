@@ -238,7 +238,7 @@ export class DocumentUploader {
       const url = `/documents/${this.documentUploadKey}/${body.csruid}`;
       let result = await this.check200(() => this.api.put(url, body));
       await idleness();
-      if (result == null) {
+      if (result == null || result.data.Status !== "SUCCESS") {
         return;
       }
     }
