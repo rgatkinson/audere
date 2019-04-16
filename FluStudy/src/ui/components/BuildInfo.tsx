@@ -30,7 +30,7 @@ class BuildInfo extends React.Component<Props & WithNamespaces> {
       t("buildInfo:version") +
       buildInfo.version +
       t("buildInfo:build") +
-      (ios ? buildInfo.iosBuild : "") +
+      (ios ? buildInfo.iosBuild : Constants.platform.android.versionCode) +
       t("buildInfo:commit") +
       buildInfo.hash +
       t("buildInfo:date") +

@@ -21,8 +21,8 @@ android {
   defaultConfig {
     applicationId 'org.auderenow.fluathome'
     targetSdkVersion 26
-    versionCode 1
-    versionName '0.2.0'
+    versionCode 72 
+    versionName '0.2.12'
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }
