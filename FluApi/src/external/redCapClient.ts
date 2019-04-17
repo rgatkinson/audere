@@ -38,11 +38,21 @@ export class REDCapClient {
   }
 
   private async makeRequest<T>(data: string): Promise<AxiosResponse<T>> {
-    return this.api.post<T>("", data, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
+    try {
+      const response = await this.api.post<T>("", data, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      });
+
+      return response;
+    } catch(e) {
+      if (e.response) {
+        logger.error(`Error returned from REDCap: ${e.response.data}`);
       }
-    });
+
+      throw e;
+    }
   }
 
   private validateReportRow(row: AtHomeData): boolean {
@@ -154,8 +164,9 @@ export class REDCapClient {
       `data=${JSON.stringify(records)}`;
 
     const importRecordsResponse = await this.makeRequest<string[]>(data);
-    logger.info(`Received ${importRecordsResponse.status} status from record ` +
-      `request with ${(importRecordsResponse.data || []).length} auto-ids`);
+    logger.info(`Received ${importRecordsResponse.status} status from ` +
+      `record request with ${(importRecordsResponse.data || []).length} ` +
+      `auto-ids`);
 
     const mappedIds = new Map();
 
