@@ -184,14 +184,20 @@ class WelcomeBackScreen extends React.Component<
         imageSrc={{
           uri:
             Platform.OS === "ios"
-              ? "img/WelcomeBack"
-              : "asset:/img/welcome_back.png",
+              ? "img/howTestWorks_1"
+              : "asset:/img/howTestWorks_1.png",
         }}
         navigation={this.props.navigation}
         title={t("welcomeBack")}
         onBack={this._onBack}
         onNext={this._onNext}
-      />
+      >
+        {t("bullets")
+          .split("\n")
+          .map((bullet: string, index: number) => {
+            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+          })}
+      </Screen>
     );
   }
 }
@@ -216,13 +222,19 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
         imageSrc={{
           uri:
             Platform.OS === "ios"
-              ? "img/whatsNext"
-              : "asset:/img/whats_next.png",
+              ? "img/preparingForTest"
+              : "asset:/img/preparingForTest.png",
         }}
         navigation={this.props.navigation}
         title={t("whatsNext")}
         onNext={this._onNext}
-      />
+      >
+        {t("bullets")
+          .split("\n")
+          .map((bullet: string, index: number) => {
+            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+          })}
+      </Screen>
     );
   }
 }

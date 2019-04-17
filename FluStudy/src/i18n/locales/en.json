@@ -293,6 +293,17 @@
     "description": "We're sorry, but you need to agree to the consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
     "back": "Back to consent"
   },
+  "kitOrderedScreen": {
+    "title": "Your kit was ordered.",
+    "description": "The flu test package should arrive at your home within the next 1-2 days.\n\n**When your kit arrives:**",
+    "bullets": "**Open the flu@home app on your device.** The app will guide you through the entire test.\n**Keep the kit contents in their original packaging.** The app will guide you through everything.\n**Save the box the kit came in.** You will need it to scan its barcode for verification and to return the kit to us (via pre-paid postage).",
+    "disclaimer": "The kit is for your use only. Please do not give, share, or use the kit with anyone else after you receive it."
+  },
+  "thankYouScreeningScreen": {
+    "title": "Thanks for participating!",
+    "description": "We hope you’re able to get some rest and feel better soon.\n\n**While you wait for your kit:** ",
+    "bullets": "**Search Maps for urgent care clinics nearby.** If you need to see a doctor, you can use Maps to find one.\n**Learn more about this study.** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)**."
+  },
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",
     "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your {{device}} and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?",
@@ -307,12 +318,14 @@
     "close": "Close flu@home"
   },
   "welcomeBackScreen": {
-    "welcomeBack": "Preparing to use the kit",
-    "description": "Sorry, we know you're feeling bad and appreciate your participation. Today you'll be completing two tests, which allows us to double-check your results. The whole process should take about 20 minutes total.\n\nBefore we get started, find a location with good lighting and make yourself comfortable.\n\n**Keep the big box you just opened.** After the tests are complete you will package everything up in the same box to send back to us."
+    "welcomeBack": "How the test works",
+    "description": "Sorry, we know you’re feeling bad and appreciate your participation. Today you’ll be completing two tests which involve taking nose swabs. The whole process should take about 20 minutes total.\n\n**Please note the following:**",
+    "bullets": "**Save the box the kit came in.** The app will ask you to scan the blue barcode on the box and you'll return your samples to us in the same box.\n**Shipping is pre-paid.** A return label is included in your kit, as well as tape to seal up the box.\n**Return the kit and we’ll send you a gift card.** Your gift card will be emailed within four weeks of us receiving your kit with samples in the mail."
   },
   "whatsNextScreen": {
-    "whatsNext": "What's next?",
-    "description": "Both tests involve taking nose swabs, then returning them by mail using a shipping label provided in the box. As a thank you for all your help, we'll email you a gift card within four weeks of us receiving your completed test kit.\n\nBefore you begin, find a flat surface where you can place the kit. Be sure it is away from pets and children."
+    "whatsNext": "Preparing for the test",
+    "description": "Take a minute to get comfortable before you start the test process. Ideally, you’ll stay with your test kit for the duration of the test.\n\n**Before you begin:**",
+    "bullets": "**Find a location away from pets and children.** Your test kit includes items that could be broken, damaged, or contaminated.\n**Choose a flat surface with good lighting.** The app will take a photo of your test strip."
   },
   "beforeScreen": {
     "beforeYouBegin": "Before you begin",

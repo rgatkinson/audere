@@ -25,6 +25,8 @@ import {
   PreConsent,
   Consent,
   ConsentIneligible,
+  KitOrdered,
+  ThankYouScreening,
   Confirmation,
   PushNotifications,
 } from "./screens/ScreeningScreens";
@@ -99,6 +101,8 @@ const Home = createStackNavigator(
     ConsentIneligible,
     Address: AddressScreen,
     AddressConfirm,
+    KitOrdered,
+    ThankYouScreening,
     Confirmation,
     StateIneligible,
     PushNotifications,

@@ -30,9 +30,7 @@ import {
   setEmail,
   setWorkflow,
   setConsent,
-  logger,
 } from "../../store";
-import { Logger } from "../../transport/LogUtil";
 import {
   MailingAddressConfig,
   AddressConfig,
@@ -55,7 +53,6 @@ import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
 import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
-import OptionQuestion from "../components/OptionQuestion";
 import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
 import { findMedHelp, learnMore } from "../externalActions";
@@ -395,17 +392,6 @@ export const Symptoms = reduxWriter(
 class PreConsentScreen extends React.PureComponent<
   Props & WorkflowProps & WithNamespaces & ReduxWriterProps
 > {
-  _renderBullets = (arr: string[]) => {
-    const { t } = this.props;
-    return (
-      <View>
-        {arr.map((bullet, index) => {
-          return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-        })}
-      </View>
-    );
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -430,7 +416,11 @@ class PreConsentScreen extends React.PureComponent<
               style={{ marginTop: GUTTER, marginBottom: GUTTER }}
               content={t("description")}
             />
-            {this._renderBullets(t("bullets").split("\n"))}
+            {t("bullets")
+              .split("\n")
+              .map((bullet: string, index: number) => {
+                return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+              })}
             <Text style={{ marginVertical: GUTTER }} content={t("questions")} />
             <Text
               italic={true}
@@ -672,7 +662,7 @@ function writeAddressAndNavigate(
   const config = didSkipScreening ? AddressConfig : MailingAddressConfig;
   updateAnswer({ addressInput: address }, config);
 
-  navigation.push(didSkipScreening ? "WhatsNext" : "Confirmation");
+  navigation.push(didSkipScreening ? "WhatsNext" : "KitOrdered");
 }
 
 interface AddressState {
@@ -1344,6 +1334,81 @@ class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
 }
 export const StateIneligible = withNamespaces("stateIneligibleScreen")(
   StateIneligibleScreen
+);
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class KitOrderedScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("ThankYouScreening");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        buttonLabel={t("common:button:continue")}
+        canProceed={true}
+        desc={t("description")}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/fluKitOrdered"
+              : "asset:/img/flu_kit_ordered.png",
+        }}
+        navigation={this.props.navigation}
+        onNext={this._onNext}
+        title={t("title")}
+      >
+        {t("bullets")
+          .split("\n")
+          .map((bullet: string, index: number) => {
+            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+          })}
+        <Text
+          style={{ lineHeight: 22 }}
+          italic={true}
+          content={t("disclaimer")}
+        />
+      </Screen>
+    );
+  }
+}
+export const KitOrdered = withNamespaces("kitOrderedScreen")(KitOrderedScreen);
+
+@connect((state: StoreState) => ({
+  workflow: state.survey.workflow,
+}))
+class ThankYouScreeningScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        buttonLabel={t("common:button:continue")}
+        canProceed={false}
+        desc={t("description")}
+        imageSrc={{
+          uri:
+            Platform.OS === "ios"
+              ? "img/thanksForParticipating"
+              : "asset:/img/thanksForParticipating.png",
+        }}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("title")}
+      >
+        {t("bullets")
+          .split("\n")
+          .map((bullet: string, index: number) => {
+            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+          })}
+      </Screen>
+    );
+  }
+}
+export const ThankYouScreening = withNamespaces("thankYouScreeningScreen")(
+  ThankYouScreeningScreen
 );
 
 @connect((state: StoreState) => ({

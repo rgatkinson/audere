@@ -66,7 +66,8 @@ class Screen extends React.Component<Props & WithNamespaces> {
     if (
       this.lastTap != null &&
       this.secondLastTap != null &&
-      now - this.secondLastTap! < TRIPLE_PRESS_DELAY
+      now - this.secondLastTap! < TRIPLE_PRESS_DELAY &&
+      this.props.menuItem
     ) {
       this.props.dispatch!(setDemo(!this.props.isDemo));
     } else {
