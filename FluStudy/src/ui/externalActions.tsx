@@ -33,5 +33,5 @@ export function showNearbyShippingLocations(zipcode: string) {
 }
 
 export function emailSupport(params: string = "") {
-  Linking.openURL("mailto:flu-support@auderenow.org" + params);
+  Linking.openURL("mailto:fluhelp@uw.edu" + params);
 }
