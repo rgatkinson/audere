@@ -9,9 +9,12 @@ import { tracker, AppHealthEvents } from "../util/tracker";
 import { Constants } from "expo";
 
 interface RemoteConfig {
+  barcodeSupportCodes: string[];
   blockKitOrders: boolean;
   showVideos: boolean;
-  [key: string]: boolean;
+  validateBarcodes: boolean;
+  validateSupportCodes: boolean;
+  [key: string]: boolean | string[];
 }
 
 // Every config you load should have a default set here.  Remember that the
@@ -25,8 +28,11 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   // Pessimistically assume we have no kits.  Currently only on iOS because
   // we're busy getting remoteConfig working on Android (struggling with 403
   // Forbidden issues).
+  barcodeSupportCodes: [],
   blockKitOrders: !!Constants.platform.ios,
   showVideos: true,
+  validateBarcodes: false,
+  validateSupportCodes: true,
 };
 
 // Values you put into here will always be applied on top of remote config

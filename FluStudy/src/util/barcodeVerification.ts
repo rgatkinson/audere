@@ -1,5 +1,9 @@
 import { Alert } from "react-native";
 import i18n from "i18next";
+import axios from "axios";
+import { getApiBaseUrl } from "../transport";
+import { getRemoteConfig } from "./remoteConfig";
+import { tracker, BarcodeVerificationEvents } from "./tracker";
 
 const BARCODE_RE = /^[0-9a-f]{8}$/;
 const BARCODE_CHARS = 8;
@@ -28,14 +32,45 @@ export function invalidBarcodeShapeAlert(
   );
 }
 
-export function verifiedBarcode(barcode: string): boolean {
-  // TODO: implement this
-  return true;
+export async function verifiedBarcode(barcode: string): Promise<boolean> {
+  const validateBarcodes = getRemoteConfig("validateBarcodes");
+  if (!validateBarcodes) {
+    return true;
+  }
+  let response;
+  try {
+    response = await axios.get(getApiBaseUrl() + "/validateBarcode/" + barcode);
+    if (response != null) {
+      tracker.logEvent(BarcodeVerificationEvents.SERVER_RESPONSE, {
+        barcode,
+        responseStatus: response.status,
+        responseData: response.data,
+      });
+      return response.status === 200 && response.data === "Valid";
+    }
+  } catch (e) {
+    tracker.logEvent(BarcodeVerificationEvents.EXCEPTION, { barcode });
+  }
+  return false;
 }
 
 export function verifiedSupportCode(code: string): boolean {
-  // TODO implement this
-  return true;
+  const validateSupportCodes = getRemoteConfig("validateSupportCodes");
+  if (!validateSupportCodes) {
+    return true;
+  }
+  const supportCodes = getRemoteConfig("barcodeSupportCodes");
+
+  if (supportCodes.includes(code)) {
+    tracker.logEvent(BarcodeVerificationEvents.VALID_SUPPORT_CODE, { code });
+    return true;
+  } else {
+    tracker.logEvent(BarcodeVerificationEvents.INVALID_SUPPORT_CODE, {
+      code,
+      supportCodes,
+    });
+    return false;
+  }
 }
 
 export function unverifiedBarcodeAlert(

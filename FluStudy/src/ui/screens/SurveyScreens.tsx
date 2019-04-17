@@ -384,7 +384,7 @@ class ScanScreen extends React.Component<
     }
   }
 
-  _onBarCodeScanned = ({ type, data }: { type: any; data: string }) => {
+  _onBarCodeScanned = async ({ type, data }: { type: any; data: string }) => {
     const { t } = this.props;
     const barcode = data.toLowerCase();
 
@@ -392,35 +392,38 @@ class ScanScreen extends React.Component<
       this.setState({ activeScan: true });
       if (!validBarcodeShape(barcode)) {
         invalidBarcodeShapeAlert(barcode, this._setTimer);
-      } else if (!verifiedBarcode(barcode)) {
-        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-          ? this.props.invalidBarcodes.length
-          : 0;
-        this.props.dispatch(
-          appendInvalidBarcode({
-            sample_type: type,
-            code: barcode,
-          })
-        );
-        if (priorUnverifiedAttempts > 2) {
-          this.props.navigation.push("BarcodeContactSupport");
-        } else {
-          unverifiedBarcodeAlert(t("scan"), this._setTimer);
-        }
       } else {
-        this.props.dispatch(
-          setKitBarcode({
-            sample_type: type,
-            code: barcode,
-          })
-        );
-        this.props.dispatch(
-          setWorkflow({
-            ...this.props.workflow,
-            surveyStartedAt: new Date().toISOString(),
-          })
-        );
-        this.props.navigation.push("ScanConfirmation");
+        const serverVerifiedBarcode = await verifiedBarcode(barcode);
+        if (!serverVerifiedBarcode) {
+          const priorUnverifiedAttempts = !!this.props.invalidBarcodes
+            ? this.props.invalidBarcodes.length
+            : 0;
+          this.props.dispatch(
+            appendInvalidBarcode({
+              sample_type: type,
+              code: barcode,
+            })
+          );
+          if (priorUnverifiedAttempts > 2) {
+            this.props.navigation.push("BarcodeContactSupport");
+          } else {
+            unverifiedBarcodeAlert(t("scan"), this._setTimer);
+          }
+        } else {
+          this.props.dispatch(
+            setKitBarcode({
+              sample_type: type,
+              code: barcode,
+            })
+          );
+          this.props.dispatch(
+            setWorkflow({
+              ...this.props.workflow,
+              surveyStartedAt: new Date().toISOString(),
+            })
+          );
+          this.props.navigation.push("ScanConfirmation");
+        }
       }
     }
   };
@@ -653,7 +656,7 @@ class ManualEntryScreen extends React.Component<
     this.props.navigation.push("ManualConfirmation");
   };
 
-  _onNext = () => {
+  _onNext = async () => {
     const { t } = this.props;
     if (this.state.barcode1 == null) {
       Alert.alert("", t("barcodeRequired"), [
@@ -665,23 +668,26 @@ class ManualEntryScreen extends React.Component<
       ]);
     } else if (!validBarcodeShape(this.state.barcode1)) {
       invalidBarcodeShapeAlert(this.state.barcode1);
-    } else if (!verifiedBarcode(this.state.barcode1)) {
-      const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-        ? this.props.invalidBarcodes.length
-        : 0;
-      this.props.dispatch(
-        appendInvalidBarcode({
-          sample_type: "manualEntry",
-          code: this.state.barcode1,
-        })
-      );
-      if (priorUnverifiedAttempts > 2 && !this.props.supportCode) {
-        this.props.navigation.push("BarcodeContactSupport");
-      } else {
-        unverifiedBarcodeAlert(t("enter"));
-      }
     } else {
-      this._onSave();
+      const serverVerifiedBarcode = await verifiedBarcode(this.state.barcode1);
+      if (!serverVerifiedBarcode) {
+        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
+          ? this.props.invalidBarcodes.length
+          : 0;
+        this.props.dispatch(
+          appendInvalidBarcode({
+            sample_type: "manualEntry",
+            code: this.state.barcode1,
+          })
+        );
+        if (priorUnverifiedAttempts > 2 && !this.props.supportCode) {
+          this.props.navigation.push("BarcodeContactSupport");
+        } else {
+          unverifiedBarcodeAlert(t("enter"));
+        }
+      } else {
+        this._onSave();
+      }
     }
   };
 
@@ -792,17 +798,21 @@ class BarcodeContactSupportScreen extends React.Component<
 
   _updateSupportCode = (supportCode: string) => {
     this.setState({ supportCode });
-    this._onSupportCodeSubmit();
+    this._onSupportCodeSubmit(supportCode);
+  };
+
+  _onModalSubmit = () => {
+    this._onSupportCodeSubmit(this.state.supportCode);
   };
 
   _toggleModal = () => {
     this.setState({ modalVisible: !this.state.modalVisible });
   };
 
-  _onSupportCodeSubmit = () => {
-    if (verifiedSupportCode(this.state.supportCode)) {
+  _onSupportCodeSubmit = (supportCode: string) => {
+    if (verifiedSupportCode(supportCode)) {
       this.setState({ invalidCode: false });
-      this.props.dispatch(setSupportCode(this.state.supportCode));
+      this.props.dispatch(setSupportCode(supportCode));
       this._toggleModal();
       this.props.navigation.push("ManualEntry");
     } else {
@@ -845,7 +855,7 @@ class BarcodeContactSupportScreen extends React.Component<
           title={t("supportVerification")}
           visible={this.state.modalVisible}
           onDismiss={this._toggleModal}
-          onSubmit={this._onSupportCodeSubmit}
+          onSubmit={this._onModalSubmit}
         >
           <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
             <View style={{ justifyContent: "space-between", padding: GUTTER }}>

@@ -72,6 +72,13 @@ export const VideoEvents = {
   COMPLETE_VIDEO: "video_view_completed",
 };
 
+export const BarcodeVerificationEvents = {
+  SERVER_RESPONSE: "barcode_verification_server_response",
+  EXCEPTION: "barcode_verification_exception",
+  VALID_SUPPORT_CODE: "valid_support_code",
+  INVALID_SUPPORT_CODE: "invalid_support_code",
+};
+
 export const AppHealthEvents = {
   BRANCH_DATA_ERROR: "branch_data_error",
   BRANCH_GOT_ATTRIBUTION: "branch_got_attribution",
