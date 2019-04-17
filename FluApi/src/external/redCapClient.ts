@@ -102,7 +102,7 @@ export class REDCapClient {
   ): Promise<Map<string, RecordSurveyMapping>> {
     logger.info("Requesting next REDCap record id");
     const nextRecordResponse = await this.makeRequest<number>(
-      `token=${this.config.apiToken}&conttent=generateNextRecordName`
+      `token=${this.config.apiToken}&content=generateNextRecordName`
     );
 
     // Random offset that ensures we are outside of the range of current ids.
