@@ -849,6 +849,7 @@ export async function getFeverMetrics(
         ]
       }
     },
+    order: ['id'],
     raw: true
   });
 
@@ -1003,65 +1004,105 @@ export async function getFeverMetrics(
       percent: (x.count / rowsUnfinishedSurveys.length * 100).toFixed(1),
     })));
 
-  const studyIdQuery = `
-    WITH t AS (SELECT DISTINCT ON (fcs.id) fcs.id,
-      (SELECT events->>'at' as kitordertime
-        FROM json_array_elements(survey->'events') events
-        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='Confirmation' LIMIT 1),
-      (SELECT events->>'at' as part2time
-        FROM json_array_elements(survey->'events') events
-        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='WelcomeBack' LIMIT 1),
-      (SELECT events->>'at' as questionscompletedtime
-        FROM json_array_elements(survey->'events') events
-        WHERE ${dateClause} AND ${demoClause} AND events->>'refId'='ThankYouSurvey' LIMIT 1),
-      (SELECT json_extract_path(items->'answerOptions',
-        items->'answer'->0->>'valueIndex','id') as firsttestfeedback
-        FROM json_array_elements(survey->'responses'->0->'item') items
-        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='FirstTestFeedback'),
-      (SELECT json_extract_path(items->'answerOptions',
-        items->'answer'->0->>'valueIndex','id') as secondtestfeedback
-        FROM json_array_elements(survey->'responses'->0->'item') items
-        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='SecondTestFeedback'),
-      (SELECT json_extract_path(items->'answerOptions',
-        items->'answer'->0->>'valueIndex','id') as redwhenblue
-        FROM json_array_elements(survey->'responses'->0->'item') items
-        WHERE ${dateClause} AND ${demoClause} AND items->>'id'='RedWhenBlue')
-      FROM fever_current_surveys fcs
-      WHERE ${dateClause} AND ${demoClause}
-      ORDER BY fcs.id, kitordertime ASC)
-    SELECT
-          t.kitordertime,
-          t.part2time,
-          t.questionscompletedtime,
-          t.firsttestfeedback,
-          t.secondtestfeedback,
-          t.redwhenblue,
-          fcs.id as dbid,
-          fcs."createdAt",
-          CASE WHEN fcs.survey->'samples'->0->>'sample_type' = 'manualEntry'
-              THEN CONCAT(fcs.survey->'samples'->0->>'code','*')
-              ELSE fcs.survey->'samples'->0->>'code' END as barcode,
-          fcs.survey->'workflow'->'surveyCompletedAt' as finishtime,
-          fcs.csruid as studyid,
-          fcs.device->'clientVersion'->'version' as appversion,
-          regexp_matches(fcs.device->>'platform','"model":"(.*)","user') as devicemodel,
-          fcs.device->'installation' as installation,
-          CASE WHEN (fcs.survey->'workflow')::jsonb ? 'surveyCompletedAt' THEN 'Finisehd App'
-              WHEN (fcs.survey->'workflow')::jsonb ? 'surveyStartedAt' THEN 'Scanned Barcode'
-              WHEN (fcs.survey->'workflow')::jsonb ? 'screeningCompletedAt' THEN 'Ordered Kit'
-              ELSE ''
-              END as workflow,
-          json_extract_path_text(survey->'responses'->0->'item'->0->'answerOptions',
-            survey->'responses'->0->'item'->0->'answer'->0->>'valueIndex','text') as age
-      FROM t RIGHT JOIN fever_current_surveys fcs
-    ON fcs.id=t.id
-    WHERE ${dateClause} AND ${demoClause}
-    ORDER BY fcs."createdAt";`;
+  //Format fields for excel details sheet
+  const getAgeRange = (row) => {
+    const ageField = row.survey.responses[0].item[0];
+    if (ageField && ageField.answer.length > 0) {
+      const age = ageField.answer[0].valueIndex;
+      return ageField.answerOptions[age].text;
+    }
+  };
+  const getBarcode = (row) => {
+    const barcodeField = row.survey.samples[0];
+    if (barcodeField) {
+      return barcodeField.sample_type === 'manualEntry' ? barcodeField.code+"*" : barcodeField.code;
+    }
+  }
+  const getDeviceModel = (row) => {
+    const modelInfo = /model":"(.*)","user/.exec(row.device.platform);
+    if (modelInfo && modelInfo.length > 1) {
+      return modelInfo[1];
+    }
+  }
+  const getKitOrderTime = (row) => {
+    const confirmation = row.survey.events.find(item => item.refId === "Confirmation");
+    if (confirmation) return confirmation.at;
+  };
+  const getScanTime = (row) => {
+    const barcodeConfirmation = row.survey.events.find(
+      item => item.refId == "ScanConfirmation" || item.refId === "ManualConfirmation");
+    if (barcodeConfirmation) {
+      return barcodeConfirmation.at;
+    }
+  };
+  const getSurveyCompleteTime = (row) => {
+    const surveyComplete = row.survey.events.find(item => item.refId === "ThankYouSurvey");
+    if (surveyComplete) {
+      return surveyComplete.at;
+    }
+  }
+  const getFinishTime = (row) => {
+    if (row.survey.workflow.surveyCompletedAt) return row.survey.workflow.surveyCompletedAt;
+  }
+  const getTest1Feedback = (row) => {
+    const feedback = row.survey.responses[0].item.find(
+      item => item.id == "FirstTestFeedback" && item.answer.length > 0);
+    if (feedback) {
+      return feedback.answerOptions[feedback.answer[0].valueIndex].id;
+    }
+  }
+  const getTest2Feedback = (row) => {
+    const feedback = row.survey.responses[0].item.find(
+      item => item.id == "SecondTestFeedback" && item.answer.length > 0);
+    if (feedback) {
+      return feedback.answerOptions[feedback.answer[0].valueIndex].id;
+    }
+  }
+  const getRedWhenBlueAnswer = (row) => {
+    const redwhenblue = row.survey.responses[0].item.find(
+      item => item.id == "RedWhenBlue" && item.answer.length > 0);
+    if (redwhenblue) {
+      return redwhenblue.answerOptions[redwhenblue.answer[0].valueIndex].id;
+    }
+  }
+  const getWorkflow = (row) => {
+    const workflow = row.survey.workflow;
+    if (row["fever_received_kit.dateReceived"]) {
+      return "Kit Returned"
+    }
+    else if (workflow.surveyCompletedAt) {
+      return "Finished App"
+    }
+    else if (workflow.surveyStartedAt) {
+      return "Scanned Barcode"
+    }
+    else if (workflow.screeningCompletedAt) {
+      return "Ordered Kit"
+    }
+  }
 
-  const studyIdData = (await clientQuery(studyIdQuery)).map(study => ({
-    ...study,
-    studyid: study.studyid.substring(0, 21)
-  }));
+  let studyIdData = [];
+  rowsNonPii.forEach( (row) => {
+    studyIdData.push({
+      age: getAgeRange(row),
+      createdAt: row["createdAt"],
+      barcode: getBarcode(row),
+      studyid: row.csruid.substring(0, 21),
+      dbid: row.id,
+      appversion: row.device.clientVersion['version'],
+      devicemodel: getDeviceModel(row),
+      installation: row.device.installation,
+      kitordertime: getKitOrderTime(row),
+      scantime: getScanTime(row),
+      questionscompletedtime: getSurveyCompleteTime(row),
+      finishtime: getFinishTime(row),
+      kitreceiveddate: row["fever_received_kit.dateReceived"],
+      firsttestfeedback: getTest1Feedback(row),
+      secondtestfeedback: getTest2Feedback(row),
+      redwhenblue: getRedWhenBlueAnswer(row),
+      workflow: getWorkflow(row)
+    });
+  });
 
   return {surveyStatsData, lastScreenData, statesData, studyIdData};
 }
@@ -1378,8 +1419,8 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       },
       width: 150
     },
-    part2time: {
-      displayName: "Started Part II (" + getTimezoneAbbrev() + ")",
+    scantime: {
+      displayName: "Scanned Barcode (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
@@ -1401,6 +1442,11 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
         return !!value ? toStudyDateString(value) : value;
       },
       width: 150
+    },
+    kitreceiveddate: {
+      displayName: "Kit Received",
+      headerStyle: styles.columnHeader,
+      width: 70
     },
     firsttestfeedback: {
       displayName: "First Test Feedback",
@@ -1547,9 +1593,10 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     ["Device Model", null, "What device the user used to complete the app"],
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
-    ["Started Part II", null, "Time user reopened app to begin part 2"],
+    ["Barcode Scanned", null, "Time when user scanned or manually entered barcode"],
     ["Finished Survey Questions", null, "Time when user finished the questions about their illness"],
     ["Finished App", null, "Time user reached last screen of app"],
+    ["Kit Received", null, "Date when kit was received by lab"],
     [
       "First Test Feedback",
       null,
