@@ -1380,7 +1380,18 @@ export const KitOrdered = withNamespaces("kitOrderedScreen")(KitOrderedScreen);
 @connect((state: StoreState) => ({
   workflow: state.survey.workflow,
 }))
-class ThankYouScreeningScreen extends React.Component<Props & WithNamespaces> {
+class ThankYouScreeningScreen extends React.Component<
+  Props & WorkflowProps & WithNamespaces
+> {
+  componentDidMount() {
+    this.props.dispatch(
+      setWorkflow({
+        ...this.props.workflow,
+        screeningCompletedAt: new Date().toISOString(),
+      })
+    );
+  }
+
   render() {
     const { t } = this.props;
     return (

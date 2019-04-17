@@ -17,6 +17,7 @@ import {
   TEXT_COLOR,
 } from "../styles";
 import i18next from "i18next";
+import { findMedHelp } from "../externalActions";
 
 interface Props {
   bold?: boolean;
@@ -84,17 +85,25 @@ function linkify(
     }
 
     // Now the link itself
-    elements.push(
-      <SystemText
-        key={link.url}
-        style={style}
-        onPress={() => {
-          Linking.openURL(link.url);
-        }}
-      >
-        {link.title}
-      </SystemText>
-    );
+    if (link.url === "findMedHelp") {
+      elements.push(
+        <SystemText key={link.url} style={style} onPress={() => findMedHelp()}>
+          {link.title}
+        </SystemText>
+      );
+    } else {
+      elements.push(
+        <SystemText
+          key={link.url}
+          style={style}
+          onPress={() => {
+            Linking.openURL(link.url);
+          }}
+        >
+          {link.title}
+        </SystemText>
+      );
+    }
 
     toProcess = toProcess.substr(link.startIndex + link.length);
   });
