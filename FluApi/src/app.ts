@@ -15,6 +15,7 @@ import { SplitSql } from "./util/sql";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReport";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
+import { BarcodeValidator } from "./endpoints/barcodeValidator";
 import { useOuch, createApp, wrap, requestId } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import { isAWS } from "./util/environment";
@@ -92,6 +93,15 @@ export async function createPublicApp(config: AppConfig) {
   publicApp.get("/about", stats("about"), (req, res) => {
     res.status(200).send(buildInfo);
   });
+
+  const barcodeValidator = new BarcodeValidator(sql);
+  publicApp.get(
+    "/api/validateBarcode/:barcode([0-9a-f]{8})",
+    stats("validateBarcode"),
+    wrap(async (req, res) => {
+      return barcodeValidator.validate(req, res);
+    })
+  );
 
   const deviceSettings = new DeviceSettingsEndpoint(sql);
   publicApp.get(
