@@ -127,7 +127,10 @@ export async function syncToCouch(address: string) {
   const remoteDB = new PouchDB(address);
   await new Promise((res, rej) => {
     db.replicate
-      .to(remoteDB)
+      .to(remoteDB, {
+        filter: doc =>
+          doc._id.startsWith("documents/1") || doc._id.startsWith("backup"),
+      })
       .on("complete", res)
       .on("error", rej);
   });
