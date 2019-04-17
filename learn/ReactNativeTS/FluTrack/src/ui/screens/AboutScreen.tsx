@@ -13,6 +13,8 @@ import { NavigationScreenProp } from "react-navigation";
 import { Constants } from "expo";
 import Button from "../components/Button";
 import { getApiBaseUrl } from "../../transport";
+import { getDeviceSetting } from "../../util/deviceSettings";
+import { uploader } from "../../store/uploader";
 
 const buildInfo = require("../../../buildInfo.json");
 
@@ -20,17 +22,29 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-export default class AboutScreen extends React.Component<Props> {
+interface State {
+  encryptionKey: string | null;
+}
+
+export default class AboutScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: "About",
   };
+
+  state = { encryptionKey: null };
 
   copyToClipboard = async (text: string) => {
     await Clipboard.setString(text);
   };
 
-  render() {
-    const aboutContent: string =
+  componentDidMount = async () => {
+    if (await getDeviceSetting("DISPLAY_ENCRYPTION_KEY")) {
+      this.setState({ encryptionKey: await uploader.getEncryptionPassword() });
+    }
+  };
+
+  render = () => {
+    let aboutContent: string =
       "Version: " +
       buildInfo.version +
       "\nCommit: " +
@@ -45,6 +59,11 @@ export default class AboutScreen extends React.Component<Props> {
       Constants.installationId +
       "\nAPI Server: " +
       getApiBaseUrl();
+
+    console.log(this.state);
+    if (this.state.encryptionKey) {
+      aboutContent += "\nEncryption Key: " + this.state.encryptionKey;
+    }
 
     return (
       <ScreenContainer>
@@ -66,7 +85,7 @@ export default class AboutScreen extends React.Component<Props> {
         </ContentContainer>
       </ScreenContainer>
     );
-  }
+  };
 }
 
 const styles = StyleSheet.create({
