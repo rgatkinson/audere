@@ -30,7 +30,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   // Forbidden issues).
   barcodeSupportCodes: [],
   blockKitOrders: !!Constants.platform.ios,
-  showVideos: true,
+  showVideos: false,
   validateBarcodes: false,
   validateSupportCodes: true,
 };
@@ -39,7 +39,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {
   blockKitOrders: false,
-  showVideos: true,
+  showVideos: false,
 };
 
 let _currentConfig: RemoteConfig = Object.assign({}, DEFAULT_CONFIGS);
