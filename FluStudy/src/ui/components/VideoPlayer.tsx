@@ -24,7 +24,6 @@ export default class VideoPlayer extends React.Component<Props> {
   state = {
     loggedFirstPlay: false,
     paused: true,
-    rate: 1.0,
     showThumbnail: true,
   };
 
@@ -46,7 +45,7 @@ export default class VideoPlayer extends React.Component<Props> {
     playableDuration: number;
     seekableDuration: number;
   }) => {
-    if (this.state.rate == 1) {
+    if (!this.state.paused) {
       if (currentTime == 0) {
         if (!this.state.loggedFirstPlay) {
           tracker.logEvent(VideoEvents.START_VIDEO, {
@@ -73,17 +72,11 @@ export default class VideoPlayer extends React.Component<Props> {
   };
 
   _pauseVideo = () => {
-    this.setState({ rate: 0.0 });
-  };
-
-  _resetRate = () => {
-    // We use rate to pause/unpause on navigation events instead of pause because
-    // we never want the video to auto-play.
-    this.setState({ rate: 1.0 });
+    this.setState({ paused: true });
   };
 
   _playVideo = () => {
-    this.setState({ paused: false, showThumbnail: false, rate: 1.0 });
+    this.setState({ paused: false, showThumbnail: false });
   };
 
   render() {
@@ -94,10 +87,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
     return (
       <View>
-        <NavigationEvents
-          onWillFocus={this._resetRate}
-          onWillBlur={this._pauseVideo}
-        />
+        <NavigationEvents onWillBlur={this._pauseVideo} />
         <Divider />
         {this.state.showThumbnail && (
           <TouchableWithoutFeedback
@@ -126,7 +116,6 @@ export default class VideoPlayer extends React.Component<Props> {
           ignoreSilentSwitch="obey"
           playInBackground={false}
           progressUpdateInterval={THREE_SECONDS_MS}
-          rate={this.state.rate}
           ref={this._videoPlayer}
           repeat={true}
           source={{ uri: this._config.uri }}
