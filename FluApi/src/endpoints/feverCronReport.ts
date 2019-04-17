@@ -11,7 +11,7 @@ import { KitOrders } from "../services/fever/kitOrders";
 import { KitRecipientsDataAccess } from "../services/fever/kitOrdersData";
 import { ReceivedKits } from "../services/fever/receivedKits";
 import { ReceivedKitsData } from "../services/fever/receivedKitsData";
-import { REDCapRetriever } from "../external/redCapRetriever";
+import { REDCapClient } from "../external/redCapClient";
 import { createAxios } from "../util/axios";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
@@ -39,6 +39,26 @@ export class FeverCronReportEndpoint {
     this.receivedKits = new LazyAsync(() => createReceivedKits(sql));
   }
 
+  async exportBarcodes(req, res, next) {
+    try {
+      const service = await this.receivedKits.get();
+      await service.exportBarcodes();
+      res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async importReceivedKits(req, res, next) {
+    try {
+      const service = await this.receivedKits.get();
+      await service.importReceivedKits();
+      res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async sendIncentives(req, res, next) {
     try {
       const service = await this.incentives.get();
@@ -63,16 +83,6 @@ export class FeverCronReportEndpoint {
     try {
       const service = await this.followUps.get();
       await service.generateReport();
-      res.sendStatus(200);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  async importReceivedKits(req, res, next) {
-    try {
-      const service = await this.receivedKits.get();
-      await service.importReceivedKits();
       res.sendStatus(200);
     } catch (e) {
       next(e);
@@ -134,7 +144,7 @@ async function createReceivedKits(sql: SplitSql): Promise<ReceivedKits> {
   const secrets = new SecretConfig(sql);
   const redCapConfig = await getREDCapConfig(secrets);
   const axios = createAxios(redCapConfig.apiUrl);
-  const retriever = new REDCapRetriever(axios, redCapConfig);
+  const retriever = new REDCapClient(axios, redCapConfig);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, s3Config);

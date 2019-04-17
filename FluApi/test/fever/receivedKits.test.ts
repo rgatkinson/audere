@@ -3,12 +3,45 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { anything, instance, mock, when, capture, anyNumber, anyString, deepEqual } from "ts-mockito";
+import { anything, instance, mock, when, capture, anyNumber, anyString, deepEqual, verify } from "ts-mockito";
 import { ReceivedKits } from "../../src/services/fever/receivedKits";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
-import { REDCapRetriever } from "../../src/external/redCapRetriever";
+import { REDCapClient } from "../../src/external/redCapClient";
 import { S3Uploader } from "../../src/external/s3Uploader";
 import parse from "csv-parse/lib/sync";
+
+describe("exporting barcodes to REDCap", () => {
+  it("should link provisioned barcodes in the database", async () => {
+    const unlinked = {
+      id: 123,
+      code: "secret",
+      scannedAt: "2019-04-14",
+      state: "WA",
+      recordId: 1
+    };
+
+    const dao = mock(ReceivedKitsData);
+    when(dao.findUnlinkedBarcodes()).thenResolve([unlinked]);
+    when(dao.linkKits(anything())).thenResolve();
+
+    const mapping = { recordId: 1, surveyId: 1 };
+    const mappedKits = new Map([[unlinked.code, mapping]])
+    const redcap = mock(REDCapClient);
+    when(redcap.provisionBarcodes(deepEqual([unlinked])))
+      .thenResolve(mappedKits);
+
+    const service = new ReceivedKits(
+      instance(dao),
+      instance(redcap),
+      undefined
+    );
+
+    await service.exportBarcodes();
+
+    verify(redcap.provisionBarcodes(deepEqual([unlinked]))).once();
+    verify(dao.linkKits(anything())).once();
+  });
+});
 
 describe("importing received kits", () => {
   it("saves received kits in the database", async () => {
@@ -17,11 +50,12 @@ describe("importing received kits", () => {
       boxBarcode: "12345678",
       utmBarcode: "22334455",
       rdtBarcode: "abcdefgh",
-      stripBarcode: "aabbccdd"
+      stripBarcode: "aabbccdd",
+      recordId: 1
     };
 
-    const retriever = mock(REDCapRetriever);
-    when(retriever.getAtHomeData()).thenResolve([record]);
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve([record]);
 
     const dao = mock(ReceivedKitsData);
     const match = { id: 115, code: "12345678" };
@@ -33,7 +67,7 @@ describe("importing received kits", () => {
 
     const service = new ReceivedKits(
       instance(dao),
-      instance(retriever),
+      instance(redcap),
       instance(uploader)
     );
     await service.importReceivedKits();
@@ -51,19 +85,21 @@ describe("importing received kits", () => {
         boxBarcode: undefined,
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 1
       },
       {
         dateReceived: "2018-01-01",
         boxBarcode: "/alwkj",
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 2
       }
     ];
 
-    const retriever = mock(REDCapRetriever);
-    when(retriever.getAtHomeData()).thenResolve(records);
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
@@ -74,7 +110,7 @@ describe("importing received kits", () => {
 
     const service = new ReceivedKits(
       instance(dao),
-      instance(retriever),
+      instance(redcap),
       instance(uploader)
     );
     await service.importReceivedKits();
@@ -102,19 +138,21 @@ describe("importing received kits", () => {
         boxBarcode: "12345678",
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 1
       },
       {
         dateReceived: "2018-01-01",
         boxBarcode: "98765432",
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 2
       }
     ];
 
-    const retriever = mock(REDCapRetriever);
-    when(retriever.getAtHomeData()).thenResolve(records);
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
     when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve();
@@ -126,7 +164,7 @@ describe("importing received kits", () => {
 
     const service = new ReceivedKits(
       instance(dao),
-      instance(retriever),
+      instance(redcap),
       instance(uploader)
     );
     await service.importReceivedKits();
@@ -154,24 +192,26 @@ describe("importing received kits", () => {
         boxBarcode: "12345678",
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 1
       },
       {
         dateReceived: "2018-01-01",
         boxBarcode: "98765432",
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
-        stripBarcode: "aabbccdd"
+        stripBarcode: "aabbccdd",
+        recordId: 2
       }
     ];
 
-    const retriever = mock(REDCapRetriever);
-    when(retriever.getAtHomeData()).thenResolve(records);
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
     const matches = [
-      { id: 123, code: "12345678", kitId: 1 },
-      { id: 456, code: "98765432", kitId: 2 }
+      { id: 123, code: "12345678", kitId: 1, recordId: 1 },
+      { id: 456, code: "98765432", kitId: 2, recordId: 2 }
     ];
     when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
@@ -181,7 +221,99 @@ describe("importing received kits", () => {
 
     const service = new ReceivedKits(
       instance(dao),
-      instance(retriever),
+      instance(redcap),
+      instance(uploader)
+    );
+    await service.importReceivedKits();
+
+    const [file, kits] = capture(dao.importReceivedKits).first();
+    expect(file).toMatch("1");
+    expect(kits.size).toBe(0);
+  });
+
+  it("matches the greater record by row index if there are duplicates", async () => {
+    const records = [
+      {
+        dateReceived: "2018-01-01",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        recordId: 1
+      },
+      {
+        dateReceived: "2018-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        recordId: 2
+      }
+    ];
+
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
+
+    const dao = mock(ReceivedKitsData);
+    const matches = [
+      { id: 123, code: "12345678", kitId: 1 }
+    ];
+    when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
+    when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
+
+    const uploader = mock(S3Uploader);
+    when(uploader.writeAtHomeData(anyString(), anyString())).thenResolve("1");
+
+    const service = new ReceivedKits(
+      instance(dao),
+      instance(redcap),
+      instance(uploader)
+    );
+    await service.importReceivedKits();
+
+    const [file, kits] = capture(dao.importReceivedKits).first();
+    expect(file).toMatch("1");
+    expect(kits.size).toBe(1);
+    expect(kits.has(123)).toBe(true);
+    expect(kits.get(123).recordId).toBe(2);
+  });
+
+  it("discards duplicate barcodes after one has been set", async () => {
+    const records = [
+      {
+        dateReceived: "2018-01-01",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        recordId: 1
+      },
+      {
+        dateReceived: "2018-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        recordId: 2
+      }
+    ];
+
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
+
+    const dao = mock(ReceivedKitsData);
+    const matches = [
+      { id: 123, code: "12345678", kitId: 1, recordId: 555 }
+    ];
+    when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
+    when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
+
+    const uploader = mock(S3Uploader);
+    when(uploader.writeAtHomeData(anyString(), anyString())).thenResolve("1");
+
+    const service = new ReceivedKits(
+      instance(dao),
+      instance(redcap),
       instance(uploader)
     );
     await service.importReceivedKits();

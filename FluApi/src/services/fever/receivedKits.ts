@@ -6,7 +6,7 @@
 import { ReceivedKitsData } from "./receivedKitsData";
 import { KitRecord } from "../../models/kitRecord";
 import { S3Uploader } from "../../external/s3Uploader";
-import { REDCapRetriever } from "../../external/redCapRetriever";
+import { REDCapClient } from "../../external/redCapClient";
 import { parse } from "json2csv";
 import logger from "../../util/logger";
 
@@ -16,17 +16,34 @@ import logger from "../../util/logger";
  */
 export class ReceivedKits {
   private readonly dao: ReceivedKitsData;
-  private readonly retriever: REDCapRetriever;
+  private readonly redcap: REDCapClient;
   private readonly uploader: S3Uploader;
 
   constructor(
     dao: ReceivedKitsData,
-    retriever: REDCapRetriever,
+    redcap: REDCapClient,
     uploader: S3Uploader
   ) {
     this.dao = dao;
-    this.retriever = retriever;
+    this.redcap = redcap;
     this.uploader = uploader;
+  }
+
+  /**
+   * Exports barcodes from the Audere system to REDCap for UW lab researchers.
+   */
+  public async exportBarcodes(): Promise<void> {
+    logger.info("[Export Barcodes] Finding unlinked records");
+    const unlinked = await this.dao.findUnlinkedBarcodes();
+
+    if (unlinked != null && unlinked.length > 0) {
+      logger.info(`[Export Barcodes] Provisioning ${unlinked.length} barcodes`);
+      const records = await this.redcap.provisionBarcodes(unlinked);
+      logger.info(`[Export Barcodes] Linking ${records.size} REDCap records`);
+      await this.dao.linkKits(records);
+    } else {
+      logger.info(`[Export Barcodes] No unlinked barcodes found`);
+    }
   }
 
   private getDateAndTimeString(): string {
@@ -40,73 +57,128 @@ export class ReceivedKits {
       pad2(now.getSeconds());
   }
 
+  private async getAtHomeData(
+    backupFile: string
+  ): Promise<[string, KitRecord[]]> {
+    logger.info("[Import Kits] Fetching at home data from REDCap");
+    const data = await this.redcap.getAtHomeData();
+
+    if (data.length > 0) {
+      logger.info(`[Import Kits] Writing at home data report to S3 with ` +
+        `${data.length} rows`);
+      const key = await this.uploader
+        .writeAtHomeData(backupFile, JSON.stringify(data));
+      return [key, data];
+    } else {
+      logger.warn("[Import Kits] Downloaded empty at home data report");
+      return [null, null];
+    }
+  }
+
+  private async matchBarcodes(
+    records: KitRecord[]
+  ): Promise<[Map<number, KitRecord>, any[]]> {
+    const errors = [];
+    const codes = Array.from(new Set(records.map(b => b.boxBarcode)));
+    logger.info(`[Import Kits] Matching ${records.length} barcodes`);
+    const matches = await this.dao.matchBarcodes(codes) || [];
+
+    // Check that the box barcode can be associated to a survey
+    const matchesByCode = new Map();
+    matches.forEach((v, k) => {
+      matchesByCode.set(v.code, v);
+    });
+
+    const kitsBySurvey: Map<number, KitRecord> = new Map();
+
+    records.forEach(r => {
+      if (!matchesByCode.has(r.boxBarcode)) {
+        logger.error(`[Import Kits] Barcode doesn't match any survey: ` +
+          r.boxBarcode);
+        errors.push(this.createBarcodeError(r, "NoMatch"));
+      } else {
+        const match = matchesByCode.get(r.boxBarcode);
+        if (match.recordId == null ||
+           (match.recordId === r.recordId && match.kitId == null)) {
+          kitsBySurvey.set(match.id, r);
+        } else {
+          logger.debug(`[Import Kits] Barcode ${r.boxBarcode} was already ` +
+          `matched and can be ignored`);
+        }
+      }
+    });
+
+    logger.info(`[Import Kits] Matching resulted in ${kitsBySurvey.size} ` +
+      `matches and ${errors.length} errors`);
+    return [kitsBySurvey, errors];
+  }
+
+  private async validateBarcodes(
+    data: KitRecord[]
+  ): Promise<[KitRecord[], any[]]> {
+    const errors = [];
+    const validBarcodes: KitRecord[] = [];
+
+    data.forEach(r => {
+      if (r.boxBarcode != null && /^[0-9a-zA-Z]{8}$/.test(r.boxBarcode)) {
+        r.boxBarcode = r.boxBarcode.toLowerCase();
+        r.rdtBarcode = r.rdtBarcode.toLowerCase();
+        r.stripBarcode = r.stripBarcode.toLowerCase();
+        r.utmBarcode = r.utmBarcode.toLowerCase();
+        validBarcodes.push(r);
+      } else {
+        logger.error(`[Import Kits] Box barcode has invalid format: ` +
+          r.boxBarcode);
+        errors.push(this.createBarcodeError(r, "InvalidBarcode"));
+      }
+    });
+
+    return [validBarcodes, errors];
+  }
+
   /**
    * Imports processed kit data.  Polls for new files and checks them against
    * previously processed files by name to find new files for import.
    */
-  public async importReceivedKits() {
-    const data = await this.retriever.getAtHomeData();
+  public async importReceivedKits(): Promise<void> {
+    const timestamp = this.getDateAndTimeString();
+    const backupFile = `FluHome_Lab_Data_${timestamp}.json`;
+    const [key, data] = await this.getAtHomeData(backupFile);
 
-    if (data.length > 0) {
-      const timestamp = this.getDateAndTimeString();
-      const labFile = `FluHome_Lab_Data_${timestamp}.json`;
-      const s3File = await this.uploader
-        .writeAtHomeData(labFile, JSON.stringify(data));
-
+    if (data != null && data.length > 0) {
       const errors = [];
-      const validBarcodes: Map<string, KitRecord> = new Map();
-      const kitsBySurvey: Map<number, KitRecord> = new Map();
+      const [validBarcodes, barcodeErrors] = await this.validateBarcodes(data);
 
-      data.forEach(r => {
-        if (r.boxBarcode != null && /^[0-9a-zA-Z]{8}$/.test(r.boxBarcode)) {
-          r.boxBarcode = r.boxBarcode.toLowerCase();
-          r.rdtBarcode = r.rdtBarcode.toLowerCase();
-          r.stripBarcode = r.stripBarcode.toLowerCase();
-          r.utmBarcode = r.utmBarcode.toLowerCase();
-          validBarcodes.set(r.boxBarcode, r);
-        } else {
-          logger.error(`[Import Kits] Box barcode has invalid format: ` +
-            r.boxBarcode);
-          errors.push(this.createBarcodeError(r, "InvalidBarcode"));
+      if (barcodeErrors.length > 0) {
+        errors.push(...barcodeErrors);
+      }
+
+      let kitsBySurvey: Map<number, KitRecord> = new Map();
+  
+      if (validBarcodes.length > 0) {
+        const [matches, matchErrors] =
+          await this.matchBarcodes(validBarcodes);
+        kitsBySurvey = matches;
+
+        if (matchErrors.length > 0) {
+          errors.push(...matchErrors);
         }
-      });
-
-      if (validBarcodes.size > 0) {
-        const codes = Array.from(validBarcodes.keys());
-        const matches = await this.dao.matchBarcodes(codes) || [];
-
-        // Check that the box barcode can be associated to a survey
-        codes.forEach(code => {
-          const match = matches.find(m => m.code === code);
-          const r = validBarcodes.get(code);
-
-          if (match == null) {
-            logger.error(`[Import Kits] Barcode doesn't match any survey: ` +
-              r.boxBarcode);
-            errors.push(this.createBarcodeError(r, "NoMatch"));
-          } else if (match.kitId != null) {
-            logger.debug(`[Import Kits] Barcode ${code} was already ` +
-              `matched and can be ignored`);
-          } else {
-            kitsBySurvey.set(match.id, r);
-          }
-        });
       } else {
         logger.info(`[Import Kits] No new barcodes to process`);
       }
 
       // Write errors for tracking
       if (errors.length > 0) {
+        const errorFile = `FluHome_BarcodeErrors_${timestamp}.csv`;
         logger.info(`[Import Kits] Posting ${errors.length} errors`);
         const csv = parse(errors, { header: true });
-        const errorFile = `FluHome_BarcodeErrors_${timestamp}.csv`;
         this.uploader.writeBarcodeErrors(errorFile, csv);
       }
 
       // Insert the file metadata and barcode mappings
-      logger.info(`[Import Kits] Committing ${s3File} as processed with `
+      logger.info(`[Import Kits] Committing ${key} as processed with `
         + `${kitsBySurvey.size} new barcodes`);
-      await this.dao.importReceivedKits(s3File, kitsBySurvey);
+      await this.dao.importReceivedKits(key, kitsBySurvey);
     } else {
       logger.info(`[Import Kits] No files to process`);
     }

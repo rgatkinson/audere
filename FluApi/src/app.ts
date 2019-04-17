@@ -188,6 +188,12 @@ export function createInternalApp(config: AppConfig) {
   );
 
   internalApp.get(
+    "/api/export/provisionBarcodes",
+    stats("provisionbarcodes"),
+    (req, res, next) => fever.exportBarcodes(req, res, next)
+  )
+
+  internalApp.get(
     "/api/import/receivedKits",
     stats("importreceivedkits"),
     (req, res, next) => fever.importReceivedKits(req, res, next)

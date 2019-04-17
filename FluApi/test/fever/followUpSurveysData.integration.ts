@@ -144,7 +144,9 @@ describe("survey batch data access", () => {
           surveyId: +x.id,
           fileId: file.id,
           boxBarcode: x.csruid.repeat(8),
-          dateReceived: "1985-06-12"
+          dateReceived: "1985-06-12",
+          linked: true,
+          recordId: +x.id
         };
       });
       await receivedKits.bulkCreate(received);

@@ -7,6 +7,8 @@ import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { FeverModels, defineFeverModels } from "../../src/models/db/fever";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
+import { EventInfoKind } from "audere-lib/feverProtocol";
+import _ from "lodash";
 
 describe("received kits data access", () => {
   let sql: SplitSql;
@@ -26,178 +28,372 @@ describe("received kits data access", () => {
   async function cleanupDb() {
     await fever.surveyNonPii.destroy({ where: {} });
     await fever.receivedKitsFile.destroy({ where: {} });
+    await fever.barcodes.destroy({ where: {} });
   }
 
-  it("should filter existing barcodes", async () => {
-    const barcode = "12345678";
-    const db = surveyNonPIIInDb("asdf");
-    db.survey.samples.push({ sample_type: "scan", code: barcode });
-    const survey = await fever.surveyNonPii.create(db, { returning: true });
+  describe("find unlinked barcodes", () => {
+    it("should exclude linked records", async () => {
+      const file = await fever.receivedKitsFile.create(
+        { file: "test.json" },
+        { returning: true}
+      );
 
-    const file = await fever.receivedKitsFile.create(
-      { file: "test.json" },
-      { returning: true}
-    );
+      await fever.barcodes.bulkCreate([
+        { barcode: "s1" },
+        { barcode: "qwerty" }
+      ]);
 
-    const kit = await fever.receivedKit.create({
-      surveyId: +survey.id,
-      fileId: file.id,
-      boxBarcode: barcode,
-      dateReceived: "2018-09-19"
-    }, {
-      returning: true
+      // A linked record
+      const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s1.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const db1 = await fever.surveyNonPii.create(s1);
+      await fever.receivedKit.create({
+        surveyId: +db1.id,
+        fileId: file.id,
+        boxBarcode: db1.csruid,
+        dateReceived: "2018-09-19",
+        linked: true,
+        recordId: +db1.id
+      });
+
+      // An unlinked record
+      const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
+      s2.survey.samples.push({ sample_type: "manualEntry", code: "qwerty" });
+      const db2 = await fever.surveyNonPii.create(s2);
+      await fever.receivedKit.create({
+        surveyId: +db2.id,
+        fileId: file.id,
+        boxBarcode: db2.csruid,
+        dateReceived: "2018-09-19",
+        linked: false,
+        recordId: +db2.id
+      });
+
+      const dao = new ReceivedKitsData(sql);
+      const unlinked = await dao.findUnlinkedBarcodes();
+
+      // Only the unlinked record should be returned
+      expect(unlinked.length).toBe(1);
+      expect(unlinked[0].id).toBe(db2.id);
     });
 
-    const dao = new ReceivedKitsData(sql);
-    const matches = await dao.matchBarcodes([barcode]);
+    it("should match only manually entered or app scanned barcodes", async () => {
+      const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s1.survey.samples.push({ sample_type: "base64Value", code: "s1" });
+      const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
+      s2.survey.samples.push({ sample_type: "manualEntry", code: "qwerty" });
 
-    expect(matches).toHaveLength(1);
-    expect(matches[0].id).toBe(+survey.id);
-    expect(matches[0].kitId).toBe(kit.id);
+      const surveys = await fever.surveyNonPii.bulkCreate([s1, s2], {
+        returning: true
+      });
+
+      await fever.barcodes.bulkCreate([
+        { barcode: "s1" },
+        { barcode: "qwerty" }
+      ]);
+
+      const dao = new ReceivedKitsData(sql);
+      const unlinked = await dao.findUnlinkedBarcodes();
+
+      expect(unlinked.length).toBe(1);
+      expect(unlinked[0]).toEqual(
+        expect.objectContaining({
+          id: +surveys[1].id,
+          code: surveys[1].survey.samples
+            .find(s => s.sample_type === "manualEntry")
+            .code,
+          recordId: undefined
+        })
+      );
+    });
+
+    it("should derive scanned time from app nav events", async () => {
+      const s = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const now = new Date().toISOString();
+      s.survey.events = [
+        {
+          kind: EventInfoKind.AppNav,
+          at: now,
+          refId: "ScanConfirmation"
+        },
+        {
+          kind: EventInfoKind.AppNav,
+          at: "Jibber jabber",
+          refId: "Placebo"
+        }
+      ];
+
+      await fever.surveyNonPii.create(s);
+      await fever.barcodes.bulkCreate([{ barcode: "s1" }]);
+
+      const dao = new ReceivedKitsData(sql);
+      const barcodes = await dao.findUnlinkedBarcodes();
+
+      expect(barcodes.length).toBe(1);
+      expect(barcodes[0].scannedAt).toBe(now);
+    });
+
+    it("should filter out demo records and invalid barcodes", async () => {
+      const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s1.survey.samples.push({ sample_type: "manualEntry", code: "bad" });
+      const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
+      s2.survey.isDemo = true;
+      s2.survey.samples.push({ sample_type: "manualEntry", code: "good" });
+
+      await fever.surveyNonPii.bulkCreate([s1, s2], {
+        returning: true
+      });
+      await fever.barcodes.bulkCreate([{ barcode: "s1" }]);
+
+      const dao = new ReceivedKitsData(sql);
+      const barcodes = await dao.findUnlinkedBarcodes();
+
+      expect(barcodes.length).toBe(0);
+    });
   });
 
-  it("should match barcodes to sample code", async () => {
-    const barcode = "a1b2c3d4";
-    const db = surveyNonPIIInDb("asdf");
-    db.survey.workflow.surveyCompletedAt = new Date().toISOString();
-    db.survey.samples.push({ sample_type: "scan", code: barcode });
-    const survey = await fever.surveyNonPii.create(db, { returning: true });
+  describe("link kits", () => {
+    it("should update an existing record", async () => {
+      const barcode = "a1b2c3d4";
+  
+      const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      db.survey.workflow.surveyCompletedAt = new Date().toISOString();
+      db.survey.samples.push({ sample_type: "scan", code: barcode });
+      const survey = await fever.surveyNonPii.create(db, { returning: true });
 
-    const dao = new ReceivedKitsData(sql);
-    const matches = await dao.matchBarcodes([barcode]);
-    
-    expect(matches).toHaveLength(1);
-    expect(matches[0].id).toBe(survey.id);
-    expect(matches[0].kitId).toBeNull();
+      const record = {
+        dateReceived: "2019-01-02",
+        boxBarcode: barcode,
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        linked: false
+      };
+  
+      const dao = new ReceivedKitsData(sql);
+      await dao.importReceivedKits("test.json", new Map([[+survey.id, record]]));
+      const mapping = { recordId: 127, surveyId: +survey.id };
+      await dao.linkKits(new Map([[barcode, mapping]]));
+  
+      const kitRecord = await fever.receivedKit.findOne({
+        where: {
+          boxBarcode: barcode
+        }
+      });
+
+      expect(kitRecord.linked).toBe(true);
+      expect(kitRecord.recordId).toBe(127);
+
+      // Other fields unchanged
+      expect(kitRecord.surveyId).toBe(+survey.id);
+    });
+
+    it("should insert a new record if there is no existing record to updated", async () => {
+      const barcode = "a1b2c3d4";
+  
+      const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      db.survey.workflow.surveyCompletedAt = new Date().toISOString();
+      db.survey.samples.push({ sample_type: "scan", code: barcode });
+      const survey = await fever.surveyNonPii.create(db, { returning: true });
+
+      const record = {
+        dateReceived: "2019-01-02",
+        boxBarcode: barcode,
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        linked: false
+      };
+  
+      const dao = new ReceivedKitsData(sql);
+      const mapping = { recordId: 127, surveyId: +survey.id };
+      await dao.linkKits(new Map([[barcode, mapping]]));
+  
+      const kitRecord = await fever.receivedKit.findOne({
+        where: {
+          boxBarcode: barcode
+        }
+      });
+
+      expect(kitRecord.linked).toBe(true);
+      expect(kitRecord.recordId).toBe(127);
+      expect(kitRecord.surveyId).toBe(+survey.id);
+    });
   });
 
-  it("should case-insensitive match barcodes to sample code", async () => {
-    const barcode = "BARCODE1";
-    const db = surveyNonPIIInDb("asdf");
-    db.survey.workflow.surveyCompletedAt = new Date().toISOString();
-    db.survey.samples.push({ sample_type: "scan", code: barcode });
-    const survey = await fever.surveyNonPii.create(db, { returning: true });
+  describe("match barcodes", () => {
+    it("should filter existing barcodes", async () => {
+      const barcode = "12345678";
+      const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      db.survey.samples.push({ sample_type: "scan", code: barcode });
+      const survey = await fever.surveyNonPii.create(db, { returning: true });
 
-    const dao = new ReceivedKitsData(sql);
-    const matches = await dao.matchBarcodes([barcode.toLowerCase()]);
-    
-    expect(matches).toHaveLength(1);
-    expect(matches[0].id).toBe(survey.id);
-    expect(matches[0].kitId).toBeNull();
+      const file = await fever.receivedKitsFile.create(
+        { file: "test.json" },
+        { returning: true}
+      );
+
+      const kit = await fever.receivedKit.create({
+        surveyId: +survey.id,
+        fileId: file.id,
+        boxBarcode: barcode,
+        dateReceived: "2018-09-19",
+        linked: true,
+        recordId: 55
+      }, {
+        returning: true
+      });
+
+      const dao = new ReceivedKitsData(sql);
+      const matches = await dao.matchBarcodes([barcode]);
+
+      expect(matches).toHaveLength(1);
+      expect(matches[0].id).toBe(+survey.id);
+      expect(matches[0].kitId).toBe(kit.id);
+    });
+
+    it("should match barcodes to sample code", async () => {
+      const barcode = "a1b2c3d4";
+      const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      db.survey.workflow.surveyCompletedAt = new Date().toISOString();
+      db.survey.samples.push({ sample_type: "scan", code: barcode });
+      const survey = await fever.surveyNonPii.create(db, { returning: true });
+
+      const dao = new ReceivedKitsData(sql);
+      const matches = await dao.matchBarcodes([barcode]);
+      
+      expect(matches).toHaveLength(1);
+      expect(matches[0].id).toBe(survey.id);
+      expect(matches[0].kitId).toBeNull();
+    });
+
+    it("should case-insensitive match barcodes to sample code", async () => {
+      const barcode = "BARCODE1";
+      const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      db.survey.workflow.surveyCompletedAt = new Date().toISOString();
+      db.survey.samples.push({ sample_type: "scan", code: barcode });
+      const survey = await fever.surveyNonPii.create(db, { returning: true });
+
+      const dao = new ReceivedKitsData(sql);
+      const matches = await dao.matchBarcodes([barcode.toLowerCase()]);
+      
+      expect(matches).toHaveLength(1);
+      expect(matches[0].id).toBe(survey.id);
+      expect(matches[0].kitId).toBeNull();
+    });
+
+    it("should error when attempting to match invalid barcodes", async () => {
+      const dao = new ReceivedKitsData(sql);
+      const result = dao.matchBarcodes(["ASDF"]);
+      expect(result).rejects.toThrow();
+    });
   });
 
-  it("should error when attempting to match invalid barcodes", async () => {
-    const dao = new ReceivedKitsData(sql);
-    const result = dao.matchBarcodes(["ASDF"]);
-    expect(result).rejects.toThrow();
-  });
+  describe("import received kits", () => {
+    it("should write file and kit data", async () => {
+      const db = [
+        surveyNonPIIInDb("asdf"),
+        surveyNonPIIInDb("qwerty")
+      ];
 
-  it("should write file and kit data", async () => {
-    const db = [
-      surveyNonPIIInDb("asdf"),
-      surveyNonPIIInDb("qwerty")
-    ];
+      const surveys = await fever.surveyNonPii.bulkCreate(db, {
+        returning: true
+      });
 
-    const surveys = await fever.surveyNonPii.bulkCreate(db, {
-      returning: true
+      const record1 = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        linked: true,
+        recordId: 55
+      };
+
+      const record2 = {
+        dateReceived: "2017-03-12",
+        boxBarcode: "abcdefgh",
+        utmBarcode: "11111111",
+        rdtBarcode: "22222222",
+        stripBarcode: "33333333",
+        linked: true,
+        recordId: 66
+      };
+
+      const records = new Map([
+        [+surveys[0].id, record1],
+        [+surveys[1].id, record2]
+      ]);
+
+      const dao = new ReceivedKitsData(sql);
+      await dao.importReceivedKits("test.json", records);
+
+      const file = await fever.receivedKitsFile.findOne({
+        where: {
+          file: "test.json"
+        }
+      });
+
+      const receivedKits = await fever.receivedKit.findAll({
+        where: {
+          fileId: file.id
+        }
+      });
+
+      expect(receivedKits).toHaveLength(2);
+
+      expect(receivedKits).toContainEqual(
+        expect.objectContaining({
+          boxBarcode: record1.boxBarcode,
+          dateReceived: record1.dateReceived
+        })
+      );
+
+      expect(receivedKits).toContainEqual(
+        expect.objectContaining({
+          boxBarcode: record2.boxBarcode,
+          dateReceived: record2.dateReceived
+        })
+      );
     });
 
-    const record1 = {
-      dateReceived: "2019-01-02",
-      boxBarcode: "12345678",
-      utmBarcode: "aaaaaaaa",
-      rdtBarcode: "bbbbbbbb",
-      stripBarcode: "cccccccc"
-    }
+    it("should update existing records", async () => {
+      const db = surveyNonPIIInDb("dvorak");
+      const survey = await fever.surveyNonPii.create(db);
 
-    const record2 = {
-      dateReceived: "2017-03-12",
-      boxBarcode: "abcdefgh",
-      utmBarcode: "11111111",
-      rdtBarcode: "22222222",
-      stripBarcode: "33333333"
-    }
+      const dao = new ReceivedKitsData(sql);
+  
+      const insertRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc"
+      };
 
-    const records = new Map([
-      [+surveys[0].id, record1],
-      [+surveys[1].id, record2]
-    ]);
+      const insertRecords = new Map([[+survey.id, insertRecord]]);
+      await dao.importReceivedKits("test1.json", insertRecords);
 
-    const dao = new ReceivedKitsData(sql);
-    await dao.importReceivedKits("test.json", records);
+      const updateRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        recordId: 88
+      };
 
-    const file = await fever.receivedKitsFile.findOne({
-      where: {
-        file: "test.json"
-      }
+      const updateRecords = new Map([[+survey.id, updateRecord]]);
+      await dao.importReceivedKits("test2.json", updateRecords);
+
+      const kit = await fever.receivedKit.findOne({
+        where: {
+          surveyId: survey.id
+        }
+      });
+
+      expect(kit.recordId).toBe(88);
     });
-
-    const receivedKits = await fever.receivedKit.findAll({
-      where: {
-        fileId: file.id
-      }
-    });
-
-    expect(receivedKits).toHaveLength(2);
-
-    expect(receivedKits).toContainEqual(
-      expect.objectContaining({
-        boxBarcode: record1.boxBarcode,
-        dateReceived: record1.dateReceived
-      })
-    );
-
-    expect(receivedKits).toContainEqual(
-      expect.objectContaining({
-        boxBarcode: record2.boxBarcode,
-        dateReceived: record2.dateReceived
-      })
-    );
-  });
-
-  it("should enforce the unique constraint on barcode", async () => {
-    const db = [
-      surveyNonPIIInDb("asdf"),
-      surveyNonPIIInDb("qwerty")
-    ];
-
-    const surveys = await fever.surveyNonPii.bulkCreate(db, {
-      returning: true
-    });
-
-    const record1 = {
-      dateReceived: "2019-01-02",
-      boxBarcode: "12345678",
-      utmBarcode: "aaaaaaaa",
-      rdtBarcode: "bbbbbbbb",
-      stripBarcode: "cccccccc"
-    }
-
-    const record2 = {
-      dateReceived: "2017-03-12",
-      boxBarcode: "abcdefgh",
-      utmBarcode: "11111111",
-      rdtBarcode: "22222222",
-      stripBarcode: "33333333"
-    }
-
-    const records = new Map([
-      [+surveys[0].id, record1],
-      [+surveys[1].id, record2]
-    ]);
-
-    const dao = new ReceivedKitsData(sql);
-    await dao.importReceivedKits("test.json", records);
-    const result = dao.importReceivedKits("notest.json", records);
-
-    expect(result).rejects.toThrow();
-
-    const file = await fever.receivedKitsFile.findOne({
-      where: {
-        file: "notest.json"
-      }
-    });
-
-    expect(file).toBeNull();
   });
 });

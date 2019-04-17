@@ -47,7 +47,8 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
     kitItem: defineKitItem(sql.nonPii),
     kitDiscard: defineKitDiscard(sql.nonPii),
     receivedKit: defineReceivedKits(sql.nonPii),
-    receivedKitsFile: defineReceivedKitsFiles(sql.nonPii)
+    receivedKitsFile: defineReceivedKitsFiles(sql.nonPii),
+    barcodes: defineBarcodes(sql.nonPii)
   };
 
   models.surveyPii.hasOne(models.consentEmail, {
@@ -88,6 +89,7 @@ export interface FeverModels {
   kitDiscard: Model<BatchDiscardAttributes>;
   receivedKit: Model<ReceivedKitAttributes>;
   receivedKitsFile: Model<ReceivedKitsFileAttributes>;
+  barcodes: Model<BarcodeAttributes>;
 }
 
 // ---------------------------------------------------------------
@@ -302,6 +304,8 @@ export interface ReceivedKitAttributes {
   id?: number,
   surveyId: number,
   fileId: number,
+  recordId: number,
+  linked: boolean,
   boxBarcode: string,
   dateReceived: string,
 }
@@ -316,9 +320,11 @@ export function defineReceivedKits(
 ): Model<ReceivedKitAttributes> {
   return defineModel<ReceivedKitAttributes>(sql, "fever_received_kits", {
     surveyId: unique(integerColumn()),
-    fileId: integerColumn(),
+    fileId: nullable(integerColumn()),
+    recordId: nullable(integerColumn()),
+    linked: booleanColumn(),
     boxBarcode: stringColumn(),
-    dateReceived: stringColumn()
+    dateReceived: nullable(stringColumn())
   });
 }
 
@@ -378,4 +384,18 @@ export async function querySurveyJoinConsentEmail<TCustom>(
     ]
   });
   return <SurveyWithConsentEmail[]>(<any>items);
+}
+
+// ---------------------------------------------------------------
+
+export interface BarcodeAttributes {
+  barcode: string;
+}
+
+export function defineBarcodes(
+  sql: Sequelize
+): Model<BarcodeAttributes> {
+  return defineModel<BarcodeAttributes>(sql, "fever_box_barcodes", {
+    barcode: stringColumn()
+  });
 }
