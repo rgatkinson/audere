@@ -76,7 +76,10 @@ export class ReceivedKitsData {
     piiData.forEach((v, k) => {
       const address = v.survey.patient.address
         .find(a => a.use === AddressInfoUse.Home);
-      states.set(v.csruid, address.state);
+
+      if (address != null) {
+        states.set(v.csruid, address.state);
+      }
     });
 
     return untrackedSamples.map(s => {
