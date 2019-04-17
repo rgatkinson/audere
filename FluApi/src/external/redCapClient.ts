@@ -69,7 +69,12 @@ export class REDCapClient {
     const result = await this.makeRequest<AtHomeData[]>(data);
     logger.info(`Received ${result.status} from request to REDCap`);
 
-    if (result.data == null || result.data.length === 0) {
+    if (!Array.isArray(result.data)) {
+      const error = JSON.stringify(result.data);
+      throw Error(`Unknown response from REDCap - ${error}`);
+    }
+
+    if (result.data.length === 0) {
       throw Error("Report for @Home data is empty");
     }
 
