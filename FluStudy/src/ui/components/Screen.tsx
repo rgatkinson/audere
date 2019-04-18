@@ -91,7 +91,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Chrome
-        dispatch={this.props.dispatch}
         hideBackButton={this.props.hideBackButton}
         isDemo={this.props.isDemo}
         menuItem={this.props.menuItem}

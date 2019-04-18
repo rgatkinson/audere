@@ -59,6 +59,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
+        {this.props.demoMode && <View style={styles.demoView} />}
         {!!this.props.hideBackButton ? (
           <View style={{ width: 30 }} />
         ) : !!this.props.menuItem ? (
@@ -93,6 +94,17 @@ const styles = StyleSheet.create({
   actionContainer: {
     alignItems: "center",
     flexDirection: "row",
+  },
+  demoView: {
+    backgroundColor: "green",
+    opacity: 0.5,
+    paddingTop: STATUS_BAR_HEIGHT,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    lineHeight: NAV_BAR_HEIGHT,
+    right: 0,
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
   container: {
     alignItems: "center",
