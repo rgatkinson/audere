@@ -1033,6 +1033,8 @@ class AddressConfirmScreen extends React.Component<
       this.state.selectedAddress != this.props.navigation.getParam("original")
     ) {
       tracker.logEvent(FunnelEvents.ADDRESS_CORRECTION_CHOSEN);
+    } else {
+      tracker.logEvent(FunnelEvents.ADDRESS_SUGGESTION_IGNORED);
     }
     writeAddressAndNavigate(
       this.state.selectedAddress,

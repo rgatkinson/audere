@@ -40,6 +40,7 @@ export const FunnelEvents = {
   ADDRESS_VERIFICATION_SKIPPED_NO_INTERNET:
     "funnel_address_verification_skipped_no_internet",
   ADDRESS_CORRECTION_CHOSEN: "funnel_address_correction_chosen",
+  ADDRESS_SUGGESTION_IGNORED: "funnel_address_suggestion_ignored",
   ADDRESS_COMPLETED: "funnel_address_completed",
   AGE_INELIGIBLE: "funnel_age_ineligible",
   SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
