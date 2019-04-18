@@ -48,7 +48,8 @@ export class REDCapClient {
       return response;
     } catch(e) {
       if (e.response) {
-        logger.error(`Error returned from REDCap: ${e.response.data}`);
+        const message = JSON.stringify(e.response.data);
+        logger.error(`Error returned from REDCap: ${message}`);
       }
 
       throw e;
@@ -134,7 +135,7 @@ export class REDCapClient {
       if (b.scannedAt != null) {
         const scanDate = moment(b.scannedAt)
           .tz("America/Los_Angeles")
-          .format('MM/DD/YYYY');
+          .format('YYYY-MM-DD');
         record.date_barcode_scanned_by_pa = scanDate;
       }
 
