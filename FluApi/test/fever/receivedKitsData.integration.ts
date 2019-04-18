@@ -83,28 +83,47 @@ describe("received kits data access", () => {
         { returning: true}
       );
 
-      await fever.barcodes.create({ barcode: "s1" });
+      await fever.barcodes.bulkCreate([
+        { barcode: "1" },
+        { barcode: "2" }
+      ]);
 
+      // A track and untracked record
       const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
-      s1.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      s1.survey.samples.push({ sample_type: "manualEntry", code: "1" });
       const db1 = await fever.surveyNonPii.create(s1);
       await fever.receivedKit.create({
         surveyId: +db1.id,
         fileId: file.id,
-        boxBarcode: "s1",
+        boxBarcode: "1",
         dateReceived: "2018-09-19",
         linked: true,
         recordId: +db1.id
       });
 
       const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
-      s2.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
-      const db2 = await fever.surveyNonPii.create(s2);
+      s2.survey.samples.push({ sample_type: "manualEntry", code: "1" });
+      await fever.surveyNonPii.create(s2);
+
+      // Two untracked records
+      const s3 = _.cloneDeep(surveyNonPIIInDb("dvorak"));
+      s3.survey.samples.push({ sample_type: "manualEntry", code: "2" });
+      await fever.surveyNonPii.create(s3);
+
+      const s4 = _.cloneDeep(surveyNonPIIInDb("voltron"));
+      s4.survey.samples.push({ sample_type: "manualEntry", code: "2" });
+      s4.survey.events.push({
+        kind: EventInfoKind.AppNav,
+        at: new Date().toISOString(),
+        refId: "ScanConfirmation"
+      });
+      const db4 = await fever.surveyNonPii.create(s4);
 
       const dao = new ReceivedKitsData(sql);
       const unlinked = await dao.findUnlinkedBarcodes();
 
-      expect(unlinked.length).toBe(0);
+      expect(unlinked.length).toBe(1);
+      expect(unlinked[0].id).toBe(db4.id);
     });
 
     it("should match only manually entered or app scanned barcodes", async () => {

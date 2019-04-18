@@ -58,7 +58,8 @@ export class ReceivedKitsData {
          s.survey->>'isDemo' = 'false'
          and ss->>'sample_type' in ('manualEntry', 'org.iso.Code128')
          and (s.id = k."surveyId" or k."surveyId" is null)
-         and (k.linked is null or k.linked = false)`,
+         and (k.linked is null or k.linked = false)
+       order by s.id`,
       { type: Sequelize.QueryTypes.SELECT }
     );
 
@@ -83,7 +84,10 @@ export class ReceivedKitsData {
       }
     });
 
-    return untrackedSamples.map(s => {
+    // Filter down to a single survey (the most recent scan) per barcode
+    const results = new Map();
+
+    untrackedSamples.forEach(s => {
       // Get the most recent scan event timestamp
       const events = s.events ? <EventInfo[]>(JSON.parse(s.events)) : [];
 
@@ -92,14 +96,24 @@ export class ReceivedKitsData {
         .map(e => e.at)
         .reduce((a, b) => a > b ? a : b, undefined);
 
-      return {
-        id: +s.id,
-        code: <string>s.code,
-        scannedAt: scannedAt,
-        state: states.get(s.csruid),
-        recordId: s.recordId ? <string>s.recordId : undefined
-      };
+      const code = <string>s.code;
+
+      const existing = results.get(code);
+
+      if (existing == null ||
+          existing.scannedAt == null ||
+          existing.scannedAt < scannedAt) {
+        results.set(code, {
+          id: +s.id,
+          code: <string>s.code,
+          scannedAt: scannedAt,
+          state: states.get(s.csruid),
+          recordId: s.recordId ? <string>s.recordId : undefined
+        });
+      }
     });
+
+    return Array.from(results.values());
   }
 
   /**
