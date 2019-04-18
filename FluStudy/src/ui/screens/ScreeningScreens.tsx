@@ -118,7 +118,7 @@ class WelcomeScreen extends React.Component<
         navigation={this.props.navigation}
         skipButton={true}
         stableImageSrc={{
-          uri: Platform.OS === "ios" ? "img/welcome" : "asset:/img/welcome.png",
+          uri: "welcome",
         }}
         title={t("welcome")}
       />
@@ -139,10 +139,7 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         stableImageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/whyThisStudy"
-              : "asset:/img/why_this_study.png",
+          uri: "whythisstudy",
         }}
         navigation={this.props.navigation}
         title={t("why")}
@@ -206,10 +203,7 @@ class WhatScreen extends React.Component<
         imageSrc={
           blockKits
             ? {
-                uri:
-                  Platform.OS === "ios"
-                    ? "img/thanksForYourInterest"
-                    : "asset:/img/thanks_for_your_interest.png",
+                uri: "thanksforyourinterest",
               }
             : undefined
         }
@@ -217,10 +211,7 @@ class WhatScreen extends React.Component<
           blockKits
             ? undefined
             : {
-                uri:
-                  Platform.OS === "ios"
-                    ? "img/whatDoIDoNext"
-                    : "asset:/img/what_do_i_do_next.png",
+                uri: "whatdoidonext",
               }
         }
         navigation={this.props.navigation}
@@ -402,10 +393,7 @@ class PreConsentScreen extends React.PureComponent<
           centerDesc={true}
           hideBackButton={true}
           imageSrc={{
-            uri:
-              Platform.OS === "ios"
-                ? "img/preConsent"
-                : "asset:/img/pre_consent.png",
+            uri: "preconsent",
           }}
           navigation={this.props.navigation}
           onNext={() => this.props.navigation.push("Consent")}
@@ -636,10 +624,7 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
           />
         }
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1093,10 +1078,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         hideBackButton={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1135,10 +1117,7 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t(this.props.navigation.getParam("description"))}
         hideBackButton={this.props.navigation.getParam("hideBack")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1175,10 +1154,7 @@ class AddressIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         hideBackButton={false}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1217,10 +1193,7 @@ class POBoxIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         hideBackButton={false}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1259,10 +1232,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         hideBackButton={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1309,10 +1279,7 @@ class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description")}
         hideBackButton={false}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForYourInterest"
-              : "asset:/img/thanks_for_your_interest.png",
+          uri: "thanksforyourinterest",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1354,10 +1321,7 @@ class KitOrderedScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/fluKitOrdered"
-              : "asset:/img/flu_kit_ordered.png",
+          uri: "flukitordered",
         }}
         navigation={this.props.navigation}
         onNext={this._onNext}
@@ -1402,10 +1366,7 @@ class ThankYouScreeningScreen extends React.Component<
         canProceed={false}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/thanksForParticipating"
-              : "asset:/img/thanksForParticipating.png",
+          uri: "thanksforparticipating",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1448,10 +1409,7 @@ class ConfirmationScreen extends React.Component<
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/fluKitOrdered"
-              : "asset:/img/flu_kit_ordered.png",
+          uri: "flukitordered",
         }}
         navigation={this.props.navigation}
         skipButton={true}

@@ -11,7 +11,7 @@ export const menuScreens: MenuConfig[] = [
   {
     key: "Partners",
     subTitle: "about",
-    images: ["Brotman", "UWMed", "FredHutch"],
+    images: ["brotman", "uwmed", "fredhutch"],
   },
   { key: "GeneralQuestions", subTitle: "help" },
   { key: "Problems", subTitle: "help" },

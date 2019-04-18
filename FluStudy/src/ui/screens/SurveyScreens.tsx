@@ -182,10 +182,7 @@ class WelcomeBackScreen extends React.Component<
         desc={t("description")}
         hideBackButton={!this.props.workflow.skippedScreeningAt}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/howTestWorks_1"
-              : "asset:/img/howTestWorks_1.png",
+          uri: "howtestworks_1",
         }}
         navigation={this.props.navigation}
         title={t("welcomeBack")}
@@ -220,10 +217,7 @@ class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/preparingForTest"
-              : "asset:/img/preparingForTest.png",
+          uri: "preparingfortest",
         }}
         navigation={this.props.navigation}
         title={t("whatsNext")}
@@ -253,10 +247,7 @@ class BeforeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("flatStep")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/beforeYouBegin"
-              : "asset:/img/before_you_begin.png",
+          uri: "beforeyoubegin",
         }}
         navigation={this.props.navigation}
         title={t("beforeYouBegin")}
@@ -315,10 +306,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
           </View>
         }
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/barCodeOnBox"
-              : "asset:/img/barcode_on_box.png",
+          uri: "barcodeonbox",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -516,10 +504,7 @@ class ScanConfirmationScreen extends React.Component<
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/barCodeSuccess"
-              : "asset:/img/barcode_success.png",
+          uri: "barcodesuccess",
         }}
         navigation={this.props.navigation}
         title={t("codeSent")}
@@ -561,10 +546,7 @@ class ManualConfirmationScreen extends React.Component<
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/barCodeSuccess"
-              : "asset:/img/barcode_success.png",
+          uri: "barcodesuccess",
         }}
         navigation={this.props.navigation}
         title={t("codeSent")}
@@ -766,7 +748,7 @@ class ManualEntryScreen extends React.Component<
           >
             <Image
               style={{ aspectRatio: 2.2, flex: 0.4 }}
-              source={{ uri: "img/barcode" }}
+              source={{ uri: "barcode" }}
             />
             <View style={{ flex: 0.6, paddingLeft: GUTTER }}>
               <Text
@@ -840,10 +822,7 @@ class BarcodeContactSupportScreen extends React.Component<
         }
         hideBackButton={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/contactSupport"
-              : "asset:/img/contact_support.png",
+          uri: "contactsupport",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -900,10 +879,7 @@ class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/whatsNext"
-              : "asset:/img/whats_next.png",
+          uri: "whatsnext",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -932,10 +908,7 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/unpackingInstructions"
-              : "asset:/img/unpacking_instructions.png",
+          uri: "unpackinginstructions",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -962,10 +935,7 @@ class SwabScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/begin1stTest"
-              : "asset:/img/begin_1st_test.png",
+          uri: "begin1sttest",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -989,10 +959,7 @@ class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/prepareTube"
-              : "asset:/img/prepare_tube.png",
+          uri: "preparetube",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1016,10 +983,7 @@ class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/openNasalSwab"
-              : "asset:/img/open_nasal_swab.png",
+          uri: "opennasalswab",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1042,10 +1006,7 @@ class MucusScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/collectMucus"
-              : "asset:/img/collect_mucus.png",
+          uri: "collectmucus",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1076,10 +1037,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/putSwabInTube"
-              : "asset:/img/put_swab_in_tube.png",
+          uri: "putswabintube",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1152,10 +1110,7 @@ class FirstTimerScreen extends React.Component<
           </View>
         }
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/oneMinuteTimer"
-              : "asset:/img/one_minute_timer.png",
+          uri: "oneminutetimer",
         }}
         navigation={this.props.navigation}
         skipButton={!this.props.done()}
@@ -1189,10 +1144,7 @@ class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/removeSwabFromTube"
-              : "asset:/img/remove_swab_from_tube.png",
+          uri: "removeswabfromtube",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1219,10 +1171,7 @@ class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/openTestStrip"
-              : "asset:/img/open_test_strip.png",
+          uri: "openteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1251,10 +1200,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/openTestStrip_1"
-              : "asset:/img/open_test_strip_1.png",
+          uri: "openteststrip_1",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1482,10 +1428,7 @@ class GeneralExposureScreen extends React.Component<
       >
         <Divider />
         <Text content={t("expoDesc")} style={{ marginBottom: GUTTER }} />
-        <Image
-          style={imageStyles.image}
-          source={{ uri: "img/generalExposure" }}
-        />
+        <Image style={imageStyles.image} source={{ uri: "generalexposure" }} />
         <Text
           content={t("expoRef")}
           italic={true}
@@ -1703,10 +1646,7 @@ class ThankYouSurveyScreen extends React.Component<
           </View>
         }
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/questionsThankYou"
-              : "asset:/img/questions_thank_you.png",
+          uri: "questionsthankyou",
         }}
         navigation={this.props.navigation}
         skipButton={true}
@@ -1738,10 +1678,7 @@ class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("desc")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/removeTestStrip"
-              : "asset:/img/remove_test_strip.png",
+          uri: "removeteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1767,10 +1704,7 @@ class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/finishWithTube"
-              : "asset:/img/finish_with_tube.png",
+          uri: "finishwithtube",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1794,10 +1728,7 @@ class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/lookAtTestStrip"
-              : "asset:/img/look_at_test_strip.png",
+          uri: "lookatteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1860,10 +1791,7 @@ class TestStripSurveyScreen extends React.Component<
         canProceed={true}
         desc={t("desc")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/lookAtTestStrip"
-              : "asset:/img/look_at_test_strip.png",
+          uri: "lookatteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1934,28 +1862,19 @@ class PictureInstructionsScreen extends React.Component<
           />
         }
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/takePictureTestStrip"
-              : "asset:/img/take_picture_test_strip.png",
+          uri: "takepictureteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
         videoId="takePhotoOfStrip"
         onNext={this._onNext}
       >
-        <Image
-          style={imageStyles.image}
-          source={{ uri: "img/testStripCamera1" }}
-        />
+        <Image style={imageStyles.image} source={{ uri: "teststripcamera1" }} />
         <Text
           content={t("tip2")}
           style={{ alignSelf: "stretch", marginBottom: GUTTER }}
         />
-        <Image
-          style={imageStyles.image}
-          source={{ uri: "img/testStripCamera2" }}
-        />
+        <Image style={imageStyles.image} source={{ uri: "teststripcamera2" }} />
         <Text
           content={t("tip3")}
           style={{ alignSelf: "stretch", marginBottom: GUTTER }}
@@ -2034,7 +1953,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
             <View style={cameraStyles.innerContainer}>
               <Image
                 style={cameraStyles.testStrip}
-                source={{ uri: "img/testStripDetail" }}
+                source={{ uri: "teststripdetail" }}
               />
               <View style={{ flex: 1, marginLeft: GUTTER }}>
                 <Text
@@ -2202,10 +2121,7 @@ class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("desc")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/sealUpTestStrip"
-              : "asset:/img/seal_up_test_strip.png",
+          uri: "sealupteststrip",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2231,10 +2147,7 @@ class CleanFirstTest2Screen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("desc")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/putTestStripBag2"
-              : "asset:/img/put_test_strip_bag_2.png",
+          uri: "putteststripbag2",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2261,8 +2174,7 @@ class FirstTestFeedbackScreen extends React.Component<
       <Screen
         canProceed={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios" ? "img/niceJob" : "asset:/img/nice_job.png",
+          uri: "nicejob",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2299,10 +2211,7 @@ class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/begin2ndTest"
-              : "asset:/img/begin_2nd_test.png",
+          uri: "begin2ndtest",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2328,10 +2237,7 @@ class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/prepareForTest"
-              : "asset:/img/prepare_for_test.png",
+          uri: "preparefortest",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2357,10 +2263,7 @@ class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/collectMucus"
-              : "asset:/img/collect_mucus.png",
+          uri: "collectmucus",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2386,10 +2289,7 @@ class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/putSwabInRedTube"
-              : "asset:/img/put_swab_in_red_tube.png",
+          uri: "putswabinredtube",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2415,10 +2315,7 @@ class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/cleanUpSecondTest"
-              : "asset:/img/clean_up_second_test.png",
+          uri: "cleanupsecondtest",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2445,8 +2342,7 @@ class SecondTestFeedbackScreen extends React.Component<
       <Screen
         canProceed={true}
         imageSrc={{
-          uri:
-            Platform.OS === "ios" ? "img/niceJob" : "asset:/img/nice_job.png",
+          uri: "nicejob",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2483,10 +2379,7 @@ class PackingScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/packingThingsUp"
-              : "asset:/img/packing_things_up.png",
+          uri: "packingthingsup",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2509,10 +2402,7 @@ class StickersScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/putStickersOnBox"
-              : "asset:/img/put_stickers_on_box.png",
+          uri: "putstickersonbox",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2536,10 +2426,7 @@ class SecondBagScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/putBag2inBox"
-              : "asset:/img/put_bag_2_in_box.png",
+          uri: "putbag2inbox",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2563,10 +2450,7 @@ class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/tapeUpBox"
-              : "asset:/img/tape_up_box.png",
+          uri: "tapeupbox",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2602,10 +2486,7 @@ class ShipBoxScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/shippingYourBox"
-              : "asset:/img/shipping_your_box.png",
+          uri: "shippingyourbox",
         }}
         footer={
           <Button
@@ -2652,10 +2533,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/schedulePickup"
-              : "asset:/img/schedule_pickup.png",
+          uri: "schedulepickup",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2707,10 +2585,7 @@ class EmailOptInScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/optInMessages"
-              : "asset:/img/opt_in_messages.png",
+          uri: "optinmessages",
         }}
         navigation={this.props.navigation}
         title={t("title")}
@@ -2751,10 +2626,7 @@ class ThanksScreen extends React.Component<
         canProceed={false}
         desc={t("description", { email: this.props.email })}
         imageSrc={{
-          uri:
-            Platform.OS === "ios"
-              ? "img/finalThanks"
-              : "asset:/img/final_thanks.png",
+          uri: "finalthanks",
         }}
         navigation={this.props.navigation}
         skipButton={true}

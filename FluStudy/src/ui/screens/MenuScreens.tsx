@@ -119,12 +119,7 @@ export const generateMenuScreen = (config: MenuConfig) => {
           menuItem={true}
           navigation={this.props.navigation}
           skipButton={true}
-          imageSrc={{
-            uri:
-              Platform.OS === "ios"
-                ? "img/colorLogo"
-                : "asset:/img/colorLogo.png",
-          }}
+          imageSrc={{ uri: "colorlogo" }}
           subTitle={t(`common:menu:${config.subTitle}`)}
           title={t("title")}
         >

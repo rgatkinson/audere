@@ -60,14 +60,7 @@ export const STATUS_BAR_HEIGHT =
 export const NAV_BAR_HEIGHT = 40;
 export const LOGO_HEIGHT = 120;
 export const IMAGE_WIDTH = isIPhoneSE ? "75%" : "100%";
-export const SPLASH_IMAGE = isIPhoneSE
-  ? {
-      uri:
-        Platform.OS === "ios"
-          ? "img/mediumSplash"
-          : "asset:/img/medium_splash.png",
-    }
-  : { uri: Platform.OS === "ios" ? "img/splash" : "asset:/img/splash.png" };
+export const SPLASH_IMAGE = { uri: isIPhoneSE ? "mediumsplash" : "splash" };
 export const ASPECT_RATIO = 1.75;
 export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;

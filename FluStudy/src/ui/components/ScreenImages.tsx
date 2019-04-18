@@ -10,7 +10,7 @@ const ScreenImages = (props: any) => {
             resizeMode={"contain"}
             style={{ flex: 1, height: undefined, width: undefined }}
             key={`${uri}-${index}`}
-            source={{ uri: "img/" + uri }}
+            source={{ uri }}
           />
         );
       })}
