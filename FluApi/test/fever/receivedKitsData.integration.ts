@@ -50,7 +50,7 @@ describe("received kits data access", () => {
       await fever.receivedKit.create({
         surveyId: +db1.id,
         fileId: file.id,
-        boxBarcode: db1.csruid,
+        boxBarcode: "s1",
         dateReceived: "2018-09-19",
         linked: true,
         recordId: +db1.id
@@ -63,7 +63,7 @@ describe("received kits data access", () => {
       await fever.receivedKit.create({
         surveyId: +db2.id,
         fileId: file.id,
-        boxBarcode: db2.csruid,
+        boxBarcode: "qwerty",
         dateReceived: "2018-09-19",
         linked: false,
         recordId: +db2.id
@@ -75,6 +75,36 @@ describe("received kits data access", () => {
       // Only the unlinked record should be returned
       expect(unlinked.length).toBe(1);
       expect(unlinked[0].id).toBe(db2.id);
+    });
+
+    it("should avoid returning duplicate barcodes", async () => {
+      const file = await fever.receivedKitsFile.create(
+        { file: "test.json" },
+        { returning: true}
+      );
+
+      await fever.barcodes.create({ barcode: "s1" });
+
+      const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s1.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const db1 = await fever.surveyNonPii.create(s1);
+      await fever.receivedKit.create({
+        surveyId: +db1.id,
+        fileId: file.id,
+        boxBarcode: "s1",
+        dateReceived: "2018-09-19",
+        linked: true,
+        recordId: +db1.id
+      });
+
+      const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
+      s2.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const db2 = await fever.surveyNonPii.create(s2);
+
+      const dao = new ReceivedKitsData(sql);
+      const unlinked = await dao.findUnlinkedBarcodes();
+
+      expect(unlinked.length).toBe(0);
     });
 
     it("should match only manually entered or app scanned barcodes", async () => {

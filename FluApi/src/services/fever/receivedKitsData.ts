@@ -50,13 +50,14 @@ export class ReceivedKitsData {
          s.survey->>'events' events,
          k."recordId" "recordId"
        from
-         fever_current_surveys s
-         left join fever_received_kits k on s.id = k."surveyId",
+         fever_current_surveys s,
          json_array_elements(s.survey->'samples') ss
          join fever_box_barcodes b on lower(ss->>'code') = b.barcode
+         left join fever_received_kits k on lower(ss->>'code') = k."boxBarcode"
        where
          s.survey->>'isDemo' = 'false'
          and ss->>'sample_type' in ('manualEntry', 'org.iso.Code128')
+         and (s.id = k."surveyId" or k."surveyId" is null)
          and (k.linked is null or k.linked = false)`,
       { type: Sequelize.QueryTypes.SELECT }
     );
