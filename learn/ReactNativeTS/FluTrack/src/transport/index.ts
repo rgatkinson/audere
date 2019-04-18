@@ -76,10 +76,6 @@ class TypedDocumentUploader {
       0
     );
   }
-
-  public getEncryptionPassword(): Promise<string> {
-    return this.uploader.getEncryptionPassword();
-  }
 }
 
 function createAxios(logger: LogBatcher) {

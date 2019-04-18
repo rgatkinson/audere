@@ -16,7 +16,6 @@ import EditSettingButton from "../../components/EditSettingButton";
 import ScreenContainer from "../../components/ScreenContainer";
 import Text from "../../components/Text";
 import { syncToCouch } from "../../../transport/index";
-import { getDeviceSetting } from "../../../util/deviceSettings";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
@@ -57,16 +56,28 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
   async _refresh() {
     this._loadNumDocs();
 
-    const address = await getDeviceSetting("COUCH_DB_SYNC");
-    if (!address) {
+    let response;
+    try {
+      response = await axios.get(
+        getApiBaseUrl() +
+          "/settings/" +
+          Constants.installationId +
+          "/" +
+          "COUCH_DB_SYNC"
+      );
+    } catch (e) {
+      // Expected most of the time
       return;
     }
     try {
-      this.setState({ refreshMessage: `Syncing to ${address}...` });
-      await syncToCouch(address);
-      this.setState({ refreshMessage: `Synced to ${address}` });
+      if (response.status === 200) {
+        console.log(response.data);
+        this.setState({ refreshMessage: `Syncing to ${response.data}...` });
+        await syncToCouch(response.data);
+        this.setState({ refreshMessage: `Synced to ${response.data}` });
+      }
     } catch (e) {
-      this.setState({ refreshMessage: `Failed to sync to ${address}` });
+      this.setState({ refreshMessage: `Failed to sync to ${response.data}` });
       console.log(e);
     }
   }
