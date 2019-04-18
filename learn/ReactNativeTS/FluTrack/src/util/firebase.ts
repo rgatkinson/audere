@@ -10,7 +10,19 @@ import firebase from "firebase";
 import "firebase/firestore";
 import { DEVICE_INFO } from "../transport/DeviceInfo";
 import { format } from "date-fns";
+import { VisitInfo } from "audere-lib/snifflesProtocol";
+import { Crypt } from "hybrid-crypto-js";
 
+const backupPublicKey =
+  "-----BEGIN PUBLIC KEY-----\
+  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwOm4OEe8w3010YV3hVyb\
+  CPusZSz4DyThkd30FYkW1dcAdFoCFnQiYVoMkGUNiQzXAeb748nnzyAX1BQqCfMu\
+  ruAfJ8FcRy/hq+g7JZMNj/H0kjTMCHofl9rkhqplPBZYBEYAAneV6wgGCSmwopcb\
+  d3klGPnDG14f8JhPwrXnqBYOK8aCGVXSLzq0D3AtNqkC5Wwki+auSYoOLweybgJy\
+  rXpCXZM4jbGHWTNP9xMz8m4M0flj/VImiuv/U6RzGcCvRBGXWea2XJQ/PuN8dWE/\
+  ByiP2JvtK6KHIBNUJ72LWgjOPmH2XPmqNGJHZeMi/ucXl/Uf/QvTnr/GI4bbjFk7\
+  2wIDAQAB\
+  -----END PUBLIC KEY-----";
 export const FirestoreCollection = {
   BARCODES: "barcodes",
 };
@@ -31,7 +43,13 @@ export function initializeFirebase() {
   }
 }
 
-export async function writeBarcodeToFirebase(barcode: string, uid: string) {
+export async function backupToFirebase(
+  barcode: string,
+  uid: string,
+  visit: VisitInfo
+) {
+  const crypt = new Crypt();
+  const encryptedData = crypt.encrypt(backupPublicKey, JSON.stringify(visit));
   const data = {
     barcode,
     uid,
@@ -39,6 +57,7 @@ export async function writeBarcodeToFirebase(barcode: string, uid: string) {
     device_name: DEVICE_INFO.deviceName,
     client_version: DEVICE_INFO.clientVersion,
     device_local_time: format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+    encrypted_visit_info: encryptedData,
   };
 
   try {

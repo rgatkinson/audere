@@ -5045,6 +5045,13 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.1.0"
     debug "^3.1.0"
 
+hybrid-crypto-js@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/hybrid-crypto-js/-/hybrid-crypto-js-0.1.6.tgz#c9da90b2c256dea9cc59b780575953730191fc7a"
+  integrity sha1-ydqQssJW3qnMWbeAV1lTcwGR/Ho=
+  dependencies:
+    node-forge "^0.7.1"
+
 i18next@^11.10.0:
   version "11.10.0"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-11.10.0.tgz#901231c840ba2bbf89b672a7f65d50fb2250626e"
@@ -7253,6 +7260,16 @@ node-fetch@^2.0.0, node-fetch@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.3.0.tgz#1a1d940bbfb916a1d3e0219f037e89e71f8c5fa5"
   integrity sha512-MOd8pV3fxENbryESLgVIeaGKrdl+uaYhCSSVkjeOb/31/njTpcis5aWfdqgNlHIrKOLRbMnfPINPOML2CIFeXA==
+
+node-forge@^0.7.1:
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.6.tgz#fdf3b418aee1f94f0ef642cd63486c77ca9724ac"
+  integrity sha512-sol30LUpz1jQFBjOKwbjxijiE3b6pjd74YwfD0fJOKPjF+fONKb2Yg8rYgS6+bK6VDl+/wfr4IYpC7jDzLUIfw==
+
+node-forge@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.8.2.tgz#b4bcc59fb12ce77a8825fc6a783dfe3182499c5a"
+  integrity sha512-mXQ9GBq1N3uDCyV1pdSzgIguwgtVpM7f5/5J4ipz12PKWElmPpVWLDuWl8iXmhysr21+WmX/OJ5UKx82wjomgg==
 
 node-int64@^0.4.0:
   version "0.4.0"

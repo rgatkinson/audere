@@ -21,7 +21,7 @@ import {
   VisitInfo,
 } from "audere-lib/snifflesProtocol";
 import { isNotNull } from "../util/check";
-import { writeBarcodeToFirebase } from "../util/firebase";
+import { backupToFirebase } from "../util/firebase";
 
 export const { uploader, logger } = createTransport();
 
@@ -40,7 +40,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       uploader.saveVisit(state.form.formId, visitInfo);
       if (action.type === "SET_SAMPLES") {
         const barcode = action.samples[action.samples.length - 1].code;
-        writeBarcodeToFirebase(barcode, state.form.formId);
+        backupToFirebase(barcode, state.form.formId, visitInfo);
         uploader.saveBackup(state.form.formId, visitInfo);
         let demoPrefix = !!state.form.isDemo
           ? DEMO_TRUE_PREFIX
