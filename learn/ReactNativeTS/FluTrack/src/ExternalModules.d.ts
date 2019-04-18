@@ -10,6 +10,7 @@ declare module "expo";
 declare module "i18next";
 declare module "expo-pixi";
 declare module "crypto-pouch";
+declare module "hybrid-crypto-js";
 
 // pouch-crypto extension
 namespace PouchDB {
