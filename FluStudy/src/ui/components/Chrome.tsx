@@ -49,7 +49,11 @@ export default class Chrome extends React.Component<Props> {
             },
           ]}
         >
-          <StatusBar barStyle="light-content" backgroundColor="transparent" />
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor="transparent"
+            translucent={true}
+          />
           {this.props.isDemo && (
             <Text
               bold={true}

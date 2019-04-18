@@ -1,4 +1,4 @@
-import { Dimensions, NativeModules, Platform } from "react-native";
+import { Dimensions, NativeModules, Platform, StatusBar } from "react-native";
 const { PlatformConstants } = NativeModules;
 const deviceType = PlatformConstants.interfaceIdiom;
 
@@ -55,7 +55,8 @@ export const SYSTEM_TEXT = 17;
 export const SYSTEM_FONT = "System";
 export const SYSTEM_PADDING_BOTTOM = isIPhoneX ? 20 : 0;
 export const STATUS_BAR_COLOR = "#F8F8F8";
-export const STATUS_BAR_HEIGHT = isIPhoneX ? 44 : 20;
+export const STATUS_BAR_HEIGHT =
+  Platform.OS === "android" ? StatusBar.currentHeight! : isIPhoneX ? 44 : 20;
 export const NAV_BAR_HEIGHT = 40;
 export const LOGO_HEIGHT = 120;
 export const IMAGE_WIDTH = isIPhoneSE ? "75%" : "100%";
