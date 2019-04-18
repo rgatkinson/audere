@@ -264,14 +264,13 @@ export class DocumentUploader {
       const promises = pouchIds.map(id => this.db.get(id));
       const results = await Promise.all(
         promises.map(p => p.catch(() => undefined))
-      )
+      );
       return results.reduce((map, result) => {
         if (result != null) {
           map.set(result._id.substring(CSRUID_PREFIX.length), result.csruid);
         }
         return map;
       }, new Map<string, string>());
-
     } catch (e) {
       return new Map<string, string>();
     }
