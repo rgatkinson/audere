@@ -9,6 +9,7 @@
 import firebase from "firebase";
 import "firebase/firestore";
 import { DEVICE_INFO } from "../transport/DeviceInfo";
+import { format } from "date-fns";
 
 export const FirestoreCollection = {
   BARCODES: "barcodes",
@@ -35,7 +36,9 @@ export async function writeBarcodeToFirebase(barcode: string, uid: string) {
     barcode,
     uid,
     installation_id: DEVICE_INFO.installation,
+    device_name: DEVICE_INFO.deviceName,
     client_version: DEVICE_INFO.clientVersion,
+    device_local_time: format(new Date(), "YYYY-MM-DD HH:mm:ss"),
   };
 
   try {
