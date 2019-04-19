@@ -1005,6 +1005,15 @@ export async function getFeverMetrics(
     })));
 
   //Format fields for excel details sheet
+  const piiMap = new Map(validPii.map(row =>
+    [row.csruid, 
+      {'city': row.survey.patient.address[0].city,
+       'state': row.survey.patient.address[0].state,
+       'gender': row.survey.patient.gender
+      }
+    ] as [string, object]
+  ));
+
   const getAgeRange = (row) => {
     const ageField = row.survey.responses[0].item[0];
     if (ageField && ageField.answer.length > 0) {
@@ -1012,6 +1021,15 @@ export async function getFeverMetrics(
       return ageField.answerOptions[age].text;
     }
   };
+  const getUserState = (row) => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['state'];
+  }
+  const getUserCity = (row) => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['city'];
+  }
+  const getUserGender = (row) => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['gender'];
+  }
   const getBarcode = (row) => {
     const barcodeField = row.survey.samples[0];
     if (barcodeField) {
@@ -1025,7 +1043,9 @@ export async function getFeverMetrics(
     }
   }
   const getKitOrderTime = (row) => {
-    const confirmation = row.survey.events.find(item => item.refId === "Confirmation");
+    const confirmation = row.survey.events.find(
+      item => item.refId === "Confirmation" || item.refId === "KitOrdered"
+    );
     if (confirmation) return confirmation.at;
   };
   const getScanTime = (row) => {
@@ -1085,6 +1105,9 @@ export async function getFeverMetrics(
   rowsNonPii.forEach( (row) => {
     studyIdData.push({
       age: getAgeRange(row),
+      city: getUserCity(row),
+      state: getUserState(row),
+      gender: getUserGender(row),
       createdAt: row["createdAt"],
       barcode: getBarcode(row),
       studyid: row.csruid.substring(0, 21),
@@ -1371,6 +1394,21 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
   const studyIdSpec = {
     age: {
       displayName: "Age",
+      headerStyle: styles.columnHeader,
+      width: 70
+    },
+    city: {
+      displayName: "City",
+      headerStyle: styles.columnHeader,
+      width: 70
+    },
+    state: {
+      displayName: "State",
+      headerStyle: styles.columnHeader,
+      width: 70
+    },
+    gender: {
+      displayName: "Gender",
       headerStyle: styles.columnHeader,
       width: 70
     },
