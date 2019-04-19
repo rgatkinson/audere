@@ -11,6 +11,7 @@ locals {
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 ? * MON-FRI *)"
   cron_weekdays_at_4AM_PST = "cron(0 10 ? * MON-FRI *)"
+  cron_monday_thursday_before_9AM_PST = "cron(30 15 ? * MON,THU *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -130,6 +131,30 @@ module "fever_kits_report_cron" {
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300
   notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+}
+
+module "fever_gift_cards_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-fever-gift-cards-report"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_monday_thursday_before_9AM_PST}"
+  url = "http://${var.fluapi_fqdn}:444/api/export/sendIncentives"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  timeout = 300
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}" 
+}
+
+module "fever_follow_up_surveys_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-fever-follow-up-surveys-report"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_monday_thursday_before_9AM_PST}"
+  url = "http://${var.fluapi_fqdn}:444/api/export/sendFollowUps"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  timeout = 300
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}" 
 }
 
 module "fever_received_kits_cron" {
