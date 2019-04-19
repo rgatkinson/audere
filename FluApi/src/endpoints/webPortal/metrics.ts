@@ -1674,7 +1674,8 @@ export async function getFeverFirebase(
   if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
     throw new Error("Dates must be specified as yyyy-MM-dd");
   }
-
+  const offset = getStudyTimezoneOffset();
+  
   const secrets = new SecretConfig(sql);
   const bigqueryConfig = await getBigqueryConfig(secrets);
   const queryList = Object.keys(bigQueries);
@@ -1691,7 +1692,7 @@ export async function getFeverFirebase(
   const options = {
     query: query,
     location: 'US',
-    params: [startDate.replace(/-/g, ""), endDate.replace(/-/g, "")],
+    params: [`${startDate} 00:00:00.000${offset}`, `${endDate} 23:59:59.999${offset}`],
   };
   const [job] = await bigquery.createQueryJob(options);
   const [queryData] = await job.getQueryResults();
