@@ -381,15 +381,15 @@ class ConnectedRootContainer extends React.Component<Props> {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={this.handleQuadTap}>
-          <View style={styles.touchable} />
-        </TouchableWithoutFeedback>
         <AppContainer
           persistenceKey={"NavigationState"}
           ref={this.navigator}
           onNavigationStateChange={this._handleNavChange}
           renderLoadingExperimental={this._loadingIndicator}
         />
+        <TouchableWithoutFeedback onPress={this.handleQuadTap}>
+          <View style={styles.touchable} />
+        </TouchableWithoutFeedback>
       </View>
     );
   }
