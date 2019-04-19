@@ -19,6 +19,13 @@ interface AtHomeData {
   strip_barcode: string
 }
 
+interface AtHomeRecord {
+  record_id: number,
+  participant_entered_kit_ba: string,
+  state_from_audere: string,
+  date_barcode_scanned_by_pa?: string
+}
+
 export interface RecordSurveyMapping {
   recordId: number,
   surveyId: number
@@ -116,20 +123,19 @@ export class REDCapClient {
       `token=${this.config.apiToken}&content=generateNextRecordName`
     );
 
-    // Random offset that ensures we are outside of the range of current ids.
-    // If we collide with an existing id our request will be interpreted as an
-    // update, where as if we provided a non-existant id it will be discarded
-    // and remapped to a newly created, auto-numbered record.
-    let nextRecord = nextRecordResponse.data + 1000;
+    let nextRecord = nextRecordResponse.data;
     logger.info(`Next REDCap id is ${nextRecordResponse.data}, setting next ` +
       `record offset to ${nextRecord}`);
 
-    const dataById = new Map();
+    const mappedRecords = new Map();
+    const proposedMappings = new Map();
+    const existingRecords: AtHomeRecord[] = [];
+    const newRecords: AtHomeRecord[] = [];
 
-    const records = untrackedBarcodes.map(b => {
+    untrackedBarcodes.forEach(b => {
       const record: any = {
-        "participant_entered_kit_ba": b.code,
-        "state_from_audere": b.state
+        participant_entered_kit_ba: b.code,
+        state_from_audere: b.state
       };
 
       if (b.scannedAt != null) {
@@ -141,42 +147,75 @@ export class REDCapClient {
 
       if (b.recordId != null) {
         record.record_id = b.recordId;
+        existingRecords.push(record);
+        mappedRecords.set(b.code, { recordId: b.recordId, surveyId: b.id });
       } else {
         record.record_id = nextRecord;
         nextRecord++;
+        newRecords.push(record);
+        proposedMappings.set(record.record_id, [b.code, b.id]);
       }
-
-      dataById.set(record.record_id, [b.code, b.id]);
-      return record;
     });
 
-    logger.info(`Modifying ${records.length} records in REDCap including ` +
-      `${nextRecord - nextRecordResponse.data - 1000} new records`);
+    logger.info(`Modifying ${untrackedBarcodes.length} records in REDCap ` +
+      `including ${newRecords.length} new records and ` +
+      `${existingRecords.length} existing records`);
 
+    // Create new auto-numbered records
+    if (newRecords.length > 0) {
+      const result = await this.importRecords<string[]>(newRecords, true);
+
+      if (!Array.isArray(result.data)) {
+        const error = JSON.stringify(result.data);
+        throw Error(`Unknown response from REDCap - ${error}`);
+      }
+
+      logger.info(`Received ${result.status} status from ` +
+        `new record request with ${result.data.length} ` +
+        `auto-ids`);
+
+      result.data.forEach(res => {
+        const [actual, proposed] = res.split(",");
+        const [code, surveyId] = proposedMappings.get(+proposed);
+        mappedRecords.set(code, { recordId: +actual, surveyId: surveyId });
+      });
+    }
+
+    // Update existing records
+    if (existingRecords.length > 0) {
+      const result =
+        await this.importRecords<{count: string}>(existingRecords, false);
+
+      const count = +result.data.count;
+      if (Number.isNaN(count)) {
+        const error = JSON.stringify(result.data);
+        throw Error(`Unknown response from REDCap - ${error}`);
+      }
+
+      logger.info(`Received ${result.status} status from ` +
+        `existing record request with ${count} records updated`);
+
+      if (count !== existingRecords.length) {
+        throw Error(`Expected to modify ${existingRecords.length} records ` +
+          `but server returned ${count}`);
+      }
+    }
+
+    return mappedRecords;
+  }
+
+  private async importRecords<T>(records: AtHomeRecord[], autoNumber: boolean) {
     // Form encoding
     const data = `token=${this.config.apiToken}&` +
       `content=record&` +
       `format=json&` +
       `type=flat&` +
       `overwriteBehavior=normal&` +
-      `forceAutoNumber=true&` +
+      `forceAutoNumber=${autoNumber}&` +
       `returnContent=auto_ids&` +
       `returnFormat=json&` +
       `data=${JSON.stringify(records)}`;
 
-    const importRecordsResponse = await this.makeRequest<string[]>(data);
-    logger.info(`Received ${importRecordsResponse.status} status from ` +
-      `record request with ${(importRecordsResponse.data || []).length} ` +
-      `auto-ids`);
-
-    const mappedIds = new Map();
-
-    importRecordsResponse.data.forEach(res => {
-      const [actual, proposed] = res.split(",");
-      const [code, surveyId] = dataById.get(+proposed);
-      mappedIds.set(code, { recordId: +actual, surveyId: surveyId });
-    });
-
-    return mappedIds;
+    return await this.makeRequest<T>(data);
   }
 }
