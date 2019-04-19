@@ -302,7 +302,7 @@
   "thankYouScreeningScreen": {
     "title": "Thanks for participating!",
     "description": "We hope you’re able to get some rest and feel better soon.\n\n**While you wait for your kit:** ",
-    "bullets": "**[Search Maps for urgent care clinics nearby.](findMedHelp)** If you need to see a doctor, you can use Maps to find one.\n**[Learn more about this study.](http://fluathome.org/)** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](fluhelp@uw.edu)**."
+    "bullets": "**[Search Maps for urgent care clinics nearby.](FIND_MED_HELP)** If you need to see a doctor, you can use Maps to find one.\n**[Learn more about this study.](http://fluathome.org/)** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](EMAIL_SUPPORT)**."
   },
   "confirmationScreen": {
     "confirmed": "Thank you! Your flu test kit has been ordered.",

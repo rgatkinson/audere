@@ -7,6 +7,7 @@ import {
   TextStyle,
 } from "react-native";
 import { Svg } from "expo";
+import { textActions } from "../../resources/TextConfig";
 import {
   FONT_BOLD,
   FONT_EXTRA_BOLD,
@@ -17,7 +18,6 @@ import {
   TEXT_COLOR,
 } from "../styles";
 import i18next from "i18next";
-import { findMedHelp } from "../externalActions";
 
 interface Props {
   bold?: boolean;
@@ -85,9 +85,13 @@ function linkify(
     }
 
     // Now the link itself
-    if (link.url === "findMedHelp") {
+    if (textActions.hasOwnProperty(link.url)) {
       elements.push(
-        <SystemText key={link.url} style={style} onPress={() => findMedHelp()}>
+        <SystemText
+          key={link.url}
+          style={style}
+          onPress={() => (textActions as any)[link.url]()}
+        >
           {link.title}
         </SystemText>
       );

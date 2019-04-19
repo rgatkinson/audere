@@ -1,6 +1,4 @@
-import { Alert, Linking, Platform } from "react-native";
-import { AddressScreen } from "./screens/ScreeningScreens";
-import { AddressConfig } from "../../src/resources/ScreenConfig";
+import { Linking, Platform } from "react-native";
 
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
 const scheduleUSPSUrl = "https://www.usps.com/pickup/";
