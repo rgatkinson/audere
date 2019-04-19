@@ -78,34 +78,6 @@ module "fludb_nonpii_log_archive" {
   db_name = "${aws_db_instance.fludb_nonpii.identifier}"
 }
 
-resource "aws_db_instance" "fludb_postgis" {
-  allocated_storage = 20
-  availability_zone = "${var.availability_zone}"
-  backup_retention_period = 5
-  backup_window = "10:00-10:59"
-  copy_tags_to_snapshot = true
-  deletion_protection = true
-  engine = "postgres"
-  engine_version = "10.6"
-  identifier = "${local.base_name}-postgis"
-  instance_class = "db.t2.small"
-  license_model = "postgresql-license"
-  maintenance_window = "Sun:11:00-Sun:11:59"
-  password = "${local.db_setup_password}"
-  publicly_accessible = false
-  skip_final_snapshot = false
-  storage_encrypted = true
-  db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
-  username = "postgisa"
-  vpc_security_group_ids = [
-    "${module.fludb_sg.server_id}",
-  ]
-
-  tags {
-    Name = "${local.base_name}-postgis"
-  }
-}
-
 resource "aws_db_parameter_group" "fludb_parameters" {
   name = "${local.base_name}-parameters"
   family = "postgres10"
