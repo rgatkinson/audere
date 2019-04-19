@@ -16,10 +16,7 @@ export class Incentives extends SurveyCompletedReport {
   protected readonly report = "Incentives";
   private readonly uploader: S3Uploader;
 
-  constructor(
-    dao: IncentiveRecipientsDataAccess,
-    uploader: S3Uploader
-  ) {
+  constructor(dao: IncentiveRecipientsDataAccess, uploader: S3Uploader) {
     super(dao);
     this.uploader = uploader;
   }

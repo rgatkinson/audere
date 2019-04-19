@@ -8,17 +8,18 @@ import WinstonCloudWatch from "winston-cloudwatch";
 import { isAWS } from "./environment";
 
 const FORMAT_WITH_TIMESTAMP = format.printf(
-  ({ level, message, timestamp}) => `[${timestamp || new Date().toISOString()}] ${level} ${message.trim()}`
+  ({ level, message, timestamp }) =>
+    `[${timestamp || new Date().toISOString()}] ${level} ${message.trim()}`
 );
 
 const LOGGER_OPTIONS = isAWS()
   ? {
       level: "error",
-      format: FORMAT_WITH_TIMESTAMP,
+      format: FORMAT_WITH_TIMESTAMP
     }
   : {
       level: "debug",
-      format: FORMAT_WITH_TIMESTAMP,
+      format: FORMAT_WITH_TIMESTAMP
     };
 
 const logger = createLogger({
@@ -27,8 +28,8 @@ const logger = createLogger({
     new winston.transports.File({
       filename: "debug.log",
       level: "debug",
-      format: FORMAT_WITH_TIMESTAMP,
-    }),
+      format: FORMAT_WITH_TIMESTAMP
+    })
   ]
 });
 

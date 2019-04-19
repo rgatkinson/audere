@@ -279,9 +279,7 @@ export function defineFollowUpBatch(sql: Sequelize): Model<BatchAttributes> {
   });
 }
 
-export function defineFollowUpItem(
-  sql: Sequelize
-): Model<BatchItemAttributes> {
+export function defineFollowUpItem(sql: Sequelize): Model<BatchItemAttributes> {
   return defineModel<BatchItemAttributes>(sql, "fever_followup_items", {
     id: primaryKey(integerColumn()),
     batchId: integerColumn(),
@@ -301,18 +299,18 @@ export function defineFollowUpDiscard(
 // ---------------------------------------------------------------
 
 export interface ReceivedKitAttributes {
-  id?: number,
-  surveyId: number,
-  fileId: number,
-  recordId: number,
-  linked: boolean,
-  boxBarcode: string,
-  dateReceived: string,
+  id?: number;
+  surveyId: number;
+  fileId: number;
+  recordId: number;
+  linked: boolean;
+  boxBarcode: string;
+  dateReceived: string;
 }
 
 export interface ReceivedKitsFileAttributes {
-  id?: number,
-  file: string
+  id?: number;
+  file: string;
 }
 
 export function defineReceivedKits(
@@ -392,9 +390,7 @@ export interface BarcodeAttributes {
   barcode: string;
 }
 
-export function defineBarcodes(
-  sql: Sequelize
-): Model<BarcodeAttributes> {
+export function defineBarcodes(sql: Sequelize): Model<BarcodeAttributes> {
   return defineModel<BarcodeAttributes>(sql, "fever_box_barcodes", {
     barcode: stringColumn()
   });

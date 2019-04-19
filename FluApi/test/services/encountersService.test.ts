@@ -6,7 +6,10 @@
 import _ from "lodash";
 import { anything, instance, mock, verify, when } from "ts-mockito";
 import { HutchUploader } from "../../src/external/hutchUploader";
-import { canonicalizeName, EncountersService } from "../../src/services/sniffles/encountersService";
+import {
+  canonicalizeName,
+  EncountersService
+} from "../../src/services/sniffles/encountersService";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { VisitsService } from "../../src/services/sniffles/visitsService";
 import { PIIVisitDetails } from "../../src/models/visitDetails";
@@ -101,26 +104,26 @@ describe("encounters service", () => {
     });
 
     it("should filter ages above 90", async () => {
-        const geocoderMock = mock(GeocodingService);
-        when(geocoderMock.geocodeAddresses(anything())).thenResolve([]);
+      const geocoderMock = mock(GeocodingService);
+      when(geocoderMock.geocodeAddresses(anything())).thenResolve([]);
 
-        const visitsMock = mock(VisitsService);
-        const olderDetails = _.cloneDeepWith(details);
-        olderDetails.patientInfo.birthDate = "1900-01-01";
-        when(visitsMock.retrievePendingDetails(20)).thenResolve(
-          new Map([[details.id, olderDetails]])
-        );
+      const visitsMock = mock(VisitsService);
+      const olderDetails = _.cloneDeepWith(details);
+      olderDetails.patientInfo.birthDate = "1900-01-01";
+      when(visitsMock.retrievePendingDetails(20)).thenResolve(
+        new Map([[details.id, olderDetails]])
+      );
 
-        const encountersService = new EncountersService(
-          instance(geocoderMock),
-          undefined,
-          instance(visitsMock),
-          "secret"
-        );
-        const result = await encountersService.getEncounters(20);
+      const encountersService = new EncountersService(
+        instance(geocoderMock),
+        undefined,
+        instance(visitsMock),
+        "secret"
+      );
+      const result = await encountersService.getEncounters(20);
 
-        const encounter = result.get(details.id);
-        expect(encounter.age.ninetyOrAbove).toBe(true);
+      const encounter = result.get(details.id);
+      expect(encounter.age.ninetyOrAbove).toBe(true);
     });
 
     it("should ignore invalid birth dates", async () => {
@@ -129,7 +132,8 @@ describe("encounters service", () => {
 
       const visitsMock = mock(VisitsService);
       const badDetails = _.cloneDeepWith(details);
-      badDetails.patientInfo.birthDate = "A long time ago in a galaxy far far away";
+      badDetails.patientInfo.birthDate =
+        "A long time ago in a galaxy far far away";
       when(visitsMock.retrievePendingDetails(20)).thenResolve(
         new Map([[details.id, badDetails]])
       );
@@ -330,27 +334,31 @@ describe("encounters service", () => {
 
 describe("canonicalizeName", () => {
   it("removes all ASCII punctuation and keeps alpha-numerics", () => {
-    expect(canonicalizeName("`1234567890-=~!@#$%^&*()_+"))
-      .toEqual("1234567890");
-    expect(canonicalizeName("qwertyuiop[]\\QWERTYUIOP{}|"))
-      .toEqual("QWERTYUIOPQWERTYUIOP");
-    expect(canonicalizeName("asdfghjkl;'ASDFGHJKL:\""))
-      .toEqual("ASDFGHJKLASDFGHJKL");
-    expect(canonicalizeName("zxcvbnm,./ZXCVBNM<>?"))
-      .toEqual("ZXCVBNMZXCVBNM");
+    expect(canonicalizeName("`1234567890-=~!@#$%^&*()_+")).toEqual(
+      "1234567890"
+    );
+    expect(canonicalizeName("qwertyuiop[]\\QWERTYUIOP{}|")).toEqual(
+      "QWERTYUIOPQWERTYUIOP"
+    );
+    expect(canonicalizeName("asdfghjkl;'ASDFGHJKL:\"")).toEqual(
+      "ASDFGHJKLASDFGHJKL"
+    );
+    expect(canonicalizeName("zxcvbnm,./ZXCVBNM<>?")).toEqual("ZXCVBNMZXCVBNM");
   });
 
   it("collapses sequences of whitespace", () => {
-    expect(canonicalizeName("The \t\n, quick   brown fox"))
-      .toEqual("THE QUICK BROWN FOX");
-    expect(canonicalizeName("  jumps\t\tover\n\n\nthe   .  "))
-      .toEqual(" JUMPS OVER THE ");
-    expect(canonicalizeName("lazydog"))
-      .toEqual("LAZYDOG");
+    expect(canonicalizeName("The \t\n, quick   brown fox")).toEqual(
+      "THE QUICK BROWN FOX"
+    );
+    expect(canonicalizeName("  jumps\t\tover\n\n\nthe   .  ")).toEqual(
+      " JUMPS OVER THE "
+    );
+    expect(canonicalizeName("lazydog")).toEqual("LAZYDOG");
   });
 
   it("Removes Spanish punctuation", () => {
-    expect(canonicalizeName("¿¡Y tú quién te crees!?"))
-      .toEqual("Y TÚ QUIÉN TE CREES");
+    expect(canonicalizeName("¿¡Y tú quién te crees!?")).toEqual(
+      "Y TÚ QUIÉN TE CREES"
+    );
   });
 });

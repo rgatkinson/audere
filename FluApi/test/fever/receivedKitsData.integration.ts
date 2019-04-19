@@ -35,7 +35,7 @@ describe("received kits data access", () => {
     it("should exclude linked records", async () => {
       const file = await fever.receivedKitsFile.create(
         { file: "test.json" },
-        { returning: true}
+        { returning: true }
       );
 
       await fever.barcodes.bulkCreate([
@@ -80,13 +80,10 @@ describe("received kits data access", () => {
     it("should avoid returning duplicate barcodes", async () => {
       const file = await fever.receivedKitsFile.create(
         { file: "test.json" },
-        { returning: true}
+        { returning: true }
       );
 
-      await fever.barcodes.bulkCreate([
-        { barcode: "1" },
-        { barcode: "2" }
-      ]);
+      await fever.barcodes.bulkCreate([{ barcode: "1" }, { barcode: "2" }]);
 
       // A track and untracked record
       const s1 = _.cloneDeep(surveyNonPIIInDb("asdf"));
@@ -148,9 +145,9 @@ describe("received kits data access", () => {
       expect(unlinked[0]).toEqual(
         expect.objectContaining({
           id: +surveys[1].id,
-          code: surveys[1].survey.samples
-            .find(s => s.sample_type === "manualEntry")
-            .code,
+          code: surveys[1].survey.samples.find(
+            s => s.sample_type === "manualEntry"
+          ).code,
           recordId: undefined
         })
       );
@@ -205,7 +202,7 @@ describe("received kits data access", () => {
   describe("link kits", () => {
     it("should update an existing record", async () => {
       const barcode = "a1b2c3d4";
-  
+
       const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
       db.survey.workflow.surveyCompletedAt = new Date().toISOString();
       db.survey.samples.push({ sample_type: "scan", code: barcode });
@@ -219,12 +216,15 @@ describe("received kits data access", () => {
         stripBarcode: "cccccccc",
         linked: false
       };
-  
+
       const dao = new ReceivedKitsData(sql);
-      await dao.importReceivedKits("test.json", new Map([[+survey.id, record]]));
+      await dao.importReceivedKits(
+        "test.json",
+        new Map([[+survey.id, record]])
+      );
       const mapping = { recordId: 127, surveyId: +survey.id };
       await dao.linkKits(new Map([[barcode, mapping]]));
-  
+
       const kitRecord = await fever.receivedKit.findOne({
         where: {
           boxBarcode: barcode
@@ -240,7 +240,7 @@ describe("received kits data access", () => {
 
     it("should insert a new record if there is no existing record to updated", async () => {
       const barcode = "a1b2c3d4";
-  
+
       const db = _.cloneDeep(surveyNonPIIInDb("asdf"));
       db.survey.workflow.surveyCompletedAt = new Date().toISOString();
       db.survey.samples.push({ sample_type: "scan", code: barcode });
@@ -254,11 +254,11 @@ describe("received kits data access", () => {
         stripBarcode: "cccccccc",
         linked: false
       };
-  
+
       const dao = new ReceivedKitsData(sql);
       const mapping = { recordId: 127, surveyId: +survey.id };
       await dao.linkKits(new Map([[barcode, mapping]]));
-  
+
       const kitRecord = await fever.receivedKit.findOne({
         where: {
           boxBarcode: barcode
@@ -280,19 +280,22 @@ describe("received kits data access", () => {
 
       const file = await fever.receivedKitsFile.create(
         { file: "test.json" },
-        { returning: true}
+        { returning: true }
       );
 
-      const kit = await fever.receivedKit.create({
-        surveyId: +survey.id,
-        fileId: file.id,
-        boxBarcode: barcode,
-        dateReceived: "2018-09-19",
-        linked: true,
-        recordId: 55
-      }, {
-        returning: true
-      });
+      const kit = await fever.receivedKit.create(
+        {
+          surveyId: +survey.id,
+          fileId: file.id,
+          boxBarcode: barcode,
+          dateReceived: "2018-09-19",
+          linked: true,
+          recordId: 55
+        },
+        {
+          returning: true
+        }
+      );
 
       const dao = new ReceivedKitsData(sql);
       const matches = await dao.matchBarcodes([barcode]);
@@ -311,7 +314,7 @@ describe("received kits data access", () => {
 
       const dao = new ReceivedKitsData(sql);
       const matches = await dao.matchBarcodes([barcode]);
-      
+
       expect(matches).toHaveLength(1);
       expect(matches[0].id).toBe(survey.id);
       expect(matches[0].kitId).toBeNull();
@@ -326,7 +329,7 @@ describe("received kits data access", () => {
 
       const dao = new ReceivedKitsData(sql);
       const matches = await dao.matchBarcodes([barcode.toLowerCase()]);
-      
+
       expect(matches).toHaveLength(1);
       expect(matches[0].id).toBe(survey.id);
       expect(matches[0].kitId).toBeNull();
@@ -341,10 +344,7 @@ describe("received kits data access", () => {
 
   describe("import received kits", () => {
     it("should write file and kit data", async () => {
-      const db = [
-        surveyNonPIIInDb("asdf"),
-        surveyNonPIIInDb("qwerty")
-      ];
+      const db = [surveyNonPIIInDb("asdf"), surveyNonPIIInDb("qwerty")];
 
       const surveys = await fever.surveyNonPii.bulkCreate(db, {
         returning: true
@@ -412,7 +412,7 @@ describe("received kits data access", () => {
       const survey = await fever.surveyNonPii.create(db);
 
       const dao = new ReceivedKitsData(sql);
-  
+
       const insertRecord = {
         dateReceived: "2019-01-02",
         boxBarcode: "12345678",

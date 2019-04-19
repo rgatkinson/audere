@@ -69,8 +69,8 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
     {
       kind: EventInfoKind.Visit,
       at: "2019-01-01T01:00:00Z",
-      refId: "CompletedQuestionnaire",
-    },
+      refId: "CompletedQuestionnaire"
+    }
   ]
 };
 export const VISIT_NONPII: VisitNonPIIDbInfo = {

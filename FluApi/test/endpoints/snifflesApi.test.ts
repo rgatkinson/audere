@@ -191,8 +191,8 @@ describe("putDocument", () => {
     const where = { where: { csruid } };
     await Promise.all([
       models.visitNonPii.destroy(where),
-      models.visitPii.destroy(where),
-    ])
+      models.visitPii.destroy(where)
+    ]);
   });
 
   it("logs invalid http interactions", async () => {

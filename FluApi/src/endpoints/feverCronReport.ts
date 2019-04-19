@@ -98,7 +98,8 @@ async function createIncentives(sql: SplitSql): Promise<Incentives> {
     seq,
     fever.incentiveBatch,
     fever.incentiveItem,
-    fever.incentiveDiscard);
+    fever.incentiveDiscard
+  );
   const secrets = new SecretConfig(sql);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
@@ -114,7 +115,8 @@ async function createKits(sql: SplitSql): Promise<KitOrders> {
     seq,
     fever.kitBatch,
     fever.kitItem,
-    fever.kitDiscard);
+    fever.kitDiscard
+  );
   const secrets = new SecretConfig(sql);
   const geocoder = await createGeocoder(secrets, sql);
   const s3Config = await getS3Config(secrets);
@@ -131,7 +133,8 @@ async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
     seq,
     fever.followUpBatch,
     fever.followUpItem,
-    fever.followUpDiscard);
+    fever.followUpDiscard
+  );
   const secrets = new SecretConfig(sql);
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });

@@ -5,7 +5,10 @@
 
 import { SplitSql } from "../util/sql";
 import { Model } from "../util/sql";
-import { DeviceSettingAttributes, defineDeviceSetting } from "../models/db/devices";
+import {
+  DeviceSettingAttributes,
+  defineDeviceSetting
+} from "../models/db/devices";
 import logger from "../util/logger";
 
 export class DeviceSettingsEndpoint {
@@ -16,11 +19,11 @@ export class DeviceSettingsEndpoint {
   }
 
   async getSetting(req, res) {
-    const {device, key} = req.params;
+    const { device, key } = req.params;
     const rows = await this.deviceFlag.findAll({
       where: {
         device,
-        key,
+        key
       }
     });
 

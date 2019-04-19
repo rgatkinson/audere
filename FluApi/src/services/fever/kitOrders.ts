@@ -80,7 +80,7 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
       } else {
         logger.error(
           `[${this.report}] Discarded a participant because the address for ` +
-          `survey ${i.surveyId} did not return successfully from geocoding.`
+            `survey ${i.surveyId} did not return successfully from geocoding.`
         );
         discarded.push(i.workflowId);
       }

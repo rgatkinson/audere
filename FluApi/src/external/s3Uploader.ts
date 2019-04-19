@@ -56,7 +56,7 @@ export class S3Uploader {
     fileName: string,
     contents: string
   ): Promise<string> {
-    const key = `${this.env}/incoming/lab-data/${fileName}`
+    const key = `${this.env}/incoming/lab-data/${fileName}`;
     await this.writeObject(key, contents);
     return key;
   }

@@ -27,5 +27,5 @@ export class WinstonBuffer extends WinstonTransport {
 
 interface LogInfo {
   message: string;
-  level: string
+  level: string;
 }

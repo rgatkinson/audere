@@ -7,7 +7,10 @@ import { instance, mock, when, anything, anyString, capture } from "ts-mockito";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { S3Uploader } from "../../src/external/s3Uploader";
 import { Batch } from "../../src/services/fever/surveyBatchData";
-import { makeRandomKitReceipient, makeRandomGeoResponse } from "./reportTestUtil";
+import {
+  makeRandomKitReceipient,
+  makeRandomGeoResponse
+} from "./reportTestUtil";
 import parse from "csv-parse/lib/sync";
 import { KitOrders, KitRecipient } from "../../src/services/fever/kitOrders";
 import { KitRecipientsDataAccess } from "../../src/services/fever/kitOrdersData";

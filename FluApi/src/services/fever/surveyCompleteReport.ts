@@ -32,13 +32,18 @@ export interface SurveyCompleteParticipant {
  * Generates a common report for data from the end of the survey lifecycle. The
  * logic to retrieve rows may be customized but the output format is shared.
  */
-export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem, SurveyCompleteParticipant> {
+export abstract class SurveyCompletedReport extends PIIReport<
+  SurveyCompleteItem,
+  SurveyCompleteParticipant
+> {
   protected abstract report: string;
 
   /**
    * Converts a batch into a CSV output string.
    */
-  public async buildReport(batch: Batch<SurveyCompleteParticipant>): Promise<RenderResult> {
+  public async buildReport(
+    batch: Batch<SurveyCompleteParticipant>
+  ): Promise<RenderResult> {
     const rows = [];
     const discarded = [];
 
@@ -63,7 +68,6 @@ export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem
       rows.push(row);
     });
 
-    
     const csv = rows.length > 0 ? parse(rows, { header: true }) : undefined;
     return { report: csv, discarded: discarded };
   }
@@ -85,9 +89,7 @@ export abstract class SurveyCompletedReport extends PIIReport<SurveyCompleteItem
     );
 
     if (email == null) {
-      throw Error(
-        `${item.surveyId} has no email and may be malformed`
-      );
+      throw Error(`${item.surveyId} has no email and may be malformed`);
     }
 
     const appBuilds = pii.survey.consents

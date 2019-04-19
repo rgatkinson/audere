@@ -60,7 +60,9 @@ export class AuthManager {
         logger.debug(`AuthManager: deserialized ${user.userid} (${user.uuid})`);
         done(null, user);
       } catch (err) {
-        logger.error(`AuthManager: failed deserializing user for ${uuid}: ${err}`);
+        logger.error(
+          `AuthManager: failed deserializing user for ${uuid}: ${err}`
+        );
         done(err);
       }
     });

@@ -92,7 +92,7 @@ async function addSession(
     store,
     proxy: secure,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
   };
 
   if (secure) {
@@ -135,7 +135,9 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
         logger.debug(`post/login: logging in as '${user.userid}'`);
         req.login(user, () => {
           req.session.save(() => {
-            logger.debug(`post/login: logged in as '${user.userid}', redirecting`);
+            logger.debug(
+              `post/login: logged in as '${user.userid}', redirecting`
+            );
             res.redirect("./index");
           });
         });
@@ -156,72 +158,88 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   }
 
   function addMetricsHandlers(app: Express): void {
-    app.get("/metrics", wrap(async (req, res) => {
-      const startDate = req.query.startDate || getLastMonday();
-      const endDate = req.query.endDate || getThisSunday();
-      const {
-        surveyStatsData,
-        surveyStatsByAdminData,
-        lastQuestionData,
-        studyIdData,
-        feedbackData
-      } = await getMetrics(startDate, endDate);
-      res.render("metrics.ejs", {
-        static: app.mountpath,
-        surveyStatsData: surveyStatsData,
-        surveyStatsByAdminData: surveyStatsByAdminData,
-        lastQuestionData: lastQuestionData,
-        feedbackData: feedbackData,
-        startDate: startDate,
-        endDate: endDate
-      });
-    }));
+    app.get(
+      "/metrics",
+      wrap(async (req, res) => {
+        const startDate = req.query.startDate || getLastMonday();
+        const endDate = req.query.endDate || getThisSunday();
+        const {
+          surveyStatsData,
+          surveyStatsByAdminData,
+          lastQuestionData,
+          studyIdData,
+          feedbackData
+        } = await getMetrics(startDate, endDate);
+        res.render("metrics.ejs", {
+          static: app.mountpath,
+          surveyStatsData: surveyStatsData,
+          surveyStatsByAdminData: surveyStatsByAdminData,
+          lastQuestionData: lastQuestionData,
+          feedbackData: feedbackData,
+          startDate: startDate,
+          endDate: endDate
+        });
+      })
+    );
 
-    app.get("/feverMetrics", wrap(async (req, res) => {
-      const startDate = req.query.startDate || getLastMonday();
-      const endDate = req.query.endDate || getThisSunday();
-      const {
-        surveyStatsData,
-        lastScreenData,
-        statesData,
-        studyIdData
-      } = await getFeverMetrics(startDate, endDate);
-      res.render("feverMetrics.ejs", {
-        static: app.mountpath,
-        surveyStatsData: surveyStatsData,
-        lastQuestionData: lastScreenData,
-        statesData: statesData,
-        studyIdData: studyIdData,
-        startDate: startDate,
-        endDate: endDate
-      });
-    }));
+    app.get(
+      "/feverMetrics",
+      wrap(async (req, res) => {
+        const startDate = req.query.startDate || getLastMonday();
+        const endDate = req.query.endDate || getThisSunday();
+        const {
+          surveyStatsData,
+          lastScreenData,
+          statesData,
+          studyIdData
+        } = await getFeverMetrics(startDate, endDate);
+        res.render("feverMetrics.ejs", {
+          static: app.mountpath,
+          surveyStatsData: surveyStatsData,
+          lastQuestionData: lastScreenData,
+          statesData: statesData,
+          studyIdData: studyIdData,
+          startDate: startDate,
+          endDate: endDate
+        });
+      })
+    );
 
-    app.get("/feverFirebase", wrap(async (req, res) => {
-      const startDate = req.query.startDate || getLastMonday();
-      const endDate = req.query.endDate || getThisSunday();
-      const queryName = req.query.queryName || "";
-      const [
-        queryList,
-        queryData
-      ] = await getFeverFirebase(startDate, endDate, queryName);
-      res.render("feverFirebase.ejs", {
-        static: app.mountpath,
-        queryList: queryList,
-        queryData: queryData,
-        startDate: startDate,
-        endDate: endDate,
-        queryName: queryName
-      });
-    }));
+    app.get(
+      "/feverFirebase",
+      wrap(async (req, res) => {
+        const startDate = req.query.startDate || getLastMonday();
+        const endDate = req.query.endDate || getThisSunday();
+        const queryName = req.query.queryName || "";
+        const [queryList, queryData] = await getFeverFirebase(
+          startDate,
+          endDate,
+          queryName
+        );
+        res.render("feverFirebase.ejs", {
+          static: app.mountpath,
+          queryList: queryList,
+          queryData: queryData,
+          startDate: startDate,
+          endDate: endDate,
+          queryName: queryName
+        });
+      })
+    );
 
     app.get("/saveMetrics", excelHandler("sfs", getExcelReport));
-    app.get("/saveFeverMetrics", excelHandler("fluAtHome", getFeverExcelReport));
+    app.get(
+      "/saveFeverMetrics",
+      excelHandler("fluAtHome", getFeverExcelReport)
+    );
     app.get("/saveDataSummary", excelHandler("sfsData", getExcelDataSummary));
 
     type DateRangeQuery = (start: string, end: string) => Promise<Buffer>;
 
-    function excelHandler(prefix: string, query: DateRangeQuery): express.Handler {
+    function excelHandler(
+      prefix: string,
+      query: DateRangeQuery
+    ): express.Handler {
       return wrap(async (req, res) => {
         const start = req.query.startDate || getLastMonday();
         const end = req.query.endDate || getThisSunday();

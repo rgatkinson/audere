@@ -48,7 +48,9 @@ export class SnifflesEndpoint {
     });
 
     if (!matchingKey) {
-      logger.warn(`${requestId(req)} rejected document upload with key: ${req.params.key}`);
+      logger.warn(
+        `${requestId(req)} rejected document upload with key: ${req.params.key}`
+      );
       next();
       return;
     }
@@ -62,13 +64,9 @@ export class SnifflesEndpoint {
   async putDocument(req, res) {
     const document = req.body as ProtocolDocument;
     logger.info(
-      `${requestId(req)} put ${
-        guard(() => document.documentType)
-        } ${
-        guard(() => document.csruid)
-        } from ${
-        guard(() => document.device.installation)
-        } @sniffles`
+      `${requestId(req)} put ${guard(() => document.documentType)} ${guard(
+        () => document.csruid
+      )} from ${guard(() => document.device.installation)} @sniffles`
     );
     switch (document.documentType) {
       case DocumentType.Visit: {

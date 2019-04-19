@@ -3,7 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { ResponseInfo, ResponseItemInfo } from "audere-lib/dist/snifflesProtocol";
+import {
+  ResponseInfo,
+  ResponseItemInfo
+} from "audere-lib/dist/snifflesProtocol";
 
 const PII_RESPONSE_KEYS = new Set([
   "Address",

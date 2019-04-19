@@ -22,8 +22,6 @@ export function getBigqueryConfig(
 }
 
 async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
-  const [authToken] = await Promise.all([
-    secrets.get("GCP_BIG_QUERY_FEVER")
-  ]);
+  const [authToken] = await Promise.all([secrets.get("GCP_BIG_QUERY_FEVER")]);
   return { authToken };
 }

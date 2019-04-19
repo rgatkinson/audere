@@ -4,8 +4,20 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { PIIInfo, SurveyNonPIIDbInfo } from "audere-lib/feverProtocol";
-import { BatchItem, SurveyBatchDataAccess, BatchItemWithCsruid } from "./surveyBatchData";
-import { BatchAttributes, BatchDiscardAttributes, BatchItemAttributes, SurveyAttributes, FeverModels, defineFeverModels, ReceivedKitAttributes } from "../../models/db/fever";
+import {
+  BatchItem,
+  SurveyBatchDataAccess,
+  BatchItemWithCsruid
+} from "./surveyBatchData";
+import {
+  BatchAttributes,
+  BatchDiscardAttributes,
+  BatchItemAttributes,
+  SurveyAttributes,
+  FeverModels,
+  defineFeverModels,
+  ReceivedKitAttributes
+} from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
@@ -22,7 +34,9 @@ export interface SurveyCompleteItem extends BatchItemWithCsruid {
  * app.  Can be customized via the surveyPredicate to tune what records are
  * returned.
  */
-export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<SurveyCompleteItem> {
+export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
+  SurveyCompleteItem
+> {
   protected fever: FeverModels;
   protected abstract requireReceivedKit: boolean;
   protected abstract requireSurveyComplete: boolean;
@@ -61,11 +75,11 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
             }
           }
         }
-      }
+      };
     } else {
       return {
         survey: {
-          isDemo: false,
+          isDemo: false
         }
       };
     }
@@ -105,12 +119,12 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
       filter = {
         ...filter,
         ...{ id: items.map(x => x.surveyId) }
-      }
+      };
     } else {
       filter = {
         ...filter,
         ...{ "$items.surveyId$": null }
-      }
+      };
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({
@@ -134,11 +148,11 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
 
     // Need to cast the result object to access joined data
     interface HasReceivedKit {
-      received: ReceivedKitAttributes
+      received: ReceivedKitAttributes;
     }
 
-    type SurveyWithReceivedKit =
-      SurveyAttributes<SurveyNonPIIDbInfo> & HasReceivedKit;
+    type SurveyWithReceivedKit = SurveyAttributes<SurveyNonPIIDbInfo> &
+      HasReceivedKit;
 
     if (surveys != null && surveys.length > 0) {
       const result: SurveyCompleteItem[] = surveys.map(s => {
@@ -146,12 +160,10 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<Sur
         const item: SurveyCompleteItem = {
           surveyId: +swk.id,
           csruid: swk.csruid,
-          boxBarcode: swk.received != null ?
-            swk.received.boxBarcode :
-            undefined,
-          dateReceived: swk.received != null ?
-            swk.received.dateReceived :
-            undefined
+          boxBarcode:
+            swk.received != null ? swk.received.boxBarcode : undefined,
+          dateReceived:
+            swk.received != null ? swk.received.dateReceived : undefined
         };
 
         if (items != null) {

@@ -7,7 +7,11 @@ import Sequelize, { Op } from "sequelize";
 import logger from "../../util/logger";
 import { HutchUploadModel } from "../../models/db/hutchUpload";
 import { PIIVisitDetails } from "../../models/visitDetails";
-import { SnifflesModels, VisitNonPIIInstance, VisitPIIInstance } from "../../models/db/sniffles";
+import {
+  SnifflesModels,
+  VisitNonPIIInstance,
+  VisitPIIInstance
+} from "../../models/db/sniffles";
 import { ResponseInfo } from "audere-lib/dist/snifflesProtocol";
 import { filterResponsePII } from "./piiFilter";
 import { RequestContext } from "../../util/requestContext";
@@ -95,7 +99,7 @@ export class VisitsService {
           consentDate: consentDate,
           visitInfo: {
             ...nonPii.visit,
-            responses: nonPiiResponses(nonPii, pii),
+            responses: nonPiiResponses(nonPii, pii)
           },
           patientInfo: pii.visit.patient
         });
@@ -112,19 +116,28 @@ export class VisitsService {
   }
 }
 
-function nonPiiResponses(nonPii: VisitNonPIIInstance, pii: VisitPIIInstance): ResponseInfo[] {
+function nonPiiResponses(
+  nonPii: VisitNonPIIInstance,
+  pii: VisitPIIInstance
+): ResponseInfo[] {
   if (nonPii.visit.responses.length === 1 && pii.visit.responses.length === 1) {
     // There have been changes over time in the definition of what is PII or not, so
     // re-combine all responses and re-filter.
-    return [{
-      ...nonPii.visit.responses,
-      item: [
-        ...nonPii.visit.responses[0].item,
-        ...pii.visit.responses[0].item,
-      ]
-    }].map(filterResponsePII(false));
+    return [
+      {
+        ...nonPii.visit.responses,
+        item: [
+          ...nonPii.visit.responses[0].item,
+          ...pii.visit.responses[0].item
+        ]
+      }
+    ].map(filterResponsePII(false));
   } else {
-    logger.warn(`Unexpected responses format on ${nonPii.csruid}, returning existing nonPii`);
+    logger.warn(
+      `Unexpected responses format on ${
+        nonPii.csruid
+      }, returning existing nonPii`
+    );
     return nonPii.visit.responses;
   }
 }

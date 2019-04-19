@@ -16,10 +16,7 @@ export class FollowUpSurveys extends SurveyCompletedReport {
   protected readonly report = "FollowUp";
   private readonly uploader: S3Uploader;
 
-  constructor(
-    dao: FollowUpDataAccess,
-    uploader: S3Uploader
-  ) {
+  constructor(dao: FollowUpDataAccess, uploader: S3Uploader) {
     super(dao);
     this.uploader = uploader;
   }

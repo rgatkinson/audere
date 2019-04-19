@@ -5,10 +5,7 @@
 
 "use strict";
 
-const {
-  column,
-  identity,
-} = require("../../util");
+const { column, identity } = require("../../util");
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -18,7 +15,7 @@ module.exports = {
       updatedAt: column(Sequelize.DATE),
       device: column(Sequelize.STRING),
       key: column(Sequelize.STRING),
-      setting: column(Sequelize.TEXT),
+      setting: column(Sequelize.TEXT)
     });
   },
 

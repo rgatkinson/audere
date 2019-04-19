@@ -140,8 +140,19 @@ export class EncountersService {
     return undefined;
   }
 
-  private deidentifyParticipant({name, gender, birthDate, postalCode}: ParticipantIdentifierParts): string {
-    return generateSHA256(this.hashSecret, canonicalizeName(name), gender, birthDate, postalCode);
+  private deidentifyParticipant({
+    name,
+    gender,
+    birthDate,
+    postalCode
+  }: ParticipantIdentifierParts): string {
+    return generateSHA256(
+      this.hashSecret,
+      canonicalizeName(name),
+      gender,
+      birthDate,
+      postalCode
+    );
   }
 
   private hasAddressInfo(details: PIIVisitDetails) {
@@ -236,9 +247,7 @@ export class EncountersService {
         const visit = visits.get(k);
 
         if (visit.patientInfo == null) {
-          throw Error(
-            `Patient info does not exist for visit ${visit.id}`
-          );
+          throw Error(`Patient info does not exist for visit ${visit.id}`);
         }
 
         return this.scrubVisit(k, visit, geocodedAddresses.get(k));
@@ -324,15 +333,18 @@ export class EncountersService {
 }
 
 type ParticipantIdentifierParts = {
-  name: string,
-  gender: string,
-  birthDate: string,
-  postalCode: string,
+  name: string;
+  gender: string;
+  birthDate: string;
+  postalCode: string;
 };
 
 export function canonicalizeName(name: string): string {
   return name
-    .replace(/[^\s\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]/ug, "")
-    .replace(/\s+/ug, " ")
+    .replace(
+      /[^\s\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]/gu,
+      ""
+    )
+    .replace(/\s+/gu, " ")
     .toUpperCase();
 }

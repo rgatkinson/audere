@@ -199,7 +199,7 @@ describe("survey batch data access", () => {
         expect.objectContaining({
           csruid: "1"
         })
-      );      
+      );
     });
   });
 

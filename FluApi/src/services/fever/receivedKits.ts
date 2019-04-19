@@ -49,12 +49,14 @@ export class ReceivedKits {
   private getDateAndTimeString(): string {
     const pad2 = (n: number) => n.toFixed().padStart(2, "0");
     const now = new Date();
-    return now.getFullYear() +
+    return (
+      now.getFullYear() +
       pad2(now.getMonth()) +
       pad2(now.getDate()) +
       pad2(now.getHours()) +
       pad2(now.getMinutes()) +
-      pad2(now.getSeconds());
+      pad2(now.getSeconds())
+    );
   }
 
   private async getAtHomeData(
@@ -64,10 +66,14 @@ export class ReceivedKits {
     const data = await this.redcap.getAtHomeData();
 
     if (data.length > 0) {
-      logger.info(`[Import Kits] Writing at home data report to S3 with ` +
-        `${data.length} rows`);
-      const key = await this.uploader
-        .writeAtHomeData(backupFile, JSON.stringify(data));
+      logger.info(
+        `[Import Kits] Writing at home data report to S3 with ` +
+          `${data.length} rows`
+      );
+      const key = await this.uploader.writeAtHomeData(
+        backupFile,
+        JSON.stringify(data)
+      );
       return [key, data];
     } else {
       logger.warn("[Import Kits] Downloaded empty at home data report");
@@ -81,7 +87,7 @@ export class ReceivedKits {
     const errors = [];
     const codes = Array.from(new Set(records.map(b => b.boxBarcode)));
     logger.info(`[Import Kits] Matching ${records.length} barcodes`);
-    const matches = await this.dao.matchBarcodes(codes) || [];
+    const matches = (await this.dao.matchBarcodes(codes)) || [];
 
     // Check that the box barcode can be associated to a survey
     const matchesByCode = new Map();
@@ -93,23 +99,30 @@ export class ReceivedKits {
 
     records.forEach(r => {
       if (!matchesByCode.has(r.boxBarcode)) {
-        logger.error(`[Import Kits] Barcode doesn't match any survey: ` +
-          r.boxBarcode);
+        logger.error(
+          `[Import Kits] Barcode doesn't match any survey: ` + r.boxBarcode
+        );
         errors.push(this.createBarcodeError(r, "NoMatch"));
       } else {
         const match = matchesByCode.get(r.boxBarcode);
-        if (match.recordId == null ||
-           (match.recordId === r.recordId && match.kitId == null)) {
+        if (
+          match.recordId == null ||
+          (match.recordId === r.recordId && match.kitId == null)
+        ) {
           kitsBySurvey.set(match.id, r);
         } else {
-          logger.debug(`[Import Kits] Barcode ${r.boxBarcode} was already ` +
-          `matched and can be ignored`);
+          logger.debug(
+            `[Import Kits] Barcode ${r.boxBarcode} was already ` +
+              `matched and can be ignored`
+          );
         }
       }
     });
 
-    logger.info(`[Import Kits] Matching resulted in ${kitsBySurvey.size} ` +
-      `matches and ${errors.length} errors`);
+    logger.info(
+      `[Import Kits] Matching resulted in ${kitsBySurvey.size} ` +
+        `matches and ${errors.length} errors`
+    );
     return [kitsBySurvey, errors];
   }
 
@@ -127,8 +140,9 @@ export class ReceivedKits {
         r.utmBarcode = r.utmBarcode.toLowerCase();
         validBarcodes.push(r);
       } else {
-        logger.error(`[Import Kits] Box barcode has invalid format: ` +
-          r.boxBarcode);
+        logger.error(
+          `[Import Kits] Box barcode has invalid format: ` + r.boxBarcode
+        );
         errors.push(this.createBarcodeError(r, "InvalidBarcode"));
       }
     });
@@ -154,10 +168,9 @@ export class ReceivedKits {
       }
 
       let kitsBySurvey: Map<number, KitRecord> = new Map();
-  
+
       if (validBarcodes.length > 0) {
-        const [matches, matchErrors] =
-          await this.matchBarcodes(validBarcodes);
+        const [matches, matchErrors] = await this.matchBarcodes(validBarcodes);
         kitsBySurvey = matches;
 
         if (matchErrors.length > 0) {
@@ -176,8 +189,10 @@ export class ReceivedKits {
       }
 
       // Insert the file metadata and barcode mappings
-      logger.info(`[Import Kits] Committing ${key} as processed with `
-        + `${kitsBySurvey.size} new barcodes`);
+      logger.info(
+        `[Import Kits] Committing ${key} as processed with ` +
+          `${kitsBySurvey.size} new barcodes`
+      );
       await this.dao.importReceivedKits(key, kitsBySurvey);
     } else {
       logger.info(`[Import Kits] No files to process`);

@@ -43,9 +43,9 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
   let site: Encounter.Site;
   const administeredAt = Sites[input.visitInfo.location];
   if (administeredAt != null) {
-    site = { type: administeredAt.type, name: input.visitInfo.location }
+    site = { type: administeredAt.type, name: input.visitInfo.location };
   } else {
-    site = { type: undefined, name: input.visitInfo.location }
+    site = { type: undefined, name: input.visitInfo.location };
   }
 
   let startTimestamp: moment.Moment;
@@ -79,7 +79,7 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     if (years < 90) {
       age = { value: years, ninetyOrAbove: false };
     } else {
-      age = { ninetyOrAbove: true }
+      age = { ninetyOrAbove: true };
     }
   }
 

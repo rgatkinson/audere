@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('consent_email', 'signatures_sent', {
+    return queryInterface.addColumn("consent_email", "signatures_sent", {
       type: Sequelize.BOOLEAN,
-      defaultValue: false,
+      defaultValue: false
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.removeColumn('consent_email', 'signatures_sent');
+    return queryInterface.removeColumn("consent_email", "signatures_sent");
   }
 };

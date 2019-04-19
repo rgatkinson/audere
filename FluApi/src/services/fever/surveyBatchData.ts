@@ -62,8 +62,8 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
   protected readonly discardModel: Model<BatchDiscardAttributes>;
 
   // Namespaces for batch id and for items within a batch.
-  protected readonly abstract batchSeq: string;
-  protected readonly abstract itemSeq: string;
+  protected abstract readonly batchSeq: string;
+  protected abstract readonly itemSeq: string;
 
   constructor(
     sql: SplitSql,

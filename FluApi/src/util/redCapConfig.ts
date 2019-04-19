@@ -6,16 +6,14 @@
 import { SecretConfig } from "./secretsConfig";
 
 export interface REDCapConfig {
-  apiToken: string,
-  apiUrl: string,
-  homeDataReportId: string
+  apiToken: string;
+  apiUrl: string;
+  homeDataReportId: string;
 }
 
 let lazy: Promise<REDCapConfig> | null = null;
 
-export function getREDCapConfig(
-  secrets: SecretConfig
-): Promise<REDCapConfig> {
+export function getREDCapConfig(secrets: SecretConfig): Promise<REDCapConfig> {
   if (lazy != null) {
     return lazy;
   }

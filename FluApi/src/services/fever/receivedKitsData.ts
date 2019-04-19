@@ -3,7 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { defineFeverModels, FeverModels, ReceivedKitAttributes } from "../../models/db/fever";
+import {
+  defineFeverModels,
+  FeverModels,
+  ReceivedKitAttributes
+} from "../../models/db/fever";
 import { KitRecord } from "../../models/kitRecord";
 import { SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
@@ -11,18 +15,18 @@ import { AddressInfoUse, EventInfo } from "audere-lib/feverProtocol";
 import { RecordSurveyMapping } from "../../external/redCapClient";
 
 export interface MatchedBarcode {
-  id: number,
-  code: string,
-  kitId?: number,
-  recordId?: number
+  id: number;
+  code: string;
+  kitId?: number;
+  recordId?: number;
 }
 
 export interface UntrackedBarcode {
-  id: number,
-  code: string,
-  scannedAt: string,
-  state: string,
-  recordId?: number
+  id: number;
+  code: string;
+  scannedAt: string;
+  state: string;
+  recordId?: number;
 }
 
 /**
@@ -66,7 +70,7 @@ export class ReceivedKitsData {
     if (untrackedSamples.length === 0) {
       return [];
     }
-    
+
     // Get the participant's address information to dervice state
     const piiData = await this.fever.surveyPii.findAll({
       where: {
@@ -76,8 +80,9 @@ export class ReceivedKitsData {
 
     const states = new Map();
     piiData.forEach((v, k) => {
-      const address = v.survey.patient.address
-        .find(a => a.use === AddressInfoUse.Home);
+      const address = v.survey.patient.address.find(
+        a => a.use === AddressInfoUse.Home
+      );
 
       if (address != null) {
         states.set(v.csruid, address.state);
@@ -89,20 +94,22 @@ export class ReceivedKitsData {
 
     untrackedSamples.forEach(s => {
       // Get the most recent scan event timestamp
-      const events = s.events ? <EventInfo[]>(JSON.parse(s.events)) : [];
+      const events = s.events ? <EventInfo[]>JSON.parse(s.events) : [];
 
       const scannedAt = events
         .filter(e => e.kind === "appNav" && e.refId === "ScanConfirmation")
         .map(e => e.at)
-        .reduce((a, b) => a > b ? a : b, undefined);
+        .reduce((a, b) => (a > b ? a : b), undefined);
 
       const code = <string>s.code;
 
       const existing = results.get(code);
 
-      if (existing == null ||
-          existing.scannedAt == null ||
-          existing.scannedAt < scannedAt) {
+      if (
+        existing == null ||
+        existing.scannedAt == null ||
+        existing.scannedAt < scannedAt
+      ) {
         results.set(code, {
           id: +s.id,
           code: <string>s.code,
@@ -133,9 +140,11 @@ export class ReceivedKitsData {
     });
 
     if (invalidBarcodes.length > 0) {
-      throw Error(`Barcodes ${invalidBarcodes.join(", ")} were in an ` +
-        `unexpected format. matchBarcodes expects 8 lowercase characters ` +
-        `from the English alphabet or numbers 0-9.`);
+      throw Error(
+        `Barcodes ${invalidBarcodes.join(", ")} were in an ` +
+          `unexpected format. matchBarcodes expects 8 lowercase characters ` +
+          `from the English alphabet or numbers 0-9.`
+      );
     }
 
     const result = await this.sql.nonPii.query(
@@ -153,7 +162,7 @@ export class ReceivedKitsData {
       { type: Sequelize.QueryTypes.SELECT }
     );
 
-    return <MatchedBarcode[]>result
+    return <MatchedBarcode[]>result;
   }
 
   /**
@@ -178,8 +187,8 @@ export class ReceivedKitsData {
         const records: ReceivedKitAttributes[] = [];
 
         // At the moment we only care about box barcodes
-        receivedKits.forEach((v, k) => 
-           records.push({
+        receivedKits.forEach((v, k) =>
+          records.push({
             surveyId: k,
             recordId: v.recordId,
             fileId: f.id,
@@ -190,7 +199,7 @@ export class ReceivedKitsData {
         );
 
         for (let i = 0; i < records.length; i++) {
-          await this.fever.receivedKit.upsert(records[i], { 
+          await this.fever.receivedKit.upsert(records[i], {
             transaction: t,
             // Really everything except `linked`
             fields: [
@@ -221,21 +230,20 @@ export class ReceivedKitsData {
       for (let i = 0; i < keys.length; i++) {
         const k = keys[i];
         const v = records.get(k);
-        await this.fever.receivedKit.upsert({
-          surveyId: v.surveyId,
-          recordId: v.recordId,
-          boxBarcode: k,
-          linked: true,
-          dateReceived: undefined,
-          fileId: undefined
-        }, {
-          transaction: t,
-          fields: [
-            "recordId",
-            "boxBarcode",
-            "linked"
-          ]
-        });
+        await this.fever.receivedKit.upsert(
+          {
+            surveyId: v.surveyId,
+            recordId: v.recordId,
+            boxBarcode: k,
+            linked: true,
+            dateReceived: undefined,
+            fileId: undefined
+          },
+          {
+            transaction: t,
+            fields: ["recordId", "boxBarcode", "linked"]
+          }
+        );
       }
     });
   }

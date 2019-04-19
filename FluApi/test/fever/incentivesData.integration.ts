@@ -59,7 +59,8 @@ describe("survey batch data access", () => {
       seq,
       incentiveBatch,
       incentiveItems,
-      incentiveDiscard);
+      incentiveDiscard
+    );
 
     batchSeq = await seq.find({
       where: { name: INCENTIVE_BATCH_NAMESPACE }

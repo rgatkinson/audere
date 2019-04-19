@@ -54,10 +54,12 @@ export function wrap(handler: any) {
     try {
       const maybePromise = handler(req, res, next);
 
-      if (maybePromise != null &&
+      if (
+        maybePromise != null &&
         typeof maybePromise.then === "function" &&
-        typeof maybePromise.catch === "function") {
-          maybePromise.catch(next);
+        typeof maybePromise.catch === "function"
+      ) {
+        maybePromise.catch(next);
       }
     } catch (err) {
       // Make sure any synchronous errors are also exposed

@@ -59,7 +59,8 @@ describe("survey batch data access", () => {
       seq,
       followUpBatch,
       followUpItems,
-      followUpDiscard);
+      followUpDiscard
+    );
 
     batchSeq = await seq.find({
       where: { name: FOLLOWUP_BATCH_NAMESPACE }

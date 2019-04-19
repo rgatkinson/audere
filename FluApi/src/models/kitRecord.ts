@@ -4,10 +4,10 @@
 // can be found in the LICENSE file distributed with this file.
 
 export interface KitRecord {
-  recordId?: number,
-  dateReceived?: string,
-  boxBarcode: string,
-  utmBarcode?: string,
-  rdtBarcode?: string,
-  stripBarcode?: string
+  recordId?: number;
+  dateReceived?: string;
+  boxBarcode: string;
+  utmBarcode?: string;
+  rdtBarcode?: string;
+  stripBarcode?: string;
 }

@@ -47,11 +47,7 @@ describe("sending incentives", () => {
     const uploader = mock(S3Uploader);
     when(uploader.sendIncentives(batch.id, anyString())).thenResolve();
 
-    const i = new TestIncentives(
-      batch,
-      instance(dao),
-      instance(uploader)
-    );
+    const i = new TestIncentives(batch, instance(dao), instance(uploader));
     await i.generateReport();
 
     const contents = capture(uploader.sendIncentives).first()[1];

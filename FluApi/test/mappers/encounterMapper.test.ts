@@ -175,15 +175,15 @@ describe("encounter mapper", () => {
       expect(encounter.startTimestamp).toBe(now);
     });
 
-    it("requires a start timestamp", async() => {
+    it("requires a start timestamp", async () => {
       const visit = new VisitBuilder()
-      .withVisitId("asdf")
-      .withHousehold("beach house", "beach")
-      .withTemporaryLocation("vacation", "europe")
-      .withWorkplace("company", "city")
-      .withLocation("hospital")
-      .withResponse(response1)
-      .build();
+        .withVisitId("asdf")
+        .withHousehold("beach house", "beach")
+        .withTemporaryLocation("vacation", "europe")
+        .withWorkplace("company", "city")
+        .withLocation("hospital")
+        .withResponse(response1)
+        .build();
 
       expect(() => mapEncounter(visit)).toThrow();
     });

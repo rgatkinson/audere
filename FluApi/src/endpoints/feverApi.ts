@@ -47,7 +47,9 @@ export class FeverEndpoint {
   async putFeverDocument(req, res, next) {
     const query = { where: { key: req.params.key, valid: true } };
     if (!(await this.models.accessKey.findOne(query))) {
-      logger.warn(`${requestId(req)} rejected document upload with key: ${req.params.key}`);
+      logger.warn(
+        `${requestId(req)} rejected document upload with key: ${req.params.key}`
+      );
       next();
       return;
     }
@@ -58,16 +60,12 @@ export class FeverEndpoint {
     }
   }
 
-  async   putDocument(req, res) {
+  async putDocument(req, res) {
     const document = req.body as ProtocolDocument;
     logger.info(
-      `${requestId(req)} put ${
-        guard(() => document.documentType)
-      } ${
-        guard(() => document.csruid)
-      } from ${
-        guard(() => document.device.installation)
-      } @fever`
+      `${requestId(req)} put ${guard(() => document.documentType)} ${guard(
+        () => document.csruid
+      )} from ${guard(() => document.device.installation)} @fever`
     );
     switch (document.documentType) {
       case DocumentType.Survey:

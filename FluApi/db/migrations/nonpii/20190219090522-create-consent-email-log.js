@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -22,11 +22,11 @@ module.exports = {
       },
       email_requested: {
         allowNull: false,
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.BOOLEAN
       },
       consents_sent: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +40,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('consent_email');
+    return queryInterface.dropTable("consent_email");
   }
 };

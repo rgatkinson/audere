@@ -7,7 +7,10 @@ import { deepEqual, instance, mock, when, verify } from "ts-mockito";
 import { makeBatchData } from "./reportTestUtil";
 import { KitOrders } from "../../src/services/fever/kitOrders";
 import { KitRecipientsDataAccess } from "../../src/services/fever/kitOrdersData";
-import { Batch, BatchItemWithCsruid } from "../../src/services/fever/surveyBatchData";
+import {
+  Batch,
+  BatchItemWithCsruid
+} from "../../src/services/fever/surveyBatchData";
 
 describe("kit order recipients", () => {
   it("should replay an existing batch if it wasn't completed", async () => {

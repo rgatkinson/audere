@@ -7,24 +7,16 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.changeColumn(
-      "secrets",
-      "value",
-      {
-        allowNull: false,
-        type: Sequelize.TEXT
-      }
-    );
+    return queryInterface.changeColumn("secrets", "value", {
+      allowNull: false,
+      type: Sequelize.TEXT
+    });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.changeColumn(
-      "secrets",
-      "value",
-      {
-        allowNull: false,
-        type: Sequelize.STRING
-      }
-    );
+    return queryInterface.changeColumn("secrets", "value", {
+      allowNull: false,
+      type: Sequelize.STRING
+    });
   }
 };

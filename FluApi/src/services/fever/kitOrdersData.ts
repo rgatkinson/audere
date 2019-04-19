@@ -4,8 +4,19 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { PIIInfo } from "audere-lib/feverProtocol";
-import { BatchItem, SurveyBatchDataAccess, BatchItemWithCsruid } from "./surveyBatchData";
-import { BatchAttributes, BatchDiscardAttributes, BatchItemAttributes, SurveyAttributes, FeverModels, defineFeverModels } from "../../models/db/fever";
+import {
+  BatchItem,
+  SurveyBatchDataAccess,
+  BatchItemWithCsruid
+} from "./surveyBatchData";
+import {
+  BatchAttributes,
+  BatchDiscardAttributes,
+  BatchItemAttributes,
+  SurveyAttributes,
+  FeverModels,
+  defineFeverModels
+} from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import Sequelize from "sequelize";
@@ -14,7 +25,9 @@ import logger from "../../util/logger";
 export const KIT_BATCH_NAMESPACE = "Kit_Batch";
 export const KIT_ITEMS_NAMESPACE = "Kit_Items";
 
-export class KitRecipientsDataAccess extends SurveyBatchDataAccess<BatchItemWithCsruid> {
+export class KitRecipientsDataAccess extends SurveyBatchDataAccess<
+  BatchItemWithCsruid
+> {
   private readonly fever: FeverModels;
   protected readonly batchModel: Model<BatchAttributes>;
   protected readonly itemModel: Model<BatchItemAttributes>;
@@ -71,8 +84,8 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<BatchItemWith
 
   /**
    * Queries for valid records to form a batch.  May be seeded with a
-   * constrained list of surveys to include.  
-   * @param items 
+   * constrained list of surveys to include.
+   * @param items
    */
   private async getItems(
     items?: BatchItem[]
@@ -83,12 +96,12 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<BatchItemWith
       filter = {
         ...filter,
         ...{ id: items.map(x => x.surveyId) }
-      }
+      };
     } else {
       filter = {
         ...filter,
         ...{ "$items.surveyId$": null }
-      }
+      };
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({

@@ -85,7 +85,9 @@ export function makeRandomKitReceipient(num: number): KitRecipient {
   };
 }
 
-export function makeRandomIncentiveRecipient(num: number): SurveyCompleteParticipant {
+export function makeRandomIncentiveRecipient(
+  num: number
+): SurveyCompleteParticipant {
   return {
     workflowId: num,
     surveyId: Math.floor(Math.random() * 10) + 1,
@@ -97,7 +99,7 @@ export function makeRandomIncentiveRecipient(num: number): SurveyCompletePartici
       state: makeRandomString(),
       postalCode: makeRandomString(),
       country: makeRandomString(),
-      line: [ makeRandomString() ]
+      line: [makeRandomString()]
     },
     email: makeRandomString(),
     timestamp: makeRandomString(),

@@ -63,8 +63,7 @@ export class CensusTractService {
       }
     });
 
-
-    logger.info(`[Census] Matched ${tracts.size} census tracts`)
+    logger.info(`[Census] Matched ${tracts.size} census tracts`);
 
     return tracts;
   }

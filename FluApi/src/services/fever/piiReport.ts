@@ -5,7 +5,12 @@
 
 import { SurveyAttributes } from "../../models/db/fever";
 import { PIIInfo } from "audere-lib/feverProtocol";
-import { Batch, BatchItem, SurveyBatchDataAccess, BatchItemWithCsruid } from "./surveyBatchData";
+import {
+  Batch,
+  BatchItem,
+  SurveyBatchDataAccess,
+  BatchItemWithCsruid
+} from "./surveyBatchData";
 import logger from "../../util/logger";
 
 export interface RenderResult {
@@ -38,8 +43,10 @@ export abstract class PIIReport<T extends BatchItemWithCsruid, U> {
       let result: RenderResult;
 
       if (batch.items != null) {
-        logger.info(`[${this.report}] Found batch ${batch.id} with ` +
-          `${batch.items.length} items`)
+        logger.info(
+          `[${this.report}] Found batch ${batch.id} with ` +
+            `${batch.items.length} items`
+        );
         result = await this.buildReport(batch);
 
         if (result.report != null) {
@@ -65,10 +72,7 @@ export abstract class PIIReport<T extends BatchItemWithCsruid, U> {
    * @param item Non-PII tracking data about the record.
    * @param pii PII survey data related to the record.
    */
-  abstract transformSurveyData(
-    item: T,
-    pii: SurveyAttributes<PIIInfo>
-  ): U;
+  abstract transformSurveyData(item: T, pii: SurveyAttributes<PIIInfo>): U;
 
   /**
    * Saves the report in the appropriate location.
@@ -124,7 +128,7 @@ export abstract class PIIReport<T extends BatchItemWithCsruid, U> {
       } else {
         logger.error(
           `[${this.report}] A completed survey was found without ` +
-          `corresponding PII completion data, csruid ${i.csruid}`
+            `corresponding PII completion data, csruid ${i.csruid}`
         );
       }
     });

@@ -3,7 +3,17 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { anything, instance, mock, when, capture, anyNumber, anyString, deepEqual, verify } from "ts-mockito";
+import {
+  anything,
+  instance,
+  mock,
+  when,
+  capture,
+  anyNumber,
+  anyString,
+  deepEqual,
+  verify
+} from "ts-mockito";
 import { ReceivedKits } from "../../src/services/fever/receivedKits";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
 import { REDCapClient } from "../../src/external/redCapClient";
@@ -25,10 +35,11 @@ describe("exporting barcodes to REDCap", () => {
     when(dao.linkKits(anything())).thenResolve();
 
     const mapping = { recordId: 1, surveyId: 1 };
-    const mappedKits = new Map([[unlinked.code, mapping]])
+    const mappedKits = new Map([[unlinked.code, mapping]]);
     const redcap = mock(REDCapClient);
-    when(redcap.provisionBarcodes(deepEqual([unlinked])))
-      .thenResolve(mappedKits);
+    when(redcap.provisionBarcodes(deepEqual([unlinked]))).thenResolve(
+      mappedKits
+    );
 
     const service = new ReceivedKits(
       instance(dao),
@@ -59,7 +70,9 @@ describe("importing received kits", () => {
 
     const dao = mock(ReceivedKitsData);
     const match = { id: 115, code: "12345678" };
-    when(dao.matchBarcodes(deepEqual([record.boxBarcode]))).thenResolve([match]);
+    when(dao.matchBarcodes(deepEqual([record.boxBarcode]))).thenResolve([
+      match
+    ]);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
     const uploader = mock(S3Uploader);
@@ -75,7 +88,7 @@ describe("importing received kits", () => {
     const [file, kits] = capture(dao.importReceivedKits).first();
     expect(file).toBe("1");
     expect(kits.get(115).dateReceived).toBe(record.dateReceived);
-    expect(kits.get(115).boxBarcode).toBe(record.boxBarcode);    
+    expect(kits.get(115).boxBarcode).toBe(record.boxBarcode);
   });
 
   it("filters and reports invalid barcodes", async () => {
@@ -213,7 +226,9 @@ describe("importing received kits", () => {
       { id: 123, code: "12345678", kitId: 1, recordId: 1 },
       { id: 456, code: "98765432", kitId: 2, recordId: 2 }
     ];
-    when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve(matches);
+    when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve(
+      matches
+    );
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
     const uploader = mock(S3Uploader);
@@ -255,9 +270,7 @@ describe("importing received kits", () => {
     when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
-    const matches = [
-      { id: 123, code: "12345678", kitId: 1 }
-    ];
+    const matches = [{ id: 123, code: "12345678", kitId: 1 }];
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
@@ -302,9 +315,7 @@ describe("importing received kits", () => {
     when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
-    const matches = [
-      { id: 123, code: "12345678", kitId: 1, recordId: 555 }
-    ];
+    const matches = [{ id: 123, code: "12345678", kitId: 1, recordId: 555 }];
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 

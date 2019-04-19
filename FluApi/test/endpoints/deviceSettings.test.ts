@@ -40,7 +40,7 @@ describe("getDeviceSetting", () => {
     await deviceSetting.create({
       device: "abc",
       key: "def",
-      setting: "ghi",
+      setting: "ghi"
     });
 
     await request(publicApp)
@@ -55,7 +55,7 @@ describe("getDeviceSetting", () => {
     await deviceSetting.destroy({
       where: {
         device,
-        key,
+        key
       }
     });
   }

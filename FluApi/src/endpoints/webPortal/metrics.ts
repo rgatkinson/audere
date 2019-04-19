@@ -21,7 +21,7 @@ import { defineFeverModels } from "../../models/db/fever";
 import { SecretConfig } from "../../util/secretsConfig";
 import { getBigqueryConfig } from "../../util/bigqueryConfig";
 import bigQueries from "./bigQueries.json";
-const {BigQuery} = require('@google-cloud/bigquery');
+const { BigQuery } = require("@google-cloud/bigquery");
 const sql = createSplitSql();
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
@@ -273,7 +273,7 @@ export async function getDataSummary(
     ORDER BY n DESC, zipcode;`;
   const zipcodeData = await piiClient.query(zipcodeQuery);
 
-  return {ageData, symptomsData, zipcodeData};
+  return { ageData, symptomsData, zipcodeData };
 }
 
 function filterLastQuestionData(lastQuestionData): object {
@@ -691,7 +691,7 @@ export async function getExcelReport(startDate: string, endDate: string) {
 }
 
 export async function getExcelDataSummary(startDate: string, endDate: string) {
-  const {ageData, symptomsData, zipcodeData} = await getDataSummary(
+  const { ageData, symptomsData, zipcodeData } = await getDataSummary(
     startDate,
     endDate
   );
@@ -835,9 +835,11 @@ export async function getFeverMetrics(
   //Get all non-demo mode data out of nonpii database for specified date range
   const feverModels = defineFeverModels(sql);
   const rowsNonPii = await feverModels.surveyNonPii.findAll({
-    include: [{
-      model: feverModels.receivedKit
-    }],
+    include: [
+      {
+        model: feverModels.receivedKit
+      }
+    ],
     where: {
       survey: {
         isDemo: false
@@ -849,57 +851,75 @@ export async function getFeverMetrics(
         ]
       }
     },
-    order: ['id'],
+    order: ["id"],
     raw: true
   });
 
   //Aggregate by age
-  const validNonPii = rowsNonPii.filter(row => row.survey.responses[0].item[0] != null);
-  const getAge = (row) => {
+  const validNonPii = rowsNonPii.filter(
+    row => row.survey.responses[0].item[0] != null
+  );
+  const getAge = row => {
     const age = row.survey.responses[0].item[0].answer[0].valueIndex;
     return row.survey.responses[0].item[0].answerOptions[age].text;
   };
-  const isEligible = (row) => {
-    const hasSymptoms = row.survey.events.some(item => 
-      item.refId == "PreConsent" || item.refId == "Consent");
+  const isEligible = row => {
+    const hasSymptoms = row.survey.events.some(
+      item => item.refId == "PreConsent" || item.refId == "Consent"
+    );
     return hasSymptoms ? 1 : 0;
   };
-  const didConsent = (row) => row.survey.consents.length > 0 ? 1 : 0;
-  const orderedKit = (row) => row.survey.workflow.screeningCompletedAt ? 1 : 0;
-  const startedPart2 = (row) => {
+  const didConsent = row => (row.survey.consents.length > 0 ? 1 : 0);
+  const orderedKit = row => (row.survey.workflow.screeningCompletedAt ? 1 : 0);
+  const startedPart2 = row => {
     const part2 = row.survey.events.some(item => item.refId == "WelcomeBack");
     return part2 ? 1 : 0;
   };
-  const scannedBarcode = (row) => row.survey.samples.length > 0 ? 1 : 0;
-  const completedSurvey = (row) => {
-    const survey = row.survey.events.some(item => item.refId == "ThankYouSurvey");
+  const scannedBarcode = row => (row.survey.samples.length > 0 ? 1 : 0);
+  const completedSurvey = row => {
+    const survey = row.survey.events.some(
+      item => item.refId == "ThankYouSurvey"
+    );
     return survey ? 1 : 0;
   };
-  const completedTest1 = (row) => {
-    const test1 = row.survey.events.some(item => item.refId == "FirstTestFeedback");
+  const completedTest1 = row => {
+    const test1 = row.survey.events.some(
+      item => item.refId == "FirstTestFeedback"
+    );
     return test1 ? 1 : 0;
   };
-  const completedTest2 = (row) => {
-    const test2 = row.survey.events.some(item => item.refId == "SecondTestFeedback");
+  const completedTest2 = row => {
+    const test2 = row.survey.events.some(
+      item => item.refId == "SecondTestFeedback"
+    );
     return test2 ? 1 : 0;
   };
-  const finishedApp = (row) => row.survey.workflow.surveyCompletedAt ? 1 : 0;
-  const returnedKit = (row) => row["fever_received_kit.dateReceived"] ? 1 : 0;
-  const test1Errors = (row) => {
-    const error = row.survey.responses[0].item.some(item => 
-      item.id == "FirstTestFeedback" && item.answer.length > 0 && item.answer[0].valueIndex >= 2)
-    return error ? 1 : 0
+  const finishedApp = row => (row.survey.workflow.surveyCompletedAt ? 1 : 0);
+  const returnedKit = row => (row["fever_received_kit.dateReceived"] ? 1 : 0);
+  const test1Errors = row => {
+    const error = row.survey.responses[0].item.some(
+      item =>
+        item.id == "FirstTestFeedback" &&
+        item.answer.length > 0 &&
+        item.answer[0].valueIndex >= 2
+    );
+    return error ? 1 : 0;
   };
-  const test2Errors = (row) => {
-    const error = row.survey.responses[0].item.some(item => 
-      item.id == "SecondTestFeedback" && item.answer.length > 0 && item.answer[0].valueIndex >= 2)
-    return error ? 1 : 0
+  const test2Errors = row => {
+    const error = row.survey.responses[0].item.some(
+      item =>
+        item.id == "SecondTestFeedback" &&
+        item.answer.length > 0 &&
+        item.answer[0].valueIndex >= 2
+    );
+    return error ? 1 : 0;
   };
   const ageCounts = aggregate(
     validNonPii,
     getAge,
-    (row) => ({ age: getAge(row), 
-      count: 0, 
+    row => ({
+      age: getAge(row),
+      count: 0,
       eligible: 0,
       consents: 0,
       kits: 0,
@@ -912,9 +932,10 @@ export async function getFeverMetrics(
       kitsreturned: 0,
       test1errors: 0,
       test2errors: 0
-     }),
-    (acc, row) => ({ ...acc, 
-      count: acc.count + 1, 
+    }),
+    (acc, row) => ({
+      ...acc,
+      count: acc.count + 1,
       eligible: acc.eligible + isEligible(row),
       consents: acc.consents + didConsent(row),
       kits: acc.kits + orderedKit(row),
@@ -931,7 +952,7 @@ export async function getFeverMetrics(
   );
   let ageData = ageCounts.sort((a, b) => a.age.localeCompare(b.age));
   if (ageData.length > 0) {
-    const total = ageData.reduce( (previousValue, currentValue) => {
+    const total = ageData.reduce((previousValue, currentValue) => {
       return {
         age: "Total",
         count: previousValue.count + currentValue.count,
@@ -940,19 +961,20 @@ export async function getFeverMetrics(
         kits: previousValue.kits + currentValue.kits,
         part2: previousValue.part2 + currentValue.part2,
         scanned: previousValue.scanned + currentValue.scanned,
-        surveyscompleted: previousValue.surveyscompleted + currentValue.surveyscompleted,
+        surveyscompleted:
+          previousValue.surveyscompleted + currentValue.surveyscompleted,
         test1: previousValue.test1 + currentValue.test1,
         test2: previousValue.test2 + currentValue.test2,
         finished: previousValue.finished + currentValue.finished,
-        kitsreturned: previousValue.kitsreturned+ currentValue.kitsreturned,
+        kitsreturned: previousValue.kitsreturned + currentValue.kitsreturned,
         test1errors: previousValue.test1errors + currentValue.test1errors,
         test2errors: previousValue.test2errors + currentValue.test2errors
-      }
+      };
     });
     ageData.push(total);
   }
   const surveyStatsData = funnelAgeData(ageData);
-  
+
   //Get all non-demo mode data out of pii database for specified date range
   const rowsPii = await feverModels.surveyPii.findAll({
     where: {
@@ -968,141 +990,156 @@ export async function getFeverMetrics(
     },
     raw: true
   });
-  
+
   //Aggregate data by U. S. State
   const validPii = rowsPii.filter(row => row.survey.patient.address[0] != null);
-  const getState = (row) => row.survey.patient.address[0].state;
+  const getState = row => row.survey.patient.address[0].state;
   const counts = aggregate(
     validPii,
     getState,
-    (row) => ({ state: getState(row), count: 0 }),
+    row => ({ state: getState(row), count: 0 }),
     (acc, row) => ({ ...acc, count: acc.count + 1 })
   );
   const statesData = counts
     .sort((a, b) => b.count - a.count)
     .map(x => ({
       ...x,
-      percent: (x.count / validPii.length * 100).toFixed(1)
+      percent: ((x.count / validPii.length) * 100).toFixed(1)
     }));
 
   //Aggregate data by last screen viewed
   const rowsUnfinishedSurveys = rowsPii
     .filter(row => row.survey.events != null)
-    .filter(row => !('surveyCompletedAt' in row.survey.workflow));
-  const getLastScreen = (row) => row.survey.events[row.survey.events.length - 1].refId;
+    .filter(row => !("surveyCompletedAt" in row.survey.workflow));
+  const getLastScreen = row =>
+    row.survey.events[row.survey.events.length - 1].refId;
   const screenCounts = aggregate(
     rowsUnfinishedSurveys,
     getLastScreen,
-    (row) => ({ lastscreen: getLastScreen(row), count: 0}),
-    (acc, row) => ({ ...acc, count: acc.count + 1})
+    row => ({ lastscreen: getLastScreen(row), count: 0 }),
+    (acc, row) => ({ ...acc, count: acc.count + 1 })
   );
 
-  const lastScreenData = filterLastScreenData(screenCounts
-    .sort((a, b) => b.count - a.count)
-    .map(x => ({
-      ...x,
-      percent: (x.count / rowsUnfinishedSurveys.length * 100).toFixed(1),
-    })));
+  const lastScreenData = filterLastScreenData(
+    screenCounts
+      .sort((a, b) => b.count - a.count)
+      .map(x => ({
+        ...x,
+        percent: ((x.count / rowsUnfinishedSurveys.length) * 100).toFixed(1)
+      }))
+  );
 
   //Format fields for excel details sheet
-  const piiMap = new Map(validPii.map(row =>
-    [row.csruid, 
-      {'city': row.survey.patient.address[0].city,
-       'state': row.survey.patient.address[0].state,
-       'gender': row.survey.patient.gender
-      }
-    ] as [string, object]
-  ));
+  const piiMap = new Map(
+    validPii.map(
+      row =>
+        [
+          row.csruid,
+          {
+            city: row.survey.patient.address[0].city,
+            state: row.survey.patient.address[0].state,
+            gender: row.survey.patient.gender
+          }
+        ] as [string, object]
+    )
+  );
 
-  const getAgeRange = (row) => {
+  const getAgeRange = row => {
     const ageField = row.survey.responses[0].item[0];
     if (ageField && ageField.answer.length > 0) {
       const age = ageField.answer[0].valueIndex;
       return ageField.answerOptions[age].text;
     }
   };
-  const getUserState = (row) => {
-    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['state'];
-  }
-  const getUserCity = (row) => {
-    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['city'];
-  }
-  const getUserGender = (row) => {
-    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)['gender'];
-  }
-  const getBarcode = (row) => {
+  const getUserState = row => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)["state"];
+  };
+  const getUserCity = row => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)["city"];
+  };
+  const getUserGender = row => {
+    if (piiMap.has(row.csruid)) return piiMap.get(row.csruid)["gender"];
+  };
+  const getBarcode = row => {
     const barcodeField = row.survey.samples[0];
     if (barcodeField) {
-      return barcodeField.sample_type === 'manualEntry' ? barcodeField.code+"*" : barcodeField.code;
+      return barcodeField.sample_type === "manualEntry"
+        ? barcodeField.code + "*"
+        : barcodeField.code;
     }
-  }
-  const getDeviceModel = (row) => {
+  };
+  const getDeviceModel = row => {
     const modelInfo = /model":"(.*)","user/.exec(row.device.platform);
     if (modelInfo && modelInfo.length > 1) {
       return modelInfo[1];
     }
-  }
-  const getKitOrderTime = (row) => {
+  };
+  const getKitOrderTime = row => {
     const confirmation = row.survey.events.find(
       item => item.refId === "Confirmation" || item.refId === "KitOrdered"
     );
     if (confirmation) return confirmation.at;
   };
-  const getScanTime = (row) => {
+  const getScanTime = row => {
     const barcodeConfirmation = row.survey.events.find(
-      item => item.refId == "ScanConfirmation" || item.refId === "ManualConfirmation");
+      item =>
+        item.refId == "ScanConfirmation" || item.refId === "ManualConfirmation"
+    );
     if (barcodeConfirmation) {
       return barcodeConfirmation.at;
     }
   };
-  const getSurveyCompleteTime = (row) => {
-    const surveyComplete = row.survey.events.find(item => item.refId === "ThankYouSurvey");
+  const getSurveyCompleteTime = row => {
+    const surveyComplete = row.survey.events.find(
+      item => item.refId === "ThankYouSurvey"
+    );
     if (surveyComplete) {
       return surveyComplete.at;
     }
-  }
-  const getFinishTime = (row) => {
-    if (row.survey.workflow.surveyCompletedAt) return row.survey.workflow.surveyCompletedAt;
-  }
-  const getTest1Feedback = (row) => {
+  };
+  const getFinishTime = row => {
+    if (row.survey.workflow.surveyCompletedAt)
+      return row.survey.workflow.surveyCompletedAt;
+  };
+  const getTest1Feedback = row => {
     const feedback = row.survey.responses[0].item.find(
-      item => item.id == "FirstTestFeedback" && item.answer.length > 0);
+      item => item.id == "FirstTestFeedback" && item.answer.length > 0
+    );
     if (feedback) {
       return feedback.answerOptions[feedback.answer[0].valueIndex].id;
     }
-  }
-  const getTest2Feedback = (row) => {
+  };
+  const getTest2Feedback = row => {
     const feedback = row.survey.responses[0].item.find(
-      item => item.id == "SecondTestFeedback" && item.answer.length > 0);
+      item => item.id == "SecondTestFeedback" && item.answer.length > 0
+    );
     if (feedback) {
       return feedback.answerOptions[feedback.answer[0].valueIndex].id;
     }
-  }
-  const getRedWhenBlueAnswer = (row) => {
+  };
+  const getRedWhenBlueAnswer = row => {
     const redwhenblue = row.survey.responses[0].item.find(
-      item => item.id == "RedWhenBlue" && item.answer.length > 0);
+      item => item.id == "RedWhenBlue" && item.answer.length > 0
+    );
     if (redwhenblue) {
       return redwhenblue.answerOptions[redwhenblue.answer[0].valueIndex].id;
     }
-  }
-  const getWorkflow = (row) => {
+  };
+  const getWorkflow = row => {
     const workflow = row.survey.workflow;
     if (row["fever_received_kit.dateReceived"]) {
-      return "Kit Returned"
+      return "Kit Returned";
+    } else if (workflow.surveyCompletedAt) {
+      return "Finished App";
+    } else if (workflow.surveyStartedAt) {
+      return "Scanned Barcode";
+    } else if (workflow.screeningCompletedAt) {
+      return "Ordered Kit";
     }
-    else if (workflow.surveyCompletedAt) {
-      return "Finished App"
-    }
-    else if (workflow.surveyStartedAt) {
-      return "Scanned Barcode"
-    }
-    else if (workflow.screeningCompletedAt) {
-      return "Ordered Kit"
-    }
-  }
+  };
 
   let studyIdData = [];
-  rowsNonPii.forEach( (row) => {
+  rowsNonPii.forEach(row => {
     studyIdData.push({
       age: getAgeRange(row),
       city: getUserCity(row),
@@ -1112,7 +1149,7 @@ export async function getFeverMetrics(
       barcode: getBarcode(row),
       studyid: row.csruid.substring(0, 21),
       dbid: row.id,
-      appversion: row.device.clientVersion['version'],
+      appversion: row.device.clientVersion["version"],
       devicemodel: getDeviceModel(row),
       installation: row.device.installation,
       kitordertime: getKitOrderTime(row),
@@ -1127,7 +1164,7 @@ export async function getFeverMetrics(
     });
   });
 
-  return {surveyStatsData, lastScreenData, statesData, studyIdData};
+  return { surveyStatsData, lastScreenData, statesData, studyIdData };
 }
 
 function aggregate<Row, Key, Value>(
@@ -1148,38 +1185,46 @@ function aggregate<Row, Key, Value>(
 
 function funnelAgeData(ageData): object {
   const totalRow = ageData[ageData.length - 1];
-  if (totalRow){
+  if (totalRow) {
     ageData.push({
-      "age": "% of users",
-      "count": "100%",
-      "eligible": (totalRow.eligible/totalRow.count * 100).toFixed(1) + "%",
-      "consents": (totalRow.consents/totalRow.count * 100).toFixed(1) + "%",
-      "kits": (totalRow.kits/totalRow.count * 100).toFixed(1) + "%",
-      "part2": (totalRow.part2/totalRow.count * 100).toFixed(1) + "%",
-      "scanned": (totalRow.scanned/totalRow.count * 100).toFixed(1) + "%",
-      "surveyscompleted": (totalRow.surveyscompleted/totalRow.count * 100).toFixed(1) + "%",
-      "test1": (totalRow.test1/totalRow.count * 100).toFixed(1) + "%",
-      "test2": (totalRow.test2/totalRow.count * 100).toFixed(1) + "%",
-      "finished": (totalRow.finished/totalRow.count * 100).toFixed(1) + "%",
-      "kitsreturned": (totalRow.kitsreturned/totalRow.count * 100).toFixed(1) + "%",
-      "test1errors": (totalRow.test1errors/totalRow.count * 100).toFixed(1) + "%",
-      "test2errors": (totalRow.test2errors/totalRow.count * 100).toFixed(1) + "%",
+      age: "% of users",
+      count: "100%",
+      eligible: ((totalRow.eligible / totalRow.count) * 100).toFixed(1) + "%",
+      consents: ((totalRow.consents / totalRow.count) * 100).toFixed(1) + "%",
+      kits: ((totalRow.kits / totalRow.count) * 100).toFixed(1) + "%",
+      part2: ((totalRow.part2 / totalRow.count) * 100).toFixed(1) + "%",
+      scanned: ((totalRow.scanned / totalRow.count) * 100).toFixed(1) + "%",
+      surveyscompleted:
+        ((totalRow.surveyscompleted / totalRow.count) * 100).toFixed(1) + "%",
+      test1: ((totalRow.test1 / totalRow.count) * 100).toFixed(1) + "%",
+      test2: ((totalRow.test2 / totalRow.count) * 100).toFixed(1) + "%",
+      finished: ((totalRow.finished / totalRow.count) * 100).toFixed(1) + "%",
+      kitsreturned:
+        ((totalRow.kitsreturned / totalRow.count) * 100).toFixed(1) + "%",
+      test1errors:
+        ((totalRow.test1errors / totalRow.count) * 100).toFixed(1) + "%",
+      test2errors:
+        ((totalRow.test2errors / totalRow.count) * 100).toFixed(1) + "%"
     });
     ageData.push({
-      "age": "% retention",
-      "count": "",
-      "eligible": (totalRow.eligible/totalRow.count * 100).toFixed(1) + "%",
-      "consents": (totalRow.consents/totalRow.eligible * 100).toFixed(1) + "%",
-      "kits": (totalRow.kits/totalRow.consents * 100).toFixed(1) + "%",
-      "part2": (totalRow.part2/totalRow.kits * 100).toFixed(1) + "%",
-      "scanned": (totalRow.scanned/totalRow.part2 * 100).toFixed(1) + "%",
-      "surveyscompleted": (totalRow.surveyscompleted/totalRow.scanned * 100).toFixed(1) + "%",
-      "test1": (totalRow.test1/totalRow.surveyscompleted * 100).toFixed(1) + "%",
-      "test2": (totalRow.test2/totalRow.test1 * 100).toFixed(1) + "%",
-      "finished": (totalRow.finished/totalRow.test2 * 100).toFixed(1) + "%",
-      "kitsreturned": (totalRow.kitsreturned/totalRow.finished * 100).toFixed(1) + "%",
-      "test1errors": "",
-      "test2errors": ""
+      age: "% retention",
+      count: "",
+      eligible: ((totalRow.eligible / totalRow.count) * 100).toFixed(1) + "%",
+      consents:
+        ((totalRow.consents / totalRow.eligible) * 100).toFixed(1) + "%",
+      kits: ((totalRow.kits / totalRow.consents) * 100).toFixed(1) + "%",
+      part2: ((totalRow.part2 / totalRow.kits) * 100).toFixed(1) + "%",
+      scanned: ((totalRow.scanned / totalRow.part2) * 100).toFixed(1) + "%",
+      surveyscompleted:
+        ((totalRow.surveyscompleted / totalRow.scanned) * 100).toFixed(1) + "%",
+      test1:
+        ((totalRow.test1 / totalRow.surveyscompleted) * 100).toFixed(1) + "%",
+      test2: ((totalRow.test2 / totalRow.test1) * 100).toFixed(1) + "%",
+      finished: ((totalRow.finished / totalRow.test2) * 100).toFixed(1) + "%",
+      kitsreturned:
+        ((totalRow.kitsreturned / totalRow.finished) * 100).toFixed(1) + "%",
+      test1errors: "",
+      test2errors: ""
     });
   }
 
@@ -1189,90 +1234,91 @@ function funnelAgeData(ageData): object {
 function filterLastScreenData(lastScreenData): object {
   let lastScreenFiltered = [];
   const screenDetails = {
-    "Welcome": "Beginning of app (Part 1 - Screen 1)",
-    "Why": "Why this study? (Part 1 - Screen 2)",
-    "What": "Getting started (Part 1 - Screen 3)",
-    "Age": "How old are you? (Part 1 - Screen 4)",
-    "AgeIneligible": "Thanks for your interest (Part 1)",
-    "Symptoms": "Describe your symptoms (Part 1 - Screen 5)",
-    "SymptomsIneligible": "Thanks for your interest (Part 1)",
-    "Consent": "Consent form (Part 1 - Screen 6)",
-    "ConsentIneligible": "Thanks for your interest (Part 1)",
-    "Address": "Email and Address (Part 1 - Screen 7)",
-    "Confirmation": "Thank you! Your flu test kit has been ordered. (Part 1 - Screen 8)",
-    "WelcomeBack": "Welcome back (Part 2 - Screen 1)",
-    "WhatsNext": "What's next? (Part 2 - Screen 2)",
-    "ScanInstructions": "Scan the barcode (Part 2 - Screen 3)",
-    "Scan": "Camera for scanning barcode (Part 2 - Screen 4)",
-    "ScanConfirmation": "Your code was scanned! (Part 2 - Screen 5)",
-    "ManualEntry": "Enter barcode manually (Part 2 - Screen 4)",
-    "ManualConfirmation": "Your code was accepted (Part 2 - Screen 5)",
-    "Unpacking": "How the test works (Part 2 - Screen 6)",
-    "Swab": "Begin the first test (Part 2 - Screen 7)",
-    "SwabPrep": "Prepare tube (Part 2 - Screen 8)",
-    "OpenSwab": "Open nasal swab (Part 2 - Screen 9)",
-    "Mucus": "Collect sample from nose (Part 2 - Screen 10)",
-    "SwabInTube": "Put swab in tube (Part 2 - Screen 11)",
-    "FirstTimer": "Did you know? (Part 2 - Screen 12)",
-    "RemoveSwabFromTube": "Remove swab from tube (Part 2 - Screen 13)",
-    "OpenTestStrip": "Open test strip (Part 2 - Screen 14)",
-    "StripInTube": "Put test strip in tube (Part 2 - Screen 15)",
-    "WhatSymptoms": "Symptom Survey (Part 2 - Screen 16)",
-    "WhenSymptoms": "Symptom Survey (Part 2 - Screen 17)",
-    "GeneralExposure": "General Exposure (Part 2 - Screen 18)",
-    "GeneralHealth": "General Health (Part 2 - Screen 19)",
-    "ThankYouSurvey": "Thank you! (Part 2 - Screen 20)",
-    "TestStripReady": "Remove test strip (Part 2 - Screen 21)",
-    "FinishTube": "Finish with the tube (Part 2 - Screen 22)",
-    "LookAtStrip": "Look at the test strip (Part 2 - Screen 23)",
-    "TestStripSurvey": "What do you see? (Part 2 - Screen 24)",
-    "PictureInstructions": "Take a photo of the strip (Part 2 - Screen 25)",
-    "TestStripCamera": "Camera for test strip (Part 2 - Screen 26)",
-    "TestStripConfirmation": "Photo captured! (Part 2 - Screen 27)",
-    "CleanFirstTest": "Clean up the first test (Part 2 - Screen 28)",
-    "FirstTestFeedBack": "Nice job with the first test! (Part 2 - Screen 29)",
-    "BeginSecondTest": "Begin the second test (Part 2 - Screen 30)",
-    "PrepSecondTest": "Prepare for the test (Part 2 - Screen 31)",
-    "MucusSecond": "Collect sample from nose (Part 2 - Screen 32)",
-    "SwabInTubeSecond": "Put swab in tube (Part 2 - Screen 33)",
-    "CleanSecondTest": "Clean up the second test (Part 2 - Screen 34)",
-    "SecondTestFeedback": "Nice job with the second test! (Part 2 - Screen 35)",
-    "Packing": "Packing things up (Part 2 - Screen 36)",
-    "Stickers": "Put stickers on the box (Part 2 - Screen 37)",
-    "SecondBag": "Put bag 2 in the box (Part 2 - Screen 38)",
-    "TapeBox": "Tape up the box (Part 2 - Screen 39)",
-    "ShipBox": "Shipping your box (Part 2 - Screen 40)",
-    "SchedulePickup": "Schedule a pickup (Part 2 - Screen 41)",
-    "EmailOptIn": "Opt-in for messages (Part 2 - Screen 42)",
-    "About": "About the Study (Menu)",
-    "Funding": "Study Funding (Menu)",
-    "Partners": "Partners (Menu)",
-    "GeneralQuestions": "GeneralQuestions (Menu)",
-    "Problems": "Problems With the App (Menu)",
-    "TestQuestions": "Test Questions (Menu)",
-    "GiftcardQuestions": "Gift Card Questions (Menu)",
-    "ContactSupport": "ContactSupport (Menu)",
-    "Version": "App Version (Menu)"
+    Welcome: "Beginning of app (Part 1 - Screen 1)",
+    Why: "Why this study? (Part 1 - Screen 2)",
+    What: "Getting started (Part 1 - Screen 3)",
+    Age: "How old are you? (Part 1 - Screen 4)",
+    AgeIneligible: "Thanks for your interest (Part 1)",
+    Symptoms: "Describe your symptoms (Part 1 - Screen 5)",
+    SymptomsIneligible: "Thanks for your interest (Part 1)",
+    Consent: "Consent form (Part 1 - Screen 6)",
+    ConsentIneligible: "Thanks for your interest (Part 1)",
+    Address: "Email and Address (Part 1 - Screen 7)",
+    Confirmation:
+      "Thank you! Your flu test kit has been ordered. (Part 1 - Screen 8)",
+    WelcomeBack: "Welcome back (Part 2 - Screen 1)",
+    WhatsNext: "What's next? (Part 2 - Screen 2)",
+    ScanInstructions: "Scan the barcode (Part 2 - Screen 3)",
+    Scan: "Camera for scanning barcode (Part 2 - Screen 4)",
+    ScanConfirmation: "Your code was scanned! (Part 2 - Screen 5)",
+    ManualEntry: "Enter barcode manually (Part 2 - Screen 4)",
+    ManualConfirmation: "Your code was accepted (Part 2 - Screen 5)",
+    Unpacking: "How the test works (Part 2 - Screen 6)",
+    Swab: "Begin the first test (Part 2 - Screen 7)",
+    SwabPrep: "Prepare tube (Part 2 - Screen 8)",
+    OpenSwab: "Open nasal swab (Part 2 - Screen 9)",
+    Mucus: "Collect sample from nose (Part 2 - Screen 10)",
+    SwabInTube: "Put swab in tube (Part 2 - Screen 11)",
+    FirstTimer: "Did you know? (Part 2 - Screen 12)",
+    RemoveSwabFromTube: "Remove swab from tube (Part 2 - Screen 13)",
+    OpenTestStrip: "Open test strip (Part 2 - Screen 14)",
+    StripInTube: "Put test strip in tube (Part 2 - Screen 15)",
+    WhatSymptoms: "Symptom Survey (Part 2 - Screen 16)",
+    WhenSymptoms: "Symptom Survey (Part 2 - Screen 17)",
+    GeneralExposure: "General Exposure (Part 2 - Screen 18)",
+    GeneralHealth: "General Health (Part 2 - Screen 19)",
+    ThankYouSurvey: "Thank you! (Part 2 - Screen 20)",
+    TestStripReady: "Remove test strip (Part 2 - Screen 21)",
+    FinishTube: "Finish with the tube (Part 2 - Screen 22)",
+    LookAtStrip: "Look at the test strip (Part 2 - Screen 23)",
+    TestStripSurvey: "What do you see? (Part 2 - Screen 24)",
+    PictureInstructions: "Take a photo of the strip (Part 2 - Screen 25)",
+    TestStripCamera: "Camera for test strip (Part 2 - Screen 26)",
+    TestStripConfirmation: "Photo captured! (Part 2 - Screen 27)",
+    CleanFirstTest: "Clean up the first test (Part 2 - Screen 28)",
+    FirstTestFeedBack: "Nice job with the first test! (Part 2 - Screen 29)",
+    BeginSecondTest: "Begin the second test (Part 2 - Screen 30)",
+    PrepSecondTest: "Prepare for the test (Part 2 - Screen 31)",
+    MucusSecond: "Collect sample from nose (Part 2 - Screen 32)",
+    SwabInTubeSecond: "Put swab in tube (Part 2 - Screen 33)",
+    CleanSecondTest: "Clean up the second test (Part 2 - Screen 34)",
+    SecondTestFeedback: "Nice job with the second test! (Part 2 - Screen 35)",
+    Packing: "Packing things up (Part 2 - Screen 36)",
+    Stickers: "Put stickers on the box (Part 2 - Screen 37)",
+    SecondBag: "Put bag 2 in the box (Part 2 - Screen 38)",
+    TapeBox: "Tape up the box (Part 2 - Screen 39)",
+    ShipBox: "Shipping your box (Part 2 - Screen 40)",
+    SchedulePickup: "Schedule a pickup (Part 2 - Screen 41)",
+    EmailOptIn: "Opt-in for messages (Part 2 - Screen 42)",
+    About: "About the Study (Menu)",
+    Funding: "Study Funding (Menu)",
+    Partners: "Partners (Menu)",
+    GeneralQuestions: "GeneralQuestions (Menu)",
+    Problems: "Problems With the App (Menu)",
+    TestQuestions: "Test Questions (Menu)",
+    GiftcardQuestions: "Gift Card Questions (Menu)",
+    ContactSupport: "ContactSupport (Menu)",
+    Version: "App Version (Menu)"
   };
   for (let row of lastScreenData) {
-      if (screenDetails[row.lastscreen]){
-        const detail = screenDetails[row.lastscreen];
-        const rowWithDetails = { ...row, detail};
-        lastScreenFiltered.push(rowWithDetails);
-      }
-      else{
-        lastScreenFiltered.push(row);
-      }
-
+    if (screenDetails[row.lastscreen]) {
+      const detail = screenDetails[row.lastscreen];
+      const rowWithDetails = { ...row, detail };
+      lastScreenFiltered.push(rowWithDetails);
+    } else {
+      lastScreenFiltered.push(row);
+    }
   }
   return lastScreenFiltered;
 }
 
 export async function getFeverExcelReport(startDate: string, endDate: string) {
-  const {surveyStatsData, lastScreenData, statesData, studyIdData} = await getFeverMetrics(
-    startDate,
-    endDate
-  );
+  const {
+    surveyStatsData,
+    lastScreenData,
+    statesData,
+    studyIdData
+  } = await getFeverMetrics(startDate, endDate);
 
   const styles = {
     small: {
@@ -1522,7 +1568,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [generatedHeading]
   ];
   const lastScreenHeading = [
-    [{ value: "Last Screen Viewed for Users Who Did Not Finish the App", style: styles.title }],
+    [
+      {
+        value: "Last Screen Viewed for Users Who Did Not Finish the App",
+        style: styles.title
+      }
+    ],
     [dateRangeHeading],
     [generatedHeading]
   ];
@@ -1631,8 +1682,16 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     ["Device Model", null, "What device the user used to complete the app"],
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
-    ["Barcode Scanned", null, "Time when user scanned or manually entered barcode"],
-    ["Finished Survey Questions", null, "Time when user finished the questions about their illness"],
+    [
+      "Barcode Scanned",
+      null,
+      "Time when user scanned or manually entered barcode"
+    ],
+    [
+      "Finished Survey Questions",
+      null,
+      "Time when user finished the questions about their illness"
+    ],
     ["Finished App", null, "Time user reached last screen of app"],
     ["Kit Received", null, "Date when kit was received by lab"],
     [
@@ -1713,24 +1772,27 @@ export async function getFeverFirebase(
     throw new Error("Dates must be specified as yyyy-MM-dd");
   }
   const offset = getStudyTimezoneOffset();
-  
+
   const secrets = new SecretConfig(sql);
   const bigqueryConfig = await getBigqueryConfig(secrets);
   const queryList = Object.keys(bigQueries);
 
   const bigquery = new BigQuery({
-    projectId: 'flu-at-home-app',
+    projectId: "flu-at-home-app",
     credentials: JSON.parse(bigqueryConfig.authToken)
   });
 
-  if (!queryName){
+  if (!queryName) {
     queryName = queryList[0];
   }
   const query = bigQueries[queryName].join("\n");
   const options = {
     query: query,
-    location: 'US',
-    params: [`${startDate} 00:00:00.000${offset}`, `${endDate} 23:59:59.999${offset}`],
+    location: "US",
+    params: [
+      `${startDate} 00:00:00.000${offset}`,
+      `${endDate} 23:59:59.999${offset}`
+    ]
   };
   const [job] = await bigquery.createQueryJob(options);
   const [queryData] = await job.getQueryResults();

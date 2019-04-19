@@ -11,24 +11,24 @@ import moment from "moment-timezone";
 import logger from "../util/logger";
 
 interface AtHomeData {
-  record_id: string,
-  date_receieved: string,
-  box_barcode: string,
-  utm_barcode: string,
-  rdt_barcode: string,
-  strip_barcode: string
+  record_id: string;
+  date_receieved: string;
+  box_barcode: string;
+  utm_barcode: string;
+  rdt_barcode: string;
+  strip_barcode: string;
 }
 
 interface AtHomeRecord {
-  record_id: number,
-  participant_entered_kit_ba: string,
-  state_from_audere: string,
-  date_barcode_scanned_by_pa?: string
+  record_id: number;
+  participant_entered_kit_ba: string;
+  state_from_audere: string;
+  date_barcode_scanned_by_pa?: string;
 }
 
 export interface RecordSurveyMapping {
-  recordId: number,
-  surveyId: number
+  recordId: number;
+  surveyId: number;
 }
 
 /**
@@ -53,7 +53,7 @@ export class REDCapClient {
       });
 
       return response;
-    } catch(e) {
+    } catch (e) {
       if (e.response) {
         const message = JSON.stringify(e.response.data);
         logger.error(`Error returned from REDCap: ${message}`);
@@ -64,12 +64,14 @@ export class REDCapClient {
   }
 
   private validateReportRow(row: AtHomeData): boolean {
-    return row.record_id != null &&
+    return (
+      row.record_id != null &&
       row.date_receieved != null &&
       row.box_barcode != null &&
       row.utm_barcode != null &&
       row.rdt_barcode != null &&
       row.strip_barcode != null
+    );
   }
 
   /**
@@ -77,7 +79,8 @@ export class REDCapClient {
    */
   public async getAtHomeData(): Promise<KitRecord[]> {
     // Form encoding
-    const data = `token=${this.config.apiToken}&` +
+    const data =
+      `token=${this.config.apiToken}&` +
       `content=report&` +
       `report_id=${this.config.homeDataReportId}&` +
       `format=json&` +
@@ -124,8 +127,10 @@ export class REDCapClient {
     );
 
     let nextRecord = nextRecordResponse.data;
-    logger.info(`Next REDCap id is ${nextRecordResponse.data}, setting next ` +
-      `record offset to ${nextRecord}`);
+    logger.info(
+      `Next REDCap id is ${nextRecordResponse.data}, setting next ` +
+        `record offset to ${nextRecord}`
+    );
 
     const mappedRecords = new Map();
     const proposedMappings = new Map();
@@ -141,7 +146,7 @@ export class REDCapClient {
       if (b.scannedAt != null) {
         const scanDate = moment(b.scannedAt)
           .tz("America/Los_Angeles")
-          .format('YYYY-MM-DD');
+          .format("YYYY-MM-DD");
         record.date_barcode_scanned_by_pa = scanDate;
       }
 
@@ -157,9 +162,11 @@ export class REDCapClient {
       }
     });
 
-    logger.info(`Modifying ${untrackedBarcodes.length} records in REDCap ` +
-      `including ${newRecords.length} new records and ` +
-      `${existingRecords.length} existing records`);
+    logger.info(
+      `Modifying ${untrackedBarcodes.length} records in REDCap ` +
+        `including ${newRecords.length} new records and ` +
+        `${existingRecords.length} existing records`
+    );
 
     // Create new auto-numbered records
     if (newRecords.length > 0) {
@@ -170,9 +177,11 @@ export class REDCapClient {
         throw Error(`Unknown response from REDCap - ${error}`);
       }
 
-      logger.info(`Received ${result.status} status from ` +
-        `new record request with ${result.data.length} ` +
-        `auto-ids`);
+      logger.info(
+        `Received ${result.status} status from ` +
+          `new record request with ${result.data.length} ` +
+          `auto-ids`
+      );
 
       result.data.forEach(res => {
         const [actual, proposed] = res.split(",");
@@ -183,8 +192,10 @@ export class REDCapClient {
 
     // Update existing records
     if (existingRecords.length > 0) {
-      const result =
-        await this.importRecords<{count: string}>(existingRecords, false);
+      const result = await this.importRecords<{ count: string }>(
+        existingRecords,
+        false
+      );
 
       const count = +result.data.count;
       if (Number.isNaN(count)) {
@@ -192,12 +203,16 @@ export class REDCapClient {
         throw Error(`Unknown response from REDCap - ${error}`);
       }
 
-      logger.info(`Received ${result.status} status from ` +
-        `existing record request with ${count} records updated`);
+      logger.info(
+        `Received ${result.status} status from ` +
+          `existing record request with ${count} records updated`
+      );
 
       if (count !== existingRecords.length) {
-        throw Error(`Expected to modify ${existingRecords.length} records ` +
-          `but server returned ${count}`);
+        throw Error(
+          `Expected to modify ${existingRecords.length} records ` +
+            `but server returned ${count}`
+        );
       }
     }
 
@@ -206,7 +221,8 @@ export class REDCapClient {
 
   private async importRecords<T>(records: AtHomeRecord[], autoNumber: boolean) {
     // Form encoding
-    const data = `token=${this.config.apiToken}&` +
+    const data =
+      `token=${this.config.apiToken}&` +
       `content=record&` +
       `format=json&` +
       `type=flat&` +

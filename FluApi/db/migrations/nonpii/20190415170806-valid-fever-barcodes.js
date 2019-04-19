@@ -5,11 +5,7 @@
 
 "use strict";
 
-const {
-  column,
-  identity,
-  unique,
-} = require("../../util");
+const { column, identity, unique } = require("../../util");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -24,4 +20,4 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     return queryInterface.dropTable("fever_box_barcodes");
   }
-}
+};

@@ -10,7 +10,7 @@ import {
   documentContentsNonPII,
   documentContentsPII,
   BED_ASSIGNMENT_RESPONSE_ITEM,
-  PII_RESPONSE_ITEM,
+  PII_RESPONSE_ITEM
 } from "../../util/sample_data";
 
 describe("visitsService", () => {
@@ -131,32 +131,41 @@ describe("visitsService", () => {
       const docPII = documentContentsPII("fakecsruid1");
       docPII.visit = {
         ...docPII.visit,
-        responses: [{
-          id: docPII.visit.responses[0].id,
-          item: [
-            ...docPII.visit.responses[0].item,
-            BED_ASSIGNMENT_RESPONSE_ITEM,
-            PII_RESPONSE_ITEM,
-          ]
-        }]
+        responses: [
+          {
+            id: docPII.visit.responses[0].id,
+            item: [
+              ...docPII.visit.responses[0].item,
+              BED_ASSIGNMENT_RESPONSE_ITEM,
+              PII_RESPONSE_ITEM
+            ]
+          }
+        ]
       };
       const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
       const visitPII = await snifflesModels.visitPii.create(docPII);
 
       const pendingVisits = await visitsService.retrievePendingDetails(1000);
 
-      const rows = Array.from(pendingVisits.values())
-        .filter(x => x.csruid === "fakecsruid1");
+      const rows = Array.from(pendingVisits.values()).filter(
+        x => x.csruid === "fakecsruid1"
+      );
       expect(rows.length).toEqual(1);
       const row = rows[0];
 
       // Should include Bed Assignment
-      expect(row.visitInfo.responses[0].item
-        .some(x => x.id === BED_ASSIGNMENT_RESPONSE_ITEM.id)).toBeTruthy();
+      expect(
+        row.visitInfo.responses[0].item.some(
+          x => x.id === BED_ASSIGNMENT_RESPONSE_ITEM.id
+        )
+      ).toBeTruthy();
 
       // But not any PII items
-      expect(row.visitInfo.responses[0].item
-        .every(x => x.id !== PII_RESPONSE_ITEM.id)).toBeTruthy();
+      expect(
+        row.visitInfo.responses[0].item.every(
+          x => x.id !== PII_RESPONSE_ITEM.id
+        )
+      ).toBeTruthy();
 
       await visitPII.destroy();
       await visitNonPII.destroy();

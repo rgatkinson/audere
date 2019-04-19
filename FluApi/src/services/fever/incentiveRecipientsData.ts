@@ -4,7 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SurveyCompleteDataAccess } from "./surveyCompleteData";
-import { BatchAttributes, BatchDiscardAttributes, BatchItemAttributes } from "../../models/db/fever";
+import {
+  BatchAttributes,
+  BatchDiscardAttributes,
+  BatchItemAttributes
+} from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 

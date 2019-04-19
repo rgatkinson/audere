@@ -17,7 +17,8 @@ import {
   SURVEY_NONPII,
   surveyPost,
   surveyNonPIIInDb,
-  makeCSRUID, DEVICE
+  makeCSRUID,
+  DEVICE
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/db/fever";
@@ -194,8 +195,8 @@ describe("putFeverDocument", () => {
     const where = { where: { csruid } };
     await Promise.all([
       models.surveyNonPii.destroy(where),
-      models.surveyPii.destroy(where),
-    ])
+      models.surveyPii.destroy(where)
+    ]);
   });
 
   it("logs invalid http interactions", async () => {
