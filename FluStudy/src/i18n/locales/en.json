@@ -385,12 +385,12 @@
   },
   "unpackingScreen": {
     "title": "How the test works",
-    "description": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①①, a bag with a number ②②, a bag with a number ③③, and some bubble wrap.",
+    "description": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap.",
     "kitMissingItems": "Is your kit missing items? Email us."
   },
   "swabScreen": {
     "title": "Begin the first test",
-    "description": "Open box ①① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
+    "description": "Open box ① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
   },
   "swabPrepScreen": {
     "title": "Prepare tube",
@@ -406,7 +406,7 @@
   },
   "swabInTubeScreen": {
     "title": "Put swab in tube",
-    "description": "Place the swab into the tube sitting in box ①①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
+    "description": "Place the swab into the tube sitting in box ①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "firstTimerScreen": {
@@ -421,7 +421,7 @@
   },
   "openTestStripScreen": {
     "title": "Open test strip",
-    "description": "Inside the same box ①① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
+    "description": "Inside the same box ① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
@@ -447,7 +447,7 @@
   },
   "testStripReadyScreen": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①①."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①."
   },
   "testStripTimerScreen": {
     "title": "Time Remaining: **{{time}}**",
@@ -489,7 +489,7 @@
   },
   "cleanFirstTest2Screen": {
     "title": "Put test strip in bag #2",
-    "desc": "Open bag ②② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
+    "desc": "Open bag ② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
   },
   "firstTestFeedbackScreen": {
     "title": "Nice job with the first test! One more to go."
@@ -512,22 +512,22 @@
   },
   "cleanSecondTestScreen": {
     "title": "Clean up the second test",
-    "description": "Put the tube with the red top into the same bag ②② as the other items to be returned."
+    "description": "Put the tube with the red top into the same bag ② as the other items to be returned."
   },
   "secondTestFeedbackScreen": {
     "title": "Nice job with the second (and final) test!"
   },
   "packingScreen": {
     "title": "Packing things up",
-    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③③, and inside, you'll find everything you need to pack up your box."
+    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③, and inside, you'll find everything you need to pack up your box."
   },
   "stickersScreen": {
     "title": "Put stickers on the box",
     "description": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
   },
   "secondBagScreen": {
-    "title": "Put bag ②② in the box",
-    "description": "Bag ②② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ②② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
+    "title": "Put bag ② in the box",
+    "description": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
   },
   "tapeBoxScreen": {
     "title": "Tape up the box",
