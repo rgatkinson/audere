@@ -77,8 +77,11 @@ export function defineModel<Attr>(
 export function primaryKey(column) {
   return { ...column, primaryKey: true };
 }
-export function unique(column) {
-  return { ...column, unique: true };
+export function unique(column, compositeKeyName?: string) {
+  return {
+    ...column,
+    unique: compositeKeyName === undefined ? true : compositeKeyName
+  };
 }
 export function nullable(column) {
   return { ...column, allowNull: true };

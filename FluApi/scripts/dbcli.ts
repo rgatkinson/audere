@@ -37,11 +37,15 @@ import {
   DeviceInfo as FeverDevice,
   EventInfo,
   SurveyNonPIIDbInfo,
-  PIIInfo,
+  PIIInfo
 } from "audere-lib/feverProtocol";
-import { SurveyNonPIIUpdater, SurveyPIIUpdater } from "./util/feverSurveyUpdater";
+import {
+  SurveyNonPIIUpdater,
+  SurveyPIIUpdater
+} from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
-import { AuthManager } from "../src/endpoints/webPortal/auth"
+import { AuthManager } from "../src/endpoints/webPortal/auth";
+import { defineDeviceSetting } from "../src/models/db/devices";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -55,34 +59,54 @@ const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
 const auth = new AuthManager(sql);
+const deviceSetting = defineDeviceSetting(sql);
 
-type SnifflesNonPiiUpdater = Updater<VisitAttributes<VisitNonPIIInfo>, VisitNonPIIInfo, SnifflesDevice>;
-type SnifflesPiiUpdater = Updater<VisitAttributes<VisitPIIInfo>, VisitPIIInfo, SnifflesDevice>;
-type FeverNonPiiUpdater = Updater<SurveyAttributes<SurveyNonPIIDbInfo>, SurveyNonPIIDbInfo, FeverDevice>;
+type SnifflesNonPiiUpdater = Updater<
+  VisitAttributes<VisitNonPIIInfo>,
+  VisitNonPIIInfo,
+  SnifflesDevice
+>;
+type SnifflesPiiUpdater = Updater<
+  VisitAttributes<VisitPIIInfo>,
+  VisitPIIInfo,
+  SnifflesDevice
+>;
+type FeverNonPiiUpdater = Updater<
+  SurveyAttributes<SurveyNonPIIDbInfo>,
+  SurveyNonPIIDbInfo,
+  FeverDevice
+>;
 type FeverPiiUpdater = Updater<SurveyAttributes<PIIInfo>, PIIInfo, FeverDevice>;
-type SomeUpdater = SnifflesNonPiiUpdater | SnifflesPiiUpdater | FeverNonPiiUpdater | FeverPiiUpdater;
+type SomeUpdater =
+  | SnifflesNonPiiUpdater
+  | SnifflesPiiUpdater
+  | FeverNonPiiUpdater
+  | FeverPiiUpdater;
 type SomeDevice = SnifflesDevice | FeverDevice;
 
 type PerReleaseUpdater<TNonPii, TPii> = {
   nonPii: TNonPii;
   pii: TPii;
-}
-type SnifflesUpdater = PerReleaseUpdater<SnifflesNonPiiUpdater, SnifflesPiiUpdater>;
+};
+type SnifflesUpdater = PerReleaseUpdater<
+  SnifflesNonPiiUpdater,
+  SnifflesPiiUpdater
+>;
 type FeverUpdater = PerReleaseUpdater<FeverNonPiiUpdater, FeverPiiUpdater>;
 
 const sniffles: SnifflesUpdater = {
   nonPii: new VisitNonPIIUpdater(sql, log),
-  pii: new VisitPIIUpdater(sql, log),
+  pii: new VisitPIIUpdater(sql, log)
 };
 
 const fever: FeverUpdater = {
   nonPii: new SurveyNonPIIUpdater(sql.nonPii, log),
-  pii: new SurveyPIIUpdater(sql.pii, log),
+  pii: new SurveyPIIUpdater(sql.pii, log)
 };
 
 enum Release {
   Sniffles = "sniffles",
-  Fever = "fever",
+  Fever = "fever"
 }
 
 yargs
@@ -108,27 +132,24 @@ yargs
   })
   .command({
     command: "location <row> <value>",
-    builder: yargs =>
-      yargs
-        .string("row")
-        .string("value"),
-    handler: command(cmdLocation),
+    builder: yargs => yargs.string("row").string("value"),
+    handler: command(cmdLocation)
   })
   .command({
     command: "upload <row>",
-    describe: "Removes marker that a row is already uploaded to Hutch, " +
+    describe:
+      "Removes marker that a row is already uploaded to Hutch, " +
       "hopefully to trigger another upload next time around.",
-    builder: yargs =>
-      yargs
-        .string("row"),
-    handler: command(cmdUpload),
+    builder: yargs => yargs.string("row"),
+    handler: command(cmdUpload)
   })
   .command({
     command: "generate-random-key [size]",
-    builder: yargs => yargs.option("size", {
-      number: true
-    }),
-    handler: command(cmdGenerateRandomKey),
+    builder: yargs =>
+      yargs.option("size", {
+        number: true
+      }),
+    handler: command(cmdGenerateRandomKey)
   })
   .command({
     command: "add-access-key <release> <key>",
@@ -162,35 +183,50 @@ yargs
   })
   .command({
     command: "log <release> [since] [until] [device] [text]",
-    builder: yargs => yargs
-      .string("release")
-      .positional("since", {
-        describe: "earliest timestamp to search",
-        default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      })
-      .positional("until", {
-        describe: "latest timestamp to search",
-        default: new Date(Date.now()),
-      })
-      .positional("device", {
-        describe: "regular expression to search in device name or id",
-        default: ".?"
-      })
-      .positional("text", {
-        describe: "regular expression to search in log lines",
-        default: ".?"
-      }),
+    builder: yargs =>
+      yargs
+        .string("release")
+        .positional("since", {
+          describe: "earliest timestamp to search",
+          default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        })
+        .positional("until", {
+          describe: "latest timestamp to search",
+          default: new Date(Date.now())
+        })
+        .positional("device", {
+          describe: "regular expression to search in device name or id",
+          default: ".?"
+        })
+        .positional("text", {
+          describe: "regular expression to search in log lines",
+          default: ".?"
+        }),
     handler: command(cmdLog)
   })
   .command({
-    command: 'adduser <userid> <password>',
-    builder: (yargs) => yargs.string('userid').string('password'),
-    handler: command(cmdAdd),
+    command: "adduser <userid> <password>",
+    builder: yargs => yargs.string("userid").string("password"),
+    handler: command(cmdAdd)
   })
   .command({
-    command: 'passwd <userid> <password>',
-    builder: (yargs) => yargs.string('userid').string('password'),
-    handler: command(cmdPasswd),
+    command: "passwd <userid> <password>",
+    builder: yargs => yargs.string("userid").string("password"),
+    handler: command(cmdPasswd)
+  })
+  .command({
+    command: "set-device-setting <installationId> <key> <value>",
+    builder: yargs =>
+      yargs
+        .string("installationId")
+        .string("key")
+        .string("value"),
+    handler: command(cmdSetDeviceSetting)
+  })
+  .command({
+    command: "clear-device-setting <installationId> <key>",
+    builder: yargs => yargs.string("installationId").string("key"),
+    handler: command(cmdClearDeviceSetting)
   })
   .demandCommand().argv;
 
@@ -212,11 +248,33 @@ function command(cmd: any) {
   };
 }
 
+interface DeviceSettingArgs {
+  installationId: string;
+  key: string;
+  value: string;
+}
+
+async function cmdSetDeviceSetting(argv: DeviceSettingArgs) {
+  await deviceSetting.upsert({
+    device: argv.installationId,
+    key: argv.key,
+    setting: argv.value
+  });
+}
+
+async function cmdClearDeviceSetting(argv: DeviceSettingArgs) {
+  await deviceSetting.destroy({
+    where: {
+      device: argv.installationId,
+      key: argv.key
+    }
+  });
+}
+
 interface UserPasswordArgs {
   userid: string;
   password: string;
 }
-
 async function cmdAdd(argv: UserPasswordArgs): Promise<void> {
   await auth.createUser(argv.userid, argv.password);
 }
@@ -231,7 +289,7 @@ interface DocumentEventsArgs {
 
 async function cmdDocumentEvents(argv: DocumentEventsArgs): Promise<void> {
   const csruid = argv.csruid.trim();
-  const rows = await feverModels.surveyNonPii.findAll({ where: { csruid }});
+  const rows = await feverModels.surveyNonPii.findAll({ where: { csruid } });
   if (rows.length === 0) {
     throw fail(`Could not find any surveys with csruid '${csruid}'.`);
   }
@@ -262,7 +320,7 @@ async function cmdLog(argv: LogArgs): Promise<void> {
     default:
       throw fail(
         `Unrecognized release: '${argv.release}', ` +
-        `expected one of '${Object.keys(Release).join("', '")}'`
+          `expected one of '${Object.keys(Release).join("', '")}'`
       );
   }
 }
@@ -271,13 +329,11 @@ async function snifflesLog(argv: LogArgs): Promise<void> {
   const rows = await snifflesModels.clientLogBatch.findAll({
     where: {
       [Op.and]: [
-        { batch: { timestamp: { [Op.gt]: argv.since }}},
-        { batch: { timestamp: { [Op.lt]: argv.until }}},
+        { batch: { timestamp: { [Op.gt]: argv.since } } },
+        { batch: { timestamp: { [Op.lt]: argv.until } } }
       ]
     },
-    order:[
-      literal("batch->>'timestamp' ASC"),
-    ],
+    order: [literal("batch->>'timestamp' ASC")]
   });
 
   const emitter = new LogEmitter();
@@ -285,7 +341,10 @@ async function snifflesLog(argv: LogArgs): Promise<void> {
   const reText = new RegExp(argv.text);
 
   rows.forEach(row => {
-    if (reDevice.test(row.device.installation) || reDevice.test(row.device.deviceName)) {
+    if (
+      reDevice.test(row.device.installation) ||
+      reDevice.test(row.device.deviceName)
+    ) {
       row.batch.records.forEach(record => {
         if (reText.test(record.text)) {
           emitter.emit(row.device, record);
@@ -300,14 +359,12 @@ async function feverLog(argv: LogArgs): Promise<void> {
     where: {
       analytics: {
         [Op.and]: [
-          { timestamp: { [Op.gt]: argv.since }},
-          { timestamp: { [Op.lt]: argv.until }},
+          { timestamp: { [Op.gt]: argv.since } },
+          { timestamp: { [Op.lt]: argv.until } }
         ]
       }
     },
-    order:[
-      literal("analytics->>'timestamp' ASC"),
-    ],
+    order: [literal("analytics->>'timestamp' ASC")]
   });
 
   const emitter = new LogEmitter();
@@ -316,8 +373,8 @@ async function feverLog(argv: LogArgs): Promise<void> {
 
   rows.forEach(row => {
     if (reDevice.test(row.device.installation)) {
-      const logs = [ ...row.analytics.logs ];
-      const events = [ ...row.analytics.events ];
+      const logs = [...row.analytics.logs];
+      const events = [...row.analytics.events];
 
       row.analytics.logs.forEach(record => {
         if (reText.test(record.text)) {
@@ -328,9 +385,13 @@ async function feverLog(argv: LogArgs): Promise<void> {
         emitter.emitEvent(record);
       });
       if (row.analytics.crash != null) {
-        console.log("===========================================================");
+        console.log(
+          "==========================================================="
+        );
         console.log(row.analytics.crash);
-        console.log("===========================================================");
+        console.log(
+          "==========================================================="
+        );
       }
     }
   });
@@ -346,8 +407,10 @@ class LogEmitter {
 
   maybeEmitDevice(device: SomeDevice): void {
     if (device.installation !== this.previousDevice) {
-      const name = (<any>device).deviceName || ''
-      console.log(`========== Device: ${name} (${device.installation}) ==========`);
+      const name = (<any>device).deviceName || "";
+      console.log(
+        `========== Device: ${name} (${device.installation}) ==========`
+      );
       this.previousDevice = device.installation;
     }
   }
@@ -355,7 +418,7 @@ class LogEmitter {
   emitRecord(record: LogRecordInfo): void {
     const level = (<any>record.level.toString()).padStart(5, " ");
     const text = record.text.replace(/\n/g, "\\n");
-    console.log(`${record.timestamp} [${level}]: ${text}`)
+    console.log(`${record.timestamp} [${level}]: ${text}`);
   }
 
   emitEvent(event: EventInfo): void {
@@ -380,7 +443,7 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
       const dataP = await sniffles.pii.load(csruid);
       await Promise.all([
         sniffles.nonPii.setDemo(dataNP, isDemo),
-        sniffles.pii.setDemo(dataP, isDemo),
+        sniffles.pii.setDemo(dataP, isDemo)
       ]);
       break;
     }
@@ -391,7 +454,7 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
       const dataP = await fever.pii.load(csruid);
       await Promise.all([
         fever.nonPii.setDemo(dataNP, isDemo),
-        fever.pii.setDemo(dataP, isDemo),
+        fever.pii.setDemo(dataP, isDemo)
       ]);
       break;
     }
@@ -425,7 +488,9 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
           break;
         }
         default:
-          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+          throw fail(
+            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
+          );
       }
       break;
 
@@ -442,7 +507,9 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
           break;
         }
         default:
-          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+          throw fail(
+            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
+          );
       }
       break;
 
@@ -458,8 +525,12 @@ interface LocationArgs {
 
 async function cmdLocation(argv: LocationArgs) {
   if (!snifflesLocations[argv.value]) {
-    console.log(`Unexpected location value '${argv.value}'.  Known locations are:`);
-    Object.keys(snifflesLocations).sort().forEach(x => console.log(`  ${x}`));
+    console.log(
+      `Unexpected location value '${argv.value}'.  Known locations are:`
+    );
+    Object.keys(snifflesLocations)
+      .sort()
+      .forEach(x => console.log(`  ${x}`));
     await expectYes(`Update anyway? `);
   }
 
@@ -477,8 +548,11 @@ async function cmdLocation(argv: LocationArgs) {
   }
 
   const updates = await Promise.all([
-    sniffles.nonPii.updateItem(nonPii, { ...nonPii.visit, location: argv.value }),
-    sniffles.pii.updateItem(pii, { ...pii.visit, location: argv.value }),
+    sniffles.nonPii.updateItem(nonPii, {
+      ...nonPii.visit,
+      location: argv.value
+    }),
+    sniffles.pii.updateItem(pii, { ...pii.visit, location: argv.value })
   ]);
   if (updates.some(x => x)) {
     console.log(`Updated location to '${argv.value}'`);
@@ -499,14 +573,18 @@ async function cmdUpload(argv: UploadArgs): Promise<void> {
   if (await updater.deleteUploadMarker(csruid)) {
     console.log(`Unmarked ${pubId(csruid)} (${argv.release}) as uploaded.`);
   } else {
-    console.log(`Nothing changed: ${pubId(csruid)} (${argv.release}) is already unmarked.`);
+    console.log(
+      `Nothing changed: ${pubId(csruid)} (${argv.release}) is already unmarked.`
+    );
   }
 }
 
 interface GenerateRandomKeyArgs {
   size?: number;
 }
-async function cmdGenerateRandomKey(argv: GenerateRandomKeyArgs): Promise<void> {
+async function cmdGenerateRandomKey(
+  argv: GenerateRandomKeyArgs
+): Promise<void> {
   console.log(await generateRandomKey(argv.size));
 }
 
@@ -517,7 +595,7 @@ interface AddAccessKeyArgs {
 async function cmdAddAccessKey(argv: AddAccessKeyArgs): Promise<void> {
   await accessKey(argv.release).create({
     key: argv.key,
-    valid: true,
+    valid: true
   });
   console.log(`Added access key '${argv.key}' and marked valid.`);
 }
@@ -535,7 +613,7 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   const buffer = buffers.reduce(bufferXor, Buffer.alloc(0));
   const key = base64url(buffer);
 
-  await accessKey(argv.release).create({ key, valid: true});
+  await accessKey(argv.release).create({ key, valid: true });
 
   console.log(`New access key created and added for ${argv.release}`);
   console.log();
@@ -575,7 +653,9 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
           await snifflesEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
-          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+          throw fail(
+            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
+          );
       }
       break;
     case Release.Fever:
@@ -587,13 +667,15 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
           await feverEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
-          throw fail(`expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`);
+          throw fail(
+            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
+          );
       }
       break;
     default:
       throw fail(
         `Unrecognized release: '${argv.release}', ` +
-        `expected one of '${Object.keys(Release).join("', '")}'`
+          `expected one of '${Object.keys(Release).join("', '")}'`
       );
   }
   console.log("Committed changes.");
@@ -620,7 +702,7 @@ async function snifflesEditVisitPart(original: any, path: string) {
   console.log(`Preparing to update id=${original.id} csruid=${uid}..`);
   await colordiff(part, edited);
   console.log("Do you want to write these changes to the database?");
-  await expectYes("Anything besides 'yes' will cancel. Choose wisely: ")
+  await expectYes("Anything besides 'yes' will cancel. Choose wisely: ");
 
   return setPart(original.visit, pathNodes, edited);
 }
@@ -646,7 +728,7 @@ async function feverEditVisitPart(original: any, path: string) {
   console.log(`Preparing to update id=${original.id} csruid=${uid}..`);
   await colordiff(part, edited);
   console.log("Do you want to write these changes to the database?");
-  await expectYes("Anything besides 'yes' will cancel. Choose wisely: ")
+  await expectYes("Anything besides 'yes' will cancel. Choose wisely: ");
 
   return setPart(original.survey, pathNodes, edited);
 }
@@ -656,7 +738,7 @@ async function editJson(originalValue: any): Promise<any> {
 
   try {
     const tmp = await mkdtemp(pjoin(tmpdir(), `db-json-edit-`));
-    cleanups.push(() => rmdir(tmp))
+    cleanups.push(() => rmdir(tmp));
 
     const editPath = pjoin(tmp, "edit.json");
     console.log(`Temporary file: '${editPath}'`);
@@ -684,17 +766,17 @@ async function editJson(originalValue: any): Promise<any> {
 async function expectYes(query: string): Promise<void> {
   const answer = await question(query);
   if (answer !== "yes") {
-    throw fail(`canceling because '${answer}' is not 'yes'`)
+    throw fail(`canceling because '${answer}' is not 'yes'`);
   }
 }
 
 async function question(query: string): Promise<string> {
   const rl = createReadline({
     input: process.stdin,
-    output: process.stdout,
+    output: process.stdout
   });
   return new Promise<string>(resolve => {
-    rl.question(query, (answer) => {
+    rl.question(query, answer => {
       rl.close();
       resolve(answer);
     });
@@ -705,18 +787,27 @@ async function colordiff(before: any, after: any): Promise<void> {
   const cleanups = [];
   try {
     const tmp = await mkdtemp(pjoin(tmpdir(), `json-diff-`));
-    cleanups.push(() => rmdir(tmp))
+    cleanups.push(() => rmdir(tmp));
 
     const beforePath = pjoin(tmp, "before.json");
     const afterPath = pjoin(tmp, "after.json");
 
-    await writeFile(beforePath, JSON.stringify(before, null, 2) + "\n", "UTF-8");
+    await writeFile(
+      beforePath,
+      JSON.stringify(before, null, 2) + "\n",
+      "UTF-8"
+    );
     cleanups.push(() => unlink(beforePath));
 
     await writeFile(afterPath, JSON.stringify(after, null, 2) + "\n", "UTF-8");
     cleanups.push(() => unlink(afterPath));
 
-    const code = await runCode("colordiff", "--unified=3", beforePath, afterPath);
+    const code = await runCode(
+      "colordiff",
+      "--unified=3",
+      beforePath,
+      afterPath
+    );
     if ([0, 1].indexOf(code) < 0) {
       throw fail(`'colordiff' exited with code '${code}', expected 0 or 1`);
     }
@@ -756,29 +847,32 @@ function fail(message: string): never {
 function accessKey(release: Release) {
   return forApp(release, {
     sniffles: snifflesModels.accessKey,
-    fever: feverModels.accessKey,
+    fever: feverModels.accessKey
   });
 }
 
 function updater(release: Release, kind: string): SomeUpdater {
   switch (kind) {
-    case "pii": return piiUpdater(release);
-    case "nonpii": return nonPiiUpdater(release);
-    default: throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
+    case "pii":
+      return piiUpdater(release);
+    case "nonpii":
+      return nonPiiUpdater(release);
+    default:
+      throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
   }
 }
 
 function piiUpdater(release: Release) {
   return forApp<SnifflesPiiUpdater | FeverPiiUpdater>(release, {
     sniffles: sniffles.pii,
-    fever: fever.pii,
+    fever: fever.pii
   });
 }
 
 function nonPiiUpdater(release: Release) {
   return forApp<SnifflesNonPiiUpdater | FeverNonPiiUpdater>(release, {
     sniffles: sniffles.nonPii,
-    fever: fever.nonPii,
+    fever: fever.nonPii
   });
 }
 
@@ -787,14 +881,13 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
     const required = Object.keys(Release)
       .map(x => Release[x])
       .sort();
-    const provided = Object.keys(choices)
-      .sort();
+    const provided = Object.keys(choices).sort();
     if (!_.isEqual(required, provided)) {
       throw new Error(
         `Internal error: forApp called with choices that don't match releases: ` +
-        `required=[${required.join(",")}] ` +
-        `provided=[${provided.join(",")}]`
-      )
+          `required=[${required.join(",")}] ` +
+          `provided=[${provided.join(",")}]`
+      );
     }
   }
 
@@ -802,7 +895,9 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
   if (choice == null) {
     throw fail(
       `Unrecognized release: '${release}', ` +
-      `expected one of '${Object.keys(Release).map(x => Release[x]).join("', '")}'`
+        `expected one of '${Object.keys(Release)
+          .map(x => Release[x])
+          .join("', '")}'`
     );
   }
 
