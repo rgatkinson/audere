@@ -145,6 +145,10 @@ interface WorkflowProps {
   workflow: WorkflowInfo;
 }
 
+interface ConnectedProps {
+  isConnected: boolean;
+}
+
 @connect((state: StoreState) => ({
   workflow: state.survey.workflow,
 }))
@@ -2554,23 +2558,37 @@ interface EmailProps {
 }
 
 @connect((state: StoreState) => ({
+  isConnected: state.meta.isConnected,
   workflow: state.survey.workflow,
 }))
 class EmailOptInScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces & ReduxWriterProps
+  Props & ConnectedProps & WorkflowProps & WithNamespaces & ReduxWriterProps
 > {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.COMPLETED_SHIPPING);
   }
 
-  _onNext = () => {
+  _onNext = async () => {
+    const { isConnected, t } = this.props;
+
     this.props.dispatch(
       setWorkflow({
         ...this.props.workflow,
         surveyCompletedAt: new Date().toISOString(),
       })
     );
-    this.props.navigation.push("Thanks");
+
+    const awaitingUpload = await uploader.documentsAwaitingUpload();
+
+    if (!!awaitingUpload && awaitingUpload > 0 && !isConnected) {
+      Alert.alert(
+        t("common:notifications:dataUploadTitle"),
+        t("common:notifications:dataUploadDesc"),
+        [{ text: "Try Again" }]
+      );
+    } else {
+      this.props.navigation.push("Thanks");
+    }
   };
 
   _onChange = (options: Option[]) => {

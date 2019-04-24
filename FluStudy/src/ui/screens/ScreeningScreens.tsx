@@ -13,7 +13,6 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -652,7 +651,6 @@ function writeAddressAndNavigate(
 
 interface AddressState {
   address: Address;
-  isConnected: boolean;
   noResults: boolean;
   showValidationError: boolean;
   suggestedAddress: Address | null;
@@ -663,19 +661,25 @@ interface DemoModeProps {
   isDemo: boolean;
 }
 
+interface IsConnectedProps {
+  isConnected: boolean;
+}
+
 interface AddressValidatorProps {
   csruid: string;
 }
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
-  workflow: state.survey.workflow,
-  isDemo: state.meta.isDemo,
   csruid: state.survey.csruid,
+  isConnected: state.meta.isConnected,
+  isDemo: state.meta.isDemo,
+  workflow: state.survey.workflow,
 }))
 class AddressInputScreen extends React.Component<
   Props &
     DemoModeProps &
+    IsConnectedProps &
     EmailProps &
     WorkflowProps &
     WithNamespaces &
@@ -685,6 +689,7 @@ class AddressInputScreen extends React.Component<
 > {
   constructor(
     props: Props &
+      IsConnectedProps &
       DemoModeProps &
       EmailProps &
       WorkflowProps &
@@ -696,7 +701,6 @@ class AddressInputScreen extends React.Component<
     this.state = {
       address: props.getAnswer("addressInput", AddressConfig.id),
       email: props.email,
-      isConnected: false,
       noResults: false,
       showValidationError: false,
       suggestedAddress: null,
@@ -730,27 +734,6 @@ class AddressInputScreen extends React.Component<
       return address;
     });
   };
-
-  _handleConnectivityChange = (isConnected: boolean) => {
-    this.setState({ isConnected });
-  };
-
-  componentDidMount() {
-    NetInfo.isConnected.fetch().then(isConnected => {
-      this.setState({ isConnected });
-    });
-    NetInfo.isConnected.addEventListener(
-      "connectionChange",
-      this._handleConnectivityChange
-    );
-  }
-
-  componentWillUnmount() {
-    NetInfo.isConnected.removeEventListener(
-      "connectionChange",
-      this._handleConnectivityChange
-    );
-  }
 
   _onNext = async () => {
     const { dispatch, navigation, t, updateAnswer, workflow } = this.props;
@@ -798,7 +781,7 @@ class AddressInputScreen extends React.Component<
           updateAnswer,
           navigation
         );
-      } else if (this.state.isConnected) {
+      } else if (this.props.isConnected) {
         try {
           const key = createAccessKey();
           const response = await axios.get(
@@ -889,7 +872,7 @@ class AddressInputScreen extends React.Component<
   };
 
   _onEmailChange = (newEmail: string) => {
-    const { address, showValidationError, triedToProceed } = this.state;
+    const { address, triedToProceed } = this.state;
     const newShowValidationError =
       !isValidAddress(address) || !isValidEmail(newEmail) || !triedToProceed;
 

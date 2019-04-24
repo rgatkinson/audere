@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  Dimensions,
+  Alert,
   Image,
   ImageSourcePropType,
   ScrollView,
@@ -23,7 +23,7 @@ import VideoPlayer from "./VideoPlayer";
 import ScreenImages from "./ScreenImages";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
 import { getRemoteConfig, overrideRemoteConfig } from "../../util/remoteConfig";
-
+import { setShownOfflineWarning } from "../../store";
 interface Props {
   buttonLabel?: string;
   canProceed: boolean;
@@ -36,8 +36,10 @@ interface Props {
   images?: string[];
   imageSrc?: ImageSourcePropType;
   isDemo?: boolean;
+  isConnected?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
+  shownOfflineWarning?: boolean;
   skipButton?: boolean;
   stableImageSrc?: ImageSourcePropType;
   step?: number;
@@ -49,17 +51,28 @@ interface Props {
   onNext?: () => void;
 }
 
+interface ScreenState {
+  showOfflineWarningModal: boolean;
+}
+
 const CustomScrollView = wrapScrollView(ScrollView);
 
 const TRIPLE_PRESS_DELAY = 500;
 const LONG_PRESS_DELAY_MS = 3 * 1000;
 
 @connect((state: StoreState) => ({
+  isConnected: state.meta.isConnected,
   isDemo: state.meta.isDemo,
+  shownOfflineWarning: state.meta.shownOfflineWarning,
 }))
-class Screen extends React.Component<Props & WithNamespaces> {
+class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
   lastTap: number | null = null;
   secondLastTap: number | null = null;
+
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = { showOfflineWarningModal: false };
+  }
 
   handleTripleTap = () => {
     const now = Date.now();
@@ -82,9 +95,29 @@ class Screen extends React.Component<Props & WithNamespaces> {
     }
 
     const blockKitOrders = getRemoteConfig("blockKitOrders");
-
     overrideRemoteConfig("blockKitOrders", !blockKitOrders);
     alert(`blockKitOrders is now ${!blockKitOrders}`);
+  };
+
+  handleNavigation = () => {
+    const {
+      dispatch,
+      isConnected,
+      onNext,
+      shownOfflineWarning,
+      t,
+    } = this.props;
+
+    if (!isConnected && !shownOfflineWarning) {
+      dispatch!(setShownOfflineWarning(true));
+      Alert.alert(
+        t("common:notifications:connectionErrorTitle"),
+        t("common:notifications:connectionError"),
+        [{ text: "Try Again" }]
+      );
+    } else if (!!onNext) {
+      onNext();
+    }
   };
 
   render() {
@@ -172,7 +205,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                       : t("common:button:continue")
                   }
                   primary={true}
-                  onPress={this.props.onNext}
+                  onPress={this.handleNavigation}
                 />
               )}
               {this.props.footer}

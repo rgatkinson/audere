@@ -3,10 +3,11 @@ import {
   ActivityIndicator,
   AppState,
   Dimensions,
+  StyleSheet,
   TouchableWithoutFeedback,
   View,
-  StyleSheet,
 } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
 import {
   Action,
   StoreState,
@@ -14,6 +15,8 @@ import {
   clearState,
   setCSRUIDIfUnset,
   setMarketingProperties,
+  setShownOfflineWarning,
+  setConnectivity,
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
 import { crashlytics } from "../crashReporter";
@@ -62,6 +65,7 @@ class SplashScreen extends React.Component<SplashProps> {
 }
 
 interface Props {
+  isConnected: boolean;
   isDemo: boolean;
   lastUpdate?: number;
   workflow: WorkflowInfo;
@@ -108,16 +112,31 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   };
 
+  _handleConnectivityChange = async (isConnected: boolean) => {
+    this.props.dispatch(setConnectivity(isConnected));
+  };
+
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
     this.props.dispatch(setMarketingProperties(getMarketingProperties()));
     if (this.props.csruid) {
       onCSRUIDEstablished(this.props.csruid);
     }
+    NetInfo.isConnected.fetch().then(isConnected => {
+      this.props.dispatch(setConnectivity(isConnected));
+    });
+    NetInfo.isConnected.addEventListener(
+      "connectionChange",
+      this._handleConnectivityChange
+    );
   }
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this._handleAppStateChange);
+    NetInfo.isConnected.removeEventListener(
+      "connectionChange",
+      this._handleConnectivityChange
+    );
   }
 
   _handleAppStateChange = (nextAppState: string) => {
@@ -154,6 +173,7 @@ class ConnectedRootContainer extends React.Component<Props> {
       this.state.appState === "active" &&
       nextAppState.match(/inactive|background/)
     ) {
+      this.props.dispatch!(setShownOfflineWarning(false));
       tracker.logEvent(AppEvents.APP_BACKGROUNDED, {
         screen: this.state.activeRouteName,
       });
@@ -408,6 +428,7 @@ const styles = StyleSheet.create({
 export default connect((state: StoreState) => {
   try {
     return {
+      isConnected: state.meta.isConnected,
       isDemo: state.meta.isDemo,
       lastUpdate: state.survey.timestamp,
       workflow: state.survey.workflow,
@@ -417,6 +438,7 @@ export default connect((state: StoreState) => {
     uploadingErrorHandler(e, true, "StoreState corrupted");
 
     const defaults = {
+      isConnected: false,
       isDemo: false,
       lastUpdate: undefined,
       workflow: {},
@@ -428,6 +450,7 @@ export default connect((state: StoreState) => {
     }
 
     return {
+      isConnected: !!state.meta ? state.meta.isConnected : defaults.isConnected,
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
