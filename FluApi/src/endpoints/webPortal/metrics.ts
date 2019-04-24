@@ -67,6 +67,22 @@ function getTimezoneAbbrev(): string {
     .format("z");
 }
 
+function getTimeDifference(startTime: Date, endTime: Date): string {
+  if (startTime && endTime) {
+    const delta = moment.duration(moment(endTime).diff(moment(startTime)));
+    const days = Math.floor(delta.days());
+    if (days == 0) {
+      return moment.utc(delta.asMilliseconds()).format("HH:mm:ss");
+    } else if (days == 1) {
+      return "1 day " + moment.utc(delta.asMilliseconds()).format("HH:mm:ss");
+    } else {
+      return (
+        days + " days " + moment.utc(delta.asMilliseconds()).format("HH:mm:ss")
+      );
+    }
+  }
+}
+
 export interface SnifflesMetrics {
   surveyStatsData: object;
   surveyStatsByAdminData: object;
@@ -1083,7 +1099,7 @@ export async function getFeverMetrics(
   const getScanTime = row => {
     const barcodeConfirmation = row.survey.events.find(
       item =>
-        item.refId == "ScanConfirmation" || item.refId === "ManualConfirmation"
+        item.refId === "ScanConfirmation" || item.refId === "ManualConfirmation"
     );
     if (barcodeConfirmation) {
       return barcodeConfirmation.at;
@@ -1140,21 +1156,28 @@ export async function getFeverMetrics(
 
   let studyIdData = [];
   rowsNonPii.forEach(row => {
+    const startTime = row["createdAt"];
+    const kitOrderTime = getKitOrderTime(row);
+    const scanTime = getScanTime(row);
+    const surveyCompleteTime = getSurveyCompleteTime(row);
     studyIdData.push({
       age: getAgeRange(row),
       city: getUserCity(row),
       state: getUserState(row),
       gender: getUserGender(row),
-      createdAt: row["createdAt"],
+      createdAt: startTime,
       barcode: getBarcode(row),
       studyid: row.csruid.substring(0, 21),
       dbid: row.id,
       appversion: row.device.clientVersion["version"],
       devicemodel: getDeviceModel(row),
       installation: row.device.installation,
-      kitordertime: getKitOrderTime(row),
-      scantime: getScanTime(row),
-      questionscompletedtime: getSurveyCompleteTime(row),
+      kitordertime: kitOrderTime,
+      starttoorder: getTimeDifference(startTime, kitOrderTime),
+      scantime: scanTime,
+      ordertoscan: getTimeDifference(kitOrderTime, scanTime),
+      questionscompletedtime: surveyCompleteTime,
+      scantosurveyfinish: getTimeDifference(scanTime, surveyCompleteTime),
       finishtime: getFinishTime(row),
       kitreceiveddate: row["fever_received_kit.dateReceived"],
       firsttestfeedback: getTest1Feedback(row),
@@ -1503,6 +1526,11 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       },
       width: 150
     },
+    starttoorder: {
+      displayName: "App Start to Kit Order",
+      headerStyle: styles.columnHeader,
+      width: 150
+    },
     scantime: {
       displayName: "Scanned Barcode (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
@@ -1511,12 +1539,22 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       },
       width: 150
     },
+    ordertoscan: {
+      displayName: "Kit Order to Barcode Scan",
+      headerStyle: styles.columnHeader,
+      width: 150
+    },
     questionscompletedtime: {
       displayName: "Finished Survey Questions (" + getTimezoneAbbrev() + ")",
       headerStyle: styles.columnHeader,
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
+      width: 150
+    },
+    scantosurveyfinish: {
+      displayName: "Barcode Scan to Survey FInish",
+      headerStyle: styles.columnHeader,
       width: 150
     },
     finishtime: {
@@ -1683,14 +1721,29 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     ["Installation ID", null, "Unique ID associated with App installation"],
     ["Kit Ordered", null, "Time user submitted their address to order kit"],
     [
+      "App Start to Kit Order",
+      null,
+      "How much time elapsed between when the user started the app and ordered the kit"
+    ],
+    [
       "Barcode Scanned",
       null,
       "Time when user scanned or manually entered barcode"
     ],
     [
+      "Kit Order to Barcode Scan",
+      null,
+      "How much time elapsed between when the user ordered the kit and scanned the barcode"
+    ],
+    [
       "Finished Survey Questions",
       null,
       "Time when user finished the questions about their illness"
+    ],
+    [
+      "Barcode Scan to Survey Finish",
+      null,
+      "How much time elapsed between when the user scanned the barcode and finished the survey"
     ],
     ["Finished App", null, "Time user reached last screen of app"],
     ["Kit Received", null, "Date when kit was received by lab"],
