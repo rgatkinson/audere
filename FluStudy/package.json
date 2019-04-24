@@ -32,7 +32,8 @@
     "eject": "expo eject",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "test": "jest",
+    "test": "jest -c test/jest.config.js",
+    "test-ui": "jest -c test/jest.config.ui.js",
     "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
     "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}",
     "typecheck": "tsc --noEmit"
@@ -40,39 +41,13 @@
   "prettier": {
     "trailingComma": "es5"
   },
-  "jest": {
-    "preset": "jest-expo",
-    "setupTestFrameworkScriptFile": "./test/setupJest",
-    "setupFiles": [
-      "./jestSetup.js"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "transform": {
-      "\\.(js)$": "babel-jest",
-      "\\.(ts|tsx)$": "ts-jest"
-    },
-    "testMatch": [
-      "**/__tests__/**/*.(ts|js)?(x)",
-      "**/?(*.)+(spec|test).(ts|js)?(x)"
-    ],
-    "testPathIgnorePatterns": [
-      "\\.snap$",
-      "<rootDir>/node_modules/"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|pouchdb-adapter-asyncstorage|@react-native-community/netinfo))"
-    ]
-  },
   "dependencies": {
     "@react-native-community/netinfo": "^2.0.0",
     "@types/buffer-xor": "^2.0.0",
     "@types/expo-localization": "^1.0.0",
     "@types/expo__vector-icons": "^6.2.3",
     "@types/i18next": "^11.9.3",
+    "appium": "^1.12.1",
     "audere-lib": "link:../lib",
     "axios": "^0.18.0",
     "babel-plugin-inline-dotenv": "^1.2.0",
@@ -113,6 +88,7 @@
     "redux-persist-transform-immutable": "^5.0.0",
     "snyk": "^1.136.0",
     "url-parse": "^1.4.4",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "wd": "^1.11.2"
   }
 }

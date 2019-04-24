@@ -1,5 +1,5 @@
 import { NativeModules as RNNativeModules } from "react-native";
-import crypto from 'crypto';
+import crypto from "crypto";
 
 RNNativeModules.UIManager = RNNativeModules.UIManager || {};
 RNNativeModules.UIManager.RCTView = RNNativeModules.UIManager.RCTView || {};
@@ -9,10 +9,9 @@ RNNativeModules.RNGestureHandlerModule = RNNativeModules.RNGestureHandlerModule 
   createGestureHandler: jest.fn(),
   dropGestureHandler: jest.fn(),
   updateGestureHandler: jest.fn(),
-
 };
 RNNativeModules.PlatformConstants = RNNativeModules.PlatformConstants || {
-  forceTouchAvailable: false
+  forceTouchAvailable: false,
 };
 
 Object.defineProperty(global, "crypto", {
