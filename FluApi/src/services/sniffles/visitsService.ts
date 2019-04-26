@@ -14,7 +14,7 @@ import {
 } from "../../models/db/sniffles";
 import { ResponseInfo } from "audere-lib/dist/snifflesProtocol";
 import { filterResponsePII } from "./piiFilter";
-import { RequestContext } from "../../util/requestContext";
+import moment from "moment";
 
 /**
  * Consolidates the view of a visit across PII & non-PII storage.
@@ -36,6 +36,9 @@ export class VisitsService {
   public async retrievePendingDetails(
     numToRetrieve: number
   ): Promise<Map<number, PIIVisitDetails>> {
+    const now = moment();
+    const staleDate = now.subtract(2, "days").format("YYYY-MM-DD");
+
     // Filters by joining to HutchUpload and looking for records with no match.
     // HutchUpload exists only in the Non-PII database.
     const nonPiiVisits = await this.snifflesModels.visitNonPii.findAll({
@@ -43,9 +46,23 @@ export class VisitsService {
         [Op.and]: [
           {
             visit: {
-              isDemo: false,
-              complete: "true"
+              isDemo: false
             }
+          },
+          // Either completed or over two days old
+          {
+            [Op.or]: [
+              {
+                visit: {
+                  complete: "true"
+                }
+              },
+              {
+                updatedAt: {
+                  [Op.lt]: staleDate
+                }
+              }
+            ]
           },
           {
             [Op.or]: [

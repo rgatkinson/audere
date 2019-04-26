@@ -4,7 +4,7 @@ import {
   defineSnifflesModels,
   SnifflesModels
 } from "../../../src/models/db/sniffles";
-import { createSplitSql } from "../../../src/util/sql";
+import { createSplitSql, SplitSql } from "../../../src/util/sql";
 import { defineHutchUpload } from "../../../src/models/db/hutchUpload";
 import {
   documentContentsNonPII,
@@ -12,12 +12,16 @@ import {
   BED_ASSIGNMENT_RESPONSE_ITEM,
   PII_RESPONSE_ITEM
 } from "../../util/sample_data";
+import _ from "lodash";
+import moment from "moment";
+import sequelize = require("sequelize");
 
 describe("visitsService", () => {
   let visitsService: VisitsService;
   let snifflesModels: SnifflesModels;
+  let splitSql: SplitSql;
   beforeAll(async done => {
-    const splitSql = createSplitSql();
+    splitSql = createSplitSql();
     snifflesModels = defineSnifflesModels(splitSql);
     visitsService = new VisitsService(
       snifflesModels,
@@ -55,7 +59,7 @@ describe("visitsService", () => {
       await visitNonPII.destroy();
     });
 
-    it("Returns visits that are complete but missing a sample", async () => {
+    it("Returns visits that have no samples but have completed the questionnarie", async () => {
       const docNonPII = documentContentsNonPII("fakecsruid2");
       docNonPII.visit = {
         ...docNonPII.visit,
@@ -77,35 +81,9 @@ describe("visitsService", () => {
       await visitNonPII.destroy();
     });
 
-    it("Returns visits that are not complete but have a sample", async () => {
-      const docNonPII = documentContentsNonPII("fakecsruid3");
-      docNonPII.visit = {
-        ...docNonPII.visit,
-        events: []
-      };
-      const docPII = documentContentsPII("fakecsruid3");
-      const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
-      const visitPII = await snifflesModels.visitPii.create(docPII);
-
-      const pendingVisits = await visitsService.retrievePendingDetails(1000);
-
-      const csruids = Array.from(pendingVisits.values()).map(
-        value => value.csruid
-      );
-
-      expect(csruids).toContain("fakecsruid3");
-
-      await visitPII.destroy();
-      await visitNonPII.destroy();
-    });
-
-    it("Does not return visits that are not complete nor have a sample", async () => {
-      const docNonPII = documentContentsNonPII("fakecsruid4");
-      docNonPII.visit = {
-        ...docNonPII.visit,
-        samples: [],
-        events: []
-      };
+    it("Does not return recent visits that are not complete", async () => {
+      const docNonPII = _.cloneDeep(documentContentsNonPII("fakecsruid4"));
+      docNonPII.visit.complete = false;
       const docPII = documentContentsPII("fakecsruid4");
       const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
       const visitPII = await snifflesModels.visitPii.create(docPII);
@@ -117,6 +95,53 @@ describe("visitsService", () => {
       );
 
       expect(csruids).not.toContain("fakecsruid4");
+
+      await visitPII.destroy();
+      await visitNonPII.destroy();
+    });
+
+    it("does not return recent visits that have no sample or completed questionnaire", async () => {
+      const docNonPII = _.cloneDeep(documentContentsNonPII("fakecsruid4"));
+      docNonPII.visit.complete = false;
+      docNonPII.visit.events = docNonPII.visit.events
+        .filter(e => e.refId != "CompletedQuestionnaire");
+      docNonPII.visit.samples = [];
+      const docPII = documentContentsPII("fakecsruid4");
+      const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
+      const visitPII = await snifflesModels.visitPii.create(docPII);
+
+      const pendingVisits = await visitsService.retrievePendingDetails(1000);
+
+      const csruids = Array.from(pendingVisits.values()).map(
+        value => value.csruid
+      );
+
+      expect(csruids).not.toContain("fakecsruid4");
+
+      await visitPII.destroy();
+      await visitNonPII.destroy();
+    });
+
+    it("returns older visits that will no longer be edited, even if they are not marked as complete", async () => {
+      const docNonPII = _.cloneDeep(documentContentsNonPII("fakecsruid5"));
+      docNonPII.visit.complete = false;
+      const docPII = documentContentsPII("fakecsruid5");
+      const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
+      const visitPII = await snifflesModels.visitPii.create(docPII);
+
+      const date = moment().subtract(20, "days").toISOString()
+
+      await splitSql.nonPii.query(`
+        update visits set "updatedAt" = '${date}' where csruid = 'fakecsruid5';
+      `, { type: sequelize.QueryTypes.UPDATE });
+
+      const pendingVisits = await visitsService.retrievePendingDetails(1000);
+
+      const csruids = Array.from(pendingVisits.values()).map(
+        value => value.csruid
+      );
+
+      expect(csruids).toContain("fakecsruid5");
 
       await visitPII.destroy();
       await visitNonPII.destroy();
