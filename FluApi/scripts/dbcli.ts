@@ -651,10 +651,7 @@ async function cmdLog(argv: LogArgs): Promise<void> {
       await feverLog(argv);
       break;
     default:
-      throw fail(
-        `Unrecognized release: '${argv.release}', ` +
-          `expected one of '${Object.keys(Release).join("', '")}'`
-      );
+      throw failRelease(argv.release);
   }
 }
 
@@ -821,9 +818,7 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
           break;
         }
         default:
-          throw fail(
-            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
-          );
+          throw failKind(argv.kind);
       }
       break;
 
@@ -840,9 +835,7 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
           break;
         }
         default:
-          throw fail(
-            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
-          );
+          throw failKind(argv.kind);
       }
       break;
 
@@ -992,9 +985,7 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
           await snifflesEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
-          throw fail(
-            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
-          );
+          throw failKind(argv.kind);
       }
       break;
     case Release.Fever:
@@ -1006,16 +997,11 @@ async function cmdEdit(argv: EditArgs): Promise<void> {
           await feverEditNonPii(argv.row.trim(), argv.path);
           break;
         default:
-          throw fail(
-            `expected kind to be either 'pii' or 'nonpii', got '${argv.kind}'`
-          );
+          throw failKind(argv.kind);
       }
       break;
     default:
-      throw fail(
-        `Unrecognized release: '${argv.release}', ` +
-          `expected one of '${Object.keys(Release).join("', '")}'`
-      );
+      throw failRelease(argv.release);
   }
   console.log("Committed changes.");
 }
@@ -1177,23 +1163,6 @@ function runCode(program: string, ...args: string[]): Promise<number> {
   });
 }
 
-function failKind(kind: string): never {
-  throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
-}
-
-function failRelease(release: string | Release): never {
-  throw fail(
-    `Unrecognized release: '${release}', ` +
-    `expected one of '${Object.keys(Release).join("', '")}'`
-  );
-}
-
-function fail(message: string): never {
-  const error = new Error(message);
-  (<any>error).checked = true;
-  throw error;
-}
-
 function accessKey(release: Release) {
   return forApp(release, {
     sniffles: snifflesModels.accessKey,
@@ -1267,4 +1236,21 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
 
 function pubId(csruid: string): string {
   return csruid.substring(0, 21);
+}
+
+function failKind(kind: string): never {
+  throw fail(`expected kind to be either 'pii' or 'nonpii', got '${kind}'`);
+}
+
+function failRelease(release: string | Release): never {
+  throw fail(
+    `Unrecognized release: '${release}', ` +
+    `expected one of '${Object.keys(Release).join("', '")}'`
+  );
+}
+
+function fail(message: string): never {
+  const error = new Error(message);
+  (<any>error).checked = true;
+  throw error;
 }
