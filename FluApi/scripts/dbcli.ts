@@ -119,7 +119,8 @@ yargs
     alias: "v",
     boolean: true,
     global: true
-  })
+  });
+yargs
   .command({
     command: "by-created <release> <start> <end>",
     builder: yargs => yargs
@@ -127,22 +128,26 @@ yargs
       .string("start")
       .string("end"),
     handler: command(cmdByCreated),
-  })
+  });
+yargs
   .command({
     command: "by-consent-date <release> <date>",
     builder: yargs => yargs.string("release").string("date"),
     handler: command(cmdByConsentDate),
-  })
+  });
+yargs
   .command({
     command: "by-email <release> <email>",
     builder: yargs => yargs.string("email"),
     handler: command(cmdByEmail),
-  })
+  });
+yargs
   .command({
     command: "by-name <release> <first> <last>",
     builder: yargs => yargs.string("first").string("last"),
     handler: command(cmdByName),
-  })
+  });
+yargs
   .command({
     command: "show-path <release> <kind> <path> <rows>",
     builder: yargs => yargs
@@ -151,7 +156,8 @@ yargs
       .string("path")
       .string("rows"),
     handler: command(cmdShowPath)
-  })
+  });
+yargs
   // TODO: This might be subsumed by show-path, remove?
   .command({
     command: "survey-path <row> <kind> <path>",
@@ -160,17 +166,20 @@ yargs
       .string("kind")
       .string("path"),
     handler: command(cmdSurveyPath),
-  })
+  });
+yargs
   .command({
     command: "photo <csruid>",
     builder: yargs => yargs.string("csruid"),
     handler: command(cmdPhoto),
-  })
+  });
+yargs
   .command({
     command: "demo <release> <row> [value]",
     builder: yargs => yargs.string("row").boolean("value"),
     handler: command(cmdDemo)
-  })
+  });
+yargs
   .command({
     command: "demo1 <release> <kind> <row> [value]",
     builder: yargs =>
@@ -180,12 +189,14 @@ yargs
         .string("row")
         .option("value", { boolean: true }),
     handler: command(cmdDemo1)
-  })
+  });
+yargs
   .command({
     command: "set-location <row> <value>",
     builder: yargs => yargs.string("row").string("value"),
     handler: command(cmdSetSnifflesLocation)
-  })
+  });
+yargs
   .command({
     command: "upload <row>",
     describe:
@@ -193,7 +204,8 @@ yargs
       "hopefully to trigger another upload next time around.",
     builder: yargs => yargs.string("row"),
     handler: command(cmdUpload)
-  })
+  });
+yargs
   .command({
     command: "generate-random-key [size]",
     builder: yargs =>
@@ -201,22 +213,26 @@ yargs
         number: true
       }),
     handler: command(cmdGenerateRandomKey)
-  })
+  });
+yargs
   .command({
     command: "add-access-key <release> <key>",
     builder: yargs => yargs.string("release"),
     handler: command(cmdAddAccessKey)
-  })
+  });
+yargs
   .command({
     command: "create-access-key <release>",
     builder: yargs => yargs.string("release"),
     handler: command(cmdCreateAccessKey)
-  })
+  });
+yargs
   .command({
     command: "show <release> <kind> <row>",
     builder: yargs => yargs.string("kind").string("row"),
     handler: command(cmdShow)
-  })
+  });
+yargs
   .command({
     command: "edit <release> <kind> <row> <path>",
     builder: yargs =>
@@ -225,13 +241,15 @@ yargs
         .string("row")
         .string("path"),
     handler: command(cmdEdit)
-  })
+  });
+yargs
   .command({
     // Fever-only
     command: "docev <csruid>",
     builder: yargs => yargs.string("crsuid"),
     handler: command(cmdDocumentEvents)
-  })
+  });
+yargs
   .command({
     command: "log <release> [since] [until] [device] [text]",
     builder: yargs =>
@@ -254,17 +272,20 @@ yargs
           default: ".?"
         }),
     handler: command(cmdLog)
-  })
+  });
+yargs
   .command({
     command: "adduser <userid> <password>",
     builder: yargs => yargs.string("userid").string("password"),
     handler: command(cmdAdd)
-  })
+  });
+yargs
   .command({
     command: "passwd <userid> <password>",
     builder: yargs => yargs.string("userid").string("password"),
     handler: command(cmdPasswd)
-  })
+  });
+yargs
   .command({
     command: "set-device-setting <installationId> <key> <value>",
     builder: yargs =>
@@ -273,7 +294,8 @@ yargs
         .string("key")
         .string("value"),
     handler: command(cmdSetDeviceSetting)
-  })
+  });
+yargs
   .command({
     command: "clear-device-setting <installationId> <key>",
     builder: yargs => yargs.string("installationId").string("key"),
