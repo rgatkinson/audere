@@ -291,4 +291,12 @@ resource "aws_cloudwatch_log_group" "flu_api_log_group" {
 resource "aws_s3_bucket" "flu_api_reports_bucket" {
   bucket        = "${local.base_name}-reports"
   force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 }
