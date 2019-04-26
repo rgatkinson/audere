@@ -405,17 +405,23 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          keys:
+            - feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+            - feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
       - run:
           name: flu@home Yarn Install
           command: |
             cd FluStudy
             yarn install
       - run:
+          name: flu@home pod install
+          ommand: |
+            cd FluStudy/ios
+            pod install
+      - run:
           name: Run setup scripts
           command: |
             scripts/generate-build-info
-            scripts/get-cached-pods
             scripts/build-hacks
       - run:
           name: flu@home Tests
@@ -426,6 +432,10 @@ jobs:
           key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
           paths:
             - FluStudy/node_modules
+      - save_cache:
+          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
+          paths:
+            - FluStudy/ios/Pods
       - run:
           name: Configure Bundler
           command: |
