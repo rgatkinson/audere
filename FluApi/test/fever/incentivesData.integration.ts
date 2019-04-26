@@ -211,6 +211,13 @@ describe("survey batch data access", () => {
       );
     });
 
+    it("should ignore received kits that don't have a set file id", async () => {
+      await createTestData(true, false);
+      await receivedKits.update({ fileId: null }, { where: {} });
+      const out = await dao.getNewItems();
+      expect(out).toBeNull();
+    });
+
     it("should filter surveys that don't have a received kit", async () => {
       await createTestData(true, true, false);
 

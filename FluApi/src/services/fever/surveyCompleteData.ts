@@ -140,7 +140,12 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
         {
           model: this.fever.receivedKit,
           as: "received",
-          required: this.requireReceivedKit
+          required: this.requireReceivedKit,
+          where: {
+            fileId: {
+              [Sequelize.Op.ne]: null
+            }
+          }
         }
       ],
       order: [["id", "ASC"]]
