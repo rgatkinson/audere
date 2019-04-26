@@ -29,7 +29,9 @@ export class ScriptLogger {
 
   info(s: string): void {
     if (this._closed) {
-      throw new Error(`BUG (missing await?) - operation after Logger close: '${s}'`);
+      throw new Error(
+        `BUG (missing await?) - operation after Logger close: '${s}'`
+      );
     }
     if (this._verbose) {
       this._write(s);
@@ -38,5 +40,5 @@ export class ScriptLogger {
 }
 
 export function idtxt(uid: string): string {
-  return uid.length <= 16 ? uid : (uid.substring(0, 16) + '...');
+  return uid.length <= 16 ? uid : uid.substring(0, 16) + "...";
 }

@@ -17,8 +17,8 @@
     "test-watch": "      jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1 --testPathPattern=\\.test\\.ts$ --watchAll",
     "test-integration": "jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1 --testPathPattern=\\.integration\\.ts$",
     "sequelize": "sequelize",
-    "lint": "prettier --list-different '{src,test}/**/*.ts' 'db/**/*.js'",
-    "lint-fix": "prettier --write '{src,test}/**/*.ts' 'db/**/*.js'",
+    "lint": "prettier --list-different '{scripts,src,test}/**/*.ts' 'db/**/*.js'",
+    "lint-fix": "prettier --write '{scripts,src,test}/**/*.ts' 'db/**/*.js'",
     "typecheck": "tsc --noEmit",
     "dbcli": "./node_modules/.bin/ts-node scripts/dbcli.ts"
   },

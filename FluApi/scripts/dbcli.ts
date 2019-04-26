@@ -24,15 +24,24 @@ import { createSplitSql } from "../src/util/sql";
 import { generateRandomKey } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
-  defineSnifflesModels, VisitAttributes, VisitInstance, VisitModel
+  defineSnifflesModels,
+  VisitAttributes,
+  VisitInstance,
+  VisitModel
 } from "../src/models/db/sniffles";
 import {
   DeviceInfo as SnifflesDevice,
-  LogRecordInfo, VisitNonPIIDbInfo,
+  LogRecordInfo,
+  VisitNonPIIDbInfo,
   VisitNonPIIInfo,
   VisitPIIInfo
 } from "audere-lib/snifflesProtocol";
-import { defineFeverModels, SurveyAttributes, SurveyInstance, SurveyModel } from "../src/models/db/fever";
+import {
+  defineFeverModels,
+  SurveyAttributes,
+  SurveyInstance,
+  SurveyModel
+} from "../src/models/db/fever";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
@@ -114,187 +123,169 @@ enum Release {
   Fever = "fever"
 }
 
-yargs
-  .option("verbose", {
-    alias: "v",
-    boolean: true,
-    global: true
-  });
-yargs
-  .command({
-    command: "by-created <release> <start> <end>",
-    builder: yargs => yargs
+yargs.option("verbose", {
+  alias: "v",
+  boolean: true,
+  global: true
+});
+yargs.command({
+  command: "by-created <release> <start> <end>",
+  builder: yargs =>
+    yargs
       .string("release")
       .string("start")
       .string("end"),
-    handler: command(cmdByCreated),
-  });
-yargs
-  .command({
-    command: "by-consent-date <release> <date>",
-    builder: yargs => yargs.string("release").string("date"),
-    handler: command(cmdByConsentDate),
-  });
-yargs
-  .command({
-    command: "by-email <release> <email>",
-    builder: yargs => yargs.string("email"),
-    handler: command(cmdByEmail),
-  });
-yargs
-  .command({
-    command: "by-name <release> <first> <last>",
-    builder: yargs => yargs.string("first").string("last"),
-    handler: command(cmdByName),
-  });
-yargs
-  .command({
-    command: "show-path <release> <kind> <path> <rows>",
-    builder: yargs => yargs
+  handler: command(cmdByCreated)
+});
+yargs.command({
+  command: "by-consent-date <release> <date>",
+  builder: yargs => yargs.string("release").string("date"),
+  handler: command(cmdByConsentDate)
+});
+yargs.command({
+  command: "by-email <release> <email>",
+  builder: yargs => yargs.string("email"),
+  handler: command(cmdByEmail)
+});
+yargs.command({
+  command: "by-name <release> <first> <last>",
+  builder: yargs => yargs.string("first").string("last"),
+  handler: command(cmdByName)
+});
+yargs.command({
+  command: "show-path <release> <kind> <path> <rows>",
+  builder: yargs =>
+    yargs
       .string("release")
       .string("kind")
       .string("path")
       .string("rows"),
-    handler: command(cmdShowPath)
-  });
+  handler: command(cmdShowPath)
+});
 yargs
   // TODO: This might be subsumed by show-path, remove?
   .command({
     command: "survey-path <row> <kind> <path>",
-    builder: yargs => yargs
-      .string("row")
-      .string("kind")
-      .string("path"),
-    handler: command(cmdSurveyPath),
-  });
-yargs
-  .command({
-    command: "photo <csruid>",
-    builder: yargs => yargs.string("csruid"),
-    handler: command(cmdPhoto),
-  });
-yargs
-  .command({
-    command: "demo <release> <row> [value]",
-    builder: yargs => yargs.string("row").boolean("value"),
-    handler: command(cmdDemo)
-  });
-yargs
-  .command({
-    command: "demo1 <release> <kind> <row> [value]",
     builder: yargs =>
       yargs
-        .string("release")
-        .string("kind")
         .string("row")
-        .option("value", { boolean: true }),
-    handler: command(cmdDemo1)
-  });
-yargs
-  .command({
-    command: "set-location <row> <value>",
-    builder: yargs => yargs.string("row").string("value"),
-    handler: command(cmdSetSnifflesLocation)
-  });
-yargs
-  .command({
-    command: "upload <row>",
-    describe:
-      "Removes marker that a row is already uploaded to Hutch, " +
-      "hopefully to trigger another upload next time around.",
-    builder: yargs => yargs.string("row"),
-    handler: command(cmdUpload)
-  });
-yargs
-  .command({
-    command: "generate-random-key [size]",
-    builder: yargs =>
-      yargs.option("size", {
-        number: true
-      }),
-    handler: command(cmdGenerateRandomKey)
-  });
-yargs
-  .command({
-    command: "add-access-key <release> <key>",
-    builder: yargs => yargs.string("release"),
-    handler: command(cmdAddAccessKey)
-  });
-yargs
-  .command({
-    command: "create-access-key <release>",
-    builder: yargs => yargs.string("release"),
-    handler: command(cmdCreateAccessKey)
-  });
-yargs
-  .command({
-    command: "show <release> <kind> <row>",
-    builder: yargs => yargs.string("kind").string("row"),
-    handler: command(cmdShow)
-  });
-yargs
-  .command({
-    command: "edit <release> <kind> <row> <path>",
-    builder: yargs =>
-      yargs
         .string("kind")
-        .string("row")
         .string("path"),
-    handler: command(cmdEdit)
+    handler: command(cmdSurveyPath)
   });
-yargs
-  .command({
-    // Fever-only
-    command: "docev <csruid>",
-    builder: yargs => yargs.string("crsuid"),
-    handler: command(cmdDocumentEvents)
-  });
-yargs
-  .command({
-    command: "log <release> [since] [until] [device] [text]",
-    builder: yargs =>
-      yargs
-        .string("release")
-        .positional("since", {
-          describe: "earliest timestamp to search",
-          default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        })
-        .positional("until", {
-          describe: "latest timestamp to search",
-          default: new Date(Date.now())
-        })
-        .positional("device", {
-          describe: "regular expression to search in device name or id",
-          default: ".?"
-        })
-        .positional("text", {
-          describe: "regular expression to search in log lines",
-          default: ".?"
-        }),
-    handler: command(cmdLog)
-  });
-yargs
-  .command({
-    command: "adduser <userid> <password>",
-    builder: yargs => yargs.string("userid").string("password"),
-    handler: command(cmdAdd)
-  });
-yargs
-  .command({
-    command: "passwd <userid> <password>",
-    builder: yargs => yargs.string("userid").string("password"),
-    handler: command(cmdPasswd)
-  });
-yargs
-  .command({
-    command: "set-device-setting <installationId> <key> <value>",
-    builder: yargs =>
-      yargs
-        .string("installationId")
-        .string("key")
-        .string("value"),
-    handler: command(cmdSetDeviceSetting)
-  });
+yargs.command({
+  command: "photo <csruid>",
+  builder: yargs => yargs.string("csruid"),
+  handler: command(cmdPhoto)
+});
+yargs.command({
+  command: "demo <release> <row> [value]",
+  builder: yargs => yargs.string("row").boolean("value"),
+  handler: command(cmdDemo)
+});
+yargs.command({
+  command: "demo1 <release> <kind> <row> [value]",
+  builder: yargs =>
+    yargs
+      .string("release")
+      .string("kind")
+      .string("row")
+      .option("value", { boolean: true }),
+  handler: command(cmdDemo1)
+});
+yargs.command({
+  command: "set-location <row> <value>",
+  builder: yargs => yargs.string("row").string("value"),
+  handler: command(cmdSetSnifflesLocation)
+});
+yargs.command({
+  command: "upload <row>",
+  describe:
+    "Removes marker that a row is already uploaded to Hutch, " +
+    "hopefully to trigger another upload next time around.",
+  builder: yargs => yargs.string("row"),
+  handler: command(cmdUpload)
+});
+yargs.command({
+  command: "generate-random-key [size]",
+  builder: yargs =>
+    yargs.option("size", {
+      number: true
+    }),
+  handler: command(cmdGenerateRandomKey)
+});
+yargs.command({
+  command: "add-access-key <release> <key>",
+  builder: yargs => yargs.string("release"),
+  handler: command(cmdAddAccessKey)
+});
+yargs.command({
+  command: "create-access-key <release>",
+  builder: yargs => yargs.string("release"),
+  handler: command(cmdCreateAccessKey)
+});
+yargs.command({
+  command: "show <release> <kind> <row>",
+  builder: yargs => yargs.string("kind").string("row"),
+  handler: command(cmdShow)
+});
+yargs.command({
+  command: "edit <release> <kind> <row> <path>",
+  builder: yargs =>
+    yargs
+      .string("kind")
+      .string("row")
+      .string("path"),
+  handler: command(cmdEdit)
+});
+yargs.command({
+  // Fever-only
+  command: "docev <csruid>",
+  builder: yargs => yargs.string("crsuid"),
+  handler: command(cmdDocumentEvents)
+});
+yargs.command({
+  command: "log <release> [since] [until] [device] [text]",
+  builder: yargs =>
+    yargs
+      .string("release")
+      .positional("since", {
+        describe: "earliest timestamp to search",
+        default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      })
+      .positional("until", {
+        describe: "latest timestamp to search",
+        default: new Date(Date.now())
+      })
+      .positional("device", {
+        describe: "regular expression to search in device name or id",
+        default: ".?"
+      })
+      .positional("text", {
+        describe: "regular expression to search in log lines",
+        default: ".?"
+      }),
+  handler: command(cmdLog)
+});
+yargs.command({
+  command: "adduser <userid> <password>",
+  builder: yargs => yargs.string("userid").string("password"),
+  handler: command(cmdAdd)
+});
+yargs.command({
+  command: "passwd <userid> <password>",
+  builder: yargs => yargs.string("userid").string("password"),
+  handler: command(cmdPasswd)
+});
+yargs.command({
+  command: "set-device-setting <installationId> <key> <value>",
+  builder: yargs =>
+    yargs
+      .string("installationId")
+      .string("key")
+      .string("value"),
+  handler: command(cmdSetDeviceSetting)
+});
 yargs
   .command({
     command: "clear-device-setting <installationId> <key>",
@@ -362,9 +353,9 @@ interface PhotosArgs {
 
 async function cmdPhoto(argv: PhotosArgs): Promise<void> {
   const csruid = argv.csruid;
-  const rows = await feverModels.photo.findAll(
-    { where: { csruid: { [Op.like]: `${csruid}%`} }}
-  );
+  const rows = await feverModels.photo.findAll({
+    where: { csruid: { [Op.like]: `${csruid}%` } }
+  });
   switch (rows.length) {
     case 0:
       throw new Error(`No photo found with csruid '${csruid}'`);
@@ -372,9 +363,11 @@ async function cmdPhoto(argv: PhotosArgs): Promise<void> {
       console.log(rows[0].photo.jpegBase64);
       break;
     default:
-      throw new Error(`Multiple records found: '${
-        rows.map(row => pubId(row.csruid)).join("', '")
-      }'`);
+      throw new Error(
+        `Multiple records found: '${rows
+          .map(row => pubId(row.csruid))
+          .join("', '")}'`
+      );
   }
 }
 
@@ -387,9 +380,12 @@ interface SurveyPathArgs {
 async function cmdSurveyPath(argv: SurveyPathArgs): Promise<void> {
   const path = partPath(argv.path);
   switch (argv.kind) {
-    case "pii": return getSurveyPii(argv.csruid, path);
-    case "nonpii": return getSurveyNonPii(argv.csruid, path);
-    default: throw failKind(argv.kind);
+    case "pii":
+      return getSurveyPii(argv.csruid, path);
+    case "nonpii":
+      return getSurveyNonPii(argv.csruid, path);
+    default:
+      throw failKind(argv.kind);
   }
 }
 
@@ -424,8 +420,10 @@ async function cmdByConsentDate(argv: ByDateArgs): Promise<void> {
       const rows = await snifflesModels.visitNonPii.findAll({
         where: {
           [Op.and]: [
-            { visit: { isDemo: false }},
-            Sequelize.literal(`lower(visit->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`),
+            { visit: { isDemo: false } },
+            Sequelize.literal(
+              `lower(visit->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`
+            )
           ]
         }
       });
@@ -436,8 +434,10 @@ async function cmdByConsentDate(argv: ByDateArgs): Promise<void> {
       const rows = await feverModels.surveyNonPii.findAll({
         where: {
           [Op.and]: [
-            { survey: { isDemo: false }},
-            Sequelize.literal(`lower(survey->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`),
+            { survey: { isDemo: false } },
+            Sequelize.literal(
+              `lower(survey->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`
+            )
           ]
         }
       });
@@ -460,11 +460,11 @@ async function cmdByEmail(argv: ByEmailArgs): Promise<void> {
       const rows = await snifflesModels.visitPii.findAll({
         where: {
           [Op.and]: [
-            { visit: { isDemo: false }},
+            { visit: { isDemo: false } },
             Sequelize.literal(`
               lower(visit->'patient'->>'telecom')::jsonb @>
               lower('[{"value":"${argv.email}"}]')
-            `),
+            `)
           ]
         }
       });
@@ -475,11 +475,11 @@ async function cmdByEmail(argv: ByEmailArgs): Promise<void> {
       const rows = await feverModels.surveyPii.findAll({
         where: {
           [Op.and]: [
-            { survey: { isDemo: false }},
+            { survey: { isDemo: false } },
             Sequelize.literal(`
               lower(survey->'patient'->>'telecom')::jsonb @>
               lower('[{"value":"${argv.email}"}]')
-            `),
+            `)
           ]
         }
       });
@@ -527,7 +527,7 @@ async function cmdByName(argv: ByNameArgs): Promise<void> {
               },
               lastName: {
                 [Op.iLike]: `%argv.last%`
-              },
+              }
             }
           }
         }
@@ -552,9 +552,9 @@ async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
       const rows = await snifflesModels.visitNonPii.findAll({
         where: {
           [Op.and]: [
-            { visit: { isDemo: false }},
-            { createdAt: { [Op.gte]: argv.start}},
-            { createdAt: { [Op.lte]: argv.end}},
+            { visit: { isDemo: false } },
+            { createdAt: { [Op.gte]: argv.start } },
+            { createdAt: { [Op.lte]: argv.end } }
           ]
         }
       });
@@ -565,9 +565,9 @@ async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
       const rows = await feverModels.surveyNonPii.findAll({
         where: {
           [Op.and]: [
-            { survey: { isDemo: false }},
-            { createdAt: { [Op.gte]: argv.start}},
-            { createdAt: { [Op.lte]: argv.end}},
+            { survey: { isDemo: false } },
+            { createdAt: { [Op.gte]: argv.start } },
+            { createdAt: { [Op.lte]: argv.end } }
           ]
         }
       });
@@ -587,25 +587,31 @@ function consoleLogRows(rows: HasCsruid[]): void {
   rows.forEach(x => console.log(x.csruid.substring(0, 21)));
 }
 
-async function feverSurveys(kind: string, q: any): Promise<SomeSurveyInstance[]> {
+async function feverSurveys(
+  kind: string,
+  q: any
+): Promise<SomeSurveyInstance[]> {
   return await surveyModel(kind).findAll({
     where: {
       ...q,
       survey: {
         isDemo: false,
-        ...q.survey,
+        ...q.survey
       }
     }
   });
 }
 
-async function snifflesVisits(kind: string, q: any): Promise<SomeVisitInstance[]> {
+async function snifflesVisits(
+  kind: string,
+  q: any
+): Promise<SomeVisitInstance[]> {
   return await visitModel(kind).findAll({
     where: {
       ...q,
       visit: {
         isDemo: false,
-        ...q.visit,
+        ...q.visit
       }
     }
   });
@@ -624,12 +630,16 @@ async function cmdShowPath(argv: ShowPathArgs): Promise<void> {
 
   switch (argv.release) {
     case Release.Sniffles: {
-      const rows = await snifflesVisits(argv.kind, { csruid: { [Op.like]: { [Op.any]: rowLikes }}});
+      const rows = await snifflesVisits(argv.kind, {
+        csruid: { [Op.like]: { [Op.any]: rowLikes } }
+      });
       console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
       break;
     }
     case Release.Fever: {
-      const rows = await feverSurveys(argv.kind, { csruid: { [Op.like]: { [Op.any]: rowLikes }}});
+      const rows = await feverSurveys(argv.kind, {
+        csruid: { [Op.like]: { [Op.any]: rowLikes } }
+      });
       console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
       break;
     }
@@ -972,7 +982,8 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
 }
 
 function argRowLikes(rows: string): string[] {
-  return rows.split(/[\s,]/)
+  return rows
+    .split(/[\s,]/)
     .filter(x => x !== "")
     .map(x => `${x}%`);
 }
@@ -1194,17 +1205,23 @@ function accessKey(release: Release) {
 
 function surveyModel(kind: string): SomeSurveyModel {
   switch (kind) {
-    case "pii": return feverModels.surveyPii;
-    case "nonpii": return feverModels.surveyNonPii;
-    default: throw failKind(kind);
+    case "pii":
+      return feverModels.surveyPii;
+    case "nonpii":
+      return feverModels.surveyNonPii;
+    default:
+      throw failKind(kind);
   }
 }
 
 function visitModel(kind: string): SomeVisitModel {
   switch (kind) {
-    case "pii": return snifflesModels.visitPii;
-    case "nonpii": return snifflesModels.visitNonPii;
-    default: throw failKind(kind);
+    case "pii":
+      return snifflesModels.visitPii;
+    case "nonpii":
+      return snifflesModels.visitNonPii;
+    default:
+      throw failKind(kind);
   }
 }
 
@@ -1267,7 +1284,7 @@ function failKind(kind: string): never {
 function failRelease(release: string | Release): never {
   throw fail(
     `Unrecognized release: '${release}', ` +
-    `expected one of '${Object.keys(Release).join("', '")}'`
+      `expected one of '${Object.keys(Release).join("', '")}'`
   );
 }
 

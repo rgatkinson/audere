@@ -4,15 +4,28 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Sequelize from "sequelize";
-import { defineVisit, VisitAttributes, VisitInstance, VisitModel, VisitTableType } from "../../src/models/db/sniffles";
+import {
+  defineVisit,
+  VisitAttributes,
+  VisitInstance,
+  VisitModel,
+  VisitTableType
+} from "../../src/models/db/sniffles";
 import _ from "lodash";
 
-import { DeviceInfo, VisitNonPIIDbInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
+import {
+  DeviceInfo,
+  VisitNonPIIDbInfo,
+  VisitPIIInfo
+} from "audere-lib/snifflesProtocol";
 
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
 import { SplitSql } from "../../src/util/sql";
-import { defineHutchUpload, HutchUploadModel } from "../../src/models/db/hutchUpload";
+import {
+  defineHutchUpload,
+  HutchUploadModel
+} from "../../src/models/db/hutchUpload";
 
 const Op = Sequelize.Op;
 
@@ -23,8 +36,8 @@ interface Config<T> {
   label: string;
 }
 
-export abstract class VisitUpdater<T extends object & {isDemo?: boolean}>
-implements Updater<VisitAttributes<T>, T, DeviceInfo> {
+export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
+  implements Updater<VisitAttributes<T>, T, DeviceInfo> {
   private readonly sql: SplitSql;
   private readonly data: VisitModel<T>;
   private readonly backup: VisitModel<T>;
@@ -52,7 +65,7 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
     const actions = [];
 
     for (let visit of await this.nonPii.findAll(where)) {
-      actions.push(this.upload.destroy({ where: { visit_id: visit.id }}));
+      actions.push(this.upload.destroy({ where: { visit_id: visit.id } }));
     }
     for (let db of [this.sql.nonPii, this.sql.pii]) {
       for (let type of [VisitTableType.CURRENT, VisitTableType.BACKUP]) {
@@ -63,27 +76,38 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
     await Promise.all(actions);
   }
 
-  abstract async setDemo(current: VisitInstance<T>, isDemo: boolean): Promise<boolean>;
+  abstract async setDemo(
+    current: VisitInstance<T>,
+    isDemo: boolean
+  ): Promise<boolean>;
 
   async load(key: string): Promise<VisitInstance<T>> {
     this.log.info(`VisitUpdater.load ${this.label} for key '${idtxt(key)}'.`);
     const rows = looksLikeRowId(key)
-      ? await this.data.findAll({ where: { id: key }})
-      : await this.data.findAll({ where: { csruid: { [Op.like]: `${key}%` }}});
+      ? await this.data.findAll({ where: { id: key } })
+      : await this.data.findAll({
+          where: { csruid: { [Op.like]: `${key}%` } }
+        });
     return this.expectOneMatch(key, rows);
   }
 
   async loadBackup(rowId: string): Promise<VisitInstance<T>> {
-    this.log.info(`VisitUpdater.loadBackup ${this.label} for rowId '${rowId}'.`);
+    this.log.info(
+      `VisitUpdater.loadBackup ${this.label} for rowId '${rowId}'.`
+    );
     expectRowId(rowId);
-    const rows = await this.backup.findAll({ where: { id: rowId }});
+    const rows = await this.backup.findAll({ where: { id: rowId } });
     return this.expectOneMatch(rowId, rows);
   }
 
   async loadBackups(csruid: string): Promise<VisitInstance<T>[]> {
-    this.log.info(`VisitUpdater.loadBackups ${this.label} for csruid '${idtxt(csruid)}'.`);
+    this.log.info(
+      `VisitUpdater.loadBackups ${this.label} for csruid '${idtxt(csruid)}'.`
+    );
     expectCSRUID(csruid);
-    return await this.backup.findAll({ where: {csruid: { [Op.like]: `${csruid}%` }}});
+    return await this.backup.findAll({
+      where: { csruid: { [Op.like]: `${csruid}%` } }
+    });
   }
 
   async updateItem(current: VisitInstance<T>, update: T): Promise<boolean> {
@@ -91,17 +115,28 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
     return this.update(current, { csruid, device, visit: update });
   }
 
-  async updateDevice(current: VisitInstance<T>, update: DeviceInfo): Promise<boolean> {
+  async updateDevice(
+    current: VisitInstance<T>,
+    update: DeviceInfo
+  ): Promise<boolean> {
     const { csruid, visit } = current;
     return this.update(current, { csruid, device: update, visit });
   }
 
-  async update(current: VisitInstance<T>, update: VisitAttributes<T>): Promise<boolean> {
+  async update(
+    current: VisitInstance<T>,
+    update: VisitAttributes<T>
+  ): Promise<boolean> {
     if (!_.isEqual(current.csruid, update.csruid)) {
       throw new Error();
     }
-    if (_.isEqual(current.device, update.device) && _.isEqual(current.visit, update.visit)) {
-      this.log.info(`Skipping no-op update to ${this.label} row '${idtxt(current.csruid)}'.`);
+    if (
+      _.isEqual(current.device, update.device) &&
+      _.isEqual(current.visit, update.visit)
+    ) {
+      this.log.info(
+        `Skipping no-op update to ${this.label} row '${idtxt(current.csruid)}'.`
+      );
       return false;
     }
 
@@ -109,12 +144,14 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
     await this.backup.create({
       csruid: current.csruid,
       device: current.device,
-      visit: current.visit,
+      visit: current.visit
     });
 
     await this.deleteUploadMarker(current.csruid);
 
-    this.log.info(`Writing modified ${this.label} row '${idtxt(current.csruid)}'.`);
+    this.log.info(
+      `Writing modified ${this.label} row '${idtxt(current.csruid)}'.`
+    );
     await this.data.upsert(update);
 
     return true;
@@ -123,23 +160,33 @@ implements Updater<VisitAttributes<T>, T, DeviceInfo> {
   async deleteUploadMarker(csruid: string): Promise<boolean> {
     const nonPii = this.expectOneMatch(
       "csruid",
-      await this.nonPii.findAll({ where: { csruid: { [Op.like]: `${csruid}%` }}})
+      await this.nonPii.findAll({
+        where: { csruid: { [Op.like]: `${csruid}%` } }
+      })
     );
 
-    const uploads = await this.upload.destroy({ where: { visit_id: nonPii.id }});
+    const uploads = await this.upload.destroy({
+      where: { visit_id: nonPii.id }
+    });
     switch (uploads) {
       case 0:
         return false;
       case 1:
         return true;
       default:
-        throw new Error(`Expected to delete 0 or 1 upload markers, but deleted ${uploads}`);
+        throw new Error(
+          `Expected to delete 0 or 1 upload markers, but deleted ${uploads}`
+        );
     }
   }
 
   expectOneMatch<T>(key: string, items: T[]): T {
     if (items.length != 1) {
-      throw new Error(`Expected exactly 1 ${this.label} row to match key '${key}', but got ${items.length}`);
+      throw new Error(
+        `Expected exactly 1 ${this.label} row to match key '${key}', but got ${
+          items.length
+        }`
+      );
     }
     return items[0];
   }
@@ -150,7 +197,10 @@ export class VisitNonPIIUpdater extends VisitUpdater<VisitNonPIIDbInfo> {
     super({ sql, log, db: sql.nonPii, label: "non-PII" });
   }
 
-  async setDemo(current: VisitInstance<VisitNonPIIDbInfo>, isDemo: boolean): Promise<boolean> {
+  async setDemo(
+    current: VisitInstance<VisitNonPIIDbInfo>,
+    isDemo: boolean
+  ): Promise<boolean> {
     this.log.info(`setDemo(${isDemo})`);
     return this.updateItem(current, { ...current.visit, isDemo });
   }
@@ -161,7 +211,10 @@ export class VisitPIIUpdater extends VisitUpdater<VisitPIIInfo> {
     super({ sql, log, db: sql.pii, label: "PII" });
   }
 
-  async setDemo(current: VisitInstance<VisitPIIInfo>, isDemo: boolean): Promise<boolean> {
+  async setDemo(
+    current: VisitInstance<VisitPIIInfo>,
+    isDemo: boolean
+  ): Promise<boolean> {
     this.log.info(`setDemo(${isDemo})`);
     return this.updateItem(current, { ...current.visit, isDemo });
   }

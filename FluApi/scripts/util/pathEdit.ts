@@ -16,7 +16,7 @@ export function getPart(obj: object, path: string[]): any {
 
 export function setPart(obj: object, path: string[], value: any): any {
   const spine = path.reduce(
-    (acc, x) => [ ...acc, get1(acc[acc.length - 1], x) ],
+    (acc, x) => [...acc, get1(acc[acc.length - 1], x)],
     [obj]
   );
   spine[spine.length - 1] = value;
@@ -30,19 +30,23 @@ export function get1(thing: object, field: string) {
 
 export function set1(thing: object, field: string, value: any): any {
   validateField(thing, field);
-  const copy = Array.isArray(thing) ? [ ...thing ] : { ...thing };
+  const copy = Array.isArray(thing) ? [...thing] : { ...thing };
   copy[field] = value;
   return copy;
 }
 
 export function validateField(thing: object, field: string) {
   if (Array.isArray(thing)) {
-    if (Number.isNaN(+field) || (+field < 0) || (+field >= thing.length)) {
-      throw new Error(`Expected array index <= '${thing.length}'; got '${field}'`);
+    if (Number.isNaN(+field) || +field < 0 || +field >= thing.length) {
+      throw new Error(
+        `Expected array index <= '${thing.length}'; got '${field}'`
+      );
     }
   } else {
     if (!thing[field]) {
-      throw new Error(`Expected one of '${Object.keys(thing).join("', '")}'; got '${field}'`);
+      throw new Error(
+        `Expected one of '${Object.keys(thing).join("', '")}'; got '${field}'`
+      );
     }
   }
 }
