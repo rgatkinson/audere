@@ -34,3 +34,5 @@ ios/fastlane/README.md
 ios/fastlane/report.xml
 ios/fluathome.ipa
 ios/fluathome.app.dSYM.zip
+android/fastlane/README.md
+android/fastlane/report.xml

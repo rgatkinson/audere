@@ -4,41 +4,74 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
-# This increments build number (CFBundleVersion) in Info.plist then triggers Circle build-deploy-fever job 
+# This increments build number for iOS and Android then triggers Circle build-deploy-fever job 
 # Assumes we want to build head of current branch
 
 set -euo pipefail
 
-function usage() {
-  echo 1>&2 "Usage: build-fever <type> \"description of build\" [--no-increment]"
+function usage_and_exit() {
+  echo 1>&2 "Usage: build-fever <type> \"description of build\" [--no-increment] [--skip-ios] [--skip-android]"
   echo 1>&2 ""
   echo 1>&2 "<type> = \"staging\"|\"prod\""
   echo 1>&2 "description of build = Brief description of what's new, used in Slack and git tag message" 
   echo 1>&2 "--no-increment = Skip incrementing build number"
+  echo 1>&2 "--skip-ios     = Skip iOS build, only build Android"
+  echo 1>&2 "--skip-android = Skip Android build, only build iOS"
   echo 1>&2 ""
   echo 1>&2 "Example:"
   echo 1>&2 "    build-fever prod \"Latest strings from copywriter\""
   echo 1>&2 ""
   exit 1
 }
+
 INCREMENT=true
+BUILD_IOS=true
+BUILD_ANDROID=true
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 # To build a specific commit 1234567 instead of head, use --no-increment and uncomment following line
 #REVISION="\"revision\":\"1234567\","
 REVISION=""
 
-case "$#" in
-  2) CHANNEL="$1"
-     DESCRIPTION="$2";;
-  3) if [ "$3" == "--no-increment" ]; then 
-       CHANNEL="$1"
-       DESCRIPTION="$2"
-       INCREMENT=false
-     else 
-       usage
-     fi;;
-  *) usage;;
-esac
+if [[ "$#" -lt 2 ]]; then 
+  usage_and_exit
+fi
+
+POSITIONAL=()
+while [[ "$#" -gt 0 ]]; do
+  key="$1"
+  case "$key" in
+    --no-increment) 
+      INCREMENT=false
+      shift
+      ;;
+    --skip-ios) 
+      BUILD_IOS=false
+      shift
+      ;;
+    --skip-android)
+      BUILD_ANDROID=false
+      shift
+      ;;
+    *)
+      POSITIONAL+=("$1") # save in array for later 
+      shift
+      ;; 
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional params 
+ 
+if [[ "$#" -ne 2 || ! "$1" =~ ^(staging|prod)$ ]]; then
+  echo "Error: First argument must be \"staging\" or \"prod\""
+  echo "       Second argument must be description of build"
+  usage_and_exit
+fi 
+CHANNEL="$1"
+DESCRIPTION="$2"
+
+if [[ "$BUILD_IOS" = false && "$BUILD_ANDROID" = false ]]; then 
+  echo 1>&2 "Error: Cannot skip both iOS and Android"
+  exit 1
+fi
 
 if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
   echo 1>&2 "Error: CIRCLE_TOKEN env variable is not set. Set this before running this script."
@@ -46,7 +79,7 @@ if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
   exit 1 
 fi
 
-if [ "$INCREMENT" = true ]; then 
+if [[ "$INCREMENT" = true ]]; then 
   REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
   PLIST_FILE="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/Info.plist"
   BUILD_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$PLIST_FILE")"
@@ -75,9 +108,21 @@ to $BRANCH. Press Enter to continue or Ctrl-C to abort."
   done
 fi 
 
-set -x
-curl --user "${CIRCLE_TOKEN}":\
+if [[ "$BUILD_IOS" = true ]]; then
+  echo "Asking CircleCI to build Fever iOS (build_deploy_fever)"
+  curl --user "${CIRCLE_TOKEN}":\
      -X POST\
      --header "Content-Type: application/json"\
      -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_fever", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
 https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
+fi 
+
+if [[ "$BUILD_ANDROID" = true ]]; then
+  echo "Asking CircleCI to build Fever Android (build_deploy_fever_android)"
+  curl --user "${CIRCLE_TOKEN}":\
+     -X POST\
+     --header "Content-Type: application/json"\
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_fever_android", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
+https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
+fi
+

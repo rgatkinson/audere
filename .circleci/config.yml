@@ -107,8 +107,8 @@ jobs:
       - run:
           name: Generate Build Info
           command: |
-            scripts/generate-build-info
-            scripts/build-hacks
+            ./scripts/generate-build-info
+            ./scripts/build-hacks
       - run:
           name: FluTrack Tests
           command: |
@@ -252,8 +252,8 @@ jobs:
       - run:
           name: Run setup scripts
           command: |
-            scripts/generate-build-info
-            scripts/build-hacks
+            ./scripts/generate-build-info
+            ./scripts/build-hacks
       - run:
           name: Snyk flu@home Scan
           command: |
@@ -352,7 +352,7 @@ jobs:
       - run:
           name: Test env variables
           command: |
-            if [ -z "$EXPO_RELEASE_CHANNEL" ]; then
+            if [[ -z "$EXPO_RELEASE_CHANNEL" ]]; then
               echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
             fi
       - run:
@@ -368,7 +368,7 @@ jobs:
       - run:
           name: Generate Build Info
           command: |
-            scripts/generate-build-info
+            ./scripts/generate-build-info
       - run:
           name: App Tests
           command: |
@@ -400,7 +400,7 @@ jobs:
       <<: *const
     macos:
       xcode: 10.1.0
-    working_directory: ~/repo
+    working_directory: /tmp/repo
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
@@ -421,8 +421,8 @@ jobs:
       - run:
           name: Run setup scripts
           command: |
-            scripts/generate-build-info
-            scripts/build-hacks
+            ./scripts/generate-build-info
+            ./scripts/build-hacks
       - run:
           name: flu@home Tests
           command: |
@@ -467,6 +467,80 @@ jobs:
           command: |
             cd FluStudy/ios
             bundle exec fastlane beta
+
+  build_deploy_fever_android: &build_deploy_fever_android
+    environment:
+      PRODUCT: fever
+      # Fastlane env variable for where it should put output files
+      FL_OUTPUT_DIR: output
+      # https://stackoverflow.com/questions/37171043/gradle-build-daemon-disappeared-unexpectedly-it-may-have-been-killed-or-may-hav
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
+      JVM_OPTS: -Xmx3200m
+      <<: *const
+    docker:
+      - image: circleci/android:api-27-node
+    working_directory: /tmp/repo
+    steps:
+      - checkout
+      - restore_cache:
+          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+      - run:
+          name: flu@home Yarn Install
+          command: |
+            cd FluStudy
+            yarn install
+      - run:
+          name: Run setup scripts
+          command: |
+            ./scripts/generate-build-info
+            ./scripts/build-hacks
+      - save_cache:
+          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
+      - restore_cache:
+          key: gradlejars-{{ checksum "FluStudy/android/build.gradle" }}-{{ checksum  "FluStudy/android/app/build.gradle" }}
+      - run:
+          name: Download Android dependencies
+          command: |
+            cd FluStudy/android
+            ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradlejars-{{ checksum "FluStudy/android/build.gradle" }}-{{ checksum  "FluStudy/android/app/build.gradle" }}
+      - restore_cache:
+          key: 1-gems-android-{{ checksum "FluStudy/android/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            cd FluStudy/android
+            bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-android-{{ checksum "FluStudy/android/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: *setenv
+      - run:
+          name: Setup Expo and expo publish
+          command: |
+            yarn global add expo-cli
+            export PATH="$PATH:$(yarn global bin)"
+            cd FluStudy
+            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
+            expo publish
+      - run:
+          name: Prepare signing artifacts
+          command: |
+            cd FluStudy/android
+            echo "$FEVER_SIGNING_STORE_ENCRYPTED" | base64 --decode | tee keystore.jks app/keystore.jks >/dev/null
+            echo "export FEVER_SIGNING_STORE_FILE=keystore.jks" >> $BASH_ENV
+            echo "$GOOGLE_PLAY_KEY_JSON" > google_play_key.json
+      - run:
+          name: Fastlane
+          command: |
+            cd FluStudy/android
+            bundle exec fastlane internal
 
 workflows:
   version: 2
