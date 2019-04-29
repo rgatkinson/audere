@@ -240,13 +240,14 @@ export function createInternalApp(config: AppConfig) {
 }
 
 const MORGAN_FORMAT =
-  ":request-id :req[X-Forwarded-For](:remote-addr) :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
+  ":request-id :req[X-Forwarded-For](:remote-addr) :userid :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
 
 const MORGAN_STREAM = {
   write: message => logger.info(message)
 };
 
 morgan.token("request-id", (req: any, res) => requestId(req));
+morgan.token("userid", (req: any, res) => req.user ? req.user.userid : "-");
 
 function morganMiddleware() {
   return morgan(MORGAN_FORMAT, {
