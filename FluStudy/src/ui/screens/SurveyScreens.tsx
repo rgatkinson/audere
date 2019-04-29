@@ -9,7 +9,6 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -26,7 +25,6 @@ import {
   Option,
   StoreState,
   appendInvalidBarcode,
-  setEmail,
   setKitBarcode,
   setTestStripImg,
   setOneMinuteStartTime,
@@ -62,10 +60,7 @@ import {
   AddressConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
-import timerWithConfigProps, {
-  ConfigProps,
-  TimerProps,
-} from "../components/Timer";
+import timerWithConfigProps, { TimerProps } from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
@@ -74,12 +69,9 @@ import ButtonGrid from "../components/ButtonGrid";
 import Chrome from "../components/Chrome";
 import DigitInput from "../components/DigitInput";
 import Divider from "../components/Divider";
-import EmailInput from "../components/EmailInput";
 import Links from "../components/Links";
 import Modal from "../components/Modal";
 import MonthPicker from "../components/MonthPicker";
-import NavigationBar from "../components/NavigationBar";
-import NumberInput from "../components/NumberInput";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import OptionQuestion from "../components/OptionQuestion";
 import QuestionText from "../components/QuestionText";
@@ -108,15 +100,12 @@ import {
   GUTTER,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
-  NAV_BAR_HEIGHT,
   SECONDARY_COLOR,
   SMALL_TEXT,
-  STATUS_BAR_HEIGHT,
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
-import { isValidEmail } from "../../util/check";
 import RadioGrid from "../components/RadioGrid";
 
 const SECOND_MS = 1000;
@@ -1891,11 +1880,15 @@ export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
   PictureInstructionsScreen
 );
 
-@connect()
-class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
+@connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+}))
+class TestStripCameraScreen extends React.Component<
+  DemoModeProps & Props & WithNamespaces
+> {
   camera = React.createRef<any>();
 
-  constructor(props: Props & WithNamespaces) {
+  constructor(props: DemoModeProps & Props & WithNamespaces) {
     super(props);
     this._takePicture = this._takePicture.bind(this);
   }
@@ -1940,7 +1933,7 @@ class TestStripCameraScreen extends React.Component<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <Chrome navigation={this.props.navigation}>
+      <Chrome isDemo={this.props.isDemo} navigation={this.props.navigation}>
         <View style={{ flex: 1, marginBottom: -1 * SYSTEM_PADDING_BOTTOM }}>
           <Spinner visible={this.state.spinner} />
           <Camera

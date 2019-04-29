@@ -5,13 +5,10 @@ import {
   ImageSourcePropType,
   StatusBar,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import { connect } from "react-redux";
 import NavigationBar from "./NavigationBar";
-import Text from "./Text";
 import {
   ASPECT_RATIO,
   GUTTER,

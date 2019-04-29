@@ -9,7 +9,6 @@ import {
   Alert,
   AppState,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   View,
 } from "react-native";
