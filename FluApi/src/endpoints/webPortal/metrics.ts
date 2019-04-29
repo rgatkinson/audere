@@ -886,7 +886,12 @@ export async function getFeverMetrics(
     return hasSymptoms ? 1 : 0;
   };
   const didConsent = row => (row.survey.consents.length > 0 ? 1 : 0);
-  const orderedKit = row => (row.survey.workflow.screeningCompletedAt ? 1 : 0);
+  const orderedKit = row => {
+    const confirmation = row.survey.events.some(
+      item => item.refId == "Confirmation" || item.refId == "KitOrdered"
+    );
+    return confirmation ? 1 : 0;
+  };
   const startedPart2 = row => {
     const part2 = row.survey.events.some(item => item.refId == "WelcomeBack");
     return part2 ? 1 : 0;
