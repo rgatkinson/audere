@@ -16,7 +16,6 @@ import { Action, setDemo, StoreState } from "../../store";
 import Button from "./Button";
 import Chrome from "./Chrome";
 import Divider from "./Divider";
-import Step from "./Step";
 import Text from "./Text";
 import Title from "./Title";
 import VideoPlayer from "./VideoPlayer";
@@ -42,7 +41,6 @@ interface Props {
   shownOfflineWarning?: boolean;
   skipButton?: boolean;
   stableImageSrc?: ImageSourcePropType;
-  step?: number;
   subTitle?: string;
   title?: string;
   videoId?: string;
@@ -141,9 +139,6 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.innerContainer}>
-              {!!this.props.step && (
-                <Step step={this.props.step} totalSteps={4} />
-              )}
               {!!this.props.imageSrc && (
                 <TouchableWithoutFeedback
                   style={{ alignSelf: "stretch" }}

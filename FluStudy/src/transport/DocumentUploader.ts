@@ -139,10 +139,13 @@ export class DocumentUploader {
   }
 
   public async getEncryptionPassword(): Promise<string> {
-    let pouchPassword = await SecureStore.getItemAsync(POUCH_PASS_KEY);
-    if (pouchPassword) {
-      return pouchPassword;
-    }
+    let pouchPassword;
+    try {
+      pouchPassword = await SecureStore.getItemAsync(POUCH_PASS_KEY);
+      if (pouchPassword) {
+        return pouchPassword;
+      }
+    } catch (e) {}
     pouchPassword = base64url(crypto.getRandomValues(new Buffer(32)));
     await SecureStore.setItemAsync(POUCH_PASS_KEY, pouchPassword);
     return pouchPassword;

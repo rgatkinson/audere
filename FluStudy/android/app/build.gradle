@@ -18,8 +18,8 @@ def getNpmVersion() {
 }
 
 android {
-  compileSdkVersion 27
-  buildToolsVersion '27.0.3'
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
   sourceSets {
     main {
@@ -36,7 +36,7 @@ android {
     def code = versionProps['VERSION_CODE'].toInteger()
 
     applicationId 'org.auderenow.fluathome'
-    targetSdkVersion 26
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode code 
     versionName getNpmVersion()
     ndk {
@@ -100,8 +100,8 @@ configurations.all {
 apply from: 'expo.gradle'
 
 dependencies {
-  compile project(':@react-native-community_netinfo')
-  compile project(':react-native-push-notification')
+  implementation project(':@react-native-community_netinfo')
+  implementation project(':react-native-push-notification')
   implementation project(':react-native-fbsdk')
   implementation project(':react-native-firebase')
   implementation project(':react-native-get-random-values')

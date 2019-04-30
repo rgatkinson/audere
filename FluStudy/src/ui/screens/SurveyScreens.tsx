@@ -98,6 +98,7 @@ import {
   BUTTON_WIDTH,
   ERROR_COLOR,
   GUTTER,
+  KEYBOARD_BEHAVIOR,
   LARGE_TEXT,
   EXTRA_SMALL_TEXT,
   SECONDARY_COLOR,
@@ -506,7 +507,10 @@ class ScanConfirmationScreen extends React.Component<
         <BorderView style={{ marginTop: GUTTER }}>
           <Text
             center={true}
-            content={t("yourCode") + this.props.kitBarcode.code}
+            content={
+              t("yourCode") +
+              (!!this.props.kitBarcode ? this.props.kitBarcode.code : "")
+            }
           />
         </BorderView>
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
@@ -680,9 +684,12 @@ class ManualEntryScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    const width = (Dimensions.get("window").width - 3 * GUTTER) / 3;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={KEYBOARD_BEHAVIOR}
+        enabled
+      >
         <Screen
           buttonLabel={t("common:button:continue")}
           canProceed={true}
@@ -829,7 +836,11 @@ class BarcodeContactSupportScreen extends React.Component<
           onDismiss={this._toggleModal}
           onSubmit={this._onModalSubmit}
         >
-          <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={KEYBOARD_BEHAVIOR}
+            enabled
+          >
             <View style={{ justifyContent: "space-between", padding: GUTTER }}>
               <Text
                 content={t("enterCode")}
