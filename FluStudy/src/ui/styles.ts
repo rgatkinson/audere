@@ -64,3 +64,5 @@ export const SPLASH_IMAGE = { uri: isIPhoneSE ? "mediumsplash" : "splash" };
 export const ASPECT_RATIO = 1.75;
 export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;
+export const KEYBOARD_BEHAVIOR =
+  Platform.OS === "android" ? undefined : "padding";

@@ -39,7 +39,7 @@ import {
   SurveyQuestionData,
   SymptomsConfig,
 } from "../../resources/ScreenConfig";
-import { ERROR_COLOR, LARGE_TEXT } from "../styles";
+import { ERROR_COLOR, KEYBOARD_BEHAVIOR, LARGE_TEXT } from "../styles";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import AddressInput from "../components/AddressInput";
 import RadioButtonGroup from "../components/RadioButtonGroup";
@@ -382,7 +382,7 @@ class PreConsentScreen extends React.PureComponent<
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <View style={{ flex: 1 }}>
         <Screen
           buttonLabel={t("common:button:continue")}
           canProceed={true}
@@ -413,7 +413,7 @@ class PreConsentScreen extends React.PureComponent<
             />
           </ScrollView>
         </Screen>
-      </KeyboardAvoidingView>
+      </View>
     );
   }
 }
@@ -511,7 +511,11 @@ class ConsentScreen extends React.PureComponent<
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={KEYBOARD_BEHAVIOR}
+        enabled
+      >
         <Screen
           buttonLabel={t("accept")}
           canProceed={true}
@@ -892,7 +896,11 @@ class AddressInputScreen extends React.Component<
       : MailingAddressConfig;
 
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={KEYBOARD_BEHAVIOR}
+        enabled
+      >
         <Screen
           buttonLabel={
             !!workflow.skippedScreeningAt
@@ -1010,7 +1018,11 @@ class AddressConfirmScreen extends React.Component<
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={KEYBOARD_BEHAVIOR}
+        enabled
+      >
         <Screen
           buttonLabel={
             !!this.props.workflow.skippedScreeningAt
