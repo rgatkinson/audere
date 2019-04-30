@@ -273,7 +273,6 @@ class AgeScreen extends React.Component<
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         navigation={this.props.navigation}
         skipButton={false}
-        step={!!this.props.workflow.skippedScreeningAt ? undefined : 1}
         title={t("surveyTitle:" + AgeConfig.title)}
         onNext={this._onNext}
       >
@@ -353,7 +352,6 @@ class SymptomsScreen extends React.PureComponent<
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
         navigation={this.props.navigation}
-        step={2}
         title={t("surveyTitle:" + SymptomsConfig.title)}
         onNext={this._onNext}
       >
@@ -529,7 +527,6 @@ class ConsentScreen extends React.PureComponent<
           }
           hideBackButton={false}
           navigation={this.props.navigation}
-          step={!!this.props.workflow.skippedScreeningAt ? undefined : 3}
           title={t("consent")}
           onNext={this._onNext}
         >
@@ -909,7 +906,6 @@ class AddressInputScreen extends React.Component<
               : t("surveyDescription:mailingAddressDesc")
           }
           navigation={navigation}
-          step={!!workflow.skippedScreeningAt ? undefined : 4}
           title={t("title")}
           onNext={this._onNext}
         >
@@ -1025,7 +1021,6 @@ class AddressConfirmScreen extends React.Component<
           centerDesc={true}
           desc={t("description")}
           navigation={this.props.navigation}
-          step={!!this.props.workflow.skippedScreeningAt ? undefined : 4}
           title={t("title")}
           onNext={this._onNext}
         >
