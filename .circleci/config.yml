@@ -415,7 +415,7 @@ jobs:
             yarn install
       - run:
           name: flu@home pod install
-          ommand: |
+          command: |
             cd FluStudy/ios
             pod install
       - run:
