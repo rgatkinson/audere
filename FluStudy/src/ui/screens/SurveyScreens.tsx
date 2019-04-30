@@ -321,10 +321,11 @@ interface InvalidBarcodeProps {
 
 @connect((state: StoreState) => ({
   invalidBarcodes: state.survey.invalidBarcodes,
+  isDemo: state.meta.isDemo,
   workflow: state.survey.workflow,
 }))
 class ScanScreen extends React.Component<
-  Props & InvalidBarcodeProps & WorkflowProps & WithNamespaces
+  DemoModeProps & Props & InvalidBarcodeProps & WorkflowProps & WithNamespaces
 > {
   state = {
     activeScan: false,
@@ -417,7 +418,7 @@ class ScanScreen extends React.Component<
   render() {
     const { t } = this.props;
     return (
-      <Chrome navigation={this.props.navigation}>
+      <Chrome isDemo={this.props.isDemo} navigation={this.props.navigation}>
         <View style={{ flex: 1 }}>
           <BarCodeScanner
             style={{ flex: 1, alignSelf: "stretch" }}
