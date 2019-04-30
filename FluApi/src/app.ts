@@ -135,6 +135,13 @@ export async function createPublicApp(config: AppConfig) {
     })
   );
 
+  publicApp.get(
+    "/api/utility/echoStatus/:code([0-9]+)",
+    wrap(async (req, res) => {
+      const code = +req.params.code;
+      res.sendStatus((code >= 100 && code <= 599) ? code : 404);
+    })
+  );
   return useOuch(publicApp);
 }
 
