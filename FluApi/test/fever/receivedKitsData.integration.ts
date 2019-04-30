@@ -9,6 +9,7 @@ import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import { EventInfoKind } from "audere-lib/feverProtocol";
 import _ from "lodash";
+import moment = require("moment");
 
 describe("received kits data access", () => {
   let sql: SplitSql;
@@ -153,7 +154,7 @@ describe("received kits data access", () => {
       );
     });
 
-    it("should derive scanned time from app nav events", async () => {
+    it("should derive scan time from app nav scan events", async () => {
       const s = _.cloneDeep(surveyNonPIIInDb("asdf"));
       s.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
       const now = new Date().toISOString();
@@ -178,6 +179,60 @@ describe("received kits data access", () => {
 
       expect(barcodes.length).toBe(1);
       expect(barcodes[0].scannedAt).toBe(now);
+    });
+
+    it("should derive scan time from app nav manual scan events", async () => {
+      const s = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const now = new Date().toISOString();
+      s.survey.events = [
+        {
+          kind: EventInfoKind.AppNav,
+          at: now,
+          refId: "ManualConfirmation"
+        },
+        {
+          kind: EventInfoKind.AppNav,
+          at: "Jibber jabber",
+          refId: "Placebo"
+        }
+      ];
+
+      await fever.surveyNonPii.create(s);
+      await fever.barcodes.bulkCreate([{ barcode: "s1" }]);
+
+      const dao = new ReceivedKitsData(sql);
+      const barcodes = await dao.findUnlinkedBarcodes();
+
+      expect(barcodes.length).toBe(1);
+      expect(barcodes[0].scannedAt).toBe(now);
+    });
+
+    it("should use the most recent scan time if there are multiple scan events", async () => {
+      const s = _.cloneDeep(surveyNonPIIInDb("asdf"));
+      s.survey.samples.push({ sample_type: "manualEntry", code: "s1" });
+      const now = moment();
+      s.survey.events = [
+        {
+          kind: EventInfoKind.AppNav,
+          at: now.subtract(10, "days").toISOString(),
+          refId: "ManualConfirmation"
+        },
+        {
+          kind: EventInfoKind.AppNav,
+          at: now.toISOString(),
+          refId: "ScanConfirmation"
+        }
+      ];
+
+      await fever.surveyNonPii.create(s);
+      await fever.barcodes.bulkCreate([{ barcode: "s1" }]);
+
+      const dao = new ReceivedKitsData(sql);
+      const barcodes = await dao.findUnlinkedBarcodes();
+
+      expect(barcodes.length).toBe(1);
+      expect(barcodes[0].scannedAt).toBe(now.toISOString());
     });
 
     it("should filter out demo records and invalid barcodes", async () => {
