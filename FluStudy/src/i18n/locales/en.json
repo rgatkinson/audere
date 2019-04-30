@@ -22,8 +22,9 @@
       "emailEx": "e.g. joe@gmail.com"
     },
     "notifications": {
-      "oneMinuteStartTime": "Timer is complete! Next you'll remove your swab from the tube.",
-      "tenMinuteStartTime": "Timer is complete! Next you'll remove your test strip from the tube.",
+      "title": "Timer is complete!",
+      "oneMinuteStartTime": "Next you'll remove your swab from the tube.",
+      "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
       "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and press Try again.",
       "dataUploadTitle": "Connect to upload data",

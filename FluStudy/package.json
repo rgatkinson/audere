@@ -47,6 +47,7 @@
     "@types/expo-localization": "^1.0.0",
     "@types/expo__vector-icons": "^6.2.3",
     "@types/i18next": "^11.9.3",
+    "@types/react-native-push-notification": "^3.0.4",
     "appium": "^1.12.1",
     "audere-lib": "link:../lib",
     "axios": "^0.18.0",

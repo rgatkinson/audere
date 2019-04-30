@@ -506,7 +506,10 @@ class ScanConfirmationScreen extends React.Component<
         <BorderView style={{ marginTop: GUTTER }}>
           <Text
             center={true}
-            content={t("yourCode") + this.props.kitBarcode.code}
+            content={
+              t("yourCode") +
+              (!!this.props.kitBarcode ? this.props.kitBarcode.code : "")
+            }
           />
         </BorderView>
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
