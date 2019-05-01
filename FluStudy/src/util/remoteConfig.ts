@@ -102,11 +102,9 @@ export async function loadAllRemoteConfigs() {
     // any given hour, throttled from the client side.  To be safe, we cache
     // for an hour now.
     await config.fetch(SECONDS_IN_HOUR);
+    await config.activateFetched();
 
-    const activated = await config.activateFetched();
-    if (activated) {
-      _currentConfig = await loadConfig();
-    }
+    _currentConfig = await loadConfig();
   } catch (error) {
     const errorMessage = `Remote Config Load Error: ${
       error && error.message ? error.message : error
