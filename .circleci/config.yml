@@ -400,24 +400,32 @@ jobs:
       <<: *const
     macos:
       xcode: 10.1.0
-    working_directory: /tmp/repo
+    working_directory: ~/repo
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
       - restore_cache:
           keys:
-            - feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+            - feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
             - feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
       - run:
           name: flu@home Yarn Install
           command: |
             cd FluStudy
             yarn install
+      - save_cache:
+          key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
       - run:
           name: flu@home pod install
           command: |
             cd FluStudy/ios
             pod install
+      - save_cache:
+          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
+          paths:
+            - FluStudy/ios/Pods
       - run:
           name: Run setup scripts
           command: |
@@ -428,14 +436,6 @@ jobs:
           command: |
             cd FluStudy
             yarn test
-      - save_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
-          paths:
-            - FluStudy/node_modules
-      - save_cache:
-          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
-          paths:
-            - FluStudy/ios/Pods
       - run:
           name: Configure Bundler
           command: |
@@ -483,21 +483,21 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: feverprod-android-node-cache-{{ checksum "FluStudy/package.json" }}
       - run:
           name: flu@home Yarn Install
           command: |
             cd FluStudy
             yarn install
+      - save_cache:
+          key: feverprod-android-node-cache-{{ checksum "FluStudy/package.json" }}
+          paths:
+            - FluStudy/node_modules
       - run:
           name: Run setup scripts
           command: |
             ./scripts/generate-build-info
             ./scripts/build-hacks
-      - save_cache:
-          key: feverprod-node-cache-{{ checksum "FluStudy/package.json" }}
-          paths:
-            - FluStudy/node_modules
       - restore_cache:
           key: gradlejars-{{ checksum "FluStudy/android/build.gradle" }}-{{ checksum  "FluStudy/android/app/build.gradle" }}
       - run:
