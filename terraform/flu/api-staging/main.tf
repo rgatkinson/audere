@@ -31,6 +31,7 @@ module "flu_api" {
   fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
   fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
   gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
+  infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   migrate = "${var.migrate}"
   public_cidr = "${module.vpc_cidr.staging_public_cidr}"
   service = "${var.service}"
@@ -60,6 +61,15 @@ data "terraform_remote_state" "flu_db" {
   config {
     bucket = "flu-staging-terraform.auderenow.io"
     key = "db/terraform.state"
+    region = "us-west-2"
+  }
+}
+
+data "terraform_remote_state" "flu_notifier" {
+  backend = "s3"
+  config {
+    bucket = "flu-staging-terraform.auderenow.io"
+    key = "notifier/terraform.state"
     region = "us-west-2"
   }
 }

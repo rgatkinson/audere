@@ -61,3 +61,8 @@ variable "commit" {
 variable "creds_snapshot_id" {
   description = "snapshot id of volume containing api credentials"
 }
+
+variable "infra_alerts_sns_topic_arn" {
+  description = "ARN of SNS topic for publishing alarms"
+  type = "string"
+}

@@ -35,60 +35,6 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc_access_managed_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
-resource "aws_kms_key" "lambda_key" {
-  description = "Encryption key for ${local.base_name}"
-}
-
-resource "aws_iam_role_policy" "lambda_decrypt_policy" {
-  name = "${local.base_name}-decrypt-policy"
-  role = "${aws_iam_role.flu_lambda.id}"
-  policy = "${data.aws_iam_policy_document.lambda_decrypt_policy.json}"
-}
-
-data "aws_iam_policy_document" "lambda_decrypt_policy" {
-  statement {
-    actions = ["kms:Decrypt"]
-    resources = ["${aws_kms_key.lambda_key.arn}"]
-  }
-}
-
-resource "aws_sns_topic" "flu_lambda_notifications" {
-  name = "${local.base_name}-notifications"
-}
-
-data "aws_ssm_parameter" "notifications_hook_url" {
-  name = "${var.environment}-cw-infra-slack-hook-url"
-}
-
-resource "aws_lambda_function" "flu_lambda_slack_notifications" {
-  function_name = "${local.base_name}-slack-notifications"
-  filename = "${local.slack_archive_path}"
-  handler = "index.handler"
-  runtime = "nodejs8.10"
-  source_code_hash = "${base64sha256(file("${local.slack_archive_path}"))}"
-  role = "${aws_iam_role.flu_lambda.arn}"
-
-  environment {
-    variables = {
-      KMS_ENCRYPTED_HOOK_URL = "${data.aws_ssm_parameter.notifications_hook_url.value}"
-    }
-  }
-}
-
-resource "aws_sns_topic_subscription" "flu_lambda_notifications" {
-  topic_arn = "${aws_sns_topic.flu_lambda_notifications.arn}"
-  protocol = "lambda"
-  endpoint = "${aws_lambda_function.flu_lambda_slack_notifications.arn}"
-}
-
-resource "aws_lambda_permission" "flu_lambda_sns_permission" {
-  statement_id = "AllowExecutionFromSNS"
-  action = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.flu_lambda_slack_notifications.arn}"
-  principal = "sns.amazonaws.com"
-  source_arn = "${aws_sns_topic.flu_lambda_notifications.arn}"
-}
-
 module "hutch_upload_cron" {
   source = "../lambda-cron"
   name = "${local.base_name}-hutch-upload"
@@ -97,7 +43,7 @@ module "hutch_upload_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/export/sendEncounters"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "fever_consent_emailer_cron" {
@@ -108,7 +54,7 @@ module "fever_consent_emailer_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/sendFeverConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "sniffles_consent_emailer_cron" {
@@ -119,7 +65,7 @@ module "sniffles_consent_emailer_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/sendSnifflesConsentEmails"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "sniffles_visit_jobs_cron" {
@@ -143,7 +89,7 @@ module "fever_kits_report_cron" {
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "fever_gift_cards_cron" {
@@ -155,7 +101,7 @@ module "fever_gift_cards_cron" {
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}" 
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "fever_follow_up_surveys_cron" {
@@ -167,7 +113,7 @@ module "fever_follow_up_surveys_cron" {
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}" 
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 module "fever_received_kits_cron" {
@@ -179,5 +125,5 @@ module "fever_received_kits_cron" {
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
   timeout = 300
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }

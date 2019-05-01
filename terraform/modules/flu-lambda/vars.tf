@@ -27,3 +27,8 @@ variable "fluapi_fqdn" {
   description = "Fully qualified domain name for FluApi"
   type = "string"
 }
+
+variable "infra_alerts_sns_topic_arn" {
+  description = "ARN of SNS topic for publishing alarms"
+  type = "string"
+}

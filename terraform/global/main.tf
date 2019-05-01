@@ -1260,6 +1260,32 @@ resource "aws_iam_group_membership" "securers" {
 }
 
 // --------------------------------------------------------------------------------
+// To set an encrypted parameter in SSM:
+//
+// 1) Put the parameter value in a file (e.g. slack-hook-url.txt)
+// 2) Generate encrypted blob via `aws`:
+//      aws kms encrypt --key-id alias/ssm-parameters --plaintext fileb://./slack-hook-url.txt --output text --query CiphertextBlob
+// 3) Add the value as a parameter in AWS Systems Manager
+//      E.g. at https://us-west-2.console.aws.amazon.com/systems-manager/parameters?region=us-west-2
+//      create parameter `slack-hook-url` with the value from step 2.
+//
+// Well-known parameters (these should be added after applying global and before
+// applying anything else):
+// * slack-hook-url: create a Slack app and generate an incoming webhook url
+//
+// This supports round-tripping the encrypted data to code that expects to decrypt an environment variable.
+// For code that supports SecureString directly, you can just create a SecureString in SSM.
+
+resource "aws_kms_key" "ssm_parameters" {
+  description = "Key for encrypting secrets stored as SSM parameters."
+}
+
+resource "aws_kms_alias" "ssm_parameters" {
+  name = "alias/ssm-parameters"
+  target_key_id = "${aws_kms_key.ssm_parameters.key_id}"
+}
+
+// --------------------------------------------------------------------------------
 // Locals
 
 locals {

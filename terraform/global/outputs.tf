@@ -18,3 +18,7 @@ output "database_log_archive_bucket_name" {
 output "infrastructurers_group_name" {
   value = "${aws_iam_group.infrastructurers.name}"
 }
+
+output "ssm_parameters_key_arn" {
+  value = "${aws_kms_key.ssm_parameters.arn}"
+}

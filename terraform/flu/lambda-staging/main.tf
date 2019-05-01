@@ -24,11 +24,11 @@ module "flu_lambda" {
   source = "../../modules/flu-lambda"
 
   environment = "staging"
-
   fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_internal_fqdn}"
-  lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
+  infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   internal_elb_access_sg = "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
   internet_egress_sg = "${data.terraform_remote_state.flu_api.internet_egress_sg_id}"
+  lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
 }
 
 data "terraform_remote_state" "flu_api" {
@@ -36,6 +36,15 @@ data "terraform_remote_state" "flu_api" {
   config {
     bucket = "flu-staging-terraform.auderenow.io"
     key = "api/terraform.state"
+    region = "us-west-2"
+  }
+}
+
+data "terraform_remote_state" "flu_notifier" {
+  backend = "s3"
+  config {
+    bucket = "flu-staging-terraform.auderenow.io"
+    key = "notifier/terraform.state"
     region = "us-west-2"
   }
 }

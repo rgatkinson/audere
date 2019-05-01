@@ -8,6 +8,7 @@
 /**/buildInfo.json
 /**/*.tfstate
 /**/*.tfstate.backup
+/**/*.tfstate.*.backup
 /**/.terraform/
 /**/.terraform.tfstate.lock.info
 /**/*.auto.tfvars
