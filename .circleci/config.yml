@@ -405,9 +405,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
-            - feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
+          key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
       - run:
           name: flu@home Yarn Install
           command: |
@@ -417,6 +415,8 @@ jobs:
           key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
           paths:
             - FluStudy/node_modules
+      - restore_cache:
+          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
       - run:
           name: flu@home pod install
           command: |
