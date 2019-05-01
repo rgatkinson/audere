@@ -91,7 +91,6 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
     if (!this.props.isDemo) {
       return;
     }
-
     const blockKitOrders = getRemoteConfig("blockKitOrders");
     overrideRemoteConfig("blockKitOrders", !blockKitOrders);
     alert(`blockKitOrders is now ${!blockKitOrders}`);

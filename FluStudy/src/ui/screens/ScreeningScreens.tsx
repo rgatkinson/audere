@@ -125,37 +125,11 @@ class WelcomeScreen extends React.Component<
 }
 export const Welcome = withNamespaces("welcomeScreen")(WelcomeScreen);
 
-class WhyScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("What");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        stableImageSrc={{
-          uri: "whythisstudy",
-        }}
-        navigation={this.props.navigation}
-        title={t("why")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Why = withNamespaces("whyScreen")(WhyScreen);
-
-interface KitStatusState {
+interface WhyState {
   blockKits: boolean;
 }
 
-class WhatScreen extends React.Component<
-  Props & WithNamespaces,
-  KitStatusState
-> {
+class WhyScreen extends React.Component<Props & WithNamespaces, WhyState> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = { blockKits: this._getBlockKitOrderStatus() };
@@ -163,7 +137,11 @@ class WhatScreen extends React.Component<
   }
 
   _onNext = () => {
-    this.props.navigation.push("Age");
+    if (!!this.state.blockKits) {
+      this.props.navigation.push("OutOfKits");
+    } else {
+      this.props.navigation.push("What");
+    }
   };
 
   _getBlockKitOrderStatus = (currentStatus: boolean = false) => {
@@ -193,55 +171,88 @@ class WhatScreen extends React.Component<
 
   render() {
     const { t } = this.props;
-    const { blockKits } = this.state;
     return (
       <Screen
-        canProceed={!blockKits}
-        desc={blockKits ? t("blockKitsDesc") : t("description")}
-        imageSrc={
-          blockKits
-            ? {
-                uri: "thanksforyourinterest",
-              }
-            : undefined
-        }
-        stableImageSrc={
-          blockKits
-            ? undefined
-            : {
-                uri: "whatdoidonext",
-              }
-        }
+        canProceed={true}
+        desc={t("description")}
+        stableImageSrc={{
+          uri: "whythisstudy",
+        }}
         navigation={this.props.navigation}
-        title={blockKits ? t("whatBlockKits") : t("what")}
-        skipButton={blockKits}
+        title={t("why")}
+        onNext={this._onNext}
+      />
+    );
+  }
+}
+export const Why = withNamespaces("whyScreen")(WhyScreen);
+
+class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+  }
+
+  _onNext = () => {
+    this.props.navigation.push("Age");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={false}
+        desc={t("blockKitsDesc")}
+        imageSrc={{ uri: "thanksforyourinterest" }}
+        navigation={this.props.navigation}
+        title={t("whatBlockKits")}
+        skipButton={true}
         onNext={this._onNext}
       >
-        {blockKits && (
-          <View>
-            <Links
-              links={[
-                {
-                  label: t("links:learnLink"),
-                  onPress: learnMore,
-                },
-                {
-                  label: t("links:medLink"),
-                  onPress: findMedHelp,
-                },
-              ]}
-            />
-            <Text
-              content={t("disclaimer")}
-              style={{
-                alignSelf: "stretch",
-                fontSize: SMALL_TEXT,
-                marginBottom: GUTTER,
-              }}
-            />
-          </View>
-        )}
+        <View>
+          <Links
+            links={[
+              {
+                label: t("links:learnLink"),
+                onPress: learnMore,
+              },
+              {
+                label: t("links:medLink"),
+                onPress: findMedHelp,
+              },
+            ]}
+          />
+          <Text
+            content={t("disclaimer")}
+            style={{
+              alignSelf: "stretch",
+              fontSize: SMALL_TEXT,
+              marginBottom: GUTTER,
+            }}
+          />
+        </View>
       </Screen>
+    );
+  }
+}
+export const OutOfKits = withNamespaces("outOfKitsScreen")(OutOfKitsScreen);
+
+class WhatScreen extends React.Component<Props & WithNamespaces> {
+  _onNext = () => {
+    this.props.navigation.push("Age");
+  };
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        canProceed={true}
+        desc={t("description")}
+        stableImageSrc={{ uri: "whatdoidonext" }}
+        navigation={this.props.navigation}
+        title={t("what")}
+        skipButton={false}
+        onNext={this._onNext}
+      />
     );
   }
 }
