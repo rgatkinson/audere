@@ -39,9 +39,6 @@ android {
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode code 
     versionName getNpmVersion()
-    ndk {
-      abiFilters 'armeabi-v7a', 'x86'
-    }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -86,6 +83,15 @@ android {
   }
   configurations.all {
     resolutionStrategy.force 'com.android.support:design:27.1.0'
+  }
+  splits {
+    // https://developer.android.com/studio/build/configure-apk-splits
+    abi {
+      enable true
+      reset()
+      include "x86", "armeabi-v7a"
+      universalApk false
+    }
   }
 }
 
