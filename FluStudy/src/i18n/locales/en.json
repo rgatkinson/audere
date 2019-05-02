@@ -225,8 +225,8 @@
     "haveKit": "I already have my kit"
   },
   "whyScreen": {
-    "why": "Why this study?",
-    "description": "The goal of this program is to understand if people who are sick should test themselves at home for the flu using a new test. Although you won't learn whether or not you have the flu as part of this study, you'll play an important role in helping find ways to manage it in the future. "
+    "title": "Why this study?",
+    "desc": "The goal of this program is to understand if people who are sick should test themselves at home for the flu using a new test. Although you won't learn whether or not you have the flu as part of this study, you'll play an important role in helping find ways to manage it in the future. "
   },
   "whatScreen": {
     "what": "Getting started",
@@ -316,14 +316,13 @@
     "description": "We hope you’re able to get some rest and feel better soon.\n\n**While you wait for your kit:** ",
     "bullets": "**[Search Maps for urgent care clinics nearby.](FIND_MED_HELP)** If you need to see a doctor, you can use Maps to find one.\n**[Learn more about this study.](http://fluathome.org/)** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](EMAIL_SUPPORT)**."
   },
-  "confirmationScreen": {
-    "confirmed": "Thank you! Your flu test kit has been ordered.",
-    "description": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your {{device}} and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?",
-    "disclaimer": "The kit is for your use only. Please do not share or use the kit with anyone else after you receive it."
+  "Confirmation": {
+    "title": "Thank you! Your flu test kit has been ordered.",
+    "desc": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your device and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?"
   },
-  "pushNotificationsScreen": {
-    "pushNotifications": "May we send you push notifications?",
-    "description": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
+  "PushNotifications": {
+    "title": "May we send you push notifications?",
+    "desc": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
   },
   "extraInfoScreen": {
     "extraInfo": "Interested in sharing this or learning more?",
@@ -334,14 +333,14 @@
     "description": "Sorry, we know you’re feeling bad and appreciate your participation. Today you’ll be completing two tests which involve taking nose swabs. The whole process should take about 20 minutes total.\n\n**Please note the following:**",
     "bullets": "**Save the box the kit came in.** The app will ask you to scan the blue barcode on the box and you'll return your samples to us in the same box.\n**Shipping is pre-paid.** A return label is included in your kit, as well as tape to seal up the box.\n**Return the kit and we’ll send you a gift card.** Your gift card will be emailed within four weeks of us receiving your kit with samples in the mail."
   },
-  "whatsNextScreen": {
-    "whatsNext": "Preparing for the test",
-    "description": "Take a minute to get comfortable before you start the test process. Ideally, you’ll stay with your test kit for the duration of the test.\n\n**Before you begin:**",
+  "WhatsNext": {
+    "title": "Preparing for the test",
+    "desc": "Take a minute to get comfortable before you start the test process. Ideally, you’ll stay with your test kit for the duration of the test.\n\n**Before you begin:**",
     "bullets": "**Find a location away from pets and children.** Your test kit includes items that could be broken, damaged, or contaminated.\n**Choose a flat surface with good lighting.** The app will take a photo of your test strip."
   },
-  "beforeScreen": {
-    "beforeYouBegin": "Before you begin",
-    "flatStep": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
+  "Before": {
+    "title": "Before you begin",
+    "desc": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "scanInstructionsScreen": {
     "scanQrCode": "Scan the barcode",
@@ -365,7 +364,7 @@
   },
   "scanConfirmationScreen": {
     "codeSent": "Your code was scanned!",
-    "yourCode": "Your code: KIT ",
+    "yourCode": "**Your code**: KIT ",
     "description": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
@@ -381,7 +380,7 @@
   },
   "manualConfirmationScreen": {
     "codeSent": "Your code was accepted",
-    "yourCode": "Your code: ",
+    "yourCode": "**Your code**: KIT ",
     "description": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "barcodeContactSupportScreen": {
@@ -391,30 +390,30 @@
     "enterCode": "Please enter the code you receieved from the flu@home support team",
     "invalidCode": "Sorry, that code is not valid."
   },
-  "testInstructionsScreen": {
+  "TestInstructions": {
     "title": "How the test works",
-    "description": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
+    "desc": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
   },
   "unpackingScreen": {
     "title": "How the test works",
     "description": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap.",
     "kitMissingItems": "Is your kit missing items? Email us."
   },
-  "swabScreen": {
+  "Swab": {
     "title": "Begin the first test",
-    "description": "Open box ① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
+    "desc": "Open box ① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
   },
-  "swabPrepScreen": {
+  "SwabPrep": {
     "title": "Prepare tube",
-    "description": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
+    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
   },
-  "openSwabScreen": {
+  "OpenSwab": {
     "title": "Open nasal swab",
-    "description": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\n\nBe careful not to drop it, and only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\n\nBe careful not to drop it, and only touch the handle, not the tip."
   },
-  "mucusScreen": {
+  "Mucus": {
     "title": "Collect sample from nose",
-    "description": "Gently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "swabInTubeScreen": {
     "title": "Put swab in tube",
@@ -427,13 +426,13 @@
     "tip": "If you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
     "tip2": "To avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
   },
-  "removeSwabFromTubeScreen": {
+  "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
-    "description": "Carefully rub the tip of the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
   },
-  "openTestStripScreen": {
+  "OpenTestStrip": {
     "title": "Open test strip",
-    "description": "Inside the same box ① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
+    "desc": "Inside the same box ① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
   },
   "stripInTubeScreen": {
     "title": "Put test strip in tube",
@@ -457,7 +456,7 @@
     "desc": "Your answers, along with the tests, help us to understand many factors related to your illness.",
     "waiting": "Now, just wait for the time to end and the app will direct you to the next steps."
   },
-  "testStripReadyScreen": {
+  "TestStripReady": {
     "title": "Remove test strip",
     "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①."
   },
@@ -466,13 +465,13 @@
     "doneTitle": "Time Complete",
     "desc": "**Please wait for the timer to end.**"
   },
-  "finishTubeScreen": {
+  "FinishTube": {
     "title": "Finish with the tube",
-    "description": "Put the stopper back on the sample tube you just took the test strip out of. You'll be sending this back to us. We'll walk you through packaging steps shortly."
+    "desc": "Put the stopper back on the sample tube you just took the test strip out of. You'll be sending this back to us. We'll walk you through packaging steps shortly."
   },
-  "lookAtStripScreen": {
+  "LookAtStrip": {
     "title": "Look at the test strip",
-    "description": "We are going to ask you a few questions about what you see on the test strip. Please try to look at it in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we're just interested in knowing what you see."
+    "desc": "We are going to ask you a few questions about what you see on the test strip. Please try to look at it in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we're just interested in knowing what you see."
   },
   "testStripSurveyScreen": {
     "title": "What do you see?",
@@ -495,55 +494,55 @@
     "title": "Photo captured!",
     "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
   },
-  "cleanFirstTestScreen": {
+  "CleanFirstTest": {
     "title": "Seal up the test strip",
     "desc": "Find the medium-sized bag with a green barcode on it.\n\nPut the test strip inside that bag, remove the white strip on the bag and seal it."
   },
-  "cleanFirstTest2Screen": {
+  "CleanFirstTest2": {
     "title": "Put test strip in bag #2",
     "desc": "Open bag ② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
   },
   "firstTestFeedbackScreen": {
     "title": "Nice job with the first test! One more to go."
   },
-  "beginSecondTestScreen": {
+  "BeginSecondTest": {
     "title": "Begin the second test",
-    "description": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nFind the tube with the red top. Holding it straight so the liquid inside doesn't spill, open the top. Place the tube in the box hole marked \"Large tube\" so it's standing up. Keep the top for later."
+    "desc": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nFind the tube with the red top. Holding it straight so the liquid inside doesn't spill, open the top. Place the tube in the box hole marked \"Large tube\" so it's standing up. Keep the top for later."
   },
-  "prepSecondTestScreen": {
+  "PrepSecondTest": {
     "title": "Prepare for the test",
-    "description": "Open the swab package. Be careful to not drop it, and try to only touch the handle--not the tip of the swab."
+    "desc": "Open the swab package. Be careful to not drop it, and try to only touch the handle--not the tip of the swab."
   },
-  "mucusSecondScreen": {
+  "MucusSecond": {
     "title": "Collect sample from nose",
-    "description": "Now you'll swab your nose the same way you did during the first test:\n\nGently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Now you'll swab your nose the same way you did during the first test:\n\nGently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
   },
-  "swabInTubeSecondScreen": {
+  "SwabInTubeSecond": {
     "title": "Put swab in tube",
-    "description": "Place the swab directly into the tube and put the red top back on the tube tightly. (No need to add saline as you did with test 1)."
+    "desc": "Place the swab directly into the tube and put the red top back on the tube tightly. (No need to add saline as you did with test 1)."
   },
-  "cleanSecondTestScreen": {
+  "CleanSecondTest": {
     "title": "Clean up the second test",
-    "description": "Put the tube with the red top into the same bag ② as the other items to be returned."
+    "desc": "Put the tube with the red top into the same bag ② as the other items to be returned."
   },
   "secondTestFeedbackScreen": {
     "title": "Nice job with the second (and final) test!"
   },
-  "packingScreen": {
+  "Packing": {
     "title": "Packing things up",
-    "description": "You will be using the same box that was shipped to you to send everything back. Open bag ③, and inside, you'll find everything you need to pack up your box."
+    "desc": "You will be using the same box that was shipped to you to send everything back. Open bag ③, and inside, you'll find everything you need to pack up your box."
   },
-  "stickersScreen": {
+  "Stickers": {
     "title": "Put stickers on the box",
-    "description": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
+    "desc": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
   },
-  "secondBagScreen": {
+  "SecondBag": {
     "title": "Put bag ② in the box",
-    "description": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
+    "desc": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
   },
-  "tapeBoxScreen": {
+  "TapeBox": {
     "title": "Tape up the box",
-    "description": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word \"Open.\" Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
+    "desc": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word \"Open.\" Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
   },
   "shipBoxScreen": {
     "title": "Shipping your box",
@@ -564,7 +563,7 @@
   },
   "thanksScreen": {
     "title": "Thank you!",
-    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please reply as soon as you can to that message.\n\nYour gift card will be sent to {{email}} within four weeks of us receiving your completed test kit in the mail.",
+    "description": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please reply as soon as you can to that message.\n\nYour gift card will be sent to **{{email}}** within four weeks of us receiving your completed test kit in the mail.",
     "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness."
   },
   "links": {

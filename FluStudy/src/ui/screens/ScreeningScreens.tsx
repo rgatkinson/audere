@@ -5,13 +5,7 @@
 
 import { format } from "date-fns";
 import React from "react";
-import {
-  Alert,
-  AppState,
-  KeyboardAvoidingView,
-  ScrollView,
-  View,
-} from "react-native";
+import { Alert, AppState, KeyboardAvoidingView, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -100,27 +94,17 @@ class WelcomeScreen extends React.Component<
           amount: t("common:giftCardAmount"),
         })}
         footer={
-          <View style={{ alignSelf: "stretch", marginTop: GUTTER / 2 }}>
-            <Button
-              enabled={true}
-              label={t("common:button:continue")}
-              primary={true}
-              style={{ alignSelf: "center" }}
-              onPress={this._onNext}
-            />
-            <Links
-              center={true}
-              links={[{ label: t("haveKit"), onPress: this._onSkipPartOne }]}
-            />
-          </View>
+          <Links
+            center={true}
+            links={[{ label: t("haveKit"), onPress: this._onSkipPartOne }]}
+          />
         }
         hideBackButton={true}
         navigation={this.props.navigation}
-        skipButton={true}
-        stableImageSrc={{
-          uri: "welcome",
-        }}
+        skipButton={false}
+        splashImage="welcome"
         title={t("welcome")}
+        onNext={this._onNext}
       />
     );
   }
@@ -176,12 +160,10 @@ class WhyScreen extends React.Component<Props & WithNamespaces, WhyState> {
     return (
       <Screen
         canProceed={true}
-        desc={t("description")}
-        stableImageSrc={{
-          uri: "whythisstudy",
-        }}
+        desc={t("desc")}
+        splashImage="whatdoidonext"
         navigation={this.props.navigation}
-        title={t("why")}
+        title={t("title")}
         onNext={this._onNext}
       />
     );
@@ -204,7 +186,7 @@ class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={false}
         desc={t("blockKitsDesc")}
-        imageSrc={{ uri: "thanksforyourinterest" }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         title={t("whatBlockKits")}
         skipButton={true}
@@ -213,14 +195,8 @@ class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
         <View>
           <Links
             links={[
-              {
-                label: t("links:learnLink"),
-                onPress: learnMore,
-              },
-              {
-                label: t("links:medLink"),
-                onPress: findMedHelp,
-              },
+              { label: t("links:learnLink"), onPress: learnMore },
+              { label: t("links:medLink"), onPress: findMedHelp },
             ]}
           />
           <Text
@@ -249,7 +225,7 @@ class WhatScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        stableImageSrc={{ uri: "whatdoidonext" }}
+        splashImage="whatdoidonext"
         navigation={this.props.navigation}
         title={t("what")}
         skipButton={false}
@@ -386,53 +362,40 @@ export const Symptoms = reduxWriter(
   withNamespaces("symptomsScreen")(SymptomsScreen)
 );
 
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class PreConsentScreen extends React.PureComponent<
-  Props & WorkflowProps & WithNamespaces & ReduxWriterProps
-> {
+class PreConsentScreen extends React.PureComponent<Props & WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
-      <View style={{ flex: 1 }}>
-        <Screen
-          buttonLabel={t("common:button:continue")}
-          canProceed={true}
-          centerDesc={true}
-          hideBackButton={true}
-          imageSrc={{
-            uri: "preconsent",
-          }}
-          navigation={this.props.navigation}
-          onNext={() => this.props.navigation.push("Consent")}
-          title={t("title")}
-        >
-          <ScrollView>
-            <Text
-              style={{ marginTop: GUTTER, marginBottom: GUTTER }}
-              content={t("description")}
-            />
-            {t("bullets")
-              .split("\n")
-              .map((bullet: string, index: number) => {
-                return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-              })}
-            <Text style={{ marginVertical: GUTTER }} content={t("questions")} />
-            <Text
-              italic={true}
-              style={{ marginBottom: GUTTER * 2 }}
-              content={t("instructions")}
-            />
-          </ScrollView>
-        </Screen>
-      </View>
+      <Screen
+        buttonLabel={t("common:button:continue")}
+        canProceed={true}
+        centerDesc={true}
+        hideBackButton={true}
+        image="preconsent"
+        navigation={this.props.navigation}
+        onNext={() => this.props.navigation.push("Consent")}
+        title={t("title")}
+      >
+        <Text
+          style={{ marginTop: GUTTER, marginBottom: GUTTER }}
+          content={t("description")}
+        />
+        {t("bullets")
+          .split("\n")
+          .map((bullet: string, index: number) => {
+            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+          })}
+        <Text style={{ marginVertical: GUTTER }} content={t("questions")} />
+        <Text
+          italic={true}
+          style={{ marginBottom: GUTTER * 2 }}
+          content={t("instructions")}
+        />
+      </Screen>
     );
   }
 }
-export const PreConsent = reduxWriter(
-  withNamespaces("preConsentScreen")(PreConsentScreen)
-);
+export const PreConsent = withNamespaces("preConsentScreen")(PreConsentScreen);
 
 interface EmailProps {
   email?: string;
@@ -622,30 +585,17 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     tracker.logEvent(FunnelEvents.CONSENT_INELIGIBLE);
   }
 
-  _onBack = () => {
-    this.props.navigation.pop();
-  };
-
   render() {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={false}
-        footer={
-          <Button
-            enabled={true}
-            primary={true}
-            label={t("back")}
-            onPress={this._onBack}
-          />
-        }
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        buttonLabel={t("back")}
+        canProceed={true}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
-        skipButton={true}
         title={t("ineligible")}
         desc={t("description")}
+        onNext={() => this.props.navigation.pop()}
       />
     );
   }
@@ -1041,11 +991,6 @@ class AddressConfirmScreen extends React.Component<
         enabled
       >
         <Screen
-          buttonLabel={
-            !!this.props.workflow.skippedScreeningAt
-              ? undefined
-              : t("common:button:continue")
-          }
           canProceed={true}
           centerDesc={true}
           desc={t("description")}
@@ -1053,15 +998,13 @@ class AddressConfirmScreen extends React.Component<
           title={t("title")}
           onNext={this._onNext}
         >
-          <View>
-            <RadioButtonGroup
-              original={this.props.navigation.getParam("original")}
-              suggestions={this.props.navigation.getParam("suggestions")}
-              onChange={(selectedAddress: Address) =>
-                this.setState({ selectedAddress })
-              }
-            />
-          </View>
+          <RadioButtonGroup
+            original={this.props.navigation.getParam("original")}
+            suggestions={this.props.navigation.getParam("suggestions")}
+            onChange={(selectedAddress: Address) =>
+              this.setState({ selectedAddress })
+            }
+          />
         </Screen>
       </KeyboardAvoidingView>
     );
@@ -1083,9 +1026,7 @@ class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
@@ -1122,23 +1063,15 @@ class IneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t(this.props.navigation.getParam("description"))}
         hideBackButton={this.props.navigation.getParam("hideBack")}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
       </Screen>
@@ -1159,23 +1092,15 @@ class AddressIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={false}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
       </Screen>
@@ -1198,23 +1123,15 @@ class POBoxIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={false}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
       </Screen>
@@ -1237,23 +1154,15 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={true}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
         <Text
@@ -1284,23 +1193,15 @@ class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
         canProceed={false}
         desc={t("description")}
         hideBackButton={false}
-        imageSrc={{
-          uri: "thanksforyourinterest",
-        }}
+        image="thanksforyourinterest"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("ineligible")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
       </Screen>
@@ -1326,9 +1227,7 @@ class KitOrderedScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "flukitordered",
-        }}
+        image="flukitordered"
         navigation={this.props.navigation}
         onNext={this._onNext}
         title={t("title")}
@@ -1371,9 +1270,7 @@ class ThankYouScreeningScreen extends React.Component<
         buttonLabel={t("common:button:continue")}
         canProceed={false}
         desc={t("description")}
-        imageSrc={{
-          uri: "thanksforparticipating",
-        }}
+        image="thanksforparticipating"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
@@ -1389,81 +1286,4 @@ class ThankYouScreeningScreen extends React.Component<
 }
 export const ThankYouScreening = withNamespaces("thankYouScreeningScreen")(
   ThankYouScreeningScreen
-);
-
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class ConfirmationScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces
-> {
-  componentDidMount() {
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        screeningCompletedAt: new Date().toISOString(),
-      })
-    );
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description", {
-          device: t("common:device:" + DEVICE_INFO.idiomText),
-        })}
-        imageSrc={{
-          uri: "flukitordered",
-        }}
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("confirmed")}
-      >
-        <Links
-          links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
-          ]}
-        />
-        <Text
-          content={t("disclaimer")}
-          style={{
-            alignSelf: "stretch",
-            fontSize: SMALL_TEXT,
-            marginBottom: GUTTER,
-          }}
-        />
-      </Screen>
-    );
-  }
-}
-export const Confirmation = withNamespaces("confirmationScreen")(
-  ConfirmationScreen
-);
-
-class PushNotificationsScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:yes")}
-        canProceed={true}
-        desc={t("description")}
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("pushNotifications")}
-      />
-    );
-  }
-}
-export const PushNotifications = withNamespaces("pushNotificationsScreen")(
-  PushNotificationsScreen
 );

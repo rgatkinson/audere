@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import {
   Alert,
   Image,
-  ImageSourcePropType,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -33,14 +32,14 @@ interface Props {
   footer?: any;
   hideBackButton?: boolean;
   images?: string[];
-  imageSrc?: ImageSourcePropType;
+  image?: string;
   isDemo?: boolean;
   isConnected?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   shownOfflineWarning?: boolean;
   skipButton?: boolean;
-  stableImageSrc?: ImageSourcePropType;
+  splashImage?: string;
   subTitle?: string;
   title?: string;
   videoId?: string;
@@ -125,7 +124,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
         isDemo={this.props.isDemo}
         menuItem={this.props.menuItem}
         navigation={this.props.navigation}
-        stableImageSrc={this.props.stableImageSrc}
+        splashImage={this.props.splashImage}
         onBack={this.props.onBack}
       >
         <View style={styles.scrollContainer}>
@@ -138,7 +137,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.innerContainer}>
-              {!!this.props.imageSrc && (
+              {!!this.props.image && (
                 <TouchableWithoutFeedback
                   style={{ alignSelf: "stretch" }}
                   delayLongPress={LONG_PRESS_DELAY_MS}
@@ -150,7 +149,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
                       styles.image,
                       this.props.menuItem && styles.menuImage,
                     ]}
-                    source={this.props.imageSrc}
+                    source={{ uri: this.props.image }}
                   />
                 </TouchableWithoutFeedback>
               )}

@@ -175,9 +175,7 @@ class WelcomeBackScreen extends React.Component<
         canProceed={true}
         desc={t("description")}
         hideBackButton={!this.props.workflow.skippedScreeningAt}
-        imageSrc={{
-          uri: "howtestworks_1",
-        }}
+        image="howtestworks_1"
         navigation={this.props.navigation}
         title={t("welcomeBack")}
         onBack={this._onBack}
@@ -195,62 +193,6 @@ class WelcomeBackScreen extends React.Component<
 export const WelcomeBack = withNamespaces("welcomeBackScreen")(
   WelcomeBackScreen
 );
-
-@connect((state: StoreState) => ({
-  email: state.survey.email,
-}))
-class WhatsNextScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ScanInstructions");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "preparingfortest",
-        }}
-        navigation={this.props.navigation}
-        title={t("whatsNext")}
-        onNext={this._onNext}
-      >
-        {t("bullets")
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-          })}
-      </Screen>
-    );
-  }
-}
-export const WhatsNext = withNamespaces("whatsNextScreen")(WhatsNextScreen);
-
-// NOTE this screen has been removed. Leaving in code for redux state versioning.
-class BeforeScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ScanInstructions");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("flatStep")}
-        imageSrc={{
-          uri: "beforeyoubegin",
-        }}
-        navigation={this.props.navigation}
-        title={t("beforeYouBegin")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Before = withNamespaces("beforeScreen")(BeforeScreen);
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
   constructor(props: Props & WithNamespaces) {
@@ -275,36 +217,23 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
+        buttonLabel={t("okScan")}
         canProceed={true}
         desc={t("description", {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
         footer={
-          <View style={{ alignSelf: "stretch", marginTop: GUTTER / 2 }}>
-            <Button
-              enabled={true}
-              label={t("okScan")}
-              primary={true}
-              style={{ alignSelf: "center" }}
-              onPress={this._onNext}
-            />
-            <Links
-              center={true}
-              links={[
-                {
-                  label: t("inputManually"),
-                  onPress: this._onManualEntry,
-                },
-              ]}
-            />
-          </View>
+          <Links
+            center={true}
+            links={[
+              { label: t("inputManually"), onPress: this._onManualEntry },
+            ]}
+          />
         }
-        imageSrc={{
-          uri: "barcodeonbox",
-        }}
+        image="barcodeonbox"
         navigation={this.props.navigation}
-        skipButton={true}
         title={t("scanQrCode")}
+        onNext={this._onNext}
       >
         <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
       </Screen>
@@ -496,24 +425,20 @@ class ScanConfirmationScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("common:button:continue")}
         canProceed={true}
-        imageSrc={{
-          uri: "barcodesuccess",
-        }}
+        image="barcodesuccess"
         navigation={this.props.navigation}
         title={t("codeSent")}
         onNext={this._onNext}
       >
-        <BorderView style={{ marginTop: GUTTER }}>
-          <Text
-            center={true}
-            content={
-              t("yourCode") +
-              (!!this.props.kitBarcode ? this.props.kitBarcode.code : "")
-            }
-          />
-        </BorderView>
+        {!!this.props.kitBarcode && (
+          <BorderView style={{ marginTop: GUTTER }}>
+            <Text
+              center={true}
+              content={t("yourCode") + this.props.kitBarcode.code}
+            />
+          </BorderView>
+        )}
         <Text content={t("description")} style={{ marginVertical: GUTTER }} />
       </Screen>
     );
@@ -523,50 +448,6 @@ export const ScanConfirmation = withNamespaces("scanConfirmationScreen")(
   ScanConfirmationScreen
 );
 
-@connect((state: StoreState) => ({
-  kitBarcode: state.survey.kitBarcode,
-}))
-class ManualConfirmationScreen extends React.Component<
-  Props & BarcodeProps & WithNamespaces
-> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.MANUAL_CODE_CONFIRMATION);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("Unpacking");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        imageSrc={{
-          uri: "barcodesuccess",
-        }}
-        navigation={this.props.navigation}
-        title={t("codeSent")}
-        onNext={this._onNext}
-      >
-        <BorderView style={{ marginTop: GUTTER }}>
-          <Text
-            center={true}
-            content={
-              "**" +
-              t("yourCode") +
-              "**" +
-              BARCODE_PREFIX +
-              this.props.kitBarcode.code
-            }
-          />
-        </BorderView>
-        <Text content={t("description")} style={{ marginVertical: GUTTER }} />
-      </Screen>
-    );
-  }
-}
 export const ManualConfirmation = withNamespaces("manualConfirmationScreen")(
   ScanConfirmationScreen
 );
@@ -814,17 +695,12 @@ class BarcodeContactSupportScreen extends React.Component<
           <Links
             center={true}
             links={[
-              {
-                label: t("links:supportCode"),
-                onPress: this._toggleModal,
-              },
+              { label: t("links:supportCode"), onPress: this._toggleModal },
             ]}
           />
         }
         hideBackButton={true}
-        imageSrc={{
-          uri: "contactsupport",
-        }}
+        image="contactsupport"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
@@ -870,33 +746,6 @@ export const BarcodeContactSupport = withNamespaces(
   "barcodeContactSupportScreen"
 )(BarcodeContactSupportScreen);
 
-// NOTE this screen has been removed. Leaving in code for redux state versioning.
-class TestInstructionsScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Unpacking");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "whatsnext",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const TestInstructions = withNamespaces("testInstructionsScreen")(
-  TestInstructionsScreen
-);
-
 class UnpackingScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
     this.props.navigation.push("Swab");
@@ -912,9 +761,7 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
       <Screen
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "unpackinginstructions",
-        }}
+        image="unpackinginstructions"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -927,101 +774,6 @@ class UnpackingScreen extends React.Component<Props & WithNamespaces> {
   }
 }
 export const Unpacking = withNamespaces("unpackingScreen")(UnpackingScreen);
-
-class SwabScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("SwabPrep");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "begin1sttest",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="beginFirstTest"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Swab = withNamespaces("swabScreen")(SwabScreen);
-
-class SwabPrepScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("OpenSwab");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "preparetube",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="prepareTube"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const SwabPrep = withNamespaces("swabPrepScreen")(SwabPrepScreen);
-
-class OpenSwabScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Mucus");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "opennasalswab",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const OpenSwab = withNamespaces("openSwabScreen")(OpenSwabScreen);
-
-class MucusScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("SwabInTube");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "collectmucus",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="collectSample"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Mucus = withNamespaces("mucusScreen")(MucusScreen);
 
 @connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
@@ -1041,9 +793,7 @@ class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("startTimer")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "putswabintube",
-        }}
+        image="putswabintube"
         navigation={this.props.navigation}
         title={t("title")}
         videoId="putSwabInTube"
@@ -1114,9 +864,7 @@ class FirstTimerScreen extends React.Component<
             )}
           </View>
         }
-        imageSrc={{
-          uri: "oneminutetimer",
-        }}
+        image="oneminutetimer"
         navigation={this.props.navigation}
         skipButton={!this.props.done()}
         title={t("title")}
@@ -1132,64 +880,6 @@ export const FirstTimer = timerWithConfigProps({
   nextScreen: "RemoveSwabFromTube",
 })(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
-class RemoveSwabFromTubeScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.PASSED_FIRST_TIMER);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("OpenTestStrip");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "removeswabfromtube",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="removeSwabFromTube"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const RemoveSwabFromTube = withNamespaces("removeSwabFromTubeScreen")(
-  RemoveSwabFromTubeScreen
-);
-
-class OpenTestStripScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("StripInTube");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "openteststrip",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="openTestStrip"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const OpenTestStrip = withNamespaces("openTestStripScreen")(
-  OpenTestStripScreen
-);
-
 @connect()
 class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
@@ -1204,9 +894,7 @@ class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "openteststrip_1",
-        }}
+        image="openteststrip_1"
         navigation={this.props.navigation}
         title={t("title")}
         videoId="putTestStripInTube"
@@ -1619,43 +1307,29 @@ class ThankYouSurveyScreen extends React.Component<
         canProceed={this.props.done()}
         desc={t("desc")}
         footer={
-          <View
-            style={{
-              alignSelf: "stretch",
-              alignItems: "center",
-              marginBottom: GUTTER,
-            }}
-          >
-            {this.props.done() ? (
-              <Button
-                enabled={true}
-                primary={true}
-                label={t("common:button:continue")}
-                onPress={this._onNext}
+          this.props.done() ? (
+            undefined
+          ) : (
+            <BorderView
+              style={{
+                alignSelf: "center",
+                borderRadius: BORDER_RADIUS,
+                width: BUTTON_WIDTH,
+              }}
+            >
+              <Text
+                bold={true}
+                content={this.props.getRemainingLabel()}
+                style={{ color: SECONDARY_COLOR }}
               />
-            ) : (
-              <BorderView
-                style={{
-                  alignSelf: "center",
-                  borderRadius: BORDER_RADIUS,
-                  width: BUTTON_WIDTH,
-                }}
-              >
-                <Text
-                  bold={true}
-                  content={this.props.getRemainingLabel()}
-                  style={{ color: SECONDARY_COLOR }}
-                />
-              </BorderView>
-            )}
-          </View>
+            </BorderView>
+          )
         }
-        imageSrc={{
-          uri: "questionsthankyou",
-        }}
+        image="questionsthankyou"
         navigation={this.props.navigation}
-        skipButton={true}
+        skipButton={!this.props.done()}
         title={t("title")}
+        onNext={this._onNext}
         onTitlePress={this._onTitlePress}
       >
         {!this.props.done() && (
@@ -1670,82 +1344,6 @@ export const ThankYouSurvey = timerWithConfigProps({
   startTimeConfig: "tenMinuteStartTime",
   nextScreen: "TestStripReady",
 })(withNamespaces("thankYouSurveyScreen")(ThankYouSurveyScreen));
-
-class TestStripReadyScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("FinishTube");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("desc")}
-        imageSrc={{
-          uri: "removeteststrip",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="removeTestStrip"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const TestStripReady = withNamespaces("testStripReadyScreen")(
-  TestStripReadyScreen
-);
-
-class FinishTubeScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("LookAtStrip");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "finishwithtube",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="finishWithTube"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const FinishTube = withNamespaces("finishTubeScreen")(FinishTubeScreen);
-
-class LookAtStripScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("TestStripSurvey");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "lookatteststrip",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="lookAtTestStrip"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const LookAtStrip = withNamespaces("lookAtStripScreen")(
-  LookAtStripScreen
-);
 
 class TestStripSurveyScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -1795,9 +1393,7 @@ class TestStripSurveyScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        imageSrc={{
-          uri: "lookatteststrip",
-        }}
+        image="lookatteststrip"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -1866,9 +1462,7 @@ class PictureInstructionsScreen extends React.Component<
             links={[{ label: t("skip"), onPress: this._skip }]}
           />
         }
-        imageSrc={{
-          uri: "takepictureteststrip",
-        }}
+        image="takepictureteststrip"
         navigation={this.props.navigation}
         title={t("title")}
         videoId="takePhotoOfStrip"
@@ -2118,58 +1712,6 @@ export const TestStripConfirmation = withNamespaces(
   "testStripConfirmationScreen"
 )(TestStripConfirmationScreen);
 
-class CleanFirstTestScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("CleanFirstTest2");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("desc")}
-        imageSrc={{
-          uri: "sealupteststrip",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="cleanUpFirstTest1"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const CleanFirstTest = withNamespaces("cleanFirstTestScreen")(
-  CleanFirstTestScreen
-);
-
-class CleanFirstTest2Screen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("FirstTestFeedback");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("desc")}
-        imageSrc={{
-          uri: "putteststripbag2",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="cleanUpFirstTest2"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const CleanFirstTest2 = withNamespaces("cleanFirstTest2Screen")(
-  CleanFirstTest2Screen
-);
-
 class FirstTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -2182,9 +1724,7 @@ class FirstTestFeedbackScreen extends React.Component<
     return (
       <Screen
         canProceed={true}
-        imageSrc={{
-          uri: "nicejob",
-        }}
+        image="nicejob"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -2204,140 +1744,6 @@ export const FirstTestFeedback = reduxWriter(
   withNamespaces("firstTestFeedbackScreen")(FirstTestFeedbackScreen)
 );
 
-class BeginSecondTestScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.COMPLETED_FIRST_TEST);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("PrepSecondTest");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "begin2ndtest",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="beginSecondTest"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const BeginSecondTest = withNamespaces("beginSecondTestScreen")(
-  BeginSecondTestScreen
-);
-
-class PrepSecondTestScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("MucusSecond");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "preparefortest",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="prepareForTest"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const PrepSecondTest = withNamespaces("prepSecondTestScreen")(
-  PrepSecondTestScreen
-);
-
-class MucusSecondScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("SwabInTubeSecond");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "collectmucus",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="collectSampleFromNose"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const MucusSecond = withNamespaces("mucusSecondScreen")(
-  MucusSecondScreen
-);
-
-class SwabInTubeSecondScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("CleanSecondTest");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "putswabinredtube",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="putSwabInTube2"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const SwabInTubeSecond = withNamespaces("swabInTubeSecondScreen")(
-  SwabInTubeSecondScreen
-);
-
-class CleanSecondTestScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("SecondTestFeedback");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "cleanupsecondtest",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="cleanUpSecondTest"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const CleanSecondTest = withNamespaces("cleanSecondTestScreen")(
-  CleanSecondTestScreen
-);
-
 class SecondTestFeedbackScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -2350,9 +1756,7 @@ class SecondTestFeedbackScreen extends React.Component<
     return (
       <Screen
         canProceed={true}
-        imageSrc={{
-          uri: "nicejob",
-        }}
+        image="nicejob"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -2371,105 +1775,6 @@ class SecondTestFeedbackScreen extends React.Component<
 export const SecondTestFeedback = reduxWriter(
   withNamespaces("secondTestFeedbackScreen")(SecondTestFeedbackScreen)
 );
-
-class PackingScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.COMPLETED_SECOND_TEST);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("Stickers");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "packingthingsup",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Packing = withNamespaces("packingScreen")(PackingScreen);
-
-class StickersScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("SecondBag");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "putstickersonbox",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="putStickersOnBox"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Stickers = withNamespaces("stickersScreen")(StickersScreen);
-
-class SecondBagScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("TapeBox");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "putbag2inbox",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="putBag2InBox"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const SecondBag = withNamespaces("secondBagScreen")(SecondBagScreen);
-
-class TapeBoxScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ShipBox");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        imageSrc={{
-          uri: "tapeupbox",
-        }}
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="tapeUpBox"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const TapeBox = withNamespaces("tapeBoxScreen")(TapeBoxScreen);
 
 class ShipBoxScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
@@ -2494,9 +1799,7 @@ class ShipBoxScreen extends React.Component<
         buttonLabel={t("schedulePickup")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "shippingyourbox",
-        }}
+        image="shippingyourbox"
         footer={
           <Button
             enabled={true}
@@ -2513,10 +1816,7 @@ class ShipBoxScreen extends React.Component<
       >
         <Links
           links={[
-            {
-              label: t("showNearbyUsps"),
-              onPress: this._onShowNearbyUsps,
-            },
+            { label: t("showNearbyUsps"), onPress: this._onShowNearbyUsps },
           ]}
         />
       </Screen>
@@ -2541,9 +1841,7 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
         buttonLabel={t("title")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "schedulepickup",
-        }}
+        image="schedulepickup"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -2604,12 +1902,9 @@ class EmailOptInScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("common:button:continue")}
         canProceed={true}
         desc={t("description")}
-        imageSrc={{
-          uri: "optinmessages",
-        }}
+        image="optinmessages"
         navigation={this.props.navigation}
         title={t("title")}
         onNext={this._onNext}
@@ -2648,23 +1943,15 @@ class ThanksScreen extends React.Component<
       <Screen
         canProceed={false}
         desc={t("description", { email: this.props.email })}
-        imageSrc={{
-          uri: "finalthanks",
-        }}
+        image="finalthanks"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}
       >
         <Links
           links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
+            { label: t("links:learnLink"), onPress: learnMore },
+            { label: t("links:medLink"), onPress: findMedHelp },
           ]}
         />
         <Text

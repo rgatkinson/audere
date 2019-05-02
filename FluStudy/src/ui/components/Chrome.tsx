@@ -24,7 +24,7 @@ interface Props {
   isDemo?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
-  stableImageSrc?: ImageSourcePropType;
+  splashImage?: string;
   onBack?: () => void;
 }
 
@@ -36,7 +36,7 @@ export default class Chrome extends React.Component<Props> {
           source={SPLASH_IMAGE}
           style={[
             { alignSelf: "stretch" },
-            !!this.props.stableImageSrc && {
+            !!this.props.splashImage && {
               aspectRatio: SPLASH_RATIO,
               width: "100%",
             },
@@ -54,8 +54,11 @@ export default class Chrome extends React.Component<Props> {
             navigation={this.props.navigation}
             onBack={this.props.onBack}
           />
-          {!!this.props.stableImageSrc && (
-            <Image style={styles.image} source={this.props.stableImageSrc} />
+          {!!this.props.splashImage && (
+            <Image
+              style={styles.image}
+              source={{ uri: this.props.splashImage }}
+            />
           )}
         </ImageBackground>
         {this.props.children}
