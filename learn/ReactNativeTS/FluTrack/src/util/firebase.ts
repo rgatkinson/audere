@@ -70,3 +70,28 @@ export async function backupToFirebase(
     // ...
   }
 }
+
+// To be used only internally.  You'll have to provide the private key, BTW.
+// For data recovery purposes.
+async function decryptFromFirebase(barcode: string) {
+  const privateKey = "<Your Super Secret Key Here>";
+  const snap = await firebase
+    .firestore()
+    .collection(FirestoreCollection.BARCODES)
+    .doc(barcode)
+    .get();
+
+  if (!snap.exists) {
+    console.log(`Barcode ${barcode} unfortunately can't be found`);
+    return;
+  }
+  const crypt = new Crypt();
+  const decryptedData = crypt.decrypt(
+    privateKey,
+    snap.data()!.encrypted_visit_info
+  );
+
+  console.log(
+    `Barcode ${barcode} decrypts to:\n${JSON.stringify(decryptedData)}\n\n`
+  );
+}
