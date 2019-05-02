@@ -96,7 +96,9 @@ class WelcomeScreen extends React.Component<
     return (
       <Screen
         canProceed={true}
-        desc={t("description")}
+        desc={t("description", {
+          amount: t("common:giftCardAmount"),
+        })}
         footer={
           <View style={{ alignSelf: "stretch", marginTop: GUTTER / 2 }}>
             <Button
@@ -490,7 +492,9 @@ class ConsentScreen extends React.PureComponent<
           "\n" +
           t("consentFormHeader2") +
           "\n" +
-          t("consentFormText"),
+          t("consentFormText", {
+            amount: t("common:giftCardAmount"),
+          }),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
         appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
@@ -566,7 +570,9 @@ class ConsentScreen extends React.PureComponent<
             style={{ fontSize: SMALL_TEXT }}
           />
           <Text
-            content={t("consentFormText")}
+            content={t("consentFormText", {
+              amount: t("common:giftCardAmount"),
+            })}
             style={{ fontSize: SMALL_TEXT }}
           />
           <CheckBox

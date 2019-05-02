@@ -207,10 +207,7 @@ export default class Text extends React.Component<Props> {
   }
 
   render() {
-    const content = this.props.content.replace(
-      "$$$",
-      i18next.t("common:giftCardAmount")
-    );
+    const content = this.props.content;
     return (
       <SystemText
         selectable={true}
