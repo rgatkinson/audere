@@ -415,6 +415,10 @@ jobs:
           key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
           paths:
             - FluStudy/node_modules
+      - run:
+          name: Fetch CocoaPods Specs
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - restore_cache:
           key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
       - run:
