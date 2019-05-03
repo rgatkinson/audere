@@ -116,15 +116,19 @@ class ConnectedRootContainer extends React.Component<Props> {
     this.props.dispatch(setConnectivity(isConnected));
   };
 
+  _getConnectivity = () => {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      this.props.dispatch(setConnectivity(isConnected));
+    });
+  };
+
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
     this.props.dispatch(setMarketingProperties(getMarketingProperties()));
     if (this.props.csruid) {
       onCSRUIDEstablished(this.props.csruid);
     }
-    NetInfo.isConnected.fetch().then(isConnected => {
-      this.props.dispatch(setConnectivity(isConnected));
-    });
+    this._getConnectivity();
     NetInfo.isConnected.addEventListener(
       "connectionChange",
       this._handleConnectivityChange
@@ -165,6 +169,7 @@ class ConnectedRootContainer extends React.Component<Props> {
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
+      this._getConnectivity();
       tracker.logEvent(AppEvents.APP_FOREGROUNDED, {
         screen: this.state.activeRouteName,
       });

@@ -16,7 +16,7 @@ export type MetaState = {
 };
 
 const initialState: MetaState = {
-  isConnected: false,
+  isConnected: true,
   isDemo: false,
   marketingProperties: undefined,
   shownOfflineWarning: false,
