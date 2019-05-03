@@ -1,27 +1,22 @@
 import React from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { isValidAddress } from "../../util/check";
 import NumberInput from "./NumberInput";
-import StateModal from "./StateModal";
 import Text from "./Text";
 import TextInput from "./TextInput";
+import { states } from "../../resources/StatePickerConfig";
 import {
   BORDER_COLOR,
   ERROR_COLOR,
   FONT_NORMAL,
   GUTTER,
   INPUT_HEIGHT,
-  LINK_COLOR,
   TEXT_COLOR,
+  REGULAR_TEXT,
 } from "../styles";
+
+import ModalSelector from "react-native-modal-selector";
 
 interface Props {
   autoFocus?: boolean;
@@ -134,42 +129,27 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           styles.textInput
         )}
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-            style={styles.pickerContainer}
-            onPress={() => {
-              this.setState({ stateOpen: true });
-            }}
-          >
-            <Text
-              content={
-                this.props.value && this.props.value.state
-                  ? this.props.value.state
-                  : t("state")
-              }
-              style={[
-                styles.statePlaceholder,
-                shouldValidate &&
-                  (!this.props.value ||
-                    (this.props.value && !this.props.value.state)) &&
-                  styles.statePlaceholderError,
-              ]}
+          <View style={styles.pickerContainer}>
+            <ModalSelector
+              cancelContainerStyle={{ backgroundColor: "white" }}
+              data={states}
+              initValue={t("state")}
+              onChange={(option: any) => {
+                this.zipcode.current!.focus();
+                const address = this.props.value || {};
+                address.state = option.label;
+                this.props.onChange(address);
+                this.setState({ stateOpen: false });
+              }}
+              optionContainerStyle={{ backgroundColor: "white" }}
+              optionStyle={{ backgroundColor: "white" }}
+              optionTextStyle={{ color: TEXT_COLOR }}
+              selectStyle={styles.select}
+              selectTextStyle={styles.selectText}
+              style={{ alignSelf: "flex-start" }}
+              visible={this.state.stateOpen}
             />
-          </TouchableOpacity>
-          <StateModal
-            state={
-              this.props.value && this.props.value!.state
-                ? this.props.value!.state!
-                : "WA"
-            }
-            visible={this.state.stateOpen}
-            onDismiss={(state: string) => {
-              this.zipcode.current!.focus();
-              const address = this.props.value || {};
-              address.state = state;
-              this.props.onChange(address);
-              this.setState({ stateOpen: false });
-            }}
-          />
+          </View>
           <NumberInput
             maxDigits={5}
             placeholder={t("zipcode")}
@@ -207,6 +187,22 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     marginBottom: GUTTER,
   },
+  errorText: {
+    color: ERROR_COLOR,
+    fontFamily: FONT_NORMAL,
+    marginTop: GUTTER / 2,
+    alignSelf: "flex-end",
+  },
+  firstName: {
+    flex: 1,
+    height: INPUT_HEIGHT,
+    padding: GUTTER / 4,
+  },
+  inputRowRight: {
+    flex: 2,
+    borderLeftColor: BORDER_COLOR,
+    borderLeftWidth: StyleSheet.hairlineWidth,
+  },
   pickerContainer: {
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -215,31 +211,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: GUTTER / 4,
   },
-  firstName: {
-    flex: 1,
-    height: INPUT_HEIGHT,
-    padding: GUTTER / 4,
+  select: {
+    borderWidth: 0,
+    padding: 0,
   },
-  statePlaceholder: {
-    color: TEXT_COLOR,
-    marginVertical: 0,
-  },
-  statePlaceholderError: {
-    color: ERROR_COLOR,
+  selectText: {
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT,
+    padding: 0,
   },
   textInput: {
     height: INPUT_HEIGHT,
-  },
-  inputRowRight: {
-    flex: 2,
-    borderLeftColor: BORDER_COLOR,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-  },
-  errorText: {
-    color: ERROR_COLOR,
-    fontFamily: FONT_NORMAL,
-    marginTop: GUTTER / 2,
-    alignSelf: "flex-end",
   },
 });
 
