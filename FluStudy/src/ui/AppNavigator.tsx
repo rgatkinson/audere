@@ -9,7 +9,6 @@ import {
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import {
-  Welcome,
   Why,
   What,
   OutOfKits,
@@ -17,12 +16,7 @@ import {
   Symptoms,
   AddressScreen,
   AddressConfirm,
-  AgeIneligible,
-  Ineligible,
-  AddressIneligible,
-  POBoxIneligible,
   SymptomsIneligible,
-  StateIneligible,
   PreConsent,
   Consent,
   ConsentIneligible,
@@ -37,7 +31,6 @@ import {
   ManualEntry,
   ManualConfirmation,
   BarcodeContactSupport,
-  Unpacking,
   SwabInTube,
   FirstTimer,
   StripInTube,
@@ -65,15 +58,10 @@ import {
 } from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
-  Welcome,
   Why,
   What,
   OutOfKits,
   Age,
-  AgeIneligible,
-  Ineligible,
-  POBoxIneligible,
-  AddressIneligible,
   Symptoms,
   SymptomsIneligible,
   PreConsent,
@@ -83,7 +71,6 @@ const mainScreens = {
   AddressConfirm,
   KitOrdered,
   ThankYouScreening,
-  StateIneligible,
   WelcomeBack,
   ScanInstructions,
   Scan,
@@ -91,7 +78,6 @@ const mainScreens = {
   ManualEntry,
   ManualConfirmation,
   BarcodeContactSupport,
-  Unpacking,
   SwabInTube,
   FirstTimer,
   StripInTube,
@@ -123,6 +109,7 @@ const homeRouteConfig = simpleScreens.reduce(
 );
 
 const Home = createStackNavigator(homeRouteConfig, {
+  initialRouteName: "Welcome",
   // @ts-ignore
   defaultNavigationOptions: {
     gesturesEnabled: false,

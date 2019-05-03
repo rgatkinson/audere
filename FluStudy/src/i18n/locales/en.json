@@ -219,10 +219,9 @@
   "symptomsScreen": {
     "symptoms": "Symptoms"
   },
-  "welcomeScreen": {
-    "welcome": "Welcome",
-    "description": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you’ll receive a {{amount}} gift card within four weeks of us receiving your completed test kit in the mail. Let’s get started.",
-    "haveKit": "I already have my kit"
+  "Welcome": {
+    "title": "Welcome",
+    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you’ll receive a $25 gift card within four weeks of us receiving your completed test kit in the mail. Let’s get started."
   },
   "whyScreen": {
     "title": "Why this study?",
@@ -273,32 +272,30 @@
     "suggestedAddress": "Suggested address:",
     "originalAddress": "Original address:"
   },
-  "ageIneligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but this study is aimed at adults 18 years and older. "
+  "AgeIneligible": {
+    "title": "Thanks for your interest",
+    "desc": "We're sorry, but this study is aimed at adults 18 years and older. "
   },
-  "ineligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "descriptionAge": "We're sorry, but this study is aimed at adults 18 years and older. ",
-    "descriptionAddress": "We're sorry, but we could not verify your address.",
-    "descriptionPOBox": "We're sorry, but due to the time sensitivity of the test we do not ship to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
+  "Ineligible": {
+    "title": "Thanks for your interest",
+    "desc": "We're sorry, but you are not currently eligible for this study."
   },
-  "addressIneligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but we could not verify your address."
+  "AddressIneligible": {
+    "title": "Thanks for your interest",
+    "desc": "We're sorry, but we could not verify your address."
   },
-  "poBoxIneligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but due to the time sensitivity of the test we do not ship to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
+  "POBoxIneligible": {
+    "title": "Thanks for your interest",
+    "desc": "We're sorry, but due to the time sensitivity of the test we do not ship to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
   },
   "symptomsIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "At this time your symptoms do not meet the criteria to continue. If your symptoms change, you can open this app again on a different day.",
     "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
   },
-  "stateIneligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but we don't currently ship to Alaska or Hawaii. "
+  "StateIneligible": {
+    "title": "Thanks for your interest",
+    "desc": "We're sorry, but we don't currently ship to Alaska or Hawaii. "
   },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
@@ -394,10 +391,9 @@
     "title": "How the test works",
     "desc": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
   },
-  "unpackingScreen": {
+  "Unpacking": {
     "title": "How the test works",
-    "description": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap.",
-    "kitMissingItems": "Is your kit missing items? Email us."
+    "desc": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap."
   },
   "Swab": {
     "title": "Begin the first test",
@@ -567,10 +563,14 @@
     "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness."
   },
   "links": {
-    "recommendLink": "Recommend flu@home to a friend who's not feeling well",
-    "learnLink": "Learn more about this flu study",
-    "medLink": "Search Maps for urgent care clinics nearby",
-    "supportCode": "I have a support code"
+    "haveKitAlready": "I already have my kit",
+    "learnMore": "Learn more about this flu study",
+    "findMedHelp": "Search Maps for urgent care clinics nearby",
+    "inputManually": "Enter barcode manually",
+    "supportCode": "I have a support code",
+    "kitMissingItems": "Is your kit missing items? Email us.",
+    "skipTestStripPhoto": "Unable to take a picture? Skip this step",
+    "showNearbyUsps": "Show nearby USPS facilities"
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",

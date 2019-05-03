@@ -1,16 +1,27 @@
 import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import BulletPoint from "../ui/components/BulletPoint";
+import Links from "../ui/components/Links";
 import Screen from "../ui/components/Screen";
 import { NavigationScreenProp } from "react-navigation";
 import { tracker, FunnelEvents, AppHealthEvents } from "../util/tracker";
 
+interface LinkConfig {
+  center?: boolean;
+  footer?: boolean;
+  links: string[];
+}
+
 export interface SimpleScreenConfig {
   bullets?: boolean;
+  footerLinkConfig?: LinkConfig;
   funnelEvent?: string;
+  hideBackButton?: boolean;
   image?: string;
   key: string;
-  next: string;
+  linkConfig?: LinkConfig;
+  next?: string;
+  skipButton?: boolean;
   splashImage?: string;
   videoId?: string;
 }
@@ -28,17 +39,28 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
     }
 
     _onNext = () => {
-      this.props.navigation.push(config.next);
+      config.next && this.props.navigation.push(config.next);
     };
 
     render() {
       const { t } = this.props;
+
       return (
         <Screen
           canProceed={true}
           desc={t("desc")}
+          footer={
+            !!config.footerLinkConfig && (
+              <Links
+                center={config.footerLinkConfig.center}
+                links={config.footerLinkConfig.links}
+              />
+            )
+          }
+          hideBackButton={config.hideBackButton}
           image={config.image}
           navigation={this.props.navigation}
+          skipButton={config.skipButton}
           splashImage={config.splashImage}
           title={t("title")}
           videoId={config.videoId}
@@ -50,6 +72,12 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
               .map((bullet: string, index: number) => {
                 return <BulletPoint key={`bullet-${index}`} content={bullet} />;
               })}
+          {!!config.linkConfig && (
+            <Links
+              center={config.linkConfig.center}
+              links={config.linkConfig.links}
+            />
+          )}
         </Screen>
       );
     }
@@ -59,6 +87,55 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
 };
 
 export const simpleScreens: SimpleScreenConfig[] = [
+  {
+    hideBackButton: true,
+    key: "Welcome",
+    footerLinkConfig: {
+      center: true,
+      footer: true,
+      links: ["haveKitAlready"],
+    },
+    next: "Why",
+    splashImage: "welcome",
+  },
+  {
+    funnelEvent: FunnelEvents.AGE_INELIGIBLE,
+    hideBackButton: true,
+    image: "thanksforyourinterest",
+    key: "AgeIneligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
+  {
+    funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
+    image: "thanksforyourinterest",
+    key: "AddressIneligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
+  {
+    funnelEvent: FunnelEvents.PO_BOX_INELIGIBLE,
+    image: "thanksforyourinterest",
+    key: "POBoxIneligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
+  {
+    funnelEvent: FunnelEvents.STATE_INELIGIBLE,
+    image: "thanksforyourinterest",
+    key: "StateIneligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
+
+  {
+    // NOTE: removed, keeping only for navigation state
+    hideBackButton: true,
+    image: "thanksforyourinterest",
+    key: "Ineligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
   {
     // NOTE: removed, keeping only for navigation state
     image: "flukitordered",
@@ -88,6 +165,14 @@ export const simpleScreens: SimpleScreenConfig[] = [
     image: "preparingfortest",
     key: "WhatsNext",
     next: "ScanInstructions",
+  },
+  {
+    image: "unpackinginstructions",
+    key: "Unpacking",
+    linkConfig: {
+      links: ["kitMissingItems"],
+    },
+    next: "Swab",
   },
   {
     image: "begin1sttest",

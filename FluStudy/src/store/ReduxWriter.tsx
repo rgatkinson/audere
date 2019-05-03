@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { NavigationScreenProp } from "react-navigation";
 import {
   Action,
   OptionLabel,
@@ -22,10 +21,8 @@ import { getStore } from "./index";
 
 interface InnerProps {
   dispatch(action: Action): void;
-  navigation: NavigationScreenProp<any, any>;
   responses: SurveyResponse[];
   t(key: string): string;
-  tReady: boolean;
 }
 
 export interface ReduxWriterProps {

@@ -12,7 +12,6 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
 import axios from "axios";
 import { createAccessKey } from "../../util/accessKey";
-
 import { WorkflowInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import {
   Action,
@@ -47,7 +46,6 @@ import Links from "../components/Links";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
-import { findMedHelp, learnMore } from "../externalActions";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { isPOBox, isValidAddress, isValidEmail } from "../../util/check";
 import { getRemoteConfig, loadAllRemoteConfigs } from "../../util/remoteConfig";
@@ -65,57 +63,14 @@ interface WorkflowProps {
   workflow: WorkflowInfo;
 }
 
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class WelcomeScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces
-> {
-  _onNext = () => {
-    this.props.navigation.push("Why");
-  };
-
-  _onSkipPartOne = () => {
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        skippedScreeningAt: new Date().toISOString(),
-      })
-    );
-    this.props.navigation.push("WelcomeBack");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description", {
-          amount: t("common:giftCardAmount"),
-        })}
-        footer={
-          <Links
-            center={true}
-            links={[{ label: t("haveKit"), onPress: this._onSkipPartOne }]}
-          />
-        }
-        hideBackButton={true}
-        navigation={this.props.navigation}
-        skipButton={false}
-        splashImage="welcome"
-        title={t("welcome")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const Welcome = withNamespaces("welcomeScreen")(WelcomeScreen);
-
-interface WhyState {
+interface KitStatusState {
   blockKits: boolean;
 }
 
-class WhyScreen extends React.Component<Props & WithNamespaces, WhyState> {
+class WhyScreen extends React.Component<
+  Props & WithNamespaces,
+  KitStatusState
+> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = { blockKits: this._getBlockKitOrderStatus() };
@@ -193,12 +148,7 @@ class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
         onNext={this._onNext}
       >
         <View>
-          <Links
-            links={[
-              { label: t("links:learnLink"), onPress: learnMore },
-              { label: t("links:medLink"), onPress: findMedHelp },
-            ]}
-          />
+          <Links links={["learnMore", "findMedHelp"]} />
           <Text
             content={t("disclaimer")}
             style={{
@@ -1014,134 +964,6 @@ export const AddressConfirm = reduxWriter(
   withNamespaces("addressConfirmScreen")(AddressConfirmScreen)
 );
 
-class AgeIneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.AGE_INELIGIBLE);
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        hideBackButton={true}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links
-          links={[
-            {
-              label: t("links:learnLink"),
-              onPress: learnMore,
-            },
-            {
-              label: t("links:medLink"),
-              onPress: findMedHelp,
-            },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const AgeIneligible = withNamespaces("ageIneligibleScreen")(
-  AgeIneligibleScreen
-);
-
-class IneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(this.props.navigation.getParam("funnelEvent"));
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t(this.props.navigation.getParam("description"))}
-        hideBackButton={this.props.navigation.getParam("hideBack")}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const Ineligible = withNamespaces("ineligibleScreen")(IneligibleScreen);
-
-class AddressIneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.ADDRESS_INELIGIBLE);
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        hideBackButton={false}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const AddressIneligible = withNamespaces("addressIneligibleScreen")(
-  AddressIneligibleScreen
-);
-
-class POBoxIneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.PO_BOX_INELIGIBLE);
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        hideBackButton={false}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const POBoxIneligible = withNamespaces("poBoxIneligibleScreen")(
-  POBoxIneligibleScreen
-);
-
 class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.SYMPTOMS_INELIGIBLE);
@@ -1159,12 +981,7 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
         skipButton={true}
         title={t("ineligible")}
       >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
+        <Links links={["learnMore", "findMedHelp"]} />
         <Text
           content={t("disclaimer")}
           style={{
@@ -1179,37 +996,6 @@ class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
 }
 export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")(
   SymptomsIneligibleScreen
-);
-
-class StateIneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.STATE_INELIGIBLE);
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        hideBackButton={false}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
-      </Screen>
-    );
-  }
-}
-export const StateIneligible = withNamespaces("stateIneligibleScreen")(
-  StateIneligibleScreen
 );
 
 @connect((state: StoreState) => ({

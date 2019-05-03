@@ -3,27 +3,40 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { GUTTER, PRIMARY_COLOR } from "../styles";
-
-export interface LinkData {
-  label: string;
-  onPress(): any;
-}
+import {
+  linkConfig,
+  LinkConfig,
+  LinkConfigProps,
+  LinkPropProvider,
+} from "../../resources/LinkConfig";
 
 interface Props {
   center?: boolean;
-  links: LinkData[];
+  links: string[];
 }
 
-class Links extends React.Component<Props & WithNamespaces> {
+class Links extends React.Component<Props & LinkConfigProps & WithNamespaces> {
+  _links: LinkConfig[];
+
+  constructor(props: Props & LinkConfigProps & WithNamespaces) {
+    super(props);
+    this._links = props.links
+      .filter(linkId => linkConfig.has(linkId))
+      .map(linkId => linkConfig.get(linkId)!);
+  }
+
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        {this.props.links.map(link => (
-          <TouchableOpacity key={link.label} onPress={link.onPress}>
+        {this._links.map(link => (
+          <TouchableOpacity
+            key={link.key}
+            onPress={() => link.action(this.props)}
+          >
             <Text
               center={this.props.center}
-              content={link.label}
+              content={t(link.key)}
               style={styles.linkStyle}
             />
           </TouchableOpacity>
@@ -32,6 +45,8 @@ class Links extends React.Component<Props & WithNamespaces> {
     );
   }
 }
+
+export default LinkPropProvider(withNamespaces("links")(Links));
 
 const styles = StyleSheet.create({
   container: {
@@ -43,5 +58,3 @@ const styles = StyleSheet.create({
     marginBottom: GUTTER / 2,
   },
 });
-
-export default withNamespaces("links")(Links);

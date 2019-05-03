@@ -31,6 +31,7 @@ import {
   setTenMinuteStartTime,
   setSupportCode,
   setWorkflow,
+  toggleSupportCodeModal,
   uploader,
 } from "../../store";
 import {
@@ -57,7 +58,6 @@ import {
   FirstTestFeedbackConfig,
   SecondTestFeedbackConfig,
   OptInForMessagesConfig,
-  AddressConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import timerWithConfigProps, { TimerProps } from "../components/Timer";
@@ -78,13 +78,7 @@ import QuestionText from "../components/QuestionText";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
-import {
-  findMedHelp,
-  learnMore,
-  scheduleUSPSPickUp,
-  showNearbyShippingLocations,
-  emailSupport,
-} from "../externalActions";
+import { scheduleUSPSPickUp } from "../externalActions";
 import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
@@ -209,10 +203,6 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     }
   }
 
-  _onManualEntry = () => {
-    this.props.navigation.push("ManualEntry");
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -222,14 +212,7 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
         desc={t("description", {
           device: t("common:device:" + DEVICE_INFO.idiomText),
         })}
-        footer={
-          <Links
-            center={true}
-            links={[
-              { label: t("inputManually"), onPress: this._onManualEntry },
-            ]}
-          />
-        }
+        footer={<Links center={true} links={["inputManually"]} />}
         image="barcodeonbox"
         navigation={this.props.navigation}
         title={t("scanQrCode")}
@@ -650,13 +633,18 @@ export const ManualEntry = withNamespaces("manualEntryScreen")(
   ManualEntryScreen
 );
 
-@connect()
+interface SupportProps {
+  supportModalVisible: boolean;
+}
+
+@connect((state: StoreState) => ({
+  supportModalVisible: state.meta.supportCodeModalVisible,
+}))
 class BarcodeContactSupportScreen extends React.Component<
-  Props & WithNamespaces
+  Props & SupportProps & WithNamespaces
 > {
   state = {
     invalidCode: false,
-    modalVisible: false,
     supportCode: "",
   };
 
@@ -669,15 +657,11 @@ class BarcodeContactSupportScreen extends React.Component<
     this._onSupportCodeSubmit(this.state.supportCode);
   };
 
-  _toggleModal = () => {
-    this.setState({ modalVisible: !this.state.modalVisible });
-  };
-
   _onSupportCodeSubmit = (supportCode: string) => {
     if (verifiedSupportCode(supportCode)) {
       this.setState({ invalidCode: false });
       this.props.dispatch(setSupportCode(supportCode));
-      this._toggleModal();
+      this.props.dispatch(toggleSupportCodeModal());
       this.props.navigation.push("ManualEntry");
     } else {
       this.setState({ invalidCode: true });
@@ -691,14 +675,7 @@ class BarcodeContactSupportScreen extends React.Component<
       <Screen
         canProceed={false}
         desc={t("description")}
-        footer={
-          <Links
-            center={true}
-            links={[
-              { label: t("links:supportCode"), onPress: this._toggleModal },
-            ]}
-          />
-        }
+        footer={<Links center={true} links={["supportCode"]} />}
         hideBackButton={true}
         image="contactsupport"
         navigation={this.props.navigation}
@@ -709,8 +686,8 @@ class BarcodeContactSupportScreen extends React.Component<
           height={280}
           width={width * 0.8}
           title={t("supportVerification")}
-          visible={this.state.modalVisible}
-          onDismiss={this._toggleModal}
+          visible={this.props.supportModalVisible}
+          onDismiss={() => this.props.dispatch(toggleSupportCodeModal())}
           onSubmit={this._onModalSubmit}
         >
           <KeyboardAvoidingView
@@ -745,35 +722,6 @@ class BarcodeContactSupportScreen extends React.Component<
 export const BarcodeContactSupport = withNamespaces(
   "barcodeContactSupportScreen"
 )(BarcodeContactSupportScreen);
-
-class UnpackingScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Swab");
-  };
-
-  _emailSupport = () => {
-    emailSupport("?subject=Kit missing items");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        image="unpackinginstructions"
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      >
-        <Links
-          links={[{ label: t("kitMissingItems"), onPress: this._emailSupport }]}
-        />
-      </Screen>
-    );
-  }
-}
-export const Unpacking = withNamespaces("unpackingScreen")(UnpackingScreen);
 
 @connect()
 class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
@@ -1456,12 +1404,7 @@ class PictureInstructionsScreen extends React.Component<
       <Screen
         canProceed={true}
         desc={t("desc")}
-        footer={
-          <Links
-            center={true}
-            links={[{ label: t("skip"), onPress: this._skip }]}
-          />
-        }
+        footer={<Links center={true} links={["skipTestStripPhoto"]} />}
         image="takepictureteststrip"
         navigation={this.props.navigation}
         title={t("title")}
@@ -1787,11 +1730,6 @@ class ShipBoxScreen extends React.Component<
     this.props.navigation.push("EmailOptIn");
   };
 
-  _onShowNearbyUsps = () => {
-    const addressInput = this.props.getAnswer("addressInput", AddressConfig.id);
-    showNearbyShippingLocations(addressInput.zipcode);
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -1814,11 +1752,7 @@ class ShipBoxScreen extends React.Component<
         videoId="shipBox"
         onNext={this._onNext}
       >
-        <Links
-          links={[
-            { label: t("showNearbyUsps"), onPress: this._onShowNearbyUsps },
-          ]}
-        />
+        <Links links={["showNearbyUsps"]} />
       </Screen>
     );
   }
@@ -1948,12 +1882,7 @@ class ThanksScreen extends React.Component<
         skipButton={true}
         title={t("title")}
       >
-        <Links
-          links={[
-            { label: t("links:learnLink"), onPress: learnMore },
-            { label: t("links:medLink"), onPress: findMedHelp },
-          ]}
-        />
+        <Links links={["learnMore", "findMedHelp"]} />
         <Text
           content={t("disclaimer")}
           style={{
