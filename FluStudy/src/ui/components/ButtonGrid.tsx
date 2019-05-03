@@ -13,6 +13,7 @@ import {
   BORDER_WIDTH,
   BUTTON_BORDER_RADIUS,
   GUTTER,
+  HIGHLIGHT_STYLE,
   RADIO_BUTTON_HEIGHT,
   SECONDARY_COLOR,
   TEXT_COLOR,
@@ -25,7 +26,7 @@ interface Props {
   onRef?: any;
   question: SurveyQuestionData;
   scrollOnMount?: boolean;
-  style?: StyleProp<ViewStyle>;
+  highlighted?: boolean;
   title?: string;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
@@ -50,17 +51,17 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
   render() {
     const {
       desc,
+      highlighted,
       onRef,
       question,
       scrollOnMount,
-      style,
       t,
       title,
       updateAnswer,
     } = this.props;
     return (
       <ScrollIntoView
-        style={[styles.container, style]}
+        style={styles.container}
         ref={onRef}
         onMount={scrollOnMount}
       >
@@ -92,6 +93,7 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
                   index === 0 && styles.buttonFirst,
                   index === question.buttons.length - 1 && styles.buttonLast,
                   this.state.selected === button.key && styles.selectedButton,
+                  !!highlighted && HIGHLIGHT_STYLE,
                 ]}
               >
                 <Text

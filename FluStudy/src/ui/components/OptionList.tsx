@@ -15,6 +15,7 @@ import {
   BORDER_WIDTH,
   FONT_SEMI_BOLD,
   GUTTER,
+  HIGHLIGHT_STYLE,
   INPUT_HEIGHT,
   RADIO_BUTTON_HEIGHT,
   SECONDARY_COLOR,
@@ -29,6 +30,7 @@ interface Option {
 interface Props {
   data: Option[];
   exclusiveOptions?: string[];
+  highlighted?: boolean;
   inclusiveOption?: string;
   multiSelect: boolean;
   numColumns: number;
@@ -121,6 +123,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         keyExtractor={item => item.key}
         renderItem={(item, width) => (
           <TranslatedListItem
+            highlighted={this.props.highlighted}
             id={item.key}
             selected={item.selected}
             style={item.key === lastKey && styles.itemLast}
@@ -136,6 +139,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
 export default withNamespaces("optionList")(OptionList);
 
 interface ItemProps {
+  highlighted?: boolean;
   id: string;
   selected: boolean;
   style?: StyleProp<ViewStyle>;
@@ -151,14 +155,20 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   };
 
   render() {
-    const { id, selected, t, width } = this.props;
+    const { highlighted, id, selected, t, width } = this.props;
 
     return (
       <TouchableOpacity
         style={[styles.item, { width }, this.props.style]}
         onPress={this._onPress}
       >
-        <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
+        <View
+          style={[
+            styles.checkbox,
+            selected && styles.checkboxSelected,
+            !!highlighted && HIGHLIGHT_STYLE,
+          ]}
+        >
           {selected && (
             <Feather name="check" color={"white"} size={featherSize} />
           )}

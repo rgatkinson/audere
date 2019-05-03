@@ -12,6 +12,7 @@ import { SurveyQuestionData } from "../../resources/ScreenConfig";
 import {
   BORDER_WIDTH,
   GUTTER,
+  HIGHLIGHT_STYLE,
   ERROR_COLOR,
   FONT_NORMAL,
   RADIO_BUTTON_HEIGHT,
@@ -27,6 +28,7 @@ import Text from "./Text";
 interface Props {
   desc?: boolean;
   hideQuestion?: boolean;
+  highlighted?: boolean;
   onRef?: any;
   question: SurveyQuestionData;
   scrollOnMount?: boolean;
@@ -68,6 +70,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     const {
       desc,
       hideQuestion,
+      highlighted,
       onRef,
       question,
       scrollOnMount,
@@ -78,7 +81,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
 
     return (
       <ScrollIntoView
-        style={[styles.container, style]}
+        style={[styles.container, !!style && style]}
         ref={onRef}
         onMount={scrollOnMount}
       >
@@ -115,6 +118,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
                       style={[
                         styles.radioButton,
                         isSelected && styles.selectedRadioColor,
+                        !!highlighted && HIGHLIGHT_STYLE,
                       ]}
                     >
                       {isSelected && <View style={styles.radioButtonCenter} />}

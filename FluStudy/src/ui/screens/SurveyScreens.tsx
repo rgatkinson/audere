@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Alert,
   Dimensions,
@@ -35,23 +35,10 @@ import {
   uploader,
 } from "../../store";
 import {
-  InContactConfig,
-  SurveyQuestionData,
   WhenSymptomsScreenConfig,
   WhatSymptomsConfig,
-  HouseholdChildrenConfig,
   GeneralExposureScreenConfig,
-  MedConditionsConfig,
-  FluShotConfig,
-  FluShotDateConfig,
-  TobaccoConfig,
-  HouseholdTobaccoConfig,
-  InterferingConfig,
-  AntibioticsConfig,
-  AssignedSexConfig,
-  RaceConfig,
-  HispanicConfig,
-  InsuranceConfig,
+  GeneralHealthScreenConfig,
   BlueLineConfig,
   RedWhenBlueConfig,
   RedLineConfig,
@@ -68,13 +55,9 @@ import Button from "../components/Button";
 import ButtonGrid from "../components/ButtonGrid";
 import Chrome from "../components/Chrome";
 import DigitInput from "../components/DigitInput";
-import Divider from "../components/Divider";
 import Links from "../components/Links";
 import Modal from "../components/Modal";
-import MonthPicker from "../components/MonthPicker";
 import OptionList, { newSelectedOptionsList } from "../components/OptionList";
-import OptionQuestion from "../components/OptionQuestion";
-import QuestionText from "../components/QuestionText";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
@@ -108,17 +91,6 @@ const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
-const FLUSHOT_START_DATE = new Date(2018, 0);
-
-const scrollOptions = {
-  align: "auto",
-  animated: true,
-  immediate: false,
-  insets: {
-    top: 0,
-    bottom: 0,
-  },
-};
 
 interface Props {
   dispatch(action: Action): void;
@@ -858,19 +830,6 @@ export const StripInTube = withNamespaces("stripInTubeScreen")(
 class WhatSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _haveOption = () => {
-    const symptoms: Option[] = this.props.getAnswer(
-      "options",
-      WhatSymptomsConfig.id
-    );
-    return symptoms
-      ? symptoms.reduce(
-          (result: boolean, option: Option) => result || option.selected,
-          false
-        )
-      : false;
-  };
-
   _onNext = () => {
     this.props.navigation.push("WhenSymptoms");
   };
@@ -879,20 +838,17 @@ class WhatSymptomsScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={this._haveOption()}
+        canProceed={true}
         centerDesc={true}
+        configs={[WhatSymptomsConfig]}
         desc={t("description")}
+        hasDivider={true}
         navigation={this.props.navigation}
         title={t("title")}
+        getAnswer={this.props.getAnswer}
+        updateAnswer={this.props.updateAnswer}
         onNext={this._onNext}
-      >
-        <Divider style={{ marginBottom: 0 }} />
-        <OptionQuestion
-          question={WhatSymptomsConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-      </Screen>
+      />
     );
   }
 }
@@ -900,131 +856,49 @@ export const WhatSymptoms = reduxWriter(
   withNamespaces("surveyScreen")(WhatSymptomsScreen)
 );
 
-interface WhenSymptomsState {
-  questionTypes: any[];
-  highlighted: Set<string>;
-}
-
 class WhenSymptomsScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps,
-  WhenSymptomsState
+  Props & WithNamespaces & ReduxWriterProps
 > {
-  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
-    super(props);
-    this.state = {
-      questionTypes: WhenSymptomsScreenConfig.map((question: any) => {
-        return this.props
-          .getAnswer("options", WhatSymptomsConfig.id)
-          .filter((option: Option) => option.selected)
-          .map((option: Option) => {
-            return {
-              buttons: question.buttons,
-              description: option.key,
-              id: question.id + "_" + option.key,
-              required: question.required,
-              title: question.title,
-              ref: question.required ? React.createRef() : null,
-            };
-          });
-      }),
-      highlighted: new Set(),
-    };
-  }
-
   _onNext = () => {
-    if (this._isFormValidToSubmit()) {
-      this.props.navigation.push("GeneralExposure");
-    }
+    this.props.navigation.push("GeneralExposure");
   };
 
-  _isFormValidToSubmit = () => {
-    const { questionTypes } = this.state;
+  _createConfigs = () => {
+    const configs: any = [];
 
-    let requiredQuestions = new Set();
-    let firstRequired: any = null;
-
-    questionTypes.forEach(questions => {
-      questions.forEach((question: any) => {
-        if (
-          question.required &&
-          this.props.getAnswer("selectedButtonKey", question.id) === null
-        ) {
-          if (firstRequired === null) {
-            firstRequired = question.ref;
-          }
-          requiredQuestions.add(question.id);
-        }
-      });
+    WhenSymptomsScreenConfig.forEach((question: any) => {
+      return this.props
+        .getAnswer("options", WhatSymptomsConfig.id)
+        .filter((option: Option) => option.selected)
+        .forEach((option: Option) => {
+          configs.push({
+            buttons: question.buttons,
+            description: option.key,
+            id: question.id + "_" + option.key,
+            required: question.required,
+            title: question.title,
+            type: "buttonGrid",
+          });
+        });
     });
-
-    if (requiredQuestions.size > 0) {
-      this.setState({ highlighted: requiredQuestions });
-      firstRequired.scrollIntoView(scrollOptions);
-      return false;
-    }
-
-    this.setState({ highlighted: new Set() });
-    return true;
-  };
-
-  _renderQuestions = () => {
-    const { t } = this.props;
-    const { highlighted } = this.state;
-    let toRender = [] as any[];
-    this.state.questionTypes.forEach((answers, index) => {
-      const question = WhenSymptomsScreenConfig[index];
-
-      toRender.push(
-        <QuestionText
-          key={`${question.title}-${index}`}
-          required={question.required}
-          subtext={
-            question.description &&
-            t("surveyDescription:" + question.description)
-          }
-          text={t("surveyTitle:" + question.title)}
-        />
-      );
-
-      toRender.push(
-        answers.map((config: SurveyQuestionData, index: number) => {
-          let buttonStyle = [];
-          if (highlighted.has(config.id)) {
-            buttonStyle.push({ borderColor: "red", borderWidth: 1 });
-          }
-          return (
-            <ButtonGrid
-              onRef={(ref: any) => {
-                config.ref = ref;
-              }}
-              style={buttonStyle}
-              key={config.id}
-              question={config}
-              title={t("surveyDescription:" + config.description) + ":"}
-              getAnswer={this.props.getAnswer}
-              updateAnswer={this.props.updateAnswer}
-            />
-          );
-        })
-      );
-    });
-    return toRender;
+    return configs;
   };
 
   render() {
-    const { t } = this.props;
+    const { getAnswer, navigation, t, updateAnswer } = this.props;
     return (
       <Screen
         canProceed={true}
         centerDesc={true}
+        configs={this._createConfigs()}
         desc={t("description")}
-        navigation={this.props.navigation}
+        getAnswer={getAnswer}
+        hasDivider={true}
+        navigation={navigation}
         title={t("title")}
+        updateAnswer={updateAnswer}
         onNext={this._onNext}
-      >
-        <Divider />
-        {this._renderQuestions()}
-      </Screen>
+      />
     );
   }
 }
@@ -1035,39 +909,14 @@ export const WhenSymptoms = reduxWriter(
 class GeneralExposureScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  _questions = GeneralExposureScreenConfig;
-
   _onNext = () => {
     this.props.navigation.push("GeneralHealth");
   };
 
   render() {
-    const width = Dimensions.get("window").width - 2 * GUTTER;
-    const { t, getAnswer } = this.props;
-
-    function conditionalQuestionFilter(question: SurveyQuestionData): boolean {
-      switch (question.id) {
-        case "CoughSneeze":
-          return getAnswer("selectedButtonKey", InContactConfig.id) === "yes";
-        case "ChildrenWithChildren":
-          return (
-            getAnswer("selectedButtonKey", HouseholdChildrenConfig.id) === "yes"
-          );
-        default:
-          return true;
-      }
-    }
-
-    return (
-      <Screen
-        canProceed={true}
-        centerDesc={true}
-        desc={t("description")}
-        navigation={this.props.navigation}
-        title={t("generalExposure")}
-        onNext={this._onNext}
-      >
-        <Divider />
+    const { t, getAnswer, navigation, updateAnswer } = this.props;
+    const header = (
+      <Fragment>
         <Text content={t("expoDesc")} style={{ marginBottom: GUTTER }} />
         <Image style={imageStyles.image} source={{ uri: "generalexposure" }} />
         <Text
@@ -1075,27 +924,23 @@ class GeneralExposureScreen extends React.Component<
           italic={true}
           style={{ marginBottom: GUTTER }}
         />
-        {this._questions
-          .filter(conditionalQuestionFilter)
-          .map(
-            question =>
-              question.id === "YoungChildren" ? (
-                <RadioGrid
-                  key={question.id}
-                  question={question}
-                  getAnswer={this.props.getAnswer}
-                  updateAnswer={this.props.updateAnswer}
-                />
-              ) : (
-                <ButtonGrid
-                  key={question.id}
-                  question={question}
-                  getAnswer={this.props.getAnswer}
-                  updateAnswer={this.props.updateAnswer}
-                />
-              )
-          )}
-      </Screen>
+      </Fragment>
+    );
+
+    return (
+      <Screen
+        canProceed={true}
+        centerDesc={true}
+        configs={GeneralExposureScreenConfig}
+        desc={t("description")}
+        getAnswer={getAnswer}
+        hasDivider={true}
+        header={header}
+        navigation={navigation}
+        onNext={this._onNext}
+        title={t("generalExposure")}
+        updateAnswer={updateAnswer}
+      />
     );
   }
 }
@@ -1103,120 +948,31 @@ export const GeneralExposure = reduxWriter(
   withNamespaces("surveyScreen")(GeneralExposureScreen)
 );
 
-interface GeneralHealhState {
-  highlighted: string | null;
-}
-
 class GeneralHealthScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps,
-  GeneralHealhState
+  Props & WithNamespaces & ReduxWriterProps
 > {
-  scrollIntoViewRef = React.createRef();
-
-  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
-    super(props);
-    this.state = {
-      highlighted: null,
-    };
-  }
   _onNext = () => {
-    if (
-      this.props.getAnswer("selectedButtonKey", AntibioticsConfig.id) === null
-    ) {
-      this.setState({ highlighted: AntibioticsConfig.id });
-      (this.scrollIntoViewRef as any).scrollIntoView(scrollOptions);
-    } else {
-      this.setState({ highlighted: null });
-      this.props.navigation.push("ThankYouSurvey");
-    }
-  };
-
-  _onUpdateFluShotDate = (dateInput: Date | null) => {
-    this.props.updateAnswer({ dateInput }, FluShotDateConfig);
+    this.props.navigation.push("ThankYouSurvey");
   };
 
   render() {
-    const { t } = this.props;
-    const gotFluShot =
-      this.props.getAnswer("selectedButtonKey", FluShotConfig.id) === "yes";
+    const { getAnswer, navigation, t, updateAnswer } = this.props;
+    const header = <Text content={t("generalDesc")} />;
 
     return (
       <Screen
         canProceed={true}
         centerDesc={true}
+        configs={GeneralHealthScreenConfig}
         desc={t("description")}
-        navigation={this.props.navigation}
+        hasDivider={true}
+        header={header}
+        navigation={navigation}
         title={t("generalHealth")}
         onNext={this._onNext}
-      >
-        <Divider />
-        <Text content={t("generalDesc")} />
-        <OptionQuestion
-          question={MedConditionsConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          question={FluShotConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        {gotFluShot && (
-          <QuestionText text={t("surveyTitle:" + FluShotDateConfig.title)} />
-        )}
-        {gotFluShot && (
-          <MonthPicker
-            date={this.props.getAnswer("dateInput", FluShotDateConfig.id)}
-            startDate={FLUSHOT_START_DATE}
-            endDate={new Date(Date.now())}
-            onDateChange={this._onUpdateFluShotDate}
-          />
-        )}
-        <ButtonGrid
-          question={TobaccoConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          question={HouseholdTobaccoConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          question={InterferingConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          style={
-            !!this.state.highlighted && { borderColor: "red", borderWidth: 1 }
-          }
-          onRef={(ref: any) => (this.scrollIntoViewRef = ref)}
-          question={AntibioticsConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          question={AssignedSexConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <OptionQuestion
-          question={RaceConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <ButtonGrid
-          question={HispanicConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        <OptionQuestion
-          question={InsuranceConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-      </Screen>
+        getAnswer={getAnswer}
+        updateAnswer={updateAnswer}
+      />
     );
   }
 }

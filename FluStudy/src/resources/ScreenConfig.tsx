@@ -1,21 +1,14 @@
-import { Action, SurveyResponse } from "../store";
-
-export interface SurveyQuestionData {
-  buttons: ButtonConfig[];
-  id: string;
-  dateInput?: boolean;
-  description?: string;
-  optionList?: OptionListConfig;
-  title?: string;
-  ref?: any;
-  required?: boolean;
-}
-
 export interface ButtonConfig {
   key: string;
   primary: boolean;
   enabled: boolean;
   subtextKey?: string;
+}
+
+export interface conditionalQuestionConfig {
+  key: string;
+  id: string;
+  answer: string;
 }
 
 export interface OptionListConfig {
@@ -27,6 +20,20 @@ export interface OptionListConfig {
   otherPlaceholder?: string;
   exclusiveOptions?: string[];
   inclusiveOption?: string;
+}
+
+export interface SurveyQuestionData {
+  buttons: ButtonConfig[];
+  id: string;
+  type: string;
+  condition?: conditionalQuestionConfig;
+  dateInput?: boolean;
+  description?: string;
+  optionList?: OptionListConfig;
+  startDate?: Date;
+  title?: string;
+  ref?: any;
+  required?: boolean;
 }
 
 export const AgeBuckets: {
@@ -45,6 +52,7 @@ export const AddressConfig: SurveyQuestionData = {
   title: "address",
   description: "addressDesc",
   buttons: [{ key: "next", primary: true, enabled: true }],
+  type: "address",
 };
 
 export const MailingAddressConfig: SurveyQuestionData = {
@@ -52,6 +60,7 @@ export const MailingAddressConfig: SurveyQuestionData = {
   title: "address",
   description: "mailingAddressDesc",
   buttons: [{ key: "next", primary: true, enabled: true }],
+  type: "address",
 };
 
 export const WhereKitConfig: SurveyQuestionData = {
@@ -61,6 +70,7 @@ export const WhereKitConfig: SurveyQuestionData = {
     { key: "orderedApp", primary: false, enabled: true },
     { key: "fromClinic", primary: false, enabled: true },
   ],
+  type: "address",
 };
 
 export const AgeConfig: SurveyQuestionData = {
@@ -74,19 +84,22 @@ export const AgeConfig: SurveyQuestionData = {
     { key: AgeBuckets.MiddleAge, primary: false, enabled: true },
     { key: AgeBuckets.Senior, primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const ConsentConfig: SurveyQuestionData = {
   buttons: [],
   id: "Consent",
   title: "consentEmail",
+  type: "buttonGrid",
 };
 
 export const SymptomsConfig: SurveyQuestionData = {
-  id: "Symptoms",
-  title: "symptomTitle",
+  buttons: [{ key: "next", primary: true, enabled: true }],
   description: "selectAll",
+  id: "Symptoms",
   optionList: {
+    exclusiveOptions: ["noneOfTheAbove"],
     multiSelect: true,
     options: [
       "feelingFeverish",
@@ -97,15 +110,15 @@ export const SymptomsConfig: SurveyQuestionData = {
       "noneOfTheAbove",
     ],
     withOther: false,
-    exclusiveOptions: ["noneOfTheAbove"],
   },
-  buttons: [{ key: "next", primary: true, enabled: true }],
+  title: "symptomTitle",
+  type: "optionQuestion",
 };
 
 export const WhatSymptomsConfig: SurveyQuestionData = {
-  id: "WhatSymptoms",
-  title: "whatSymptoms",
+  buttons: [{ key: "next", primary: true, enabled: true }],
   description: "selectAll",
+  id: "WhatSymptoms",
   optionList: {
     multiSelect: true,
     options: [
@@ -121,8 +134,10 @@ export const WhatSymptomsConfig: SurveyQuestionData = {
     ],
     withOther: false,
   },
-  buttons: [{ key: "next", primary: true, enabled: true }],
+
   required: true,
+  title: "whatSymptoms",
+  type: "optionQuestion",
 };
 
 export const SymptomsStartConfig: SurveyQuestionData = {
@@ -136,6 +151,7 @@ export const SymptomsStartConfig: SurveyQuestionData = {
     { key: "4days", primary: false, enabled: true },
   ],
   required: true,
+  type: "radioGrid",
 };
 
 export const Last48Config: SurveyQuestionData = {
@@ -146,6 +162,7 @@ export const Last48Config: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
   ],
   required: true,
+  type: "buttonGrid",
 };
 
 export const SymptomSeverityConfig: SurveyQuestionData = {
@@ -158,6 +175,7 @@ export const SymptomSeverityConfig: SurveyQuestionData = {
     { key: "severe", primary: false, enabled: true },
   ],
   required: true,
+  type: "buttonGrid",
 };
 
 export const WhenSymptomsScreenConfig = [
@@ -167,28 +185,33 @@ export const WhenSymptomsScreenConfig = [
 ];
 
 export const InContactConfig: SurveyQuestionData = {
-  id: "InContact",
-  title: "inContact",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  id: "InContact",
+  title: "inContact",
+  type: "buttonGrid",
 };
 
 export const CoughSneezeConfig: SurveyQuestionData = {
-  id: "CoughSneeze",
-  title: "coughSneeze",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  condition: {
+    key: "selectedButtonKey",
+    id: InContactConfig.id,
+    answer: "yes",
+  },
+  id: "CoughSneeze",
+  title: "coughSneeze",
+  type: "buttonGrid",
 };
 
 export const YoungChildrenConfig: SurveyQuestionData = {
-  id: "YoungChildren",
-  title: "youngChildren",
   buttons: [
     { key: "noContactUnderFive", primary: false, enabled: true },
     { key: "oneChild", primary: false, enabled: true },
@@ -196,15 +219,19 @@ export const YoungChildrenConfig: SurveyQuestionData = {
     { key: "moreThanFiveChildren", primary: false, enabled: true },
     { key: "doNotKnow", primary: false, enabled: true },
   ],
+  id: "YoungChildren",
+  title: "youngChildren",
+  type: "radioGrid",
 };
 
 export const HouseholdChildrenConfig: SurveyQuestionData = {
-  id: "HouseholdChildren",
-  title: "householdChildren",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  id: "HouseholdChildren",
+  title: "householdChildren",
+  type: "buttonGrid",
 };
 
 export const ChildrenWithChildrenConfig: SurveyQuestionData = {
@@ -215,22 +242,27 @@ export const ChildrenWithChildrenConfig: SurveyQuestionData = {
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  condition: {
+    key: "selectedButtonKey",
+    id: HouseholdChildrenConfig.id,
+    answer: "yes",
+  },
+  type: "buttonGrid",
 };
 
 export const PeopleInHouseholdConfig: SurveyQuestionData = {
-  id: "PeopleInHousehold",
-  title: "peopleInHousehold",
   buttons: [
     { key: "1to2", primary: false, enabled: true },
     { key: "3to4", primary: false, enabled: true },
     { key: "5to7", primary: false, enabled: true },
     { key: "8plus", primary: false, enabled: true },
   ],
+  id: "PeopleInHousehold",
+  title: "peopleInHousehold",
+  type: "buttonGrid",
 };
 
 export const BedroomsConfig: SurveyQuestionData = {
-  id: "Bedrooms",
-  title: "bedrooms",
   buttons: [
     { key: "0-1", primary: false, enabled: true },
     { key: "2", primary: false, enabled: true },
@@ -238,6 +270,9 @@ export const BedroomsConfig: SurveyQuestionData = {
     { key: "4", primary: false, enabled: true },
     { key: "5+", primary: false, enabled: true },
   ],
+  id: "Bedrooms",
+  title: "bedrooms",
+  type: "buttonGrid",
 };
 
 export const GeneralExposureScreenConfig = [
@@ -251,87 +286,96 @@ export const GeneralExposureScreenConfig = [
 ];
 
 export const MedConditionsConfig: SurveyQuestionData = {
-  id: "MedicalCondition",
-  title: "medicalCondition",
+  buttons: [],
   description: "selectAll",
+  id: "MedicalCondition",
   optionList: {
     multiSelect: true,
     options: ["asthma", "copd", "diabetes", "noneOfThese", "doNotKnow"],
     withOther: false,
     exclusiveOptions: ["noneOfThese", "doNotKnow"],
   },
-
-  buttons: [],
+  title: "medicalCondition",
+  type: "optionQuestion",
 };
 
 export const FluShotConfig: SurveyQuestionData = {
-  id: "FluShot",
-  title: "fluShot",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  id: "FluShot",
+  title: "fluShot",
+  type: "buttonGrid",
 };
 
+const FLUSHOT_START_DATE = new Date(2018, 0);
+
 export const FluShotDateConfig: SurveyQuestionData = {
-  id: "FluShotDate",
-  title: "fluShotDate",
   buttons: [],
+  condition: { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
   dateInput: true,
+  id: "FluShotDate",
+  startDate: FLUSHOT_START_DATE,
+  title: "fluShotDate",
+  type: "datePicker",
 };
 
 export const TobaccoConfig: SurveyQuestionData = {
-  id: "SmokeTobacco",
-  title: "smokeTobacco",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  id: "SmokeTobacco",
+  title: "smokeTobacco",
+  type: "buttonGrid",
 };
 
 export const HouseholdTobaccoConfig: SurveyQuestionData = {
-  id: "HouseholdTobacco",
-  title: "householdTobacco",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  id: "HouseholdTobacco",
+  title: "householdTobacco",
+  type: "buttonGrid",
 };
 
 export const InterferingConfig: SurveyQuestionData = {
-  id: "Interfering",
-  title: "interfering",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  id: "Interfering",
+  title: "interfering",
+  type: "buttonGrid",
 };
 
 export const AntibioticsConfig: SurveyQuestionData = {
-  id: "Antibiotics",
-  title: "antibiotics",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
+  id: "Antibiotics",
   required: true,
+  title: "antibiotics",
+  type: "buttonGrid",
 };
 
 export const AssignedSexConfig: SurveyQuestionData = {
-  id: "AssignedSex",
-  title: "assignedSex",
   buttons: [
     { key: "male", primary: false, enabled: true },
     { key: "female", primary: false, enabled: true },
     { key: "other", primary: false, enabled: true },
   ],
+  id: "AssignedSex",
+  title: "assignedSex",
+  type: "buttonGrid",
 };
 
 export const RaceConfig: SurveyQuestionData = {
-  id: "Race",
-  title: "race",
   buttons: [],
   description: "selectAll",
   optionList: {
@@ -346,22 +390,25 @@ export const RaceConfig: SurveyQuestionData = {
     multiSelect: true,
     withOther: false,
   },
+  id: "Race",
+  title: "race",
+  type: "optionQuestion",
 };
 
 export const HispanicConfig: SurveyQuestionData = {
-  id: "Hispanic",
-  title: "hispanic",
   buttons: [
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  id: "Hispanic",
+  title: "hispanic",
+  type: "buttonGrid",
 };
 
 export const InsuranceConfig: SurveyQuestionData = {
-  id: "HealthInsurance",
-  title: "healthInsurance",
-  description: "selectAll",
   buttons: [],
+  description: "selectAll",
+  id: "HealthInsurance",
   optionList: {
     options: [
       "noInsurance",
@@ -375,11 +422,15 @@ export const InsuranceConfig: SurveyQuestionData = {
     withOther: false,
     exclusiveOptions: ["noInsurance", "doNotKnow"],
   },
+
+  title: "healthInsurance",
+  type: "optionQuestion",
 };
 
 export const GeneralHealthScreenConfig = [
   MedConditionsConfig,
   FluShotConfig,
+  FluShotDateConfig,
   TobaccoConfig,
   HouseholdTobaccoConfig,
   InterferingConfig,
@@ -398,6 +449,7 @@ export const BlueLineConfig: SurveyQuestionData = {
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const RedWhenBlueConfig: SurveyQuestionData = {
@@ -410,6 +462,7 @@ export const RedWhenBlueConfig: SurveyQuestionData = {
     { key: "yesBelowBlue", primary: false, enabled: true },
     { key: "yesAboveBelowBlue", primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const RedLineConfig: SurveyQuestionData = {
@@ -421,6 +474,7 @@ export const RedLineConfig: SurveyQuestionData = {
     { key: "yesOneRed", primary: false, enabled: true },
     { key: "yesTwoRed", primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const FirstTestFeedbackConfig: SurveyQuestionData = {
@@ -433,6 +487,7 @@ export const FirstTestFeedbackConfig: SurveyQuestionData = {
     { key: "confusingNotCorrect", primary: false, enabled: true },
     { key: "incorrect", primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const SecondTestFeedbackConfig: SurveyQuestionData = {
@@ -445,6 +500,7 @@ export const SecondTestFeedbackConfig: SurveyQuestionData = {
     { key: "confusingNotCorrect", primary: false, enabled: true },
     { key: "incorrect", primary: false, enabled: true },
   ],
+  type: "buttonGrid",
 };
 
 export const OptInForMessagesConfig: SurveyQuestionData = {
@@ -461,4 +517,5 @@ export const OptInForMessagesConfig: SurveyQuestionData = {
     withOther: false,
   },
   buttons: [],
+  type: "radioGrid",
 };

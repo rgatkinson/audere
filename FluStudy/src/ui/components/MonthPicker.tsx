@@ -113,12 +113,13 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
   };
 
   _getOptions(): Date[] {
+    const { endDate, startDate } = this.props;
     const options = [];
 
-    let currentMonth = this.props.startDate.getMonth();
-    let currentYear = this.props.startDate.getFullYear();
-    let endMonth = this.props.endDate.getMonth();
-    let endYear = this.props.endDate.getFullYear();
+    let currentMonth = startDate.getMonth();
+    let currentYear = startDate.getFullYear();
+    let endMonth = endDate.getMonth();
+    let endYear = endDate.getFullYear();
 
     if (
       endYear < currentYear ||
@@ -141,7 +142,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
   }
 
   render() {
-    const { t } = this.props;
+    const { date, onDateChange, t } = this.props;
     const now = new Date();
 
     return (
@@ -152,22 +153,20 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
         >
           <Text
             content={
-              !!this.props.date
-                ? t(months[this.props.date.getMonth()]) +
-                  " " +
-                  this.props.date.getFullYear()
+              !!date
+                ? t(months[date.getMonth()]) + " " + date.getFullYear()
                 : t("selectDate")
             }
-            style={{ color: !!this.props.date ? SECONDARY_COLOR : LINK_COLOR }}
+            style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
           />
         </TouchableOpacity>
         <TranslatedMonthModal
           options={this._getOptions()}
-          date={!!this.props.date ? this.props.date : null}
+          date={!!date ? date : null}
           visible={this.state.pickerOpen}
           onDismiss={(date: Date | null) => {
             this.setState({ pickerOpen: false });
-            this.props.onDateChange(date);
+            onDateChange(date);
           }}
         />
       </View>

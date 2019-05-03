@@ -66,3 +66,4 @@ export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const SPLASH_RATIO = isIPhoneSE ? 1.26 : 1.05;
 export const KEYBOARD_BEHAVIOR =
   Platform.OS === "android" ? undefined : "padding";
+export const HIGHLIGHT_STYLE = { borderWidth: 1, borderColor: "red" };
