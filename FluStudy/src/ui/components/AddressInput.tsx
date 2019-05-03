@@ -163,6 +163,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
             }
             visible={this.state.stateOpen}
             onDismiss={(state: string) => {
+              this.zipcode.current!.focus();
               const address = this.props.value || {};
               address.state = state;
               this.props.onChange(address);
