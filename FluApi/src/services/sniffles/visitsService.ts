@@ -90,10 +90,7 @@ export class VisitsService {
     // Query the second database for the PII data associated to the visit.
     const piiVisits = await this.snifflesModels.visitPii.findAll({
       where: {
-        csruid: nonPiiVisits.map(visit => visit.csruid),
-        visit: {
-          complete: "true"
-        }
+        csruid: nonPiiVisits.map(visit => visit.csruid)
       }
     });
 
