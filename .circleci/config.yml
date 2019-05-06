@@ -528,7 +528,7 @@ jobs:
       - run:
           name: Setup Expo and expo publish
           command: |
-            yarn global add expo-cli
+            yarn global add expo-cli@2.16.1
             export PATH="$PATH:$(yarn global bin)"
             cd FluStudy
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
