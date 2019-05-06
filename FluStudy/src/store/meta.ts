@@ -1,6 +1,7 @@
 import { updateCollectionEnabled } from "../util/tracker";
 
 export type MetaAction =
+  | { type: "SET_ACTIVE_ROUTE_NAME"; activeRouteName: string }
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_DEMO"; isDemo: boolean }
@@ -8,6 +9,7 @@ export type MetaAction =
   | { type: "TOGGLE_SUPPORT_CODE_MODAL" };
 
 export type MetaState = {
+  activeRouteName: string;
   isConnected: boolean;
   isDemo: boolean;
   marketingProperties: any;
@@ -16,6 +18,7 @@ export type MetaState = {
 };
 
 const initialState: MetaState = {
+  activeRouteName: "Welcome",
   isConnected: true,
   isDemo: false,
   marketingProperties: undefined,
@@ -25,6 +28,8 @@ const initialState: MetaState = {
 
 export default function reducer(state = initialState, action: MetaAction) {
   switch (action.type) {
+    case "SET_ACTIVE_ROUTE_NAME":
+      return { ...state, activeRouteName: action.activeRouteName };
     case "SET_DEMO":
       return { ...state, isDemo: action.isDemo };
     case "SET_MARKETING_PROPERTIES":
@@ -41,6 +46,13 @@ export default function reducer(state = initialState, action: MetaAction) {
     default:
       return state;
   }
+}
+
+export function setActiveRouteName(activeRouteName: string): MetaAction {
+  return {
+    type: "SET_ACTIVE_ROUTE_NAME",
+    activeRouteName,
+  };
 }
 
 export function setDemo(isDemo: boolean): MetaAction {

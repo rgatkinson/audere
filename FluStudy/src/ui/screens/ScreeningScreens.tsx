@@ -48,7 +48,7 @@ import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { isPOBox, isValidAddress, isValidEmail } from "../../util/check";
-import { getRemoteConfig, loadAllRemoteConfigs } from "../../util/remoteConfig";
+import { getRemoteConfig } from "../../util/remoteConfig";
 import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents, AppHealthEvents } from "../../util/tracker";
 import RadioGrid from "../components/RadioGrid";
@@ -63,52 +63,14 @@ interface WorkflowProps {
   workflow: WorkflowInfo;
 }
 
-interface KitStatusState {
-  blockKits: boolean;
-}
-
-class WhyScreen extends React.Component<
-  Props & WithNamespaces,
-  KitStatusState
-> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this.state = { blockKits: this._getBlockKitOrderStatus() };
-    this._handleAppStateChange = this._handleAppStateChange.bind(this);
-  }
-
+class WhyScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    if (!!this.state.blockKits) {
+    if (!!getRemoteConfig("blockKitOrders")) {
       this.props.navigation.push("OutOfKits");
     } else {
       this.props.navigation.push("What");
     }
   };
-
-  _getBlockKitOrderStatus = (currentStatus: boolean = false) => {
-    const blockKits = getRemoteConfig("blockKitOrders");
-    if (blockKits != currentStatus) {
-      tracker.logEvent(AppHealthEvents.KIT_ORDER_BLOCKED);
-    }
-    return blockKits;
-  };
-
-  async _handleAppStateChange(nextAppState: string) {
-    if (nextAppState === "active" && this.props.navigation.isFocused()) {
-      await loadAllRemoteConfigs();
-      this.setState({
-        blockKits: this._getBlockKitOrderStatus(this.state.blockKits),
-      });
-    }
-  }
-
-  componentDidMount() {
-    AppState.addEventListener("change", this._handleAppStateChange);
-  }
-
-  componentWillUnmount() {
-    AppState.removeEventListener("change", this._handleAppStateChange);
-  }
 
   render() {
     const { t } = this.props;
@@ -127,8 +89,8 @@ class WhyScreen extends React.Component<
 export const Why = withNamespaces("whyScreen")(WhyScreen);
 
 class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
+  componentDidMount() {
+    tracker.logEvent(AppHealthEvents.KIT_ORDER_BLOCKED);
   }
 
   _onNext = () => {

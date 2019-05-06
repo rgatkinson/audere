@@ -13,6 +13,7 @@ import {
   StoreState,
   appendEvent,
   clearState,
+  setActiveRouteName,
   setCSRUIDIfUnset,
   setMarketingProperties,
   setShownOfflineWarning,
@@ -42,7 +43,8 @@ import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newCSRUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { getMarketingProperties } from "../util/tracker";
+import { getMarketingProperties, AppHealthEvents } from "../util/tracker";
+import { getRemoteConfig, loadAllRemoteConfigs } from "../util/remoteConfig";
 
 const AppContainer = createAppContainer(AppNavigator);
 
@@ -65,6 +67,7 @@ class SplashScreen extends React.Component<SplashProps> {
 }
 
 interface Props {
+  activeRouteName: string;
   isConnected: boolean;
   isDemo: boolean;
   lastUpdate?: number;
@@ -76,7 +79,6 @@ interface Props {
 
 class ConnectedRootContainer extends React.Component<Props> {
   state = {
-    activeRouteName: "Welcome",
     appState: "active",
   };
 
@@ -143,7 +145,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     );
   }
 
-  _handleAppStateChange = (nextAppState: string) => {
+  _handleAppStateChange = async (nextAppState: string) => {
     // Bleagh.
     //
     // For idempotence and security, we need to call the uploader with
@@ -171,7 +173,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     ) {
       this._getConnectivity();
       tracker.logEvent(AppEvents.APP_FOREGROUNDED, {
-        screen: this.state.activeRouteName,
+        screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
     } else if (
@@ -180,7 +182,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     ) {
       this.props.dispatch!(setShownOfflineWarning(false));
       tracker.logEvent(AppEvents.APP_BACKGROUNDED, {
-        screen: this.state.activeRouteName,
+        screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
     }
@@ -225,10 +227,10 @@ class ConnectedRootContainer extends React.Component<Props> {
             })
           );
       } else if (
-        (this.state.activeRouteName === "AgeIneligible" ||
-          this.state.activeRouteName === "SymptomsIneligible" ||
-          this.state.activeRouteName === "StateIneligible" ||
-          this.state.activeRouteName === "ConsentIneligible") &&
+        (this.props.activeRouteName === "AgeIneligible" ||
+          this.props.activeRouteName === "SymptomsIneligible" ||
+          this.props.activeRouteName === "StateIneligible" ||
+          this.props.activeRouteName === "ConsentIneligible") &&
         (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
       ) {
         // Was on ineligible screen for at least 24 hours, clear state
@@ -282,6 +284,16 @@ class ConnectedRootContainer extends React.Component<Props> {
           )
         );
         this.clearState();
+      } else if (this.props.activeRouteName === "OutOfKits") {
+        await loadAllRemoteConfigs();
+        if (!getRemoteConfig("blockKitOrders")) {
+          tracker.logEvent(AppHealthEvents.KIT_ORDER_UNBLOCKED);
+          this.navigator &&
+            this.navigator.current &&
+            this.navigator.current.dispatch(
+              StackActions.replace({ routeName: "What" })
+            );
+        }
       }
     }
   };
@@ -388,15 +400,18 @@ class ConnectedRootContainer extends React.Component<Props> {
     action: NavigationAction
   ) {
     const activeRouteName = getActiveRouteName(newState);
-    if (this.state.activeRouteName != activeRouteName) {
-      this.setState({ activeRouteName });
+    if (
+      this.props.activeRouteName != activeRouteName &&
+      activeRouteName != null
+    ) {
+      this.props.dispatch(setActiveRouteName(activeRouteName));
       this._firebaseLogging(prevState, newState, action);
       this._navLogging(prevState, newState, action);
     }
   }
 
-  _onLaunch = () => {
-    this._handleAppStateChange("launch");
+  _onLaunch = async () => {
+    await this._handleAppStateChange("launch");
   };
 
   _loadingIndicator = () => {
@@ -433,6 +448,7 @@ const styles = StyleSheet.create({
 export default connect((state: StoreState) => {
   try {
     return {
+      activeRouteName: state.meta.activeRouteName,
       isConnected: state.meta.isConnected,
       isDemo: state.meta.isDemo,
       lastUpdate: state.survey.timestamp,
@@ -443,6 +459,7 @@ export default connect((state: StoreState) => {
     uploadingErrorHandler(e, true, "StoreState corrupted");
 
     const defaults = {
+      activeRouteName: "Welcome",
       isConnected: false,
       isDemo: false,
       lastUpdate: undefined,
@@ -455,6 +472,9 @@ export default connect((state: StoreState) => {
     }
 
     return {
+      activeRouteName: !!state.meta
+        ? state.meta.activeRouteName
+        : defaults.activeRouteName,
       isConnected: !!state.meta ? state.meta.isConnected : defaults.isConnected,
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,

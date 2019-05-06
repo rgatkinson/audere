@@ -88,6 +88,7 @@ export const AppHealthEvents = {
   FIREBASE_GOT_ATTRIBUTION: "firebase_got_attribution",
   FIREBASE_NO_ATTRIBUTION: "firebase_no_attribution",
   KIT_ORDER_BLOCKED: "kit_order_blocked",
+  KIT_ORDER_UNBLOCKED: "kit_order_unblocked",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
