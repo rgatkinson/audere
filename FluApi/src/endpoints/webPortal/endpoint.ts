@@ -11,7 +11,7 @@ import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
 import { AuthManager } from "./auth";
-import { useOuch, createApp, render, wrap } from "../../util/expressApp";
+import { useOuch, createApp, render, wrap, requestId } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
@@ -116,6 +116,7 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   return app;
 
   function login(req, res, next) {
+    const postedUserid = req.body.username;
     auth.authenticate(
       "local",
       // Ideally we would not pass a callback and could just use options.
@@ -125,18 +126,22 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
       // the callback ourselves so we can login, then save, then redirect.
       (err, user, info) => {
         if (err) {
-          logger.debug(`post/login: error '${err}'`);
+          logger.warn(`${requestId(req)}: FAILED authentication for '${postedUserid}' err='${err.message}'`);
           return next(err);
         }
         if (!user) {
-          logger.debug(`post/login: no user`);
+          logger.warn(`${requestId(req)}: FAILED authentication for '${postedUserid}' no user`);
           return res.redirect("./login");
         }
-        logger.debug(`post/login: logging in as '${user.userid}'`);
-        req.login(user, () => {
+        logger.debug(`${requestId(req)}: post/login: logging in as '${user.userid}'`);
+        req.login(user, err => {
+          if (err) {
+            logger.warn(`${requestId(req)}: FAILED login for ${user.userid}`);
+            return next(err);
+          }
           req.session.save(() => {
             logger.debug(
-              `post/login: logged in as '${user.userid}', redirecting`
+              `${requestId(req)}: post/login: logged in as '${user.userid}', redirecting`
             );
             res.redirect("./index");
           });
@@ -148,11 +153,11 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   function requireLoggedInUser(req, res, next) {
     if (req.user) {
       logger.debug(
-        `requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`
+        `${requestId(req)}: requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`
       );
       return next();
     } else {
-      logger.debug("requireLoggedInUser redirecting because no user");
+      logger.warn(`${requestId(req)}: FAILED not authenticated`);
       return res.redirect(sitepath("/login"));
     }
   }
