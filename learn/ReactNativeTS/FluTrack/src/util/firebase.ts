@@ -72,7 +72,8 @@ export async function backupToFirebase(
   }
 }
 
-export function logEmptyDocId(uid: string, step: string) {
+export function logEmptyDocId(pouchId: string, step: string) {
+  const [_, priority, uid] = pouchId.split("/");
   try {
     firebase
       .firestore()
@@ -80,6 +81,7 @@ export function logEmptyDocId(uid: string, step: string) {
       .doc(uid)
       .set({
         uid,
+        priority,
         installation_id: DEVICE_INFO.installation,
         device_name: DEVICE_INFO.deviceName,
         client_version: DEVICE_INFO.clientVersion,
