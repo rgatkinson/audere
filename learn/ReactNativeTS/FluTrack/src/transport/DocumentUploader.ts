@@ -23,6 +23,7 @@ import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
 import { Logger, summarize } from "./LogUtil";
 import { logEmptyDocId } from "../util/firebase";
+import { getApiBaseUrl } from "./Axios";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -212,7 +213,7 @@ export class DocumentUploader {
     await loadRandomBytes(this.api, 44, this.logger);
     if (!pouch.body) {
       this.logger.warn("Empty pouch doc saved to pouch");
-      logEmptyDocId(pouch._id, "WRITTEN");
+      logEmptyDocId(pouch._id, "WRITTEN", getApiBaseUrl());
     }
     await this.db.put(pouch);
     this.logger.debug(`Saved ${key}`);
@@ -247,7 +248,7 @@ export class DocumentUploader {
       }
     } else {
       this.logger.warn("Empty pouch doc loaded from pouch");
-      logEmptyDocId(pouch._id, "READ");
+      logEmptyDocId(pouch._id, "READ", getApiBaseUrl());
     }
 
     // TODO: don't delete when the device is not shared.

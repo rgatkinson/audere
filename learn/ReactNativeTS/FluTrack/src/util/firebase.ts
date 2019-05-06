@@ -72,7 +72,11 @@ export async function backupToFirebase(
   }
 }
 
-export function logEmptyDocId(pouchId: string, step: string) {
+export function logEmptyDocId(
+  pouchId: string,
+  step: string,
+  apiServer: string
+) {
   const [_, priority, uid] = pouchId.split("/");
   try {
     firebase
@@ -87,6 +91,7 @@ export function logEmptyDocId(pouchId: string, step: string) {
         client_version: DEVICE_INFO.clientVersion,
         device_local_time: format(new Date(), "YYYY-MM-DD HH:mm:ss"),
         step,
+        apiServer,
       });
   } catch (e) {}
 }
