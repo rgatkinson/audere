@@ -59,6 +59,8 @@ export interface VisitDocument extends ProtocolDocumentBase {
   documentType: DocumentType.Visit;
   schemaId: 1;
   visit: VisitInfo;
+  // local uid used on client for this document
+  localUid?: string;
 }
 
 export type VisitInfo = VisitPIIInfo & VisitNonPIIInfo;

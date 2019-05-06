@@ -24,6 +24,7 @@ export interface VisitDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Visit;
     schemaId: 1;
     visit: VisitInfo;
+    localUid?: string;
 }
 export declare type VisitInfo = VisitPIIInfo & VisitNonPIIInfo;
 export interface VisitPIIInfo extends VisitCommonInfo {

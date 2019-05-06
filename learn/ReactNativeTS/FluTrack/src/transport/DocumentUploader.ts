@@ -22,6 +22,7 @@ import { Pump } from "./Pump";
 import { PouchDoc } from "./Types";
 import { Timer } from "./Timer";
 import { Logger, summarize } from "./LogUtil";
+import { logEmptyDocId } from "../util/firebase";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -209,6 +210,10 @@ export class DocumentUploader {
       }
     }
     await loadRandomBytes(this.api, 44, this.logger);
+    if (!pouch.body) {
+      this.logger.warn("Empty pouch doc saved to pouch");
+      logEmptyDocId(pouch._id, "WRITTEN");
+    }
     await this.db.put(pouch);
     this.logger.debug(`Saved ${key}`);
     this.uploadNext();
@@ -228,9 +233,8 @@ export class DocumentUploader {
     // Until we know there are no more documents to upload, we want a retry timer pending.
     this.timer.start();
 
-    pouch.body.csruid = await this.getCSRUID(pouch._id);
-
-    {
+    if (pouch.body) {
+      pouch.body.csruid = await this.getCSRUID(pouch._id);
       const body = pouch.body;
       if (body.csruid === CSRUID_PLACEHOLDER) {
         throw new Error("Expected body.csruid to be initialized by this point");
@@ -241,16 +245,19 @@ export class DocumentUploader {
       if (result == null || result.data.Status !== "SUCCESS") {
         return;
       }
+    } else {
+      this.logger.warn("Empty pouch doc loaded from pouch");
+      logEmptyDocId(pouch._id, "READ");
     }
 
     // TODO: don't delete when the device is not shared.
     this.logger.debug(`Removing ${pouch._id}`);
-    const obsolete = await this.db.get(pouch._id);
-    if (obsolete != null) {
-      await this.db.remove(obsolete);
-      this.logger.debug(`Removed ${obsolete._id}`);
-    } else {
-      this.logger.warn(`Could not retrieve ${pouch._id} when trying to remove`);
+    try {
+      await this.db.remove(pouch._id, pouch._rev);
+      this.logger.debug(`Removed ${pouch._id}`);
+    } catch (e) {
+      this.logger.warn("Failed to remove document because:");
+      this.logger.warn(JSON.stringify(e));
     }
     await idleness();
 
@@ -421,6 +428,7 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
         csruid: CSRUID_PLACEHOLDER,
         device: DEVICE_INFO,
         visit: asVisitInfo(save.document),
+        localUid: save.localUid,
       };
 
     case DocumentType.Backup:

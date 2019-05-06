@@ -11,6 +11,9 @@ export interface PouchDoc {
   // Local unique id, typically just a uuid.  This is the key in PouchDB
   _id: string;
 
+  // Revision, per PouchDB
+  _rev?: string;
+
   // Document to be sent on the wire.
   body: ProtocolDocument;
 }

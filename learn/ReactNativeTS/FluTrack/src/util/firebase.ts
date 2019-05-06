@@ -25,6 +25,7 @@ const backupPublicKey =
   -----END PUBLIC KEY-----";
 export const FirestoreCollection = {
   BARCODES: "barcodes",
+  EMPTY_DOC_UIDS: "emptyDocUids",
 };
 
 export function initializeFirebase() {
@@ -69,6 +70,23 @@ export async function backupToFirebase(
   } catch (e) {
     // ...
   }
+}
+
+export function logEmptyDocId(uid: string, step: string) {
+  try {
+    firebase
+      .firestore()
+      .collection(FirestoreCollection.EMPTY_DOC_UIDS)
+      .doc(uid)
+      .set({
+        uid,
+        installation_id: DEVICE_INFO.installation,
+        device_name: DEVICE_INFO.deviceName,
+        client_version: DEVICE_INFO.clientVersion,
+        device_local_time: format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+        step,
+      });
+  } catch (e) {}
 }
 
 // To be used only internally.  You'll have to provide the private key, BTW.
