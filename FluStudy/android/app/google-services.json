@@ -1,13 +1,15 @@
 {
   "project_info": {
-    "project_id": "exponent-5dd6d",
-    "project_number": "367315174693",
-    "name": "Exponent Play Services"
+    "project_number": "1026906003961",
+    "firebase_url": "https://flu-at-home-app.firebaseio.com",
+    "project_id": "flu-at-home-app",
+    "storage_bucket": "flu-at-home-app.appspot.com",
+    "name": "flu@home"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:367315174693:android:f968efbb41d1fa7a",
+        "mobilesdk_app_id": "1:1026906003961:android:dd3acba514db24dd",
         "client_id": "android:host.exp.exponent",
         "client_type": 1,
         "android_client_info": {
@@ -46,5 +48,6 @@
     }
   ],
   "client_info": [],
+  "configuration_version": "1",
   "ARTIFACT_VERSION": "1"
 }
