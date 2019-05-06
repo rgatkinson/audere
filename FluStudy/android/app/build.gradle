@@ -95,6 +95,21 @@ android {
   }
 }
 
+// https://developer.android.com/studio/build/configure-apk-splits.html
+// If versionCode (build number) from version.properties is 88,
+// then ARM versionCode will be 10088 and x86 versionCode will be 20088.
+ext.abiCodes = ['armeabi-v7a':1, 'x86':2]
+import com.android.build.OutputFile
+android.applicationVariants.all { variant ->
+  variant.outputs.each { output ->
+    def baseAbiVersionCode =
+            project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+    if (baseAbiVersionCode != null) {
+      output.versionCodeOverride =
+              baseAbiVersionCode * 10000 + variant.versionCode
+    }
+  }
+}
 
 configurations.all {
   resolutionStrategy {
