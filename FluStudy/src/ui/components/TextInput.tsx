@@ -58,6 +58,7 @@ export default class TextInput extends React.Component<Props> {
         onSubmitEditing={() =>
           !!this.props.onSubmitEditing && this.props.onSubmitEditing()
         }
+        accessibilityLabel={this.props.placeholder}
       />
     );
   }

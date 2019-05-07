@@ -70,6 +70,7 @@ export default class Button extends React.Component<Props> {
             !!this.props.fontSize && { fontSize: this.props.fontSize },
             this.props.textStyle,
           ]}
+          accessibilityLabel={this.props.label.toUpperCase()}
         >
           {this.props.label.toUpperCase()}
         </Text>

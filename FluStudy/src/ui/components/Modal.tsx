@@ -72,7 +72,10 @@ class Modal extends React.Component<Props & WithNamespaces> {
                 onPress={this.props.onSubmit}
                 style={styles.actionButton}
               >
-                <Text style={[styles.actionText, { textAlign: "right" }]}>
+                <Text
+                  style={[styles.actionText, { textAlign: "right" }]}
+                  accessibilityLabel={this.props.submitText}
+                >
                   {this.props.submitText
                     ? this.props.submitText
                     : t("common:button:submit")}

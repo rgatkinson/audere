@@ -219,6 +219,7 @@ export default class Text extends React.Component<Props> {
           this.props.style,
         ]}
         onPress={this.props.onPress}
+        accessibilityLabel={content}
       >
         {content
           .split("**")
