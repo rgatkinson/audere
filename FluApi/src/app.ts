@@ -8,6 +8,7 @@ import base64url from "base64url";
 import morgan from "morgan";
 import { SnifflesEndpoint } from "./endpoints/snifflesApi";
 import { ConsentEmailerEndpoint } from "./endpoints/snifflesConsentMailer";
+import { SnifflesVisitJobs } from "./endpoints/snifflesVisitJobs";
 import { HutchUploaderEndpoint } from "./endpoints/hutchUpload";
 import { FeverEndpoint } from "./endpoints/feverApi";
 import { generateRandomKey, generateRandomBytes } from "./util/crypto";
@@ -234,6 +235,13 @@ export function createInternalApp(config: AppConfig) {
     "/api/sendSnifflesConsentEmails",
     stats("sendSnifflesConsents"),
     snifflesConsentEmailer.sendConsentEmails
+  );
+
+  const snifflesVisitJobs = new SnifflesVisitJobs(sql, []);
+  internalApp.get(
+    "/api/runSnifflesJobs",
+    stats("runSnifflesJobs"),
+    (res, req) => snifflesVisitJobs.performRequest(res, req)
   );
 
   return useOuch(internalApp);

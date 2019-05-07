@@ -122,6 +122,18 @@ module "sniffles_consent_emailer_cron" {
   notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
 }
 
+module "sniffles_visit_jobs_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-sniffles-visit-jobs"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "rate(1 hour)"
+  url = "http://${var.fluapi_fqdn}:444/api/runSnifflesJobs"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+}
+
+
 module "fever_kits_report_cron" {
   source = "../lambda-cron"
   name = "${local.base_name}-fever-kits-report"

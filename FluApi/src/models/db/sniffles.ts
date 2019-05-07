@@ -12,6 +12,7 @@ import {
   stringColumn,
   booleanColumn,
   jsonColumn,
+  jsonbColumn,
   integerColumn,
   unique
 } from "../../util/sql";
@@ -28,6 +29,7 @@ import { defineConsentEmail } from "./consentEmail";
 export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
   const hutchUpload = defineHutchUpload(sql);
   const consentEmail = defineConsentEmail(sql);
+  const visitJobRecord = defineVisitJobRecord(sql);
   const visitNonPii = defineVisit<VisitNonPIIDbInfo>(sql.nonPii);
   visitNonPii.hasOne(hutchUpload, {
     foreignKey: "visitId",
@@ -37,13 +39,18 @@ export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
     foreignKey: "visitId",
     onDelete: "CASCADE"
   });
+  visitNonPii.hasMany(visitJobRecord, {
+    foreignKey: "visitId",
+    onDelete: "CASCADE"
+  });
   return {
     accessKey: defineAccessKey(sql),
     clientLog: defineClientLog(sql),
     clientLogBatch: defineLogBatch(sql),
     feedback: defineFeedback(sql),
     visitNonPii,
-    visitPii: defineVisit(sql.pii)
+    visitPii: defineVisit(sql.pii),
+    visitJobRecord
   };
 }
 export interface SnifflesModels {
@@ -53,6 +60,7 @@ export interface SnifflesModels {
   feedback: Model<FeedbackAttributes>;
   visitNonPii: Model<VisitAttributes<VisitNonPIIDbInfo>>;
   visitPii: Model<VisitAttributes<VisitPIIInfo>>;
+  visitJobRecord: Model<VisitJobRecordAttributes>;
 }
 
 interface AccessKeyAttributes {
@@ -147,3 +155,31 @@ export type VisitInstance<Info> = Inst<VisitAttributes<Info>>;
 export type VisitModel<Info> = Model<VisitAttributes<Info>>;
 export type VisitNonPIIInstance = VisitInstance<VisitNonPIIDbInfo>;
 export type VisitPIIInstance = VisitInstance<VisitPIIInfo>;
+
+// ---------------------------------------------------------------
+
+export interface VisitJobRecordAttributes {
+  id?: number;
+  visitId: string;
+  jobName: string;
+  result: any;
+}
+
+export type VisitJobResult = {
+  error?: boolean;
+  result: any;
+};
+
+export function defineVisitJobRecord(
+  sql: SplitSql
+): Model<VisitJobRecordAttributes> {
+  return defineModel<VisitJobRecordAttributes>(
+    sql.nonPii,
+    "sniffles_visit_job_records",
+    {
+      visitId: unique(integerColumn(), "visitIdJobName"),
+      jobName: unique(stringColumn(), "visitIdJobName"),
+      result: jsonbColumn()
+    }
+  );
+}

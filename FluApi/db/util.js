@@ -3,11 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-function baseColumns(sql) {
+function baseColumns(sequelize) {
   return {
-    id: identity(column(sql.INTEGER)),
-    createdAt: column(sql.DATE),
-    updatedAt: column(sql.DATE)
+    id: identity(column(sequelize.INTEGER)),
+    createdAt: column(sequelize.DATE),
+    updatedAt: column(sequelize.DATE)
   };
 }
 
