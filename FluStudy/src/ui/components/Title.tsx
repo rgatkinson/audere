@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
-    marginVertical: GUTTER / 2,
+    marginTop: GUTTER / 2,
+    marginBottom: GUTTER,
   },
 });

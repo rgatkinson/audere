@@ -188,6 +188,9 @@ export interface WorkflowInfo {
   surveyCompletedAt?: string; // FHIR:instant
   surveyStartedAt?: string; // FHIR:instant
   skippedScreeningAt?: string; // FHIR:isntant
+  [key: string]:
+    | string
+    | undefined;
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource

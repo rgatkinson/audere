@@ -5,7 +5,7 @@
 
 import { format } from "date-fns";
 import React from "react";
-import { Alert, AppState, KeyboardAvoidingView, View } from "react-native";
+import { Alert, KeyboardAvoidingView, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -43,7 +43,6 @@ import AddressNotFoundModal from "../components/AddressNotFoundModal";
 import EmailInput from "../components/EmailInput";
 import Screen from "../components/Screen";
 import Links from "../components/Links";
-import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Text from "../components/Text";
 import QuestionText from "../components/QuestionText";
 import { GUTTER, SMALL_TEXT } from "../styles";
@@ -88,66 +87,6 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
 }
 export const Why = withNamespaces("whyScreen")(WhyScreen);
 
-class OutOfKitsScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(AppHealthEvents.KIT_ORDER_BLOCKED);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("Age");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("blockKitsDesc")}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        title={t("whatBlockKits")}
-        skipButton={true}
-        onNext={this._onNext}
-      >
-        <View>
-          <Links links={["learnMore", "findMedHelp"]} />
-          <Text
-            content={t("disclaimer")}
-            style={{
-              alignSelf: "stretch",
-              fontSize: SMALL_TEXT,
-              marginBottom: GUTTER,
-            }}
-          />
-        </View>
-      </Screen>
-    );
-  }
-}
-export const OutOfKits = withNamespaces("outOfKitsScreen")(OutOfKitsScreen);
-
-class WhatScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("Age");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        desc={t("description")}
-        splashImage="whatdoidonext"
-        navigation={this.props.navigation}
-        title={t("what")}
-        skipButton={false}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const What = withNamespaces("whatScreen")(WhatScreen);
-
 @connect((state: StoreState) => ({
   workflow: state.survey.workflow,
 }))
@@ -172,20 +111,15 @@ class AgeScreen extends React.Component<
     return (
       <Screen
         canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
+        hideQuestionText={true}
         navigation={this.props.navigation}
         skipButton={false}
         title={t("surveyTitle:" + AgeConfig.title)}
+        questions={[AgeConfig]}
+        getAnswer={this.props.getAnswer}
         onNext={this._onNext}
-      >
-        <RadioGrid
-          desc={false}
-          hideQuestion={true}
-          question={AgeConfig}
-          style={{ marginTop: GUTTER }}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-      </Screen>
+        updateAnswer={this.props.updateAnswer}
+      />
     );
   }
 }
@@ -241,10 +175,6 @@ class SymptomsScreen extends React.PureComponent<
       : false;
   };
 
-  _onChange = (symptoms: Option[]) => {
-    this.props.updateAnswer({ options: symptoms }, SymptomsConfig);
-  };
-
   render() {
     const { t } = this.props;
     return (
@@ -252,62 +182,20 @@ class SymptomsScreen extends React.PureComponent<
         canProceed={this._hasSymptoms()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
+        hideQuestionText={true}
         navigation={this.props.navigation}
         title={t("surveyTitle:" + SymptomsConfig.title)}
+        questions={[SymptomsConfig]}
+        getAnswer={this.props.getAnswer}
         onNext={this._onNext}
-      >
-        <OptionList
-          data={newSelectedOptionsList(
-            SymptomsConfig.optionList!.options,
-            this.props.getAnswer("options", SymptomsConfig.id)
-          )}
-          multiSelect={true}
-          numColumns={1}
-          exclusiveOptions={["noneOfTheAbove"]}
-          onChange={this._onChange}
-        />
-      </Screen>
+        updateAnswer={this.props.updateAnswer}
+      />
     );
   }
 }
 export const Symptoms = reduxWriter(
   withNamespaces("symptomsScreen")(SymptomsScreen)
 );
-
-class PreConsentScreen extends React.PureComponent<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        centerDesc={true}
-        hideBackButton={true}
-        image="preconsent"
-        navigation={this.props.navigation}
-        onNext={() => this.props.navigation.push("Consent")}
-        title={t("title")}
-      >
-        <Text
-          style={{ marginTop: GUTTER, marginBottom: GUTTER }}
-          content={t("description")}
-        />
-        {t("bullets")
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-          })}
-        <Text style={{ marginVertical: GUTTER }} content={t("questions")} />
-        <Text
-          italic={true}
-          style={{ marginBottom: GUTTER * 2 }}
-          content={t("instructions")}
-        />
-      </Screen>
-    );
-  }
-}
-export const PreConsent = withNamespaces("preConsentScreen")(PreConsentScreen);
 
 interface EmailProps {
   email?: string;
@@ -924,114 +812,4 @@ class AddressConfirmScreen extends React.Component<
 }
 export const AddressConfirm = reduxWriter(
   withNamespaces("addressConfirmScreen")(AddressConfirmScreen)
-);
-
-class SymptomsIneligibleScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.SYMPTOMS_INELIGIBLE);
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description")}
-        hideBackButton={true}
-        image="thanksforyourinterest"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("ineligible")}
-      >
-        <Links links={["learnMore", "findMedHelp"]} />
-        <Text
-          content={t("disclaimer")}
-          style={{
-            alignSelf: "stretch",
-            fontSize: SMALL_TEXT,
-            marginBottom: GUTTER,
-          }}
-        />
-      </Screen>
-    );
-  }
-}
-export const SymptomsIneligible = withNamespaces("symptomsIneligibleScreen")(
-  SymptomsIneligibleScreen
-);
-
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class KitOrderedScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.navigation.push("ThankYouScreening");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        image="flukitordered"
-        navigation={this.props.navigation}
-        onNext={this._onNext}
-        title={t("title")}
-      >
-        {t("bullets")
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-          })}
-        <Text
-          style={{ lineHeight: 22 }}
-          italic={true}
-          content={t("disclaimer")}
-        />
-      </Screen>
-    );
-  }
-}
-export const KitOrdered = withNamespaces("kitOrderedScreen")(KitOrderedScreen);
-
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class ThankYouScreeningScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces
-> {
-  componentDidMount() {
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        screeningCompletedAt: new Date().toISOString(),
-      })
-    );
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={false}
-        desc={t("description")}
-        image="thanksforparticipating"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("title")}
-      >
-        {t("bullets")
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-          })}
-      </Screen>
-    );
-  }
-}
-export const ThankYouScreening = withNamespaces("thankYouScreeningScreen")(
-  ThankYouScreeningScreen
 );

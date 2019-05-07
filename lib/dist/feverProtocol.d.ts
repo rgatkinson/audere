@@ -119,6 +119,7 @@ export interface WorkflowInfo {
     surveyCompletedAt?: string;
     surveyStartedAt?: string;
     skippedScreeningAt?: string;
+    [key: string]: string | undefined;
 }
 export interface ResponseInfo {
     id: string;

@@ -27,8 +27,6 @@ import {
   appendInvalidBarcode,
   setKitBarcode,
   setTestStripImg,
-  setOneMinuteStartTime,
-  setTenMinuteStartTime,
   setSupportCode,
   setWorkflow,
   toggleSupportCodeModal,
@@ -38,12 +36,9 @@ import {
   WhenSymptomsScreenConfig,
   WhatSymptomsConfig,
   GeneralExposureScreenConfig,
-  GeneralHealthScreenConfig,
   BlueLineConfig,
   RedWhenBlueConfig,
-  RedLineConfig,
-  FirstTestFeedbackConfig,
-  SecondTestFeedbackConfig,
+  TestStripSurveyConfig,
   OptInForMessagesConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
@@ -51,13 +46,10 @@ import timerWithConfigProps, { TimerProps } from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
-import Button from "../components/Button";
-import ButtonGrid from "../components/ButtonGrid";
 import Chrome from "../components/Chrome";
 import DigitInput from "../components/DigitInput";
 import Links from "../components/Links";
 import Modal from "../components/Modal";
-import OptionList, { newSelectedOptionsList } from "../components/OptionList";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
@@ -77,20 +69,15 @@ import {
   GUTTER,
   KEYBOARD_BEHAVIOR,
   LARGE_TEXT,
-  EXTRA_SMALL_TEXT,
   SECONDARY_COLOR,
-  SMALL_TEXT,
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
-import RadioGrid from "../components/RadioGrid";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
-
-const BARCODE_PREFIX = "KIT "; // Space intentional. Hardcoded, because never translated.
 
 interface Props {
   dispatch(action: Action): void;
@@ -283,12 +270,6 @@ class ScanScreen extends React.Component<
               code: barcode,
             })
           );
-          this.props.dispatch(
-            setWorkflow({
-              ...this.props.workflow,
-              surveyStartedAt: new Date().toISOString(),
-            })
-          );
           this.props.navigation.push("ScanConfirmation");
         }
       }
@@ -362,51 +343,6 @@ interface BarcodeProps {
   kitBarcode: SampleInfo;
 }
 
-@connect((state: StoreState) => ({
-  kitBarcode: state.survey.kitBarcode,
-}))
-class ScanConfirmationScreen extends React.Component<
-  Props & BarcodeProps & WithNamespaces
-> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.SCAN_CONFIRMATION);
-  }
-
-  _onNext = () => {
-    this.props.navigation.push("Unpacking");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        image="barcodesuccess"
-        navigation={this.props.navigation}
-        title={t("codeSent")}
-        onNext={this._onNext}
-      >
-        {!!this.props.kitBarcode && (
-          <BorderView style={{ marginTop: GUTTER }}>
-            <Text
-              center={true}
-              content={t("yourCode") + this.props.kitBarcode.code}
-            />
-          </BorderView>
-        )}
-        <Text content={t("description")} style={{ marginVertical: GUTTER }} />
-      </Screen>
-    );
-  }
-}
-export const ScanConfirmation = withNamespaces("scanConfirmationScreen")(
-  ScanConfirmationScreen
-);
-
-export const ManualConfirmation = withNamespaces("manualConfirmationScreen")(
-  ScanConfirmationScreen
-);
-
 interface SupportCodeProps {
   supportCode?: string;
 }
@@ -461,12 +397,6 @@ class ManualEntryScreen extends React.Component<
       setKitBarcode({
         sample_type: "manualEntry",
         code: this.state.barcode1!.trim(),
-      })
-    );
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        surveyStartedAt: new Date().toISOString(),
       })
     );
     this.props.navigation.push("ManualConfirmation");
@@ -695,35 +625,6 @@ export const BarcodeContactSupport = withNamespaces(
   "barcodeContactSupportScreen"
 )(BarcodeContactSupportScreen);
 
-@connect()
-class SwabInTubeScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.SURVIVED_FIRST_SWAB);
-  }
-
-  _onNext = () => {
-    this.props.dispatch(setOneMinuteStartTime());
-    this.props.navigation.push("FirstTimer");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("startTimer")}
-        canProceed={true}
-        desc={t("description")}
-        image="putswabintube"
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="putSwabInTube"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const SwabInTube = withNamespaces("swabInTubeScreen")(SwabInTubeScreen);
-
 interface FirstTimerProps {
   oneMinuteStartTime: number | undefined;
 }
@@ -800,62 +701,6 @@ export const FirstTimer = timerWithConfigProps({
   nextScreen: "RemoveSwabFromTube",
 })(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
-@connect()
-class StripInTubeScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    this.props.dispatch(setTenMinuteStartTime());
-    this.props.navigation.push("WhatSymptoms");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("common:button:continue")}
-        canProceed={true}
-        desc={t("description")}
-        image="openteststrip_1"
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="putTestStripInTube"
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const StripInTube = withNamespaces("stripInTubeScreen")(
-  StripInTubeScreen
-);
-
-class WhatSymptomsScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("WhenSymptoms");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        centerDesc={true}
-        configs={[WhatSymptomsConfig]}
-        desc={t("description")}
-        hasDivider={true}
-        navigation={this.props.navigation}
-        title={t("title")}
-        getAnswer={this.props.getAnswer}
-        updateAnswer={this.props.updateAnswer}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const WhatSymptoms = reduxWriter(
-  withNamespaces("surveyScreen")(WhatSymptomsScreen)
-);
-
 class WhenSymptomsScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
@@ -863,15 +708,15 @@ class WhenSymptomsScreen extends React.Component<
     this.props.navigation.push("GeneralExposure");
   };
 
-  _createConfigs = () => {
-    const configs: any = [];
+  _createQuestions = () => {
+    const questions: any = [];
 
     WhenSymptomsScreenConfig.forEach((question: any) => {
       return this.props
         .getAnswer("options", WhatSymptomsConfig.id)
         .filter((option: Option) => option.selected)
         .forEach((option: Option) => {
-          configs.push({
+          questions.push({
             buttons: question.buttons,
             description: option.key,
             id: question.id + "_" + option.key,
@@ -881,7 +726,7 @@ class WhenSymptomsScreen extends React.Component<
           });
         });
     });
-    return configs;
+    return questions;
   };
 
   render() {
@@ -890,7 +735,7 @@ class WhenSymptomsScreen extends React.Component<
       <Screen
         canProceed={true}
         centerDesc={true}
-        configs={this._createConfigs()}
+        questions={this._createQuestions()}
         desc={t("description")}
         getAnswer={getAnswer}
         hasDivider={true}
@@ -931,7 +776,7 @@ class GeneralExposureScreen extends React.Component<
       <Screen
         canProceed={true}
         centerDesc={true}
-        configs={GeneralExposureScreenConfig}
+        questions={GeneralExposureScreenConfig}
         desc={t("description")}
         getAnswer={getAnswer}
         hasDivider={true}
@@ -946,38 +791,6 @@ class GeneralExposureScreen extends React.Component<
 }
 export const GeneralExposure = reduxWriter(
   withNamespaces("surveyScreen")(GeneralExposureScreen)
-);
-
-class GeneralHealthScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("ThankYouSurvey");
-  };
-
-  render() {
-    const { getAnswer, navigation, t, updateAnswer } = this.props;
-    const header = <Text content={t("generalDesc")} />;
-
-    return (
-      <Screen
-        canProceed={true}
-        centerDesc={true}
-        configs={GeneralHealthScreenConfig}
-        desc={t("description")}
-        hasDivider={true}
-        header={header}
-        navigation={navigation}
-        title={t("generalHealth")}
-        onNext={this._onNext}
-        getAnswer={getAnswer}
-        updateAnswer={updateAnswer}
-      />
-    );
-  }
-}
-export const GeneralHealth = reduxWriter(
-  withNamespaces("surveyScreen")(GeneralHealthScreen)
 );
 
 interface ThankYouSurveyProps {
@@ -1099,32 +912,12 @@ class TestStripSurveyScreen extends React.Component<
         desc={t("desc")}
         image="lookatteststrip"
         navigation={this.props.navigation}
+        questions={TestStripSurveyConfig}
         title={t("title")}
+        getAnswer={this.props.getAnswer}
         onNext={this._onNext}
-      >
-        <ButtonGrid
-          desc={true}
-          question={BlueLineConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-        {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
-          "yes" && (
-          <RadioGrid
-            question={RedWhenBlueConfig}
-            getAnswer={this.props.getAnswer}
-            updateAnswer={this.props.updateAnswer}
-          />
-        )}
-        {this.props.getAnswer("selectedButtonKey", BlueLineConfig.id) ===
-          "no" && (
-          <RadioGrid
-            question={RedLineConfig}
-            getAnswer={this.props.getAnswer}
-            updateAnswer={this.props.updateAnswer}
-          />
-        )}
-      </Screen>
+        updateAnswer={this.props.updateAnswer}
+      />
     );
   }
 }
@@ -1411,112 +1204,6 @@ export const TestStripConfirmation = withNamespaces(
   "testStripConfirmationScreen"
 )(TestStripConfirmationScreen);
 
-class FirstTestFeedbackScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("BeginSecondTest");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        image="nicejob"
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      >
-        <RadioGrid
-          desc={true}
-          hideQuestion={false}
-          question={FirstTestFeedbackConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-      </Screen>
-    );
-  }
-}
-export const FirstTestFeedback = reduxWriter(
-  withNamespaces("firstTestFeedbackScreen")(FirstTestFeedbackScreen)
-);
-
-class SecondTestFeedbackScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("Packing");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={true}
-        image="nicejob"
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      >
-        <RadioGrid
-          desc={true}
-          hideQuestion={false}
-          question={SecondTestFeedbackConfig}
-          getAnswer={this.props.getAnswer}
-          updateAnswer={this.props.updateAnswer}
-        />
-      </Screen>
-    );
-  }
-}
-export const SecondTestFeedback = reduxWriter(
-  withNamespaces("secondTestFeedbackScreen")(SecondTestFeedbackScreen)
-);
-
-class ShipBoxScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("SchedulePickup");
-  };
-
-  _onDropOff = () => {
-    this.props.navigation.push("EmailOptIn");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("schedulePickup")}
-        canProceed={true}
-        desc={t("description")}
-        image="shippingyourbox"
-        footer={
-          <Button
-            enabled={true}
-            label={t("iWillDropOff")}
-            primary={true}
-            textStyle={{ fontSize: EXTRA_SMALL_TEXT }}
-            onPress={this._onDropOff}
-          />
-        }
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="shipBox"
-        onNext={this._onNext}
-      >
-        <Links links={["showNearbyUsps"]} />
-      </Screen>
-    );
-  }
-}
-export const ShipBox = reduxWriter(
-  withNamespaces("shipBoxScreen")(ShipBoxScreen)
-);
-
 class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
     scheduleUSPSPickUp(() => {
@@ -1546,16 +1233,11 @@ export const SchedulePickup = withNamespaces("schedulePickupScreen")(
   SchedulePickupScreen
 );
 
-interface EmailProps {
-  email?: string;
-}
-
 @connect((state: StoreState) => ({
   isConnected: state.meta.isConnected,
-  workflow: state.survey.workflow,
 }))
 class EmailOptInScreen extends React.Component<
-  Props & ConnectedProps & WorkflowProps & WithNamespaces & ReduxWriterProps
+  Props & ConnectedProps & WithNamespaces & ReduxWriterProps
 > {
   componentDidMount() {
     tracker.logEvent(FunnelEvents.COMPLETED_SHIPPING);
@@ -1563,13 +1245,6 @@ class EmailOptInScreen extends React.Component<
 
   _onNext = async () => {
     const { isConnected, t } = this.props;
-
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        surveyCompletedAt: new Date().toISOString(),
-      })
-    );
 
     const awaitingUpload = await uploader.documentsAwaitingUpload();
 
@@ -1584,71 +1259,24 @@ class EmailOptInScreen extends React.Component<
     }
   };
 
-  _onChange = (options: Option[]) => {
-    this.props.updateAnswer({ options }, OptInForMessagesConfig);
-  };
-
   render() {
     const { t } = this.props;
     return (
       <Screen
         canProceed={true}
         desc={t("description")}
+        hideQuestionText={true}
         image="optinmessages"
         navigation={this.props.navigation}
         title={t("title")}
+        questions={[OptInForMessagesConfig]}
+        getAnswer={this.props.getAnswer}
         onNext={this._onNext}
-      >
-        <OptionList
-          data={newSelectedOptionsList(
-            OptInForMessagesConfig.optionList!.options,
-            this.props.getAnswer("options", OptInForMessagesConfig.id)
-          )}
-          multiSelect={true}
-          numColumns={1}
-          style={{ marginBottom: GUTTER }}
-          onChange={this._onChange}
-        />
-      </Screen>
+        updateAnswer={this.props.updateAnswer}
+      />
     );
   }
 }
 export const EmailOptIn = reduxWriter(
   withNamespaces("emailOptInScreen")(EmailOptInScreen)
 );
-
-interface ThanksScreenProps {
-  email: string;
-}
-
-@connect((state: StoreState) => ({
-  email: state.survey.email,
-}))
-class ThanksScreen extends React.Component<
-  Props & ThanksScreenProps & WithNamespaces & ReduxWriterProps
-> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        canProceed={false}
-        desc={t("description", { email: this.props.email })}
-        image="finalthanks"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("title")}
-      >
-        <Links links={["learnMore", "findMedHelp"]} />
-        <Text
-          content={t("disclaimer")}
-          style={{
-            alignSelf: "stretch",
-            fontSize: SMALL_TEXT,
-            marginBottom: GUTTER,
-          }}
-        />
-      </Screen>
-    );
-  }
-}
-export const Thanks = reduxWriter(withNamespaces("thanksScreen")(ThanksScreen));

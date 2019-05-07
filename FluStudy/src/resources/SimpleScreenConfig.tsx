@@ -1,10 +1,35 @@
-import React from "react";
+import React, { Fragment } from "react";
+import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { WorkflowInfo } from "audere-lib/feverProtocol";
+import {
+  Action,
+  StoreState,
+  setOneMinuteStartTime,
+  setTenMinuteStartTime,
+  setWorkflow,
+} from "../store";
+import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import BulletPoint from "../ui/components/BulletPoint";
+import Button from "../ui/components/Button";
 import Links from "../ui/components/Links";
 import Screen from "../ui/components/Screen";
 import { NavigationScreenProp } from "react-navigation";
 import { tracker, FunnelEvents, AppHealthEvents } from "../util/tracker";
+import {
+  FirstTestFeedbackConfig,
+  GeneralHealthScreenConfig,
+  WhatSymptomsConfig,
+  SecondTestFeedbackConfig,
+  SurveyQuestionData,
+} from "./ScreenConfig";
+import { EXTRA_SMALL_TEXT } from "../ui/styles";
+
+interface ButtonConfig {
+  fontSize?: number;
+  label: string;
+  next: string;
+}
 
 interface LinkConfig {
   center?: boolean;
@@ -13,60 +38,103 @@ interface LinkConfig {
 }
 
 export interface SimpleScreenConfig {
-  bullets?: boolean;
+  barcode?: boolean;
+  bulletPoints?: boolean;
+  buttonLabel?: boolean;
+  centerDesc?: boolean;
+  disclaimer?: boolean;
+  dispatchOnNext?: Action;
+  extraButton?: ButtonConfig;
+  extraText?: boolean;
   footerLinkConfig?: LinkConfig;
   funnelEvent?: string;
+  hasDivider?: boolean;
   hideBackButton?: boolean;
   image?: string;
   key: string;
   linkConfig?: LinkConfig;
   next?: string;
+  questions?: SurveyQuestionData[];
   skipButton?: boolean;
   splashImage?: string;
+  workflowEvent?: string;
   videoId?: string;
 }
 
 interface Props {
+  email: string;
   navigation: NavigationScreenProp<any, any>;
+  workflow: WorkflowInfo;
+  dispatch(action: Action): void;
 }
 
 export const generateSimpleScreen = (config: SimpleScreenConfig) => {
-  class SimpleScreen extends React.Component<Props & WithNamespaces> {
+  class SimpleScreen extends React.Component<
+    Props & WithNamespaces & ReduxWriterProps
+  > {
     componentDidMount() {
       if (config.funnelEvent) {
         tracker.logEvent(config.funnelEvent);
       }
+      if (config.workflowEvent) {
+        const workflow = { ...this.props.workflow };
+        workflow[config.workflowEvent] = new Date().toISOString();
+        this.props.dispatch(setWorkflow(workflow));
+      }
     }
 
     _onNext = () => {
+      !!config.dispatchOnNext && this.props.dispatch(config.dispatchOnNext);
       config.next && this.props.navigation.push(config.next);
     };
 
     render() {
-      const { t } = this.props;
+      const { email, t } = this.props;
 
       return (
         <Screen
+          barcode={config.barcode}
+          buttonLabel={config.buttonLabel && t("buttonLabel")}
           canProceed={true}
-          desc={t("desc")}
+          centerDesc={config.centerDesc}
+          desc={t("desc", { email })}
+          disclaimer={config.disclaimer && t("disclaimer")}
+          extraText={config.extraText && t("extraText")}
           footer={
-            !!config.footerLinkConfig && (
-              <Links
-                center={config.footerLinkConfig.center}
-                links={config.footerLinkConfig.links}
-              />
-            )
+            <Fragment>
+              {!!config.extraButton && (
+                <Button
+                  enabled={true}
+                  fontSize={config.extraButton.fontSize}
+                  label={t(config.extraButton.label)}
+                  primary={true}
+                  onPress={() =>
+                    this.props.navigation.push(config.extraButton!.next)
+                  }
+                />
+              )}
+              {!!config.footerLinkConfig && (
+                <Links
+                  center={config.footerLinkConfig.center}
+                  links={config.footerLinkConfig.links}
+                />
+              )}
+            </Fragment>
           }
+          hasDivider={config.hasDivider}
           hideBackButton={config.hideBackButton}
           image={config.image}
           navigation={this.props.navigation}
+          questions={config.questions}
           skipButton={config.skipButton}
           splashImage={config.splashImage}
           title={t("title")}
           videoId={config.videoId}
+          getAnswer={this.props.getAnswer}
           onNext={this._onNext}
+          updateAnswer={this.props.updateAnswer}
         >
-          {!!config.bullets &&
+          {!!config.bulletPoints &&
             t("bullets")
               .split("\n")
               .map((bullet: string, index: number) => {
@@ -83,7 +151,12 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
     }
   }
 
-  return withNamespaces(config.key)(SimpleScreen);
+  return connect((state: StoreState) => {
+    return {
+      email: state.survey.email,
+      workflow: state.survey.workflow,
+    };
+  })(reduxWriter(withNamespaces(config.key)(SimpleScreen)));
 };
 
 export const simpleScreens: SimpleScreenConfig[] = [
@@ -97,6 +170,19 @@ export const simpleScreens: SimpleScreenConfig[] = [
     },
     next: "Why",
     splashImage: "welcome",
+  },
+  {
+    key: "What",
+    next: "Age",
+    splashImage: "whatdoidonext",
+  },
+  {
+    disclaimer: true,
+    funnelEvent: AppHealthEvents.KIT_ORDER_BLOCKED,
+    image: "thanksforyourinterest",
+    key: "OutOfKits",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
   },
   {
     funnelEvent: FunnelEvents.AGE_INELIGIBLE,
@@ -127,7 +213,38 @@ export const simpleScreens: SimpleScreenConfig[] = [
     linkConfig: { links: ["learnMore", "findMedHelp"] },
     skipButton: true,
   },
-
+  {
+    disclaimer: true,
+    funnelEvent: FunnelEvents.SYMPTOMS_INELIGIBLE,
+    hideBackButton: true,
+    image: "thanksforyourinterest",
+    key: "SymptomsIneligible",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+  },
+  {
+    bulletPoints: true,
+    disclaimer: true,
+    extraText: true,
+    hideBackButton: true,
+    image: "preconsent",
+    key: "PreConsent",
+    next: "Consent",
+  },
+  {
+    bulletPoints: true,
+    disclaimer: true,
+    image: "flukitordered",
+    key: "KitOrdered",
+    next: "ThankYouScreening",
+  },
+  {
+    bulletPoints: true,
+    image: "thanksforparticipating",
+    key: "ThankYouScreening",
+    skipButton: true,
+    workflowEvent: "screeningCompletedAt",
+  },
   {
     // NOTE: removed, keeping only for navigation state
     hideBackButton: true,
@@ -161,10 +278,26 @@ export const simpleScreens: SimpleScreenConfig[] = [
     next: "Unpacking",
   },
   {
-    bullets: true,
+    bulletPoints: true,
     image: "preparingfortest",
     key: "WhatsNext",
     next: "ScanInstructions",
+  },
+  {
+    barcode: true,
+    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    image: "barcodesuccess",
+    key: "ScanConfirmation",
+    next: "Unpacking",
+    workflowEvent: "surveyStartedAt",
+  },
+  {
+    barcode: true,
+    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    image: "barcodesuccess",
+    key: "ManualConfirmation",
+    next: "Unpacking",
+    workflowEvent: "surveyStartedAt",
   },
   {
     image: "unpackinginstructions",
@@ -198,6 +331,14 @@ export const simpleScreens: SimpleScreenConfig[] = [
     videoId: "collectSample",
   },
   {
+    buttonLabel: true,
+    dispatchOnNext: setOneMinuteStartTime(),
+    funnelEvent: FunnelEvents.SURVIVED_FIRST_SWAB,
+    image: "putswabintube",
+    key: "SwabInTube",
+    next: "FirstTimer",
+  },
+  {
     funnelEvent: FunnelEvents.PASSED_FIRST_TIMER,
     image: "removeswabfromtube",
     key: "RemoveSwabFromTube",
@@ -209,6 +350,28 @@ export const simpleScreens: SimpleScreenConfig[] = [
     key: "OpenTestStrip",
     next: "StripInTube",
     videoId: "openTestStrip",
+  },
+  {
+    dispatchOnNext: setTenMinuteStartTime(),
+    image: "openteststrip_1",
+    key: "StripInTube",
+    next: "WhatSymptoms",
+    videoId: "putTestStripInTube",
+  },
+  {
+    centerDesc: true,
+    hasDivider: true,
+    key: "WhatSymptoms",
+    next: "WhenSymptoms",
+    questions: [WhatSymptomsConfig],
+  },
+  {
+    centerDesc: true,
+    extraText: true,
+    hasDivider: true,
+    key: "GeneralHealth",
+    next: "ThankYouSurvey",
+    questions: GeneralHealthScreenConfig,
   },
   {
     image: "removeteststrip",
@@ -239,6 +402,12 @@ export const simpleScreens: SimpleScreenConfig[] = [
     key: "CleanFirstTest2",
     next: "FirstTestFeedback",
     videoId: "cleanUpFirstTest2",
+  },
+  {
+    image: "nicejob",
+    key: "FirstTestFeedback",
+    next: "BeginSecondTest",
+    questions: [FirstTestFeedbackConfig],
   },
   {
     funnelEvent: FunnelEvents.COMPLETED_FIRST_TEST,
@@ -272,6 +441,12 @@ export const simpleScreens: SimpleScreenConfig[] = [
     videoId: "cleanUpSecondTest",
   },
   {
+    image: "nicejob",
+    key: "SecondTestFeedback",
+    next: "Packing",
+    questions: [SecondTestFeedbackConfig],
+  },
+  {
     funnelEvent: FunnelEvents.COMPLETED_SECOND_TEST,
     image: "packingthingsup",
     key: "Packing",
@@ -294,5 +469,26 @@ export const simpleScreens: SimpleScreenConfig[] = [
     key: "TapeBox",
     next: "ShipBox",
     videoId: "tapeUpBox",
+  },
+  {
+    buttonLabel: true,
+    extraButton: {
+      fontSize: EXTRA_SMALL_TEXT,
+      label: "iWillDropOff",
+      next: "EmailOptIn",
+    },
+    image: "shippingyourbox",
+    key: "ShipBox",
+    linkConfig: { links: ["showNearbyUsps"] },
+    next: "SchedulePickup",
+    videoId: "shipBox",
+  },
+  {
+    disclaimer: true,
+    image: "finalthanks",
+    key: "Thanks",
+    linkConfig: { links: ["learnMore", "findMedHelp"] },
+    skipButton: true,
+    workflowEvent: "surveyCompletedAt",
   },
 ];

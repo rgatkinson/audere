@@ -9,6 +9,7 @@ import { ScrollIntoView } from "react-native-scroll-into-view";
 
 interface Props {
   question: SurveyQuestionData;
+  hideQuestionText?: boolean;
   highlighted?: boolean;
   onRef?: any;
   style?: StyleProp<ViewStyle>;
@@ -18,21 +19,23 @@ interface Props {
 
 class OptionQuestion extends React.Component<Props & WithNamespaces> {
   render() {
-    const { style, question, t } = this.props;
+    const { hideQuestionText, style, question, t } = this.props;
     return (
       <ScrollIntoView
         ref={this.props.onRef}
-        style={[{ alignSelf: "stretch", marginVertical: GUTTER }]}
+        style={[{ alignSelf: "stretch", marginBottom: GUTTER }]}
       >
-        <QuestionText
-          text={t("surveyTitle:" + question.title)}
-          subtext={
-            question.description
-              ? t("surveyDescription:" + question.description)
-              : undefined
-          }
-          required={question.required}
-        />
+        {!hideQuestionText && (
+          <QuestionText
+            text={t("surveyTitle:" + question.title)}
+            subtext={
+              question.description
+                ? t("surveyDescription:" + question.description)
+                : undefined
+            }
+            required={question.required}
+          />
+        )}
         <OptionList
           data={newSelectedOptionsList(
             question.optionList!.options,

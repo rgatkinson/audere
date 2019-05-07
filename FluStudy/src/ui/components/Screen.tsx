@@ -12,6 +12,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { ScrollIntoView, wrapScrollView } from "react-native-scroll-into-view";
 import { Action, Option, setDemo, StoreState } from "../../store";
+import Barcode from "./flu/Barcode";
 import Button from "./Button";
 import Chrome from "./Chrome";
 import Divider from "./Divider";
@@ -19,26 +20,37 @@ import MonthPicker from "./MonthPicker";
 import OptionQuestion from "./OptionQuestion";
 import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
+import BorderView from "./BorderView";
 import ButtonGrid from "./ButtonGrid";
 import Text from "./Text";
 import Title from "./Title";
 import VideoPlayer from "./VideoPlayer";
 import ScreenImages from "./ScreenImages";
-import { ASPECT_RATIO, GUTTER, HIGHLIGHT_STYLE, IMAGE_WIDTH } from "../styles";
+import {
+  ASPECT_RATIO,
+  GUTTER,
+  HIGHLIGHT_STYLE,
+  IMAGE_WIDTH,
+  SMALL_TEXT,
+} from "../styles";
 import { getRemoteConfig, overrideRemoteConfig } from "../../util/remoteConfig";
 import { setShownOfflineWarning } from "../../store";
 import { SurveyQuestionData } from "../../resources/ScreenConfig";
 interface Props {
+  barcode?: boolean;
   buttonLabel?: string;
   canProceed: boolean;
   centerDesc?: boolean;
   children?: any;
-  configs?: SurveyQuestionData[];
+  questions?: SurveyQuestionData[];
   desc?: string;
+  disclaimer?: string;
   dispatch?(action: Action): void;
+  extraText?: string;
   footer?: any;
   hasDivider?: boolean;
   hideBackButton?: boolean;
+  hideQuestionText?: boolean;
   header?: any;
   images?: string[];
   image?: string;
@@ -75,8 +87,9 @@ interface ScreenState {
 }))
 class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
   lastTap: number | null = null;
-  requiredQuestions = {};
   secondLastTap: number | null = null;
+
+  requiredQuestions = {};
 
   constructor(props: Props & WithNamespaces) {
     super(props);
@@ -139,7 +152,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
   }
 
   _validateQuestions = () => {
-    if (this.props.configs == null) {
+    if (this.props.questions == null) {
       !!this.props.onNext && this.props.onNext();
       return;
     }
@@ -188,9 +201,15 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
   };
 
   _renderQuestions = () => {
-    const { configs, getAnswer, t, updateAnswer } = this.props;
-    if (!!configs && !!getAnswer && !!updateAnswer) {
-      return configs.map((config, index) => {
+    const {
+      hideQuestionText,
+      questions,
+      getAnswer,
+      t,
+      updateAnswer,
+    } = this.props;
+    if (!!questions && !!getAnswer && !!updateAnswer) {
+      return questions.map((config, index) => {
         if (
           (!!config.condition && this._evaluateConditional(config)) ||
           !config.condition
@@ -216,6 +235,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
                 <OptionQuestion
                   key={`${config.id}-${index}`}
                   question={config}
+                  hideQuestionText={hideQuestionText}
                   highlighted={highlighted}
                   onRef={(ref: any) => {
                     if (config.required) {
@@ -229,7 +249,9 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
             case "radioGrid":
               return (
                 <RadioGrid
+                  desc={!!config.description}
                   key={`${config.id}-${index}`}
+                  hideQuestion={hideQuestionText}
                   highlighted={highlighted}
                   onRef={(ref: any) => {
                     if (config.required) {
@@ -296,8 +318,11 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
       desc,
       canProceed,
       centerDesc,
+      barcode,
       buttonLabel,
       children,
+      disclaimer,
+      extraText,
       footer,
       hasDivider,
       header,
@@ -352,13 +377,13 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
                 </View>
               )}
               {!!title && <Title label={title} onPress={onTitlePress} />}
+              {!!barcode && <Barcode />}
               {!!desc && (
                 <Text
                   content={desc}
                   center={!!centerDesc}
                   style={{
                     alignSelf: "stretch",
-                    marginTop: GUTTER / 2,
                     marginBottom: GUTTER,
                   }}
                 />
@@ -368,9 +393,15 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
               {!!images && <ScreenImages images={images} />}
               {this._renderQuestions()}
               {children}
+              {!!extraText && (
+                <Text content={extraText} style={{ marginBottom: GUTTER }} />
+              )}
               {videoId != null && <VideoPlayer id={videoId} />}
             </View>
             <View style={styles.footerContainer}>
+              {!!disclaimer && (
+                <Text content={disclaimer} style={styles.disclaimer} />
+              )}
               {!skipButton && (
                 <Button
                   enabled={canProceed}
@@ -397,6 +428,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "space-between",
     paddingHorizontal: GUTTER / 2,
+  },
+  disclaimer: {
+    alignSelf: "stretch",
+    fontSize: SMALL_TEXT,
+    marginBottom: GUTTER,
   },
   footerContainer: {
     alignItems: "center",
