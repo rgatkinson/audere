@@ -429,7 +429,6 @@ function protocolDocument(save: SaveEvent | BackupEvent): ProtocolDocument {
         csruid: CSRUID_PLACEHOLDER,
         device: DEVICE_INFO,
         visit: asVisitInfo(save.document),
-        localUid: save.localUid,
       };
 
     case DocumentType.Backup:

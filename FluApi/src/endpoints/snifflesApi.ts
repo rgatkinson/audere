@@ -78,7 +78,8 @@ export class SnifflesEndpoint {
           complete: visitDocument.visit.complete,
           location: visitDocument.visit.location,
           administrator: visitDocument.visit.administrator,
-          events: visitDocument.visit.events
+          events: visitDocument.visit.events,
+          localUid: visitDocument.visit.localUid
         };
         const visitNonPII: VisitNonPIIDbInfo = {
           ...visitCommon,

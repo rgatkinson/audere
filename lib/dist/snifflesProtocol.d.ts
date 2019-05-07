@@ -24,7 +24,6 @@ export interface VisitDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Visit;
     schemaId: 1;
     visit: VisitInfo;
-    localUid?: string;
 }
 export declare type VisitInfo = VisitPIIInfo & VisitNonPIIInfo;
 export interface VisitPIIInfo extends VisitCommonInfo {
@@ -47,6 +46,7 @@ export interface VisitCommonInfo {
     location?: string;
     administrator?: string;
     events: EventInfo[];
+    localUid?: string;
 }
 export interface GpsLocationInfo {
     latitude: string;

@@ -71,6 +71,7 @@ export function redux_to_pouch(state: StoreState): VisitInfo {
     consents: [],
     responses: [],
     events: [],
+    localUid: state.form.formId,
   };
 
   const form = state.form;
