@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle, Platform } from "react-native";
 import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import NumberInput from "./NumberInput";
@@ -65,7 +65,7 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
     const { shouldValidate, t } = this.props;
     return (
       <TextInput
-        autoCapitalize="words"
+        autoCapitalize={Platform.OS === "android" ? "sentences" : "words"}
         autoCorrect={false}
         autoFocus={!!autoFocus}
         placeholder={placeholder}
