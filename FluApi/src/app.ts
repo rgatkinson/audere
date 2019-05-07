@@ -23,6 +23,7 @@ import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
 import logger from "./util/logger";
 import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";
+import { HipaaUploader } from "./services/sniffles/hipaaUploader";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -237,7 +238,9 @@ export function createInternalApp(config: AppConfig) {
     snifflesConsentEmailer.sendConsentEmails
   );
 
-  const snifflesVisitJobs = new SnifflesVisitJobs(sql, []);
+  const snifflesVisitJobs = new SnifflesVisitJobs(sql, [
+    new HipaaUploader(sql)
+  ]);
   internalApp.get(
     "/api/runSnifflesJobs",
     stats("runSnifflesJobs"),

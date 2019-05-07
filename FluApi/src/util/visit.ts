@@ -1,5 +1,6 @@
 import { sendEmail } from "./email";
 import {
+  ConsentInfo,
   ConsentInfoSignerType,
   PatientInfo,
   ResponseItemInfo,
@@ -90,38 +91,27 @@ export function getConsentEmailParams(
   const patientEmailAddresses = getPatientEmailAddresses(visitPII.patient);
 
   const signatures = [];
+  const getSignatureTag = (signature, index) => {
+    const cid = `signature_${index}`;
+    signatures.push({
+      filename: `${cid}.png`,
+      content: signature,
+      cid,
+      encoding: "base64"
+    });
+    return `<img src="cid:${cid}"/>`;
+  };
   const body =
     getPreamble(visitPII.consents.length, includeResendingMessage) +
     visitPII.consents
       .map((consent, index) => {
-        const cid = `signature_${index}`;
-        signatures.push({
-          filename: `${cid}.png`,
-          content: consent.signature,
-          cid,
-          encoding: "base64"
-        });
-        if (includeSignatures) {
-          return (
-            toHTML(consent.terms) +
-            `<img src="cid:${cid}"/>` +
-            `<p>${consent.name}, ${consent.signerType}</p>` +
-            (consent.signerType === ConsentInfoSignerType.Representative
-              ? `<p>Signed on behalf of ${
-                  visitPII.patient.name
-                }.</p><p>Relationship of representative to participant: ${
-                  consent.relation
-                }</p>`
-              : "") +
-            `<p>Date: ${consent.date}</p>`
-          );
-        } else {
-          return (
-            `<p>Accepted by ${consent.signerType} ${consent.name} on ${
-              consent.date
-            }:</p>` + toHTML(consent.terms)
-          );
-        }
+        return formatConsent(
+          consent,
+          visitPII.patient.name,
+          index,
+          includeSignatures,
+          getSignatureTag
+        );
       })
       .join("<hr/>");
 
@@ -133,6 +123,38 @@ export function getConsentEmailParams(
     attachments: signatures,
     consentCount: visitPII.consents.length
   };
+}
+
+export function formatConsent(
+  consent: ConsentInfo,
+  patientName: string,
+  index: number,
+  includeSignatures: boolean,
+  getSignatureTag: (string, number) => string = getInlineSignatureTag
+) {
+  if (includeSignatures) {
+    return (
+      toHTML(consent.terms) +
+      getSignatureTag(consent.signature, index) +
+      `<p>${consent.name}, ${consent.signerType}</p>` +
+      (consent.signerType === ConsentInfoSignerType.Representative
+        ? `<p>Signed on behalf of ${patientName}.</p><p>Relationship of representative to participant: ${
+            consent.relation
+          }</p>`
+        : "") +
+      `<p>Date: ${consent.date}</p>`
+    );
+  } else {
+    return (
+      `<p>Accepted by ${consent.signerType} ${consent.name} on ${
+        consent.date
+      }:</p>` + toHTML(consent.terms)
+    );
+  }
+}
+
+function getInlineSignatureTag(signature, index) {
+  return `<img src="data:image/png;base64,${signature}"/>`;
 }
 
 function getPatientEmailAddresses(patient: PatientInfo) {

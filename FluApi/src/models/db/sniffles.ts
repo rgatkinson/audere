@@ -167,7 +167,7 @@ export interface VisitJobRecordAttributes {
 
 export type VisitJobResult = {
   error?: boolean;
-  result: any;
+  result?: any;
 };
 
 export function defineVisitJobRecord(

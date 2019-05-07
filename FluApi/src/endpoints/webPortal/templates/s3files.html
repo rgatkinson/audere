@@ -1,0 +1,38 @@
+<!--
+Copyright (c) 2019 by Audere
+
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file distributed with this file.
+-->
+
+<html>
+  <head>
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{static}}/css/metrics.css"/>
+    <link rel="icon" type="image/x-icon" href="{{static}}/favicon-32x32.png" />
+  </head>
+  <body>
+    <h1>{{title}}</h1>
+    <p><a href="{{archiveUrl}}">Download all</a></p>
+    <p>
+      {{#if nextUrl}}
+        <a href="{{nextUrl}}">Next ›</a>
+      {{else}}
+        <a>Next ›</a>
+      {{/if}}
+    </p>
+    <ul>
+      {{#each files}}
+        <li><a href="{{url}}">{{label}}</a></li>
+      {{/each}}
+    </ul>
+    <p>
+      {{#if nextUrl}}
+        <a href="{{nextUrl}}">Next ›</a>
+      {{else}}
+        <a>Next ›</a>
+      {{/if}}
+    </p>
+  </body>
+</html>

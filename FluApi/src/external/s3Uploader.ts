@@ -68,4 +68,13 @@ export class S3Uploader {
     const key = `${this.env}/outgoing/received-kits/${fileName}`;
     await this.writeObject(key, contents);
   }
+
+  public async writeHipaaForm(
+    group: string,
+    fileName: string,
+    contents: string
+  ): Promise<void> {
+    const key = `${this.env}/shared/hipaa-forms/${group}/${fileName}`;
+    await this.writeObject(key, contents);
+  }
 }

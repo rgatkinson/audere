@@ -10,7 +10,7 @@ import {
 } from "../models/db/sniffles";
 import logger from "../util/logger";
 
-type CombinedVisit = {
+export type CombinedVisit = {
   nonPii: VisitNonPIIInstance;
   pii: VisitPIIInstance;
 };
@@ -63,15 +63,27 @@ export class SnifflesVisitJobs {
           });
           const visitPiis = await this.snifflesModels.visitPii.findAll({
             where: {
-              id: visitNonPiis.map(visitNonPii => visitNonPii.id)
+              csruid: visitNonPiis.map(visitNonPii => visitNonPii.csruid)
             }
           });
-          const combinedVisits = visitNonPiis.map(visitNonPii => ({
-            nonPii: visitNonPii,
-            pii: visitPiis.find(
-              visitPii => visitPii.csruid === visitNonPii.csruid
-            )
-          }));
+          const combinedVisits = visitNonPiis
+            .map(visitNonPii => ({
+              nonPii: visitNonPii,
+              pii: visitPiis.find(
+                visitPii => visitPii.csruid === visitNonPii.csruid
+              )
+            }))
+            .filter(combinedVisit => {
+              if (!combinedVisit.pii) {
+                console.error(
+                  `Not running ${jobName} on visit ${
+                    combinedVisit.nonPii.id
+                  } because pii is mising`
+                );
+                return false;
+              }
+              return true;
+            });
           const jobResults = await job.processVisits(combinedVisits);
           const jobRecords = Array.from(jobResults.entries())
             .filter(([visitId, jobResult]) => !jobResult.error)

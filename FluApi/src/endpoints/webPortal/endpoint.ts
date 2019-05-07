@@ -27,6 +27,7 @@ import {
   getFeverFirebase
 } from "./metrics";
 import logger from "../../util/logger";
+import { S3DirectoryServer } from "./s3server";
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
   session.Store
@@ -68,7 +69,7 @@ export async function portalApp(config: PortalConfig) {
   app.use(auth.initialize());
   app.use(auth.session());
 
-  addHandlers(app, auth);
+  addHandlers(app, auth, authManager, config);
 
   addErrorHandler(app);
   useOuch(app);
@@ -105,7 +106,12 @@ async function addSession(
   return app;
 }
 
-function addHandlers(app: Express, auth: passport.Authenticator): Express {
+function addHandlers(
+  app: Express,
+  auth: passport.Authenticator,
+  authManager: AuthManager,
+  config: PortalConfig
+): Express {
   app.get("/login", render("login.html", loginContext));
   app.post("/login", wrap(login));
 
@@ -113,6 +119,23 @@ function addHandlers(app: Express, auth: passport.Authenticator): Express {
   app.get("/index", render("index.html", userContext));
 
   addMetricsHandlers(app);
+
+  const s3DirectoryServer = new S3DirectoryServer(
+    config.sql,
+    `${process.env.NODE_ENV.toLowerCase()}/shared/hipaa-forms/seattle-childrens/`,
+    () => ({
+      static: Array.isArray(app.mountpath) ? app.mountpath[0] : app.mountpath,
+      title: "Seattle Children's Flu Study Consent and HIPAA Forms"
+    })
+  );
+  app.get(
+    "/seattleChildrensForms",
+    authorizationMiddleware(
+      authManager,
+      Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS
+    ),
+    wrap(s3DirectoryServer.performRequest)
+  );
 
   return app;
 
