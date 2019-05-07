@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Text as SystemText,
   TextStyle,
+  Image,
 } from "react-native";
 import { Svg } from "expo";
 import { textActions } from "../../resources/TextConfig";
@@ -167,7 +168,28 @@ export default class Text extends React.Component<Props> {
     }
 
     if (Platform.OS === "android") {
-      return character;
+      let uri = "";
+
+      switch (character) {
+        case "①":
+          uri = "one";
+          break;
+        case "②":
+          uri = "two";
+          break;
+        case "③":
+          uri = "three";
+          break;
+        default:
+          break;
+      }
+
+      return (
+        <Image
+          source={{ uri }}
+          style={{ height: REGULAR_TEXT, width: REGULAR_TEXT }}
+        />
+      );
     }
 
     return (
