@@ -11,6 +11,7 @@ import { Constants } from "expo";
 interface RemoteConfig {
   barcodeSupportCodes: string[];
   blockKitOrders: boolean;
+  rdtReader: boolean;
   showVideos: boolean;
   validateBarcodes: boolean;
   validateSupportCodes: boolean;
@@ -30,6 +31,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   // Forbidden issues).
   barcodeSupportCodes: [],
   blockKitOrders: !!Constants.platform.ios,
+  rdtReader: false,
   showVideos: false,
   validateBarcodes: false,
   validateSupportCodes: true,
@@ -39,6 +41,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {
   blockKitOrders: false,
+  rdtReader: true,
   showVideos: false,
 };
 

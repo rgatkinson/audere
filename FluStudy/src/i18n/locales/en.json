@@ -336,10 +336,7 @@
   },
   "scanInstructionsScreen": {
     "scanQrCode": "Scan the barcode",
-    "description": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your {{device}}'s camera.",
-    "okScan": "Ok! Let's Scan",
-    "tips": "**Tips:**\n\nHold the camera so the barcode is in the middle of the camera.\n\nIf it's too dark, please adjust your lighting.",
-    "inputManually": "Enter barcode manually"
+    "description": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
   },
   "barcode": {
     "yourCode": "**Your code**: KIT {{barcode}}",
@@ -473,6 +470,21 @@
   "testStripSurveyScreen": {
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
+  },
+  "RDTInstructions": {
+    "title": "Take a picture of the strip",
+    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, we'd like you to take a picture of the test strip. **The app will access your phone's camera and will automatically take the picture for you.**"
+  },
+  "RDTReader": {
+    "title": "RDT READER",
+    "stripHere": "Your strip here",
+    "description": "Tap the round button to take a photo",
+    "loading": "Loading..."
+  },
+  "CameraSettings": {
+    "title": "Update your settings",
+    "desc": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
+    "descAndroid": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
   },
   "pictureInstructionsScreen": {
     "title": "Take a photo of the strip",

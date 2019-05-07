@@ -100,7 +100,6 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
         <Screen
           barcode={config.barcode}
           buttonLabel={config.buttonLabel && t("buttonLabel")}
-          canProceed={true}
           centerDesc={config.centerDesc}
           desc={t("desc", { email })}
           disclaimer={config.disclaimer && t("disclaimer")}

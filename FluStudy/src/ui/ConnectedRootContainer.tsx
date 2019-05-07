@@ -25,6 +25,7 @@ import {
   setConnectivity,
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
+import { Camera, Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
 import {
   tracker,
@@ -297,6 +298,15 @@ class ConnectedRootContainer extends React.Component<Props> {
             this.navigator.current &&
             this.navigator.current.dispatch(
               StackActions.replace({ routeName: "What" })
+            );
+        }
+      } else if (this.props.activeRouteName === "CameraSettings") {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        if (status === "granted") {
+          this.navigator &&
+            this.navigator.current &&
+            this.navigator.current.dispatch(
+              StackActions.replace({ routeName: "RDTReader" })
             );
         }
       }

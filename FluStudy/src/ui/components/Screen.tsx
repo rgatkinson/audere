@@ -44,7 +44,7 @@ import { SurveyQuestionData } from "../../resources/ScreenConfig";
 interface Props {
   barcode?: boolean;
   buttonLabel?: string;
-  canProceed: boolean;
+  cantProceed?: boolean;
   centerDesc?: boolean;
   children?: any;
   questions?: SurveyQuestionData[];
@@ -321,7 +321,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
   render() {
     const {
       desc,
-      canProceed,
+      cantProceed,
       centerDesc,
       barcode,
       buttonLabel,
@@ -409,7 +409,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
               )}
               {!skipButton && (
                 <Button
-                  enabled={canProceed}
+                  enabled={!cantProceed}
                   label={
                     buttonLabel != null
                       ? buttonLabel

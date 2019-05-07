@@ -111,7 +111,6 @@ export const generateMenuScreen = (config: MenuConfig) => {
       const { t } = this.props;
       return (
         <Screen
-          canProceed={true}
           desc={t("description", {
             device: t("common:device:" + DEVICE_INFO.idiomText),
           })}

@@ -75,7 +75,6 @@ class WhyScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
         desc={t("desc")}
         splashImage="whatdoidonext"
         navigation={this.props.navigation}
@@ -110,7 +109,7 @@ class AgeScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={!!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
+        cantProceed={!this.props.getAnswer("selectedButtonKey", AgeConfig.id)}
         hideQuestionText={true}
         navigation={this.props.navigation}
         skipButton={false}
@@ -179,7 +178,7 @@ class SymptomsScreen extends React.PureComponent<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={this._hasSymptoms()}
+        cantProceed={!this._hasSymptoms()}
         centerDesc={true}
         desc={t("surveyDescription:" + SymptomsConfig.description)}
         hideQuestionText={true}
@@ -296,7 +295,6 @@ class ConsentScreen extends React.PureComponent<
       >
         <Screen
           buttonLabel={t("accept")}
-          canProceed={true}
           centerDesc={true}
           desc={t("description")}
           footer={
@@ -390,7 +388,6 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         buttonLabel={t("back")}
-        canProceed={true}
         image="thanksforyourinterest"
         navigation={this.props.navigation}
         title={t("ineligible")}
@@ -674,7 +671,6 @@ class AddressInputScreen extends React.Component<
               ? undefined
               : t("common:button:submit")
           }
-          canProceed={true}
           desc={
             !!workflow.skippedScreeningAt
               ? t("surveyDescription:addressDesc")
@@ -791,7 +787,6 @@ class AddressConfirmScreen extends React.Component<
         enabled
       >
         <Screen
-          canProceed={true}
           centerDesc={true}
           desc={t("description")}
           navigation={this.props.navigation}

@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -20,6 +21,7 @@ import { BarCodeScanner, Camera, Permissions } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { SampleInfo, WorkflowInfo } from "audere-lib/feverProtocol";
+import { getRemoteConfig } from "../../util/remoteConfig";
 import {
   Action,
   Option,
@@ -72,7 +74,6 @@ import {
   SECONDARY_COLOR,
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
-import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 
 const SECOND_MS = 1000;
@@ -125,7 +126,6 @@ class WelcomeBackScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
         desc={t("description")}
         hideBackButton={!this.props.workflow.skippedScreeningAt}
         image="howtestworks_1"
@@ -166,19 +166,12 @@ class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        buttonLabel={t("okScan")}
-        canProceed={true}
-        desc={t("description", {
-          device: t("common:device:" + DEVICE_INFO.idiomText),
-        })}
-        footer={<Links center={true} links={["inputManually"]} />}
+        desc={t("description")}
         image="barcodeonbox"
         navigation={this.props.navigation}
         title={t("scanQrCode")}
         onNext={this._onNext}
-      >
-        <Text content={t("tips")} style={{ marginBottom: GUTTER / 2 }} />
-      </Screen>
+      />
     );
   }
 }
@@ -459,7 +452,6 @@ class ManualEntryScreen extends React.Component<
       >
         <Screen
           buttonLabel={t("common:button:continue")}
-          canProceed={true}
           desc={t("desc")}
           navigation={this.props.navigation}
           title={t("enterKit")}
@@ -575,7 +567,6 @@ class BarcodeContactSupportScreen extends React.Component<
     const width = Dimensions.get("window").width;
     return (
       <Screen
-        canProceed={false}
         desc={t("description")}
         footer={<Links center={true} links={["supportCode"]} />}
         hideBackButton={true}
@@ -652,7 +643,6 @@ class FirstTimerScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={this.props.done()}
         desc={this.props.getRemainingTime() > 30 * 1000 ? t("tip") : t("tip2")}
         footer={
           <View
@@ -733,7 +723,6 @@ class WhenSymptomsScreen extends React.Component<
     const { getAnswer, navigation, t, updateAnswer } = this.props;
     return (
       <Screen
-        canProceed={true}
         centerDesc={true}
         questions={this._createQuestions()}
         desc={t("description")}
@@ -774,7 +763,6 @@ class GeneralExposureScreen extends React.Component<
 
     return (
       <Screen
-        canProceed={true}
         centerDesc={true}
         questions={GeneralExposureScreenConfig}
         desc={t("description")}
@@ -821,7 +809,6 @@ class ThankYouSurveyScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={this.props.done()}
         desc={t("desc")}
         footer={
           this.props.done() ? (
@@ -865,13 +852,7 @@ export const ThankYouSurvey = timerWithConfigProps({
 class TestStripSurveyScreen extends React.Component<
   Props & WithNamespaces & ReduxWriterProps
 > {
-  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
-    super(props);
-    this._onNext = this._onNext.bind(this);
-  }
-
-  async _onNext() {
-    const { status } = await Permissions.getAsync(Permissions.CAMERA);
+  _onNext = () => {
     const getAnswer = this.props.getAnswer;
     const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
 
@@ -897,18 +878,18 @@ class TestStripSurveyScreen extends React.Component<
         break;
     }
 
-    if (status === "denied") {
-      this.props.navigation.push("CleanFirstTest");
+    const rdtReader = getRemoteConfig("rdtReader");
+    if (rdtReader) {
+      this.props.navigation.push("RDTInstructions");
     } else {
       this.props.navigation.push("PictureInstructions");
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
         desc={t("desc")}
         image="lookatteststrip"
         navigation={this.props.navigation}
@@ -923,6 +904,55 @@ class TestStripSurveyScreen extends React.Component<
 }
 export const TestStripSurvey = reduxWriter(
   withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
+);
+
+class RDTInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._onNext = this._onNext.bind(this);
+  }
+
+  async _onNext() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.props.navigation.push("RDTReader");
+    } else {
+      this.props.navigation.push("CameraSettings");
+    }
+  }
+
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        desc={Platform.OS === "android" ? t("descAndroid") : t("desc")}
+        image="takepictureteststrip"
+        navigation={this.props.navigation}
+        title={t("title")}
+        onNext={this._onNext}
+      />
+    );
+  }
+}
+export const RDTInstructions = withNamespaces("RDTInstructions")(
+  RDTInstructionsScreen
+);
+
+class CameraSettingsScreen extends React.Component<Props & WithNamespaces> {
+  render() {
+    const { t } = this.props;
+    return (
+      <Screen
+        desc={t("desc")}
+        navigation={this.props.navigation}
+        skipButton={true}
+        title={t("title")}
+      />
+    );
+  }
+}
+export const CameraSettings = withNamespaces("CameraSettings")(
+  CameraSettingsScreen
 );
 
 class PictureInstructionsScreen extends React.Component<
@@ -951,7 +981,6 @@ class PictureInstructionsScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
         desc={t("desc")}
         footer={<Links center={true} links={["skipTestStripPhoto"]} />}
         image="takepictureteststrip"
@@ -1078,6 +1107,11 @@ class TestStripCameraScreen extends React.Component<
   }
 }
 
+export const TestStripCamera = withNamespaces("testStripCameraScreen")(
+  TestStripCameraScreen
+);
+export const RDTReader = withNamespaces("RDTReader")(TestStripCameraScreen);
+
 const imageStyles = StyleSheet.create({
   image: {
     aspectRatio: ASPECT_RATIO,
@@ -1157,10 +1191,6 @@ const cameraStyles = StyleSheet.create({
   },
 });
 
-export const TestStripCamera = withNamespaces("testStripCameraScreen")(
-  TestStripCameraScreen
-);
-
 interface TestStripProps {
   testStripImg: SampleInfo;
 }
@@ -1179,7 +1209,6 @@ class TestStripConfirmationScreen extends React.Component<
     const screenHeight = Dimensions.get("window").height;
     return (
       <Screen
-        canProceed={true}
         desc={t("desc")}
         navigation={this.props.navigation}
         title={t("title")}
@@ -1216,7 +1245,6 @@ class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
     return (
       <Screen
         buttonLabel={t("title")}
-        canProceed={true}
         desc={t("description")}
         image="schedulepickup"
         navigation={this.props.navigation}
@@ -1263,7 +1291,6 @@ class EmailOptInScreen extends React.Component<
     const { t } = this.props;
     return (
       <Screen
-        canProceed={true}
         desc={t("description")}
         hideQuestionText={true}
         image="optinmessages"
