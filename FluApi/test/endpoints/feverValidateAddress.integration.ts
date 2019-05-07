@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import { anything, mock, instance, when } from "ts-mockito";
 import { AddressInfo, AddressInfoUse } from "audere-lib/feverProtocol";
 import { FeverValidateAddress } from "../../src/endpoints/feverValidateAddress";
