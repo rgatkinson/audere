@@ -10,21 +10,25 @@ import {
   stringColumn,
   SplitSql,
   primaryKey,
-  dateColumn
+  dateColumn,
+  foreignIdKey
 } from "../../util/sql";
 
 export const SESSION_TABLE_NAME = "site_sessions";
 
 export function defineSiteUserModels(sql: SplitSql): SiteUserModels {
+  const userModel = defineUser(sql);
   return {
-    user: defineUser(sql),
-    session: defineSession(sql)
+    user: userModel,
+    session: defineSession(sql),
+    permissions: definePermissions(sql, userModel)
   };
 }
 
 export interface SiteUserModels {
   user: Model<UserAttributes>;
   session: Model<SessionAttributes>;
+  permissions: Model<UserPermissionAttributes>;
 }
 
 export function defineUser(sql: SplitSql): Model<UserAttributes> {
@@ -54,4 +58,23 @@ export interface SessionAttributes {
   sid: string;
   expires: string;
   data: string;
+}
+
+export function definePermissions(
+  sql: SplitSql,
+  userModel: Model<UserAttributes>
+): Model<UserPermissionAttributes> {
+  return defineModel<UserPermissionAttributes>(
+    sql.pii,
+    "site_user_permissions",
+    {
+      userId: foreignIdKey(stringColumn(), userModel),
+      permission: stringColumn()
+    }
+  );
+}
+export interface UserPermissionAttributes {
+  id?: string;
+  userId: string;
+  permission: string;
 }

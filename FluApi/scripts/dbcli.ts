@@ -292,6 +292,16 @@ yargs
     builder: yargs => yargs.string("installationId").string("key"),
     handler: command(cmdClearDeviceSetting)
   })
+  .command({
+    command: "grant-permission <userid> <permission>",
+    builder: yargs => yargs.string("userid").string("permission"),
+    handler: command(cmdGrantPermission)
+  })
+  .command({
+    command: "revoke-permission <userid> <permission>",
+    builder: yargs => yargs.string("userid").string("permission"),
+    handler: command(cmdRevokePermission)
+  })
   .demandCommand().argv;
 
 function command(cmd: any) {
@@ -646,6 +656,19 @@ async function cmdShowPath(argv: ShowPathArgs): Promise<void> {
     default:
       throw failRelease(argv.release);
   }
+}
+
+interface PermissionArgs {
+  userid: string;
+  permission: string;
+}
+
+async function cmdGrantPermission(argv: PermissionArgs) {
+  await auth.grantPermission(argv.userid, argv.permission);
+}
+
+async function cmdRevokePermission(argv: PermissionArgs) {
+  await auth.revokePermission(argv.userid, argv.permission);
 }
 
 interface DocumentEventsArgs {

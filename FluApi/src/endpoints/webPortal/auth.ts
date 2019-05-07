@@ -22,7 +22,7 @@ export class AuthManager {
     const auth = new Passport();
     auth.use(
       new LocalStrategy(async (userid, password, done) => {
-        logger.debug(`passport.local: looking up '${userid}'`);
+        logger.info(`passport.local: looking up '${userid}'`);
         try {
           const user = await this.models.user.findOne({ where: { userid } });
           if (!user) {
@@ -97,6 +97,48 @@ export class AuthManager {
     await user.destroy();
   }
 
+  async grantPermission(userid: string, permission: string): Promise<void> {
+    const user = await this.findUser(userid);
+    await this.models.permissions.create({
+      userId: user.id,
+      permission
+    });
+  }
+
+  async revokePermission(userid: string, permission: string): Promise<void> {
+    const user = await this.findUser(userid);
+    const permissionsRevoked = await this.models.permissions.destroy({
+      where: {
+        userId: user.id,
+        permission
+      }
+    });
+    if(permissionsRevoked === 0) {
+      throw new Error("Could not find a permission to revoke");
+    }
+  }
+
+  async authorize(userid: string, permission: string): Promise<boolean> {
+    try {
+      logger.info(
+        `[AuthManager#authorize] authorizing ${userid} to ${permission} @audit`
+      );
+      const user = await this.findUser(userid);
+      return !!(await this.models.permissions.findOne({
+        where: {
+          userId: user.id,
+          permission
+        }
+      }));
+    } catch (e) {
+      logger.error(
+        `[AuthManager#authorize] Error authorizing ${userid} to ${permission}`
+      );
+      logger.error(e.toString());
+      return false;
+    }
+  }
+
   private async findUser(userid: string): Promise<Inst<UserAttributes>> {
     const user = await this.models.user.findOne({ where: { userid } });
     if (user == null) {
@@ -123,4 +165,29 @@ function hash(...args: (string | Buffer)[]): string {
   const hash = crypto.createHash("sha256");
   args.forEach(arg => hash.update(arg));
   return hash.digest("hex").toString();
+}
+
+export const Permissions = {
+  SEATTLE_CHILDRENS_HIPAA_ACCESS: "seattleChildrensHipaaAccess"
+};
+
+export function authorizationMiddleware(
+  authManager: AuthManager,
+  requiredPermission: string
+) {
+  return async (req, res, next) => {
+    if (!req.user) {
+      throw new Error("Attempted to authorize an unauthenticated user");
+    }
+    const authorized = await authManager.authorize(
+      req.user.userid,
+      requiredPermission
+    );
+    if (!authorized) {
+      res.status(401);
+      res.send("Not authorized");
+      return;
+    }
+    next();
+  };
 }

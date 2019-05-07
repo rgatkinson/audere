@@ -10,7 +10,7 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
-import { AuthManager } from "./auth";
+import { AuthManager, Permissions, authorizationMiddleware } from "./auth";
 import { useOuch, createApp, render, wrap, requestId } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
@@ -63,7 +63,8 @@ export async function portalApp(config: PortalConfig) {
 
   app.use(csurf({ cookie: false }));
 
-  const auth = new AuthManager(config.sql).makePassport();
+  const authManager = new AuthManager(config.sql);
+  const auth = authManager.makePassport();
   app.use(auth.initialize());
   app.use(auth.session());
 
