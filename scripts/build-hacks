@@ -6,9 +6,9 @@
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-NOTIF_FILE="$REPO_ROOT_DIR/FluStudy_au/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
-FIREBASE_FILE="$REPO_ROOT_DIR/FluStudy_au/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
-DEVICEINFO_FILE="$REPO_ROOT_DIR/FluStudy_au/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
+NOTIF_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
+FIREBASE_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
+DEVICEINFO_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
 
 if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE";
 then
@@ -36,8 +36,8 @@ perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
 # `pod install` surprisingly does not do this -- move this particular .h to the
 # right place.  Not sure when they will... but in the meantime, we move it
 # manually.  [philipsu]
-cp "$REPO_ROOT_DIR/FluStudy_au/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
-  "$REPO_ROOT_DIR/FluStudy_au/ios/Pods/Headers/Public/Firebase/"
+cp "$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
+  "$REPO_ROOT_DIR/$1/ios/Pods/Headers/Public/Firebase/"
 
 
 echo "Updating DeviceInfo build search paths"
@@ -49,7 +49,7 @@ FILEBAK="$DEVICEINFO_FILE.bak"
 perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
-EXBUILDCONSTANTS="$REPO_ROOT_DIR/FluStudy_au/ios/fluathome/Supporting/EXBuildConstants.plist"
+EXBUILDCONSTANTS="$REPO_ROOT_DIR/$1/ios/fluathome/Supporting/EXBuildConstants.plist"
 if [ ! -f "$EXBUILDCONSTANTS" ]; then
   echo "Creating EXBuildConstants.plist"
   cat >"$EXBUILDCONSTANTS" <<EOT

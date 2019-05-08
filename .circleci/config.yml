@@ -107,8 +107,8 @@ jobs:
       - run:
           name: Generate Build Info
           command: |
-            ./scripts/generate-build-info
-            ./scripts/build-hacks
+            ./scripts/generate-build-info FluStudy_au
+            ./scripts/build-hacks FluStudy_au
       - run:
           name: FluTrack Tests
           command: |
