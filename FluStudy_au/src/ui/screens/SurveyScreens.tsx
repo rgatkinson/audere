@@ -925,7 +925,7 @@ class RDTInstructionsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        desc={Platform.OS === "android" ? t("descAndroid") : t("desc")}
+        desc={t("desc")}
         image="takepictureteststrip"
         navigation={this.props.navigation}
         title={t("title")}
@@ -943,7 +943,8 @@ class CameraSettingsScreen extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <Screen
-        desc={t("desc")}
+        desc={Platform.OS === "android" ? t("descAndroid") : t("desc")}
+        image="updatesettings"
         navigation={this.props.navigation}
         skipButton={true}
         title={t("title")}

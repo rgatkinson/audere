@@ -22,6 +22,9 @@
 		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
 		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
 		EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA054781220D289A00AC77FF /* libRCTPushNotification.a */; };
+		EA1DC5BC22833B9F002DA2A9 /* updatesettings.png in Resources */ = {isa = PBXBuildFile; fileRef = EA1DC5B222833B9E002DA2A9 /* updatesettings.png */; };
+		EA1DC5BD22833B9F002DA2A9 /* updatesettings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */; };
+		EA1DC5BE22833B9F002DA2A9 /* updatesettings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA1DC5BB22833B9F002DA2A9 /* updatesettings@2x.png */; };
 		EAEBD27022691AB7009815C6 /* sealupteststrip@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAEBD1AC22691A98009815C6 /* sealupteststrip@2x.png */; };
 		EAEBD27122691AB7009815C6 /* begin2ndtest.png in Resources */ = {isa = PBXBuildFile; fileRef = EAEBD1AD22691A99009815C6 /* begin2ndtest.png */; };
 		EAEBD27222691AB7009815C6 /* nicejob@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAEBD1AE22691A99009815C6 /* nicejob@2x.png */; };
@@ -303,6 +306,9 @@
 		C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fluathome.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA054779220D27CD00AC77FF /* fluathome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fluathome.entitlements; sourceTree = "<group>"; };
 		EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
+		EA1DC5B222833B9E002DA2A9 /* updatesettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = updatesettings.png; path = ../../../assets/images/updatesettings.png; sourceTree = "<group>"; };
+		EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "updatesettings@3x.png"; path = "../../../assets/images/updatesettings@3x.png"; sourceTree = "<group>"; };
+		EA1DC5BB22833B9F002DA2A9 /* updatesettings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "updatesettings@2x.png"; path = "../../../assets/images/updatesettings@2x.png"; sourceTree = "<group>"; };
 		EAEBD1AC22691A98009815C6 /* sealupteststrip@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "sealupteststrip@2x.png"; path = "../../../assets/images/sealupteststrip@2x.png"; sourceTree = "<group>"; };
 		EAEBD1AD22691A99009815C6 /* begin2ndtest.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = begin2ndtest.png; path = ../../../assets/images/begin2ndtest.png; sourceTree = "<group>"; };
 		EAEBD1AE22691A99009815C6 /* nicejob@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "nicejob@2x.png"; path = "../../../assets/images/nicejob@2x.png"; sourceTree = "<group>"; };
@@ -579,6 +585,9 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				EA1DC5B222833B9E002DA2A9 /* updatesettings.png */,
+				EA1DC5BB22833B9F002DA2A9 /* updatesettings@2x.png */,
+				EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */,
 				EAEBD21A22691AA8009815C6 /* app-icon.png */,
 				EAEBD1E522691A9F009815C6 /* barcode.png */,
 				EAEBD1BE22691A9A009815C6 /* barcode@2x.png */,
@@ -1017,6 +1026,7 @@
 				EAEBD2CA22691AB7009815C6 /* whatsnext@2x.png in Resources */,
 				EAEBD2A422691AB7009815C6 /* finalthanks.png in Resources */,
 				EAEBD2EC22691AB7009815C6 /* openteststrip_1@3x.png in Resources */,
+				EA1DC5BE22833B9F002DA2A9 /* updatesettings@2x.png in Resources */,
 				EAEBD2DE22691AB7009815C6 /* app-icon.png in Resources */,
 				EAEBD32422691AB7009815C6 /* contactsupport@2x.png in Resources */,
 				EAEBD30622691AB7009815C6 /* oneminutetimer.png in Resources */,
@@ -1124,6 +1134,7 @@
 				EAEBD2B022691AB7009815C6 /* collectsamplethumb.png in Resources */,
 				EAEBD2DC22691AB7009815C6 /* openteststrip.png in Resources */,
 				EAEBD33322691AB7009815C6 /* schedulepickup@3x.png in Resources */,
+				EA1DC5BC22833B9F002DA2A9 /* updatesettings.png in Resources */,
 				EAEBD2D322691AB7009815C6 /* barcodeonbox.png in Resources */,
 				EAEBD2E022691AB7009815C6 /* removeswabfromtubethumb.png in Resources */,
 				EAEBD2C522691AB7009815C6 /* putteststripbag2@3x.png in Resources */,
@@ -1169,6 +1180,7 @@
 				F09B107F222880D0002970AA /* GoogleService-Info.plist in Resources */,
 				EAEBD2D122691AB7009815C6 /* begin2ndtest@2x.png in Resources */,
 				EAEBD2C622691AB7009815C6 /* removeswabfromtube@3x.png in Resources */,
+				EA1DC5BD22833B9F002DA2A9 /* updatesettings@3x.png in Resources */,
 				EAEBD2B122691AB7009815C6 /* openteststrip@3x.png in Resources */,
 				EAEBD27622691AB7009815C6 /* openteststrip_1.png in Resources */,
 				EAEBD2C922691AB7009815C6 /* openteststrip@2x.png in Resources */,
