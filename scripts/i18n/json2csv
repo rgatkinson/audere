@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-USAGE="Usage: json2csv [FluTrack|FluStudy]" 
+USAGE="Usage: json2csv [FluTrack|FluStudy_au]" 
 TODAY="$(date +%Y%m%d)"
 
 case "$#" in 
@@ -18,7 +18,7 @@ REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 case "$1" in 
   "FluTrack") APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack";;
-  "FluStudy") APP_DIR="$REPO_ROOT_DIR/FluStudy";;
+  "FluStudy_au") APP_DIR="$REPO_ROOT_DIR/FluStudy_au";;
   *) echo 1>&2 "$USAGE"; exit 1;;
 esac
 

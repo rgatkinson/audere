@@ -81,7 +81,7 @@ fi
 
 if [[ "$INCREMENT" = true ]]; then 
   REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-  PLIST_FILE="$REPO_ROOT_DIR/FluStudy/ios/fluathome/Supporting/Info.plist"
+  PLIST_FILE="$REPO_ROOT_DIR/FluStudy_au/ios/fluathome/Supporting/Info.plist"
   BUILD_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$PLIST_FILE")"
   VERSION_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$PLIST_FILE")"
   while true; do 
@@ -89,7 +89,7 @@ if [[ "$INCREMENT" = true ]]; then
     case "$input" in 
       Y) 
         read -p "Will increment build number to $((BUILD_NUM+1)) and commit to $BRANCH. Press Enter to continue or Ctrl-C to abort."
-        cd "$REPO_ROOT_DIR/FluStudy/ios"
+        cd "$REPO_ROOT_DIR/FluStudy_au/ios"
         fastlane increment_build_number_and_commit versionBump:false
         break;;
       n) 
@@ -99,7 +99,7 @@ if [[ "$INCREMENT" = true ]]; then
         PATCH="${SEMVER[2]}"
         read -p "Will increment version to $MAJOR.$MINOR.$((PATCH+1)), build number to $((BUILD_NUM+1)) and commit \
 to $BRANCH. Press Enter to continue or Ctrl-C to abort."
-        cd "$REPO_ROOT_DIR/FluStudy/ios"
+        cd "$REPO_ROOT_DIR/FluStudy_au/ios"
         fastlane increment_build_number_and_commit versionBump:true
         break;;
       *) 

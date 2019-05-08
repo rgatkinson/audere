@@ -57,7 +57,7 @@ setenv: &setenv
     fi
     case "$PRODUCT" in
       sniffles) cd learn/ReactNativeTS/FluTrack;;
-      fever) cd FluStudy;;
+      fever) cd FluStudy_au;;
       *) echo 1>&2 "Unrecognized product '$PRODUCT'"; false;;
     esac
     echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
@@ -79,7 +79,7 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
-          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
@@ -96,7 +96,7 @@ jobs:
       - run:
           name: flu@home Yarn Install
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn install
             ls node_modules
             if [[ -e package-lock.json ]]; then
@@ -118,7 +118,7 @@ jobs:
       - run:
           name: flu@home Tests
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn typecheck
             yarn test
       - run:
@@ -187,9 +187,9 @@ jobs:
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
-          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
-            - FluStudy/node_modules
+            - FluStudy_au/node_modules
       - save_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
@@ -210,7 +210,7 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
       - restore_cache:
-          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - run:
@@ -241,7 +241,7 @@ jobs:
       - run:
           name: flu@home Yarn Install
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn install
             ls node_modules
             if [[ -e package-lock.json ]]; then
@@ -257,7 +257,7 @@ jobs:
       - run:
           name: Snyk flu@home Scan
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn list --json > ~/current_packages
             git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
             git show $(git merge-base HEAD origin/master):./package.json > package.json
@@ -298,9 +298,9 @@ jobs:
           paths:
             - learn/ReactNativeTS/FluTrack/node_modules
       - save_cache:
-          key: fever-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: fever-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
-            - FluStudy/node_modules
+            - FluStudy_au/node_modules
       - save_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
@@ -405,31 +405,31 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: feverprod-ios-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - run:
           name: flu@home Yarn Install
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn install
       - save_cache:
-          key: feverprod-ios-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: feverprod-ios-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
-            - FluStudy/node_modules
+            - FluStudy_au/node_modules
       - run:
           name: Fetch CocoaPods Specs
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - restore_cache:
-          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
+          key: feverprod-pod-cache-{{ checksum "FluStudy_au/ios/Podfile.lock" }}
       - run:
           name: flu@home pod install
           command: |
-            cd FluStudy/ios
+            cd FluStudy_au/ios
             pod install
       - save_cache:
-          key: feverprod-pod-cache-{{ checksum "FluStudy/ios/Podfile.lock" }}
+          key: feverprod-pod-cache-{{ checksum "FluStudy_au/ios/Podfile.lock" }}
           paths:
-            - FluStudy/ios/Pods
+            - FluStudy_au/ios/Pods
       - run:
           name: Run setup scripts
           command: |
@@ -438,23 +438,23 @@ jobs:
       - run:
           name: flu@home Tests
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn test
       - run:
           name: Configure Bundler
           command: |
-            cd FluStudy/ios
+            cd FluStudy_au/ios
             export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")
             sudo gem install bundler
       - restore_cache:
-          key: 1-gems-{{ checksum "FluStudy/ios/Gemfile.lock" }}
+          key: 1-gems-{{ checksum "FluStudy_au/ios/Gemfile.lock" }}
       - run:
           name: Bundle install
           command: |
-            cd FluStudy/ios
+            cd FluStudy_au/ios
             bundle install --path vendor/bundle
       - save_cache:
-          key: 1-gems-{{ checksum "FluStudy/ios/Gemfile.lock" }}
+          key: 1-gems-{{ checksum "FluStudy_au/ios/Gemfile.lock" }}
           paths:
             - vendor/bundle
       - run: *setenv
@@ -463,13 +463,13 @@ jobs:
           command: |
             yarn global add expo-cli@2.16.1
             export PATH="$PATH:$(yarn global bin)" 
-            cd FluStudy
+            cd FluStudy_au
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish
       - run:
           name: Fastlane
           command: |
-            cd FluStudy/ios
+            cd FluStudy_au/ios
             bundle exec fastlane beta
 
   build_deploy_fever_android: &build_deploy_fever_android
@@ -487,41 +487,41 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: feverprod-android-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: feverprod-android-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - run:
           name: flu@home Yarn Install
           command: |
-            cd FluStudy
+            cd FluStudy_au
             yarn install
       - save_cache:
-          key: feverprod-android-node-cache-{{ checksum "FluStudy/package.json" }}
+          key: feverprod-android-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
-            - FluStudy/node_modules
+            - FluStudy_au/node_modules
       - run:
           name: Run setup scripts
           command: |
             ./scripts/generate-build-info
             ./scripts/build-hacks
       - restore_cache:
-          key: gradlejars-{{ checksum "FluStudy/android/build.gradle" }}-{{ checksum  "FluStudy/android/app/build.gradle" }}
+          key: gradlejars-{{ checksum "FluStudy_au/android/build.gradle" }}-{{ checksum  "FluStudy_au/android/app/build.gradle" }}
       - run:
           name: Download Android dependencies
           command: |
-            cd FluStudy/android
+            cd FluStudy_au/android
             ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: gradlejars-{{ checksum "FluStudy/android/build.gradle" }}-{{ checksum  "FluStudy/android/app/build.gradle" }}
+          key: gradlejars-{{ checksum "FluStudy_au/android/build.gradle" }}-{{ checksum  "FluStudy_au/android/app/build.gradle" }}
       - restore_cache:
-          key: 1-gems-android-{{ checksum "FluStudy/android/Gemfile.lock" }}
+          key: 1-gems-android-{{ checksum "FluStudy_au/android/Gemfile.lock" }}
       - run:
           name: Bundle install
           command: |
-            cd FluStudy/android
+            cd FluStudy_au/android
             bundle install --path vendor/bundle
       - save_cache:
-          key: 1-gems-android-{{ checksum "FluStudy/android/Gemfile.lock" }}
+          key: 1-gems-android-{{ checksum "FluStudy_au/android/Gemfile.lock" }}
           paths:
             - vendor/bundle
       - run: *setenv
@@ -530,20 +530,20 @@ jobs:
           command: |
             yarn global add expo-cli@2.16.1
             export PATH="$PATH:$(yarn global bin)"
-            cd FluStudy
+            cd FluStudy_au
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish
       - run:
           name: Prepare signing artifacts
           command: |
-            cd FluStudy/android
+            cd FluStudy_au/android
             echo "$FEVER_SIGNING_STORE_ENCRYPTED" | base64 --decode | tee keystore.jks app/keystore.jks >/dev/null
             echo "export FEVER_SIGNING_STORE_FILE=keystore.jks" >> $BASH_ENV
             echo "$GOOGLE_PLAY_KEY_JSON" > google_play_key.json
       - run:
           name: Fastlane
           command: |
-            cd FluStudy/android
+            cd FluStudy_au/android
             bundle exec fastlane internal
 
 workflows:

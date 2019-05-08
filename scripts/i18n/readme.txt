@@ -1,6 +1,6 @@
 To convert i18n string files from JSON to CSV:
 
-  ./json2csv [FluTrack|FluStudy] 
+  ./json2csv [FluTrack|FluStudy_au] 
 
   This will convert /src/i18n/locales/*.json into csv. You can then upload the CSV to Google Drive and open as Sheets. 
 

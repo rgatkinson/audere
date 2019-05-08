@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+  package="host.exp.exponent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <!-- We remove this only in release because RN needs it for debug -->
+  <uses-permission tools:node="remove"
+    android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+</manifest>

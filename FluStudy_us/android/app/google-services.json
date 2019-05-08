@@ -1,0 +1,53 @@
+{
+  "project_info": {
+    "project_number": "1026906003961",
+    "firebase_url": "https://flu-at-home-app.firebaseio.com",
+    "project_id": "flu-at-home-app",
+    "storage_bucket": "flu-at-home-app.appspot.com",
+    "name": "flu@home"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026906003961:android:dd3acba514db24dd",
+        "client_id": "android:host.exp.exponent",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "org.auderenow.fluathome",
+          "certificate_hash": ""
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1c11678YJicpKZk1AwWzhXeqzmR-hlwc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-76673608-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "configuration_version": "1",
+  "ARTIFACT_VERSION": "1"
+}

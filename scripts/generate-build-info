@@ -8,7 +8,7 @@ set -euo pipefail
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
-HOME_APP_DIR="$REPO_ROOT_DIR/FluStudy"
+HOME_APP_DIR="$REPO_ROOT_DIR/FluStudy_au"
 SERVER_DIR="$REPO_ROOT_DIR/FluApi"
 SERVER_SUBDIR="static"
 FILENAME="buildInfo.json"
