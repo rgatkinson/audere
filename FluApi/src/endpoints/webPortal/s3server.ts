@@ -41,7 +41,6 @@ export class S3DirectoryServer {
     const params: AWS.S3.ListObjectsV2Request = {
       Bucket: s3Config.bucket,
       Prefix: this.path,
-      MaxKeys: 50
     };
     if (req.query.startAfter) {
       params.StartAfter =
