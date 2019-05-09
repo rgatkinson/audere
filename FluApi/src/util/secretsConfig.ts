@@ -30,13 +30,11 @@ export class SecretConfig {
   private async envFile(key: string): Promise<string | null> {
     const envVar = process.env[key];
 
-    if (envVar != null) {
-      try {
-        return await fsPromise.readFile(envVar, { encoding: "utf8" });
-      } catch (err) {}
+    if (envVar == null) {
+      return null;
+    } else {
+      return await fsPromise.readFile(envVar, { encoding: "utf8" });
     }
-
-    return null;
   }
 
   private async getFromDb(key: string, createIfNotFound: boolean): Promise<string> {

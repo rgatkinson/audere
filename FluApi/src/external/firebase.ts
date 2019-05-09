@@ -4,10 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { promises as fsPromise } from "fs";
+import firebase from "firebase-admin";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
-import firebase from "firebase-admin";
+import logger from "../util/logger";
 
 type App = firebase.app.App;
 type Firestore = firebase.firestore.Firestore;
@@ -102,8 +103,10 @@ export class FirebaseReceiver {
 
         await t.update(docRef, update);
       });
+      logger.debug(`FirebaseReceiver.markAsRead '${id}'@'${hash}' succeeded`);
       return true;
     } catch (err) {
+      logger.debug(`FirebaseReceiver.markAsRead '${id}'@'${hash}' ${err.message}`);
       return false;
     }
   }
