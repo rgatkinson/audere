@@ -223,9 +223,9 @@
 		EAEBD33322691AB7009815C6 /* schedulepickup@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAEBD26F22691AB6009815C6 /* schedulepickup@3x.png */; };
 		EAFF191B2254121D0027CBE8 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFF19132254121D0027CBE8 /* UserNotifications.framework */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
+		F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
 		F08F62492230A8C8008CCF6A /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		F09B107F222880D0002970AA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F09B107C222880D0002970AA /* GoogleService-Info.plist */; };
 		F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F09B108922288224002970AA /* libRNFirebase.a */; };
 /* End PBXBuildFile section */
 
@@ -506,9 +506,9 @@
 		EAEBD26E22691AB6009815C6 /* contactsupport@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contactsupport@3x.png"; path = "../../../assets/images/contactsupport@3x.png"; sourceTree = "<group>"; };
 		EAEBD26F22691AB6009815C6 /* schedulepickup@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "schedulepickup@3x.png"; path = "../../../assets/images/schedulepickup@3x.png"; sourceTree = "<group>"; };
 		EAFF19132254121D0027CBE8 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
-		F09B107C222880D0002970AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F09B108422288224002970AA /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -572,7 +572,7 @@
 		B56386431DB9693800A0598C /* fluathome */ = {
 			isa = PBXGroup;
 			children = (
-				F09B107C222880D0002970AA /* GoogleService-Info.plist */,
+				F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */,
 				EA054779220D27CD00AC77FF /* fluathome.entitlements */,
 				B56386471DB9693800A0598C /* AppDelegate.h */,
 				B56386481DB9693800A0598C /* AppDelegate.m */,
@@ -1117,6 +1117,7 @@
 				EAEBD2C122691AB7009815C6 /* whythisstudy.png in Resources */,
 				EAEBD2E122691AB7009815C6 /* cleanupsecondtest@3x.png in Resources */,
 				EAEBD2B722691AB7009815C6 /* splash.png in Resources */,
+				F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */,
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,
 				EAEBD30F22691AB7009815C6 /* howtestworks_1@2x.png in Resources */,
 				EAEBD31522691AB7009815C6 /* collectmucus.png in Resources */,
@@ -1177,7 +1178,6 @@
 				EAEBD29622691AB7009815C6 /* shippingyourbox@2x.png in Resources */,
 				EAEBD31B22691AB7009815C6 /* preparetube@2x.png in Resources */,
 				EAEBD32622691AB7009815C6 /* questionsthankyou.png in Resources */,
-				F09B107F222880D0002970AA /* GoogleService-Info.plist in Resources */,
 				EAEBD2D122691AB7009815C6 /* begin2ndtest@2x.png in Resources */,
 				EAEBD2C622691AB7009815C6 /* removeswabfromtube@3x.png in Resources */,
 				EA1DC5BD22833B9F002DA2A9 /* updatesettings@3x.png in Resources */,
