@@ -14,16 +14,10 @@ import {
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import {
-  Why,
-  Age,
-  Symptoms,
-  AddressScreen,
-  AddressConfirm,
   Consent,
   ConsentIneligible,
 } from "./screens/ScreeningScreens";
 import {
-  WelcomeBack,
   ScanInstructions,
   Scan,
   ManualEntry,
@@ -39,8 +33,6 @@ import {
   PictureInstructions,
   TestStripCamera,
   TestStripConfirmation,
-  SchedulePickup,
-  EmailOptIn,
 } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
@@ -50,14 +42,8 @@ import {
 } from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
-  Why,
-  Age,
-  Symptoms,
   Consent,
   ConsentIneligible,
-  Address: AddressScreen,
-  AddressConfirm,
-  WelcomeBack,
   ScanInstructions,
   Scan,
   ManualEntry,
@@ -73,8 +59,6 @@ const mainScreens = {
   PictureInstructions,
   TestStripCamera,
   TestStripConfirmation,
-  SchedulePickup,
-  EmailOptIn,
 };
 
 const homeRouteConfig = simpleScreens.reduce(

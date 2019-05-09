@@ -22,13 +22,11 @@ import Screen from "../ui/components/Screen";
 import { NavigationScreenProp } from "react-navigation";
 import { tracker, FunnelEvents, AppHealthEvents } from "../util/tracker";
 import {
-  FirstTestFeedbackConfig,
   GeneralHealthScreenConfig,
   WhatSymptomsConfig,
-  SecondTestFeedbackConfig,
+  TestFeedbackConfig,
   SurveyQuestionData,
 } from "./ScreenConfig";
-import { EXTRA_SMALL_TEXT } from "../ui/styles";
 
 interface ButtonConfig {
   fontSize?: number;
@@ -167,62 +165,14 @@ export const simpleScreens: SimpleScreenConfig[] = [
   {
     hideBackButton: true,
     key: "Welcome",
-    footerLinkConfig: {
-      center: true,
-      footer: true,
-      links: ["haveKitAlready"],
-    },
-    next: "Why",
+    next: "PreConsent",
     splashImage: "welcome",
-  },
-  {
-    key: "What",
-    next: "Age",
-    splashImage: "whatdoidonext",
   },
   {
     disclaimer: true,
     funnelEvent: AppHealthEvents.KIT_ORDER_BLOCKED,
     image: "thanksforyourinterest",
     key: "OutOfKits",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    funnelEvent: FunnelEvents.AGE_INELIGIBLE,
-    hideBackButton: true,
-    image: "thanksforyourinterest",
-    key: "AgeIneligible",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    funnelEvent: FunnelEvents.ADDRESS_INELIGIBLE,
-    image: "thanksforyourinterest",
-    key: "AddressIneligible",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    funnelEvent: FunnelEvents.PO_BOX_INELIGIBLE,
-    image: "thanksforyourinterest",
-    key: "POBoxIneligible",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    funnelEvent: FunnelEvents.STATE_INELIGIBLE,
-    image: "thanksforyourinterest",
-    key: "StateIneligible",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    disclaimer: true,
-    funnelEvent: FunnelEvents.SYMPTOMS_INELIGIBLE,
-    hideBackButton: true,
-    image: "thanksforyourinterest",
-    key: "SymptomsIneligible",
     linkConfig: { links: ["learnMore", "findMedHelp"] },
     skipButton: true,
   },
@@ -237,49 +187,10 @@ export const simpleScreens: SimpleScreenConfig[] = [
   },
   {
     bulletPoints: true,
-    disclaimer: true,
-    image: "flukitordered",
-    key: "KitOrdered",
-    next: "ThankYouScreening",
-  },
-  {
-    bulletPoints: true,
     image: "thanksforparticipating",
     key: "ThankYouScreening",
     skipButton: true,
     workflowEvent: "screeningCompletedAt",
-  },
-  {
-    // NOTE: removed, keeping only for navigation state
-    hideBackButton: true,
-    image: "thanksforyourinterest",
-    key: "Ineligible",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
-    // NOTE: removed, keeping only for navigation state
-    image: "flukitordered",
-    key: "Confirmation",
-    next: "ThankYouScreening",
-  },
-  {
-    // NOTE: removed, keeping only for navigation state
-    image: "flukitordered",
-    key: "PushNotifications",
-    next: "ThankYouScreening",
-  },
-  {
-    // NOTE: removed, keeping only for navigation state
-    image: "beforeyoubeing",
-    key: "Before",
-    next: "ScanInstructions",
-  },
-  {
-    // NOTE: removed, keeping only for navigationstate
-    image: "whatsnext",
-    key: "TestInstructions",
-    next: "Unpacking",
   },
   {
     bulletPoints: true,
@@ -306,22 +217,13 @@ export const simpleScreens: SimpleScreenConfig[] = [
   {
     image: "unpackinginstructions",
     key: "Unpacking",
-    linkConfig: {
-      links: ["kitMissingItems"],
-    },
     next: "Swab",
   },
   {
     image: "begin1sttest",
     key: "Swab",
-    next: "SwabPrep",
-    videoId: "beginFirstTest",
-  },
-  {
-    image: "preparetube",
-    key: "SwabPrep",
     next: "OpenSwab",
-    videoId: "prepareTube",
+    videoId: "beginFirstTest",
   },
   {
     image: "opennasalswab",
@@ -380,7 +282,7 @@ export const simpleScreens: SimpleScreenConfig[] = [
   {
     image: "removeteststrip",
     key: "TestStripReady",
-    next: "FinishTube",
+    next: "RDTInstructions",
     videoId: "removeTestStrip",
   },
   {
@@ -392,26 +294,20 @@ export const simpleScreens: SimpleScreenConfig[] = [
   {
     image: "lookatteststrip",
     key: "LookAtStrip",
-    next: "TestStripSurvey",
+    next: "TestResult",
     videoId: "lookAtTestStrip",
   },
   {
-    image: "sealupteststrip",
-    key: "CleanFirstTest",
-    next: "CleanFirstTest2",
-    videoId: "cleanUpFirstTest1",
+    key: "TestResult",
+    next: "Advice",
   },
   {
-    image: "putteststripbag2",
-    key: "CleanFirstTest2",
-    next: "FirstTestFeedback",
-    videoId: "cleanUpFirstTest2",
+    key: "Advice",
+    next: "CleanTest",
   },
   {
-    image: "nicejob",
-    key: "FirstTestFeedback",
-    next: "BeginSecondTest",
-    questions: [FirstTestFeedbackConfig],
+    key: "CleanTest",
+    next: "TestFeedback",
   },
   {
     funnelEvent: FunnelEvents.COMPLETED_FIRST_TEST,
@@ -427,71 +323,14 @@ export const simpleScreens: SimpleScreenConfig[] = [
     videoId: "prepareForTest",
   },
   {
-    image: "collectmucus",
-    key: "MucusSecond",
-    next: "SwabInTubeSecond",
-    videoId: "collectSampleFromNose",
-  },
-  {
-    image: "putswabinredtube",
-    key: "SwabInTubeSecond",
-    next: "CleanSecondTest",
-    videoId: "putSwabInTube2",
-  },
-  {
-    image: "cleanupsecondtest",
-    key: "CleanSecondTest",
-    next: "SecondTestFeedback",
-    videoId: "cleanUpSecondTest",
-  },
-  {
     image: "nicejob",
-    key: "SecondTestFeedback",
-    next: "Packing",
-    questions: [SecondTestFeedbackConfig],
+    key: "TestFeedback",
+    next: "Thanks",
+    questions: [TestFeedbackConfig],
   },
   {
-    funnelEvent: FunnelEvents.COMPLETED_SECOND_TEST,
-    image: "packingthingsup",
-    key: "Packing",
-    next: "Stickers",
-  },
-  {
-    image: "putstickersonbox",
-    key: "Stickers",
-    next: "SecondBag",
-    videoId: "putStickersOnBox",
-  },
-  {
-    image: "putbag2inbox",
-    key: "SecondBag",
-    next: "TapeBox",
-    videoId: "putBag2InBox",
-  },
-  {
-    image: "tapeupbox",
-    key: "TapeBox",
-    next: "ShipBox",
-    videoId: "tapeUpBox",
-  },
-  {
-    buttonLabel: true,
-    extraButton: {
-      fontSize: EXTRA_SMALL_TEXT,
-      label: "iWillDropOff",
-      next: "EmailOptIn",
-    },
-    image: "shippingyourbox",
-    key: "ShipBox",
-    linkConfig: { links: ["showNearbyUsps"] },
-    next: "SchedulePickup",
-    videoId: "shipBox",
-  },
-  {
-    disclaimer: true,
     image: "finalthanks",
     key: "Thanks",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
     skipButton: true,
     workflowEvent: "surveyCompletedAt",
   },

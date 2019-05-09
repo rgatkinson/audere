@@ -21,7 +21,6 @@ import { BarCodeScanner, Camera, Permissions } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { SampleInfo, WorkflowInfo } from "audere-lib/feverProtocol";
-import { getRemoteConfig } from "../../util/remoteConfig";
 import {
   Action,
   Option,
@@ -41,7 +40,6 @@ import {
   BlueLineConfig,
   RedWhenBlueConfig,
   TestStripSurveyConfig,
-  OptInForMessagesConfig,
 } from "../../resources/ScreenConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import timerWithConfigProps, { TimerProps } from "../components/Timer";
@@ -55,7 +53,6 @@ import Modal from "../components/Modal";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
-import { scheduleUSPSPickUp } from "../externalActions";
 import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
@@ -878,12 +875,7 @@ class TestStripSurveyScreen extends React.Component<
         break;
     }
 
-    const rdtReader = getRemoteConfig("rdtReader");
-    if (rdtReader) {
-      this.props.navigation.push("RDTInstructions");
-    } else {
-      this.props.navigation.push("PictureInstructions");
-    }
+    this.props.navigation.push("TestResult");
   };
 
   render() {
@@ -1200,7 +1192,7 @@ class TestStripConfirmationScreen extends React.Component<
   Props & TestStripProps & WithNamespaces
 > {
   _onNext = () => {
-    this.props.navigation.push("CleanFirstTest");
+    this.props.navigation.push("TestStripSurvey");
   };
 
   render() {
@@ -1234,77 +1226,3 @@ export const TestStripConfirmation = withNamespaces(
   "testStripConfirmationScreen"
 )(TestStripConfirmationScreen);
 
-class SchedulePickupScreen extends React.Component<Props & WithNamespaces> {
-  _onNext = () => {
-    scheduleUSPSPickUp(() => {
-      this.props.navigation.push("EmailOptIn");
-    });
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        buttonLabel={t("title")}
-        desc={t("description")}
-        image="schedulepickup"
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      >
-        <BulletPoint content={t("rule1")} />
-        <BulletPoint content={t("rule2")} />
-      </Screen>
-    );
-  }
-}
-export const SchedulePickup = withNamespaces("schedulePickupScreen")(
-  SchedulePickupScreen
-);
-
-@connect((state: StoreState) => ({
-  isConnected: state.meta.isConnected,
-}))
-class EmailOptInScreen extends React.Component<
-  Props & ConnectedProps & WithNamespaces & ReduxWriterProps
-> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.COMPLETED_SHIPPING);
-  }
-
-  _onNext = async () => {
-    const { isConnected, t } = this.props;
-
-    const awaitingUpload = await uploader.documentsAwaitingUpload();
-
-    if (!!awaitingUpload && awaitingUpload > 0 && !isConnected) {
-      Alert.alert(
-        t("common:notifications:dataUploadTitle"),
-        t("common:notifications:dataUploadDesc"),
-        [{ text: "Try Again" }]
-      );
-    } else {
-      this.props.navigation.push("Thanks");
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("description")}
-        hideQuestionText={true}
-        image="optinmessages"
-        navigation={this.props.navigation}
-        title={t("title")}
-        questions={[OptInForMessagesConfig]}
-        getAnswer={this.props.getAnswer}
-        onNext={this._onNext}
-        updateAnswer={this.props.updateAnswer}
-      />
-    );
-  }
-}
-export const EmailOptIn = reduxWriter(
-  withNamespaces("emailOptInScreen")(EmailOptInScreen)
-);

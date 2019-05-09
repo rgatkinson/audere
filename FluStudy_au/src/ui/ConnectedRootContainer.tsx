@@ -25,7 +25,7 @@ import {
   setConnectivity,
 } from "../store/";
 import { AppEventsLogger } from "react-native-fbsdk";
-import { Camera, Permissions } from "expo";
+import { Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
 import {
   tracker,

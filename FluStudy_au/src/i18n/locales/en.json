@@ -31,9 +31,7 @@
       "dataUploadDesc": "We could not connect to upload data needed to process your gift card. Once you are connected please come back to the app and click **Try again**."
     },
     "validationErrors": {
-      "email": "* Please provide a valid email address",
-      "whereKit": "* Please select where you got the kit",
-      "zipcode": "* Please provide a 5-digit zipcode"
+      "email": "* Please provide a valid email address"
     },
     "device": {
       "handset": "phone",
@@ -72,19 +70,6 @@
   "pushNotificationModal": {
     "pushNotificationTitle": "May we send you notifications?",
     "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
-  },
-  "addressInput": {
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "required": " (required)",
-    "locationName": "Location name or neighborhood",
-    "streetAddress": "Street Address",
-    "city": "City",
-    "state": "State",
-    "stateProvince": "State/Province",
-    "zipcode": "Zip Code",
-    "postalCode": "Postal Code",
-    "country": "Country"
   },
   "optionList": {
     "pleaseSpecify": "Please specify:"
@@ -191,8 +176,7 @@
     "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "redLine": "Is there a red line on your test strip?",
-    "firstTestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
-    "secondTestFeedback": "How do you feel you performed the second test?",
+    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "optInForMessages": "Opt-in for messages"
   },
   "surveyDescription": {
@@ -216,123 +200,28 @@
     "selectOne": "Select one of the following",
     "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
   },
-  "symptomsScreen": {
-    "symptoms": "Symptoms"
-  },
   "Welcome": {
     "title": "Welcome",
     "desc": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you’ll receive a $25 gift card within four weeks of us receiving your completed test kit in the mail. Let’s get started."
-  },
-  "whyScreen": {
-    "title": "Why this study?",
-    "desc": "The goal of this program is to understand if people who are sick should test themselves at home for the flu using a new test. Although you won't learn whether or not you have the flu as part of this study, you'll play an important role in helping find ways to manage it in the future. "
-  },
-  "What": {
-    "title": "Getting started",
-    "desc": "To participate, we will ask you for the following:\n\n**Your current symptoms** – a quick survey.\n\n**Your home address** – to ship the test kit to you.\n\n**Your email address** – so we may send you your gift card and a follow-up survey.\n\nFinally, you will be asked to provide your consent to participate in a medical study."
   },
   "OutOfKits": {
     "title": "We're sorry, we are no longer accepting new orders",
     "desc": "Due to high demand, we have stopped taking new orders for the time being. We appreciate your interest and hope you feel better soon!",
     "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
   },
-  "ageScreen": {
-    "welcome": "Welcome",
-    "numYears": "Number of years",
-    "numMonths": "Number of months"
-  },
-  "addressScreen": {
-    "email": "Your email address:",
-    "title": "Email and Address",
-    "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included.",
-    "noInternetTitle": "Connection error",
-    "noInternetSubtitle": "Please check your internet connection and try again",
-    "validationError": "* Please provide all required fields"
-  },
-  "addressConfirmScreen": {
-    "title": "Verify your address",
-    "description": "The USPS suggests the following changes to your address. Please select the correct address from the choices below:",
-    "suggestedAddress": "Suggested address:",
-    "originalAddress": "Original address",
-    "reEnterAddress": "Re-end address"
-  },
-  "addressNotFoundModal": {
-    "dismissText": "Not Correct",
-    "submitText": "Correct",
-    "addressNotFound": "Address not found",
-    "addressConfirm": "Please confirm the address below is correct",
-    "entered": "You entered: "
-  },
-  "radioButtonGroup": {
-    "suggestedAddress": "Suggested address:",
-    "originalAddress": "Original address:"
-  },
-  "AgeIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but this study is aimed at adults 18 years and older. "
-  },
-  "Ineligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but you are not currently eligible for this study."
-  },
-  "AddressIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but we could not verify your address."
-  },
-  "POBoxIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but due to the time sensitivity of the test we do not ship to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
-  },
-  "SymptomsIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "At this time your symptoms do not meet the criteria to continue. If your symptoms change, you can open this app again on a different day.",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
-  },
-  "StateIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but we don't currently ship to Alaska or Hawaii. "
-  },
   "consentIneligibleScreen": {
     "ineligible": "Thanks for your interest",
     "description": "We're sorry, but you need to agree to the consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
     "back": "Back to consent"
-  },
-  "KitOrdered": {
-    "title": "Your kit was ordered.",
-    "desc": "The flu test package should arrive at your home within the next 1-2 days.\n\n**When your kit arrives:**",
-    "bullets": "**Open the flu@home app on your device.** The app will guide you through the entire test.\n**Keep the kit contents in their original packaging.** The app will guide you through everything.\n**Save the box the kit came in.** You will need it to scan its barcode for verification and to return the kit to us (via pre-paid postage).",
-    "disclaimer": "The kit is for your use only. Please do not give, share, or use the kit with anyone else after you receive it."
   },
   "ThankYouScreening": {
     "title": "Thanks for participating!",
     "desc": "We hope you’re able to get some rest and feel better soon.\n\n**While you wait for your kit:** ",
     "bullets": "**[Search Maps for urgent care clinics nearby.](FIND_MED_HELP)** If you need to see a doctor, you can use Maps to find one.\n**[Learn more about this study.](http://fluathome.org/)** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](EMAIL_SUPPORT)**."
   },
-  "Confirmation": {
-    "title": "Thank you! Your flu test kit has been ordered.",
-    "desc": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your device and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?"
-  },
   "PushNotifications": {
     "title": "May we send you push notifications?",
     "desc": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
-  },
-  "extraInfoScreen": {
-    "extraInfo": "Interested in sharing this or learning more?",
-    "close": "Close flu@home"
-  },
-  "welcomeBackScreen": {
-    "welcomeBack": "How the test works",
-    "description": "Sorry, we know you’re feeling bad and appreciate your participation. Today you’ll be completing two tests which involve taking nose swabs. The whole process should take about 20 minutes total.\n\n**Please note the following:**",
-    "bullets": "**Save the box the kit came in.** The app will ask you to scan the blue barcode on the box and you'll return your samples to us in the same box.\n**Shipping is pre-paid.** A return label is included in your kit, as well as tape to seal up the box.\n**Return the kit and we’ll send you a gift card.** Your gift card will be emailed within four weeks of us receiving your kit with samples in the mail."
-  },
-  "WhatsNext": {
-    "title": "Preparing for the test",
-    "desc": "Take a minute to get comfortable before you start the test process. Ideally, you’ll stay with your test kit for the duration of the test.\n\n**Before you begin:**",
-    "bullets": "**Find a location away from pets and children.** Your test kit includes items that could be broken, damaged, or contaminated.\n**Choose a flat surface with good lighting.** The app will take a photo of your test strip."
-  },
-  "Before": {
-    "title": "Before you begin",
-    "desc": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
   },
   "scanInstructionsScreen": {
     "scanQrCode": "Scan the barcode",
@@ -378,25 +267,17 @@
     "enterCode": "Please enter the code you receieved from the flu@home support team",
     "invalidCode": "Sorry, that code is not valid."
   },
-  "TestInstructions": {
-    "title": "How the test works",
-    "desc": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
-  },
   "Unpacking": {
-    "title": "How the test works",
-    "desc": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap."
+    "title": "Set up your kit box",
+    "desc": "Open the box and remove all the items. Take out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
   },
   "Swab": {
-    "title": "Begin the first test",
-    "desc": "Open box ① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
-  },
-  "SwabPrep": {
-    "title": "Prepare tube",
+    "title": "Prepare the tube",
     "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
-    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\n\nBe careful not to drop it, and only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid). Be careful to only touch the handle, not the tip."
   },
   "Mucus": {
     "title": "Collect sample from nose",
@@ -419,15 +300,11 @@
   },
   "OpenTestStrip": {
     "title": "Open test strip",
-    "desc": "Inside the same box ① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
+    "desc": "In the white pouch with purple printing there is a test strip. Open this package by tearing from the top where there is already a small cut."
   },
   "StripInTube": {
     "title": "Put test strip in tube",
-    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out. In the meantime, please answer some questions so we can better understand how this illness has affected you."
-  },
-  "surveyCoverScreen": {
-    "title": "Questions for you",
-    "description": "The strip needs to stay in the tube for at least 10 minutes. While we're waiting, please answer some questions for us. We'll tell you when to take the strip out of the tube."
+    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\n\n In the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "WhatSymptoms": {
     "title": "Symptom Survey",
@@ -452,7 +329,7 @@
   },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①."
+    "desc": "Please remove the test strip from the tube and place it flat on the middle of the box, then put the stopper back on the tube."
   },
   "testStripTimerScreen": {
     "title": "Time Remaining: **{{time}}**",
@@ -473,7 +350,7 @@
   },
   "RDTInstructions": {
     "title": "Take a picture of the strip",
-    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, we'd like you to take a picture of the test strip. **The app will access your phone's camera and will automatically take the picture for you.**"
+    "desc": "Next, we'd like you to take a picture of the test strip. \n\n **The app will access your device's camera and will automatically take the picture for you.**"
   },
   "RDTReader": {
     "title": "RDT READER",
@@ -501,80 +378,27 @@
   },
   "testStripConfirmationScreen": {
     "title": "Photo captured!",
-    "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
+    "desc": "Thank you! Your test strip photo was captured successfully. Next, we'll show you how to read your test strip to understand your results."
   },
-  "CleanFirstTest": {
-    "title": "Seal up the test strip",
-    "desc": "Find the medium-sized bag with a green barcode on it.\n\nPut the test strip inside that bag, remove the white strip on the bag and seal it."
+  "TestResult": {
+    "title": "Your test result",
+    "desc": "Base on your answers, your test indicates you may be: \n\n"
   },
-  "CleanFirstTest2": {
-    "title": "Put test strip in bag #2",
-    "desc": "Open bag ② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
+  "Advice": {
+    "title": "What do I do now?",
+    "desc": "We're sorry you're not feeling well and we'd like to help. Here are a few resources from leading health organizations with tips and information on how to get well."
   },
-  "FirstTestFeedback": {
-    "title": "Nice job with the first test! One more to go.",
+  "CleanTest": {
+    "title": "Clean up the test",
+    "desc": "Now that you've completed the test, you can discard the kit components. Make sure to wash your hands after disposing of your flu test kit."
+  },
+  "TestFeedback": {
+    "title": "How did you do?",
     "desc": ""
-  },
-  "BeginSecondTest": {
-    "title": "Begin the second test",
-    "desc": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nFind the tube with the red top. Holding it straight so the liquid inside doesn't spill, open the top. Place the tube in the box hole marked \"Large tube\" so it's standing up. Keep the top for later."
-  },
-  "PrepSecondTest": {
-    "title": "Prepare for the test",
-    "desc": "Open the swab package. Be careful to not drop it, and try to only touch the handle--not the tip of the swab."
-  },
-  "MucusSecond": {
-    "title": "Collect sample from nose",
-    "desc": "Now you'll swab your nose the same way you did during the first test:\n\nGently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
-  },
-  "SwabInTubeSecond": {
-    "title": "Put swab in tube",
-    "desc": "Place the swab directly into the tube and put the red top back on the tube tightly. (No need to add saline as you did with test 1)."
-  },
-  "CleanSecondTest": {
-    "title": "Clean up the second test",
-    "desc": "Put the tube with the red top into the same bag ② as the other items to be returned."
-  },
-  "SecondTestFeedback": {
-    "title": "Nice job with the second (and final) test!",
-    "desc": ""
-  },
-  "Packing": {
-    "title": "Packing things up",
-    "desc": "You will be using the same box that was shipped to you to send everything back. Open bag ③, and inside, you'll find everything you need to pack up your box."
-  },
-  "Stickers": {
-    "title": "Put stickers on the box",
-    "desc": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
-  },
-  "SecondBag": {
-    "title": "Put bag ② in the box",
-    "desc": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
-  },
-  "TapeBox": {
-    "title": "Tape up the box",
-    "desc": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word \"Open.\" Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
-  },
-  "ShipBox": {
-    "title": "Shipping your box",
-    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pick-up from your location.",
-    "buttonLabel": "Schedule a pickup",
-    "iWillDropOff": "I have a drop-off location"
-  },
-  "schedulePickupScreen": {
-    "title": "Schedule a pickup",
-    "description": "You will be directed to the USPS site where you can enter the pickup address.\n\nThe mailperson can pick up the package directly from your doorstep while on their typical route. Indicate the following items on the form:",
-    "rule1": "One **Priority Mail** package for pick-up.",
-    "rule2": "Pick-up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**."
-  },
-  "emailOptInScreen": {
-    "title": "Opt-in for messages",
-    "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can email you about, or if you're not interested, just click Continue."
   },
   "Thanks": {
-    "title": "Thank you!",
-    "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please reply as soon as you can to that message.\n\nYour gift card will be sent to **{{email}}** within four weeks of us receiving your completed test kit in the mail.",
-    "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness."
+    "title": "Thanks for participating",
+    "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us."
   },
   "links": {
     "haveKitAlready": "I already have my kit",

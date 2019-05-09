@@ -7,14 +7,11 @@ import { Linking, Platform } from "react-native";
 import { connect } from "react-redux";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import {
-  setWorkflow,
   toggleSupportCodeModal,
   Action,
   StoreState,
 } from "../store";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
-import { AddressConfig } from "./ScreenConfig";
-import { SurveyResponse } from "../store/types";
 
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
 
@@ -24,12 +21,6 @@ function createMapQueryUrl(query: string) {
   const url = `${scheme}${encodedQuery}`;
 
   return url;
-}
-
-function showNearbyShippingLocations(zipcode: string) {
-  let linkUrl = `https://tools.usps.com/go/POLocatorAction!input.action?address=${zipcode}&radius=10&locationTypeQ=po`;
-
-  Linking.openURL(linkUrl);
 }
 
 export function emailSupport(params: string = "") {
@@ -58,38 +49,12 @@ export interface LinkConfig {
 
 export const LinkPropProvider = (LinkComponent: any) =>
   connect((state: StoreState) => {
-    const address = state.survey.responses.find(
-      (response: SurveyResponse) => response.questionId === AddressConfig.id
-    );
-    const zipcode =
-      address &&
-      address.answer &&
-      address.answer["addressInput"] &&
-      address.answer["addressInput"]!.zipcode
-        ? address.answer["addressInput"]!.zipcode
-        : "";
     return {
       workflow: state.survey.workflow,
-      zipcode,
     };
   })(withNavigation(LinkComponent));
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
-  [
-    "haveKitAlready",
-    {
-      action: ({ navigation, dispatch, workflow }) => {
-        dispatch(
-          setWorkflow({
-            ...workflow,
-            skippedScreeningAt: new Date().toISOString(),
-          })
-        );
-        navigation.push("WelcomeBack");
-      },
-      key: "haveKitAlready",
-    },
-  ],
   [
     "learnMore",
     {
@@ -130,13 +95,6 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     {
       action: ({ navigation }) => navigation.push("CleanFirstTest"),
       key: "skipTestStripPhoto",
-    },
-  ],
-  [
-    "showNearbyUsps",
-    {
-      action: ({ zipcode }) => showNearbyShippingLocations(zipcode),
-      key: "showNearbyUsps",
     },
   ],
 ]);

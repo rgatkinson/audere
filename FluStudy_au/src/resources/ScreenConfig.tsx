@@ -41,17 +41,6 @@ export interface SurveyQuestionData {
   required?: boolean;
 }
 
-export const AgeBuckets: {
-  [key: string]: string;
-} = {
-  Senior: "65andOlder",
-  MiddleAge: "45to64",
-  Adult: "35to44",
-  YoungAdult: "25to34",
-  VeryYoungAdult: "18to24",
-  Under18: "under18",
-};
-
 export const AddressConfig: SurveyQuestionData = {
   id: "Address",
   title: "address",
@@ -60,64 +49,11 @@ export const AddressConfig: SurveyQuestionData = {
   type: "address",
 };
 
-export const MailingAddressConfig: SurveyQuestionData = {
-  id: "Address",
-  title: "address",
-  description: "mailingAddressDesc",
-  buttons: [{ key: "next", primary: true, enabled: true }],
-  type: "address",
-};
-
-export const WhereKitConfig: SurveyQuestionData = {
-  id: "WhereKit",
-  title: "whereKit",
-  buttons: [
-    { key: "orderedApp", primary: false, enabled: true },
-    { key: "fromClinic", primary: false, enabled: true },
-  ],
-  type: "radioGrid",
-};
-
-export const AgeConfig: SurveyQuestionData = {
-  id: "Age",
-  title: "ageTitle",
-  buttons: [
-    { key: AgeBuckets.Under18, primary: false, enabled: true },
-    { key: AgeBuckets.VeryYoungAdult, primary: false, enabled: true },
-    { key: AgeBuckets.YoungAdult, primary: false, enabled: true },
-    { key: AgeBuckets.Adult, primary: false, enabled: true },
-    { key: AgeBuckets.MiddleAge, primary: false, enabled: true },
-    { key: AgeBuckets.Senior, primary: false, enabled: true },
-  ],
-  type: "radioGrid",
-};
-
 export const ConsentConfig: SurveyQuestionData = {
   buttons: [],
   id: "Consent",
   title: "consentEmail",
   type: "checkbox",
-};
-
-export const SymptomsConfig: SurveyQuestionData = {
-  buttons: [{ key: "next", primary: true, enabled: true }],
-  description: "selectAll",
-  id: "Symptoms",
-  optionList: {
-    exclusiveOptions: ["noneOfTheAbove"],
-    multiSelect: true,
-    options: [
-      "feelingFeverish",
-      "chillsOrSweats",
-      "cough",
-      "fatigue",
-      "muscleOrBodyAches",
-      "noneOfTheAbove",
-    ],
-    withOther: false,
-  },
-  title: "symptomTitle",
-  type: "optionQuestion",
 };
 
 export const WhatSymptomsConfig: SurveyQuestionData = {
@@ -469,9 +405,9 @@ export const TestStripSurveyConfig = [
   RedLineConfig,
 ];
 
-export const FirstTestFeedbackConfig: SurveyQuestionData = {
-  id: "FirstTestFeedback",
-  title: "firstTestFeedback",
+export const TestFeedbackConfig: SurveyQuestionData = {
+  id: "TestFeedback",
+  title: "TestFeedback",
   description: "selectMostApplicable",
   buttons: [
     { key: "easyCorrect", primary: false, enabled: true },
@@ -480,34 +416,4 @@ export const FirstTestFeedbackConfig: SurveyQuestionData = {
     { key: "incorrect", primary: false, enabled: true },
   ],
   type: "radioGrid",
-};
-
-export const SecondTestFeedbackConfig: SurveyQuestionData = {
-  id: "SecondTestFeedback",
-  title: "secondTestFeedback",
-  description: "selectMostApplicable",
-  buttons: [
-    { key: "easyCorrect", primary: false, enabled: true },
-    { key: "confusingCorrect", primary: false, enabled: true },
-    { key: "confusingNotCorrect", primary: false, enabled: true },
-    { key: "incorrect", primary: false, enabled: true },
-  ],
-  type: "radioGrid",
-};
-
-export const OptInForMessagesConfig: SurveyQuestionData = {
-  id: "OptInForMessages",
-  title: "optInForMessages",
-  description: "optInForMessages",
-  optionList: {
-    multiSelect: true,
-    options: [
-      "contactMeNextSeason",
-      "contactMeForFollowUpStudy",
-      "sendMeStudy",
-    ],
-    withOther: false,
-  },
-  buttons: [],
-  type: "optionQuestion",
 };
