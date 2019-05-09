@@ -5,12 +5,13 @@
 
 import wd from "wd";
 import strings from "../../src/i18n/locales/en.json";
+import { PassThrough } from "stream";
 
 const os = require("os");
 const path = require("path");
 
-PLATFORM = "iOS";
-// PLATFORM = "Android";
+// PLATFORM = "iOS";
+PLATFORM = "Android";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 const PORT = 4723;
@@ -25,7 +26,7 @@ if (PLATFORM == "iOS") {
     deviceName: "iPhone 8",
     app: path.join(
       os.homedir(),
-      "Library/Developer/Xcode/DerivedData/fluathome/Build/Products/Debug-iphonesimulator/fluathome.app"
+      "Library/Developer/Xcode/DerivedData/fluathome_us/Build/Products/Debug-iphonesimulator/fluathome.app"
     ),
   };
   screen_x = 375;
@@ -59,7 +60,7 @@ describe("Rejection Scenarios", () => {
 
   test("When user is under 18, they are rejected from the study", async () => {
     expect(
-      await driver.hasElementByAccessibilityId(strings.welcomeScreen.welcome)
+      await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await change_to_demo_mode(driver);
     await welcome_to_age(driver);
@@ -70,15 +71,13 @@ describe("Rejection Scenarios", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.ageIneligibleScreen.ineligible
-      )
+      await driver.hasElementByAccessibilityId(strings.AgeIneligible.title)
     ).toBe(true);
   });
 
   test("When user has only symptom of cough, they are rejected from the study", async () => {
     expect(
-      await driver.hasElementByAccessibilityId(strings.welcomeScreen.welcome)
+      await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await change_to_demo_mode(driver);
     await welcome_to_age(driver);
@@ -102,9 +101,7 @@ describe("Rejection Scenarios", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.symptomsIneligibleScreen.ineligible
-      )
+      await driver.hasElementByAccessibilityId(strings.SymptomsIneligible.title)
     ).toBe(true);
   });
 });
@@ -121,7 +118,7 @@ describe("Happy Path", () => {
 
   test("A user should be able to navigate through the entire app", async () => {
     expect(
-      await driver.hasElementByAccessibilityId(strings.welcomeScreen.welcome)
+      await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await change_to_demo_mode(driver);
     await welcome_to_age(driver);
@@ -153,7 +150,7 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.preConsentScreen.title)
+      await driver.hasElementByAccessibilityId(strings.PreConsent.title)
     ).toBe(true);
     await swipe_up(driver);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
@@ -202,11 +199,12 @@ describe("Happy Path", () => {
     await driver
       .elementByAccessibilityId(strings.addressInput.city)
       .type("Seattle");
-    expect(
-      await driver.hasElementByAccessibilityId(strings.addressInput.state)
-    ).toBe(true);
-    await driver.elementByAccessibilityId(strings.addressInput.state).click();
-    await driver.elementByAccessibilityId(strings.common.button.done).click();
+    await driver.hideDeviceKeyboard();
+    await new wd.TouchAction(driver)
+      .tap({ x: screen_x * 0.12, y: screen_y * 0.59 })
+      .wait(1000)
+      .tap({ x: screen_x * 0.5, y: screen_y * 0.5 })
+      .perform();
     expect(
       await driver.hasElementByAccessibilityId(strings.addressInput.zipcode)
     ).toBe(true);
@@ -236,15 +234,13 @@ describe("Happy Path", () => {
       .elementByAccessibilityId(strings.common.button.submit.toUpperCase())
       .click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.kitOrderedScreen.title)
+      await driver.hasElementByAccessibilityId(strings.KitOrdered.title)
     ).toBe(true);
     await swipe_up(driver);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.thankYouScreeningScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.ThankYouScreening.title)
     ).toBe(true);
     await quad_tap_banner(driver);
     expect(
@@ -256,9 +252,7 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.whatsNextScreen.whatsNext
-      )
+      await driver.hasElementByAccessibilityId(strings.WhatsNext.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
@@ -267,14 +261,26 @@ describe("Happy Path", () => {
         strings.scanInstructionsScreen.scanQrCode
       )
     ).toBe(true);
-    expect(
-      await driver.hasElementByAccessibilityId(
-        strings.scanInstructionsScreen.inputManually
-      )
-    ).toBe(true);
-    await driver
-      .elementByAccessibilityId(strings.scanInstructionsScreen.inputManually)
-      .click();
+    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
+    await driver.elementByAccessibilityId(CONTINUE).click();
+    if (PLATFORM == "iOS") {
+      expect(await driver.hasElementByAccessibilityId("OK")).toBe(true);
+      await driver.elementByAccessibilityId("OK").click();
+      expect(
+        await driver.hasElementByAccessibilityId(
+          strings.scanScreen.enterManually
+        )
+      ).toBe(true);
+      await new wd.TouchAction(driver)
+        .tap({ x: screen_x * 0.5, y: screen_y * 0.82 })
+        .perform();
+    } else {
+      denyButton = await driver.element(
+        "id",
+        "com.android.packageinstaller:id/permission_deny_button"
+      );
+      await denyButton.click();
+    }
     expect(
       await driver.hasElementByAccessibilityId(
         strings.manualEntryScreen.enterKit
@@ -304,51 +310,45 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.manualConfirmationScreen.codeSent
-      )
+      await driver.hasElementByAccessibilityId(strings.ManualConfirmation.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.testInstructionsScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.TestInstructions.title)
+    ).toBe(true);
+    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
+    await driver.elementByAccessibilityId(CONTINUE).click();
+    expect(await driver.hasElementByAccessibilityId(strings.Swab.title)).toBe(
+      true
+    );
+    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
+    await driver.elementByAccessibilityId(CONTINUE).click();
+    expect(
+      await driver.hasElementByAccessibilityId(strings.SwabPrep.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.swabScreen.title)
+      await driver.hasElementByAccessibilityId(strings.OpenSwab.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
-    expect(
-      await driver.hasElementByAccessibilityId(strings.swabPrepScreen.title)
-    ).toBe(true);
+    expect(await driver.hasElementByAccessibilityId(strings.Mucus.title)).toBe(
+      true
+    );
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.openSwabScreen.title)
-    ).toBe(true);
-    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
-    await driver.elementByAccessibilityId(CONTINUE).click();
-    expect(
-      await driver.hasElementByAccessibilityId(strings.mucusScreen.title)
-    ).toBe(true);
-    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
-    await driver.elementByAccessibilityId(CONTINUE).click();
-    expect(
-      await driver.hasElementByAccessibilityId(strings.swabInTubeScreen.title)
+      await driver.hasElementByAccessibilityId(strings.SwabInTube.title)
     ).toBe(true);
     expect(
       await driver.hasElementByAccessibilityId(
-        strings.swabInTubeScreen.startTimer.toUpperCase()
+        strings.SwabInTube.buttonLabel.toUpperCase()
       )
     ).toBe(true);
     await driver
-      .elementByAccessibilityId(
-        strings.swabInTubeScreen.startTimer.toUpperCase()
-      )
+      .elementByAccessibilityId(strings.SwabInTube.buttonLabel.toUpperCase())
       .click();
     expect(
       await driver.hasElementByAccessibilityId(strings.firstTimerScreen.title)
@@ -365,21 +365,17 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.removeSwabFromTubeScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.RemoveSwabFromTube.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.openTestStripScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.OpenTestStrip.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.stripInTubeScreen.title)
+      await driver.hasElementByAccessibilityId(strings.StripInTube.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
@@ -420,9 +416,7 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.surveyScreen.generalHealth
-      )
+      await driver.hasElementByAccessibilityId(strings.GeneralHealth.title)
     ).toBe(true);
     await scroll_to_element(driver, CONTINUE);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
@@ -461,19 +455,17 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.testStripReadyScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.TestStripReady.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.finishTubeScreen.title)
+      await driver.hasElementByAccessibilityId(strings.FinishTube.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.lookAtStripScreen.title)
+      await driver.hasElementByAccessibilityId(strings.LookAtStrip.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
@@ -484,118 +476,115 @@ describe("Happy Path", () => {
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
+    expect(
+      await driver.hasElementByAccessibilityId(strings.RDTInstructions.title)
+    ).toBe(true);
+    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
+    await driver.elementByAccessibilityId(CONTINUE).click();
     if (PLATFORM == "iOS") {
-      //camera not available in android simulator
       expect(
-        await driver.hasElementByAccessibilityId(
-          strings.pictureInstructionsScreen.title
-        )
+        await driver.hasElementByAccessibilityId(strings.RDTReader.title)
       ).toBe(true);
+      await new wd.TouchAction(driver)
+        .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+        .perform();
+    } else {
+      allowButton = await driver.element(
+        "id",
+        "com.android.packageinstaller:id/permission_allow_button"
+      );
+      await allowButton.click();
       expect(
-        await driver.hasElementByAccessibilityId(
-          strings.pictureInstructionsScreen.skip
-        )
+        await driver.hasElementByAccessibilityId(strings.RDTReader.title)
       ).toBe(true);
-      await scroll_to_element(driver, strings.pictureInstructionsScreen.skip);
-      await driver
-        .elementByAccessibilityId(strings.pictureInstructionsScreen.skip)
-        .click();
+      await new wd.TouchAction(driver)
+        .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+        .perform();
     }
     expect(
       await driver.hasElementByAccessibilityId(
-        strings.cleanFirstTestScreen.title
+        strings.testStripConfirmationScreen.title
       )
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.cleanFirstTest2Screen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.CleanFirstTest.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.firstTestFeedbackScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.CleanFirstTest2.title)
+    ).toBe(true);
+    expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
+    await driver.elementByAccessibilityId(CONTINUE).click();
+    expect(
+      await driver.hasElementByAccessibilityId(strings.FirstTestFeedback.title)
     ).toBe(true);
     await swipe_up(driver);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.beginSecondTestScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.BeginSecondTest.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.prepSecondTestScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.PrepSecondTest.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.mucusSecondScreen.title)
+      await driver.hasElementByAccessibilityId(strings.MucusSecond.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.swabInTubeSecondScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.SwabInTubeSecond.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.cleanSecondTestScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.CleanSecondTest.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(
-        strings.secondTestFeedbackScreen.title
-      )
+      await driver.hasElementByAccessibilityId(strings.SecondTestFeedback.title)
     ).toBe(true);
     await swipe_up(driver);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.packingScreen.title)
+      await driver.hasElementByAccessibilityId(strings.Packing.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.stickersScreen.title)
+      await driver.hasElementByAccessibilityId(strings.Stickers.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.secondBagScreen.title)
+      await driver.hasElementByAccessibilityId(strings.SecondBag.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.tapeBoxScreen.title)
+      await driver.hasElementByAccessibilityId(strings.TapeBox.title)
     ).toBe(true);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     expect(
-      await driver.hasElementByAccessibilityId(strings.shipBoxScreen.title)
+      await driver.hasElementByAccessibilityId(strings.ShipBox.title)
     ).toBe(true);
     expect(
       await driver.hasElementByAccessibilityId(
-        strings.shipBoxScreen.iWillDropOff.toUpperCase()
+        strings.ShipBox.iWillDropOff.toUpperCase()
       )
     ).toBe(true);
     await driver
-      .elementByAccessibilityId(
-        strings.shipBoxScreen.iWillDropOff.toUpperCase()
-      )
+      .elementByAccessibilityId(strings.ShipBox.iWillDropOff.toUpperCase())
       .click();
     expect(
       await driver.hasElementByAccessibilityId(strings.emailOptInScreen.title)
@@ -603,23 +592,23 @@ describe("Happy Path", () => {
     await swipe_up(driver);
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
-    expect(
-      await driver.hasElementByAccessibilityId(strings.thanksScreen.title)
-    ).toBe(true);
+    expect(await driver.hasElementByAccessibilityId(strings.Thanks.title)).toBe(
+      true
+    );
   });
 });
 
 async function welcome_to_age(driver) {
   expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
   await driver.elementByAccessibilityId(CONTINUE).click();
-  expect(await driver.hasElementByAccessibilityId(strings.whyScreen.why)).toBe(
-    true
-  );
+  expect(
+    await driver.hasElementByAccessibilityId(strings.whyScreen.title)
+  ).toBe(true);
   expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
   await driver.elementByAccessibilityId(CONTINUE).click();
-  expect(
-    await driver.hasElementByAccessibilityId(strings.whatScreen.what)
-  ).toBe(true);
+  expect(await driver.hasElementByAccessibilityId(strings.What.title)).toBe(
+    true
+  );
   await scroll_to_element(driver, CONTINUE);
   expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
   await driver.elementByAccessibilityId(CONTINUE).click();
