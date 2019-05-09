@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { promises as fsPromise } from "fs";
 import { SplitSql, Model } from "./sql";
 import { SecretAttributes, defineSecret } from "../models/db/secrets";
 import { generateRandomKey } from "./crypto";
@@ -15,38 +16,45 @@ export class SecretConfig {
   }
 
   public async get(key: string): Promise<string> {
-    // First check process environment variables.
+    return process.env[key] || await this.getFromDb(key, false);
+  }
+
+  public async getOrCreate(key: string): Promise<string> {
+    return process.env[key] || await this.getFromDb(key, true);
+  }
+
+  public async getMaybeEnvFile(key: string): Promise<string> {
+    return await this.envFile(key) || await this.getFromDb(key, false);
+  }
+
+  private async envFile(key: string): Promise<string | null> {
     const envVar = process.env[key];
+
     if (envVar != null) {
-      return envVar;
+      try {
+        return await fsPromise.readFile(envVar, { encoding: "utf8" });
+      } catch (err) {}
     }
 
-    const secret = await this.secretModel.findOne({ where: { key: key } });
+    return null;
+  }
+
+  private async getFromDb(key: string, createIfNotFound: boolean): Promise<string> {
+    const secret = await this.secretModel.findOne({ where: { key } });
     if (secret != null) {
       return secret.value;
     }
 
-    throw Error(
-      `${key} is unset. Copy .env.example to .env or update the ` +
-        `value in the database. An unset value could application instability ` +
-        `or errors.`
-    );
-  }
-
-  // TODO: getRotatingSecret(key: string): Promise<string[]>
-  public async getOrCreate(key: string): Promise<string> {
-    const envVar = process.env[key];
-    if (envVar != null) {
-      return envVar;
+    if (createIfNotFound) {
+      const value = await generateRandomKey(64);
+      await this.secretModel.create({ key, value });
+      return value;
+    } else {
+      throw Error(
+        `${key} is unset. Copy .env.example to .env or update the ` +
+          `value in the database. An unset value could application instability ` +
+          `or errors.`
+      );
     }
-
-    const record = await this.secretModel.findOne({ where: { key } });
-    if (record != null) {
-      return record.value;
-    }
-
-    const value = await generateRandomKey(64);
-    await this.secretModel.create({ key, value });
-    return value;
   }
 }
