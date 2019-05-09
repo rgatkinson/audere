@@ -102,14 +102,19 @@ export class EncountersService {
   private deidentifyAddress(
     inputAddress: Model.AddressInfo,
     addressUse: Model.AddressInfoUse,
-    geocodedAddress: GeocodedAddress
+    geocodedAddress: GeocodedAddress,
+    includeCityAndState: boolean
   ): Encounter.Location {
     let streetAddress: string;
     let region: string;
+    let city: string;
+    let state: string;
 
     if (geocodedAddress != null) {
       streetAddress = geocodedAddress.canonicalAddress;
       region = geocodedAddress.censusTract;
+      city = geocodedAddress.city,
+      state = geocodedAddress.state
     } else if (inputAddress != null) {
       // If there is no geocoding result then we rely on the user input.
       // This will be a weaker guarantee of uniqueness.
@@ -120,6 +125,9 @@ export class EncountersService {
         inputAddress.postalCode,
         inputAddress.country
       ];
+
+      city = inputAddress.city;
+      state = inputAddress.state;
 
       streetAddress = input.join(", ");
     }
@@ -138,13 +146,23 @@ export class EncountersService {
           break;
       }
 
-      return {
-        use: use,
-        id: generateSHA256(this.hashSecret, streetAddress),
-        region: region,
-        city: inputAddress.city,
-        state: inputAddress.state
-      };
+      if (includeCityAndState) {
+        return {
+          use: use,
+          id: generateSHA256(this.hashSecret, streetAddress),
+          region: region,
+          city: city,
+          state: state
+        };
+      } else {
+        return {
+          use: use,
+          id: generateSHA256(this.hashSecret, streetAddress),
+          region: region,
+          city: undefined,
+          state: undefined
+        };       
+      }
     }
 
     return undefined;
@@ -272,7 +290,8 @@ export class EncountersService {
         const deidentifiedAddress = this.deidentifyAddress(
           a.value,
           a.use,
-          geocodedAddress
+          geocodedAddress,
+          details.site === "self-test"
         );
         locations.push(deidentifiedAddress);
       });
