@@ -35,10 +35,11 @@ describe("FirebaseReceiver", async () => {
     await sql.close();
   });
 
-  it("receives normal messages", async () => {
+  it("receives one message", async () => {
     if (app == null) {
       return;
     }
+    const collection = `TestOneMessage-${process.env["USER"]}`;
 
     const docid0 = "DocumentId0";
     const doc0 = {
@@ -47,8 +48,8 @@ describe("FirebaseReceiver", async () => {
     };
     const hash0 = hash(JSON.stringify(doc0));
 
-    await firestore.collection("documents").doc(docid0).delete();
-    await firestore.collection("documents")
+    await firestore.collection(collection).doc(docid0).delete();
+    await firestore.collection(collection)
       .doc(docid0)
       .set({
         _transport: {
@@ -60,7 +61,7 @@ describe("FirebaseReceiver", async () => {
         ...doc0,
       });
 
-    const receiver = new FirebaseReceiver(async () => app);
+    const receiver = new FirebaseReceiver(async () => app, {collection});
 
     const updates = await receiver.updates();
     expect(updates).toHaveLength(1);
@@ -74,8 +75,6 @@ describe("FirebaseReceiver", async () => {
 
     const marked = await receiver.markAsRead(received0);
     expect(marked).toEqual(true);
-
-    await firestore.collection("documents").doc(docid0).delete();
   });
 });
 

@@ -16,32 +16,45 @@ type Storage = firebase.storage.Storage;
 
 const FieldPath = firebase.firestore.FieldPath;
 
+export interface Connector {
+  (): Promise<App>
+}
+
+export interface Config {
+  collection?: string;
+}
+
+const DEFAULT_CONFIG = {
+  collection: "documents",
+}
+
 // Protocol constants
-export const DOCUMENT_COLLECTION = "documents";
 export const PROTOCOL_V1 = 1;
 export const SENDER_NAME = "client";
 export const RECEIVER_NAME = "server";
 export const FIELD_PATH = {
-  protocol: "_transport.protocolVersion",
-  hash: "_transport.contentHash",
-  writer: "_transport.lastWriter",
-  timestamp: "_transport.receivedAt",
+  protocolVersion: "_transport.protocolVersion",
+  contentHash: "_transport.contentHash",
+  lastWriter: "_transport.lastWriter",
+  receivedAt: "_transport.receivedAt",
 };
 
 export class FirebaseReceiver {
+  config: typeof DEFAULT_CONFIG;
   lazyApp: LazyAsync<App>;
 
-  constructor(connector: Connector) {
+  constructor(connector: Connector, config = {}) {
     this.lazyApp = new LazyAsync(connector);
+    this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
   public async updates(): Promise<string[]> {
     const db = await this.firestore();
-    const collection = db.collection(DOCUMENT_COLLECTION);
+    const collection = db.collection(this.config.collection);
 
     const snapshot = await collection
-      .where(FIELD_PATH.writer, "==", SENDER_NAME)
-      .where(FIELD_PATH.protocol, "==", PROTOCOL_V1)
+      .where(FIELD_PATH.lastWriter, "==", SENDER_NAME)
+      .where(FIELD_PATH.protocolVersion, "==", PROTOCOL_V1)
       .select(FieldPath.documentId())
       .limit(256)
       .get();
@@ -51,7 +64,7 @@ export class FirebaseReceiver {
 
   public async read(id: string): Promise<DocumentSnapshot> {
     const db = await this.firestore();
-    const collection = db.collection(DOCUMENT_COLLECTION);
+    const collection = db.collection(this.config.collection);
 
     const snapshot = await collection.doc(id).get();
 
@@ -64,28 +77,29 @@ export class FirebaseReceiver {
 
   public async markAsRead(doc: DocumentSnapshot): Promise<boolean> {
     const id = doc.id;
-    const hash = doc.get(FIELD_PATH.hash);
+    const hash = doc.get(FIELD_PATH.contentHash);
     const db = await this.firestore();
-    const collection = db.collection(DOCUMENT_COLLECTION);
+    const collection = db.collection(this.config.collection);
     const docRef = collection.doc(id);
 
     try {
-      db.runTransaction(async t => {
+      await db.runTransaction(async t => {
         const doc = await t.get(docRef);
         if (!doc.exists) {
           throw new Error(`Could not load document for id '${id}'`);
         }
-        if (doc.get(FIELD_PATH.writer) !== SENDER_NAME) {
+        if (doc.get(FIELD_PATH.lastWriter) !== SENDER_NAME) {
           throw new Error(`CONSISTENCY ERROR: '${id}' was not last written by sender`);
         }
-        if (doc.get(FIELD_PATH.hash) !== hash) {
+        if (doc.get(FIELD_PATH.contentHash) !== hash) {
           throw new Error(`Document '${id}' was modified since last read`);
         }
 
-        let update = {};
-        update[FIELD_PATH.writer] = RECEIVER_NAME;
-        update[FIELD_PATH.timestamp] = new Date().toISOString();
-        t.update(docRef, update);
+        const update = {};
+        update[FIELD_PATH.lastWriter] = RECEIVER_NAME;
+        update[FIELD_PATH.receivedAt] = new Date().toISOString();
+
+        await t.update(docRef, update);
       });
       return true;
     } catch (err) {
@@ -100,10 +114,6 @@ export class FirebaseReceiver {
   async storage(): Promise<Storage> {
     return (await this.lazyApp.get()).storage();
   }
-}
-
-export interface Connector {
-  (): Promise<App>
 }
 
 export function connectorFromSqlSecrets(sql: SplitSql): Connector {
