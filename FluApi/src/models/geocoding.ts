@@ -6,9 +6,9 @@
 import { AddressInfoUse } from "audere-lib/snifflesProtocol";
 
 export interface GeocodingResponse {
-  id: number;
+  id: string;
   use: AddressInfoUse;
-  address?: GeocodedAddress;
+  addresses?: GeocodedAddress[];
 }
 
 export interface GeocodedAddress {

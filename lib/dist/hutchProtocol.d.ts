@@ -11,11 +11,22 @@ export interface Encounter {
     locations: Location[];
     sampleCodes: SampleCode[];
     responses: Response[];
+    events: Event[];
     age?: Age;
 }
 export interface Age {
     value?: number;
     ninetyOrAbove: boolean;
+}
+export interface Event {
+    time: string;
+    eventType: EventType;
+}
+export declare enum EventType {
+    BarcodeScanned = "BarcodeScanned",
+    ConsentSigned = "ConsentSigned",
+    StartedQuestionnaire = "StartedQuestionnaire",
+    SymptomsScreened = "SymptomsScreened"
 }
 export declare enum LocationUse {
     Home = "Home",
@@ -30,9 +41,13 @@ export interface Location {
     use: LocationUse;
     id: string;
     region: string;
+    city: string;
+    state: string;
 }
 export declare enum SampleType {
-    SelfSwab = "SelfSwab",
+    StripPhoto = "StripPhoto",
+    ManualSelfSwab = "ManualSelfSwab",
+    ScannedSelfSwab = "ScannedSelfSwab",
     ClinicSwab = "ClinicSwab",
     Blood = "Blood",
     Serum = "Serum",

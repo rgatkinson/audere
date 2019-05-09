@@ -5,8 +5,8 @@
 
 import { AxiosInstance } from "axios";
 import { Encounter } from "audere-lib/hutchProtocol";
+import { EncounterKey } from "../services/encounterDetailsService";
 import { ThrottledTaskQueue } from "../util/throttledTaskQueue";
-import { HutchUploadModel } from "../models/db/hutchUpload";
 import logger from "../util/logger";
 
 /**
@@ -18,42 +18,32 @@ export class HutchUploader {
   private readonly maxConcurrent: number;
   private readonly user: string;
   private readonly password: string;
-  private readonly uploads: HutchUploadModel;
 
   constructor(
     api: AxiosInstance,
     maxConcurrent: number,
     user: string,
-    password: string,
-    uploads: HutchUploadModel
+    password: string
   ) {
     this.api = api;
     this.maxConcurrent = maxConcurrent;
     this.user = user;
     this.password = password;
-    this.uploads = uploads;
   }
 
   /**
    * Push encounters to the flu study.
    * @param encounters Encounters to be sent keyed by database id.
    */
-  public async uploadEncounters(
-    encounters: Map<number, Encounter>
-  ): Promise<number[]> {
+  public async uploadEncounters(encounters: Encounter[]): Promise<void> {
     // Wraps the upload function in a task queue that limits concurrency.
-    const keys = Array.from(encounters.keys());
-    const requests = keys.map(k => () => this.upload(k, encounters.get(k)));
+    const requests = encounters.map(e => () => this.upload(e));
     const queue = new ThrottledTaskQueue(requests, this.maxConcurrent);
-    const result = await queue.drain();
+    await queue.drain();
 
     logger.info(
-      encounters.size +
-        " records were provided and " +
-        result.length +
-        " records were uploaded to the Hutch endpoint"
+      encounters.length + " records were uploaded to the Hutch endpoint"
     );
-    return result;
   }
 
   /**
@@ -61,7 +51,7 @@ export class HutchUploader {
    * @param id Identifier for the encounter. Used to track success.
    * @param e Encounter to upload.
    */
-  private async upload(id: number, e: Encounter): Promise<number> {
+  private async upload(e: Encounter): Promise<void> {
     try {
       await this.api.post("api/enrollment", e, {
         auth: {
@@ -72,39 +62,14 @@ export class HutchUploader {
           "Content-Type": "application/json"
         }
       });
-      return id;
     } catch (error) {
-      // Anything that does not get to the point of handling a response is a
-      // hard error.
+      logger.error(`Call to upload encounter ${e.id} from ${e.site} failed`);
+
       if (error.response != null) {
-        logger.error(
-          "Unexpected status code uploading encounter " +
-            error.response.status.toString()
-        );
-      } else {
-        logger.error(
-          "Call to upload encounter " +
-            id.toString() +
-            " failed with no response"
-        );
+        logger.error(`Unexpected status code ${error.response.status}`);
       }
 
       throw error;
     }
-  }
-
-  /**
-   * Writes a record of an upload to the database to indicate completeness for
-   * this workflow.
-   * @param ids Database identifiers for the records successfully uploaded.
-   */
-  public async commitUploads(ids: number[]): Promise<number[]> {
-    if (ids.length === 0) {
-      return [];
-    }
-
-    const uploadIds = ids.map(id => ({ visitId: id }));
-    const dbRecords = await this.uploads.bulkCreate(uploadIds);
-    return dbRecords.map(u => u.visitId);
   }
 }

@@ -1,3 +1,4 @@
+
 // Copyright (c) 2018 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
@@ -28,7 +29,7 @@ describe("incentive recipients", () => {
       piiData
     );
 
-    const i = new FollowUpSurveys(instance(dao), undefined);
+    const i = new FollowUpSurveys(instance(dao), undefined, undefined);
     const result = await i.getBatch();
 
     expect(result.id).toBe(batch.id);
@@ -44,7 +45,7 @@ describe("incentive recipients", () => {
     );
     when(dao.trackBatch(surveyBatch.items)).thenResolve(surveyBatch);
 
-    const i = new FollowUpSurveys(instance(dao), undefined);
+    const i = new FollowUpSurveys(instance(dao), undefined, undefined);
     await i.getBatch();
 
     verify(dao.trackBatch(surveyBatch.items)).called();

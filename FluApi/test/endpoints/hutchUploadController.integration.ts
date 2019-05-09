@@ -26,14 +26,28 @@ import {
 } from "../../src/models/db/sniffles";
 import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
+import {
+  defineFeverModels,
+  FeverModels,
+  SurveyInstance
+} from "../../src/models/db/fever";
+import { SurveyDocumentBuilder } from "../surveyDocumentBuilder";
+import {
+  PIIInfo,
+  SurveyNonPIIDbInfo,
+  SurveyDocument
+} from "audere-lib/feverProtocol";
+import { Encounter } from "audere-lib/hutchProtocol";
 
 describe("export controller", () => {
   let sql;
   let internalApp;
   let publicApp;
-  let models;
+  let feverModels: FeverModels;
+  let snifflesModels;
   let hutchUpload;
-  let accessKey;
+  let feverAccessKey;
+  let snifflesAccessKey;
   let geocodingConfig;
   let hutchConfig;
 
@@ -43,28 +57,66 @@ describe("export controller", () => {
     const config = { sql, sessionStore };
     publicApp = await createPublicApp(config);
     internalApp = createInternalApp(config);
-    models = defineSnifflesModels(sql);
+    feverModels = defineFeverModels(sql);
+    snifflesModels = defineSnifflesModels(sql);
     hutchUpload = defineHutchUpload(sql);
-    accessKey = await models.accessKey.create({
+    feverAccessKey = await feverModels.accessKey.create({
       key: "accesskey1",
       valid: true
     });
+    snifflesAccessKey = await snifflesModels.accessKey.create({
+      key: "accesskey1",
+      valid: true
+    });
+
     const secrets = new SecretConfig(sql);
     geocodingConfig = await getGeocodingConfig(secrets);
     hutchConfig = await getHutchConfig(secrets);
     done();
   });
 
+  beforeEach(async () => {
+    await cleanupFever();
+    await cleanupSniffles();
+  });
+
   afterAll(async done => {
-    await accessKey.destroy();
+    await feverAccessKey.destroy();
+    await snifflesAccessKey.destroy();
+    await cleanupFever();
+    await cleanupSniffles();
     await sql.close();
     done();
   });
 
-  async function destroyVisits(
-    instances: (VisitNonPIIInstance | VisitPIIInstance)[]
-  ): Promise<void[]> {
-    return Promise.all(instances.map(i => i.destroy()));
+  async function cleanupFever() {
+    await feverModels.surveyNonPii.destroy({ where: {} });
+    await feverModels.surveyPii.destroy({ where: {} });
+    await feverModels.followUpSurveys.destroy({ where: {} });
+  }
+
+  async function cleanupSniffles() {
+    await snifflesModels.visitPii.destroy({ where: {} });
+    await snifflesModels.visitNonPii.destroy({ where: {} });
+  }
+
+  async function createSurvey(
+    survey: SurveyDocument
+  ): Promise<[SurveyInstance<SurveyNonPIIDbInfo>, SurveyInstance<PIIInfo>]> {
+    await request(publicApp)
+      .put(`/api/fever/documents/${feverAccessKey.key}/${survey.csruid}`)
+      .send(survey)
+      .expect(200);
+
+    const surveyPii = await feverModels.surveyPii.findOne({
+      where: { csruid: survey.csruid }
+    });
+
+    const surveyNonPii = await feverModels.surveyNonPii.findOne({
+      where: { csruid: survey.csruid }
+    });
+
+    return [surveyNonPii, surveyPii];
   }
 
   async function createVisit(
@@ -87,15 +139,15 @@ describe("export controller", () => {
     };
 
     await request(publicApp)
-      .put(`/api/documents/${accessKey.key}/${csruid}`)
+      .put(`/api/documents/${snifflesAccessKey.key}/${csruid}`)
       .send(contents)
       .expect(200);
 
-    const visitPii = await models.visitPii.findOne({
+    const visitPii = await snifflesModels.visitPii.findOne({
       where: { csruid: csruid }
     });
 
-    const visitNonPii = await models.visitNonPii.findOne({
+    const visitNonPii = await snifflesModels.visitNonPii.findOne({
       where: { csruid: csruid }
     });
 
@@ -103,7 +155,7 @@ describe("export controller", () => {
   }
 
   describe("get pending encounters", () => {
-    it("should retrieve only completed vists", async () => {
+    it("should retrieve completed vists and surveys", async () => {
       await request(internalApp)
         .get("/api/export/getEncounters")
         .expect(200)
@@ -117,23 +169,44 @@ describe("export controller", () => {
       const visit2 = new VisitInfoBuilder().withComplete(false).build();
       const c2 = await createVisit(visitId2, visit2);
 
-      try {
-        await request(internalApp)
-          .get("/api/export/getEncounters")
-          .expect(200)
-          .expect(bodyOnlyContainsFirstVisit);
+      const surveyId1 = "1A2B3C-_".repeat(8);
+      const survey1 = new SurveyDocumentBuilder(surveyId1).build();
+      const c3 = await createSurvey(survey1);
 
-        function bodyOnlyContainsFirstVisit(res) {
-          expect(res.body.encounters).toHaveLength(1);
-          if (!visitId1.startsWith(res.body.encounters[0].id)) {
-            throw new Error(
-              "Encounter id is not a prefix of the correct csruid, this is " +
-                "not the correct record"
-            );
-          }
+      const surveyId2 = "Z9Y8X7-_".repeat(8);
+      const survey2 = new SurveyDocumentBuilder(surveyId2)
+        .withSamples([])
+        .build();
+      const c4 = await createSurvey(survey2);
+
+      const surveyId3 = "A0B0C0-_".repeat(8);
+      const survey3 = new SurveyDocumentBuilder(surveyId3)
+        .withDemoMode()
+        .build();
+      const c5 = await createSurvey(survey3);
+
+      await request(internalApp)
+        .get("/api/export/getEncounters")
+        .expect(200)
+        .expect(bodyOnlyContainsFirstVisitAndSurvey);
+
+      function bodyOnlyContainsFirstVisitAndSurvey(res) {
+        expect(res.body.encounters).toHaveLength(2);
+        const encounters = <Encounter[]>res.body.encounters;
+
+        if (!encounters.some(e => visitId1.startsWith(e.id))) {
+          throw new Error(
+            "Encounter id is not a prefix of the correct csruid, no record " +
+              "matches the valid visit"
+          );
         }
-      } finally {
-        await destroyVisits([...c1, ...c2]);
+
+        if (!encounters.some(e => surveyId1.startsWith(e.id))) {
+          throw new Error(
+            "Encounter id is not a prefix of the correct csruid, no record " +
+              "matches the valid survey"
+          );
+        }
       }
     });
 
@@ -142,16 +215,71 @@ describe("export controller", () => {
       const visit1 = new VisitInfoBuilder().build();
       const c1 = await createVisit(visitId1, visit1);
 
-      try {
-        await hutchUpload.bulkCreate([{ visitId: +c1[0].id }]);
+      const surveyId1 = "DEF666-_".repeat(8);
+      const survey1 = new SurveyDocumentBuilder(surveyId1).build();
+      const c2 = await createSurvey(survey1);
 
-        await request(internalApp)
-          .get("/api/export/getEncounters")
-          .expect(200)
-          .expect(res => expect(res.body.encounters).toHaveLength(0));
-      } finally {
-        await destroyVisits(c1);
-      }
+      await hutchUpload.bulkCreate([
+        { visitId: +c1[0].id },
+        { surveyId: +c2[0].id }
+      ]);
+
+      await request(internalApp)
+        .get("/api/export/getEncounters")
+        .expect(200)
+        .expect(res => expect(res.body.encounters).toHaveLength(0));
+    });
+
+    it("should include follow-up survey data if present", async () => {
+      jest.setTimeout(10000000);
+      const surveyId1 = "DEFJAM-_".repeat(8);
+      const survey1 = new SurveyDocumentBuilder(surveyId1)
+        .withEmail("surveytaker@surveymonkey.com")
+        .build();
+      const c = await createSurvey(survey1);
+
+      await feverModels.followUpSurveys.create({
+        email: "surveytaker@surveymonkey.com",
+        survey: {
+          record_id: 1,
+          email: "surveytaker@surveymonkey.com",
+          daily_activity: 1,
+          medications: 2,
+          care___1: 0,
+          care___2: 1,
+          care___3: 0,
+          care___4: 1,
+          care___5: 0,
+          care___6: 1,
+          care___7: 0,
+          care___8: 0,
+          care_other: undefined,
+          found_study: 3
+        }
+      });
+
+      await request(internalApp)
+        .get("/api/export/getEncounters")
+        .expect(200)
+        .expect(res => {
+          expect(res.body.encounters).toHaveLength(1);
+
+          const dailyActivity = res.body.encounters[0].responses
+            .find(r => r.question.token === "daily_activity");
+          expect(dailyActivity).not.toBeNull();
+
+          const medications = res.body.encounters[0].responses
+            .find(r => r.question.token === "medications");
+          expect(medications).not.toBeNull();
+
+          const care = res.body.encounters[0].responses
+            .find(r => r.question.token === "care");
+          expect(care).not.toBeNull();
+
+          const foundStudy = res.body.encounters[0].responses
+            .find(r => r.question.token === "care");
+          expect(foundStudy).not.toBeNull();
+        });
     });
   });
 
@@ -161,37 +289,28 @@ describe("export controller", () => {
       const visit1 = new VisitInfoBuilder().build();
       const c = await createVisit(visitId1, visit1);
 
-      try {
-        nock(hutchConfig.baseUrl)
-          .post(new RegExp(".*"), new RegExp(".*ABC123.*"))
-          .reply(200);
+      nock(hutchConfig.baseUrl)
+        .post(new RegExp(".*"), new RegExp(".*ABC123.*"))
+        .reply(200);
 
-        const response = await request(internalApp)
-          .get("/api/export/sendEncounters")
-          .expect(200);
+      const response = await request(internalApp)
+        .get("/api/export/sendEncounters")
+        .expect(200);
 
-        expect(response.body.sent).toHaveLength(1);
-        expect(response.body.sent[0]).toBe(c[0].id);
+      const uploaded = await hutchUpload.findAll({
+        where: {
+          visitId: c[0].id
+        }
+      });
 
-        const uploaded = await hutchUpload.findAll({
-          where: {
-            visitId: c[0].id
-          }
-        });
-
-        expect(uploaded.length).toBe(1);
-        expect(uploaded[0].visitId).toBe(+c[0].id);
-      } finally {
-        await destroyVisits(c);
-      }
+      expect(uploaded.length).toBe(1);
+      expect(uploaded[0].visitId).toBe(+c[0].id);
     });
 
     it("should not require communication with external services when there are no pending records", async () => {
       const response = await request(internalApp)
         .get("/api/export/sendEncounters")
         .expect(200);
-
-      expect(response.body.sent.length).toBe(0);
     });
 
     it("should not retrieve demo records", async () => {
@@ -202,8 +321,6 @@ describe("export controller", () => {
       const response = await request(internalApp)
         .get("/api/export/sendEncounters")
         .expect(200);
-
-      expect(response.body.sent.length).toBe(0);
     });
 
     it("should error if geocoding fails", async () => {
@@ -220,17 +337,13 @@ describe("export controller", () => {
       const visit1 = new VisitInfoBuilder().withAddress(address).build();
       const c1 = await createVisit(visitId1, visit1);
 
-      try {
-        nock(geocodingConfig.baseUrl)
-          .get(new RegExp(".*"))
-          .reply(400);
+      nock(geocodingConfig.baseUrl)
+        .get(new RegExp(".*"))
+        .reply(400);
 
-        await request(internalApp)
-          .get("/api/export/sendEncounters")
-          .expect(500);
-      } finally {
-        await destroyVisits(c1);
-      }
+      await request(internalApp)
+        .get("/api/export/sendEncounters")
+        .expect(500);
     });
 
     it("should batch data sent to the geocoding service", async () => {
@@ -255,22 +368,18 @@ describe("export controller", () => {
 
       const c = await Promise.all(visits);
 
-      try {
-        nock(geocodingConfig.baseUrl)
-          .post(new RegExp(".*"))
-          .reply(200, rawResponse);
+      nock(geocodingConfig.baseUrl)
+        .post(new RegExp(".*"))
+        .reply(200, rawResponse);
 
-        nock(hutchConfig.baseUrl)
-          .post(new RegExp(".*"))
-          .times(10)
-          .reply(200);
+      nock(hutchConfig.baseUrl)
+        .post(new RegExp(".*"))
+        .times(10)
+        .reply(200);
 
-        await request(internalApp)
-          .get("/api/export/sendEncounters")
-          .expect(200);
-      } finally {
-        await destroyVisits([...c[0], ...c[1]]);
-      }
+      await request(internalApp)
+        .get("/api/export/sendEncounters")
+        .expect(200);
     });
   });
 });

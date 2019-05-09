@@ -5,7 +5,7 @@
 
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 import { AddressInfo, AddressInfoUse } from "audere-lib/snifflesProtocol";
-import { GeocodingResponse } from "../models/geocoding";
+import { GeocodingResponse, GeocodedAddress } from "../models/geocoding";
 import { Geocoder } from "../services/geocodingService";
 import logger from "../util/logger";
 
@@ -57,7 +57,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
    * records.
    */
   public async geocode(
-    addresses: Map<number, AddressInfo[]>
+    addresses: Map<string, AddressInfo[]>
   ): Promise<GeocodingResponse[]> {
     const lookups: SmartyStreetsSDK.usStreet.Lookup[] = [];
 
@@ -89,7 +89,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
   }
 
   private createLookup(
-    k: number,
+    k: string,
     a: AddressInfo
   ): SmartyStreetsSDK.usStreet.Lookup {
     const lookup = new SmartyStreetsSDK.usStreet.Lookup();
@@ -123,38 +123,37 @@ export class SmartyStreetsGeocoder implements Geocoder {
     const responses = [];
 
     response.lookups.forEach(lookup => {
-      const inputIds = lookup.inputId.split("_");
-      const id = +inputIds[0];
+      const input = (<string>lookup.inputId).split("_");
+      const useInput = input.pop();
+      const id = input.join("_");
 
       // Converts string back to enumeration.
       const useKey = Object.keys(AddressInfoUse).find(
-        k => AddressInfoUse[k] === inputIds[1]
+        k => AddressInfoUse[k] === useInput
       );
       const use = AddressInfoUse[useKey];
 
       // TODO: If there is no geocoded result is the record invalid?
-      if (lookup.result != null && lookup.result.length > 0) {
-        // We ask for max 1 candidate by default.
-        const result = lookup.result[0];
+      if (Array.isArray(lookup.result) && lookup.result.length > 0) {
+        const results = <any[]>lookup.result;
+        const addresses = [];
 
-        const address = [
-          result.deliveryLine1,
-          result.deliveryLine2,
-          result.lastLine
-        ]
-          .filter(c => c != null)
-          .join(", ");
+        results.forEach(result => {
+          const addressParts = [
+            result.deliveryLine1,
+            result.deliveryLine2,
+            result.lastLine
+          ]
+            .filter(c => c != null)
+            .join(", ");
 
-        const latitude = result.metadata.latitude;
-        const longitude = result.metadata.longitude;
+          const latitude = result.metadata.latitude;
+          const longitude = result.metadata.longitude;
+          const { cityName, state, zipCode }: any = result.components || {};
 
-        const { cityName, state, zipCode }: any = result.components || {};
-
-        const r: GeocodingResponse = {
-          id: id,
-          use: use,
-          address: {
-            canonicalAddress: address.length > 0 ? address : undefined,
+          const address: GeocodedAddress = {
+            canonicalAddress:
+              addressParts.length > 0 ? addressParts : undefined,
             address1: result.deliveryLine1,
             address2: result.deliveryLine2,
             city: cityName,
@@ -162,7 +161,15 @@ export class SmartyStreetsGeocoder implements Geocoder {
             latitude: latitude,
             longitude: longitude,
             postalCode: zipCode
-          }
+          };
+
+          addresses.push(address);
+        });
+
+        const r: GeocodingResponse = {
+          id: id,
+          use: use,
+          addresses: addresses
         };
 
         responses.push(r);

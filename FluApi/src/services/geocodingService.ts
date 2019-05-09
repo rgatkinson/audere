@@ -3,24 +3,26 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { AddressInfo } from "audere-lib/snifflesProtocol";
-import { Op } from "sequelize";
-import moment from "moment";
+import { AddressInfo } from "audere-lib/common";
+import { CensusTractService, LatLng } from "./censusTractService";
 import { GeocodingResponse } from "../models/geocoding";
+import { AddressDetails } from "../models/encounterDetails";
+import { Op } from "sequelize";
 import {
   SmartyStreetsResponseModel,
   SmartyStreetsResponseAttributes
 } from "../models/db/smartyStreetsResponses";
-import { CensusTractService, LatLng } from "./censusTractService";
 import logger from "../util/logger";
+import moment from "moment";
+import _ from "lodash";
 
 export interface Geocoder {
-  geocode(addresses: Map<number, AddressInfo[]>): Promise<GeocodingResponse[]>;
+  geocode(addresses: Map<string, AddressInfo[]>): Promise<GeocodingResponse[]>;
 }
 
 type GetCachedAddressesResult = {
   cachedResults: GeocodingResponse[];
-  uncachedAddressesMap: Map<number, AddressInfo[]>;
+  uncachedAddressesMap: Map<string, AddressInfo[]>;
 };
 
 /**
@@ -45,11 +47,12 @@ export class GeocodingService {
   /**
    * Performs address canonicalization, lat/lng lookup, and census tract lookup
    * on a set of addresses.
+   *
    * @param addresses A set of addresses keyed by a stable identifier that will
    * be present in the output if data is found.
    */
   public async geocodeAddresses(
-    addresses: Map<number, AddressInfo[]>
+    addresses: Map<string, AddressDetails[]>
   ): Promise<GeocodingResponse[]> {
     const {
       cachedResults,
@@ -62,24 +65,25 @@ export class GeocodingService {
     logger.info(
       `[Geocoder] Requesting ${uncachedAddressesCount} addresses from smartystreets`
     );
+
     const results = await this.geocoder.geocode(uncachedAddressesMap);
     logger.info(
       `[Geocoder] Received ${results.length} responses from smartystreets`
     );
 
     await this.updateAddressCache(uncachedAddressesMap, results);
-
     return results.concat(cachedResults);
   }
 
   private async getCachedAddresses(
-    addresses: Map<number, AddressInfo[]>
+    addresses: Map<string, AddressDetails[]>
   ): Promise<GetCachedAddressesResult> {
     const allAddressInfos = [];
-    Array.from(addresses.values()).forEach(addressInfos =>
-      allAddressInfos.push(...addressInfos.map(canonicalizeAddressInfo))
+    addresses.forEach((v, k) =>
+      allAddressInfos.push(...v.map(a => canonicalizeAddressInfo(a.value)))
     );
     logger.info(`[Geocoder] Geocoding ${allAddressInfos.length} addresses`);
+
     const cachedResponses = await this.smartyStreetResponses.findAll({
       where: {
         inputAddress: {
@@ -93,35 +97,33 @@ export class GeocodingService {
       }
     });
 
-    const uncachedAddressesMap: Map<number, AddressInfo[]> = new Map();
+    const uncachedAddressesMap: Map<string, AddressInfo[]> = new Map();
     const cachedResults: GeocodingResponse[] = [];
     let emptyCachedResponseCount = 0;
-    addresses.forEach((addressInfos, key) => {
-      const uncachedAddresses = [];
-      addressInfos.forEach(addressInfo => {
-        const cachedResponse = cachedResponses.find(response => {
-          return addressInfosEqual(
-            response.inputAddress,
-            canonicalizeAddressInfo(addressInfo)
-          );
-        });
-        if (cachedResponse) {
-          if (cachedResponse.responseAddresses.length > 0) {
+
+    addresses.forEach((v, k) => {
+      v.forEach(addressInfo => {
+        const a = canonicalizeAddressInfo(addressInfo.value);
+        const c = cachedResponses.find(r =>
+          addressInfosEqual(r.inputAddress, a)
+        );
+
+        if (c != null) {
+          if (c.responseAddresses.length > 0) {
             cachedResults.push({
-              id: key,
+              id: k,
               use: addressInfo.use,
-              address: cachedResponse.responseAddresses[0]
+              addresses: c.responseAddresses
             });
           } else {
             emptyCachedResponseCount++;
           }
         } else {
-          uncachedAddresses.push(addressInfo);
+          const uncached = uncachedAddressesMap.get(k) || [];
+          uncached.push(a);
+          uncachedAddressesMap.set(k, uncached);
         }
       });
-      if (uncachedAddresses.length > 0) {
-        uncachedAddressesMap.set(key, uncachedAddresses);
-      }
     });
 
     logger.info(
@@ -136,22 +138,22 @@ export class GeocodingService {
   }
 
   private async updateAddressCache(
-    uncachedAddressesMap: Map<number, AddressInfo[]>,
+    uncachedAddressesMap: Map<string, AddressInfo[]>,
     results: GeocodingResponse[]
   ): Promise<void> {
     const newResponses: SmartyStreetsResponseAttributes[] = [];
+
     for (let [key, addresses] of uncachedAddressesMap.entries()) {
       addresses.forEach(address => {
-        const result = results.find(
-          result => result.id === key && result.use === address.use
-        );
+        const result = results.find(result => result.id === key);
+
         newResponses.push({
           inputAddress: canonicalizeAddressInfo(address),
-          maxCandidates: 1,
-          responseAddresses: result ? [result.address] : []
+          responseAddresses: result == null ? [] : result.addresses
         });
       });
     }
+
     await this.smartyStreetResponses.bulkCreate(newResponses, {
       ignoreDuplicates: true
     });
@@ -162,33 +164,40 @@ export class GeocodingService {
    * @param addresses Geocoded address data lacking census tract information.
    */
   public async appendCensusTract(
-    addresses: GeocodingResponse[]
+    responses: GeocodingResponse[]
   ): Promise<GeocodingResponse[]> {
-    const latlng: LatLng[] = addresses
-      .filter(a => a.address != null)
-      .map(a => ({
-        latitude: a.address.latitude,
-        longitude: a.address.longitude
-      }));
+    const latlng: LatLng[] = [];
+
+    responses
+      .filter(r => r.addresses != null)
+      .forEach(r => {
+        const coordinates = r.addresses.map(a => ({
+          latitude: a.latitude,
+          longitude: a.longitude
+        }));
+        latlng.push(...coordinates);
+      });
 
     const unique = Array.from(new Set(latlng));
 
     if (unique.length > 0) {
       logger.info(`[Geocoder] Querying coordinates for census data`);
       const tracts = await this.censusTractService.lookupCensusTract(unique);
-      const appended = addresses.map(a => {
-        if (a.address != null) {
-          const key = a.address.latitude + "|" + a.address.longitude;
-          const tract = tracts.get(key);
-          a.address.censusTract = tract;
+      const appended = responses.map(r => {
+        if (r.addresses != null) {
+          r.addresses.forEach(a => {
+            const key = a.latitude + "|" + a.longitude;
+            const tract = tracts.get(key);
+            a.censusTract = tract;
+          });
         }
 
-        return a;
+        return r;
       });
 
       return appended;
     } else {
-      return addresses;
+      return responses;
     }
   }
 }
@@ -224,12 +233,19 @@ export function cleanAddressString(str: string): string {
   if (!str || !str.toUpperCase) {
     return str;
   }
+
   return str.toUpperCase().replace(/[,.]/g, "");
 }
 
 export function canonicalizeAddressInfo(address: AddressInfo): AddressInfo {
   address = { ...address };
-  delete address.use;
+
+  // Removes known properties from types implementing the AddressInfo interface
+  delete (<any>address).use;
+  delete (<any>address).name;
+  delete (<any>address).firstName;
+  delete (<any>address).lastName;
+
   for (let part in address) {
     if (Array.isArray(address[part])) {
       address[part] = address[part].map(cleanAddressString);
@@ -237,5 +253,6 @@ export function canonicalizeAddressInfo(address: AddressInfo): AddressInfo {
       address[part] = cleanAddressString(address[part]);
     }
   }
+
   return address;
 }

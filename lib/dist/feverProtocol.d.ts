@@ -1,9 +1,30 @@
-export interface ProtocolDocumentBase {
-    documentType: string;
-    schemaId: number;
-    csruid: string;
-    device: DeviceInfo;
+import * as common from "./common";
+export import ProtocolDocumentBase = common.ProtocolDocumentBase;
+export import DeviceInfo = common.DeviceInfo;
+export import GpsLocationInfo = common.GpsLocationInfo;
+export import SampleInfo = common.SampleInfo;
+export import PatientInfoGender = common.PatientInfoGender;
+export import TelecomInfo = common.TelecomInfo;
+export import TelecomInfoSystem = common.TelecomInfoSystem;
+export import AddressInfoUse = common.AddressInfoUse;
+export import ConsentInfoSignerType = common.ConsentInfoSignerType;
+export import QuestionInfo = common.QuestionInfo;
+export import QuestionAnswerOption = common.QuestionAnswerOption;
+export interface ResponseInfo {
+    id: string;
+    item: ResponseItemInfo[];
 }
+export interface ResponseItemInfo extends QuestionInfo {
+    answer: AnswerInfo[];
+}
+export interface AnswerInfo extends common.AnswerInfo {
+    valueAddress?: AddressValueInfo;
+}
+export interface AddressValueInfo extends common.AddressInfo {
+    firstName?: string;
+    lastName?: string;
+}
+export import OtherValueInfo = common.OtherValueInfo;
 export declare enum DocumentType {
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
@@ -11,13 +32,6 @@ export declare enum DocumentType {
     Photo = "PHOTO"
 }
 export declare type ProtocolDocument = SurveyDocument | FeedbackDocument | AnalyticsDocument | PhotoDocument;
-export interface DeviceInfo {
-    installation: string;
-    clientVersion: string;
-    yearClass: string;
-    idiomText: string;
-    platform: string;
-}
 export interface PIIInfo extends CommonInfo {
     gps_location?: GpsLocationInfo;
     patient: PatientInfo;
@@ -45,10 +59,6 @@ export interface SurveyNonPIIInfo extends CommonInfo {
     invalidBarcodes?: SampleInfo[];
     responses: ResponseInfo[];
 }
-export interface GpsLocationInfo {
-    latitude: string;
-    longitude: string;
-}
 export interface PushNotificationState {
     showedSystemPrompt: boolean;
     softResponse?: boolean;
@@ -60,10 +70,6 @@ export interface PushRegistrationError {
     code: number;
     details: string;
 }
-export interface SampleInfo {
-    sample_type: string;
-    code: string;
-}
 export interface PatientInfo {
     firstName?: string;
     lastName?: string;
@@ -72,28 +78,8 @@ export interface PatientInfo {
     telecom: TelecomInfo[];
     address: AddressInfo[];
 }
-export declare enum PatientInfoGender {
-    Male = "male",
-    Female = "female",
-    Other = "other",
-    Unknown = "unknown"
-}
-export interface TelecomInfo {
-    system: TelecomInfoSystem;
-    value: string;
-}
-export declare enum TelecomInfoSystem {
-    Phone = "phone",
-    SMS = "sms",
-    Email = "email"
-}
 export interface AddressInfo extends AddressValueInfo {
     use: AddressInfoUse;
-}
-export declare enum AddressInfoUse {
-    Home = "home",
-    Work = "work",
-    Temp = "temp"
 }
 export interface NonPIIConsentInfo {
     terms: string;
@@ -108,58 +94,12 @@ export interface ConsentInfo extends NonPIIConsentInfo {
     signature?: string;
     relation?: string;
 }
-export declare enum ConsentInfoSignerType {
-    Subject = "Subject",
-    Parent = "Parent",
-    Representative = "Representative",
-    Researcher = "Researcher"
-}
 export interface WorkflowInfo {
     screeningCompletedAt?: string;
     surveyCompletedAt?: string;
     surveyStartedAt?: string;
     skippedScreeningAt?: string;
     [key: string]: string | undefined;
-}
-export interface ResponseInfo {
-    id: string;
-    item: ResponseItemInfo[];
-}
-export interface ResponseItemInfo extends QuestionInfo {
-    answer: AnswerInfo[];
-}
-export interface QuestionInfo {
-    id: string;
-    text: string;
-    answerOptions?: QuestionAnswerOption[];
-}
-export interface QuestionAnswerOption {
-    id: string;
-    text: string;
-}
-export interface AnswerInfo {
-    valueBoolean?: boolean;
-    valueDateTime?: string;
-    valueDecimal?: number;
-    valueInteger?: number;
-    valueString?: string;
-    valueAddress?: AddressValueInfo;
-    valueIndex?: number;
-    valueOther?: OtherValueInfo;
-    valueDeclined?: boolean;
-}
-export interface AddressValueInfo {
-    firstName?: string;
-    lastName?: string;
-    line: string[];
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-}
-export interface OtherValueInfo {
-    selectedIndex: Number;
-    valueString: string;
 }
 export interface FeedbackDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Feedback;
@@ -202,11 +142,8 @@ export interface PhotoInfo {
     timestamp: string;
     jpegBase64: string;
 }
-export interface EventInfo {
+export interface EventInfo extends common.EventInfo {
     kind: EventInfoKind;
-    at: string;
-    until?: string;
-    refId?: string;
 }
 export declare enum EventInfoKind {
     Response = "response",

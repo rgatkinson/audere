@@ -127,3 +127,15 @@ module "fever_received_kits_cron" {
   timeout = 300
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
+
+module "fever_follow_up_surveys_cron" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-follow-up-surveys"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "${local.cron_weekdays_at_4AM_PST}"
+  url = "http://${var.fluapi_fqdn}:444/api/import/followUpSurveys"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  timeout = 300
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+}

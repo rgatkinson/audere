@@ -50,8 +50,10 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
    * Render output report based on the collected batch data.
    */
   public async buildReport(batch: Batch<KitRecipient>): Promise<RenderResult> {
-    const addresses = new Map();
-    batch.items.forEach(i => addresses.set(i.workflowId, [i.homeAddress]));
+    const addresses: Map<string, AddressInfo[]> = new Map();
+    batch.items.forEach(i =>
+      addresses.set(i.workflowId.toString(), [i.homeAddress])
+    );
     logger.info(`[${this.report}] Validating report addresses`);
     const geocodedAddresses = await this.geocoder.geocodeAddresses(addresses);
 
@@ -59,17 +61,19 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
     const discarded = [];
 
     batch.items.forEach(i => {
-      const geocoded = geocodedAddresses.find(a => a.id === i.workflowId);
+      const geocoded = geocodedAddresses.find(
+        a => a.id === i.workflowId.toString()
+      );
 
       if (geocoded != null) {
         const row = {
           "First Name": i.firstName,
           "Last Name": i.lastName,
-          "Address 1": geocoded.address.address1,
-          "Address 2": geocoded.address.address2,
-          City: geocoded.address.city,
-          State: geocoded.address.state,
-          Zip: geocoded.address.postalCode,
+          "Address 1": geocoded.addresses[0].address1,
+          "Address 2": geocoded.addresses[0].address2,
+          City: geocoded.addresses[0].city,
+          State: geocoded.addresses[0].state,
+          Zip: geocoded.addresses[0].postalCode,
           Email: i.email,
           Timestamp: i.timestamp,
           "Workflow ID": i.workflowId.toFixed(),

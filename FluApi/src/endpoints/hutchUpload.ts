@@ -3,16 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { EncountersService } from "../services/sniffles/encountersService";
-import {
-  defaultNumEncounters,
-  hutchConcurrentUploads,
-  getHashSecret
-} from "../util/exportConfig";
+import { EncountersService } from "../services/encountersService";
+import { hutchConcurrentUploads, getHashSecret } from "../util/exportConfig";
 import { HutchUploader } from "../external/hutchUploader";
-import { VisitsService } from "../services/sniffles/visitsService";
+import { EncounterDetailsService } from "../services/encounterDetailsService";
 import { defineHutchUpload } from "../models/db/hutchUpload";
 import { getHutchConfig } from "../util/hutchUploadConfig";
+import { defineFeverModels } from "../models/db/fever";
 import { defineSnifflesModels } from "../models/db/sniffles";
 import { createAxios } from "../util/axios";
 import { SplitSql } from "../util/sql";
@@ -46,9 +43,8 @@ export class HutchUploaderEndpoint {
   public async getEncounters(req, res, next) {
     try {
       const service = await this.lazyEncountersService();
-      const maxToRetrieve = +req.query.limit || defaultNumEncounters;
-      const enc = await service.getEncounters(maxToRetrieve);
-      res.json({ encounters: Array.from(enc.values()) });
+      const enc = await service.getEncounters();
+      res.json({ encounters: enc.map(e => e.encounter) });
     } catch (e) {
       next(e);
     }
@@ -60,9 +56,8 @@ export class HutchUploaderEndpoint {
   public async sendEncounters(req, res, next) {
     try {
       const service = await this.lazyEncountersService();
-      const maxToSend = +req.query.limit || defaultNumEncounters;
-      const result = await service.sendEncounters(maxToSend);
-      res.json({ sent: result.sent, erred: result.erred });
+      const result = await service.sendEncounters();
+      res.sendStatus(200);
     } catch (e) {
       next(e);
     }
@@ -81,16 +76,21 @@ async function createEncountersService(
     axiosClient,
     hutchConcurrentUploads,
     hutchConfig.user,
-    hutchConfig.password,
-    hutchUploadModel
+    hutchConfig.password
   );
 
-  const visits: VisitsService = new VisitsService(
+  const encounterDetails: EncounterDetailsService = new EncounterDetailsService(
+    defineFeverModels(sql),
     defineSnifflesModels(sql),
     hutchUploadModel
   );
 
   const hashSecret = await getHashSecret(secrets);
 
-  return new EncountersService(geocoder, uploader, visits, hashSecret);
+  return new EncountersService(
+    geocoder,
+    uploader,
+    encounterDetails,
+    hashSecret
+  );
 }

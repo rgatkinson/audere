@@ -59,6 +59,16 @@ export class FeverCronReportEndpoint {
     }
   }
 
+  async importFollowUpSurveys(req, res, next) {
+    try {
+      const service = await this.followUps.get();
+      await service.importFollowUpResults();
+      res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async sendIncentives(req, res, next) {
     try {
       const service = await this.incentives.get();
@@ -139,7 +149,10 @@ async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
   const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, s3Config);
-  return new FollowUpSurveys(dao, uploader);
+  const redCapConfig = await getREDCapConfig(secrets);
+  const axios = createAxios(redCapConfig.apiUrl);
+  const retriever = new REDCapClient(axios, redCapConfig);
+  return new FollowUpSurveys(dao, uploader, retriever);
 }
 
 async function createReceivedKits(sql: SplitSql): Promise<ReceivedKits> {

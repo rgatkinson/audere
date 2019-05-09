@@ -8,16 +8,28 @@ import {
   Model,
   SplitSql,
   integerColumn,
-  unique
+  unique,
+  nullable
 } from "../../util/sql";
+import { Sequelize } from "sequelize";
 
 export interface HutchUploadAttributes {
   id?: number;
   visitId: number;
+  surveyId: number;
 }
+
 export type HutchUploadModel = Model<HutchUploadAttributes>;
+
 export function defineHutchUpload(sql: SplitSql): HutchUploadModel {
-  return defineModel<HutchUploadAttributes>(sql.nonPii, "hutch_upload", {
-    visitId: unique(integerColumn("visit_id"))
+  return defineHutchUploadSequelize(sql.nonPii);
+}
+
+export function defineHutchUploadSequelize(
+  sequelize: Sequelize
+): HutchUploadModel {
+  return defineModel<HutchUploadAttributes>(sequelize, "hutch_upload", {
+    visitId: nullable(unique(integerColumn("visit_id"))),
+    surveyId: nullable(unique(integerColumn("survey_id")))
   });
 }

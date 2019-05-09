@@ -51,7 +51,7 @@ describe("feverValidateAddress", () => {
       {
         id: "1_home",
         use: AddressInfoUse.Home,
-        address: geocodedAddress
+        addresses: [geocodedAddress]
       }
     ];
     when(mockGeocoder.geocodeAddresses(anything())).thenReturn(

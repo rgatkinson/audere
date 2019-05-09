@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { anything, instance, mock, verify, when } from "ts-mockito";
-import { AddressInfo, AddressInfoUse } from "audere-lib/snifflesProtocol";
+import { AddressInfo, AddressInfoUse } from "audere-lib/common";
 import { GeocodingResponse } from "../../src/models/geocoding";
 import { SmartyStreetsResponseModel } from "../../src/models/db/smartyStreetsResponses";
 import {
@@ -15,12 +15,13 @@ import {
   addressInfosEqual
 } from "../../src/services/geocodingService";
 import { CensusTractService } from "../../src/services/censusTractService";
+import { AddressDetails } from "../../src/models/encounterDetails";
 
 describe("geocoding service", () => {
   function makeClient(handle: () => GeocodingResponse[]): Geocoder {
     let client: Geocoder = {
       async geocode(
-        addresses: Map<number, AddressInfo[]>
+        addresses: Map<string, AddressInfo[]>
       ): Promise<GeocodingResponse[]> {
         return handle();
       }
@@ -31,6 +32,7 @@ describe("geocoding service", () => {
 
   function makeGeoResponse(
     id: number,
+    use: AddressInfoUse,
     request: AddressInfo,
     lat: number,
     lng: number,
@@ -44,41 +46,47 @@ describe("geocoding service", () => {
     ];
 
     return {
-      id: id,
-      use: request.use,
-      address: {
-        canonicalAddress: addressComponents.join(", "),
-        address1: request.line[0],
-        address2: request.line[1],
-        city: request.city,
-        state: request.state,
-        latitude: lat,
-        longitude: lng,
-        postalCode: postalCode
-      }
+      id: id.toString(),
+      use: use,
+      addresses: [
+        {
+          canonicalAddress: addressComponents.join(", "),
+          address1: request.line[0],
+          address2: request.line[1],
+          city: request.city,
+          state: request.state,
+          latitude: lat,
+          longitude: lng,
+          postalCode: postalCode
+        }
+      ]
     };
   }
 
-  let homeAddress: AddressInfo = {
+  let homeAddress: AddressDetails = {
     use: AddressInfoUse.Home,
-    line: ["123 Place"],
-    city: "Town",
-    state: "PL",
-    postalCode: "00000",
-    country: "US"
+    value: {
+      line: ["123 Place"],
+      city: "Town",
+      state: "PL",
+      postalCode: "00000",
+      country: "US"
+    }
   };
 
   let homeLat = 4;
   let homeLng = 5;
   let homeZip = "12345";
 
-  let workAddress: AddressInfo = {
+  let workAddress: AddressDetails = {
     use: AddressInfoUse.Work,
-    line: ["456 Work"],
-    city: "City",
-    state: "PL",
-    postalCode: "00001",
-    country: "US"
+    value: {
+      line: ["456 Work"],
+      city: "City",
+      state: "PL",
+      postalCode: "00001",
+      country: "US"
+    }
   };
 
   let workLat = -13;
@@ -89,14 +97,16 @@ describe("geocoding service", () => {
   let addresses = [homeAddress, workAddress];
   let homeCoded = makeGeoResponse(
     visitId,
-    homeAddress,
+    homeAddress.use,
+    homeAddress.value,
     homeLat,
     homeLng,
     homeZip
   );
   let workCoded = makeGeoResponse(
     visitId,
-    workAddress,
+    workAddress.use,
+    workAddress.value,
     workLat,
     workLng,
     workZip
@@ -124,24 +134,24 @@ describe("geocoding service", () => {
       );
 
       let result = await geoService.geocodeAddresses(
-        new Map([[visitId, addresses]])
+        new Map([[visitId.toString(), addresses]])
       );
 
       expect(result.length).toBe(2);
 
       const homeResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Home
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Home
       );
-      expect(homeResponse.address.latitude).toBe(homeLat);
-      expect(homeResponse.address.longitude).toBe(homeLng);
-      expect(homeResponse.address.postalCode).toBe(homeZip);
+      expect(homeResponse.addresses[0].latitude).toBe(homeLat);
+      expect(homeResponse.addresses[0].longitude).toBe(homeLng);
+      expect(homeResponse.addresses[0].postalCode).toBe(homeZip);
 
       const workResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Work
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Work
       );
-      expect(workResponse.address.latitude).toBe(workLat);
-      expect(workResponse.address.longitude).toBe(workLng);
-      expect(workResponse.address.postalCode).toBe(workZip);
+      expect(workResponse.addresses[0].latitude).toBe(workLat);
+      expect(workResponse.addresses[0].longitude).toBe(workLng);
+      expect(workResponse.addresses[0].postalCode).toBe(workZip);
     });
 
     it("should append census tract details if they can be found from coordinates", async () => {
@@ -167,22 +177,22 @@ describe("geocoding service", () => {
       expect(result.length).toBe(2);
 
       const homeResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Home
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Home
       );
-      expect(homeResponse.address.censusTract).toBe(homeRegion);
+      expect(homeResponse.addresses[0].censusTract).toBe(homeRegion);
 
       const workResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Work
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Work
       );
-      expect(workResponse.address.censusTract).toBe(workRegion);
+      expect(workResponse.addresses[0].censusTract).toBe(workRegion);
     });
 
     it("should return cached responses", async () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded];
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
-          inputAddress: canonicalizeAddressInfo(workAddress),
-          responseAddresses: [workCoded.address]
+          inputAddress: canonicalizeAddressInfo(workAddress.value),
+          responseAddresses: workCoded.addresses
         }
       ]);
       let geoService: GeocodingService = new GeocodingService(
@@ -192,30 +202,30 @@ describe("geocoding service", () => {
       );
 
       let result = await geoService.geocodeAddresses(
-        new Map([[visitId, addresses]])
+        new Map([[visitId.toString(), addresses]])
       );
 
       expect(result.length).toBe(2);
 
       const homeResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Home
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Home
       );
       expect(homeResponse).toBeTruthy();
 
       const workResponse = result.find(
-        a => a.id === visitId && a.use === AddressInfoUse.Work
+        a => a.id === visitId.toString() && a.use === AddressInfoUse.Work
       );
-      expect(workResponse.address.latitude).toBe(workLat);
-      expect(workResponse.address.longitude).toBe(workLng);
-      expect(workResponse.address.postalCode).toBe(workZip);
+      expect(workResponse.addresses[0].latitude).toBe(workLat);
+      expect(workResponse.addresses[0].longitude).toBe(workLng);
+      expect(workResponse.addresses[0].postalCode).toBe(workZip);
     });
 
     it("should update the cache with new addresses", async () => {
       let geoResponse: () => GeocodingResponse[] = () => [homeCoded];
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
-          inputAddress: canonicalizeAddressInfo(workAddress),
-          responseAddresses: [workCoded.address]
+          inputAddress: canonicalizeAddressInfo(workAddress.value),
+          responseAddresses: [workCoded.addresses]
         }
       ]);
       let geoService: GeocodingService = new GeocodingService(
@@ -224,12 +234,14 @@ describe("geocoding service", () => {
         mockSmartyStreetsCache
       );
 
-      await geoService.geocodeAddresses(new Map([[visitId, addresses]]));
+      await geoService.geocodeAddresses(
+        new Map([[visitId.toString(), addresses]])
+      );
 
       expect(mockSmartyStreetsCache.cachedResponsesCreated.length).toBe(1);
       expect(
         mockSmartyStreetsCache.cachedResponsesCreated[0].responseAddresses[0]
-      ).toEqual(homeCoded.address);
+      ).toEqual(homeCoded.addresses[0]);
     });
   });
   describe("cleanAddressString", () => {

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Audere
+// Copyright (c) 2019 Audere
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import { LocationType } from "./locations";
 // MAJOR should increment when there is an incompatible or breaking change.
 // MINOR should increment when fields are added in a backwards compatible way.
 // PATCH should increment when there is a backward-compatible bug fix.
-export const schemaVersion: string = "1.0.0";
+export const schemaVersion: string = "1.1.0";
 
 // --------------------------------------------------------------------------
 // This defines types for the JSON body uploaded to the Hutch endpoint to
@@ -79,6 +79,8 @@ export interface Encounter {
   sampleCodes: SampleCode[];
   responses: Response[];
 
+  events: Event[];
+
   // Participant's age when compared to the current time during report
   // generation.  If the survey lacks a valid birth date then age will not be
   // supplied.
@@ -88,6 +90,18 @@ export interface Encounter {
 export interface Age {
   value?: number;
   ninetyOrAbove: boolean;
+}
+
+export interface Event {
+  time: string;
+  eventType: EventType;
+}
+
+export enum EventType {
+  BarcodeScanned = "BarcodeScanned",
+  ConsentSigned = "ConsentSigned",
+  StartedQuestionnaire = "StartedQuestionnaire",
+  SymptomsScreened = "SymptomsScreened"
 }
 
 export enum LocationUse {
@@ -116,10 +130,16 @@ export interface Location {
   // addresses in the same region will have the same string value here.
   // This is expected to be census tract, but exact format is TBD.
   region: string;
+
+  city: string;
+
+  state: string;
 }
 
 export enum SampleType {
-  SelfSwab = "SelfSwab",
+  StripPhoto = "StripPhoto",
+  ManualSelfSwab = "ManualSelfSwab",
+  ScannedSelfSwab = "ScannedSelfSwab",
   ClinicSwab = "ClinicSwab",
   Blood = "Blood",
   Serum = "Serum",

@@ -9,9 +9,9 @@ import { SmartyStreetsGeocoder } from "../../src/external/smartyStreetsGeocoder"
 import exampleResponse from "../resources/geocodingObjectResponse.json";
 
 describe("Smarty Streets geocoder", () => {
-  const addressInfo: Map<number, AddressInfo[]> = new Map([
+  const addressInfo: Map<string, AddressInfo[]> = new Map([
     [
-      1,
+      "1",
       [
         {
           use: AddressInfoUse.Home,
@@ -79,7 +79,7 @@ describe("Smarty Streets geocoder", () => {
       const lotsOfAddressInfo = new Map();
 
       for (let i = 1; i <= 500; i++) {
-        lotsOfAddressInfo.set(i, _.cloneDeep(addressInfo.get(1)));
+        lotsOfAddressInfo.set(i, _.cloneDeep(addressInfo.get("1")));
       }
 
       const geocoder = new SmartyStreetsGeocoder(client);
@@ -103,21 +103,21 @@ describe("Smarty Streets geocoder", () => {
       expect(
         result.some(
           x =>
-            x.id === 1 &&
+            x.id === "1" &&
             x.use === AddressInfoUse.Home &&
-            x.address.latitude === 33.28748 &&
-            x.address.longitude === -111.75881 &&
-            x.address.postalCode === "85297"
+            x.addresses[0].latitude === 33.28748 &&
+            x.addresses[0].longitude === -111.75881 &&
+            x.addresses[0].postalCode === "85297"
         )
       ).toBe(true);
       expect(
         result.some(
           x =>
-            x.id === 1 &&
+            x.id === "1" &&
             x.use === AddressInfoUse.Work &&
-            x.address.latitude === 42.41062 &&
-            x.address.longitude === -71.18248 &&
-            x.address.postalCode === "02478"
+            x.addresses[0].latitude === 42.41062 &&
+            x.addresses[0].longitude === -71.18248 &&
+            x.addresses[0].postalCode === "02478"
         )
       ).toBe(true);
     });

@@ -25,19 +25,21 @@ import {
   VisitAttributes
 } from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
-import { VisitsService } from "../../src/services/sniffles/visitsService";
+import { EncounterDetailsService } from "../../src/services/encounterDetailsService";
 import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { HutchUploader } from "../../src/external/hutchUploader";
-import { EncountersService } from "../../src/services/sniffles/encountersService";
+import { EncountersService } from "../../src/services/encountersService";
 import { setPart } from "../../scripts/util/pathEdit";
+import { defineFeverModels } from "../../src/models/db/fever";
 
 describe("VisitUpdater", () => {
   let sql;
   let updaterNonPII;
   let updaterPII;
   let publicApp;
-  let models;
+  let feverModels;
+  let snifflesModels;
   let hutchUploadModel;
   let accessKey;
 
@@ -58,9 +60,10 @@ describe("VisitUpdater", () => {
     publicApp = await createPublicApp({ sql, sessionStore });
     updaterNonPII = new VisitNonPIIUpdater(sql, log);
     updaterPII = new VisitPIIUpdater(sql, log);
-    models = defineSnifflesModels(sql);
+    feverModels = defineFeverModels(sql);
+    snifflesModels = defineSnifflesModels(sql);
     hutchUploadModel = defineHutchUpload(sql);
-    accessKey = await models.accessKey.create({
+    accessKey = await snifflesModels.accessKey.create({
       key: "accesskey1",
       valid: true
     });
@@ -222,8 +225,7 @@ describe("VisitUpdater", () => {
     const encountersService = createDbEncountersService();
 
     // Since we added two visits, we should send both.
-    const send0 = await encountersService.sendEncounters(10);
-    expect(send0.sent.length).toEqual(2);
+    const send0 = await encountersService.sendEncounters();
 
     const doc0 = await updater.load(csruid0);
     expect(doc0.csruid).toEqual(csruid0);
@@ -234,8 +236,7 @@ describe("VisitUpdater", () => {
     );
 
     // After editing one of the visits, we should resend.
-    const send1 = await encountersService.sendEncounters(10);
-    expect(send1.sent.length).toEqual(1);
+    const send1 = await encountersService.sendEncounters();
 
     await cleanup(csruid0, csruid1);
   }
@@ -244,18 +245,16 @@ describe("VisitUpdater", () => {
     const MockGeocodingService = mock(GeocodingService);
     when(MockGeocodingService.geocodeAddresses(anything())).thenResolve([]);
     const api: any = { post: () => Promise.resolve() };
-    const hutchUploader = new HutchUploader(
-      api,
-      20,
-      "User",
-      "Password",
+    const hutchUploader = new HutchUploader(api, 20, "User", "Password");
+    const encounterDetails = new EncounterDetailsService(
+      feverModels,
+      snifflesModels,
       hutchUploadModel
     );
-    const visitsService = new VisitsService(models, hutchUploadModel);
     return new EncountersService(
       instance(MockGeocodingService),
       hutchUploader,
-      visitsService,
+      encounterDetails,
       "abc"
     );
   }

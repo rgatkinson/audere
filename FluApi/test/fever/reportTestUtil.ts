@@ -57,19 +57,21 @@ function makePiiData(id: number): SurveyAttributes<PIIInfo> {
 
 export function makeRandomGeoResponse(item: BatchItem): GeocodingResponse {
   return {
-    id: item.workflowId,
+    id: item.workflowId.toString(),
     use: AddressInfoUse.Home,
-    address: {
-      canonicalAddress: makeRandomString(),
-      address1: makeRandomString(),
-      address2: makeRandomString(),
-      city: makeRandomString(),
-      state: makeRandomString(),
-      postalCode: makeRandomString(),
-      latitude: 1,
-      longitude: 1,
-      censusTract: makeRandomString()
-    }
+    addresses: [
+      {
+        canonicalAddress: makeRandomString(),
+        address1: makeRandomString(),
+        address2: makeRandomString(),
+        city: makeRandomString(),
+        state: makeRandomString(),
+        postalCode: makeRandomString(),
+        latitude: 1,
+        longitude: 1,
+        censusTract: makeRandomString()
+      }
+    ]
   };
 }
 

@@ -17,16 +17,51 @@
 //
 // ========================================================================
 
-export interface ProtocolDocumentBase {
-  documentType: string;
-  schemaId: number;
+import * as common from "./common";
 
-  // cryptographically secure unique id for this document.
-  csruid: string;
+export import ProtocolDocumentBase = common.ProtocolDocumentBase;
 
-  // information about client device
-  device: DeviceInfo;
+export import DeviceInfo = common.DeviceInfo;
+
+export import GpsLocationInfo = common.GpsLocationInfo;
+
+export import SampleInfo = common.SampleInfo;
+
+export import PatientInfoGender = common.PatientInfoGender;
+
+export import TelecomInfo = common.TelecomInfo;
+
+export import TelecomInfoSystem = common.TelecomInfoSystem;
+
+export import AddressInfoUse = common.AddressInfoUse;
+
+export import ConsentInfoSignerType = common.ConsentInfoSignerType;
+
+export import QuestionInfo = common.QuestionInfo;
+
+export import QuestionAnswerOption = common.QuestionAnswerOption;
+
+// This is loosely based on the FHIR 'QuestionnaireResponse' resource
+// https://www.hl7.org/fhir/questionnaireresponse.html
+export interface ResponseInfo {
+  id: string;
+  item: ResponseItemInfo[];
 }
+
+export interface ResponseItemInfo extends QuestionInfo {
+  answer: AnswerInfo[];
+}
+
+export interface AnswerInfo extends common.AnswerInfo {
+  valueAddress?: AddressValueInfo;
+}
+
+export interface AddressValueInfo extends common.AddressInfo {
+  firstName?: string;
+  lastName?: string;
+}
+
+export import OtherValueInfo = common.OtherValueInfo;
 
 export enum DocumentType {
   Survey = "SURVEY",
@@ -40,14 +75,6 @@ export type ProtocolDocument =
   | FeedbackDocument
   | AnalyticsDocument
   | PhotoDocument;
-
-export interface DeviceInfo {
-  installation: string; // uuid
-  clientVersion: string;
-  yearClass: string;
-  idiomText: string;
-  platform: string;
-}
 
 // ================================================================================
 // Yes, I know, I know, "Personally-Identifiable-Information Info".
@@ -94,11 +121,6 @@ export interface SurveyNonPIIInfo extends CommonInfo {
   responses: ResponseInfo[];
 }
 
-export interface GpsLocationInfo {
-  latitude: string;
-  longitude: string;
-}
-
 export interface PushNotificationState {
   showedSystemPrompt: boolean;
   softResponse?: boolean;
@@ -112,14 +134,6 @@ export interface PushRegistrationError {
   details: string,
 }
 
-// Information about swabs or other physical samples collected during visit
-export interface SampleInfo {
-  // Possible values TBD
-  sample_type: string;
-  // Value read from the test kit's QR code, or another unique identifier
-  code: string;
-}
-
 // This is a subset of the FHIR 'Patient' resource
 // https://www.hl7.org/fhir/patient.html
 export interface PatientInfo {
@@ -131,34 +145,8 @@ export interface PatientInfo {
   address: AddressInfo[];
 }
 
-// The following options come from:
-// https://www.hl7.org/fhir/valueset-administrative-gender.html
-export enum PatientInfoGender {
-  Male = "male",
-  Female = "female",
-  Other = "other",
-  Unknown = "unknown"
-}
-
-export interface TelecomInfo {
-  system: TelecomInfoSystem;
-  value: string;
-}
-
-export enum TelecomInfoSystem {
-  Phone = "phone",
-  SMS = "sms",
-  Email = "email"
-}
-
 export interface AddressInfo extends AddressValueInfo {
   use: AddressInfoUse;
-}
-
-export enum AddressInfoUse {
-  Home = "home",
-  Work = "work",
-  Temp = "temp"
 }
 
 export interface NonPIIConsentInfo {
@@ -176,13 +164,6 @@ export interface ConsentInfo extends NonPIIConsentInfo {
   relation?: string;
 }
 
-export enum ConsentInfoSignerType {
-  Subject = "Subject",
-  Parent = "Parent",
-  Representative = "Representative",
-  Researcher = "Researcher"
-}
-
 export interface WorkflowInfo {
   screeningCompletedAt?: string; // FHIR:instant
   surveyCompletedAt?: string; // FHIR:instant
@@ -191,66 +172,6 @@ export interface WorkflowInfo {
   [key: string]:
     | string
     | undefined;
-}
-
-// This is loosely based on the FHIR 'QuestionnaireResponse' resource
-// https://www.hl7.org/fhir/questionnaireresponse.html
-export interface ResponseInfo {
-  id: string;
-  item: ResponseItemInfo[];
-}
-
-export interface ResponseItemInfo extends QuestionInfo {
-  answer: AnswerInfo[];
-}
-
-export interface QuestionInfo {
-  // human-readable, locale-independent id of the question
-  id: string;
-  // localized text of question
-  text: string;
-  // For multiple-choice questions, the exact text of each option, in order
-  answerOptions?: QuestionAnswerOption[];
-}
-
-export interface QuestionAnswerOption {
-  id: string;
-  text: string;
-}
-
-export interface AnswerInfo {
-  valueBoolean?: boolean;
-  valueDateTime?: string; // FHIR:dateTime
-  valueDecimal?: number;
-  valueInteger?: number;
-  valueString?: string;
-  valueAddress?: AddressValueInfo;
-
-  // Index in answerOptions of the selected choice
-  valueIndex?: number;
-
-  // If the selected option also has a freeform text box, e.g
-  // 'Other, please specify: _________'
-  valueOther?: OtherValueInfo;
-
-  // True if the patiented declined to respond to the question
-  valueDeclined?: boolean;
-}
-
-export interface AddressValueInfo {
-  firstName?: string;
-  lastName?: string;
-  line: string[];
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
-
-export interface OtherValueInfo {
-  // Index in answerOptions of the selected choice
-  selectedIndex: Number;
-  valueString: string;
 }
 
 // ================================================================================
@@ -314,14 +235,8 @@ export interface PhotoInfo {
 // ================================================================================
 // EventInfo
 
-export interface EventInfo {
+export interface EventInfo extends common.EventInfo {
   kind: EventInfoKind;
-
-  at: string; // FHIR:instant
-  until?: string; // FHIR:instant
-
-  // id of the item this event describes (e.g. question id), if applicable
-  refId?: string;
 }
 
 export enum EventInfoKind {

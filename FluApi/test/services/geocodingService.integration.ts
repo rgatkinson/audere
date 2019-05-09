@@ -5,7 +5,7 @@
 
 import _ from "lodash";
 import { Op } from "sequelize";
-import { AddressInfo, AddressInfoUse } from "audere-lib/snifflesProtocol";
+import { AddressInfoUse } from "audere-lib/common";
 import { SmartyStreetsGeocoder } from "../../src/external/smartyStreetsGeocoder";
 import {
   defineSmartyStreetsResponse,
@@ -19,35 +19,42 @@ import {
 } from "../../src/services/geocodingService";
 import { SecretConfig } from "../../src/util/secretsConfig";
 import exampleResponse from "../resources/geocodingObjectResponse.json";
+import { AddressDetails } from "../../src/models/encounterDetails";
 
 describe("geocoder cache", () => {
   const address1 = {
     use: AddressInfoUse.Home,
-    line: ["42 Fake Address Ln.", null],
-    city: "CITYVILLE",
-    state: "CA",
-    postalCode: "99999",
-    country: "US"
+    value: {
+      line: ["42 Fake Address Ln.", null],
+      city: "CITYVILLE",
+      state: "CA",
+      postalCode: "99999",
+      country: "US"
+    }
   };
   const address2 = {
     use: AddressInfoUse.Work,
-    line: ["99 THIS IS NOT A PLACE", "Apt. 42"],
-    city: "TOWNOPOLIS",
-    state: "WA",
-    postalCode: "00000",
-    country: "US"
+    value: {
+      line: ["99 THIS IS NOT A PLACE", "Apt. 42"],
+      city: "TOWNOPOLIS",
+      state: "WA",
+      postalCode: "00000",
+      country: "US"
+    }
   };
   const address3 = {
     use: AddressInfoUse.Temp,
-    line: ["123 Some Street", ""],
-    city: "Village",
-    state: "MT",
-    postalCode: "12345",
-    country: "US"
+    value: {
+      line: ["123 Some Street", ""],
+      city: "Village",
+      state: "MT",
+      postalCode: "12345",
+      country: "US"
+    }
   };
 
-  const addressInfo: Map<number, AddressInfo[]> = new Map([
-    [1, [address1, address2, address3]]
+  const addressInfo: Map<string, AddressDetails[]> = new Map([
+    ["1", [address1, address2, address3]]
   ]);
 
   let smartyStreetsResponses: SmartyStreetsResponseModel;
@@ -66,8 +73,8 @@ describe("geocoder cache", () => {
     try {
       const result = await smartyStreetsResponses.destroy({
         where: {
-          inputAddress: [address1, address2, address3].map(
-            canonicalizeAddressInfo
+          inputAddress: [address1, address2, address3].map(a =>
+            canonicalizeAddressInfo(a.value)
           )
         }
       });
@@ -94,7 +101,7 @@ describe("geocoder cache", () => {
         smartyStreetsResponses.find({
           where: {
             inputAddress: {
-              [Op.eq]: canonicalizeAddressInfo(key)
+              [Op.eq]: canonicalizeAddressInfo(key.value)
             }
           }
         })

@@ -16,11 +16,13 @@ import {
   defineReceivedKitsFiles,
   defineFollowUpBatch,
   defineFollowUpItem,
-  defineFollowUpDiscard
+  defineFollowUpDiscard,
+  FollowUpSurveyAttributes,
+  defineFollowUpSurveys
 } from "../../src/models/db/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
-import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
-import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
+import { PIIInfo, SurveyNonPIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
+import { surveyNonPIIInDb, surveyPIIInDb } from "../endpoints/feverSampleData";
 import {
   FollowUpDataAccess,
   FOLLOWUP_BATCH_NAMESPACE,
@@ -30,6 +32,7 @@ import {
   defineGaplessSeq,
   GaplessSeqAttributes
 } from "../../src/models/db/gaplessSeq";
+import { HutchUploadAttributes, defineHutchUpload } from "../../src/models/db/hutchUpload";
 
 describe("survey batch data access", () => {
   let sql: SplitSql;
@@ -39,11 +42,15 @@ describe("survey batch data access", () => {
   let receivedKitFiles: Model<ReceivedKitsFileAttributes>;
   let receivedKits: Model<ReceivedKitAttributes>;
   let nonPii: SurveyModel<SurveyNonPIIInfo>;
+  let pii: SurveyModel<PIIInfo>;
   let seq: Model<GaplessSeqAttributes>;
   let dao: FollowUpDataAccess;
 
   let batchSeq: Inst<GaplessSeqAttributes>;
   let itemSeq: Inst<GaplessSeqAttributes>;
+
+  let hutchUpload: Model<HutchUploadAttributes>;
+  let followUpSurveys: Model<FollowUpSurveyAttributes>;
 
   beforeAll(async done => {
     sql = createSplitSql();
@@ -53,6 +60,7 @@ describe("survey batch data access", () => {
     receivedKitFiles = defineReceivedKitsFiles(sql.nonPii);
     receivedKits = defineReceivedKits(sql.nonPii);
     nonPii = defineSurvey(sql.nonPii);
+    pii = defineSurvey(sql.pii);
     seq = defineGaplessSeq(sql);
     dao = new FollowUpDataAccess(
       sql,
@@ -69,6 +77,9 @@ describe("survey batch data access", () => {
     itemSeq = await seq.find({
       where: { name: FOLLOWUP_ITEMS_NAMESPACE }
     });
+
+    hutchUpload = defineHutchUpload(sql);
+    followUpSurveys = defineFollowUpSurveys(sql.pii);
 
     done();
   });
@@ -88,13 +99,16 @@ describe("survey batch data access", () => {
   async function cleanupDb() {
     await Promise.all([
       nonPii.destroy({ where: {} }).then(() => {}),
+      pii.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
-      itemSeq.update({ index: 0 }).then(() => {})
+      itemSeq.update({ index: 0 }).then(() => {}),
+      followUpSurveys.destroy({ where: {} }).then(() => {})
     ]);
 
     await Promise.all([
       followUpBatch.destroy({ where: {} }).then(() => {}),
-      receivedKitFiles.destroy({ where: {} }).then(() => {})
+      receivedKitFiles.destroy({ where: {} }).then(() => {}),
+      hutchUpload.destroy({ where: {} }).then(() => {})
     ]);
   }
 
@@ -302,6 +316,111 @@ describe("survey batch data access", () => {
           })
         );
       });
+    });
+  });
+
+  describe("importing follow-up surveys", async () => {
+    const followUpData = {
+      record_id: 1,
+      email: "zaza@mail.com",
+      daily_activity: 1,
+      medications: 2,
+      care___1: 0,
+      care___2: 1,
+      care___3: 0,
+      care___4: 1,
+      care___5: 0,
+      care___6: 1,
+      care___7: 0,
+      care___8: 0,
+      care_other: undefined,
+      found_study: 3
+    };
+
+    it("should store survey details", async () => {
+      await dao.importFollowUpSurveys([followUpData]);
+
+      const followUp = await followUpSurveys.findOne({
+        where: {
+          email: followUpData.email
+        }
+      });
+
+      expect(followUp.survey).toEqual(followUpData);
+    });
+
+    it("should reset the Hutch upload log for new follow-up records based on email", async () => {
+      const piiSurveys = [
+        _.cloneDeep(surveyPIIInDb("0")),
+        _.cloneDeep(surveyPIIInDb("1"))
+      ];
+      piiSurveys.map(s => s.survey.patient.telecom = [{
+        system: TelecomInfoSystem.Email,
+        value: followUpData.email
+      }]);
+      await pii.bulkCreate(piiSurveys);
+
+      const nonPiiSurveys = [
+        _.cloneDeep(surveyNonPIIInDb("0")),
+        _.cloneDeep(surveyNonPIIInDb("1"))
+      ];
+      const surveys = await nonPii.bulkCreate(
+        nonPiiSurveys,
+        { returning: true }
+      );
+
+      const uploads = surveys.map(n =>
+        ({ surveyId: +n.id, visitId: undefined })
+      );
+      await hutchUpload.bulkCreate(uploads);
+
+      await dao.importFollowUpSurveys([followUpData]);
+
+      const result = await hutchUpload.findAll({
+        where: {
+          surveyId: uploads.map(u => u.surveyId)
+        }
+      });
+
+      expect(result).toHaveLength(0);
+    });
+
+    it("should not reset the Hutch upload log for existing records", async () => {
+      await dao.importFollowUpSurveys([followUpData]);
+
+      const piiSurveys = [
+        _.cloneDeep(surveyPIIInDb("0")),
+        _.cloneDeep(surveyPIIInDb("1"))
+      ];
+      piiSurveys.map(s => s.survey.patient.telecom = [{
+        system: TelecomInfoSystem.Email,
+        value: followUpData.email
+      }]);
+      await pii.bulkCreate(piiSurveys);
+
+      const nonPiiSurveys = [
+        _.cloneDeep(surveyNonPIIInDb("0")),
+        _.cloneDeep(surveyNonPIIInDb("1"))
+      ];
+      const surveys = await nonPii.bulkCreate(
+        nonPiiSurveys,
+        { returning: true }
+      );
+
+      const uploads = surveys.map(n =>
+        ({ surveyId: +n.id, visitId: undefined })
+      );
+      await hutchUpload.bulkCreate(uploads);
+
+      await dao.importFollowUpSurveys([followUpData]);
+
+      const result = await hutchUpload.findAll({
+        where: {
+          surveyId: uploads.map(u => u.surveyId)
+        }
+      });
+
+      expect(result).toHaveLength(2);
     });
   });
 });

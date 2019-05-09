@@ -21,15 +21,19 @@ import {
 
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
+import {
+  defineHutchUploadSequelize,
+  HutchUploadModel
+} from "../../src/models/db/hutchUpload";
 
 const Op = Sequelize.Op;
 
 export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
   implements Updater<SurveyAttributes<T>, T, DeviceInfo> {
-  private readonly data: SurveyModel<T>;
+  protected readonly data: SurveyModel<T>;
   private readonly backup: SurveyModel<T>;
   protected readonly log: ScriptLogger;
-  private readonly label: string;
+  protected readonly label: string;
 
   constructor(
     sequelize: Sequelize.Sequelize,
@@ -64,7 +68,7 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
       : await this.data.findAll({
           where: { csruid: { [Op.like]: `${key}%` } }
         });
-    return this.expectOneMatch(key, rows);
+    return expectOneMatch(key, rows, this.label);
   }
 
   async loadBackup(rowId: string): Promise<SurveyInstance<T>> {
@@ -73,7 +77,7 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
     );
     expectRowId(rowId);
     const rows = await this.backup.findAll({ where: { id: rowId } });
-    return this.expectOneMatch(rowId, rows);
+    return expectOneMatch(rowId, rows, this.label);
   }
 
   async loadBackups(csruid: string): Promise<SurveyInstance<T>[]> {
@@ -133,22 +137,14 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
   async deleteUploadMarker(csruid: string): Promise<boolean> {
     throw new Error("TODO");
   }
-
-  expectOneMatch<T>(key: string, items: T[]): T {
-    if (items.length != 1) {
-      throw new Error(
-        `Expected exactly 1 ${this.label} row to match key '${key}', but got ${
-          items.length
-        }`
-      );
-    }
-    return items[0];
-  }
 }
 
 export class SurveyNonPIIUpdater extends SurveyUpdater<SurveyNonPIIDbInfo> {
+  private readonly upload: HutchUploadModel;
+
   constructor(sequelize: Sequelize.Sequelize, log: ScriptLogger) {
     super(sequelize, log, "non-PII");
+    this.upload = defineHutchUploadSequelize(sequelize);
   }
 
   async setDemo(
@@ -157,6 +153,30 @@ export class SurveyNonPIIUpdater extends SurveyUpdater<SurveyNonPIIDbInfo> {
   ): Promise<boolean> {
     this.log.info(`setDemo(${isDemo})`);
     return this.updateItem(current, { ...current.survey, isDemo });
+  }
+
+  async deleteUploadMarker(csruid: string): Promise<boolean> {
+    const nonPii = expectOneMatch(
+      "csruid",
+      await this.data.findAll({
+        where: { csruid: { [Op.like]: `${csruid}%` } }
+      }),
+      this.label
+    );
+
+    const uploads = await this.upload.destroy({
+      where: { survey_id: nonPii.id }
+    });
+    switch (uploads) {
+      case 0:
+        return false;
+      case 1:
+        return true;
+      default:
+        throw new Error(
+          `Expected to delete 0 or 1 upload markers, but deleted ${uploads}`
+        );
+    }
   }
 }
 
@@ -188,4 +208,15 @@ function expectCSRUID(csruid: string): void {
 
 function looksLikeRowId(key: string): boolean {
   return /^[0-9]+$/.test(key);
+}
+
+function expectOneMatch<T>(key: string, items: T[], label: string): T {
+  if (items.length != 1) {
+    throw new Error(
+      `Expected exactly 1 ${label} row to match key '${key}', but got ${
+        items.length
+      }`
+    );
+  }
+  return items[0];
 }

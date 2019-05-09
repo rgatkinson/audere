@@ -26,6 +26,23 @@ interface AtHomeRecord {
   date_barcode_scanned_by_pa?: string;
 }
 
+export interface FollowUpSurveyData {
+  record_id: number;
+  email: string;
+  daily_activity: number;
+  medications: number;
+  care___1: number;
+  care___2: number;
+  care___3: number;
+  care___4: number;
+  care___5: number;
+  care___6: number;
+  care___7: number;
+  care___8: number;
+  care_other: string;
+  found_study: number;
+}
+
 export interface RecordSurveyMapping {
   recordId: number;
   surveyId: number;
@@ -80,7 +97,7 @@ export class REDCapClient {
   public async getAtHomeData(): Promise<KitRecord[]> {
     // Form encoding
     const data =
-      `token=${this.config.apiToken}&` +
+      `token=${this.config.kitProcessingToken}&` +
       `content=report&` +
       `report_id=${this.config.homeDataReportId}&` +
       `format=json&` +
@@ -115,6 +132,53 @@ export class REDCapClient {
     }));
   }
 
+  private validateSurveyRow(row: FollowUpSurveyData): boolean {
+    return (
+      row.daily_activity <= 1 && row.daily_activity >= 0 &&
+      row.medications <= 3 && row.medications >= 1 &&
+      row.care___1 <= 1 && row.care___1 >= 0 &&
+      row.care___2 <= 1 && row.care___2 >= 0 &&
+      row.care___3 <= 1 && row.care___3 >= 0 &&
+      row.care___4 <= 1 && row.care___4 >= 0 &&
+      row.care___5 <= 1 && row.care___5 >= 0 &&
+      row.care___6 <= 1 && row.care___6 >= 0 &&
+      row.care___7 <= 1 && row.care___7 >= 0 &&
+      row.care___8 <= 1 && row.care___8 >= 0 &&
+      row.found_study <= 8 && row.found_study >= 1
+    );
+  }
+
+  public async getFollowUpSurveys(): Promise<FollowUpSurveyData[]> {
+    // Form encoding
+    const data =
+      `token=${this.config.followUpSurveyToken}&` +
+      `content=report&` +
+      `report_id=${this.config.surveyDataReportId}&` +
+      `format=json&` +
+      `returnFormat=json`;
+
+    logger.info("Requesting survey data from REDCap");
+    const result = await this.makeRequest<FollowUpSurveyData[]>(data);
+    logger.info(`Received ${result.status} from request to REDCap`);
+
+    if (!Array.isArray(result.data)) {
+      const error = JSON.stringify(result.data);
+      throw Error(`Unknown response from REDCap - ${error}`);
+    }
+
+    if (result.data.length === 0) {
+      throw Error("Report for survey data is empty");
+    }
+
+    logger.info(`Received ${result.data.length} rows for follow-up survey report`);
+
+    if (!result.data.every(row => this.validateSurveyRow(row))) {
+      throw Error("Report for follow-up survey data is not in the correct format");
+    }
+
+    return result.data;
+  }
+
   /**
    * Sets readonly Audere-supplied fields in REDCap.
    */
@@ -123,7 +187,7 @@ export class REDCapClient {
   ): Promise<Map<string, RecordSurveyMapping>> {
     logger.info("Requesting next REDCap record id");
     const nextRecordResponse = await this.makeRequest<number>(
-      `token=${this.config.apiToken}&content=generateNextRecordName`
+      `token=${this.config.kitProcessingToken}&content=generateNextRecordName`
     );
 
     let nextRecord = nextRecordResponse.data;
@@ -222,7 +286,7 @@ export class REDCapClient {
   private async importRecords<T>(records: AtHomeRecord[], autoNumber: boolean) {
     // Form encoding
     const data =
-      `token=${this.config.apiToken}&` +
+      `token=${this.config.kitProcessingToken}&` +
       `content=record&` +
       `format=json&` +
       `type=flat&` +

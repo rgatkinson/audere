@@ -65,18 +65,18 @@ describe("sending kit orders", () => {
     const rows: string[][] = parse(contents).slice(1);
 
     items.forEach(item => {
-      const geo = geoResponses.find(r => r.id === item.workflowId);
+      const geo = geoResponses.find(r => r.id === item.workflowId.toString());
       const contains = rows.some(row => {
         // These row indices follow the CSV format created for UW reports in
         // UWParticipantReport.
         return (
           row[0] === item.firstName &&
           row[1] === item.lastName &&
-          row[2] === geo.address.address1 &&
-          row[3] === geo.address.address2 &&
-          row[4] === geo.address.city &&
-          row[5] === geo.address.state &&
-          row[6] === geo.address.postalCode &&
+          row[2] === geo.addresses[0].address1 &&
+          row[3] === geo.addresses[0].address2 &&
+          row[4] === geo.addresses[0].city &&
+          row[5] === geo.addresses[0].state &&
+          row[6] === geo.addresses[0].postalCode &&
           row[7] === item.email &&
           row[8] === item.timestamp &&
           row[9] === item.workflowId.toFixed() &&

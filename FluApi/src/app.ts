@@ -218,6 +218,12 @@ export function createInternalApp(config: AppConfig) {
     (req, res, next) => fever.importReceivedKits(req, res, next)
   );
 
+  internalApp.get(
+    "/api/import/followUpSurveys",
+    stats("importfollowupsurveys"),
+    (req, res, next) => fever.importFollowUpSurveys(req, res, next)
+  )
+
   const feverConsentEmailer =
     config.consentEmailer || new FeverConsentEmailerEndpoint(sql);
   // TODO: remove after migrating lambda to sendFeverConsentEmails

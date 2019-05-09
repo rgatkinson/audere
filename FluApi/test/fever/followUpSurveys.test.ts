@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { instance, mock, when, anyString, capture } from "ts-mockito";
+import { instance, mock, when, anyString, capture, deepEqual, verify, anything } from "ts-mockito";
 import { FollowUpDataAccess } from "../../src/services/fever/followUpData";
 import { FollowUpSurveys } from "../../src/services/fever/followUpSurveys";
 import { SurveyCompleteParticipant } from "../../src/services/fever/surveyCompleteReport";
@@ -11,8 +11,9 @@ import { Batch } from "../../src/services/fever/surveyBatchData";
 import { S3Uploader } from "../../src/external/s3Uploader";
 import { makeRandomIncentiveRecipient } from "./reportTestUtil";
 import parse from "csv-parse/lib/sync";
+import { REDCapClient } from "../../src/external/redCapClient";
 
-export class TestIncentives extends FollowUpSurveys {
+export class TestFollowUps extends FollowUpSurveys {
   private readonly batch: Batch<SurveyCompleteParticipant>;
 
   constructor(
@@ -20,7 +21,7 @@ export class TestIncentives extends FollowUpSurveys {
     dao: FollowUpDataAccess,
     uploader: S3Uploader
   ) {
-    super(dao, uploader);
+    super(dao, uploader, undefined);
     this.batch = batch;
   }
 
@@ -29,7 +30,7 @@ export class TestIncentives extends FollowUpSurveys {
   }
 }
 
-describe("sending incentives", () => {
+describe("sending follow up surveys", () => {
   it("should convert output to CSV format", async () => {
     const items = [
       makeRandomIncentiveRecipient(2),
@@ -45,7 +46,7 @@ describe("sending incentives", () => {
     const uploader = mock(S3Uploader);
     when(uploader.sendFollowUps(batch.id, anyString())).thenResolve();
 
-    const i = new TestIncentives(batch, instance(dao), instance(uploader));
+    const i = new TestFollowUps(batch, instance(dao), instance(uploader));
     await i.generateReport();
 
     const contents = capture(uploader.sendFollowUps).first()[1];
@@ -72,5 +73,41 @@ describe("sending incentives", () => {
 
       expect(contains).toBe(true);
     });
+  });
+});
+
+describe("importing survey results", () => {
+  it("imports surveys received from REDCap", async () => {
+    const surveys = [
+      {
+        record_id: 1,
+        email: "test@test.com",
+        daily_activity: 1,
+        medications: 1,
+        care___1: 1,
+        care___2: 1,
+        care___3: 1,
+        care___4: 1,
+        care___5: 1,
+        care___6: 1,
+        care___7: 1,
+        care___8: 1,
+        care_other: "",
+        found_study: 1
+      }
+    ];
+
+    const client = mock(REDCapClient);
+    when(client.getFollowUpSurveys()).thenResolve(surveys);
+
+    const dao = mock(FollowUpDataAccess);
+    when(dao.importFollowUpSurveys(deepEqual(surveys))).thenResolve();
+
+    const service =
+      new FollowUpSurveys(instance(dao), undefined, instance(client));
+
+    await service.importFollowUpResults();
+
+    verify(dao.importFollowUpSurveys(deepEqual(surveys))).once();
   });
 });

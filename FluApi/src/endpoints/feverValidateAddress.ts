@@ -48,15 +48,17 @@ export class FeverValidateAddress {
     const { address, address2, city, state, zipcode } = inputAddress;
     return new Map([
       [
-        1,
+        "1",
         [
           {
             use: Model.AddressInfoUse.Home,
-            line: [address, address2],
-            city: city,
-            state: state,
-            postalCode: zipcode,
-            country: "US"
+            value: {
+              line: [address, address2],
+              city: city,
+              state: state,
+              postalCode: zipcode,
+              country: "US"
+            }
           }
         ]
       ]
@@ -64,16 +66,13 @@ export class FeverValidateAddress {
   }
 
   formatResults(geocoded: GeocodingResponse[]) {
-    return geocoded.map((response: GeocodingResponse) => {
+    return geocoded[0].addresses.map(address => {
       return {
-        address: response.address.address1,
-        address2:
-          response.address.address2 === "Undefined"
-            ? ""
-            : response.address.address2,
-        city: response.address.city,
-        state: response.address.state,
-        zipcode: response.address.postalCode
+        address: address.address1,
+        address2: address.address2 === "Undefined" ? "" : address.address2,
+        city: address.city,
+        state: address.state,
+        zipcode: address.postalCode
       };
     });
   }

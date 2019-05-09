@@ -4,11 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import * as Encounter from "audere-lib/hutchProtocol";
-import * as Model from "audere-lib/snifflesProtocol";
+import * as Model from "audere-lib/common";
 import { Locations as Sites } from "audere-lib/locations";
-import { NonPIIVisitDetails } from "../models/visitDetails";
+import { NonPIIEncounterDetails } from "../models/encounterDetails";
 import moment from "moment";
 import logger from "../util/logger";
+import { FollowUpSurveyData } from "../external/redCapClient";
+import { mapSurvey } from "./followUpSurveyMapper";
 
 const buildInfo = require("../../static/buildInfo.json");
 
@@ -17,13 +19,12 @@ const buildInfo = require("../../static/buildInfo.json");
  * sending to external partners.
  * @param input View of a full visit with sensitive information de-identified.
  */
-export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
-  if (input.visitInfo == null) {
-    throw new Error("Visit does not contain visit information");
-  }
-
-  const sampleCodes = mapSamples(input.visitInfo.samples);
-  const responses = mapResponses(input.visitInfo.responses);
+export function mapEncounter(
+  input: NonPIIEncounterDetails
+): Encounter.Encounter {
+  const events = mapEvents(input.events, input.consentDate);
+  const sampleCodes = mapSamples(input.samples, input.site);
+  const responses = mapResponses(input.responses, input.followUpResponses);
 
   // Revision can be traced back to individual versions to correlate
   // cause/effect with output data.
@@ -41,23 +42,17 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
   // Populate survey site then visit start date if that information has been
   // provided.
   let site: Encounter.Site;
-  const administeredAt = Sites[input.visitInfo.location];
+  const administeredAt = Sites[input.site];
   if (administeredAt != null) {
-    site = { type: administeredAt.type, name: input.visitInfo.location };
+    site = { type: administeredAt.type, name: input.site };
   } else {
-    site = { type: undefined, name: input.visitInfo.location };
+    site = { type: undefined, name: input.site };
   }
 
   let startTimestamp: moment.Moment;
 
-  if (input.visitInfo.events != null && input.visitInfo.events.length > 0) {
-    const visitEvent = input.visitInfo.events.find(
-      e => e.kind == Model.EventInfoKind.Visit
-    );
-
-    if (visitEvent != null) {
-      startTimestamp = moment(visitEvent.at);
-    }
+  if (input.startTime != null) {
+    startTimestamp = moment(input.startTime);
   }
 
   // Fallback to consent date.
@@ -85,7 +80,7 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
 
   const output: Encounter.Encounter = {
     schemaVersion: Encounter.schemaVersion,
-    id: input.visitId,
+    id: input.encounterId,
     participant: input.participant,
     revision: revision,
     localeLanguageCode: "en", // TODO: "es" support
@@ -94,6 +89,7 @@ export function mapEncounter(input: NonPIIVisitDetails): Encounter.Encounter {
     locations: input.locations,
     sampleCodes: sampleCodes,
     responses: responses,
+    events: events,
     age: age
   };
 
@@ -119,7 +115,7 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
             "from the visit protocol"
         );
 
-        throw new Error("Visit contains a boolean response");
+        throw new Error("Answers contain a boolean response");
       } else if (a.valueDateTime != null) {
         converted.push({
           type: "String",
@@ -140,13 +136,6 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
           type: "String",
           value: a.valueString
         });
-      } else if (a.valueAddress != null) {
-        logger.error(
-          "Address formatted answers are likely to be PII and should not be " +
-            "present in the non-PII response set"
-        );
-
-        throw new Error("Visit contains an address response");
       } else if (a.valueIndex != null) {
         selectedOptions.push(+a.valueIndex);
       } else if (a.valueOther != null) {
@@ -155,6 +144,8 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
         converted.push({
           type: "Declined"
         });
+      } else {
+        throw new Error("Response with no set answer");
       }
     });
 
@@ -186,10 +177,86 @@ function mapAnswerOptions(
   }));
 }
 
+function mapEvents(
+  events: Model.EventInfo[],
+  consentDate: string
+): Encounter.Event[] {
+  const results = [];
+
+  if (events != null && events.length > 0) {
+    let barcodeScanned: string;
+    let startedQuestionnaire: string;
+    let symptomsScreened: string;
+
+    events.forEach(e => {
+      switch (e.refId) {
+        case "ManualConfirmation":
+          if (barcodeScanned == null || barcodeScanned < e.at) {
+            barcodeScanned = e.at;
+          }
+          break;
+        case "ScanConfirmation":
+          if (barcodeScanned == null || barcodeScanned < e.at) {
+            barcodeScanned = e.at;
+          }
+          break;
+        case "WhenSymptoms":
+          if (startedQuestionnaire == null || startedQuestionnaire < e.at) {
+            startedQuestionnaire = e.at;
+          }
+          break;
+        case "ThankYouScreening":
+          if (symptomsScreened == null || symptomsScreened < e.at) {
+            symptomsScreened = e.at;
+          }
+          break;
+        case "ConfirmationScreen":
+          if (symptomsScreened == null || symptomsScreened < e.at) {
+            symptomsScreened = e.at;
+          }
+          break;
+      }
+    });
+
+    if (barcodeScanned != null) {
+      results.push({
+        time: barcodeScanned,
+        eventType: Encounter.EventType.BarcodeScanned
+      });
+    }
+
+    if (startedQuestionnaire != null) {
+      results.push({
+        time: startedQuestionnaire,
+        eventType: Encounter.EventType.StartedQuestionnaire
+      });
+    }
+
+    if (symptomsScreened != null) {
+      results.push({
+        time: symptomsScreened,
+        eventType: Encounter.EventType.SymptomsScreened
+      });
+    }
+
+    if (consentDate != null) {
+      results.push({
+        time: consentDate,
+        eventType: Encounter.EventType.ConsentSigned
+      });
+    }
+  }
+
+  return results;
+}
+
 /**
  * Converts questions and their responses for downstream partners.
  */
-function mapResponses(responses: Model.ResponseInfo[]): Encounter.Response[] {
+function mapResponses(
+  responses: Model.ResponseInfo[],
+  followUpResponses: FollowUpSurveyData
+): Encounter.Response[] {
   if (responses == null || responses.length === 0) {
     throw new Error("Visit has no responses");
   }
@@ -211,16 +278,41 @@ function mapResponses(responses: Model.ResponseInfo[]): Encounter.Response[] {
     });
   });
 
+  if (followUpResponses != null) {
+    converted.push(...mapSurvey(followUpResponses));
+  }
+
   return converted;
 }
 
-function mapSamples(samples: Model.SampleInfo[]): Encounter.SampleCode[] {
+function mapSamples(
+  samples: Model.SampleInfo[],
+  site: string
+): Encounter.SampleCode[] {
   if (samples == null) {
     return [];
   }
 
-  return samples.map(s => ({
-    type: Encounter.SampleType.ClinicSwab,
-    code: s.code
-  }));
+  return samples.map(s => {
+    let sampleType: Encounter.SampleType;
+
+    if (site === "self-test") {
+      if (s.sample_type === "manualEntry") {
+        sampleType = Encounter.SampleType.ManualSelfSwab;
+      } else if (s.sample_type === "org.iso.Code128") {
+        sampleType = Encounter.SampleType.ScannedSelfSwab;
+      } else if (s.sample_type === "TestStripBase64") {
+        sampleType = Encounter.SampleType.StripPhoto;
+      } else {
+        throw Error(`Unknown Fever sample type: ${s.sample_type}`);
+      }
+    } else {
+      sampleType = Encounter.SampleType.ClinicSwab;
+    }
+
+    return {
+      type: sampleType,
+      code: s.code
+    };
+  });
 }

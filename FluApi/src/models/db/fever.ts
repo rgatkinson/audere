@@ -16,7 +16,8 @@ import {
   unique,
   primaryKey,
   nullable,
-  foreignIdKey
+  foreignIdKey,
+  jsonbColumn
 } from "../../util/sql";
 import {
   DeviceInfo,
@@ -25,6 +26,8 @@ import {
   AnalyticsInfo,
   PhotoInfo
 } from "audere-lib/feverProtocol";
+import { defineHutchUpload } from "./hutchUpload";
+import { FollowUpSurveyData } from "../../external/redCapClient";
 
 // ---------------------------------------------------------------
 
@@ -48,8 +51,16 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
     kitDiscard: defineKitDiscard(sql.nonPii),
     receivedKit: defineReceivedKits(sql.nonPii),
     receivedKitsFile: defineReceivedKitsFiles(sql.nonPii),
-    barcodes: defineBarcodes(sql.nonPii)
+    barcodes: defineBarcodes(sql.nonPii),
+    followUpSurveys: defineFollowUpSurveys(sql.pii)
   };
+
+  const hutchUpload = defineHutchUpload(sql);
+
+  models.surveyNonPii.hasOne(hutchUpload, {
+    foreignKey: "surveyId",
+    onDelete: "CASCADE"
+  });
 
   models.surveyPii.hasOne(models.consentEmail, {
     as: "fever_consent_emails",
@@ -90,6 +101,7 @@ export interface FeverModels {
   receivedKit: Model<ReceivedKitAttributes>;
   receivedKitsFile: Model<ReceivedKitsFileAttributes>;
   barcodes: Model<BarcodeAttributes>;
+  followUpSurveys: Model<FollowUpSurveyAttributes>;
 }
 
 // ---------------------------------------------------------------
@@ -393,5 +405,21 @@ export interface BarcodeAttributes {
 export function defineBarcodes(sql: Sequelize): Model<BarcodeAttributes> {
   return defineModel<BarcodeAttributes>(sql, "fever_box_barcodes", {
     barcode: stringColumn()
+  });
+}
+
+// ---------------------------------------------------------------
+
+export interface FollowUpSurveyAttributes {
+  email: string;
+  survey: FollowUpSurveyData
+}
+
+export function defineFollowUpSurveys(
+  sql: Sequelize
+): Model<FollowUpSurveyAttributes> {
+  return defineModel<FollowUpSurveyAttributes>(sql, "fever_follow_up_surveys", {
+    email: unique(stringColumn()),
+    survey: jsonbColumn()
   });
 }

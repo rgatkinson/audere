@@ -199,11 +199,11 @@ yargs.command({
   handler: command(cmdSetSnifflesLocation)
 });
 yargs.command({
-  command: "upload <row>",
+  command: "upload <release> <row>",
   describe:
     "Removes marker that a row is already uploaded to Hutch, " +
     "hopefully to trigger another upload next time around.",
-  builder: yargs => yargs.string("row"),
+  builder: yargs => yargs.string("release").string("row"),
   handler: command(cmdUpload)
 });
 yargs.command({
