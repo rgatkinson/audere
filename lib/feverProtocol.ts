@@ -19,27 +19,35 @@
 
 import * as common from "./common";
 
-export import ProtocolDocumentBase = common.ProtocolDocumentBase;
+import {
+  ProtocolDocumentBase,
+  DeviceInfo,
+  GpsLocationInfo,
+  SampleInfo,
+  PatientInfoGender,
+  TelecomInfo,
+  TelecomInfoSystem,
+  AddressInfoUse,
+  ConsentInfoSignerType,
+  QuestionInfo,
+  QuestionAnswerOption,
+  OtherValueInfo
+} from "./common";
 
-export import DeviceInfo = common.DeviceInfo;
-
-export import GpsLocationInfo = common.GpsLocationInfo;
-
-export import SampleInfo = common.SampleInfo;
-
-export import PatientInfoGender = common.PatientInfoGender;
-
-export import TelecomInfo = common.TelecomInfo;
-
-export import TelecomInfoSystem = common.TelecomInfoSystem;
-
-export import AddressInfoUse = common.AddressInfoUse;
-
-export import ConsentInfoSignerType = common.ConsentInfoSignerType;
-
-export import QuestionInfo = common.QuestionInfo;
-
-export import QuestionAnswerOption = common.QuestionAnswerOption;
+export {
+  ProtocolDocumentBase,
+  DeviceInfo,
+  GpsLocationInfo,
+  SampleInfo,
+  PatientInfoGender,
+  TelecomInfo,
+  TelecomInfoSystem,
+  AddressInfoUse,
+  ConsentInfoSignerType,
+  QuestionInfo,
+  QuestionAnswerOption,
+  OtherValueInfo
+};
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html
@@ -61,13 +69,11 @@ export interface AddressValueInfo extends common.AddressInfo {
   lastName?: string;
 }
 
-export import OtherValueInfo = common.OtherValueInfo;
-
 export enum DocumentType {
   Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Analytics = "ANALYTICS",
-  Photo = "PHOTO",
+  Photo = "PHOTO"
 }
 
 export type ProtocolDocument =
@@ -125,13 +131,13 @@ export interface PushNotificationState {
   showedSystemPrompt: boolean;
   softResponse?: boolean;
   token?: string;
-  registrationError?: PushRegistrationError,
+  registrationError?: PushRegistrationError;
 }
 
 export interface PushRegistrationError {
-  message: string,
-  code: number,
-  details: string,
+  message: string;
+  code: number;
+  details: string;
 }
 
 // This is a subset of the FHIR 'Patient' resource
@@ -154,7 +160,7 @@ export interface NonPIIConsentInfo {
   signerType: ConsentInfoSignerType;
   date: string; // date only
   localTime?: string; // FHIR:time
-  appBuild?: string;    // Used primarily to determine consent version (for $)
+  appBuild?: string; // Used primarily to determine consent version (for $)
 }
 
 export interface ConsentInfo extends NonPIIConsentInfo {
@@ -169,9 +175,7 @@ export interface WorkflowInfo {
   surveyCompletedAt?: string; // FHIR:instant
   surveyStartedAt?: string; // FHIR:instant
   skippedScreeningAt?: string; // FHIR:isntant
-  [key: string]:
-    | string
-    | undefined;
+  [key: string]: string | undefined;
 }
 
 // ================================================================================
@@ -247,5 +251,5 @@ export enum EventInfoKind {
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
   Interaction = "interaction",
-  Render = "render",
+  Render = "render"
 }

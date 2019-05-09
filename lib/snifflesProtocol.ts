@@ -19,27 +19,35 @@
 
 import * as common from "./common";
 
-export import ProtocolDocumentBase = common.ProtocolDocumentBase;
+import {
+  ProtocolDocumentBase,
+  DeviceInfo,
+  GpsLocationInfo,
+  SampleInfo,
+  PatientInfoGender,
+  TelecomInfo,
+  TelecomInfoSystem,
+  AddressInfoUse,
+  ConsentInfoSignerType,
+  QuestionInfo,
+  QuestionAnswerOption,
+  OtherValueInfo
+} from "./common";
 
-export import DeviceInfo = common.DeviceInfo;
-
-export import GpsLocationInfo = common.GpsLocationInfo;
-
-export import SampleInfo = common.SampleInfo;
-
-export import PatientInfoGender = common.PatientInfoGender;
-
-export import TelecomInfo = common.TelecomInfo;
-
-export import TelecomInfoSystem = common.TelecomInfoSystem;
-
-export import AddressInfoUse = common.AddressInfoUse;
-
-export import ConsentInfoSignerType = common.ConsentInfoSignerType;
-
-export import QuestionInfo = common.QuestionInfo;
-
-export import QuestionAnswerOption = common.QuestionAnswerOption;
+export {
+  ProtocolDocumentBase,
+  DeviceInfo,
+  GpsLocationInfo,
+  SampleInfo,
+  PatientInfoGender,
+  TelecomInfo,
+  TelecomInfoSystem,
+  AddressInfoUse,
+  ConsentInfoSignerType,
+  QuestionInfo,
+  QuestionAnswerOption,
+  OtherValueInfo
+};
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html
@@ -59,8 +67,6 @@ export interface AnswerInfo extends common.AnswerInfo {
 export interface AddressValueInfo extends common.AddressInfo {
   name?: string;
 }
-
-export import OtherValueInfo = common.OtherValueInfo;
 
 export enum DocumentType {
   Visit = "VISIT",

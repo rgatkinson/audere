@@ -1,15 +1,6 @@
 import * as common from "./common";
-export import ProtocolDocumentBase = common.ProtocolDocumentBase;
-export import DeviceInfo = common.DeviceInfo;
-export import GpsLocationInfo = common.GpsLocationInfo;
-export import SampleInfo = common.SampleInfo;
-export import PatientInfoGender = common.PatientInfoGender;
-export import TelecomInfo = common.TelecomInfo;
-export import TelecomInfoSystem = common.TelecomInfoSystem;
-export import AddressInfoUse = common.AddressInfoUse;
-export import ConsentInfoSignerType = common.ConsentInfoSignerType;
-export import QuestionInfo = common.QuestionInfo;
-export import QuestionAnswerOption = common.QuestionAnswerOption;
+import { ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
+export { ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
 export interface ResponseInfo {
     id: string;
     item: ResponseItemInfo[];
@@ -24,7 +15,6 @@ export interface AddressValueInfo extends common.AddressInfo {
     firstName?: string;
     lastName?: string;
 }
-export import OtherValueInfo = common.OtherValueInfo;
 export declare enum DocumentType {
     Survey = "SURVEY",
     Feedback = "FEEDBACK",
