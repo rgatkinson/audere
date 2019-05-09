@@ -56,6 +56,7 @@ export class FirebaseReceiver {
       .where(FIELD_PATH.lastWriter, "==", SENDER_NAME)
       .where(FIELD_PATH.protocolVersion, "==", PROTOCOL_V1)
       .select(FieldPath.documentId())
+      .orderBy(FieldPath.documentId())
       .limit(256)
       .get();
 
