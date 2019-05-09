@@ -5,52 +5,20 @@
 
 import wd from "wd";
 import strings from "../../src/i18n/locales/en.json";
-import { PassThrough } from "stream";
 
-const os = require("os");
-const path = require("path");
-
-// PLATFORM = "iOS";
-PLATFORM = "Android";
+const deviceInfo = require(process.env.TEST_UI_CONFIG);
+const PLATFORM = deviceInfo.PLATFORM;
+const screen_x = deviceInfo.SCREEN_X;
+const screen_y = deviceInfo.SCREEN_Y;
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 const PORT = 4723;
-let config = {};
-let screen_x;
-let screen_y;
-
-if (PLATFORM == "iOS") {
-  config = {
-    platformName: "iOS",
-    platformVersion: "12.2",
-    deviceName: "iPhone 8",
-    app: path.join(
-      os.homedir(),
-      "Library/Developer/Xcode/DerivedData/fluathome_us/Build/Products/Debug-iphonesimulator/fluathome.app"
-    ),
-  };
-  screen_x = 375;
-  screen_y = 665;
-} else {
-  config = {
-    platformName: "Android",
-    platformVersion: "9",
-    deviceName: "Android Emulator",
-    app: path.join(
-      os.homedir(),
-      "audere/FluStudy_us/android/app/build/outputs/apk/devKernel/debug/app-devKernel-x86-debug.apk"
-    ),
-    automationName: "UiAutomator2",
-  };
-  screen_x = 1435;
-  screen_y = 2375;
-}
 const driver = wd.promiseChainRemote("localhost", PORT);
 const CONTINUE = strings.common.button.continue.toUpperCase();
 
 describe("Rejection Scenarios", () => {
   beforeEach(async () => {
-    await driver.init(config);
+    await driver.init(deviceInfo.config);
     await driver.setImplicitWaitTimeout(10000);
   });
 
@@ -108,7 +76,7 @@ describe("Rejection Scenarios", () => {
 
 describe("Happy Path", () => {
   beforeEach(async () => {
-    await driver.init(config);
+    await driver.init(deviceInfo.config);
     await driver.setImplicitWaitTimeout(10000);
   });
 
@@ -264,8 +232,14 @@ describe("Happy Path", () => {
     expect(await driver.hasElementByAccessibilityId(CONTINUE)).toBe(true);
     await driver.elementByAccessibilityId(CONTINUE).click();
     if (PLATFORM == "iOS") {
-      expect(await driver.hasElementByAccessibilityId("OK")).toBe(true);
-      await driver.elementByAccessibilityId("OK").click();
+      expect(
+        await driver.hasElementByAccessibilityId(
+          strings.common.button.ok.toUpperCase()
+        )
+      ).toBe(true);
+      await driver
+        .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
+        .click();
       expect(
         await driver.hasElementByAccessibilityId(
           strings.scanScreen.enterManually
