@@ -115,7 +115,7 @@ resource "aws_db_instance" "metabase" {
   deletion_protection = true
   engine = "postgres"
   engine_version = "10.6"
-  identifier = "${local.base_name}-postgis"
+  identifier = "${local.base_name}-metabase"
   instance_class = "db.t2.small"
   license_model = "postgresql-license"
   maintenance_window = "Sun:11:00-Sun:11:59"
@@ -125,7 +125,7 @@ resource "aws_db_instance" "metabase" {
   skip_final_snapshot = false
   storage_encrypted = true
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
-  username = "admin"
+  username = "metabasea"
   vpc_security_group_ids = [
     "${module.fludb_sg.server_id}",
   ]
