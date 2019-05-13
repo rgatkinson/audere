@@ -218,7 +218,11 @@
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "notVerified": "Your barcode was not verified",
     "pleaseRetry": "Please re-{{action}} your kit bar code (the blue on on the inner lid of the box), being careful not to insert spaces or extra characters",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "barcodeRequired": "Please enter your kit's barcode to continue.",
+    "dontMatch": "Those barcodes don't match. Please try again.",
+    "placeholder": "Enter barcode",
+    "secondPlaceholder": "Confirm barcode"
   },
   "scanScreen": {
     "scan": "scan",
@@ -231,12 +235,7 @@
     "desc": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
   "manualEntryScreen": {
-    "enter": "enter",
-    "enterKit": "Enter barcode manually",
-    "placeholder": "Enter barcode",
-    "barcodeRequired": "Please enter your kit's barcode to continue.",
-    "dontMatch": "Those barcodes don't match. Please try again.",
-    "secondPlaceholder": "Confirm barcode",
+    "title": "Enter barcode manually",
     "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
     "tipHeader": "Tips:",
     "tips": "Find the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."

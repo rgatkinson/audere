@@ -26,10 +26,10 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
+  barcodeSupportCodes: [],
   // Pessimistically assume we have no kits.  Currently only on iOS because
   // we're busy getting remoteConfig working on Android (struggling with 403
   // Forbidden issues).
-  barcodeSupportCodes: [],
   blockKitOrders: !!Constants.platform.ios,
   rdtReader: false,
   showVideos: false,

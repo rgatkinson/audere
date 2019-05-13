@@ -5,9 +5,8 @@
 
 import React from "react";
 import { Platform, PushNotificationIOS, View } from "react-native";
-import { NavigationScreenProp } from "react-navigation";
+import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { withNavigation } from "react-navigation";
 import PushNotification from "react-native-push-notification";
 import i18n from "i18next";
 import { setPushNotificationState, Action, StoreState } from "../../store";

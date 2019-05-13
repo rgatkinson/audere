@@ -44,6 +44,7 @@ import {
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import timerWithConfigProps, { TimerProps } from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
+import BarcodeEntry from "../components/flu/BarcodeEntry";
 import BorderView from "../components/BorderView";
 import BulletPoint from "../components/BulletPoint";
 import Chrome from "../components/Chrome";
@@ -56,7 +57,6 @@ import TextInput from "../components/TextInput";
 import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
-  verifiedBarcode,
   verifiedSupportCode,
   unverifiedBarcodeAlert,
 } from "../../util/barcodeVerification";
@@ -172,33 +172,28 @@ class ScanScreen extends React.Component<
     if (!this.state.activeScan) {
       this.setState({ activeScan: true });
       if (!validBarcodeShape(barcode)) {
-        invalidBarcodeShapeAlert(barcode, this._setTimer);
-      } else {
-        const serverVerifiedBarcode = await verifiedBarcode(barcode);
-        if (!serverVerifiedBarcode) {
-          const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-            ? this.props.invalidBarcodes.length
-            : 0;
-          this.props.dispatch(
-            appendInvalidBarcode({
-              sample_type: type,
-              code: barcode,
-            })
-          );
-          if (priorUnverifiedAttempts > 2) {
-            this.props.navigation.push("BarcodeContactSupport");
-          } else {
-            unverifiedBarcodeAlert(t("scan"), this._setTimer);
-          }
+        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
+          ? this.props.invalidBarcodes.length
+          : 0;
+        this.props.dispatch(
+          appendInvalidBarcode({
+            sample_type: type,
+            code: barcode,
+          })
+        );
+        if (priorUnverifiedAttempts > 2) {
+          this.props.navigation.push("BarcodeContactSupport");
         } else {
-          this.props.dispatch(
-            setKitBarcode({
-              sample_type: type,
-              code: barcode,
-            })
-          );
-          this.props.navigation.push("ScanConfirmation");
+          invalidBarcodeShapeAlert(barcode, this._setTimer);
         }
+      } else {
+        this.props.dispatch(
+          setKitBarcode({
+            sample_type: type,
+            code: barcode,
+          })
+        );
+        this.props.navigation.push("ScanConfirmation");
       }
     }
   };
@@ -266,111 +261,13 @@ const scanStyles = StyleSheet.create({
 });
 export const Scan = withNamespaces("scanScreen")(ScanScreen);
 
-interface BarcodeProps {
-  kitBarcode: SampleInfo;
-}
+class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
+  barcodeEntry = React.createRef<any>();
 
-interface SupportCodeProps {
-  supportCode?: string;
-}
-
-interface ManualState {
-  barcode1: string | null;
-  barcode2: string | null;
-}
-
-@connect((state: StoreState) => ({
-  invalidBarcodes: state.survey.invalidBarcodes,
-  kitBarcode: state.survey.kitBarcode,
-  supportCode: state.survey.supportCode,
-}))
-class ManualEntryScreen extends React.Component<
-  Props &
-    InvalidBarcodeProps &
-    SupportCodeProps &
-    BarcodeProps &
-    WithNamespaces,
-  ManualState
-> {
-  constructor(
-    props: Props &
-      InvalidBarcodeProps &
-      SupportCodeProps &
-      BarcodeProps &
-      WithNamespaces
-  ) {
-    super(props);
-    this.state = {
-      barcode1: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
-      barcode2: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
-    };
-  }
-
-  confirmInput = React.createRef<TextInput>();
-
-  _matchingBarcodes = () => {
-    return (
-      this.state.barcode1 != null &&
-      this.state.barcode2 != null &&
-      this.state.barcode1.trim() === this.state.barcode2.trim()
-    );
-  };
-
-  _onSave = () => {
-    this.props.dispatch(
-      setKitBarcode({
-        sample_type: "manualEntry",
-        code: this.state.barcode1!.trim(),
-      })
-    );
-    this.props.navigation.push("ManualConfirmation");
-  };
-
-  _onNext = async () => {
-    const { t } = this.props;
-    if (this.state.barcode1 == null) {
-      Alert.alert("", t("barcodeRequired"), [
-        { text: t("common:button:ok"), onPress: () => {} },
-      ]);
-    } else if (!this._matchingBarcodes()) {
-      Alert.alert("", t("dontMatch"), [
-        { text: t("common:button:ok"), onPress: () => {} },
-      ]);
-    } else if (!validBarcodeShape(this.state.barcode1)) {
-      invalidBarcodeShapeAlert(this.state.barcode1);
-    } else {
-      const serverVerifiedBarcode = await verifiedBarcode(this.state.barcode1);
-      if (!serverVerifiedBarcode) {
-        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-          ? this.props.invalidBarcodes.length
-          : 0;
-        this.props.dispatch(
-          appendInvalidBarcode({
-            sample_type: "manualEntry",
-            code: this.state.barcode1,
-          })
-        );
-        if (priorUnverifiedAttempts > 2 && !this.props.supportCode) {
-          this.props.navigation.push("BarcodeContactSupport");
-        } else {
-          unverifiedBarcodeAlert(t("enter"));
-        }
-      } else {
-        this._onSave();
-      }
+  _onNext = () => {
+    if (this.barcodeEntry.current!.save()) {
+      this.props.navigation.push("ManualConfirmation");
     }
-  };
-
-  _onBarcodeOneChange = (barcode1: string) => {
-    this.setState({ barcode1: barcode1.toLowerCase() });
-  };
-
-  _onBarcodeTwoChange = (barcode2: string) => {
-    this.setState({ barcode2: barcode2.toLowerCase() });
-  };
-
-  _onBarcodeOneSubmit = () => {
-    this.confirmInput.current!.focus();
   };
 
   render() {
@@ -385,48 +282,10 @@ class ManualEntryScreen extends React.Component<
           buttonLabel={t("common:button:continue")}
           desc={t("desc")}
           navigation={this.props.navigation}
-          title={t("enterKit")}
+          title={t("title")}
           onNext={this._onNext}
         >
-          <View
-            style={{
-              alignSelf: "stretch",
-              flexDirection: "row",
-              marginBottom: GUTTER,
-            }}
-          >
-            <Text content={"KIT "} style={{ paddingVertical: 3 }} />
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoFocus={this.props.navigation.isFocused()}
-              placeholder={t("placeholder")}
-              returnKeyType="done"
-              style={{ flex: 1 }}
-              value={this.state.barcode1}
-              onChangeText={this._onBarcodeOneChange}
-              onSubmitEditing={this._onBarcodeOneSubmit}
-            />
-          </View>
-          <View
-            style={{
-              alignSelf: "stretch",
-              flexDirection: "row",
-              marginBottom: GUTTER,
-            }}
-          >
-            <Text content={"KIT "} style={{ paddingVertical: 3 }} />
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder={t("secondPlaceholder")}
-              ref={this.confirmInput}
-              returnKeyType="done"
-              style={{ flex: 1 }}
-              value={this.state.barcode2}
-              onChangeText={this._onBarcodeTwoChange}
-            />
-          </View>
+          <BarcodeEntry customRef={this.barcodeEntry} />
           <View
             style={{
               alignItems: "center",

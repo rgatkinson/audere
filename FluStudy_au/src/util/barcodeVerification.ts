@@ -37,28 +37,6 @@ export function invalidBarcodeShapeAlert(
   );
 }
 
-export async function verifiedBarcode(barcode: string): Promise<boolean> {
-  const validateBarcodes = getRemoteConfig("validateBarcodes");
-  if (!validateBarcodes) {
-    return true;
-  }
-  let response;
-  try {
-    response = await axios.get(getApiBaseUrl() + "/validateBarcode/" + barcode);
-    if (response != null) {
-      tracker.logEvent(BarcodeVerificationEvents.SERVER_RESPONSE, {
-        barcode,
-        responseStatus: response.status,
-        responseData: response.data,
-      });
-      return response.status === 200 && response.data === "Valid";
-    }
-  } catch (e) {
-    tracker.logEvent(BarcodeVerificationEvents.EXCEPTION, { barcode });
-  }
-  return false;
-}
-
 export function verifiedSupportCode(code: string): boolean {
   const validateSupportCodes = getRemoteConfig("validateSupportCodes");
   if (!validateSupportCodes) {
