@@ -50,7 +50,7 @@ perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
 EXBUILDCONSTANTS="$REPO_ROOT_DIR/$1/ios/fluathome/Supporting/EXBuildConstants.plist"
-if [ ! -f "$EXBUILDCONSTANTS" ]; then
+if [[ ! -f "$EXBUILDCONSTANTS" ]]; then
   echo "Creating EXBuildConstants.plist"
   cat >"$EXBUILDCONSTANTS" <<EOT
 <?xml version="1.0" encoding="UTF-8"?>
@@ -58,5 +58,17 @@ if [ ! -f "$EXBUILDCONSTANTS" ]; then
 <dict>
 </dict>
 </plist>
+EOT
+fi
+
+DETACHBUILDCONSTANTS="$REPO_ROOT_DIR/$1/android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java"
+if [[ ! -f "$DETACHBUILDCONSTANTS" ]]; then 
+  echo "Creating DetachBuildConstants.java"
+  cat >"$DETACHBUILDCONSTANTS" <<EOT
+package host.exp.exponent.generated;
+
+public class DetachBuildConstants {
+  public static final String DEVELOPMENT_URL = "";
+}
 EOT
 fi

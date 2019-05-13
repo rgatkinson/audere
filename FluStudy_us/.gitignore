@@ -28,6 +28,7 @@ android/local.properties
 ios/Pods
 xcuserdata
 ios/fluathome/Supporting/EXBuildConstants.*
+android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java
 
 # fastlane generated files
 ios/fastlane/README.md 
