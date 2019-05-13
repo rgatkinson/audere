@@ -311,6 +311,7 @@ export const simpleScreens: SimpleScreenConfig[] = [
   },
   {
     key: "Advice",
+    linkConfig: { links: ["ausGov", "CDC", "myDr"] },
     next: "CleanTest",
   },
   {

@@ -21,7 +21,6 @@ export const menuScreens: MenuConfig[] = [
   { key: "GeneralQuestions", subTitle: "help" },
   { key: "Problems", subTitle: "help" },
   { key: "TestQuestions", subTitle: "help" },
-  { key: "GiftcardQuestions", subTitle: "help" },
   { key: "ContactSupport", subTitle: "help" },
   { key: "Version", showBuildInfo: true, subTitle: "help" },
 ];

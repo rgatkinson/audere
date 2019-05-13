@@ -3,14 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import uuidv4 from "uuid/v4";
 import {
   ConsentInfo,
   EventInfo,
   EventInfoKind,
   SampleInfo,
   PushNotificationState,
-  PushRegistrationError,
   WorkflowInfo,
 } from "audere-lib/feverProtocol";
 import { SurveyResponse } from "./types";
@@ -71,107 +69,111 @@ const initialState: SurveyState = {
 };
 
 export default function reducer(state = initialState, action: SurveyAction) {
-  if (action.type === "APPEND_EVENT") {
-    return {
-      ...state,
-      events: pushEvent(state, action.kind, action.event),
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "APPEND_INVALID_BARCODE") {
-    return {
-      ...state,
-      invalidBarcodes: pushInvalidBarcode(state, action.barcode),
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_CONSENT") {
-    return {
-      ...state,
-      consent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_EMAIL") {
-    return { ...state, email: action.email, timestamp: new Date().getTime() };
-  }
-  if (action.type === "SET_KIT_BARCODE") {
-    return {
-      ...state,
-      kitBarcode: action.kitBarcode,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_TEST_STRIP_IMG") {
-    return {
-      ...state,
-      testStripImg: action.testStripImg,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_ONE_MINUTE_START_TIME") {
-    if (state.oneMinuteStartTime == null) {
+  switch(action.type) {
+    case "APPEND_EVENT":
       return {
         ...state,
-        oneMinuteStartTime: new Date().getTime(),
+        events: pushEvent(state, action.kind, action.event),
         timestamp: new Date().getTime(),
       };
-    }
-  }
+  
+    case "APPEND_INVALID_BARCODE":
+      return {
+        ...state,
+        invalidBarcodes: pushInvalidBarcode(state, action.barcode),
+        timestamp: new Date().getTime(),
+      };
+  
+    case "SET_CONSENT":
+      return {
+        ...state,
+        consent: action.consent,
+        timestamp: new Date().getTime(),
+      };
+  
+    case "SET_EMAIL":
+      return { ...state, email: action.email, timestamp: new Date().getTime() };
+  
+    case "SET_KIT_BARCODE":
+      return {
+        ...state,
+        kitBarcode: action.kitBarcode,
+        timestamp: new Date().getTime(),
+      };
+  
+    case "SET_TEST_STRIP_IMG":
+      return {
+        ...state,
+        testStripImg: action.testStripImg,
+        timestamp: new Date().getTime(),
+      };
+  
+    case "SET_ONE_MINUTE_START_TIME":
+      if (state.oneMinuteStartTime == null) {
+        return {
+          ...state,
+          oneMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      } 
+      return state;
 
-  if (action.type === "SET_TEN_MINUTE_START_TIME") {
-    if (state.tenMinuteStartTime == null) {
+    case "SET_TEN_MINUTE_START_TIME":
+      if (state.tenMinuteStartTime == null) {
+        return {
+          ...state,
+          tenMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+  
+    case "SET_PUSH_STATE":
       return {
         ...state,
-        tenMinuteStartTime: new Date().getTime(),
+        pushState: action.pushState,
         timestamp: new Date().getTime(),
       };
-    }
-  }
-  if (action.type === "SET_PUSH_STATE") {
-    return {
-      ...state,
-      pushState: action.pushState,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_RDT_PHOTO") {
-    return {
-      ...state,
-      rdtPhotoUri: action.rdtPhotoUri,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_RESPONSES") {
-    return {
-      ...state,
-      responses: action.responses,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_WORKFLOW") {
-    return {
-      ...state,
-      workflow: action.workflow,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_CSRUID_IF_UNSET") {
-    if (state.csruid == null) {
+
+    case "SET_RDT_PHOTO":
       return {
         ...state,
-        csruid: action.csruid,
+        rdtPhotoUri: action.rdtPhotoUri,
+        timestamp: new Date().getTime(),
       };
-    }
-  }
-  if (action.type === "SET_SUPPORT_CODE") {
+
+    case "SET_RESPONSES":
+      return {
+        ...state,
+        responses: action.responses,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_WORKFLOW":
+      return {
+        ...state,
+        workflow: action.workflow,
+        timestamp: new Date().getTime(),
+      };
+   
+    case "SET_CSRUID_IF_UNSET":
+      if (state.csruid == null) {
+        return {
+          ...state,
+          csruid: action.csruid,
+        };
+      }
+      return state;
+  
+  case "SET_SUPPORT_CODE":
     return {
       ...state,
       supportCode: action.supportCode,
     };
-  }
 
-  return state;
+  default:
+    return state;
+  }
 }
 
 export function appendEvent(kind: EventInfoKind, event: string): SurveyAction {

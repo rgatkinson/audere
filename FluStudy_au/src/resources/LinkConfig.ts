@@ -9,7 +9,10 @@ import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { toggleSupportCodeModal, Action, StoreState } from "../store";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
 
+const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
+const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
+const myDrUrl = "https://www.mydr.com.au/respiratory-health/influenza-treatment";
 
 function createMapQueryUrl(query: string) {
   const scheme = Platform.select({ ios: "maps:0,0?q=", android: "geo:0,0?q=" });
@@ -17,6 +20,18 @@ function createMapQueryUrl(query: string) {
   const url = `${scheme}${encodedQuery}`;
 
   return url;
+}
+
+export function ausGov() {
+  Linking.openURL(ausGovUrl);
+}
+
+export function CDC() {
+  Linking.openURL(CDCUrl);
+}
+
+export function myDr() {
+  Linking.openURL(myDrUrl);
 }
 
 export function emailSupport(params: string = "") {
@@ -80,17 +95,31 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     },
   ],
   [
-    "kitMissingItems",
-    {
-      action: () => emailSupport("?subject=Kit missing items"),
-      key: "kitMissingItems",
-    },
-  ],
-  [
     "skipTestStripPhoto",
     {
       action: ({ navigation }) => navigation.push("CleanFirstTest"),
       key: "skipTestStripPhoto",
     },
   ],
+  [
+    "ausGov",
+    {
+      action: () => ausGov(),
+      key: "ausGov"
+    }
+  ],
+  [
+    "CDC",
+    {
+      action: () => CDC(),
+      key: "CDC"
+    }
+  ],
+  [
+    "myDr",
+    {
+      action: () => myDr(),
+      key: "myDr"
+    }
+  ]
 ]);

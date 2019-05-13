@@ -38,7 +38,6 @@
       "tablet": "iPad",
       "unknown": "device"
     },
-    "giftCardAmount": "$25",
     "menu": {
       "about": "ABOUT FLU@HOME",
       "help": "HELP & SUPPORT"
@@ -116,10 +115,6 @@
   "TestQuestions": {
     "title": "Test Questions",
     "description": "**Why do I need to perform two tests?**\n\nHaving access to more than one nasal swab allows our researchers to compare your samples and double-check test results. Your first test swab is examined using one kind of machine in the lab, while the second is tested on a different, ultra-sensitive machine. Together, both samples help us verify the accuracy of our at-home testing kit.\n\n**Do I follow the same instructions for both tests?**\n\nNo, they’re a little different so please follow the instructions in the app closely. The first test is more involved—but don’t worry, the app screens will walk you through each step for both tests.\n\n**How long will the two tests take me?**\n\nIt should take around 20 minutes from start to finish.\n\n**My completed test swab accidentally dropped or came into contact with something else. Should I still submit it?**\n\nYes. Even if you dropped the swab or it touched another surface, please do your best to continue with the test steps.\n\n**Is it ok if I left the nasal swab in the tube longer than the designated time?**\n\nYes. If you left the swab in for a little longer than the timer, please just continue to follow the rest of the steps. \n\n**Is it ok if I left the test strip in the tube longer than the designated time?**\n\nYes. If you left the test strip in for a little longer than the timer, please just continue to follow the rest of the steps.\n\n**Why do I need to answer so many personal questions?**\n\nUnderstanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information.\n\n**Will you share my personal information with anyone else?**\n\nNo, we will not share your personal information with any third party or for purposes other than this study.\n\n**Will my personal information be kept confidential?**\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your identifiable information such as your name and address. These will be kept in a separate, secure database where the researchers do not have access as they look at the other study data.\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Institutional Review Board (IRB), who approved this study, and other accrediting agencies may inspect and copy your records--which may have your name on them. They would only do this to ensure you were treated fairly and safely during the study.\n\n**Do the pink or blue lines on the test strip mean I’m more likely to have the flu?**\n\nThe blue and pink lines help us understand how the test is performing. You should not consider them conclusive of whether or not you have the flu.\n\n**After I ship my kit back is there anything else I need to do?**\n\nYou will receive an email about a week after you ship your kit back, which has a few questions to let us know how you're feeling. It is important for us to receive this final information to complete your participation in the study.\n\n**Will I need to pay to return the test kit?**\n\nNo, we have included a prepaid United States Postal Service (USPS) return label in the test kit.\n\n**What is the UN3373 sticker for?**\n\nUN3373 is the US government’s shipping code for biological samples. Since you will be mailing a nose swab sample, it must be shipped according to applicable government, International Air Transport Association (IATA), and International Civil Aviation Organization (ICAO) regulations."
-  },
-  "GiftcardQuestions": {
-    "title": "Gift Card Questions",
-    "description": "**When will I receive my gift card?**\n\nWhen you ordered your kit we also collected your email address. The gift card will be emailed to that email address within four weeks of us receiving your completed test kit.\n\n**I prefer not to share my email address. Can you send my gift card to my home address instead?**\n\nUnfortunately, we can only email gift cards at this time. Rest assured we will not share your email address with anyone else if you choose to provide it. Thank you for your understanding.\n\n**I provided my email address, but I still haven’t received my gift card. What should I do?**\n\nWe’re sorry you haven’t received your gift card yet. If it has already been four weeks since you returned your test kit to us, please email us at [fluhelp@uw.edu](mailto:fluhelp@uw.edu) and we will make sure you get your gift card."
   },
   "ContactSupport": {
     "title": "Contact Support",
@@ -401,14 +396,15 @@
     "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us."
   },
   "links": {
+    "ausGov": "Australian Government Department of Health: All about influenza",
+    "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
     "haveKitAlready": "I already have my kit",
     "learnMore": "Learn more about this flu study",
     "findMedHelp": "Search Maps for urgent care clinics nearby",
     "inputManually": "Enter barcode manually",
+    "myDr": "myDr.com.au: Flu treatment",
     "supportCode": "I have a support code",
-    "kitMissingItems": "Is your kit missing items? Email us.",
-    "skipTestStripPhoto": "Unable to take a picture? Skip this step",
-    "showNearbyUsps": "Show nearby USPS facilities"
+    "skipTestStripPhoto": "Unable to take a picture? Skip this step"
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",

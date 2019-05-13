@@ -24,7 +24,6 @@ import {
   REGULAR_TEXT,
   TEXT_COLOR,
 } from "../styles";
-import i18next from "i18next";
 
 interface Props {
   bold?: boolean;
