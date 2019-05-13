@@ -3,8 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import uuidv4 from "uuid/v4";
+import { format } from "date-fns";
 import {
   ConsentInfo,
+  ConsentInfoSignerType,
   EventInfo,
   EventInfoKind,
   SampleInfo,
@@ -13,6 +16,8 @@ import {
 } from "audere-lib/feverProtocol";
 import { SurveyResponse } from "./types";
 import { onCSRUIDEstablished } from "../util/tracker";
+import { DEVICE_INFO, ios } from "../transport/DeviceInfo";
+import i18n from "i18next";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
@@ -191,10 +196,20 @@ export function appendInvalidBarcode(barcode: SampleInfo): SurveyAction {
   };
 }
 
-export function setConsent(consent: ConsentInfo): SurveyAction {
+export function setConsent(): SurveyAction {
   return {
     type: "SET_CONSENT",
-    consent,
+    consent: {
+      terms:
+        i18n.t("Consent:consentFormHeader1") +
+        "\n" +
+        i18n.t("Consent:consentFormHeader2") +
+        "\n" +
+        i18n.t("Consent:consentFormText"),
+      signerType: ConsentInfoSignerType.Subject,
+      date: format(new Date(), "YYYY-MM-DD"),
+      appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
+    },
   };
 }
 

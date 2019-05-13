@@ -83,6 +83,10 @@ interface Props {
 }
 
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
+  componentDidMount() {
+    tracker.logEvent(FunnelEvents.CONSENT_COMPLETED);
+  }
+
   constructor(props: Props & WithNamespaces) {
     super(props);
     this._onNext = this._onNext.bind(this);

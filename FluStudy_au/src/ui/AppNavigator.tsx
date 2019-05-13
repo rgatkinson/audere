@@ -13,7 +13,6 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { Consent, ConsentIneligible } from "./screens/ScreeningScreens";
 import {
   ScanInstructions,
   Scan,
@@ -38,8 +37,6 @@ import {
 } from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
-  Consent,
-  ConsentIneligible,
   ScanInstructions,
   Scan,
   ManualEntry,
