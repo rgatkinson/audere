@@ -79,6 +79,20 @@ export class LogBatcher implements Logger {
   }
 
   private async pumpState(): Promise<void> {
+    const uploader = this.uploader.get();
+
+    // Nothing to do here until the uploader decrypts PouchDB since we.
+    // cannot save any state.  Just buffer stuff in memory until we're
+    // ready to go.
+    //
+    // Theoretically we should subscribe to an event so we can start up
+    // when it becomes usable, but the uploader calls recursively into
+    // here so we will find out soon enough once anything interesting
+    // happens.
+    if ((uploader == null) || !uploader.getIsDbDecrypted()) {
+      return;
+    }
+
     const adding = this.buffer.splice(0);
     if (adding.length > 0) {
       const state = await this.loadPending();
@@ -86,7 +100,6 @@ export class LogBatcher implements Logger {
         state.size + adding.reduce((acc, x) => acc + this.guessSize(x), 0);
       const records = (state == null ? [] : state.records).concat(adding);
       const durationMs = Date.now() - new Date(records[0].timestamp).getTime();
-      const uploader = this.uploader.get();
       const needsUpload =
         size > this.config.targetBatchSizeInChars ||
         durationMs > this.config.targetBatchIntervalInMs;
@@ -102,7 +115,7 @@ export class LogBatcher implements Logger {
       );
 
       try {
-        if (needsUpload && uploader != null) {
+        if (needsUpload) {
           const batch = {
             timestamp: new Date().toISOString(),
             records,
@@ -216,6 +229,8 @@ export interface Uploader {
     documentType: DocumentType,
     priority: number
   ): void;
+
+  getIsDbDecrypted(): boolean;
 }
 
 export type PendingLogState = PendingLogState1;

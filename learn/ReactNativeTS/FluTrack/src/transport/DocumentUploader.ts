@@ -66,6 +66,7 @@ interface DecryptDBEvent {
 // TODO: collapse two pending saves of the same document?
 export class DocumentUploader {
   private readonly db: any;
+  private isDbDecrypted: boolean;
   private readonly api: AxiosInstance;
   private readonly documentUploadKey: string;
   private pendingEvents: Event[];
@@ -75,6 +76,7 @@ export class DocumentUploader {
 
   constructor(db: any, api: AxiosInstance, logger: Logger) {
     this.db = db;
+    this.isDbDecrypted = false;
     this.api = api;
     this.logger = logger;
     this.documentUploadKey = this.getDocumentUploadKey();
@@ -106,6 +108,10 @@ export class DocumentUploader {
       documentType,
       priority,
     });
+  }
+
+  public getIsDbDecrypted(): boolean {
+    return this.isDbDecrypted;
   }
 
   private uploadNext() {
@@ -167,6 +173,7 @@ export class DocumentUploader {
     this.db.crypto(await this.getEncryptionPassword(), {
       algorithm: "chacha20",
     });
+    this.isDbDecrypted = true;
   }
 
   private async handleBackup(backup: BackupEvent): Promise<void> {

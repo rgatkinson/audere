@@ -55,21 +55,56 @@ describe("LogBatcher", () => {
       expect(entry.text).toEqual(message);
     }
   });
+
+  it("does nothing until db is decrypted", async () => {
+    const env = new TestEnv({targetBatchSizeInChars: 200, startEncrypted: true});
+    env.bind();
+
+    const message = "This is a test.  This is only a test.  Had this been an actual message...";
+
+    env.logger.fatal(message);
+    env.logger.error(message);
+    env.logger.warn(message);
+    env.logger.info(message);
+    env.logger.debug(message);
+    await ticks(10);
+
+    env.logger.debug("something else");
+    await ticks(10);
+
+    expect(env.uploads.length).toEqual(0);
+    env.setDbDecrypted();
+
+    env.logger.debug("something else");
+    await ticks(10);
+
+    expect(env.uploads.length).toBeGreaterThan(0);
+  });
 });
+
+interface TestConfigOptions extends ConfigOptions {
+  startEncrypted?: boolean;
+}
 
 class TestEnv {
   readonly lazy: LazyUploader;
   readonly saves: PendingLogState[] = [];
   readonly uploads: LogBatch[] = [];
   readonly logger: LogBatcher;
+  private isDbDecrypted: boolean = false;
 
-  constructor(options: ConfigOptions = {}) {
+  constructor(options: TestConfigOptions = {}) {
     this.lazy = new LazyUploader();
     this.logger = new LogBatcher(this.lazy, this, options);
+    this.isDbDecrypted = !options.startEncrypted;
   }
 
   bind(): void {
     this.lazy.bind(this);
+  }
+
+  setDbDecrypted() {
+    this.isDbDecrypted = true;
   }
 
   // LogStore
@@ -95,6 +130,10 @@ class TestEnv {
     priority: number
   ): void {
     this.uploads.push({ localUid, document, documentType, priority });
+  }
+
+  public getIsDbDecrypted(): boolean {
+    return this.isDbDecrypted;
   }
 }
 
