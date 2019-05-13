@@ -20,7 +20,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner, Camera, Permissions } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
-import { SampleInfo, WorkflowInfo } from "audere-lib/feverProtocol";
+import { SampleInfo } from "audere-lib/feverProtocol";
 import {
   Action,
   Option,
@@ -30,7 +30,6 @@ import {
   setRDTPhoto,
   setSupportCode,
   setTestStripImg,
-  setWorkflow,
   toggleSupportCodeModal,
   uploader,
 } from "../../store";
@@ -83,68 +82,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-interface WorkflowProps {
-  workflow: WorkflowInfo;
-}
-
-interface ConnectedProps {
-  isConnected: boolean;
-}
-
-@connect((state: StoreState) => ({
-  workflow: state.survey.workflow,
-}))
-class WelcomeBackScreen extends React.Component<
-  Props & WorkflowProps & WithNamespaces
-> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.RECEIVED_KIT);
-  }
-
-  _onBack = () => {
-    this.props.dispatch(
-      setWorkflow({
-        ...this.props.workflow,
-        skippedScreeningAt: undefined,
-      })
-    );
-
-    this.props.navigation.pop();
-  };
-
-  _onNext = () => {
-    if (!!this.props.workflow.skippedScreeningAt) {
-      this.props.navigation.push("Age");
-    } else {
-      this.props.navigation.push("WhatsNext");
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("description")}
-        hideBackButton={!this.props.workflow.skippedScreeningAt}
-        image="howtestworks_1"
-        navigation={this.props.navigation}
-        title={t("welcomeBack")}
-        onBack={this._onBack}
-        onNext={this._onNext}
-      >
-        {t("bullets")
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
-          })}
-      </Screen>
-    );
-  }
-}
-export const WelcomeBack = withNamespaces("welcomeBackScreen")(
-  WelcomeBackScreen
-);
-
 class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
   constructor(props: Props & WithNamespaces) {
     super(props);
@@ -184,10 +121,9 @@ interface InvalidBarcodeProps {
 @connect((state: StoreState) => ({
   invalidBarcodes: state.survey.invalidBarcodes,
   isDemo: state.meta.isDemo,
-  workflow: state.survey.workflow,
 }))
 class ScanScreen extends React.Component<
-  DemoModeProps & Props & InvalidBarcodeProps & WorkflowProps & WithNamespaces
+  DemoModeProps & Props & InvalidBarcodeProps & WithNamespaces
 > {
   state = {
     activeScan: false,
@@ -347,14 +283,12 @@ interface ManualState {
   invalidBarcodes: state.survey.invalidBarcodes,
   kitBarcode: state.survey.kitBarcode,
   supportCode: state.survey.supportCode,
-  workflow: state.survey.workflow,
 }))
 class ManualEntryScreen extends React.Component<
   Props &
     InvalidBarcodeProps &
     SupportCodeProps &
     BarcodeProps &
-    WorkflowProps &
     WithNamespaces,
   ManualState
 > {
@@ -363,7 +297,6 @@ class ManualEntryScreen extends React.Component<
       InvalidBarcodeProps &
       SupportCodeProps &
       BarcodeProps &
-      WorkflowProps &
       WithNamespaces
   ) {
     super(props);

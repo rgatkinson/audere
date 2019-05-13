@@ -172,14 +172,6 @@ export const simpleScreens: SimpleScreenConfig[] = [
     splashImage: "welcome",
   },
   {
-    disclaimer: true,
-    funnelEvent: AppHealthEvents.KIT_ORDER_BLOCKED,
-    image: "thanksforyourinterest",
-    key: "OutOfKits",
-    linkConfig: { links: ["learnMore", "findMedHelp"] },
-    skipButton: true,
-  },
-  {
     bulletPoints: true,
     disclaimer: true,
     extraText: true,
@@ -187,19 +179,6 @@ export const simpleScreens: SimpleScreenConfig[] = [
     image: "preconsent",
     key: "PreConsent",
     next: "Consent",
-  },
-  {
-    bulletPoints: true,
-    image: "thanksforparticipating",
-    key: "ThankYouScreening",
-    skipButton: true,
-    workflowEvent: "screeningCompletedAt",
-  },
-  {
-    bulletPoints: true,
-    image: "preparingfortest",
-    key: "WhatsNext",
-    next: "ScanInstructions",
   },
   {
     barcode: true,
@@ -289,18 +268,6 @@ export const simpleScreens: SimpleScreenConfig[] = [
     videoId: "removeTestStrip",
   },
   {
-    image: "finishwithtube",
-    key: "FinishTube",
-    next: "LookAtStrip",
-    videoId: "finishWithTube",
-  },
-  {
-    image: "lookatteststrip",
-    key: "LookAtStrip",
-    next: "TestResult",
-    videoId: "lookAtTestStrip",
-  },
-  {
     key: "TestStripConfirmation",
     next: "TestStripSurvey",
     rdtImage: true,
@@ -317,19 +284,6 @@ export const simpleScreens: SimpleScreenConfig[] = [
   {
     key: "CleanTest",
     next: "TestFeedback",
-  },
-  {
-    funnelEvent: FunnelEvents.COMPLETED_FIRST_TEST,
-    image: "begin2ndtest",
-    key: "BeginSecondTest",
-    next: "PrepSecondTest",
-    videoId: "beginSecondTest",
-  },
-  {
-    image: "preparefortest",
-    key: "PrepSecondTest",
-    next: "MucusSecond",
-    videoId: "prepareForTest",
   },
   {
     image: "nicejob",

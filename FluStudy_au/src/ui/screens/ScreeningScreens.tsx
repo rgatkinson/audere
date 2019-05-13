@@ -10,7 +10,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
-import { WorkflowInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
+import { ConsentInfoSignerType } from "audere-lib/feverProtocol";
 import { Action, StoreState, setEmail, setConsent } from "../../store";
 import { ConsentConfig } from "../../resources/ScreenConfig";
 import { KEYBOARD_BEHAVIOR } from "../styles";
@@ -30,10 +30,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-interface WorkflowProps {
-  workflow: WorkflowInfo;
-}
-
 interface EmailProps {
   email?: string;
 }
@@ -45,19 +41,12 @@ interface EmailState {
 
 @connect((state: StoreState) => ({
   email: state.survey.email,
-  workflow: state.survey.workflow,
 }))
 class ConsentScreen extends React.PureComponent<
-  Props & EmailProps & WorkflowProps & WithNamespaces & ReduxWriterProps,
+  Props & EmailProps & WithNamespaces & ReduxWriterProps,
   EmailState
 > {
-  constructor(
-    props: Props &
-      EmailProps &
-      WorkflowProps &
-      WithNamespaces &
-      ReduxWriterProps
-  ) {
+  constructor(props: Props & EmailProps & WithNamespaces & ReduxWriterProps) {
     super(props);
     this.state = {
       email: props.email,

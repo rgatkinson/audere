@@ -210,61 +210,6 @@ class ConnectedRootContainer extends React.Component<Props> {
       nextAppState === "quadTap"
     ) {
       if (
-        this.props.workflow.screeningCompletedAt &&
-        !this.props.workflow.surveyStartedAt &&
-        (nextAppState === "quadTap" || elapsedMinutes > 3 * MINUTES_IN_HOUR)
-      ) {
-        // Have completed screening but not started survey and at least 3 hours have passed,
-        // redirect to welcome back (survey)
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" + nextAppState + ":screeningCompleteRedirectToSurveyStart"
-          )
-        );
-        this.navigator &&
-          this.navigator.current &&
-          this.navigator.current.dispatch(
-            StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({ routeName: "WelcomeBack" }),
-              ],
-            })
-          );
-      } else if (
-        (this.props.activeRouteName === "AgeIneligible" ||
-          this.props.activeRouteName === "SymptomsIneligible" ||
-          this.props.activeRouteName === "StateIneligible" ||
-          this.props.activeRouteName === "ConsentIneligible") &&
-        (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
-      ) {
-        // Was on ineligible screen for at least 24 hours, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":ineligibleExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (
-        !this.props.workflow.screeningCompletedAt &&
-        !this.props.workflow.skippedScreeningAt &&
-        (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
-      ) {
-        // Have not completed screening (not ordered kit) and 2 days have passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":screeningExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (
         this.props.workflow.surveyCompletedAt &&
         (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
       ) {
@@ -290,16 +235,6 @@ class ConnectedRootContainer extends React.Component<Props> {
           )
         );
         this.clearState();
-      } else if (this.props.activeRouteName === "OutOfKits") {
-        await loadAllRemoteConfigs();
-        if (!getRemoteConfig("blockKitOrders")) {
-          tracker.logEvent(AppHealthEvents.KIT_ORDER_UNBLOCKED);
-          this.navigator &&
-            this.navigator.current &&
-            this.navigator.current.dispatch(
-              StackActions.replace({ routeName: "What" })
-            );
-        }
       } else if (this.props.activeRouteName === "CameraSettings") {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         if (status === "granted") {
