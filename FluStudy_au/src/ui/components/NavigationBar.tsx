@@ -11,9 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { StoreState } from "../../store";
 import Text from "./Text";
 import {
   GUTTER,
@@ -29,9 +31,11 @@ interface Props {
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
-  onBack?: () => any;
 }
 
+@connect((state: StoreState) => ({
+  demoMode: state.meta.isDemo,
+}))
 class NavigationBar extends React.Component<Props & WithNamespaces> {
   _debounce = 0;
 
@@ -49,11 +53,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
       this._debounce = 0;
     }, 1000);
 
-    if (this.props.onBack != null) {
-      this.props.onBack();
-    } else {
-      this.props.navigation.pop();
-    }
+    this.props.navigation.pop();
   };
 
   _onMenu = () => {

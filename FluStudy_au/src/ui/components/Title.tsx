@@ -5,6 +5,7 @@
 
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import {
   EXTRA_LARGE_TEXT,
@@ -14,17 +15,26 @@ import {
 } from "../styles";
 
 interface Props {
-  label: string;
+  label?: string;
+  namespace?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => any;
 }
 
-export default class Title extends React.Component<Props> {
+class Title extends React.Component<Props & WithNamespaces> {
+  _getContent = () => {
+    const { label, namespace, t } = this.props;
+    if (namespace != null) {
+      return t(namespace + ":title");
+    }
+    return label;
+  };
+
   render() {
     return (
       <Text
         center={true}
-        content={this.props.label}
+        content={this._getContent()}
         extraBold={true}
         onPress={this.props.onPress}
         style={[styles.title, this.props.style && this.props.style]}
@@ -32,6 +42,8 @@ export default class Title extends React.Component<Props> {
     );
   }
 }
+
+export default withNamespaces()(Title);
 
 const styles = StyleSheet.create({
   title: {

@@ -5,6 +5,7 @@
 
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
+import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
 import {
@@ -20,7 +21,6 @@ import Button from "../ui/components/Button";
 import Links from "../ui/components/Links";
 import RDTImage from "../ui/components/flu/RDTImage";
 import Screen from "../ui/components/Screen";
-import { NavigationScreenProp } from "react-navigation";
 import { tracker, FunnelEvents, AppHealthEvents } from "../util/tracker";
 import {
   GeneralHealthScreenConfig,
@@ -166,21 +166,6 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
 
 export const simpleScreens: SimpleScreenConfig[] = [
   {
-    hideBackButton: true,
-    key: "Welcome",
-    next: "PreConsent",
-    splashImage: "welcome",
-  },
-  {
-    bulletPoints: true,
-    disclaimer: true,
-    extraText: true,
-    hideBackButton: true,
-    image: "preconsent",
-    key: "PreConsent",
-    next: "Consent",
-  },
-  {
     barcode: true,
     funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
     image: "barcodesuccess",
@@ -195,17 +180,6 @@ export const simpleScreens: SimpleScreenConfig[] = [
     key: "ManualConfirmation",
     next: "Unpacking",
     workflowEvent: "surveyStartedAt",
-  },
-  {
-    image: "unpackinginstructions",
-    key: "Unpacking",
-    next: "Swab",
-  },
-  {
-    image: "begin1sttest",
-    key: "Swab",
-    next: "OpenSwab",
-    videoId: "beginFirstTest",
   },
   {
     image: "opennasalswab",

@@ -120,10 +120,9 @@ interface InvalidBarcodeProps {
 
 @connect((state: StoreState) => ({
   invalidBarcodes: state.survey.invalidBarcodes,
-  isDemo: state.meta.isDemo,
 }))
 class ScanScreen extends React.Component<
-  DemoModeProps & Props & InvalidBarcodeProps & WithNamespaces
+  Props & InvalidBarcodeProps & WithNamespaces
 > {
   state = {
     activeScan: false,
@@ -205,7 +204,7 @@ class ScanScreen extends React.Component<
   render() {
     const { t } = this.props;
     return (
-      <Chrome isDemo={this.props.isDemo} navigation={this.props.navigation}>
+      <Chrome navigation={this.props.navigation}>
         <View style={{ flex: 1 }}>
           <BarCodeScanner
             style={{ flex: 1, alignSelf: "stretch" }}
@@ -741,15 +740,10 @@ export const CameraSettings = withNamespaces("CameraSettings")(
   CameraSettingsScreen
 );
 
-@connect((state: StoreState) => ({
-  isDemo: state.meta.isDemo,
-}))
-class RDTReaderScreen extends React.Component<
-  DemoModeProps & Props & WithNamespaces
-> {
+class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 
-  constructor(props: DemoModeProps & Props & WithNamespaces) {
+  constructor(props: Props & WithNamespaces) {
     super(props);
     this._takePicture = this._takePicture.bind(this);
   }
@@ -793,7 +787,7 @@ class RDTReaderScreen extends React.Component<
   render() {
     const { t } = this.props;
     return (
-      <Chrome isDemo={this.props.isDemo} navigation={this.props.navigation}>
+      <Chrome navigation={this.props.navigation}>
         <View style={{ flex: 1, marginBottom: -1 * SYSTEM_PADDING_BOTTOM }}>
           <Spinner visible={this.state.spinner} />
           <Camera

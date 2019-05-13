@@ -132,7 +132,6 @@ class ConsentScreen extends React.PureComponent<
               onPress={this._onNoThanks}
             />
           }
-          hideBackButton={false}
           navigation={this.props.navigation}
           title={t("consent")}
           onNext={this._onNext}

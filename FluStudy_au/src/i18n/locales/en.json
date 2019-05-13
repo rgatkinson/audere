@@ -124,8 +124,8 @@
     "title": "Consent to join the study",
     "desc": "Based on your symptoms, you qualify to participate in the research study. On the next screen you will see a consent document explaining how we will keep your data safe throughout the study. In short, the document says:",
     "bullets": "Your record will be kept confidential.\nYou will not be personally identified in any report or publication about this study.\nYour data will be assigned a number the researchers will see. They will not see your personal information such as your name, address or email.\nTaking part in this study is voluntary. You can stop at any time.\nYour test samples may be used for other research. However, no personal data will be linked to those test samples.",
-    "extraText": "If you have questions about this study, please contact [fluhelp@uw.edu](mailto:fluhelp@uw.edu) or call **(509) 593-3964**.",
-    "disclaimer": "Please scroll to the bottom of the next page and click \"I consent\" to participate in the study."
+    "questions": "If you have questions about this study, please contact [fluhelp@uw.edu](mailto:fluhelp@uw.edu) or call **(509) 593-3964**.",
+    "continue": "Please scroll to the bottom of the next page and click \"I consent\" to participate in the study."
   },
   "consentScreen": {
     "required": " (required)",

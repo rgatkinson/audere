@@ -30,6 +30,8 @@ import {
 } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
+import { declarativeScreens } from "../resources/DeclarativeScreenConfig";
+import { generateDeclarativeScreen } from "./components/DeclarativeScreen";
 import {
   simpleScreens,
   generateSimpleScreen,
@@ -62,7 +64,17 @@ const homeRouteConfig = simpleScreens.reduce(
   { ...mainScreens }
 );
 
-const Home = createStackNavigator(homeRouteConfig, {
+const allRouteConfig = declarativeScreens.reduce(
+  (allRouteConfig, declarativeScreenConfig) => ({
+    ...allRouteConfig,
+    [declarativeScreenConfig.key]: {
+      screen: generateDeclarativeScreen(declarativeScreenConfig),
+    },
+  }),
+  { ...homeRouteConfig }
+);
+
+const Home = createStackNavigator(allRouteConfig, {
   initialRouteName: "Welcome",
   // @ts-ignore
   defaultNavigationOptions: {

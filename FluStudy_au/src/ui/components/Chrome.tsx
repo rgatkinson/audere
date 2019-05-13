@@ -26,11 +26,9 @@ import {
 interface Props {
   children?: any;
   hideBackButton?: boolean;
-  isDemo?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   splashImage?: string;
-  onBack?: () => void;
 }
 
 export default class Chrome extends React.Component<Props> {
@@ -53,11 +51,9 @@ export default class Chrome extends React.Component<Props> {
             translucent={true}
           />
           <NavigationBar
-            demoMode={this.props.isDemo}
             hideBackButton={this.props.hideBackButton}
             menuItem={this.props.menuItem}
             navigation={this.props.navigation}
-            onBack={this.props.onBack}
           />
           {!!this.props.splashImage && (
             <Image

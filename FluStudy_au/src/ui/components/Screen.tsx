@@ -16,7 +16,7 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { ScrollIntoView, wrapScrollView } from "react-native-scroll-into-view";
-import { Action, Option, setDemo, StoreState } from "../../store";
+import { Action, Option, StoreState } from "../../store";
 import Barcode from "./flu/Barcode";
 import Button from "./Button";
 import Chrome from "./Chrome";
@@ -27,20 +27,16 @@ import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import BorderView from "./BorderView";
 import ButtonGrid from "./ButtonGrid";
+import MainImage from "./MainImage";
 import Text from "./Text";
 import Title from "./Title";
 import VideoPlayer from "./VideoPlayer";
 import ScreenImages from "./ScreenImages";
-import {
-  ASPECT_RATIO,
-  GUTTER,
-  HIGHLIGHT_STYLE,
-  IMAGE_WIDTH,
-  SMALL_TEXT,
-} from "../styles";
+import { GUTTER, HIGHLIGHT_STYLE, SMALL_TEXT } from "../styles";
 import { getRemoteConfig, overrideRemoteConfig } from "../../util/remoteConfig";
 import { setShownOfflineWarning } from "../../store";
 import { SurveyQuestionData } from "../../resources/ScreenConfig";
+
 interface Props {
   barcode?: boolean;
   buttonLabel?: string;
@@ -59,7 +55,6 @@ interface Props {
   header?: any;
   images?: string[];
   image?: string;
-  isDemo?: boolean;
   isConnected?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -71,15 +66,11 @@ interface Props {
   videoId?: string;
   getAnswer?: (key: string, id: string) => string;
   updateAnswer?: (answer: object, data: SurveyQuestionData) => void;
-  dispatch?(action: Action): void;
   onTitlePress?: () => void;
-  onBack?: () => void;
   onNext?: () => void;
 }
 
 const CustomScrollView = wrapScrollView(ScrollView);
-const TRIPLE_PRESS_DELAY = 500;
-const LONG_PRESS_DELAY_MS = 3 * 1000;
 
 interface ScreenState {
   triedToProceed: boolean;
@@ -87,43 +78,15 @@ interface ScreenState {
 
 @connect((state: StoreState) => ({
   isConnected: state.meta.isConnected,
-  isDemo: state.meta.isDemo,
   shownOfflineWarning: state.meta.shownOfflineWarning,
 }))
 class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-
   requiredQuestions = {};
 
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = { triedToProceed: false };
   }
-
-  handleTripleTap = () => {
-    const now = Date.now();
-    if (
-      this.lastTap != null &&
-      this.secondLastTap != null &&
-      now - this.secondLastTap! < TRIPLE_PRESS_DELAY &&
-      this.props.menuItem
-    ) {
-      this.props.dispatch!(setDemo(!this.props.isDemo));
-    } else {
-      this.secondLastTap = this.lastTap;
-      this.lastTap = now;
-    }
-  };
-
-  handleLongPress = () => {
-    if (!this.props.isDemo) {
-      return;
-    }
-    const blockKitOrders = getRemoteConfig("blockKitOrders");
-    overrideRemoteConfig("blockKitOrders", !blockKitOrders);
-    alert(`blockKitOrders is now ${!blockKitOrders}`);
-  };
 
   _handleNavigation = () => {
     const {
@@ -334,10 +297,8 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
       hideBackButton,
       images,
       image,
-      isDemo,
       menuItem,
       navigation,
-      onBack,
       onTitlePress,
       skipButton,
       splashImage,
@@ -349,11 +310,9 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
     return (
       <Chrome
         hideBackButton={hideBackButton}
-        isDemo={isDemo}
         menuItem={menuItem}
         navigation={navigation}
         splashImage={splashImage}
-        onBack={onBack}
       >
         <View style={styles.scrollContainer}>
           <CustomScrollView
@@ -361,19 +320,7 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.innerContainer}>
-              {!!image && (
-                <TouchableWithoutFeedback
-                  style={{ alignSelf: "stretch" }}
-                  delayLongPress={LONG_PRESS_DELAY_MS}
-                  onPress={this.handleTripleTap}
-                  onLongPress={this.handleLongPress}
-                >
-                  <Image
-                    style={[styles.image, menuItem && styles.menuImage]}
-                    source={{ uri: image }}
-                  />
-                </TouchableWithoutFeedback>
-              )}
+              {!!image && <MainImage menuItem={menuItem} uri={image} />}
               {!!subTitle && (
                 <View style={{ paddingHorizontal: GUTTER * 2 }}>
                   <Divider style={{ marginVertical: GUTTER / 2 }} />
@@ -444,20 +391,9 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     marginHorizontal: GUTTER,
   },
-  image: {
-    alignSelf: "center",
-    aspectRatio: ASPECT_RATIO,
-    height: undefined,
-    marginVertical: GUTTER / 2,
-    width: IMAGE_WIDTH,
-  },
   innerContainer: {
     marginHorizontal: GUTTER,
     flex: 1,
-  },
-  menuImage: {
-    aspectRatio: 4.23,
-    width: "80%",
   },
   scrollContainer: {
     alignSelf: "stretch",
