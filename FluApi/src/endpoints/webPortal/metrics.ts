@@ -19,9 +19,6 @@ import { Op } from "sequelize";
 import { createSplitSql } from "../../util/sql";
 import { defineFeverModels } from "../../models/db/fever";
 import { SecretConfig } from "../../util/secretsConfig";
-import { getBigqueryConfig } from "../../util/bigqueryConfig";
-import bigQueries from "./bigQueries.json";
-const { BigQuery } = require("@google-cloud/bigquery");
 const sql = createSplitSql();
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
@@ -1818,41 +1815,4 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
   ]);
 
   return report;
-}
-
-export async function getFeverFirebase(
-  startDate: string,
-  endDate: string,
-  queryName: string
-): Promise<[object, object]> {
-  const datePattern = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
-  if (!startDate.match(datePattern) || !endDate.match(datePattern)) {
-    throw new Error("Dates must be specified as yyyy-MM-dd");
-  }
-  const offset = getStudyTimezoneOffset();
-
-  const secrets = new SecretConfig(sql);
-  const bigqueryConfig = await getBigqueryConfig(secrets);
-  const queryList = Object.keys(bigQueries);
-
-  const bigquery = new BigQuery({
-    projectId: "flu-at-home-app",
-    credentials: JSON.parse(bigqueryConfig.authToken)
-  });
-
-  if (!queryName) {
-    queryName = queryList[0];
-  }
-  const query = bigQueries[queryName].join("\n");
-  const options = {
-    query: query,
-    location: "US",
-    params: [
-      `${startDate} 00:00:00.000${offset}`,
-      `${endDate} 23:59:59.999${offset}`
-    ]
-  };
-  const [job] = await bigquery.createQueryJob(options);
-  const [queryData] = await job.getQueryResults();
-  return [queryList, queryData];
 }

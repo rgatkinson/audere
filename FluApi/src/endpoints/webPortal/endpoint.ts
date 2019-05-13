@@ -23,8 +23,7 @@ import {
   getThisSunday,
   getExcelReport,
   getFeverMetrics,
-  getFeverExcelReport,
-  getFeverFirebase
+  getFeverExcelReport
 } from "./metrics";
 import logger from "../../util/logger";
 import { S3DirectoryServer } from "./s3server";
@@ -230,28 +229,6 @@ function addHandlers(
           studyIdData: studyIdData,
           startDate: startDate,
           endDate: endDate
-        });
-      })
-    );
-
-    app.get(
-      "/feverFirebase",
-      wrap(async (req, res) => {
-        const startDate = req.query.startDate || getLastMonday();
-        const endDate = req.query.endDate || getThisSunday();
-        const queryName = req.query.queryName || "";
-        const [queryList, queryData] = await getFeverFirebase(
-          startDate,
-          endDate,
-          queryName
-        );
-        res.render("feverFirebase.ejs", {
-          static: app.mountpath,
-          queryList: queryList,
-          queryData: queryData,
-          startDate: startDate,
-          endDate: endDate,
-          queryName: queryName
         });
       })
     );
