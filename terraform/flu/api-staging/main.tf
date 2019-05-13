@@ -23,6 +23,7 @@ provider "template" {
 module "flu_api" {
   source = "../../modules/flu-api"
 
+  account = "${var.account}"
   api_cidr = "${module.vpc_cidr.staging_api_cidr}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
@@ -32,9 +33,12 @@ module "flu_api" {
   fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
   gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
+  metabase_database_address = "${data.terraform_remote_state.flu_db.metabase_database_address}"
   migrate = "${var.migrate}"
   public_cidr = "${module.vpc_cidr.staging_public_cidr}"
+  region = "${var.region}"
   service = "${var.service}"
+  ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
 
@@ -62,6 +66,13 @@ data "terraform_remote_state" "flu_db" {
     bucket = "flu-staging-terraform.auderenow.io"
     key = "db/terraform.state"
     region = "us-west-2"
+  }
+}
+
+data "terraform_remote_state" "global" {
+  backend = "local"
+  config {
+    path = "../../global/terraform.tfstate"
   }
 }
 

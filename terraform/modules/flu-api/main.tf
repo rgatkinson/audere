@@ -104,8 +104,8 @@ resource "aws_route53_record" "api_record" {
   type = "A"
 
   alias {
-    name = "${aws_elb.flu_api_elb.dns_name}"
-    zone_id = "${aws_elb.flu_api_elb.zone_id}"
+    name = "${aws_lb.front_end.dns_name}"
+    zone_id = "${aws_lb.front_end.zone_id}"
     evaluate_target_health = true
   }
 
@@ -118,11 +118,13 @@ resource "aws_autoscaling_group" "flu_api" {
   health_check_type = "ELB"
   launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
   load_balancers = [
-    "${aws_elb.flu_api_elb.name}",
     "${aws_elb.flu_api_internal_elb.name}",
   ]
   max_size = 1
   min_size = 1
+  target_group_arns = [
+    "${aws_lb_target_group.flu_api_public.arn}"
+  ],
   vpc_zone_identifier = ["${aws_subnet.api.id}"]
   wait_for_elb_capacity = 1
 
@@ -162,12 +164,13 @@ data "aws_iam_policy_document" "allow_us_west_2_elb" {
   }
 }
 
-resource "aws_elb" "flu_api_elb" {
+resource "aws_lb" "front_end" {
   name = "${local.base_name}-public"
 
   access_logs {
     bucket = "${aws_s3_bucket.elb_logs.id}"
-    bucket_prefix = "public"
+    prefix = "public"
+    enabled = true
   }
 
   subnets = ["${aws_subnet.api.id}"]
@@ -177,28 +180,68 @@ resource "aws_elb" "flu_api_elb" {
     "${module.fluapi_sg.client_id}",
   ]
 
-  listener {
-    lb_port = 443
-    lb_protocol = "https"
-    instance_port = 443
-    instance_protocol = "https"
-    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
-  }
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_lb_target_group" "flu_api_public" {
+  name = "${local.base_name}-api"
+  port = "443"
+  protocol = "HTTPS"
 
   health_check {
     healthy_threshold = 2
     unhealthy_threshold = 2
     timeout = 5
     interval = 30
-    target = "HTTPS:443/api"
-  }
-
-  tags {
-    Name = "${local.base_name}"
-    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
+    path = "/api"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_lb_target_group" "flu_reporting_public" {
+  name = "${local.base_name}-reporting"
+  port = "443"
+  protocol = "HTTPS"
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+    path = "/api/health"
+  }
+
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = "${aws_lb.front_end.arn}"
+  port = "443"
+  protocol = "HTTPS"
+  certificate_arn = "${data.aws_acm_certificate.auderenow_io.arn}"
+
+  default_action {
+    type = "forward"
+    target_group_arn = "${aws_lb_target_group.flu_api_public.arn}"
+  }
+
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_lb_listener_rule" "reporting" {
+  listener_arn = "${aws_lb_listener.front_end.arn}"
+  priority = 100
+
+  action {
+    type = "forward"
+    target_group_arn = "${aws_lb_target_group.flu_reporting_public.arn}"
+  }
+
+  condition {
+    field = "path-pattern"
+    values = ["/reporting/*"]
+  }
 }
 
 resource "aws_elb" "flu_api_internal_elb" {
@@ -298,5 +341,56 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
         sse_algorithm = "aws:kms"
       }
     }
+  }
+}
+
+// --------------------------------------------------------------------------------
+// Metabase & ECS
+
+data "template_file" "metabase" {
+  template = "${file("${path.module}/metabase.json")}"
+
+  vars {
+    account = "${var.account}"
+    container_name = "metabase-${var.environment}"
+    db_host = "${var.metabase_database_address}"
+    db_pass_key = "metabase-${var.environment}.pass"
+    db_user_key = "metabase-${var.environment}.user"
+    encryption_secret_key = "metabase-${var.environment}.secret"
+    image = "metabase/metabase:v0.32.5"
+    region = "${var.region}"
+  }
+}
+
+module "ecs_cluster" {
+  source = "../ecs-cluster"
+  cluster_name = "${local.base_name}-ecs"
+  environment = "${var.environment}"
+  iam_instance_profile = "${aws_iam_instance_profile.flu_api.id}"
+  subnet_ids = ["${aws_subnet.api.id}"]
+  security_groups = [
+    "${aws_security_group.internet_egress.id}",
+    "${module.fluapi_sg.server_id}",
+    "${var.fludb_client_sg_id}",
+    "${var.fludev_ssh_server_sg_id}",
+  ]
+}
+
+resource "aws_ecs_task_definition" "metabase" {
+  family = "metabase-${var.environment}"
+  container_definitions = "${data.template_file.metabase.rendered}"
+  execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
+}
+
+resource "aws_ecs_service" "metabase" {
+  name = "metabase-${var.environment}"
+  cluster = "${module.ecs_cluster.id}"
+  task_definition = "${aws_ecs_task_definition.metabase.arn}"
+  desired_count = 1
+
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.flu_reporting_public.arn}"
+    container_name = "metabase-${var.environment}"
+    container_port = 3000
   }
 }
