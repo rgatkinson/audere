@@ -48,7 +48,7 @@ import QuestionText from "../components/QuestionText";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { isPOBox, isValidAddress, isValidEmail } from "../../util/check";
 import { getRemoteConfig } from "../../util/remoteConfig";
-import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents, AppHealthEvents } from "../../util/tracker";
 import RadioGrid from "../components/RadioGrid";
 import { getApiBaseUrl } from "../../transport";
@@ -259,7 +259,7 @@ class ConsentScreen extends React.PureComponent<
           }),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
-        appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
+        appBuild: DEVICE_INFO.clientBuild,
       })
     );
     this.props.navigation.push("Address");

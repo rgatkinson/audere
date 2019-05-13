@@ -4,28 +4,23 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
+# First argument is path to product dir
+# Second argument is where to write buildInfo.json, if different from product dir (optional)
+
 set -euo pipefail
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
-HOME_APP_DIR="$REPO_ROOT_DIR/$1"
-SERVER_DIR="$REPO_ROOT_DIR/FluApi"
-SERVER_SUBDIR="static"
+PRODUCT_DIR="$REPO_ROOT_DIR/$1"
+if [[ "$#" -eq 2 ]]; then 
+  TARGET_DIR="$REPO_ROOT_DIR/$2"
+else 
+  TARGET_DIR="$PRODUCT_DIR"
+fi 
 FILENAME="buildInfo.json"
 TODAY="$(date +%Y%m%d)"
 
-APP_NAME="$(node --eval 'console.log(require("'$APP_DIR'/package.json").name)')"
-APP_VERSION="$(node --eval 'console.log(require("'$APP_DIR'/package.json").version)')"
-HOME_APP_NAME="$(node --eval 'console.log(require("'$HOME_APP_DIR'/package.json").name)')"
-HOME_APP_VERSION="$(node --eval 'console.log(require("'$HOME_APP_DIR'/package.json").version)')"
-# PlistBuddy only exists on Mac, fallback to blank if the command fails
-{
-  HOME_APP_IOS_BUILD="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$HOME_APP_DIR/ios/fluathome/Supporting/Info.plist")"
-} || {
-  HOME_APP_IOS_BUILD=""
-}
-SERVER_NAME="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").name)')"
-SERVER_VERSION="$(node --eval 'console.log(require("'$SERVER_DIR'/package.json").version)')"
+PRODUCT_NAME="$(node --eval 'console.log(require("'$PRODUCT_DIR'/package.json").name)')"
+PRODUCT_VERSION="$(node --eval 'console.log(require("'$PRODUCT_DIR'/package.json").version)')"
 
 if [ "${CIRCLECI:-}" = true ] && [ -n "$CIRCLE_SHA1" ]; then
   # Ask Circle for the hash; this will be accurate for tagged builds 
@@ -34,30 +29,11 @@ else
   GITHASH="$(git rev-list -n 1 HEAD)"
 fi
 
-cat >"$APP_DIR/$FILENAME" <<EOT
+mkdir -p "$TARGET_DIR"
+cat >"$TARGET_DIR/$FILENAME" <<EOT
 {
-  "name": "$APP_NAME",
-  "version": "$APP_VERSION",  
-  "buildDate": "$TODAY",
-  "hash": "$GITHASH"
-}
-EOT
-
-cat >"$HOME_APP_DIR/$FILENAME" <<EOT
-{
-  "name": "$HOME_APP_NAME",
-  "version": "$HOME_APP_VERSION",  
-  "iosBuild": "$HOME_APP_IOS_BUILD",
-  "buildDate": "$TODAY",
-  "hash": "$GITHASH"
-}
-EOT
-			  
-mkdir -p "$SERVER_DIR/$SERVER_SUBDIR"
-cat >"$SERVER_DIR/$SERVER_SUBDIR/$FILENAME" <<EOT
-{
-  "name": "$SERVER_NAME",
-  "version": "$SERVER_VERSION",  
+  "name": "$PRODUCT_NAME",
+  "version": "$PRODUCT_VERSION",  
   "buildDate": "$TODAY",
   "hash": "$GITHASH"
 }

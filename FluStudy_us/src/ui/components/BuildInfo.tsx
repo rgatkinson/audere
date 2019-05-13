@@ -14,15 +14,13 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Constants } from "expo";
-import { ios, DEVICE_INFO } from "../../transport/DeviceInfo";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Button from "./Button";
 import Text from "./Text";
 import { getApiBaseUrl } from "../../transport";
 import { GUTTER } from "../styles";
 
 interface Props {}
-
-const buildInfo = require("../../../buildInfo.json");
 
 class BuildInfo extends React.Component<Props & WithNamespaces> {
   _copyToClipboard = async () => {
@@ -33,13 +31,13 @@ class BuildInfo extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       t("buildInfo:version") +
-      buildInfo.version +
+      DEVICE_INFO.clientVersion.version +
       t("buildInfo:build") +
-      (ios ? buildInfo.iosBuild : Constants.platform.android.versionCode) +
+      DEVICE_INFO.clientBuild +
       t("buildInfo:commit") +
-      buildInfo.hash +
+      DEVICE_INFO.clientVersion.hash +
       t("buildInfo:date") +
-      buildInfo.buildDate +
+      DEVICE_INFO.clientVersion.buildDate +
       t("buildInfo:device") +
       Platform.OS +
       " " +

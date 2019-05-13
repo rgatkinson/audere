@@ -22,7 +22,7 @@ import Screen from "../components/Screen";
 import Text from "../components/Text";
 import { GUTTER, SMALL_TEXT } from "../styles";
 import { isValidEmail } from "../../util/check";
-import { DEVICE_INFO, ios } from "../../transport/DeviceInfo";
+import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import { tracker, FunnelEvents } from "../../util/tracker";
 
 interface Props {
@@ -97,7 +97,7 @@ class ConsentScreen extends React.PureComponent<
           }),
         signerType: ConsentInfoSignerType.Subject,
         date: format(new Date(), "YYYY-MM-DD"),
-        appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
+        appBuild: DEVICE_INFO.clientBuild,
       })
     );
     this.props.navigation.push("ScanInstructions");

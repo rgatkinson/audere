@@ -1,16 +1,16 @@
 #!/bin/bash
-# Copyright (c) 2018 by Audere
+# Copyright (c) 2019 by Audere
 #
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
-# This increments build number for iOS and Android then triggers Circle build-deploy-fever job 
+# This increments build number for iOS and Android then triggers Circle build_deploy_fluathome job 
 # Assumes we want to build head of current branch
 
 set -euo pipefail
 
 function usage_and_exit() {
-  echo 1>&2 "Usage: build-fever <type> \"description of build\" [--no-increment] [--skip-ios] [--skip-android]"
+  echo 1>&2 "Usage: build-app <type> \"description of build\" [--no-increment] [--skip-ios] [--skip-android]"
   echo 1>&2 ""
   echo 1>&2 "<type> = \"staging\"|\"prod\""
   echo 1>&2 "description of build = Brief description of what's new, used in Slack and git tag message" 
@@ -19,10 +19,17 @@ function usage_and_exit() {
   echo 1>&2 "--skip-android = Skip Android build, only build iOS"
   echo 1>&2 ""
   echo 1>&2 "Example:"
-  echo 1>&2 "    build-fever prod \"Latest strings from copywriter\""
+  echo 1>&2 "    build-app prod \"Latest strings from copywriter\""
   echo 1>&2 ""
   exit 1
 }
+
+if [[ "${APP_ROOT_DIR:-}" == "" || "${PRODUCT:-}" == "" ]]; then
+  echo 1>&2 "Error: APP_ROOT_DIR and/or PRODUCT is not set."
+  echo 1>&2 "       Looks like you are calling [repo root]/scripts/build-app directly."
+  echo 1>&2 "       Call [app dir]/scripts/build-app instead which will set the variables correctly."
+  exit 1 
+fi
 
 INCREMENT=true
 BUILD_IOS=true
@@ -80,8 +87,7 @@ if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
 fi
 
 if [[ "$INCREMENT" = true ]]; then 
-  REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-  PLIST_FILE="$REPO_ROOT_DIR/FluStudy_au/ios/fluathome/Supporting/Info.plist"
+  PLIST_FILE="$APP_ROOT_DIR/ios/fluathome/Supporting/Info.plist"
   BUILD_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$PLIST_FILE")"
   VERSION_NUM="$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$PLIST_FILE")"
   while true; do 
@@ -89,7 +95,7 @@ if [[ "$INCREMENT" = true ]]; then
     case "$input" in 
       Y) 
         read -p "Will increment build number to $((BUILD_NUM+1)) and commit to $BRANCH. Press Enter to continue or Ctrl-C to abort."
-        cd "$REPO_ROOT_DIR/FluStudy_au/ios"
+        cd "$APP_ROOT_DIR/ios"
         fastlane increment_build_number_and_commit versionBump:false
         break;;
       n) 
@@ -99,7 +105,7 @@ if [[ "$INCREMENT" = true ]]; then
         PATCH="${SEMVER[2]}"
         read -p "Will increment version to $MAJOR.$MINOR.$((PATCH+1)), build number to $((BUILD_NUM+1)) and commit \
 to $BRANCH. Press Enter to continue or Ctrl-C to abort."
-        cd "$REPO_ROOT_DIR/FluStudy_au/ios"
+        cd "$APP_ROOT_DIR/ios"
         fastlane increment_build_number_and_commit versionBump:true
         break;;
       *) 
@@ -109,20 +115,20 @@ to $BRANCH. Press Enter to continue or Ctrl-C to abort."
 fi 
 
 if [[ "$BUILD_IOS" = true ]]; then
-  echo "Asking CircleCI to build Fever iOS (build_deploy_fever)"
+  echo "Asking CircleCI to build flu@home iOS"
   curl --user "${CIRCLE_TOKEN}":\
      -X POST\
      --header "Content-Type: application/json"\
-     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_fever", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_'$PRODUCT'", "PRODUCT": "'$PRODUCT'", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
 https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
 fi 
 
 if [[ "$BUILD_ANDROID" = true ]]; then
-  echo "Asking CircleCI to build Fever Android (build_deploy_fever_android)"
+  echo "Asking CircleCI to build flu@home Android"
   curl --user "${CIRCLE_TOKEN}":\
      -X POST\
      --header "Content-Type: application/json"\
-     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_fever_android", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_'$PRODUCT'_android", "PRODUCT": "'$PRODUCT'", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
 https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
 fi
 
