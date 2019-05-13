@@ -23,6 +23,10 @@ output "gateway_id" {
   value = "${module.flu_db.gateway_id}"
 }
 
+output "metabase_database_address" {
+  value = "${module.flu_db.metabase_database_address}"
+}
+
 output "vpc_id" {
   value = "${module.flu_db.vpc_id}"
 }

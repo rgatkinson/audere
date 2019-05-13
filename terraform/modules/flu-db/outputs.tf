@@ -11,6 +11,10 @@ output "nonpii_database_address" {
   value = "${aws_db_instance.fludb_nonpii.address}"
 }
 
+output "metabase_database_address" {
+  value = "${aws_db_instance.metabase.address}"
+}
+
 output "api_creds_snapshot_id" {
   value = "${element(concat(aws_ebs_snapshot.api_creds.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
 }
