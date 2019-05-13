@@ -376,7 +376,7 @@
     "description": "Tap the round button to take a photo",
     "loading": "Loading..."
   },
-  "testStripConfirmationScreen": {
+  "TestStripConfirmation": {
     "title": "Photo captured!",
     "desc": "Thank you! Your test strip photo was captured successfully. Next, we'll show you how to read your test strip to understand your results."
   },

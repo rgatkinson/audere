@@ -27,8 +27,9 @@ import {
   StoreState,
   appendInvalidBarcode,
   setKitBarcode,
-  setTestStripImg,
+  setRDTPhoto,
   setSupportCode,
+  setTestStripImg,
   setWorkflow,
   toggleSupportCodeModal,
   uploader,
@@ -948,62 +949,10 @@ export const CameraSettings = withNamespaces("CameraSettings")(
   CameraSettingsScreen
 );
 
-class PictureInstructionsScreen extends React.Component<
-  Props & WithNamespaces
-> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._onNext = this._onNext.bind(this);
-    this._skip = this._skip.bind(this);
-  }
-
-  _skip() {
-    this.props.navigation.push("CleanFirstTest");
-  }
-
-  async _onNext() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status === "granted") {
-      this.props.navigation.push("TestStripCamera");
-    } else {
-      this._skip();
-    }
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("desc")}
-        footer={<Links center={true} links={["skipTestStripPhoto"]} />}
-        image="takepictureteststrip"
-        navigation={this.props.navigation}
-        title={t("title")}
-        videoId="takePhotoOfStrip"
-        onNext={this._onNext}
-      >
-        <Image style={imageStyles.image} source={{ uri: "teststripcamera1" }} />
-        <Text
-          content={t("tip2")}
-          style={{ alignSelf: "stretch", marginBottom: GUTTER }}
-        />
-        <Image style={imageStyles.image} source={{ uri: "teststripcamera2" }} />
-        <Text
-          content={t("tip3")}
-          style={{ alignSelf: "stretch", marginBottom: GUTTER }}
-        />
-      </Screen>
-    );
-  }
-}
-export const PictureInstructions = withNamespaces("pictureInstructionsScreen")(
-  PictureInstructionsScreen
-);
-
 @connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
 }))
-class TestStripCameraScreen extends React.Component<
+class RDTReaderScreen extends React.Component<
   DemoModeProps & Props & WithNamespaces
 > {
   camera = React.createRef<any>();
@@ -1040,10 +989,9 @@ class TestStripCameraScreen extends React.Component<
             code: csruid,
           })
         );
+        this.props.dispatch(setRDTPhoto(photo.uri));
         this.setState({ spinner: false });
-        this.props.navigation.push("TestStripConfirmation", {
-          photo: photo.uri,
-        });
+        this.props.navigation.push("TestStripConfirmation");
       } catch (e) {
         this.setState({ spinner: false });
       }
@@ -1100,10 +1048,7 @@ class TestStripCameraScreen extends React.Component<
   }
 }
 
-export const TestStripCamera = withNamespaces("testStripCameraScreen")(
-  TestStripCameraScreen
-);
-export const RDTReader = withNamespaces("RDTReader")(TestStripCameraScreen);
+export const RDTReader = withNamespaces("RDTReader")(RDTReaderScreen);
 
 const imageStyles = StyleSheet.create({
   image: {
@@ -1183,46 +1128,3 @@ const cameraStyles = StyleSheet.create({
     width: undefined,
   },
 });
-
-interface TestStripProps {
-  testStripImg: SampleInfo;
-}
-
-class TestStripConfirmationScreen extends React.Component<
-  Props & TestStripProps & WithNamespaces
-> {
-  _onNext = () => {
-    this.props.navigation.push("TestStripSurvey");
-  };
-
-  render() {
-    const { navigation, t } = this.props;
-    const photo = navigation.getParam("photo", null);
-    const screenWidth = Dimensions.get("window").width;
-    const screenHeight = Dimensions.get("window").height;
-    return (
-      <Screen
-        desc={t("desc")}
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      >
-        {photo != null && (
-          <Image
-            style={{
-              alignSelf: "center",
-              aspectRatio: screenWidth / screenHeight,
-              width: "50%",
-              marginVertical: GUTTER,
-            }}
-            source={{ uri: photo }}
-          />
-        )}
-      </Screen>
-    );
-  }
-}
-export const TestStripConfirmation = withNamespaces(
-  "testStripConfirmationScreen"
-)(TestStripConfirmationScreen);
-

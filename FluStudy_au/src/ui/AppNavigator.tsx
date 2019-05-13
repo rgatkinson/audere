@@ -13,10 +13,7 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import {
-  Consent,
-  ConsentIneligible,
-} from "./screens/ScreeningScreens";
+import { Consent, ConsentIneligible } from "./screens/ScreeningScreens";
 import {
   ScanInstructions,
   Scan,
@@ -30,9 +27,6 @@ import {
   RDTInstructions,
   RDTReader,
   CameraSettings,
-  PictureInstructions,
-  TestStripCamera,
-  TestStripConfirmation,
 } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
@@ -56,9 +50,6 @@ const mainScreens = {
   RDTInstructions,
   RDTReader,
   CameraSettings,
-  PictureInstructions,
-  TestStripCamera,
-  TestStripConfirmation,
 };
 
 const homeRouteConfig = simpleScreens.reduce(

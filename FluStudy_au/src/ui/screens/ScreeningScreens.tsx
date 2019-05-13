@@ -11,15 +11,8 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import CheckBox from "react-native-check-box";
 import { WorkflowInfo, ConsentInfoSignerType } from "audere-lib/feverProtocol";
-import {
-  Action,
-  StoreState,
-  setEmail,
-  setConsent,
-} from "../../store";
-import {
-  ConsentConfig,
-} from "../../resources/ScreenConfig";
+import { Action, StoreState, setEmail, setConsent } from "../../store";
+import { ConsentConfig } from "../../resources/ScreenConfig";
 import { KEYBOARD_BEHAVIOR } from "../styles";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import Button from "../components/Button";
@@ -245,4 +238,3 @@ class ConsentIneligibleScreen extends React.Component<Props & WithNamespaces> {
 export const ConsentIneligible = withNamespaces("consentIneligibleScreen")(
   ConsentIneligibleScreen
 );
-

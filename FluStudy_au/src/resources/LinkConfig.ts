@@ -6,11 +6,7 @@
 import { Linking, Platform } from "react-native";
 import { connect } from "react-redux";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import {
-  toggleSupportCodeModal,
-  Action,
-  StoreState,
-} from "../store";
+import { toggleSupportCodeModal, Action, StoreState } from "../store";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
 
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https

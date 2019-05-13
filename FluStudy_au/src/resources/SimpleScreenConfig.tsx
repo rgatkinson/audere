@@ -18,6 +18,7 @@ import reduxWriter, { ReduxWriterProps } from "../store/ReduxWriter";
 import BulletPoint from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import Links from "../ui/components/Links";
+import RDTImage from "../ui/components/flu/RDTImage";
 import Screen from "../ui/components/Screen";
 import { NavigationScreenProp } from "react-navigation";
 import { tracker, FunnelEvents, AppHealthEvents } from "../util/tracker";
@@ -58,6 +59,7 @@ export interface SimpleScreenConfig {
   linkConfig?: LinkConfig;
   next?: string;
   questions?: SurveyQuestionData[];
+  rdtImage?: boolean;
   skipButton?: boolean;
   splashImage?: string;
   workflowEvent?: string;
@@ -142,6 +144,7 @@ export const generateSimpleScreen = (config: SimpleScreenConfig) => {
               .map((bullet: string, index: number) => {
                 return <BulletPoint key={`bullet-${index}`} content={bullet} />;
               })}
+          {!!config.rdtImage && <RDTImage />}
           {!!config.linkConfig && (
             <Links
               center={config.linkConfig.center}
@@ -296,6 +299,11 @@ export const simpleScreens: SimpleScreenConfig[] = [
     key: "LookAtStrip",
     next: "TestResult",
     videoId: "lookAtTestStrip",
+  },
+  {
+    key: "TestStripConfirmation",
+    next: "TestStripSurvey",
+    rdtImage: true,
   },
   {
     key: "TestResult",

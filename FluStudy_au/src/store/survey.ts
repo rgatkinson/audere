@@ -29,6 +29,7 @@ export type SurveyAction =
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
   | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
+  | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_SUPPORT_CODE"; supportCode: string };
 
 export type SurveyState = {
@@ -40,6 +41,7 @@ export type SurveyState = {
   kitBarcode?: SampleInfo;
   testStripImg?: SampleInfo;
   pushState: PushNotificationState;
+  rdtPhotoUri?: string;
   responses: SurveyResponse[];
   supportCode?: string;
   oneMinuteStartTime?: number;
@@ -130,6 +132,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
     return {
       ...state,
       pushState: action.pushState,
+      timestamp: new Date().getTime(),
+    };
+  }
+  if (action.type === "SET_RDT_PHOTO") {
+    return {
+      ...state,
+      rdtPhotoUri: action.rdtPhotoUri,
       timestamp: new Date().getTime(),
     };
   }
@@ -248,6 +257,13 @@ export function setCSRUIDIfUnset(csruid: string): SurveyAction {
   return {
     type: "SET_CSRUID_IF_UNSET",
     csruid,
+  };
+}
+
+export function setRDTPhoto(rdtPhotoUri: string): SurveyAction {
+  return {
+    type: "SET_RDT_PHOTO",
+    rdtPhotoUri,
   };
 }
 
