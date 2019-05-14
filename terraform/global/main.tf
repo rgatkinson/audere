@@ -9,6 +9,42 @@ provider "aws" {
 }
 
 // --------------------------------------------------------------------------------
+// Audere file-share
+
+// To share non-confidential data publicly:
+//   aws s3 cp "$LOCAL_PATH" "s3://fileshare.auderenow.io/public/$REMOTE_NAME"
+// This makes the data available at:
+//   https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/$REMOTE_NAME
+// NOTE: anyone who knows the URL can download the data.
+//
+// To share data with someone for a specific time period:
+//   aws s3 cp "$LOCAL_PATH" "s3://fileshare.auderenow.io/presign/$REMOTE_NAME"
+//   aws s3 presign "s3://fileshare.auderenow.io/presign/$REMOTE_NAME" --expires-in $(($DAYS * 24 * 3600))
+// This will generate a link that is valid for $DAYS days.
+
+resource "aws_s3_bucket" "audere_share" {
+  bucket = "fileshare.auderenow.io"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_policy" "audere_share" {
+  bucket = "${aws_s3_bucket.audere_share.id}"
+  policy = "${data.aws_iam_policy_document.audere_share.json}"
+}
+
+data "aws_iam_policy_document" "audere_share" {
+  statement {
+    sid = "ReadOnlyObjectAccessUnderPublic"
+    actions = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::fileshare.auderenow.io/public/*"]
+    principals {
+      type = "*"
+      identifiers = ["*"]
+    }
+  }
+}
+
+// --------------------------------------------------------------------------------
 // CloudTrail S3 events logging
 
 resource "aws_cloudtrail" "cloudtrail-s3-events" {
