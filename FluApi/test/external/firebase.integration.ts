@@ -70,8 +70,8 @@ describe("FirebaseReceiver", async () => {
     if (app == null) return;
     const { collection, receiver } = await setup("TwoMessages");
 
-    await collection.doc(DOC_ID1).set(wireDoc(DOC1));
     await collection.doc(DOC_ID0).set(wireDoc(DOC0));
+    await collection.doc(DOC_ID1).set(wireDoc(DOC1));
     expect(await receiver.updates()).toEqual([DOC_ID0, DOC_ID1]);
     const received0 = checkDoc(DOC0, await receiver.read(DOC_ID0));
     expect(await receiver.markAsRead(received0)).toEqual(true);
@@ -147,9 +147,9 @@ function wireDoc(content: object): object {
 
 function clientTransportFrame(hash: string) {
   return {
-    clientTimestamp: new Date().toISOString(),
+    sentAt: new Date().toISOString(),
     contentHash: hash,
-    lastWriter: "client",
+    lastWriter: "sender",
     protocolVersion: 1
   };
 }

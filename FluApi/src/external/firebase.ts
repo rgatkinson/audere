@@ -31,13 +31,14 @@ const DEFAULT_CONFIG = {
 
 // Protocol constants
 export const PROTOCOL_V1 = 1;
-export const SENDER_NAME = "client";
-export const RECEIVER_NAME = "server";
+export const SENDER_NAME = "sender";
+export const RECEIVER_NAME = "receiver";
 export const FIELD_PATH = {
   protocolVersion: "_transport.protocolVersion",
   contentHash: "_transport.contentHash",
   lastWriter: "_transport.lastWriter",
-  receivedAt: "_transport.receivedAt"
+  receivedAt: "_transport.receivedAt",
+  sentAt: "_transport.sentAt",
 };
 
 export class FirebaseReceiver {
@@ -57,7 +58,7 @@ export class FirebaseReceiver {
       .where(FIELD_PATH.lastWriter, "==", SENDER_NAME)
       .where(FIELD_PATH.protocolVersion, "==", PROTOCOL_V1)
       .select(FieldPath.documentId())
-      .orderBy(FieldPath.documentId())
+      .orderBy(FIELD_PATH.sentAt)
       .limit(256)
       .get();
 
