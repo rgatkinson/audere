@@ -4,12 +4,18 @@
 // can be found in the LICENSE file distributed with this file.
 
 locals {
-  subdomains = {
+  api_subdomains = {
     prod = "api"
     staging = "api.staging"
   }
-  subdomain = "${local.subdomains["${var.environment}"]}"
-  full_domain = "${local.subdomain}.auderenow.io"
+  api_subdomain = "${local.api_subdomains["${var.environment}"]}"
+  api_full_domain = "${local.api_subdomain}.auderenow.io"
+  reporting_subdomains = {
+    prod = "reporting"
+    staging = "reporting.staging"
+  }
+  reporting_subdomain = "${local.reporting_subdomains["${var.environment}"]}"
+  reporting_full_domain = "${local.reporting_subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
@@ -37,13 +43,13 @@ data "template_file" "sequelize_migrate_sh" {
   vars {
     assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
-    domain = "${local.full_domain}"
+    domain = "${local.api_full_domain}"
     environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "migrate"
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.subdomain}"
+    subdomain = "${local.api_subdomain}"
   }
 }
 
@@ -52,13 +58,13 @@ data "template_file" "service_init_sh" {
   vars {
     assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
-    domain = "${local.full_domain}"
+    domain = "${local.api_full_domain}"
     environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "service"
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.subdomain}"
+    subdomain = "${local.api_subdomain}"
   }
 }
 
@@ -100,12 +106,26 @@ data "aws_route53_zone" "auderenow_io" {
 
 resource "aws_route53_record" "api_record" {
   zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.subdomain}.${data.aws_route53_zone.auderenow_io.name}"
+  name = "${local.api_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
   type = "A"
 
   alias {
-    name = "${aws_lb.front_end.dns_name}"
-    zone_id = "${aws_lb.front_end.zone_id}"
+    name = "${aws_elb.flu_api_elb.dns_name}"
+    zone_id = "${aws_elb.flu_api_elb.zone_id}"
+    evaluate_target_health = true
+  }
+
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_route53_record" "reporting_record" {
+  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
+  name = "${local.reporting_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
+  type = "A"
+
+  alias {
+    name = "${aws_elb.flu_reporting_elb.dns_name}"
+    zone_id = "${aws_elb.flu_reporting_elb.zone_id}"
     evaluate_target_health = true
   }
 
@@ -122,9 +142,9 @@ resource "aws_autoscaling_group" "flu_api" {
   ]
   max_size = 1
   min_size = 1
-  target_group_arns = [
-    "${aws_lb_target_group.flu_api_public.arn}"
-  ],
+  load_balancers = [
+    "${aws_elb.flu_api_internal_elb.name}",
+  ]
   vpc_zone_identifier = ["${aws_subnet.api.id}"]
   wait_for_elb_capacity = 1
 
@@ -164,13 +184,12 @@ data "aws_iam_policy_document" "allow_us_west_2_elb" {
   }
 }
 
-resource "aws_lb" "front_end" {
+resource "aws_elb" "flu_api_elb" {
   name = "${local.base_name}-public"
 
   access_logs {
     bucket = "${aws_s3_bucket.elb_logs.id}"
-    prefix = "public"
-    enabled = true
+    bucket_prefix = "public"
   }
 
   subnets = ["${aws_subnet.api.id}"]
@@ -180,68 +199,28 @@ resource "aws_lb" "front_end" {
     "${module.fluapi_sg.client_id}",
   ]
 
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_lb_target_group" "flu_api_public" {
-  name = "${local.base_name}-api"
-  port = "443"
-  protocol = "HTTPS"
+  listener {
+    lb_port = 443
+    lb_protocol = "https"
+    instance_port = 443
+    instance_protocol = "https"
+    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
+  }
 
   health_check {
     healthy_threshold = 2
     unhealthy_threshold = 2
     timeout = 5
     interval = 30
-    path = "/api"
+    target = "HTTPS:443/api"
+  }
+
+  tags {
+    Name = "${local.base_name}-public"
+    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_lb_target_group" "flu_reporting_public" {
-  name = "${local.base_name}-reporting"
-  port = "443"
-  protocol = "HTTPS"
-
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-    path = "/api/health"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = "${aws_lb.front_end.arn}"
-  port = "443"
-  protocol = "HTTPS"
-  certificate_arn = "${data.aws_acm_certificate.auderenow_io.arn}"
-
-  default_action {
-    type = "forward"
-    target_group_arn = "${aws_lb_target_group.flu_api_public.arn}"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_lb_listener_rule" "reporting" {
-  listener_arn = "${aws_lb_listener.front_end.arn}"
-  priority = 100
-
-  action {
-    type = "forward"
-    target_group_arn = "${aws_lb_target_group.flu_reporting_public.arn}"
-  }
-
-  condition {
-    field = "path-pattern"
-    values = ["/reporting/*"]
-  }
 }
 
 resource "aws_elb" "flu_api_internal_elb" {
@@ -278,6 +257,44 @@ resource "aws_elb" "flu_api_internal_elb" {
   tags {
     Name = "${local.base_name}-internal"
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
+  }
+
+  count = "${var.service == "elb" ? 1 : 0}"
+}
+
+resource "aws_elb" "flu_reporting_elb" {
+  name = "${local.base_name}-reporting"
+
+  access_logs {
+    bucket = "${aws_s3_bucket.elb_logs.id}"
+    bucket_prefix = "reporting"
+  }
+
+  subnets = ["${aws_subnet.api.id}"]
+
+  security_groups = [
+    "${aws_security_group.public_http.id}",
+    "${module.elbreporting_sg.client_id}",
+  ]
+
+  listener {
+    lb_port = 443
+    lb_protocol = "https"
+    instance_port = 80
+    instance_protocol = "http"
+    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
+  }
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+    target = "HTTP:80/api/health"
+  }
+
+  tags {
+    Name = "${local.base_name}-reporting"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
@@ -370,7 +387,7 @@ module "ecs_cluster" {
   subnet_ids = ["${aws_subnet.api.id}"]
   security_groups = [
     "${aws_security_group.internet_egress.id}",
-    "${module.fluapi_sg.server_id}",
+    "${module.elbreporting_sg.server_id}",
     "${var.fludb_client_sg_id}",
     "${var.fludev_ssh_server_sg_id}",
   ]
@@ -389,8 +406,8 @@ resource "aws_ecs_service" "metabase" {
   desired_count = 1
 
   load_balancer {
-    target_group_arn = "${aws_lb_target_group.flu_reporting_public.arn}"
+    elb_name = "${aws_elb.flu_reporting_elb.name}"
     container_name = "metabase-${var.environment}"
-    container_port = 3000
+    container_port = 80
   }
 }
