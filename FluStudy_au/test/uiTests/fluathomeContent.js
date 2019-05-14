@@ -15,13 +15,13 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.consentScreen.consent,
-    button: strings.consentScreen.accept.toUpperCase(),
+    title: strings.Consent.title,
+    button: strings.Consent.accept.toUpperCase(),
     dbScreenName: "Consent",
   },
   {
     type: "basic",
-    title: strings.scanInstructionsScreen.scanQrCode,
+    title: strings.ScanInstructions.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "ScanInstructions",
   },
@@ -33,18 +33,18 @@ export const content = [
   },
   {
     type: "input",
-    title: strings.manualEntryScreen.enterKit,
+    title: strings.manualEntryScreen.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "ManualEntry",
     input: [
       {
         type: "text",
-        placeholder: strings.manualEntryScreen.placeholder,
+        placeholder: strings.barcode.placeholder,
         default: "aaaaaaaa",
       },
       {
         type: "text",
-        placeholder: strings.manualEntryScreen.secondPlaceholder,
+        placeholder: strings.barcode.secondPlaceholder,
         default: "aaaaaaaa",
       },
     ],
@@ -82,7 +82,7 @@ export const content = [
   {
     type: "basic",
     title: strings.SwabInTube.title,
-    button: strings.SwabInTube.buttonLabel.toUpperCase(),
+    button: strings.SwabInTube.startTimer.toUpperCase(),
     dbScreenName: "SwabInTube",
   },
   {
@@ -211,7 +211,7 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.testStripConfirmationScreen.title,
+    title: strings.TestStripConfirmation.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "TestStripConfirmation",
   },
