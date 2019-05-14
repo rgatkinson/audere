@@ -14,6 +14,7 @@ import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
 import Barcode from "../ui/components/flu/Barcode";
 import { BulletPoints } from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
+import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
@@ -59,6 +60,21 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
         },
       },
     ],
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "barcodeonbox" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [
+      {
+        tag: CameraPermissionContinueButton,
+        props: { grantedNext: "Scan", deniedNext: "ManualEntry" },
+      },
+    ],
+    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
+    key: "ScanInstructions",
   },
   {
     body: [
@@ -237,5 +253,19 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     ],
     key: "Thanks",
     workflowEvent: "surveyCompletedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "takepictureteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [
+      {
+        tag: CameraPermissionContinueButton,
+        props: { grantedNext: "RDTReader", deniedNext: "CameraSettings" },
+      },
+    ],
+    key: "RDTInstructions",
   },
 ];

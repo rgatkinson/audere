@@ -74,42 +74,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-class ScanInstructionsScreen extends React.Component<Props & WithNamespaces> {
-  componentDidMount() {
-    tracker.logEvent(FunnelEvents.CONSENT_COMPLETED);
-  }
-
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._onNext = this._onNext.bind(this);
-  }
-
-  async _onNext() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status === "granted") {
-      this.props.navigation.push("Scan");
-    } else {
-      this.props.navigation.push("ManualEntry");
-    }
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("description")}
-        image="barcodeonbox"
-        navigation={this.props.navigation}
-        title={t("scanQrCode")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const ScanInstructions = withNamespaces("scanInstructionsScreen")(
-  ScanInstructionsScreen
-);
-
 interface InvalidBarcodeProps {
   invalidBarcodes: SampleInfo[];
 }
@@ -595,38 +559,6 @@ class TestStripSurveyScreen extends React.Component<
 }
 export const TestStripSurvey = reduxWriter(
   withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
-);
-
-class RDTInstructionsScreen extends React.Component<Props & WithNamespaces> {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._onNext = this._onNext.bind(this);
-  }
-
-  async _onNext() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status === "granted") {
-      this.props.navigation.push("RDTReader");
-    } else {
-      this.props.navigation.push("CameraSettings");
-    }
-  }
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("desc")}
-        image="takepictureteststrip"
-        navigation={this.props.navigation}
-        title={t("title")}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const RDTInstructions = withNamespaces("RDTInstructions")(
-  RDTInstructionsScreen
 );
 
 class CameraSettingsScreen extends React.Component<Props & WithNamespaces> {

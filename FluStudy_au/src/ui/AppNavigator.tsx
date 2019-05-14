@@ -14,7 +14,6 @@ import {
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import {
-  ScanInstructions,
   Scan,
   ManualEntry,
   FirstTimer,
@@ -22,7 +21,6 @@ import {
   GeneralExposure,
   ThankYouSurvey,
   TestStripSurvey,
-  RDTInstructions,
   RDTReader,
   CameraSettings,
 } from "./screens/SurveyScreens";
@@ -36,7 +34,6 @@ import {
 } from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
-  ScanInstructions,
   Scan,
   ManualEntry,
   FirstTimer,
@@ -44,7 +41,6 @@ const mainScreens = {
   GeneralExposure,
   ThankYouSurvey,
   TestStripSurvey,
-  RDTInstructions,
   RDTReader,
   CameraSettings,
 };
