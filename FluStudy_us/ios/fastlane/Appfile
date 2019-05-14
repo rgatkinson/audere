@@ -6,10 +6,6 @@ for_lane :debug do
     app_identifier "org.auderenow.fluathome.dev"
 end
 
-for_lane :staging do
-    app_identifier "org.auderenow.fluathome.staging"
-end 
-
 for_lane :production do
     app_identifier "org.auderenow.fluathome"
 end
