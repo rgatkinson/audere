@@ -12,7 +12,8 @@ import { WorkflowInfo } from "audere-lib/feverProtocol";
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
-const myDrUrl = "https://www.mydr.com.au/respiratory-health/influenza-treatment";
+const myDrUrl =
+  "https://www.mydr.com.au/respiratory-health/influenza-treatment";
 
 function createMapQueryUrl(query: string) {
   const scheme = Platform.select({ ios: "maps:0,0?q=", android: "geo:0,0?q=" });
@@ -105,21 +106,21 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     "ausGov",
     {
       action: () => ausGov(),
-      key: "ausGov"
-    }
+      key: "ausGov",
+    },
   ],
   [
     "CDC",
     {
       action: () => CDC(),
-      key: "CDC"
-    }
+      key: "CDC",
+    },
   ],
   [
     "myDr",
     {
       action: () => myDr(),
-      key: "myDr"
-    }
-  ]
+      key: "myDr",
+    },
+  ],
 ]);

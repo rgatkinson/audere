@@ -74,45 +74,45 @@ const initialState: SurveyState = {
 };
 
 export default function reducer(state = initialState, action: SurveyAction) {
-  switch(action.type) {
+  switch (action.type) {
     case "APPEND_EVENT":
       return {
         ...state,
         events: pushEvent(state, action.kind, action.event),
         timestamp: new Date().getTime(),
       };
-  
+
     case "APPEND_INVALID_BARCODE":
       return {
         ...state,
         invalidBarcodes: pushInvalidBarcode(state, action.barcode),
         timestamp: new Date().getTime(),
       };
-  
+
     case "SET_CONSENT":
       return {
         ...state,
         consent: action.consent,
         timestamp: new Date().getTime(),
       };
-  
+
     case "SET_EMAIL":
       return { ...state, email: action.email, timestamp: new Date().getTime() };
-  
+
     case "SET_KIT_BARCODE":
       return {
         ...state,
         kitBarcode: action.kitBarcode,
         timestamp: new Date().getTime(),
       };
-  
+
     case "SET_TEST_STRIP_IMG":
       return {
         ...state,
         testStripImg: action.testStripImg,
         timestamp: new Date().getTime(),
       };
-  
+
     case "SET_ONE_MINUTE_START_TIME":
       if (state.oneMinuteStartTime == null) {
         return {
@@ -120,7 +120,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
           oneMinuteStartTime: new Date().getTime(),
           timestamp: new Date().getTime(),
         };
-      } 
+      }
       return state;
 
     case "SET_TEN_MINUTE_START_TIME":
@@ -132,7 +132,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
         };
       }
       return state;
-  
+
     case "SET_PUSH_STATE":
       return {
         ...state,
@@ -160,7 +160,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
         workflow: action.workflow,
         timestamp: new Date().getTime(),
       };
-   
+
     case "SET_CSRUID_IF_UNSET":
       if (state.csruid == null) {
         return {
@@ -169,15 +169,15 @@ export default function reducer(state = initialState, action: SurveyAction) {
         };
       }
       return state;
-  
-  case "SET_SUPPORT_CODE":
-    return {
-      ...state,
-      supportCode: action.supportCode,
-    };
 
-  default:
-    return state;
+    case "SET_SUPPORT_CODE":
+      return {
+        ...state,
+        supportCode: action.supportCode,
+      };
+
+    default:
+      return state;
   }
 }
 

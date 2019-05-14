@@ -4,12 +4,20 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { setConsent } from "../store";
+import {
+  setConsent,
+  setTenMinuteStartTime,
+  setOneMinuteStartTime,
+} from "../store";
+import { FunnelEvents, AppHealthEvents } from "../util/tracker";
 import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
+import Barcode from "../ui/components/flu/Barcode";
 import { BulletPoints } from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
 import ContinueButton from "../ui/components/ContinueButton";
+import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
+import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
@@ -53,6 +61,30 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "barcodesuccess" } },
+      { tag: Title },
+      { tag: Barcode },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
+    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    key: "ScanConfirmation",
+    workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "barcodesuccess" } },
+      { tag: Title },
+      { tag: Barcode },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
+    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    key: "ManualConfirmation",
+    workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
       { tag: MainImage, props: { uri: "unpackinginstructions" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -69,5 +101,129 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     ],
     footer: [{ tag: ContinueButton, props: { next: "OpenSwab" } }],
     key: "Swab",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "opennasalswab" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "Mucus" } }],
+    key: "OpenSwab",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "collectmucus" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: VideoPlayer, props: { id: "collectSample" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "SwabInTube" } }],
+    key: "Mucus",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "putswabintube" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          dispatchOnNext: () => setOneMinuteStartTime(),
+          label: "startTimer",
+          next: "FirstTimer",
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.SURVIVED_FIRST_SWAB,
+    key: "SwabInTube",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "removeswabfromtube" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: VideoPlayer, props: { id: "removeSwabFromTube" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "OpenTestStrip" } }],
+    funnelEvent: FunnelEvents.PASSED_FIRST_TIMER,
+    key: "RemoveSwabFromTube",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "openteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: VideoPlayer, props: { id: "openTestStrip" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "StripInTube" } }],
+    key: "OpenTestStrip",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "openteststrip_1" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: VideoPlayer, props: { id: "putTestStripInTube" } },
+    ],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          dispatchOnNext: () => setTenMinuteStartTime(),
+          next: "WhatSymptoms",
+        },
+      },
+    ],
+    key: "StripInTube",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "removeteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: VideoPlayer, props: { id: "removeTestStrip" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "RDTInstructions" } }],
+    key: "TestStripReady",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: RDTImage },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "TestStripSurvey" } }],
+    key: "TestStripConfirmation",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [{ tag: ContinueButton, props: { next: "Advice" } }],
+    key: "TestResult",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: Links, props: { links: ["ausGov", "CDC", "myDr"] } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "CleanTest" } }],
+    key: "Advice",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
+    key: "CleanTest",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "finalthanks" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    key: "Thanks",
+    workflowEvent: "surveyCompletedAt",
   },
 ];

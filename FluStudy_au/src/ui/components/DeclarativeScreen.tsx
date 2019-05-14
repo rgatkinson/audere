@@ -11,6 +11,10 @@ import {
   View,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
+import { connect } from "react-redux";
+import { WorkflowInfo } from "audere-lib/feverProtocol";
+import { Action, StoreState, setWorkflow } from "../../store";
+import { tracker } from "../../util/tracker";
 import Chrome from "./Chrome";
 import { GUTTER } from "../styles";
 
@@ -18,7 +22,9 @@ export interface DeclarativeScreenConfig {
   body: Component[];
   chromeProps?: object;
   footer?: Component[];
+  funnelEvent?: string;
   key: string;
+  workflowEvent?: string;
 }
 
 interface Component {
@@ -28,10 +34,23 @@ interface Component {
 
 interface DeclarativeProps {
   navigation: NavigationScreenProp<any, any>;
+  workflow: WorkflowInfo;
+  dispatch(action: Action): void;
 }
 
 export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
   class DeclarativeScreen extends React.Component<DeclarativeProps> {
+    componentDidMount() {
+      if (config.funnelEvent) {
+        tracker.logEvent(config.funnelEvent);
+      }
+      if (config.workflowEvent) {
+        const workflow = { ...this.props.workflow };
+        workflow[config.workflowEvent] = new Date().toISOString();
+        this.props.dispatch(setWorkflow(workflow));
+      }
+    }
+
     _generateComponents = (
       components: Component[],
       indexId: string,
@@ -70,7 +89,11 @@ export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
       );
     }
   }
-  return DeclarativeScreen;
+  return connect((state: StoreState) => {
+    return {
+      workflow: state.survey.workflow,
+    };
+  })(DeclarativeScreen);
 };
 
 const styles = StyleSheet.create({

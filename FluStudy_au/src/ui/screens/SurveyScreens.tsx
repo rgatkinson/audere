@@ -744,6 +744,7 @@ export const CameraSettings = withNamespaces("CameraSettings")(
   CameraSettingsScreen
 );
 
+@connect()
 class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 

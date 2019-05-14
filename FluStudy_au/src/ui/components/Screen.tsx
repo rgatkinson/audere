@@ -17,7 +17,6 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp } from "react-navigation";
 import { ScrollIntoView, wrapScrollView } from "react-native-scroll-into-view";
 import { Action, Option, StoreState } from "../../store";
-import Barcode from "./flu/Barcode";
 import Button from "./Button";
 import Chrome from "./Chrome";
 import Divider from "./Divider";
@@ -38,7 +37,6 @@ import { setShownOfflineWarning } from "../../store";
 import { SurveyQuestionData } from "../../resources/ScreenConfig";
 
 interface Props {
-  barcode?: boolean;
   buttonLabel?: string;
   cantProceed?: boolean;
   centerDesc?: boolean;
@@ -286,7 +284,6 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
       desc,
       cantProceed,
       centerDesc,
-      barcode,
       buttonLabel,
       children,
       disclaimer,
@@ -329,7 +326,6 @@ class Screen extends React.Component<Props & WithNamespaces, ScreenState> {
                 </View>
               )}
               {!!title && <Title label={title} onPress={onTitlePress} />}
-              {!!barcode && <Barcode />}
               {!!desc && (
                 <Text
                   content={desc}
