@@ -234,9 +234,11 @@
     "title": "Your code was accepted",
     "desc": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
-  "barcodeContactSupportScreen": {
+  "BarcodeContactSupport": {
     "title": "Please Contact Support",
-    "description": "We're sorry but the kit barcode you entered did not match our records.\n\nPlease take a picture of your blue kit barcode and email the picture to **[flu-support@auderenow.org](mailto:flu-support@auderenow.org?subject=Invalid barcode)** for help.",
+    "desc": "We're sorry but the kit barcode you entered did not match our records.\n\nPlease take a picture of your blue kit barcode and email the picture to **[flu-support@auderenow.org](mailto:flu-support@auderenow.org?subject=Invalid barcode)** for help."
+  },
+  "BarcodeSupportModal": {
     "supportVerification": "flu@home Support Verification",
     "enterCode": "Please enter the code you receieved from the flu@home support team",
     "invalidCode": "Sorry, that code is not valid."

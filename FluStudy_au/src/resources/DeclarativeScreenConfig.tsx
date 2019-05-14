@@ -19,6 +19,7 @@ import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
+import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 
@@ -82,6 +83,17 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
     key: "ManualConfirmation",
     workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "contactsupport" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: SupportCodeModal },
+    ],
+    chromeProps: { hideBackButton: true },
+    footer: [{ tag: Links, props: { center: true, links: ["supportCode"] } }],
+    key: "BarcodeContactSupport",
   },
   {
     body: [

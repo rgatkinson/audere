@@ -40,6 +40,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
 // Values you put into here will always be applied on top of remote config
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {
+  barcodeSupportCodes: ["11111"],
   blockKitOrders: false,
   rdtReader: true,
   showVideos: false,

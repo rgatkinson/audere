@@ -5,7 +5,6 @@
 
 import React, { Fragment } from "react";
 import {
-  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -28,9 +27,7 @@ import {
   appendInvalidBarcode,
   setKitBarcode,
   setRDTPhoto,
-  setSupportCode,
   setTestStripImg,
-  toggleSupportCodeModal,
   uploader,
 } from "../../store";
 import {
@@ -46,18 +43,13 @@ import timerWithConfigProps, { TimerProps } from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
 import BarcodeEntry from "../components/flu/BarcodeEntry";
 import BorderView from "../components/BorderView";
-import BulletPoint from "../components/BulletPoint";
 import Chrome from "../components/Chrome";
-import DigitInput from "../components/DigitInput";
-import Links from "../components/Links";
-import Modal from "../components/Modal";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
-  verifiedSupportCode,
   unverifiedBarcodeAlert,
 } from "../../util/barcodeVerification";
 import {
@@ -319,95 +311,6 @@ class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
 export const ManualEntry = withNamespaces("manualEntryScreen")(
   ManualEntryScreen
 );
-
-interface SupportProps {
-  supportModalVisible: boolean;
-}
-
-@connect((state: StoreState) => ({
-  supportModalVisible: state.meta.supportCodeModalVisible,
-}))
-class BarcodeContactSupportScreen extends React.Component<
-  Props & SupportProps & WithNamespaces
-> {
-  state = {
-    invalidCode: false,
-    supportCode: "",
-  };
-
-  _updateSupportCode = (supportCode: string) => {
-    this.setState({ supportCode });
-    this._onSupportCodeSubmit(supportCode);
-  };
-
-  _onModalSubmit = () => {
-    this._onSupportCodeSubmit(this.state.supportCode);
-  };
-
-  _onSupportCodeSubmit = (supportCode: string) => {
-    if (verifiedSupportCode(supportCode)) {
-      this.setState({ invalidCode: false });
-      this.props.dispatch(setSupportCode(supportCode));
-      this.props.dispatch(toggleSupportCodeModal());
-      this.props.navigation.push("ManualEntry");
-    } else {
-      this.setState({ invalidCode: true });
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-    const width = Dimensions.get("window").width;
-    return (
-      <Screen
-        desc={t("description")}
-        footer={<Links center={true} links={["supportCode"]} />}
-        hideBackButton={true}
-        image="contactsupport"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("title")}
-      >
-        <Modal
-          height={280}
-          width={width * 0.8}
-          title={t("supportVerification")}
-          visible={this.props.supportModalVisible}
-          onDismiss={() => this.props.dispatch(toggleSupportCodeModal())}
-          onSubmit={this._onModalSubmit}
-        >
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={KEYBOARD_BEHAVIOR}
-            enabled
-          >
-            <View style={{ justifyContent: "space-between", padding: GUTTER }}>
-              <Text
-                content={t("enterCode")}
-                style={{ paddingBottom: GUTTER }}
-              />
-              <DigitInput
-                digits={5}
-                style={
-                  this.state.invalidCode ? { color: ERROR_COLOR } : undefined
-                }
-                onSubmitEditing={this._updateSupportCode}
-              />
-              <Text
-                center={true}
-                content={this.state.invalidCode ? t("invalidCode") : ""}
-                style={{ color: ERROR_COLOR, paddingVertical: GUTTER }}
-              />
-            </View>
-          </KeyboardAvoidingView>
-        </Modal>
-      </Screen>
-    );
-  }
-}
-export const BarcodeContactSupport = withNamespaces(
-  "barcodeContactSupportScreen"
-)(BarcodeContactSupportScreen);
 
 interface FirstTimerProps {
   oneMinuteStartTime: number | undefined;
