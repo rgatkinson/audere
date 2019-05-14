@@ -313,14 +313,16 @@ describe("encounterDetailsService", () => {
 
       const nonPIISurvey = _.cloneDeep(surveyNonPIIInDb("a"));
       const PIISurvey = _.cloneDeep(surveyPIIInDb("a"));
-      PIISurvey.survey.patient.telecom = [{
-        system: TelecomInfoSystem.Email,
-        value: "me@mail.com"
-      }];
+      PIISurvey.survey.patient.telecom = [
+        {
+          system: TelecomInfoSystem.Email,
+          value: "me@mail.com"
+        }
+      ];
 
       nonPII.push((await feverModels.surveyNonPii.create(nonPIISurvey)).id);
       PII.push((await feverModels.surveyPii.create(PIISurvey)).id);
-      
+
       const followUp = {
         email: "me@mail.com",
         survey: {

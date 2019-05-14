@@ -141,7 +141,7 @@ export async function createPublicApp(config: AppConfig) {
     "/api/utility/echoStatus/:code([0-9]+)",
     wrap(async (req, res) => {
       const code = +req.params.code;
-      res.sendStatus((code >= 100 && code <= 599) ? code : 404);
+      res.sendStatus(code >= 100 && code <= 599 ? code : 404);
     })
   );
   return useOuch(publicApp);
@@ -222,7 +222,7 @@ export function createInternalApp(config: AppConfig) {
     "/api/import/followUpSurveys",
     stats("importfollowupsurveys"),
     (req, res, next) => fever.importFollowUpSurveys(req, res, next)
-  )
+  );
 
   const feverConsentEmailer =
     config.consentEmailer || new FeverConsentEmailerEndpoint(sql);
@@ -264,7 +264,7 @@ const MORGAN_STREAM = {
 };
 
 morgan.token("request-id", (req: any, res) => requestId(req));
-morgan.token("userid", (req: any, res) => req.user ? req.user.userid : "-");
+morgan.token("userid", (req: any, res) => (req.user ? req.user.userid : "-"));
 
 function morganMiddleware() {
   return morgan(MORGAN_FORMAT, {

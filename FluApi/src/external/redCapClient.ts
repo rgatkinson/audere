@@ -134,17 +134,28 @@ export class REDCapClient {
 
   private validateSurveyRow(row: FollowUpSurveyData): boolean {
     return (
-      row.daily_activity <= 1 && row.daily_activity >= 0 &&
-      row.medications <= 3 && row.medications >= 1 &&
-      row.care___1 <= 1 && row.care___1 >= 0 &&
-      row.care___2 <= 1 && row.care___2 >= 0 &&
-      row.care___3 <= 1 && row.care___3 >= 0 &&
-      row.care___4 <= 1 && row.care___4 >= 0 &&
-      row.care___5 <= 1 && row.care___5 >= 0 &&
-      row.care___6 <= 1 && row.care___6 >= 0 &&
-      row.care___7 <= 1 && row.care___7 >= 0 &&
-      row.care___8 <= 1 && row.care___8 >= 0 &&
-      row.found_study <= 8 && row.found_study >= 1
+      row.daily_activity <= 1 &&
+      row.daily_activity >= 0 &&
+      row.medications <= 3 &&
+      row.medications >= 1 &&
+      row.care___1 <= 1 &&
+      row.care___1 >= 0 &&
+      row.care___2 <= 1 &&
+      row.care___2 >= 0 &&
+      row.care___3 <= 1 &&
+      row.care___3 >= 0 &&
+      row.care___4 <= 1 &&
+      row.care___4 >= 0 &&
+      row.care___5 <= 1 &&
+      row.care___5 >= 0 &&
+      row.care___6 <= 1 &&
+      row.care___6 >= 0 &&
+      row.care___7 <= 1 &&
+      row.care___7 >= 0 &&
+      row.care___8 <= 1 &&
+      row.care___8 >= 0 &&
+      row.found_study <= 8 &&
+      row.found_study >= 1
     );
   }
 
@@ -170,10 +181,14 @@ export class REDCapClient {
       throw Error("Report for survey data is empty");
     }
 
-    logger.info(`Received ${result.data.length} rows for follow-up survey report`);
+    logger.info(
+      `Received ${result.data.length} rows for follow-up survey report`
+    );
 
     if (!result.data.every(row => this.validateSurveyRow(row))) {
-      throw Error("Report for follow-up survey data is not in the correct format");
+      throw Error(
+        "Report for follow-up survey data is not in the correct format"
+      );
     }
 
     return result.data;

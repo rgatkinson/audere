@@ -11,7 +11,13 @@ import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
 import { AuthManager, Permissions, authorizationMiddleware } from "./auth";
-import { useOuch, createApp, render, wrap, requestId } from "../../util/expressApp";
+import {
+  useOuch,
+  createApp,
+  render,
+  wrap,
+  requestId
+} from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
 import { isAWS } from "../../util/environment";
@@ -149,14 +155,26 @@ function addHandlers(
       // the callback ourselves so we can login, then save, then redirect.
       (err, user, info) => {
         if (err) {
-          logger.warn(`${requestId(req)}: FAILED authentication for '${postedUserid}' err='${err.message}'`);
+          logger.warn(
+            `${requestId(
+              req
+            )}: FAILED authentication for '${postedUserid}' err='${
+              err.message
+            }'`
+          );
           return next(err);
         }
         if (!user) {
-          logger.warn(`${requestId(req)}: FAILED authentication for '${postedUserid}' no user`);
+          logger.warn(
+            `${requestId(
+              req
+            )}: FAILED authentication for '${postedUserid}' no user`
+          );
           return res.redirect("./login");
         }
-        logger.debug(`${requestId(req)}: post/login: logging in as '${user.userid}'`);
+        logger.debug(
+          `${requestId(req)}: post/login: logging in as '${user.userid}'`
+        );
         req.login(user, err => {
           if (err) {
             logger.warn(`${requestId(req)}: FAILED login for ${user.userid}`);
@@ -164,7 +182,9 @@ function addHandlers(
           }
           req.session.save(() => {
             logger.debug(
-              `${requestId(req)}: post/login: logged in as '${user.userid}', redirecting`
+              `${requestId(req)}: post/login: logged in as '${
+                user.userid
+              }', redirecting`
             );
             res.redirect("./index");
           });
@@ -176,7 +196,9 @@ function addHandlers(
   function requireLoggedInUser(req, res, next) {
     if (req.user) {
       logger.debug(
-        `${requestId(req)}: requireLoggedInUser allowing ${req.user.userid} (${req.user.uuid})`
+        `${requestId(req)}: requireLoggedInUser allowing ${req.user.userid} (${
+          req.user.uuid
+        })`
       );
       return next();
     } else {

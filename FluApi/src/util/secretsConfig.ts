@@ -16,15 +16,15 @@ export class SecretConfig {
   }
 
   public async get(key: string): Promise<string> {
-    return process.env[key] || await this.getFromDb(key, false);
+    return process.env[key] || (await this.getFromDb(key, false));
   }
 
   public async getOrCreate(key: string): Promise<string> {
-    return process.env[key] || await this.getFromDb(key, true);
+    return process.env[key] || (await this.getFromDb(key, true));
   }
 
   public async getMaybeEnvFile(key: string): Promise<string> {
-    return await this.envFile(key) || await this.getFromDb(key, false);
+    return (await this.envFile(key)) || (await this.getFromDb(key, false));
   }
 
   private async envFile(key: string): Promise<string | null> {
@@ -37,7 +37,10 @@ export class SecretConfig {
     }
   }
 
-  private async getFromDb(key: string, createIfNotFound: boolean): Promise<string> {
+  private async getFromDb(
+    key: string,
+    createIfNotFound: boolean
+  ): Promise<string> {
     const secret = await this.secretModel.findOne({ where: { key } });
     if (secret != null) {
       return secret.value;

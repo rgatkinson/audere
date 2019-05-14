@@ -5,10 +5,7 @@
 
 "use strict";
 
-const {
-  column,
-  identity,
-} = require("../../util");
+const { column, identity } = require("../../util");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -20,22 +17,26 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: 'visits',
-          key: 'id',
-          as: 'visitId',
+          model: "visits",
+          key: "id",
+          as: "visitId"
         },
         onDelete: "CASCADE"
       },
       jobName: column(Sequelize.STRING),
-      result: column(Sequelize.JSONB),
+      result: column(Sequelize.JSONB)
     });
-    await queryInterface.addConstraint('sniffles_visit_job_records', ['visitId', 'jobName'], {
-      type: 'UNIQUE',
-      name: 'visit_id_job_name_unique',
-    });
+    await queryInterface.addConstraint(
+      "sniffles_visit_job_records",
+      ["visitId", "jobName"],
+      {
+        type: "UNIQUE",
+        name: "visit_id_job_name_unique"
+      }
+    );
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('sniffles_visit_job_records');
+    return queryInterface.dropTable("sniffles_visit_job_records");
   }
 };

@@ -97,10 +97,13 @@ export class ReceivedKitsData {
       const events = s.events ? <EventInfo[]>JSON.parse(s.events) : [];
 
       const scannedAt = events
-        .filter(e => e.kind === "appNav" &&
-          (e.refId === "ManualConfirmation" || e.refId === "ScanConfirmation"))
+        .filter(
+          e =>
+            e.kind === "appNav" &&
+            (e.refId === "ManualConfirmation" || e.refId === "ScanConfirmation")
+        )
         .reduce<string>(
-          (a, b) => ((a < b.at || a == null) ? b.at : a),
+          (a, b) => (a < b.at || a == null ? b.at : a),
           undefined
         );
 

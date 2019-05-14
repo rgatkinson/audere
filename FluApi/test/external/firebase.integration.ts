@@ -6,7 +6,10 @@
 import crypto from "crypto";
 import _ from "lodash";
 import firebase from "firebase-admin";
-import { connectorFromSqlSecrets, FirebaseReceiver } from "../../src/external/firebase";
+import {
+  connectorFromSqlSecrets,
+  FirebaseReceiver
+} from "../../src/external/firebase";
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 
 type App = firebase.app.App;
@@ -15,13 +18,13 @@ type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 const DOC_ID0 = "DocumentId0";
 const DOC0 = {
   docid: DOC_ID0,
-  key: "value0",
+  key: "value0"
 };
 
 const DOC_ID1 = "DocumentId1";
 const DOC1 = {
   docid: DOC_ID1,
-  key: "value1",
+  key: "value1"
 };
 
 describe("FirebaseReceiver", async () => {
@@ -41,31 +44,31 @@ describe("FirebaseReceiver", async () => {
 
   it("receives one message", async () => {
     if (app == null) return;
-    const {collection, receiver} = await setup("OneMessage");
+    const { collection, receiver } = await setup("OneMessage");
 
     await collection.doc(DOC_ID0).set(wireDoc(DOC0));
     expect(await receiver.updates()).toEqual([DOC_ID0]);
     const received0 = checkDoc(DOC0, await receiver.read(DOC_ID0));
     expect(await receiver.markAsRead(received0)).toEqual(true);
     expect(await receiver.updates()).toEqual([]);
-    await(clear(collection));
+    await clear(collection);
   });
 
   it("receives again if unmarked", async () => {
     if (app == null) return;
-    const {collection, receiver} = await setup("ReceiveTwice");
+    const { collection, receiver } = await setup("ReceiveTwice");
 
     await collection.doc(DOC_ID0).set(wireDoc(DOC0));
     expect(await receiver.updates()).toEqual([DOC_ID0]);
     checkDoc(DOC0, await receiver.read(DOC_ID0));
     // Re-requesting updates should be idempotent if we didn't mark anything read.
     expect(await receiver.updates()).toEqual([DOC_ID0]);
-    await(clear(collection));
+    await clear(collection);
   });
 
   it("receives two messages", async () => {
     if (app == null) return;
-    const {collection, receiver} = await setup("TwoMessages");
+    const { collection, receiver } = await setup("TwoMessages");
 
     await collection.doc(DOC_ID1).set(wireDoc(DOC1));
     await collection.doc(DOC_ID0).set(wireDoc(DOC0));
@@ -75,34 +78,37 @@ describe("FirebaseReceiver", async () => {
     const received1 = checkDoc(DOC1, await receiver.read(DOC_ID1));
     expect(await receiver.markAsRead(received1)).toEqual(true);
     expect(await receiver.updates()).toEqual([]);
-    await(clear(collection));
+    await clear(collection);
   });
 
   it("handles concurrent update", async () => {
     if (app == null) return;
-    const {collection, receiver} = await setup("ConcurrentUpdate");
+    const { collection, receiver } = await setup("ConcurrentUpdate");
 
     await collection.doc(DOC_ID0).set(wireDoc(DOC0));
     expect(await receiver.updates()).toEqual([DOC_ID0]);
     const received0 = checkDoc(DOC0, await receiver.read(DOC_ID0));
-    await collection.doc(DOC_ID0)
+    await collection
+      .doc(DOC_ID0)
       .set(wireDoc({ ...DOC0, updatedContent: true }));
     expect(await receiver.markAsRead(received0)).toEqual(false);
     expect(await receiver.updates()).toEqual([DOC_ID0]);
-    await(clear(collection));
+    await clear(collection);
   });
 
   async function setup(scenario: string) {
     const name = collectionName(scenario);
     const collection = firestore.collection(name);
-    const receiver = new FirebaseReceiver(async () => app, {collection: name});
+    const receiver = new FirebaseReceiver(async () => app, {
+      collection: name
+    });
 
     await clear(collection);
-    return {collection, receiver};
+    return { collection, receiver };
   }
 });
 
-type CollectionReference = firebase.firestore.CollectionReference
+type CollectionReference = firebase.firestore.CollectionReference;
 async function clear(collection: CollectionReference): Promise<void> {
   for (let doc of [DOC_ID0, DOC_ID1]) {
     await collection.doc(doc).delete();
@@ -135,7 +141,7 @@ function hash(...args: (string | Buffer)[]): string {
 function wireDoc(content: object): object {
   return {
     _transport: clientTransportFrame(hash(JSON.stringify(content))),
-    ...content,
+    ...content
   };
 }
 
@@ -144,8 +150,8 @@ function clientTransportFrame(hash: string) {
     clientTimestamp: new Date().toISOString(),
     contentHash: hash,
     lastWriter: "client",
-    protocolVersion: 1,
-  }
+    protocolVersion: 1
+  };
 }
 
 function collectionName(base: string): string {

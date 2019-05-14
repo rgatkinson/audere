@@ -3,7 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { instance, mock, when, anyString, capture, deepEqual, verify, anything } from "ts-mockito";
+import {
+  instance,
+  mock,
+  when,
+  anyString,
+  capture,
+  deepEqual,
+  verify,
+  anything
+} from "ts-mockito";
 import { FollowUpDataAccess } from "../../src/services/fever/followUpData";
 import { FollowUpSurveys } from "../../src/services/fever/followUpSurveys";
 import { SurveyCompleteParticipant } from "../../src/services/fever/surveyCompleteReport";
@@ -103,8 +112,11 @@ describe("importing survey results", () => {
     const dao = mock(FollowUpDataAccess);
     when(dao.importFollowUpSurveys(deepEqual(surveys))).thenResolve();
 
-    const service =
-      new FollowUpSurveys(instance(dao), undefined, instance(client));
+    const service = new FollowUpSurveys(
+      instance(dao),
+      undefined,
+      instance(client)
+    );
 
     await service.importFollowUpResults();
 

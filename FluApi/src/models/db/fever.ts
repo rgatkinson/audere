@@ -412,7 +412,7 @@ export function defineBarcodes(sql: Sequelize): Model<BarcodeAttributes> {
 
 export interface FollowUpSurveyAttributes {
   email: string;
-  survey: FollowUpSurveyData
+  survey: FollowUpSurveyData;
 }
 
 export function defineFollowUpSurveys(

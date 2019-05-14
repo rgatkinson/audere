@@ -264,20 +264,24 @@ describe("export controller", () => {
         .expect(res => {
           expect(res.body.encounters).toHaveLength(1);
 
-          const dailyActivity = res.body.encounters[0].responses
-            .find(r => r.question.token === "daily_activity");
+          const dailyActivity = res.body.encounters[0].responses.find(
+            r => r.question.token === "daily_activity"
+          );
           expect(dailyActivity).not.toBeNull();
 
-          const medications = res.body.encounters[0].responses
-            .find(r => r.question.token === "medications");
+          const medications = res.body.encounters[0].responses.find(
+            r => r.question.token === "medications"
+          );
           expect(medications).not.toBeNull();
 
-          const care = res.body.encounters[0].responses
-            .find(r => r.question.token === "care");
+          const care = res.body.encounters[0].responses.find(
+            r => r.question.token === "care"
+          );
           expect(care).not.toBeNull();
 
-          const foundStudy = res.body.encounters[0].responses
-            .find(r => r.question.token === "care");
+          const foundStudy = res.body.encounters[0].responses.find(
+            r => r.question.token === "care"
+          );
           expect(foundStudy).not.toBeNull();
         });
     });

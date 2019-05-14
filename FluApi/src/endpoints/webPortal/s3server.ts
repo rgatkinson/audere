@@ -40,7 +40,7 @@ export class S3DirectoryServer {
     const { s3, s3Config } = await this.s3.get();
     const params: AWS.S3.ListObjectsV2Request = {
       Bucket: s3Config.bucket,
-      Prefix: this.path,
+      Prefix: this.path
     };
     if (req.query.startAfter) {
       params.StartAfter =

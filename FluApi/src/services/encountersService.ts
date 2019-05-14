@@ -113,8 +113,7 @@ export class EncountersService {
     if (geocodedAddress != null) {
       streetAddress = geocodedAddress.canonicalAddress;
       region = geocodedAddress.censusTract;
-      city = geocodedAddress.city,
-      state = geocodedAddress.state
+      (city = geocodedAddress.city), (state = geocodedAddress.state);
     } else if (inputAddress != null) {
       // If there is no geocoding result then we rely on the user input.
       // This will be a weaker guarantee of uniqueness.
@@ -161,7 +160,7 @@ export class EncountersService {
           region: region,
           city: undefined,
           state: undefined
-        };       
+        };
       }
     }
 

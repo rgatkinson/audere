@@ -21,7 +21,11 @@ import {
   defineFollowUpSurveys
 } from "../../src/models/db/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
-import { PIIInfo, SurveyNonPIIInfo, TelecomInfoSystem } from "audere-lib/feverProtocol";
+import {
+  PIIInfo,
+  SurveyNonPIIInfo,
+  TelecomInfoSystem
+} from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb, surveyPIIInDb } from "../endpoints/feverSampleData";
 import {
   FollowUpDataAccess,
@@ -32,7 +36,10 @@ import {
   defineGaplessSeq,
   GaplessSeqAttributes
 } from "../../src/models/db/gaplessSeq";
-import { HutchUploadAttributes, defineHutchUpload } from "../../src/models/db/hutchUpload";
+import {
+  HutchUploadAttributes,
+  defineHutchUpload
+} from "../../src/models/db/hutchUpload";
 
 describe("survey batch data access", () => {
   let sql: SplitSql;
@@ -354,24 +361,29 @@ describe("survey batch data access", () => {
         _.cloneDeep(surveyPIIInDb("0")),
         _.cloneDeep(surveyPIIInDb("1"))
       ];
-      piiSurveys.map(s => s.survey.patient.telecom = [{
-        system: TelecomInfoSystem.Email,
-        value: followUpData.email
-      }]);
+      piiSurveys.map(
+        s =>
+          (s.survey.patient.telecom = [
+            {
+              system: TelecomInfoSystem.Email,
+              value: followUpData.email
+            }
+          ])
+      );
       await pii.bulkCreate(piiSurveys);
 
       const nonPiiSurveys = [
         _.cloneDeep(surveyNonPIIInDb("0")),
         _.cloneDeep(surveyNonPIIInDb("1"))
       ];
-      const surveys = await nonPii.bulkCreate(
-        nonPiiSurveys,
-        { returning: true }
-      );
+      const surveys = await nonPii.bulkCreate(nonPiiSurveys, {
+        returning: true
+      });
 
-      const uploads = surveys.map(n =>
-        ({ surveyId: +n.id, visitId: undefined })
-      );
+      const uploads = surveys.map(n => ({
+        surveyId: +n.id,
+        visitId: undefined
+      }));
       await hutchUpload.bulkCreate(uploads);
 
       await dao.importFollowUpSurveys([followUpData]);
@@ -392,24 +404,29 @@ describe("survey batch data access", () => {
         _.cloneDeep(surveyPIIInDb("0")),
         _.cloneDeep(surveyPIIInDb("1"))
       ];
-      piiSurveys.map(s => s.survey.patient.telecom = [{
-        system: TelecomInfoSystem.Email,
-        value: followUpData.email
-      }]);
+      piiSurveys.map(
+        s =>
+          (s.survey.patient.telecom = [
+            {
+              system: TelecomInfoSystem.Email,
+              value: followUpData.email
+            }
+          ])
+      );
       await pii.bulkCreate(piiSurveys);
 
       const nonPiiSurveys = [
         _.cloneDeep(surveyNonPIIInDb("0")),
         _.cloneDeep(surveyNonPIIInDb("1"))
       ];
-      const surveys = await nonPii.bulkCreate(
-        nonPiiSurveys,
-        { returning: true }
-      );
+      const surveys = await nonPii.bulkCreate(nonPiiSurveys, {
+        returning: true
+      });
 
-      const uploads = surveys.map(n =>
-        ({ surveyId: +n.id, visitId: undefined })
-      );
+      const uploads = surveys.map(n => ({
+        surveyId: +n.id,
+        visitId: undefined
+      }));
       await hutchUpload.bulkCreate(uploads);
 
       await dao.importFollowUpSurveys([followUpData]);

@@ -12,7 +12,10 @@ import {
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import { FollowUpSurveyData } from "../../external/redCapClient";
-import { HutchUploadModel, defineHutchUpload } from "../../models/db/hutchUpload";
+import {
+  HutchUploadModel,
+  defineHutchUpload
+} from "../../models/db/hutchUpload";
 import sequelize = require("sequelize");
 import logger from "../../util/logger";
 
@@ -62,7 +65,7 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
           fever_current_surveys s,
           json_array_elements(s.survey->'patient'->'telecom') st
         where
-          st->>'value' in ('${added.map(a => a.email).join(',')}')`,
+          st->>'value' in ('${added.map(a => a.email).join(",")}')`,
         {
           type: sequelize.QueryTypes.SELECT
         }
@@ -74,7 +77,7 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
             csruid: pii.map(s => s.csruid)
           }
         });
-        
+
         await this.hutchUpload.destroy({
           where: {
             survey_id: nonPii.map(s => s.id)

@@ -44,10 +44,12 @@ export class SurveyDocumentBuilder {
   }
 
   withEmail(email): SurveyDocumentBuilder {
-    this.surveyDocument.survey.patient.telecom = [{
-      system: TelecomInfoSystem.Email,
-      value: email
-    }];
+    this.surveyDocument.survey.patient.telecom = [
+      {
+        system: TelecomInfoSystem.Email,
+        value: email
+      }
+    ];
     return this;
   }
 

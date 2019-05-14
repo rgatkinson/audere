@@ -1,4 +1,3 @@
-
 // Copyright (c) 2018 by Audere
 //
 // Use of this source code is governed by an MIT-style license that

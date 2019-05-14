@@ -12,7 +12,8 @@ export function mapSurvey(input: FollowUpSurveyData): Response[] {
   responses.push({
     question: {
       token: "daily_activity",
-      text: "Over the last week, did your illness prevent you from going to work or school, going to a social event, or exercising/working out?"
+      text:
+        "Over the last week, did your illness prevent you from going to work or school, going to a social event, or exercising/working out?"
     },
     options: [
       {
@@ -33,7 +34,8 @@ export function mapSurvey(input: FollowUpSurveyData): Response[] {
   responses.push({
     question: {
       token: "medications",
-      text: "Are you currently taking antibiotics (e.g. Amoxiil, penicilin, Z-pack, Bactrim, Agumentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?"
+      text:
+        "Are you currently taking antibiotics (e.g. Amoxiil, penicilin, Z-pack, Bactrim, Agumentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?"
     },
     options: [
       {
@@ -77,7 +79,8 @@ export function mapSurvey(input: FollowUpSurveyData): Response[] {
   responses.push({
     question: {
       token: "care",
-      text: "In the last week did you go to any of the following for health care treatment or advice about your illness? (Select any you visited or received advice from)"
+      text:
+        "In the last week did you go to any of the following for health care treatment or advice about your illness? (Select any you visited or received advice from)"
     },
     options: [
       {

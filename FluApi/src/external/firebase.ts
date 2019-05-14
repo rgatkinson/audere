@@ -18,7 +18,7 @@ type Storage = firebase.storage.Storage;
 const FieldPath = firebase.firestore.FieldPath;
 
 export interface Connector {
-  (): Promise<App>
+  (): Promise<App>;
 }
 
 export interface Config {
@@ -26,8 +26,8 @@ export interface Config {
 }
 
 const DEFAULT_CONFIG = {
-  collection: "documents",
-}
+  collection: "documents"
+};
 
 // Protocol constants
 export const PROTOCOL_V1 = 1;
@@ -37,7 +37,7 @@ export const FIELD_PATH = {
   protocolVersion: "_transport.protocolVersion",
   contentHash: "_transport.contentHash",
   lastWriter: "_transport.lastWriter",
-  receivedAt: "_transport.receivedAt",
+  receivedAt: "_transport.receivedAt"
 };
 
 export class FirebaseReceiver {
@@ -91,7 +91,9 @@ export class FirebaseReceiver {
           throw new Error(`Could not load document for id '${id}'`);
         }
         if (doc.get(FIELD_PATH.lastWriter) !== SENDER_NAME) {
-          throw new Error(`CONSISTENCY ERROR: '${id}' was not last written by sender`);
+          throw new Error(
+            `CONSISTENCY ERROR: '${id}' was not last written by sender`
+          );
         }
         if (doc.get(FIELD_PATH.contentHash) !== hash) {
           throw new Error(`Document '${id}' was modified since last read`);
@@ -106,7 +108,9 @@ export class FirebaseReceiver {
       logger.debug(`FirebaseReceiver.markAsRead '${id}'@'${hash}' succeeded`);
       return true;
     } catch (err) {
-      logger.debug(`FirebaseReceiver.markAsRead '${id}'@'${hash}' ${err.message}`);
+      logger.debug(
+        `FirebaseReceiver.markAsRead '${id}'@'${hash}' ${err.message}`
+      );
       return false;
     }
   }
@@ -132,11 +136,13 @@ export function connectorFromFilename(path: string): Connector {
   return connectorFromCredentials(asyncContents);
 }
 
-export function connectorFromCredentials(credentials: Promise<string>): Connector {
+export function connectorFromCredentials(
+  credentials: Promise<string>
+): Connector {
   return async () => {
     const parsed = JSON.parse(await credentials);
     return firebase.initializeApp({
       credential: firebase.credential.cert(parsed)
     });
-  }
+  };
 }

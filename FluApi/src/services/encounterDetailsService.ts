@@ -109,8 +109,9 @@ export class EncounterDetailsService {
       }
     });
 
-    const emails: string[] = [].concat.apply([], piiSurveys
-      .map(s => 
+    const emails: string[] = [].concat.apply(
+      [],
+      piiSurveys.map(s =>
         s.survey.patient.telecom
           .filter(f => f.system === TelecomInfoSystem.Email)
           .map(f => f.value)
@@ -121,7 +122,7 @@ export class EncounterDetailsService {
       where: {
         email: emails
       }
-    })
+    });
 
     const zipped: Map<number, PIIEncounterDetails> = new Map();
 
@@ -146,9 +147,10 @@ export class EncounterDetailsService {
             .reduce((prev, curr) => (prev > curr ? curr : prev));
         }
 
-        const email = pii.survey.patient.telecom.length > 0 ?
-          pii.survey.patient.telecom[0].value :
-          undefined;
+        const email =
+          pii.survey.patient.telecom.length > 0
+            ? pii.survey.patient.telecom[0].value
+            : undefined;
 
         let followUpSurvey: FollowUpSurveyData;
         if (email != null) {
@@ -176,7 +178,6 @@ export class EncounterDetailsService {
           lastName: pii.survey.patient.lastName,
           followUpResponses: followUpSurvey
         });
-
       } else {
         logger.error(
           "A completed visit was found without corresponding PII " +

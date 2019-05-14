@@ -113,7 +113,7 @@ export class AuthManager {
         permission
       }
     });
-    if(permissionsRevoked === 0) {
+    if (permissionsRevoked === 0) {
       throw new Error("Could not find a permission to revoke");
     }
   }
