@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { Platform } from "react-native";
 import {
   setConsent,
   setTenMinuteStartTime,
@@ -216,6 +217,17 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     ],
     footer: [{ tag: ContinueButton, props: { next: "RDTInstructions" } }],
     key: "TestStripReady",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "updatesettings" } },
+      { tag: Title },
+      {
+        tag: ScreenText,
+        props: { label: Platform.OS === "android" ? "descAndroid" : "desc" },
+      },
+    ],
+    key: "CameraSettings",
   },
   {
     body: [

@@ -8,7 +8,6 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -559,24 +558,6 @@ class TestStripSurveyScreen extends React.Component<
 }
 export const TestStripSurvey = reduxWriter(
   withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
-);
-
-class CameraSettingsScreen extends React.Component<Props & WithNamespaces> {
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={Platform.OS === "android" ? t("descAndroid") : t("desc")}
-        image="updatesettings"
-        navigation={this.props.navigation}
-        skipButton={true}
-        title={t("title")}
-      />
-    );
-  }
-}
-export const CameraSettings = withNamespaces("CameraSettings")(
-  CameraSettingsScreen
 );
 
 @connect()

@@ -22,7 +22,6 @@ import {
   ThankYouSurvey,
   TestStripSurvey,
   RDTReader,
-  CameraSettings,
 } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
@@ -42,7 +41,6 @@ const mainScreens = {
   ThankYouSurvey,
   TestStripSurvey,
   RDTReader,
-  CameraSettings,
 };
 
 const homeRouteConfig = simpleScreens.reduce(
