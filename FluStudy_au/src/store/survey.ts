@@ -6,14 +6,13 @@
 import uuidv4 from "uuid/v4";
 import { format } from "date-fns";
 import {
-  ConsentInfo,
-  ConsentInfoSignerType,
   EventInfo,
   EventInfoKind,
-  SampleInfo,
+  NonPIIConsentInfo,
   PushNotificationState,
+  SampleInfo,
   WorkflowInfo,
-} from "audere-lib/feverProtocol";
+} from "audere-lib/coughProtocol";
 import { SurveyResponse } from "./types";
 import { onCSRUIDEstablished } from "../util/tracker";
 import { DEVICE_INFO, ios } from "../transport/DeviceInfo";
@@ -22,7 +21,7 @@ import i18n from "i18next";
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
-  | { type: "SET_CONSENT"; consent: ConsentInfo }
+  | { type: "SET_CONSENT"; consent: NonPIIConsentInfo }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
@@ -36,7 +35,7 @@ export type SurveyAction =
   | { type: "SET_SUPPORT_CODE"; supportCode: string };
 
 export type SurveyState = {
-  consent?: ConsentInfo;
+  consent?: NonPIIConsentInfo;
   email?: string;
   events: EventInfo[];
   csruid?: string;
@@ -52,7 +51,7 @@ export type SurveyState = {
   timestamp?: number;
   workflow: WorkflowInfo;
   [key: string]:
-    | ConsentInfo
+    | NonPIIConsentInfo
     | string
     | EventInfo[]
     | SampleInfo[]
@@ -206,9 +205,7 @@ export function setConsent(): SurveyAction {
         i18n.t("Consent:consentFormHeader2") +
         "\n" +
         i18n.t("Consent:consentFormText"),
-      signerType: ConsentInfoSignerType.Subject,
       date: format(new Date(), "YYYY-MM-DD"),
-      appBuild: ios ? DEVICE_INFO.clientVersion["iosBuild"] : undefined,
     },
   };
 }

@@ -11,7 +11,7 @@ import {
   AnalyticsInfo,
   EventInfo,
   EventInfoKind,
-} from "audere-lib/feverProtocol";
+} from "audere-lib/coughProtocol";
 import { Pump } from "./Pump";
 import { Logger } from "./LogUtil";
 import { EventTracker } from "./EventUtil";

@@ -11,11 +11,10 @@ import { InteractionManager } from "react-native";
 import {
   DocumentType,
   SurveyInfo,
-  FeedbackInfo,
   ProtocolDocument,
   AnalyticsInfo,
   PhotoInfo,
-} from "audere-lib/feverProtocol";
+} from "audere-lib/coughProtocol";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
@@ -384,16 +383,6 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         device: DEVICE_INFO,
         survey: asSurveyInfo(save.document),
       };
-
-    case DocumentType.Feedback:
-      return {
-        documentType: save.documentType,
-        schemaId: 1,
-        device: DEVICE_INFO,
-        csruid: save.csruid,
-        feedback: asFeedbackInfo(save.document),
-      };
-
     case DocumentType.Analytics:
       return {
         documentType: save.documentType,
@@ -428,23 +417,11 @@ function asSurveyInfo(contents: DocumentContents): SurveyInfo {
 function isProbablySurveyInfo(contents: any): contents is SurveyInfo {
   return (
     isObj(contents.samples) &&
-    isObj(contents.patient) &&
     isObj(contents.consents) &&
     isObj(contents.responses) &&
     isObj(contents.events) &&
     isObj(contents.workflow)
   );
-}
-
-function asFeedbackInfo(contents: DocumentContents): FeedbackInfo {
-  if (isProbablyFeedbackInfo(contents)) {
-    return contents;
-  }
-  throw new Error(`Expected FeedbackInfo, got ${contents}`);
-}
-
-function isProbablyFeedbackInfo(contents: any): contents is FeedbackInfo {
-  return isStr(contents.subject) && isStr(contents.body);
 }
 
 function asAnalyticsInfo(contents: DocumentContents): AnalyticsInfo {

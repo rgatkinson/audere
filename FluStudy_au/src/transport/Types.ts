@@ -6,10 +6,9 @@
 import {
   DocumentType,
   SurveyInfo,
-  FeedbackInfo,
   AnalyticsInfo,
   PhotoInfo,
-} from "audere-lib/feverProtocol";
+} from "audere-lib/coughProtocol";
 
 // Wrapper document saved in PouchDB.
 export interface PouchDoc {
@@ -34,8 +33,4 @@ export interface UniformObject<T> {
   [key: string]: T;
 }
 
-export type DocumentContents =
-  | SurveyInfo
-  | FeedbackInfo
-  | AnalyticsInfo
-  | PhotoInfo;
+export type DocumentContents = SurveyInfo | AnalyticsInfo | PhotoInfo;

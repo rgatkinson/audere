@@ -9,7 +9,7 @@ import axios from "axios";
 import URL from "url-parse";
 import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
-import { DocumentType, SurveyInfo } from "audere-lib/feverProtocol";
+import { DocumentType, SurveyInfo } from "audere-lib/coughProtocol";
 import { DocumentUploader } from "./DocumentUploader";
 import { LazyUploader, AnalyticsBatcher } from "./AnalyticsBatcher";
 import { EventTracker } from "./EventUtil";
@@ -57,10 +57,6 @@ class TypedDocumentUploader {
   }
   public saveSurvey(csruid: string, survey: SurveyInfo) {
     this.uploader.save(csruid, survey, DocumentType.Survey, 1);
-  }
-  public async saveFeedback(subject: string, body: string): Promise<void> {
-    const csruid = await newCSRUID();
-    this.uploader.save(csruid, { subject, body }, DocumentType.Feedback, 2);
   }
   public async saveCrashLog(logentry: string) {
     this.uploader.save(

@@ -14,7 +14,7 @@ import PushNotificationModal from "./PushNotificationModal";
 import {
   PushNotificationState,
   PushRegistrationError,
-} from "audere-lib/feverProtocol";
+} from "audere-lib/coughProtocol";
 import { tracker, notificationEvent } from "../../util/tracker";
 
 const SECOND_MS = 1000;

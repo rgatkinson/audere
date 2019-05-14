@@ -11,13 +11,15 @@ import {
   anything,
   capture,
   instance,
-  match,
   mock,
   spy,
-  verify,
   when,
 } from "ts-mockito";
-import { DocumentType, SurveyInfo, ProtocolDocument } from "audere-lib/feverProtocol";
+import {
+  DocumentType,
+  SurveyInfo,
+  ProtocolDocument,
+} from "audere-lib/coughProtocol";
 import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
@@ -30,11 +32,6 @@ const EMPTY_POUCH_CONTENTS = {
 
 const FAKE_SURVEY_CONTENTS: SurveyInfo = {
   isDemo: false,
-  patient: {
-    name: "Some Fake Name",
-    telecom: [],
-    address: [],
-  },
   consents: [],
   responses: [],
   samples: [],
@@ -57,7 +54,7 @@ const FAKE_POST_DOC: ProtocolDocument = {
   device: DEVICE_INFO,
   csruid: FAKE_CSRUID,
   survey: FAKE_SURVEY_CONTENTS,
-}
+};
 
 const LOGGER = new ArrayLogger();
 
@@ -93,6 +90,11 @@ describe("DocumentUploader", () => {
       };
       when(mockPouchDB.allDocs()).thenReturn(contents);
       when(mockPouchDB.allDocs(anything())).thenReturn(contents);
+      when(mockPouchDB.get(anything())).thenReturn(FAKE_POUCH_DOC);
+      when(mockPouchDB.remove(anything())).thenCall(() => {
+        when(mockPouchDB.allDocs()).thenReturn(EMPTY_POUCH_CONTENTS);
+        when(mockPouchDB.allDocs(anything())).thenReturn(EMPTY_POUCH_CONTENTS);
+      });
       uploader.save("fakeUID", FAKE_SURVEY_CONTENTS, DocumentType.Survey, 0);
 
       when(mockAxios.get("/documentId")).thenReturn(
@@ -105,6 +107,7 @@ describe("DocumentUploader", () => {
         axiosResponse()
       );
       const [url, postData] = capture(mockAxios.put as any).last();
+
       expect(postData).toEqual(FAKE_POST_DOC);
       expect(url).toMatch(new RegExp(`/documents/.*/${FAKE_CSRUID}`));
     });

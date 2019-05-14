@@ -4,22 +4,17 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { Address, Option, SurveyResponse } from "./types";
+import { Option, SurveyResponse } from "./types";
 import { SurveyState, StoreState } from "./index";
 import { createTransport } from "../transport";
 import {
-  AddressInfoUse,
-  AddressValueInfo,
-  ConsentInfo,
-  PatientInfo,
+  NonPIIConsentInfo,
   QuestionAnswerOption,
   ResponseInfo,
   ResponseItemInfo,
   SurveyInfo,
-  TelecomInfoSystem,
   PatientInfoGender,
-} from "audere-lib/feverProtocol";
-import { isNotNull } from "../util/check";
+} from "audere-lib/coughProtocol";
 import {
   FluShotConfig,
   FluShotDateConfig,
@@ -116,10 +111,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     marketingProperties: state.meta.marketingProperties,
-    patient: {
-      telecom: [],
-      address: [],
-    },
     consents: [],
     samples: [],
     responses: [],
@@ -127,25 +118,11 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     workflow: state.survey.workflow,
   };
 
-  when(getGender(survey), x => (pouch.patient.gender = x));
-
-  if (!!survey.email) {
-    pouch.patient.telecom.push({
-      system: TelecomInfoSystem.Email,
-      value: survey.email,
-    });
-  }
+  when(getGender(survey), x => (pouch.gender = x));
 
   maybePushConsent(survey, pouch.consents);
 
   const responses = cleanupResponses(survey.responses);
-
-  maybePushAddressResponse(
-    responses,
-    "Address",
-    AddressInfoUse.Home,
-    pouch.patient
-  );
 
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
@@ -166,67 +143,11 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   return pouch;
 }
 
-function maybePushConsent(survey: SurveyState, consents: ConsentInfo[]) {
+function maybePushConsent(survey: SurveyState, consents: NonPIIConsentInfo[]) {
   const consent = survey.consent;
   if (consent != null) {
     consents.push(consent);
   }
-}
-
-function maybePushAddressResponse(
-  responses: SurveyResponse[],
-  questionId: string,
-  use: AddressInfoUse,
-  patient: PatientInfo
-): void {
-  const response = responses.find(r => r.questionId === questionId);
-  if (!!response) {
-    maybePushAddress(response!.answer!.addressInput, use, patient);
-  }
-}
-
-function maybePushAddress(
-  addressInput: Address | undefined | null,
-  use: AddressInfoUse,
-  patient: PatientInfo
-): void {
-  const info = addressValueInfo(addressInput);
-  if (info != null) {
-    patient.address.push({
-      use,
-      ...info,
-    });
-    if (!!info.firstName) {
-      patient.firstName = info.firstName;
-    }
-    if (!!info.lastName) {
-      patient.lastName = info.lastName;
-    }
-  }
-}
-
-function addressValueInfo(
-  addressInput: Address | undefined | null
-): AddressValueInfo | null {
-  if (addressInput != null) {
-    const firstName = addressInput.firstName || "";
-    const lastName = addressInput.lastName || "";
-    const city = addressInput.city || "";
-    const state = addressInput.state || "";
-    const zipcode = addressInput.zipcode || "";
-    const country = "";
-    const line: string[] = [addressInput.address].filter(isNotNull);
-    return {
-      firstName,
-      lastName,
-      line,
-      city,
-      state,
-      postalCode: zipcode,
-      country,
-    };
-  }
-  return null;
 }
 
 function pushResponses(
@@ -307,11 +228,6 @@ function pushResponses(
               }
             }
           }
-        }
-
-        const valueAddress = addressValueInfo(response.answer.addressInput);
-        if (valueAddress != null) {
-          item.answer.push({ valueAddress });
         }
 
         if (response.answer.dateInput) {

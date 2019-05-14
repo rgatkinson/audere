@@ -7,7 +7,7 @@ import { Linking, Platform } from "react-native";
 import { connect } from "react-redux";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { toggleSupportCodeModal, Action, StoreState } from "../store";
-import { WorkflowInfo } from "audere-lib/feverProtocol";
+import { WorkflowInfo } from "audere-lib/coughProtocol";
 
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
