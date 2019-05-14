@@ -24,6 +24,7 @@ import * as routeStats from "express-hot-shots";
 import logger from "./util/logger";
 import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";
 import { HipaaUploader } from "./services/sniffles/hipaaUploader";
+import { CoughEndpoint } from "./endpoints/coughApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -251,6 +252,13 @@ export function createInternalApp(config: AppConfig) {
     "/api/runSnifflesJobs",
     stats("runSnifflesJobs"),
     (res, req) => snifflesVisitJobs.performRequest(res, req)
+  );
+
+  const cough = new CoughEndpoint(sql);
+  internalApp.get(
+    "/api/import/coughDocuments",
+    stats("importcoughDocuments"),
+    wrap(cough.importCoughDocuments)
   );
 
   return useOuch(internalApp);
