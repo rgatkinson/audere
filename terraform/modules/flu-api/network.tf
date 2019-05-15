@@ -84,15 +84,6 @@ module "elbinternal_sg" {
   vpc_id = "${var.vpc_id}"
 }
 
-module "elbreporting_sg" {
-  source = "../sg-pair"
-
-  name = "${local.base_name}-reporting"
-  from_port = 80
-  to_port = 80
-  vpc_id = "${var.vpc_id}"
-}
-
 resource "aws_security_group" "internet_egress" {
   name = "${local.base_name}-egress"
   description = "Allow instances access to the internet"

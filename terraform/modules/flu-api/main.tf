@@ -4,18 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 locals {
-  api_subdomains = {
+  subdomains = {
     prod = "api"
     staging = "api.staging"
   }
-  api_subdomain = "${local.api_subdomains["${var.environment}"]}"
-  api_full_domain = "${local.api_subdomain}.auderenow.io"
-  reporting_subdomains = {
-    prod = "reporting"
-    staging = "reporting.staging"
-  }
-  reporting_subdomain = "${local.reporting_subdomains["${var.environment}"]}"
-  reporting_full_domain = "${local.reporting_subdomain}.auderenow.io"
+  subdomain = "${local.subdomains["${var.environment}"]}"
+  full_domain = "${local.subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
@@ -43,13 +37,13 @@ data "template_file" "sequelize_migrate_sh" {
   vars {
     assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
-    domain = "${local.api_full_domain}"
+    domain = "${local.full_domain}"
     environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "migrate"
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.api_subdomain}"
+    subdomain = "${local.subdomain}"
   }
 }
 
@@ -58,13 +52,13 @@ data "template_file" "service_init_sh" {
   vars {
     assets_sha256 = "${local.assets_sha256}"
     commit = "${var.commit}"
-    domain = "${local.api_full_domain}"
+    domain = "${local.full_domain}"
     environment = "${var.environment}"
     init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
     mode = "service"
     service_url = "${local.service_url}"
     ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.api_subdomain}"
+    subdomain = "${local.subdomain}"
   }
 }
 
@@ -106,26 +100,12 @@ data "aws_route53_zone" "auderenow_io" {
 
 resource "aws_route53_record" "api_record" {
   zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.api_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
+  name = "${local.subdomain}.${data.aws_route53_zone.auderenow_io.name}"
   type = "A"
 
   alias {
     name = "${aws_elb.flu_api_elb.dns_name}"
     zone_id = "${aws_elb.flu_api_elb.zone_id}"
-    evaluate_target_health = true
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_route53_record" "reporting_record" {
-  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.reporting_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
-  type = "A"
-
-  alias {
-    name = "${aws_elb.flu_reporting_elb.dns_name}"
-    zone_id = "${aws_elb.flu_reporting_elb.zone_id}"
     evaluate_target_health = true
   }
 
@@ -138,13 +118,11 @@ resource "aws_autoscaling_group" "flu_api" {
   health_check_type = "ELB"
   launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
   load_balancers = [
+    "${aws_elb.flu_api_elb.name}",
     "${aws_elb.flu_api_internal_elb.name}",
   ]
   max_size = 1
   min_size = 1
-  load_balancers = [
-    "${aws_elb.flu_api_internal_elb.name}",
-  ]
   vpc_zone_identifier = ["${aws_subnet.api.id}"]
   wait_for_elb_capacity = 1
 
@@ -216,7 +194,7 @@ resource "aws_elb" "flu_api_elb" {
   }
 
   tags {
-    Name = "${local.base_name}-public"
+    Name = "${local.base_name}"
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
   }
 
@@ -257,44 +235,6 @@ resource "aws_elb" "flu_api_internal_elb" {
   tags {
     Name = "${local.base_name}-internal"
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_elb" "flu_reporting_elb" {
-  name = "${local.base_name}-reporting"
-
-  access_logs {
-    bucket = "${aws_s3_bucket.elb_logs.id}"
-    bucket_prefix = "reporting"
-  }
-
-  subnets = ["${aws_subnet.api.id}"]
-
-  security_groups = [
-    "${aws_security_group.public_http.id}",
-    "${module.elbreporting_sg.client_id}",
-  ]
-
-  listener {
-    lb_port = 443
-    lb_protocol = "https"
-    instance_port = 80
-    instance_protocol = "http"
-    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
-  }
-
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-    target = "HTTP:80/api/health"
-  }
-
-  tags {
-    Name = "${local.base_name}-reporting"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
@@ -358,56 +298,5 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
         sse_algorithm = "aws:kms"
       }
     }
-  }
-}
-
-// --------------------------------------------------------------------------------
-// Metabase & ECS
-
-data "template_file" "metabase" {
-  template = "${file("${path.module}/metabase.json")}"
-
-  vars {
-    account = "${var.account}"
-    container_name = "metabase-${var.environment}"
-    db_host = "${var.metabase_database_address}"
-    db_pass_key = "metabase-${var.environment}.pass"
-    db_user_key = "metabase-${var.environment}.user"
-    encryption_secret_key = "metabase-${var.environment}.secret"
-    image = "metabase/metabase:v0.32.5"
-    region = "${var.region}"
-  }
-}
-
-module "ecs_cluster" {
-  source = "../ecs-cluster"
-  cluster_name = "${local.base_name}-ecs"
-  environment = "${var.environment}"
-  iam_instance_profile = "${aws_iam_instance_profile.flu_api.id}"
-  subnet_ids = ["${aws_subnet.api.id}"]
-  security_groups = [
-    "${aws_security_group.internet_egress.id}",
-    "${module.elbreporting_sg.server_id}",
-    "${var.fludb_client_sg_id}",
-    "${var.fludev_ssh_server_sg_id}",
-  ]
-}
-
-resource "aws_ecs_task_definition" "metabase" {
-  family = "metabase-${var.environment}"
-  container_definitions = "${data.template_file.metabase.rendered}"
-  execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
-}
-
-resource "aws_ecs_service" "metabase" {
-  name = "metabase-${var.environment}"
-  cluster = "${module.ecs_cluster.id}"
-  task_definition = "${aws_ecs_task_definition.metabase.arn}"
-  desired_count = 1
-
-  load_balancer {
-    elb_name = "${aws_elb.flu_reporting_elb.name}"
-    container_name = "metabase-${var.environment}"
-    container_port = 80
   }
 }
