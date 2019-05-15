@@ -23,7 +23,7 @@ export class S3DirectoryServer {
     this.renderOpts = renderOpts;
     this.s3 = new LazyAsync(async () => {
       return {
-        s3: new AWS.S3({ region: "us-west-2" }),
+        s3: new AWS.S3({ region: "us-west-2", signatureVersion: "v4" }),
         s3Config: await getS3Config(new SecretConfig(this.sql))
       };
     });
