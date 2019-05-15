@@ -292,6 +292,7 @@ describe("importing received kits", () => {
   });
 
   it("discards duplicate barcodes after one has been set", async () => {
+    // Duplicate in REDCap
     const records = [
       {
         dateReceived: "2018-01-01",
@@ -307,7 +308,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 2
+        recordId: 1
       }
     ];
 
@@ -315,7 +316,13 @@ describe("importing received kits", () => {
     when(redcap.getAtHomeData()).thenResolve(records);
 
     const dao = mock(ReceivedKitsData);
-    const matches = [{ id: 123, code: "12345678", kitId: 1, recordId: 555 }];
+
+    // Duplicate in Audere
+    const matches = [
+      { id: 123, code: "12345678", kitId: 1, recordId: 1, fileId: 1 },
+      { id: 124, code: "12345678" }
+    ];
+
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
@@ -332,5 +339,89 @@ describe("importing received kits", () => {
     const [file, kits] = capture(dao.importReceivedKits).first();
     expect(file).toMatch("1");
     expect(kits.size).toBe(0);
+  });
+
+  it("remaps REDCap records when a different record is used for a given barcode", async () => {
+    const records = [
+      {
+        dateReceived: "2018-01-01",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        fileId: 1,
+        recordId: 1
+      }
+    ];
+
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
+
+    const dao = mock(ReceivedKitsData);
+
+    // Different record id
+    const matches = [
+      { id: 123, code: "12345678", kitId: 1, recordId: 555 }
+    ];
+    when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
+    when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
+
+    const uploader = mock(S3Uploader);
+    when(uploader.writeAtHomeData(anyString(), anyString())).thenResolve("1");
+
+    const service = new ReceivedKits(
+      instance(dao),
+      instance(redcap),
+      instance(uploader)
+    );
+    await service.importReceivedKits();
+
+    const [file, kits] = capture(dao.importReceivedKits).first();
+    expect(file).toMatch("1");
+    expect(kits.size).toBe(1);
+    const record = kits.get(123);
+    expect(record.remapped).toBe(true);
+  });
+
+  it("prefers matched records once they have been set", async () => {
+    const records = [
+      {
+        dateReceived: "2018-01-01",
+        boxBarcode: "12345678",
+        utmBarcode: "22334455",
+        rdtBarcode: "abcdefgh",
+        stripBarcode: "aabbccdd",
+        fileId: 1,
+        recordId: 1
+      }
+    ];
+
+    const redcap = mock(REDCapClient);
+    when(redcap.getAtHomeData()).thenResolve(records);
+
+    const dao = mock(ReceivedKitsData);
+
+    // Different record id
+    const matches = [
+      { id: 123, code: "12345678", kitId: 1, recordId: 555 },
+      { id: 124, code: "12345678" }
+    ];
+    when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
+    when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
+
+    const uploader = mock(S3Uploader);
+    when(uploader.writeAtHomeData(anyString(), anyString())).thenResolve("1");
+
+    const service = new ReceivedKits(
+      instance(dao),
+      instance(redcap),
+      instance(uploader)
+    );
+    await service.importReceivedKits();
+
+    const [file, kits] = capture(dao.importReceivedKits).first();
+    expect(file).toMatch("1");
+    expect(kits.size).toBe(1);
+    expect(kits.has(123)).toBe(true);
   });
 });

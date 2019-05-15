@@ -182,45 +182,51 @@ export class ReceivedKitsData {
     file: string,
     receivedKits: Map<number, KitRecord>
   ): Promise<void> {
-    return this.sql.nonPii.transaction(async t => {
-      const f = await this.fever.receivedKitsFile.create(
-        { file: file.toLowerCase() },
-        {
-          returning: true,
-          transaction: t
-        }
-      );
-
-      if (receivedKits.size > 0) {
-        const records: ReceivedKitAttributes[] = [];
-
-        // At the moment we only care about box barcodes
-        receivedKits.forEach((v, k) =>
-          records.push({
-            surveyId: k,
-            recordId: v.recordId,
-            fileId: f.id,
-            linked: false,
-            boxBarcode: v.boxBarcode,
-            dateReceived: v.dateReceived
-          })
+    return this.sql.nonPii.transaction(
+      { isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE },
+      async t => {
+        const f = await this.fever.receivedKitsFile.create(
+          { file: file.toLowerCase() },
+          {
+            returning: true,
+            transaction: t
+          }
         );
 
-        for (let i = 0; i < records.length; i++) {
-          await this.fever.receivedKit.upsert(records[i], {
-            transaction: t,
-            // Really everything except `linked`
-            fields: [
-              "surveyId",
-              "recordId",
-              "fileId",
-              "boxBarcode",
-              "dateReceived"
-            ]
+        if (receivedKits.size > 0) {
+          const existing = await this.fever.receivedKit.findAll({
+            where: {
+              surveyId: Array.from(receivedKits.keys())
+            }
           });
+
+          const records: ReceivedKitAttributes[] = [];
+
+          // At the moment we only care about box barcodes
+          receivedKits.forEach((v, k) => {
+            const match = existing.find(e => e.surveyId === k);
+            const linked = v.remapped === true || match == null ?
+              false :
+              match.linked;
+
+            records.push({
+              surveyId: k,
+              recordId: v.recordId,
+              fileId: f.id,
+              linked: linked,
+              boxBarcode: v.boxBarcode,
+              dateReceived: v.dateReceived
+            })
+          });
+
+          for (let i = 0; i < records.length; i++) {
+            await this.fever.receivedKit.upsert(records[i], {
+              transaction: t
+            });
+          }
         }
       }
-    });
+    );
   }
 
   /**

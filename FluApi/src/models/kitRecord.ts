@@ -10,4 +10,5 @@ export interface KitRecord {
   utmBarcode?: string;
   rdtBarcode?: string;
   stripBarcode?: string;
+  remapped?: boolean;
 }

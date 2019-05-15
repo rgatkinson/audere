@@ -501,5 +501,98 @@ describe("received kits data access", () => {
 
       expect(kit.recordId).toBe(88);
     });
+
+    it("should passthrough the linked value if the record is not remapped", async () => {
+      const db = surveyNonPIIInDb("dvorak");
+      const survey = await fever.surveyNonPii.create(db);
+
+      const dao = new ReceivedKitsData(sql);
+
+      const insertRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc"
+      };
+
+      const insertRecords = new Map([[+survey.id, insertRecord]]);
+      await dao.importReceivedKits("test1.json", insertRecords);
+
+      await fever.receivedKit.update({
+        linked: true
+      }, {
+        where: {
+          boxBarcode: insertRecord.boxBarcode
+        }
+      });
+
+      const updateRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        recordId: 88
+      };
+
+      const updateRecords = new Map([[+survey.id, updateRecord]]);
+      await dao.importReceivedKits("test2.json", updateRecords);
+
+      const kit = await fever.receivedKit.findOne({
+        where: {
+          surveyId: survey.id
+        }
+      });
+
+      expect(kit.linked).toBe(true);
+    });
+
+    it("should set linked to false when a record is remapped", async () => {
+      const db = surveyNonPIIInDb("dvorak");
+      const survey = await fever.surveyNonPii.create(db);
+
+      const dao = new ReceivedKitsData(sql);
+
+      const insertRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc"
+      };
+
+      const insertRecords = new Map([[+survey.id, insertRecord]]);
+      await dao.importReceivedKits("test1.json", insertRecords);
+
+      await fever.receivedKit.update({
+        linked: true
+      }, {
+        where: {
+          boxBarcode: insertRecord.boxBarcode
+        }
+      });
+
+      const updateRecord = {
+        dateReceived: "2019-01-02",
+        boxBarcode: "12345678",
+        utmBarcode: "aaaaaaaa",
+        rdtBarcode: "bbbbbbbb",
+        stripBarcode: "cccccccc",
+        recordId: 88,
+        remapped: true
+      };
+
+      const updateRecords = new Map([[+survey.id, updateRecord]]);
+      await dao.importReceivedKits("test2.json", updateRecords);
+
+      const kit = await fever.receivedKit.findOne({
+        where: {
+          surveyId: survey.id
+        }
+      });
+
+      expect(kit.linked).toBe(false);
+    });
   });
 });

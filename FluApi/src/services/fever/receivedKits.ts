@@ -89,10 +89,15 @@ export class ReceivedKits {
     logger.info(`[Import Kits] Matching ${records.length} barcodes`);
     const matches = (await this.dao.matchBarcodes(codes)) || [];
 
-    // Check that the box barcode can be associated to a survey
+    // Establish one match per barcode with a preference for anything that has
+    // already been mapped to a record in REDCap in cases where the same sample
+    // code may have been input multiple times
     const matchesByCode: Map<string, MatchedBarcode> = new Map();
     matches.forEach((v, k) => {
-      matchesByCode.set(v.code, v);
+      const existing = matchesByCode.get(v.code);
+      if (existing == null || existing.recordId == null) {
+        matchesByCode.set(v.code, v);
+      }
     });
 
     const kitsBySurvey: Map<number, KitRecord> = new Map();
@@ -106,10 +111,12 @@ export class ReceivedKits {
       } else {
         const match = matchesByCode.get(r.boxBarcode);
         if (
-          match.recordId == null ||
-          (match.recordId === r.recordId && match.fileId == null)
+          match.recordId == null || match.fileId == null
         ) {
-          kitsBySurvey.set(match.id, r);
+          const record = match.recordId != null && match.recordId !== r.recordId ?
+            { ...r, remapped: true } :
+            r;
+          kitsBySurvey.set(match.id, record);
         } else {
           logger.debug(
             `[Import Kits] Barcode ${r.boxBarcode} was already ` +
