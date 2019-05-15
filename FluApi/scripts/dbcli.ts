@@ -179,6 +179,20 @@ yargs.command({
   handler: command(cmdPhoto)
 });
 yargs.command({
+  command: "photo-of <release> <row>",
+  builder: yargs => yargs.string("release").string("row"),
+  handler: command(cmdPhotoOf)
+});
+yargs.command({
+  command: "sample-of <release> <row> <type>",
+  builder: yargs =>
+    yargs
+      .string("release")
+      .string("row")
+      .string("type"),
+  handler: command(cmdSampleOf)
+});
+yargs.command({
   command: "demo <release> <row> [value]",
   builder: yargs => yargs.string("row").boolean("value"),
   handler: command(cmdDemo)
@@ -378,6 +392,62 @@ async function cmdPhoto(argv: PhotosArgs): Promise<void> {
           .map(row => pubId(row.csruid))
           .join("', '")}'`
       );
+  }
+}
+
+interface PhotoOfArgs {
+  release: Release;
+  row: string;
+}
+
+async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Fever: {
+      const surveyRow = expectOne(
+        await feverModels.surveyNonPii.findAll({
+          where: { csruid: { [Op.like]: `${argv.row}%` } }
+        })
+      );
+      const sample = expectOne(
+        surveyRow.survey.samples.filter(
+          x => x.sample_type === "TestStripBase64"
+        )
+      );
+      const photoRow = expectOne(
+        await feverModels.photo.findAll({
+          where: { csruid: { [Op.eq]: sample.code } }
+        })
+      );
+      console.log(photoRow.photo.jpegBase64);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface SampleOfArgs {
+  release: Release;
+  row: string;
+  type: string;
+}
+
+async function cmdSampleOf(argv: SampleOfArgs): Promise<void> {
+  switch (argv.release) {
+    case Release.Fever: {
+      const surveyRow = expectOne(
+        await feverModels.surveyNonPii.findAll({
+          where: { csruid: { [Op.like]: `${argv.row}%` } }
+        })
+      );
+      const sample = expectOne(
+        surveyRow.survey.samples.filter(x => x.sample_type === argv.type)
+      );
+      console.log(sample.code);
+      break;
+    }
+    default:
+      throw failRelease(argv.release);
   }
 }
 
@@ -1298,6 +1368,14 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
 
 function pubId(csruid: string): string {
   return csruid.substring(0, 21);
+}
+
+function expectOne<T>(items: T[]): T {
+  if (items.length == 1) {
+    return items[0];
+  } else {
+    throw fail(`Expected exactly one item, but got ${items.length}`);
+  }
 }
 
 function failKind(kind: string): never {
