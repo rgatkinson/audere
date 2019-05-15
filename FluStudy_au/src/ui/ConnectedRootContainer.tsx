@@ -372,7 +372,7 @@ class ConnectedRootContainer extends React.Component<Props> {
     return (
       <View style={{ flex: 1 }}>
         <AppContainer
-          persistenceKey={"NavigationState"}
+          persistenceKey={"NavigationStateAus"}
           ref={this.navigator}
           onNavigationStateChange={this._handleNavChange}
           renderLoadingExperimental={this._loadingIndicator}

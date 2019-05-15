@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
     justifyContent: "space-between",
-    paddingHorizontal: GUTTER / 2,
   },
   footerContainer: {
     alignItems: "center",

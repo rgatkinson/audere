@@ -27,8 +27,8 @@ export const content = [
   },
   {
     type: "camera",
-    popup: strings.scanScreen.cameraWarning,
-    button: strings.scanScreen.enterManually,
+    popup: strings.Scan.cameraWarning,
+    button: strings.Scan.enterManually,
     dbScreenName: "Scan",
   },
   {

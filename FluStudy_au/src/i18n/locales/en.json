@@ -212,11 +212,8 @@
     "placeholder": "Enter barcode",
     "secondPlaceholder": "Confirm barcode"
   },
-  "scanScreen": {
-    "scan": "scan",
-    "cameraAccess": "Camera access needed to scan barcodes.",
-    "enterManually": "Enter barcode manually",
-    "cameraWarning": "\"flu@home\" would like to access your camera"
+  "Scan": {
+    "enterManually": "Enter barcode manually"
   },
   "ScanConfirmation": {
     "title": "Your code was scanned!",

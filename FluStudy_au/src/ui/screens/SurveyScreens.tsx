@@ -5,7 +5,6 @@
 
 import React, { Fragment } from "react";
 import {
-  Dimensions,
   Image,
   KeyboardAvoidingView,
   StyleSheet,
@@ -15,7 +14,7 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { BarCodeScanner, Camera, Permissions } from "expo";
+import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { SampleInfo } from "audere-lib/feverProtocol";
@@ -23,8 +22,6 @@ import {
   Action,
   Option,
   StoreState,
-  appendInvalidBarcode,
-  setKitBarcode,
   setRDTPhoto,
   setTestStripImg,
   uploader,
@@ -47,11 +44,6 @@ import Screen from "../components/Screen";
 import Text from "../components/Text";
 import TextInput from "../components/TextInput";
 import {
-  invalidBarcodeShapeAlert,
-  validBarcodeShape,
-  unverifiedBarcodeAlert,
-} from "../../util/barcodeVerification";
-import {
   ASPECT_RATIO,
   BORDER_RADIUS,
   BUTTON_WIDTH,
@@ -72,152 +64,6 @@ interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
-
-interface InvalidBarcodeProps {
-  invalidBarcodes: SampleInfo[];
-}
-
-@connect((state: StoreState) => ({
-  invalidBarcodes: state.survey.invalidBarcodes,
-}))
-class ScanScreen extends React.Component<
-  Props & InvalidBarcodeProps & WithNamespaces
-> {
-  state = {
-    activeScan: false,
-  };
-
-  _willFocus: any;
-  _willBlur: any;
-  _timer: NodeJS.Timeout | null | undefined;
-
-  componentDidMount() {
-    this._willFocus = this.props.navigation.addListener("willFocus", () =>
-      this._setTimer()
-    );
-    this._willBlur = this.props.navigation.addListener("willBlur", () =>
-      this._clearTimer()
-    );
-  }
-
-  componentWillUnmount() {
-    this._willFocus.remove();
-    this._willBlur.remove();
-  }
-
-  _setTimer() {
-    this.setState({ activeScan: false });
-    // Timeout after 30 seconds
-    this._clearTimer();
-    this._timer = setTimeout(() => {
-      if (this.props.navigation.isFocused()) {
-        this.props.navigation.push("ManualEntry");
-      }
-    }, 30000);
-  }
-
-  _clearTimer() {
-    if (this._timer != null) {
-      clearTimeout(this._timer);
-      this._timer = null;
-    }
-  }
-
-  _onBarCodeScanned = async ({ type, data }: { type: any; data: string }) => {
-    const { t } = this.props;
-    const barcode = data.toLowerCase();
-
-    if (!this.state.activeScan) {
-      this.setState({ activeScan: true });
-      if (!validBarcodeShape(barcode)) {
-        const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-          ? this.props.invalidBarcodes.length
-          : 0;
-        this.props.dispatch(
-          appendInvalidBarcode({
-            sample_type: type,
-            code: barcode,
-          })
-        );
-        if (priorUnverifiedAttempts > 2) {
-          this.props.navigation.push("BarcodeContactSupport");
-        } else {
-          invalidBarcodeShapeAlert(barcode, this._setTimer);
-        }
-      } else {
-        this.props.dispatch(
-          setKitBarcode({
-            sample_type: type,
-            code: barcode,
-          })
-        );
-        this.props.navigation.push("ScanConfirmation");
-      }
-    }
-  };
-
-  _onManualEntry = () => {
-    this.props.navigation.push("ManualEntry");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Chrome navigation={this.props.navigation}>
-        <View style={{ flex: 1 }}>
-          <BarCodeScanner
-            style={{ flex: 1, alignSelf: "stretch" }}
-            onBarCodeScanned={this._onBarCodeScanned}
-          />
-          <View style={scanStyles.overlayContainer}>
-            <View style={scanStyles.targetBox} />
-            <TouchableOpacity
-              style={scanStyles.overlay}
-              onPress={this._onManualEntry}
-            >
-              <Text
-                center={true}
-                content={t("enterManually")}
-                style={scanStyles.overlayText}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Chrome>
-    );
-  }
-}
-const scanStyles = StyleSheet.create({
-  overlayText: {
-    color: "white",
-    textDecorationLine: "underline",
-  },
-  overlay: {
-    alignItems: "center",
-    height: 50,
-    justifyContent: "center",
-    marginTop: 50,
-    width: 300,
-  },
-  overlayContainer: {
-    alignItems: "center",
-    backgroundColor: "transparent",
-    height: Dimensions.get("window").height,
-    left: -GUTTER,
-    justifyContent: "center",
-    position: "absolute",
-    top: 0,
-    width: Dimensions.get("window").width,
-  },
-  targetBox: {
-    borderColor: "#F5A623",
-    borderRadius: 2,
-    borderWidth: 4,
-    height: 250,
-    width: 250,
-  },
-});
-export const Scan = withNamespaces("scanScreen")(ScanScreen);
 
 class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
   barcodeEntry = React.createRef<any>();
