@@ -27,6 +27,7 @@ class OptionQuestion extends React.Component<Props & WithNamespaces> {
     const { hideQuestionText, style, question, t } = this.props;
     return (
       <ScrollIntoView
+        onMount={false}
         ref={this.props.onRef}
         style={[{ alignSelf: "stretch", marginBottom: GUTTER }]}
       >

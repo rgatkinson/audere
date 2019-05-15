@@ -10,7 +10,7 @@ import {
   setTenMinuteStartTime,
   setOneMinuteStartTime,
 } from "../store";
-import { FunnelEvents, AppHealthEvents } from "../util/tracker";
+import { FunnelEvents } from "../util/tracker";
 import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
@@ -26,25 +26,26 @@ import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
+import FooterNavigation from "../ui/components/FooterNavigation";
 
 export const declarativeScreens: DeclarativeScreenConfig[] = [
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: { hideBackButton: true, splashImage: "welcome" },
     key: "Welcome",
-    footer: [{ tag: ContinueButton, props: { next: "PreConsent" } }],
+    footer: [{ tag: FooterNavigation, props: { next: "WhatsRequired", hideBackButton: true, stepDots: {step: 1, total: 3} } }],
   },
   {
-    body: [
-      { tag: MainImage, props: { uri: "preconsent" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: BulletPoints },
-      { tag: ScreenText, props: { label: "questions" } },
-      { tag: ScreenText, props: { label: "continue", italic: true } },
-    ],
-    key: "PreConsent",
-    footer: [{ tag: ContinueButton, props: { next: "Consent" } }],
+    body: [{ tag: Title }, { tag: ScreenText , props: { label: "desc"} }],
+    chromeProps: { hideBackButton: true, splashImage: "welcome" },
+    key: "WhatsRequired",
+    footer: [{ tag: FooterNavigation, props: { next: "ReadyToBegin", stepDots: {step: 2, total: 3} } }]
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText , props: { label: "desc"} }],
+    chromeProps: { hideBackButton: true, splashImage: "welcome" },
+    key: "ReadyToBegin",
+    footer: [{ tag: FooterNavigation, props: { next: "Consent", stepDots: {step: 3, total: 3} } }]
   },
   {
     body: [
