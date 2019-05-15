@@ -223,8 +223,8 @@ describe("importing received kits", () => {
 
     const dao = mock(ReceivedKitsData);
     const matches = [
-      { id: 123, code: "12345678", kitId: 1, recordId: 1 },
-      { id: 456, code: "98765432", kitId: 2, recordId: 2 }
+      { id: 123, code: "12345678", kitId: 1, recordId: 1, fileId: 1 },
+      { id: 456, code: "98765432", kitId: 2, recordId: 2, fileId: 2 }
     ];
     when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve(
       matches

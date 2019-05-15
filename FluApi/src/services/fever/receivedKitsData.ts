@@ -19,6 +19,7 @@ export interface MatchedBarcode {
   code: string;
   kitId?: number;
   recordId?: number;
+  fileId?: number;
 }
 
 export interface UntrackedBarcode {
@@ -158,7 +159,8 @@ export class ReceivedKitsData {
          s.id id,
          ss->>'code' code,
          k.id "kitId",
-         k."recordId" "recordId"
+         k."recordId" "recordId",
+         k."fileId" "fileId"
        from
          fever_current_surveys s
          left join fever_received_kits k on s.id = k."surveyId",

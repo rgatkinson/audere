@@ -358,6 +358,8 @@ describe("received kits data access", () => {
       expect(matches).toHaveLength(1);
       expect(matches[0].id).toBe(+survey.id);
       expect(matches[0].kitId).toBe(kit.id);
+      expect(matches[0].recordId).toBe(55);
+      expect(matches[0].fileId).toBe(file.id);
     });
 
     it("should match barcodes to sample code", async () => {

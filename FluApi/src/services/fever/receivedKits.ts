@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { ReceivedKitsData } from "./receivedKitsData";
+import { ReceivedKitsData, MatchedBarcode } from "./receivedKitsData";
 import { KitRecord } from "../../models/kitRecord";
 import { S3Uploader } from "../../external/s3Uploader";
 import { REDCapClient } from "../../external/redCapClient";
@@ -90,7 +90,7 @@ export class ReceivedKits {
     const matches = (await this.dao.matchBarcodes(codes)) || [];
 
     // Check that the box barcode can be associated to a survey
-    const matchesByCode = new Map();
+    const matchesByCode: Map<string, MatchedBarcode> = new Map();
     matches.forEach((v, k) => {
       matchesByCode.set(v.code, v);
     });
@@ -107,7 +107,7 @@ export class ReceivedKits {
         const match = matchesByCode.get(r.boxBarcode);
         if (
           match.recordId == null ||
-          (match.recordId === r.recordId && match.kitId == null)
+          (match.recordId === r.recordId && match.fileId == null)
         ) {
           kitsBySurvey.set(match.id, r);
         } else {
