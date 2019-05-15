@@ -109,13 +109,10 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
 
     answers.forEach(a => {
       if (a.valueBoolean != null) {
-        // TODO: Remove boolean answers from the shared protocol
-        logger.error(
-          "Boolean formatted answers are deprecated and will be removed " +
-            "from the visit protocol"
-        );
-
-        throw new Error("Answers contain a boolean response");
+        converted.push({
+          type: "String",
+          value: String(a.valueBoolean)
+        });
       } else if (a.valueDateTime != null) {
         converted.push({
           type: "String",
