@@ -210,7 +210,8 @@
     "barcodeRequired": "Please enter your kit's barcode to continue.",
     "dontMatch": "Those barcodes don't match. Please try again.",
     "placeholder": "Enter barcode",
-    "secondPlaceholder": "Confirm barcode"
+    "secondPlaceholder": "Confirm barcode",
+    "tips": "**Tips:**\n\nFind the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
   },
   "Scan": {
     "enterManually": "Enter barcode manually"
@@ -219,11 +220,9 @@
     "title": "Your code was scanned!",
     "desc": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
   },
-  "manualEntryScreen": {
+  "ManualEntry": {
     "title": "Enter barcode manually",
-    "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tipHeader": "Tips:",
-    "tips": "Find the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
+    "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box."
   },
   "ManualConfirmation": {
     "title": "Your code was accepted",

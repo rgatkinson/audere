@@ -33,7 +33,7 @@ export const content = [
   },
   {
     type: "input",
-    title: strings.manualEntryScreen.title,
+    title: strings.ManualEntry.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "ManualEntry",
     input: [

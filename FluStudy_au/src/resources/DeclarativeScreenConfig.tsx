@@ -14,6 +14,7 @@ import { FunnelEvents, AppHealthEvents } from "../util/tracker";
 import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
+import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import { BulletPoints } from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
@@ -90,6 +91,15 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
       },
     ],
     key: "Scan",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: BarcodeEntry, validate: true },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
+    key: "ManualEntry",
   },
   {
     body: [

@@ -17,15 +17,18 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   namespace: string;
   next?: string;
+  validate?(): boolean;
   dispatch(action: Action): void;
 }
 
 @connect()
 class ContinueButton extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    const { dispatch, dispatchOnNext, navigation, next } = this.props;
-    dispatchOnNext && dispatch(dispatchOnNext());
-    next && navigation.push(next);
+    const { dispatch, dispatchOnNext, navigation, next, validate } = this.props;
+    if (!validate || validate()) {
+      dispatchOnNext && dispatch(dispatchOnNext());
+      next && navigation.push(next);
+    }
   };
 
   render() {

@@ -14,7 +14,6 @@ import {
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import {
-  ManualEntry,
   FirstTimer,
   WhenSymptoms,
   GeneralExposure,
@@ -32,7 +31,6 @@ import {
 } from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
-  ManualEntry,
   FirstTimer,
   WhenSymptoms,
   GeneralExposure,

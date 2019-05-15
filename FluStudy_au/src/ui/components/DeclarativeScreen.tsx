@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { ComponentType } from "react";
+import React, { ComponentType, RefObject } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -30,6 +30,7 @@ export interface DeclarativeScreenConfig {
 interface Component {
   tag: ComponentType<any>;
   props?: object;
+  validate?: boolean;
 }
 
 interface DeclarativeProps {
@@ -40,6 +41,18 @@ interface DeclarativeProps {
 
 export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
   class DeclarativeScreen extends React.Component<DeclarativeProps> {
+    _toValidate: Map<string, RefObject<any>>;
+
+    constructor(props: DeclarativeProps) {
+      super(props);
+      this._toValidate = new Map<string, RefObject<any>>();
+      config.body.map((component, index) => {
+        if (component.validate) {
+          this._toValidate.set("body" + index, React.createRef<any>());
+        }
+      });
+    }
+
     componentDidMount() {
       if (config.funnelEvent) {
         tracker.logEvent(config.funnelEvent);
@@ -61,11 +74,20 @@ export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
         return (
           <Tag
             {...component.props}
+            customRef={this._toValidate.get(indexId + index)}
             key={indexId + index}
             namespace={screenKey}
+            validate={this._validateComponents}
           />
         );
       });
+    };
+
+    _validateComponents = () => {
+      return Array.from(this._toValidate.values()).reduce(
+        (result, ref) => result && ref.current!.validate(),
+        true
+      );
     };
 
     render() {

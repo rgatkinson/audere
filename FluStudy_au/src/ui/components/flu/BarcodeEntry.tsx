@@ -3,15 +3,15 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { Fragment } from "react";
-import { Alert, View } from "react-native";
+import React from "react";
+import { Alert, Image, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { SampleInfo } from "audere-lib/feverProtocol";
 import { appendInvalidBarcode, setKitBarcode, Action, StoreState } from "../../../store";
 import { customRef } from "../../../util/CustomRef";
-import { GUTTER } from "../../styles";
+import { GUTTER, KEYBOARD_BEHAVIOR } from "../../styles";
 import Text from "../Text";
 import TextInput from "../TextInput";
 import { invalidBarcodeShapeAlert, validBarcodeShape } from "../../../util/barcodeVerification";
@@ -63,51 +63,44 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { t } = this.props;
     return (
-      <Fragment>
-        <View
-          style={{
-            alignSelf: "stretch",
-            flexDirection: "row",
-            marginBottom: GUTTER,
-          }}
-        >
-          <Text content={"KIT "} style={{ paddingVertical: 3 }} />
+      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
+        <View style={styles.inputContainer}>
+          <Text content={"KIT "} style={styles.kitText} />
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             autoFocus={this.props.navigation.isFocused()}
             placeholder={t("placeholder")}
             returnKeyType="done"
-            style={{ flex: 1 }}
+            style={styles.textInput}
             value={this.state.barcode1}
             onChangeText={this._onBarcodeOneChange}
             onSubmitEditing={this._onBarcodeOneSubmit}
           />
         </View>
-        <View
-          style={{
-            alignSelf: "stretch",
-            flexDirection: "row",
-            marginBottom: GUTTER,
-          }}
-        >
-          <Text content={"KIT "} style={{ paddingVertical: 3 }} />
+        <View style={styles.inputContainer}>
+          <Text content={"KIT "} style={styles.kitText} />
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={t("secondPlaceholder")}
             ref={this.confirmInput}
             returnKeyType="done"
-            style={{ flex: 1 }}
+            style={styles.textInput}
             value={this.state.barcode2}
             onChangeText={this._onBarcodeTwoChange}
           />
         </View>
-      </Fragment>
+        <View style={styles.tipContainer}>
+          <Image style={styles.image} source={{ uri: "barcode" }} />
+          <Text content={t("tips")} style={styles.tip} />
+        </View>
+
+      </KeyboardAvoidingView>
     );
   }
 
-  save() {
+  validate() {
     const { t } = this.props;
     if (this.state.barcode1 == null) {
       Alert.alert("", t("barcodeRequired"), [
@@ -149,3 +142,29 @@ export default connect((state: StoreState) => ({
   invalidBarcodes: state.survey.invalidBarcodes,
   kitBarcode: state.survey.kitBarcode,
 }))(withNamespaces("barcode")(withNavigation(customRef(BarcodeEntry))));
+
+const styles = StyleSheet.create({
+  image: {
+    aspectRatio: 2.2,
+    flex: 0.4,
+  },
+  inputContainer: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    marginBottom: GUTTER,
+  },
+  kitText: {
+    paddingVertical: 3,
+  },
+  textInput: {
+    flex: 1,
+  },
+  tip: {
+    flex: 0.6,
+    marginLeft: GUTTER,
+  },
+  tipContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+});

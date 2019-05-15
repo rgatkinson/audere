@@ -6,7 +6,6 @@
 import React, { Fragment } from "react";
 import {
   Image,
-  KeyboardAvoidingView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -49,7 +48,6 @@ import {
   BUTTON_WIDTH,
   ERROR_COLOR,
   GUTTER,
-  KEYBOARD_BEHAVIOR,
   LARGE_TEXT,
   SECONDARY_COLOR,
   SYSTEM_PADDING_BOTTOM,
@@ -64,62 +62,6 @@ interface Props {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
 }
-
-class ManualEntryScreen extends React.Component<Props & WithNamespaces> {
-  barcodeEntry = React.createRef<any>();
-
-  _onNext = () => {
-    if (this.barcodeEntry.current!.save()) {
-      this.props.navigation.push("ManualConfirmation");
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={KEYBOARD_BEHAVIOR}
-        enabled
-      >
-        <Screen
-          buttonLabel={t("common:button:continue")}
-          desc={t("desc")}
-          navigation={this.props.navigation}
-          title={t("title")}
-          onNext={this._onNext}
-        >
-          <BarcodeEntry customRef={this.barcodeEntry} />
-          <View
-            style={{
-              alignItems: "center",
-              alignSelf: "stretch",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: GUTTER,
-            }}
-          >
-            <Image
-              style={{ aspectRatio: 2.2, flex: 0.4 }}
-              source={{ uri: "barcode" }}
-            />
-            <View style={{ flex: 0.6, paddingLeft: GUTTER }}>
-              <Text
-                bold={true}
-                content={t("tipHeader")}
-                style={{ marginBottom: GUTTER }}
-              />
-              <Text content={t("tips")} />
-            </View>
-          </View>
-        </Screen>
-      </KeyboardAvoidingView>
-    );
-  }
-}
-export const ManualEntry = withNamespaces("manualEntryScreen")(
-  ManualEntryScreen
-);
 
 interface FirstTimerProps {
   oneMinuteStartTime: number | undefined;
