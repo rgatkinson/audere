@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "FluAtHome",
-    "version": "0.2.0",
-    "description": "App for Seattle Flu Study project",
+    "version": "0.3.0",
+    "description": "App for flu@home project",
     "icon": "./assets/images/app-icon.png",
-    "slug": "FluAtHome",
+    "slug": "FluAtHomeAU",
     "sdkVersion": "32.0.0",
     "ios": {
-      "bundleIdentifier": "org.auderenow.fluathome",
+      "bundleIdentifier": "org.auderenow.fluathome-au",
       "buildNumber": "1",
       "supportsTablet": false,
       "isTabletOnly": false,
@@ -18,7 +18,7 @@
       "publishManifestPath": "ios/fluathome/Supporting/shell-app-manifest.json"
     },
     "android": {
-      "package": "org.auderenow.fluathome",
+      "package": "org.auderenow.fluathome_au",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
       "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
     },

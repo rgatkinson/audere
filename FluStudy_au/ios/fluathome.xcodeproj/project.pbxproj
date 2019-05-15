@@ -1086,6 +1086,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin XCBuildConfiguration section */
 		DFEF6CCA22130582003AE6ED /* Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1144,7 +1145,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 90;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1212,9 +1213,9 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.auderenow.fluathome-au";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore org.auderenow.fluathome-au";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1284,7 +1285,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 90;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
@@ -1353,9 +1354,9 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.auderenow.fluathome.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.auderenow.fluathome-au";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development org.auderenow.fluathome.dev";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development org.auderenow.fluathome-au";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};

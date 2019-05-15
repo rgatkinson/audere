@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:218895043187:android:dd3acba514db24dd",
         "android_client_info": {
-          "package_name": "org.auderenow.fluathome"
+          "package_name": "org.auderenow.fluathome_au"
         }
       },
       "oauth_client": [
@@ -35,7 +35,7 @@
               "client_id": "218895043187-gbuqphcjhv55og70ll75rvc0lhg6v5d5.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "org.auderenow.fluathome"
+                "bundle_id": "org.auderenow.fluathome_au"
               }
             }
           ]

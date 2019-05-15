@@ -34,7 +34,7 @@ platform :ios do
   
     match(
       git_branch: "master",
-      app_identifier: "org.auderenow.fluathome.dev",
+      app_identifier: "org.auderenow.fluathome-au.dev",
       team_id: "G8UCCFY788",
       type: "development",
       readonly: readonly,
@@ -43,7 +43,7 @@ platform :ios do
   
     match(
       git_branch: "master",
-      app_identifier: "org.auderenow.fluathome",
+      app_identifier: "org.auderenow.fluathome-au",
       team_id: "G8UCCFY788",
       type: "appstore",
       readonly: readonly
@@ -85,7 +85,7 @@ platform :ios do
       # http://git-scm.com/docs/pretty-formats
       # - <short hash> <commit title>
       pretty: "- %h %s",
-      tag_match_pattern: "v0\.2\.*"
+      tag_match_pattern: "v0\.3\.*"
     )
     build_app(
       scheme: "fluathome Production",
@@ -122,10 +122,10 @@ platform :ios do
     build = get_build_number
     destination = options[:destination]
     changelog = options[:changelog]
-    lasttag = Helper.backticks("git describe --match \"v0\\.2\\.*\" --abbrev=0 --tags")
+    lasttag = Helper.backticks("git describe --match \"v0\\.3\\.*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
+      message: "flu@home Australia #{version} build #{build} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
@@ -147,10 +147,10 @@ platform :ios do
     if versionBump 
       version = increment_version_number
       Helper.backticks("yarn version --patch --no-git-tag-version")
-      message = "Build script incrementing version to #{version}, build number to #{build_num}"
+      message = "Build script incrementing Cough version to #{version}, build number to #{build_num}"
       include = ["FluStudy_au/package.json", "#{android_build_file}"]
     else 
-      message = "Build script incrementing build number to #{build_num}"
+      message = "Build script incrementing Cough build number to #{build_num}"
       include = ["#{android_build_file}"]
     end
     commit_version_bump(
