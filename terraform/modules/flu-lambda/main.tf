@@ -76,7 +76,7 @@ module "sniffles_visit_jobs_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/runSnifflesJobs"
   subnet_id = "${var.lambda_subnet_id}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
-  notification_topic = "${aws_sns_topic.flu_lambda_notifications.arn}"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
 
 
