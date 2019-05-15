@@ -49,13 +49,23 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
   public async importFollowUpSurveys(
     surveys: FollowUpSurveyData[]
   ): Promise<void> {
-    const existing = await this.fever.followUpSurveys.findAll({
-      where: {
-        email: surveys.map(s => s.email)
+    const unique = new Map();
+
+    surveys.forEach(s => {
+      if (!unique.has(s.email)) {
+        unique.set(s.email, s);
       }
     });
 
-    const added = surveys.filter(s => !existing.some(e => e.email === s.email));
+    const existing = await this.fever.followUpSurveys.findAll({
+      where: {
+        email: Array.from(unique.keys())
+      }
+    });
+
+    const uniqueSurveys = Array.from(unique.values());
+    const added = uniqueSurveys
+      .filter(s => !existing.some(e => e.email === s.email));
 
     if (added.length > 0) {
       const pii = await this.sql.pii.query(
