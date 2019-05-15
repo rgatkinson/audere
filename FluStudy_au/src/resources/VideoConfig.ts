@@ -117,14 +117,6 @@ export const videoConfig: Map<string, VideoConfig> = new Map<
     },
   ],
   [
-    "beginSecondTest",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876040.m3u8?s=4cdfb1880e864d16faba850fc4ca14bd43289167",
-      thumbnail: "beginsecondtestthumb",
-    },
-  ],
-  [
     "prepareForTest",
     {
       uri:
@@ -146,46 +138,6 @@ export const videoConfig: Map<string, VideoConfig> = new Map<
       uri:
         "https://player.vimeo.com/external/330876505.m3u8?s=5b7588166c546ae32b58076ee4612bb5fdfcd7db",
       thumbnail: "putswabintube2thumb",
-    },
-  ],
-  [
-    "cleanUpSecondTest",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876199.m3u8?s=2713efb696bc1f0e6c3cfd42446fff97b0060490",
-      thumbnail: "cleanupsecondtestthumb",
-    },
-  ],
-  [
-    "putStickersOnBox",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876461.m3u8?s=c1eccf182fb369b76f7560e77b76c74cd2ca08f6",
-      thumbnail: "putstickersonboxthumb",
-    },
-  ],
-  [
-    "putBag2InBox",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876439.m3u8?s=aa284ec1d9ba8cc1be281c2b31497393f8e794a6",
-      thumbnail: "putbag2inboxthumb",
-    },
-  ],
-  [
-    "tapeUpBox",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876614.m3u8?s=dc8a81f49b23481d4f327999b18b8f8ead52a231",
-      thumbnail: "tapeupboxthumb",
-    },
-  ],
-  [
-    "shipBox",
-    {
-      uri:
-        "https://player.vimeo.com/external/330876571.m3u8?s=81dff09f4c4ace9e190a4dd90ea90c6e0d3012b5",
-      thumbnail: "shipboxthumb",
     },
   ],
 ]);

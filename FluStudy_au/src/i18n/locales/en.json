@@ -166,8 +166,7 @@
     "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "redLine": "Is there a red line on your test strip?",
-    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
-    "optInForMessages": "Opt-in for messages"
+    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
@@ -187,8 +186,7 @@
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
     "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
-    "selectOne": "Select one of the following",
-    "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
+    "selectOne": "Select one of the following"
   },
   "Welcome": {
     "title": "Welcome",
