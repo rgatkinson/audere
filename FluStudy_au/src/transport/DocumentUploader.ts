@@ -48,7 +48,7 @@ type UploadAttachments = UniformObject<string>;
 
 interface SaveEvent {
   type: "Save";
-  csruid: string;
+  docId: string;
   document: DocumentContents;
   priority: number;
   documentType: DocumentType;
@@ -85,7 +85,7 @@ export class DocumentUploader {
   }
 
   public save(
-    csruid: string,
+    docId: string,
     document: DocumentContents,
     documentType: DocumentType,
     priority: number,
@@ -93,7 +93,7 @@ export class DocumentUploader {
   ): void {
     this.fireEvent({
       type: "Save",
-      csruid,
+      docId,
       document,
       documentType,
       priority,
@@ -158,9 +158,9 @@ export class DocumentUploader {
   }
 
   private async handleSave(save: SaveEvent): Promise<void> {
-    const key = `documents/${save.priority}/${save.csruid}`;
+    const key = `documents/${save.priority}/${save.docId}`;
     const attachments = this.attachmentsToPouch(save.attachments);
-    const { csruid, document, documentType } = save;
+    const { docId, document, documentType } = save;
     let pouch: PouchDoc;
     try {
       pouch = {
@@ -173,7 +173,7 @@ export class DocumentUploader {
     } catch (e) {
       pouch = {
         _id: key,
-        csruid,
+        docId,
         document,
         documentType,
         ...attachments,
@@ -219,7 +219,7 @@ export class DocumentUploader {
         console.log("=== End upload document ===");
       }
 
-      const url = `/fever/documents/${this.documentUploadKey}/${upload.csruid}`;
+      const url = `/fever/documents/${this.documentUploadKey}/${upload.docId}`;
       this.logger.debug(`Starting upload to ${url}`);
       let result = await this.check200(() => this.api.put(url, upload));
       this.logger.debug(`Finished upload to ${url}`);
@@ -379,7 +379,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
       return {
         documentType: save.documentType,
         schemaId: 1,
-        csruid: save.csruid,
+        docId: save.docId,
         device: DEVICE_INFO,
         survey: asSurveyInfo(save.document),
       };
@@ -388,7 +388,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: save.csruid,
+        docId: save.docId,
         analytics: asAnalyticsInfo(save.document),
       };
 
@@ -397,7 +397,7 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         documentType: save.documentType,
         schemaId: 1,
         device: DEVICE_INFO,
-        csruid: save.csruid,
+        docId: save.docId,
         photo: {
           ...asPhotoInfo(save.document),
           jpegBase64: save._attachments!.jpegBase64.data,

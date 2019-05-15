@@ -39,11 +39,11 @@ const FAKE_SURVEY_CONTENTS: SurveyInfo = {
   workflow: {},
 };
 
-const FAKE_CSRUID = "abc123";
+const FAKE_DOCID = "abc123";
 
 const FAKE_POUCH_DOC: PouchDoc = {
-  _id: `documents/1/${FAKE_CSRUID}`,
-  csruid: FAKE_CSRUID,
+  _id: `documents/1/${FAKE_DOCID}`,
+  docId: FAKE_DOCID,
   document: JSON.parse(JSON.stringify(FAKE_SURVEY_CONTENTS)),
   documentType: DocumentType.Survey,
 };
@@ -52,7 +52,7 @@ const FAKE_POST_DOC: ProtocolDocument = {
   documentType: DocumentType.Survey,
   schemaId: 1,
   device: DEVICE_INFO,
-  csruid: FAKE_CSRUID,
+  docId: FAKE_DOCID,
   survey: FAKE_SURVEY_CONTENTS,
 };
 
@@ -98,7 +98,7 @@ describe("DocumentUploader", () => {
       uploader.save("fakeUID", FAKE_SURVEY_CONTENTS, DocumentType.Survey, 0);
 
       when(mockAxios.get("/documentId")).thenReturn(
-        axiosResponse({ id: FAKE_CSRUID })
+        axiosResponse({ id: FAKE_DOCID })
       );
       await nextCall(
         mockAxios,
@@ -109,7 +109,7 @@ describe("DocumentUploader", () => {
       const [url, postData] = capture(mockAxios.put as any).last();
 
       expect(postData).toEqual(FAKE_POST_DOC);
-      expect(url).toMatch(new RegExp(`/documents/.*/${FAKE_CSRUID}`));
+      expect(url).toMatch(new RegExp(`/documents/.*/${FAKE_DOCID}`));
     });
   });
   describe("firstDocument", () => {

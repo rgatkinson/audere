@@ -29,6 +29,7 @@ import {
 } from "./src/util/uploadingErrorHandler";
 import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
+import { initializeFirestore } from "./src/store/FirebaseStore";
 
 type AppProps = {
   exp?: {
@@ -47,8 +48,16 @@ export default class App extends React.Component<AppProps> {
       reportPreviousCrash(this.props.exp.errorRecovery);
     }
     setupErrorHandler();
+
+    // We do these serially, for now, because we actually log things when
+    // loading remote config, and you could in theory use remote config to
+    // change how firestore behaves.  If we become confident that we'll never
+    // use remote config to change firestore's behavior, we can at least
+    // parallelize those two;  but both of those use tracking, and so tracking
+    // needs to be serialized before them for sure.
     await startTracking();
     await loadAllRemoteConfigs();
+    await initializeFirestore();
   }
 
   componentDidCatch(error: Error) {

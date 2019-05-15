@@ -4,12 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -53,6 +48,7 @@ import {
   SYSTEM_PADDING_BOTTOM,
 } from "../styles";
 import { tracker, FunnelEvents } from "../../util/tracker";
+import { savePhoto } from "../../store/FirebaseStore";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -376,12 +372,16 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
           orientation: "portrait",
           fixOrientation: true,
         });
-        const csruid = await newCSRUID();
-        uploader.savePhoto(csruid, photo.base64);
+        const photoId = await newCSRUID();
+
+        // PLAT-51: This won't work offline.  But we may not need it to.  More
+        // details in the task.
+        savePhoto(photoId, photo.base64);
+
         this.props.dispatch(
           setTestStripImg({
             sample_type: "TestStripBase64",
-            code: csruid,
+            code: photoId,
           })
         );
         this.props.dispatch(setRDTPhoto(photo.uri));

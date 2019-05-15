@@ -20,7 +20,6 @@
 import * as common from "./common";
 
 import {
-  ProtocolDocumentBase,
   DeviceInfo,
   SampleInfo,
   PatientInfoGender,
@@ -30,7 +29,6 @@ import {
 } from "./common";
 
 export {
-  ProtocolDocumentBase,
   DeviceInfo,
   SampleInfo,
   PatientInfoGender,
@@ -38,6 +36,17 @@ export {
   QuestionAnswerOption,
   OtherValueInfo
 };
+
+export interface ProtocolDocumentBase {
+  documentType: string;
+  schemaId: number;
+
+  // unique id for this document.
+  docId: string;
+
+  // information about client device
+  device: DeviceInfo;
+}
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html
@@ -60,6 +69,18 @@ export type ProtocolDocument =
   | SurveyDocument
   | AnalyticsDocument
   | PhotoDocument;
+
+export type TransportMetadata = {
+  sentAt: string;
+  receivedAt?: string;
+  contentHash: string;
+  lastWriter: "sender" | "receiver";
+  protocolVersion: number;
+};
+
+export type FirestoreProtocolDocument = ProtocolDocument & {
+  _transport: TransportMetadata;
+};
 
 // Common to PII and NonPII visit info.
 export interface CommonInfo {

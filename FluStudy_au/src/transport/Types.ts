@@ -14,7 +14,7 @@ import {
 export interface PouchDoc {
   _id: string;
 
-  csruid: string;
+  docId: string;
   document: DocumentContents;
   documentType: DocumentType;
 

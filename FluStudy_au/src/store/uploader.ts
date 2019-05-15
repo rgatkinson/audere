@@ -28,6 +28,7 @@ import {
   AssignedSexConfig,
 } from "../resources/ScreenConfig";
 import { crashlytics } from "../crashReporter";
+import { saveSurvey } from "./FirebaseStore";
 
 export const { uploader, events, logger } = createTransport();
 
@@ -93,7 +94,9 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_DEMO":
          */
         if (state.survey.csruid) {
-          uploader.saveSurvey(state.survey.csruid, redux_to_pouch(state));
+          const survey = redux_to_pouch(state);
+
+          saveSurvey(state.survey.csruid, survey);
         } else {
           logger.warn(
             "Skipping survey upload because no csruid is available yet"

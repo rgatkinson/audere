@@ -93,6 +93,7 @@ export const AppHealthEvents = {
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
   SMARTY_STREETS_ERROR: "smarty_streets_error",
+  FIRESTORE_SAVE_SURVEY_ERROR: "firestore_save_survey_error",
 };
 
 export const AppEvents = {
@@ -254,4 +255,11 @@ export function updateCollectionEnabled(isDemo: boolean) {
 
 export function onCSRUIDEstablished(csruid: string) {
   tracker.logEvent(AppEvents.CSRUID_ESTABLISHED, { csruid });
+}
+
+export function LogDebugEvent(event: string, params?: Object) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`LogEvent: ${event}`, params);
+  }
+  tracker.logEvent(event, params);
 }

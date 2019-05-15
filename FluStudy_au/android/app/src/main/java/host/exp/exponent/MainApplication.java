@@ -19,6 +19,8 @@ import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.links.RNFirebaseLinksPackage;
 import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage;
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 
 import org.linusu.RNGetRandomValuesPackage;
@@ -64,6 +66,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new RNFirebaseLinksPackage(),
             new RNFirebaseCrashlyticsPackage(),
             new RNFirebaseRemoteConfigPackage(),
+            new RNFirebaseFirestorePackage(),
+            new RNFirebaseStoragePackage(),
             new RNGetRandomValuesPackage()
     );
   }

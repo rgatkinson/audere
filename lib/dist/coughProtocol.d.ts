@@ -1,6 +1,12 @@
 import * as common from "./common";
-import { ProtocolDocumentBase, DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { ProtocolDocumentBase, DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+import { DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
+export { DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+export interface ProtocolDocumentBase {
+    documentType: string;
+    schemaId: number;
+    docId: string;
+    device: DeviceInfo;
+}
 export interface ResponseInfo {
     id: string;
     item: ResponseItemInfo[];
@@ -14,6 +20,16 @@ export declare enum DocumentType {
     Photo = "PHOTO"
 }
 export declare type ProtocolDocument = SurveyDocument | AnalyticsDocument | PhotoDocument;
+export declare type TransportMetadata = {
+    sentAt: string;
+    receivedAt?: string;
+    contentHash: string;
+    lastWriter: "sender" | "receiver";
+    protocolVersion: number;
+};
+export declare type FirestoreProtocolDocument = ProtocolDocument & {
+    _transport: TransportMetadata;
+};
 export interface CommonInfo {
     isDemo: boolean;
     marketingProperties?: any;
