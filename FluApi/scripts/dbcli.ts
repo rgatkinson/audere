@@ -11,7 +11,7 @@ import fs from "fs";
 import { promisify } from "util";
 import { createInterface as createReadline } from "readline";
 import Sequelize from "sequelize";
-import { literal, Op } from "sequelize";
+import { cast, literal, Op } from "sequelize";
 import yargs from "yargs";
 import _ from "lodash";
 import base64url from "base64url";
@@ -151,6 +151,11 @@ yargs.command({
   command: "by-name <release> <first> <last>",
   builder: yargs => yargs.string("first").string("last"),
   handler: command(cmdByName)
+});
+yargs.command({
+  command: "by-samples <release> <types>",
+  builder: yargs => yargs.string("release").string("types"),
+  handler: command(cmdBySamples)
 });
 yargs.command({
   command: "show-path <release> <kind> <path> <rows>",
@@ -421,6 +426,8 @@ async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
       console.log(photoRow.photo.jpegBase64);
       break;
     }
+    case Release.Sniffles:
+      throw fail("Sniffles doesn't have photos");
     default:
       throw failRelease(argv.release);
   }
@@ -446,6 +453,8 @@ async function cmdSampleOf(argv: SampleOfArgs): Promise<void> {
       console.log(sample.code);
       break;
     }
+    case Release.Sniffles:
+      throw fail("Sniffles support not yet implemented");
     default:
       throw failRelease(argv.release);
   }
@@ -654,6 +663,38 @@ async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
       consoleLogRows(rows);
       break;
     }
+    default:
+      throw failRelease(argv.release);
+  }
+}
+
+interface BySamplesArgs {
+  release: Release;
+  types: string;
+}
+
+async function cmdBySamples(argv: BySamplesArgs): Promise<void> {
+  const sample_types = argSplit(argv.types);
+
+  switch (argv.release) {
+    case Release.Fever: {
+      const rows = await feverModels.surveyNonPii.findAll({
+        where: {
+          [Op.and]: [
+            { survey: { isDemo: false } },
+            ...sample_types.map(sample_type => ({
+              "survey.samples::jsonb": {
+                [Op.contains]: cast(JSON.stringify([{ sample_type }]), "JSONB")
+              }
+            }))
+          ]
+        }
+      });
+      rows.forEach(row => console.log(pubId(row.csruid)));
+      break;
+    }
+    case Release.Sniffles:
+      throw fail("Sniffles support not yet implemented");
     default:
       throw failRelease(argv.release);
   }
@@ -1074,13 +1115,6 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   console.log();
 }
 
-function argRowLikes(rows: string): string[] {
-  return rows
-    .split(/[\s,]/)
-    .filter(x => x !== "")
-    .map(x => `${x}%`);
-}
-
 interface ShowArgs {
   release: Release;
   kind: string;
@@ -1368,6 +1402,14 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
 
 function pubId(csruid: string): string {
   return csruid.substring(0, 21);
+}
+
+function argRowLikes(rows: string): string[] {
+  return argSplit(rows).map(x => `${x}%`);
+}
+
+function argSplit(arg: string): string[] {
+  return arg.split(/[\s,]/).filter(x => x !== "");
 }
 
 function expectOne<T>(items: T[]): T {
