@@ -28,6 +28,7 @@ module "flu_api" {
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   devs = "${var.devs}"
+  ecs_service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
   environment = "staging"
   fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
   fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
@@ -38,7 +39,6 @@ module "flu_api" {
   public_cidr = "${module.vpc_cidr.staging_public_cidr}"
   region = "${var.region}"
   service = "${var.service}"
-  service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
   ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
