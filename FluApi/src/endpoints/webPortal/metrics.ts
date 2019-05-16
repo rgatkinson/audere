@@ -1155,6 +1155,23 @@ export async function getFeverMetrics(
       return "Ordered Kit";
     }
   };
+  const getPart2Sypmtoms = row => {
+    const symptoms = row.survey.responses[0].item.find(
+      item => item.id == "WhatSymptoms" && item.answer.length > 0
+    );
+    if (symptoms) {
+      const symptomsList = [];
+      symptoms.answer.forEach(ans => {
+        symptomsList.push(symptoms.answerOptions[ans.valueIndex].id);
+      });
+      return symptomsList;
+    } else {
+      return [];
+    }
+  };
+  function symptomText(symptoms: string[], check: string): string {
+    return symptoms.length > 0 ? symptoms.includes(check).toString() : "";
+  }
 
   let studyIdData = [];
   rowsNonPii.forEach(row => {
@@ -1162,6 +1179,7 @@ export async function getFeverMetrics(
     const kitOrderTime = getKitOrderTime(row);
     const scanTime = getScanTime(row);
     const surveyCompleteTime = getSurveyCompleteTime(row);
+    const part2Symptoms = getPart2Sypmtoms(row);
     studyIdData.push({
       age: getAgeRange(row),
       city: getUserCity(row),
@@ -1185,7 +1203,16 @@ export async function getFeverMetrics(
       firsttestfeedback: getTest1Feedback(row),
       secondtestfeedback: getTest2Feedback(row),
       redwhenblue: getRedWhenBlueAnswer(row),
-      workflow: getWorkflow(row)
+      workflow: getWorkflow(row),
+      fever: symptomText(part2Symptoms, "feelingFeverish"),
+      chillsorsweats: symptomText(part2Symptoms, "chillsOrSweats"),
+      sorethroat: symptomText(part2Symptoms, "soreThroat"),
+      cough: symptomText(part2Symptoms, "cough"),
+      headache: symptomText(part2Symptoms, "headache"),
+      fatigue: symptomText(part2Symptoms, "fatigue"),
+      aches: symptomText(part2Symptoms, "muscleOrBodyAches"),
+      runnynose: symptomText(part2Symptoms, "runningNose"),
+      shortnessofbreath: symptomText(part2Symptoms, "shortnessOfBreath")
     });
   });
 
@@ -1591,6 +1618,51 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Status",
       headerStyle: styles.columnHeader,
       width: 125
+    },
+    fever: {
+      displayName: "Fever",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    chillsorsweats: {
+      displayName: "Chills or Sweats",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    sorethroat: {
+      displayName: "Sore Throat",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    cough: {
+      displayName: "Cough",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    headache: {
+      displayName: "Headache",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    fatigue: {
+      displayName: "Fatigue",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    aches: {
+      displayName: "Muscle or Body Aches",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    runnynose: {
+      displayName: "Runny Nose",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    shortnessofbreath: {
+      displayName: "Shortness of Breath",
+      headerStyle: styles.columnHeader,
+      width: 75
     }
   };
 
@@ -1764,7 +1836,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       null,
       "User's answer to whether they can see a red line when they already said they saw a blue line"
     ],
-    ["Status", null, "Current workflow state of app"]
+    ["Status", null, "Current workflow state of app"],
+    [
+      "Symptom Columns",
+      null,
+      "For each symptom, the cell is TRUE if the user checked that symptom in part 2, FALSE if they did not check the symptom, and blank if they did not get that far"
+    ]
   ];
 
   const merges = [
