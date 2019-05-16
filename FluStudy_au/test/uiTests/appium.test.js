@@ -33,8 +33,7 @@ describe("Happy Path", () => {
     ).toBe(true);
     await change_to_demo_mode(driver);
 
-    for (i = 0; i < content.length; i++) {
-      const screen_info = content[i];
+    for (const screen_info of content) {
       if (screen_info.type == "basic") {
         await basic_screen(driver, screen_info);
       } else if (screen_info.type == "input") {

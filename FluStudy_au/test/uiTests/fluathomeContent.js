@@ -4,14 +4,20 @@ export const content = [
   {
     type: "basic",
     title: strings.Welcome.title,
-    button: strings.common.button.continue.toUpperCase(),
+    button: strings.common.button.next.toUpperCase(),
     dbScreenName: "Welcome",
   },
   {
     type: "basic",
-    title: strings.PreConsent.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "Preconsent",
+    title: strings.WhatsRequired.title,
+    button: strings.common.button.next.toUpperCase(),
+    dbScreenName: "WhatsRequired",
+  },
+  {
+    type: "basic",
+    title: strings.ReadyToBegin.title,
+    button: strings.common.button.next.toUpperCase(),
+    dbScreenName: "ReadyToBegin",
   },
   {
     type: "basic",
