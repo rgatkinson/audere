@@ -51,6 +51,7 @@ import { newCSRUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import { getMarketingProperties, AppHealthEvents } from "../util/tracker";
 import { getRemoteConfig, loadAllRemoteConfigs } from "../util/remoteConfig";
+import MultiTapContainer from "./components/MultiTapContainer";
 
 const AppContainer = createAppContainer(AppNavigator);
 
@@ -96,29 +97,6 @@ class ConnectedRootContainer extends React.Component<Props> {
   }
 
   navigator = React.createRef<NavigationContainerComponent>();
-
-  QUAD_PRESS_DELAY = 600;
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-  thirdLastTap: number | null = null;
-
-  handleQuadTap = () => {
-    if (this.props.isDemo) {
-      const now = Date.now();
-      if (
-        this.lastTap != null &&
-        this.secondLastTap != null &&
-        this.thirdLastTap != null &&
-        now - this.thirdLastTap! < this.QUAD_PRESS_DELAY
-      ) {
-        this._handleAppStateChange("quadTap");
-      } else {
-        this.thirdLastTap = this.secondLastTap;
-        this.secondLastTap = this.lastTap;
-        this.lastTap = now;
-      }
-    }
-  };
 
   _handleConnectivityChange = async (isConnected: boolean) => {
     this.props.dispatch(setConnectivity(isConnected));
@@ -377,9 +355,13 @@ class ConnectedRootContainer extends React.Component<Props> {
           onNavigationStateChange={this._handleNavChange}
           renderLoadingExperimental={this._loadingIndicator}
         />
-        <TouchableWithoutFeedback onPress={this.handleQuadTap}>
+        <MultiTapContainer
+          active={this.props.isDemo}
+          taps={4}
+          onMultiTap={() => this._handleAppStateChange("quadTap")}
+        >
           <View style={styles.touchable} />
-        </TouchableWithoutFeedback>
+        </MultiTapContainer>
       </View>
     );
   }

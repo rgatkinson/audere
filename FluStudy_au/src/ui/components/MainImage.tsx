@@ -8,47 +8,29 @@ import { Image, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../../store";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
+import MultiTapContainer from "./MultiTapContainer";
 
 interface Props {
   isDemo: boolean;
   menuItem?: boolean;
   uri: string;
-  dispatch?(action: Action): void;
+  dispatch(action: Action): void;
 }
 
-const TRIPLE_PRESS_DELAY = 500;
-
 class MainImage extends React.Component<Props> {
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-
-  _handleTripleTap = () => {
-    const now = Date.now();
-    if (
-      this.lastTap != null &&
-      this.secondLastTap != null &&
-      now - this.secondLastTap! < TRIPLE_PRESS_DELAY &&
-      this.props.menuItem
-    ) {
-      this.props.dispatch!(setDemo(!this.props.isDemo));
-    } else {
-      this.secondLastTap = this.lastTap;
-      this.lastTap = now;
-    }
-  };
-
   render() {
     const { menuItem, uri } = this.props;
     return (
-      <TouchableWithoutFeedback
-        style={styles.imageContainer}
-        onPress={this._handleTripleTap}
+      <MultiTapContainer
+        active={!!this.props.menuItem}
+        taps={3}
+        onMultiTap={() => this.props.dispatch(setDemo(!this.props.isDemo))}
       >
         <Image
           style={[styles.image, menuItem && styles.menuImage]}
           source={{ uri }}
         />
-      </TouchableWithoutFeedback>
+      </MultiTapContainer>
     );
   }
 }
@@ -65,9 +47,6 @@ const styles = StyleSheet.create({
     height: undefined,
     marginVertical: GUTTER / 2,
     width: IMAGE_WIDTH,
-  },
-  imageContainer: {
-    alignSelf: "stretch",
   },
   menuImage: {
     aspectRatio: 4.23,

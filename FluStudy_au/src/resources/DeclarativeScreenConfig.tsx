@@ -37,9 +37,14 @@ import QuestionText from "../ui/components/QuestionText";
 import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
+import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
+
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const TEST_STRIP_MS = 10 * MINUTE_MS;
 
 export const declarativeScreens: DeclarativeScreenConfig[] = [
   {
@@ -228,6 +233,24 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "oneminutetimer" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [
+      {
+        tag: Timer,
+        props: {
+          next: "RemoveSwabFromTube",
+          startTimeConfig: "oneMinuteStartTime",
+          totalTimeMs: MINUTE_MS,
+        },
+      },
+    ],
+    key: "FirstTimer",
+  },
+  {
+    body: [
       { tag: MainImage, props: { uri: "removeswabfromtube" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -324,6 +347,26 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     ],
     footer: [{ tag: ContinueButton, props: { next: "ThankYouSurvey" } }],
     key: "GeneralHealth",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "questionsthankyou" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: ScreenText, props: { label: "waiting" } },
+    ],
+    footer: [
+      {
+        tag: Timer,
+        props: {
+          next: "TestStripReady",
+          startTimeConfig: "tenMinuteStartTime",
+          totalTimeMs: TEST_STRIP_MS,
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.COMPLETED_SURVEY,
+    key: "ThankYouSurvey",
   },
   {
     body: [

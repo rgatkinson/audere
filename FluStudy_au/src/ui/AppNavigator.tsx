@@ -13,17 +13,13 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { FirstTimer, ThankYouSurvey, RDTReader } from "./screens/SurveyScreens";
+import { RDTReader } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
 import { declarativeScreens } from "../resources/DeclarativeScreenConfig";
 import { generateDeclarativeScreen } from "./components/DeclarativeScreen";
 
-const mainScreens = {
-  FirstTimer,
-  ThankYouSurvey,
-  RDTReader,
-};
+const mainScreens = { RDTReader };
 
 const homeRouteConfig = declarativeScreens.reduce(
   (homeRouteConfig, config) => ({

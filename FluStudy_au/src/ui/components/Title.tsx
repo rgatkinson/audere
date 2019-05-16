@@ -18,7 +18,6 @@ interface Props {
   label?: string;
   namespace?: string;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => any;
 }
 
 class Title extends React.Component<Props & WithNamespaces> {
@@ -36,7 +35,6 @@ class Title extends React.Component<Props & WithNamespaces> {
         center={true}
         content={this._getContent()}
         extraBold={true}
-        onPress={this.props.onPress}
         style={[styles.title, this.props.style && this.props.style]}
       />
     );

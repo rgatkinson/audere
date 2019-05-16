@@ -3,12 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { Fragment } from "react";
 import { Platform, PushNotificationIOS, View } from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import PushNotification from "react-native-push-notification";
-import i18n from "i18next";
 import { setPushNotificationState, Action, StoreState } from "../../store";
 import PushNotificationModal from "./PushNotificationModal";
 import {
@@ -16,31 +16,28 @@ import {
   PushRegistrationError,
 } from "audere-lib/coughProtocol";
 import { tracker, notificationEvent } from "../../util/tracker";
+import { BORDER_RADIUS, BUTTON_WIDTH, SECONDARY_COLOR } from "../styles";
+import BorderView from "./BorderView";
+import ContinueButton from "./ContinueButton";
+import Text from "./Text";
+import MultiTapContainer from "./MultiTapContainer";
 
 const SECOND_MS = 1000;
 
 interface TimerState {
-  done: boolean;
   remaining: Date | null | undefined;
   showPushModal: boolean;
+  startTimeMs: number | null;
 }
 
-export interface ConfigProps {
-  nextScreen: string;
+interface Props {
+  isDemo: boolean;
+  navigation: NavigationScreenProp<any, any>;
+  next: string;
+  pushState: PushNotificationState;
   startTimeConfig: string;
   totalTimeMs: number;
-}
-
-export interface TimerProps {
-  navigation: NavigationScreenProp<any, any>;
-  pushState: PushNotificationState;
-  startTimeMs: number;
   dispatch(action: Action): void;
-  done(): boolean;
-  getRemainingLabel(): string;
-  getRemainingTime(): number;
-  onFastForward(): void;
-  onNext(): void;
 }
 
 if (Platform.OS === "ios") {
@@ -56,288 +53,278 @@ if (Platform.OS === "ios") {
   });
 }
 
-const timerWithConfigProps = (configProps: ConfigProps) => (
-  WrappedComponent: any
-) => {
-  class Timer extends React.Component<TimerProps, TimerState> {
-    state = {
-      done: false,
-      remaining: undefined,
-      showPushModal: false,
-    };
+class Timer extends React.Component<Props & WithNamespaces> {
+  state = {
+    remaining: undefined,
+    showPushModal: false,
+    startTimeMs: null,
+  };
 
-    constructor(props: TimerProps) {
-      super(props);
-      this._isDone = this._isDone.bind(this);
-      this.getRemainingLabel = this.getRemainingLabel.bind(this);
-      this.getRemainingTime = this.getRemainingTime.bind(this);
-      this._onFastForward = this._onFastForward.bind(this);
-      this._removeNotificationListeners = this._removeNotificationListeners.bind(
-        this
+  _timer: NodeJS.Timeout | undefined;
+  _willFocus: any;
+  _fastForwardMillis = 0;
+  _userInfo = {};
+
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._userInfo = { id: props.startTimeConfig };
+  }
+
+  static getDerivedStateFromProps(
+    props: Props & WithNamespaces,
+    state: TimerState
+  ) {
+    // @ts-ignore
+    const startTimeMs = props[props.startTimeConfig];
+    if (startTimeMs !== state.startTimeMs) {
+      return { startTimeMs };
+    }
+    return null;
+  }
+
+  _regEvent = (token: string) => {
+    const newPushState = { ...this.props.pushState, token };
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this._scheduleNotification();
+  };
+
+  _regErrorEvent = (registrationError: PushRegistrationError) => {
+    const newPushState = { ...this.props.pushState, registrationError };
+    this.props.dispatch(setPushNotificationState(newPushState));
+  };
+
+  componentDidMount() {
+    if (Platform.OS === "ios") {
+      PushNotificationIOS.removeEventListener("register", this._regEvent);
+      PushNotificationIOS.addEventListener("register", this._regEvent);
+      PushNotificationIOS.removeEventListener(
+        "registrationError",
+        this._regErrorEvent
+      );
+      PushNotificationIOS.addEventListener(
+        "registrationError",
+        this._regErrorEvent
+      );
+    } else {
+      const handleNotificationAndroid = this._handleNotificationAndroid;
+      PushNotification.configure({
+        onNotification: function(notification) {
+          handleNotificationAndroid(notification);
+        },
+        requestPermissions: false,
+      });
+    }
+
+    this._willFocus = this.props.navigation.addListener("willFocus", () =>
+      this._setTimer()
+    );
+
+    const remaining = this._getRemaining();
+    this.setState({ remaining });
+
+    if (Platform.OS === "ios" && remaining != null) {
+      PushNotificationIOS.removeEventListener(
+        "localNotification",
+        this._handleNotificationIOS
+      );
+      PushNotificationIOS.addEventListener(
+        "localNotification",
+        this._handleNotificationIOS
       );
     }
 
-    _userInfo = { id: configProps.startTimeConfig };
-    _timer: NodeJS.Timeout | undefined;
-    _willFocus: any;
-    _fastForwardMillis = 0;
+    this._scheduleNotification();
 
-    _onFastForward(): void {
+    if (this.props.navigation.isFocused() && remaining != null) {
+      this._setTimer();
+
+      if (Platform.OS === "ios" && !this.props.pushState.showedSystemPrompt) {
+        setTimeout(() => {
+          this.setState({ showPushModal: true });
+        }, 3000);
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._willFocus != null) {
+      this._willFocus.remove();
+      this._willFocus = null;
+    }
+  }
+
+  _scheduleNotification(): void {
+    const { startTimeConfig, t } = this.props;
+    const remaining = this._getRemaining();
+    if (remaining != null) {
+      if (Platform.OS === "ios") {
+        PushNotification.cancelLocalNotifications(this._userInfo);
+      } else {
+        PushNotification.cancelAllLocalNotifications();
+      }
+      PushNotification.localNotificationSchedule({
+        date: new Date(Date.now() + remaining.getTime()),
+        title: t("common:notifications:title"),
+        message: t("common:notifications:" + startTimeConfig),
+        userInfo: this._userInfo,
+      });
+    }
+  }
+
+  _onFastForward(): void {
+    if (this.state.startTimeMs != null) {
+      const { totalTimeMs } = this.props;
       this._fastForwardMillis =
-        this.props.startTimeMs +
-        configProps.totalTimeMs -
+        this.state.startTimeMs! +
+        totalTimeMs -
         new Date().getTime() -
         5 * SECOND_MS;
       this._scheduleNotification();
     }
+  }
 
-    _getRemaining(): Date | null {
-      // @ts-ignore
-      const remaining = new Date(null);
-      if (this.props.startTimeMs == null) {
-        remaining.setMilliseconds(configProps.totalTimeMs);
+  _getRemaining(): Date | null {
+    const { totalTimeMs } = this.props;
+    // @ts-ignore
+    const remaining = new Date(null);
+    if (this.state.startTimeMs == null) {
+      remaining.setMilliseconds(totalTimeMs);
+      return remaining;
+    } else {
+      const deltaMillis =
+        this.state.startTimeMs! +
+        totalTimeMs -
+        new Date().getTime() -
+        this._fastForwardMillis;
+      if (deltaMillis > 0) {
+        remaining.setMilliseconds(deltaMillis);
         return remaining;
       } else {
-        const deltaMillis =
-          this.props.startTimeMs +
-          configProps.totalTimeMs -
-          new Date().getTime() -
-          this._fastForwardMillis;
-        if (deltaMillis > 0) {
-          remaining.setMilliseconds(deltaMillis);
-          return remaining;
-        } else {
-          return null;
-        }
+        return null;
       }
-    }
-
-    _setTimer() {
-      if (this.props.navigation.isFocused() && !this.state.done) {
-        setTimeout(() => {
-          if (this.props.navigation.isFocused() && !this.state.done) {
-            const remaining = this._getRemaining();
-            this.setState({ remaining, done: remaining === null });
-            if (remaining != null) {
-              this._setTimer();
-            }
-          }
-        }, 1000);
-      }
-    }
-
-    getRemainingLabel(): string {
-      if (this.state.remaining == null) {
-        return "00:00";
-      }
-      // @ts-ignore
-      return this.state.remaining!.toISOString().substr(14, 5);
-    }
-
-    getRemainingTime(): number | null {
-      if (this.state.remaining == null) {
-        return 0;
-      } else {
-        // @ts-ignore
-        return this.state.remaining.getTime();
-      }
-    }
-
-    _scheduleNotification(): void {
-      const remaining = this._getRemaining();
-      if (remaining != null) {
-        if (Platform.OS === "ios") {
-          PushNotification.cancelLocalNotifications(this._userInfo);
-        } else {
-          PushNotification.cancelAllLocalNotifications();
-        }
-        PushNotification.localNotificationSchedule({
-          date: new Date(Date.now() + remaining.getTime()),
-          title: i18n.t("common:notifications:title"),
-          message: i18n.t(
-            "common:notifications:" + configProps.startTimeConfig
-          ),
-          userInfo: this._userInfo,
-        });
-      }
-    }
-
-    _registrationEvent = (token: string) => {
-      const newPushState = { ...this.props.pushState, token };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this._scheduleNotification();
-    };
-
-    _registrationErrorEvent = (result: PushRegistrationError) => {
-      const newPushState = {
-        ...this.props.pushState,
-        registrationError: result,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-    };
-
-    componentDidMount() {
-      if (Platform.OS === "ios") {
-        PushNotificationIOS.removeEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.addEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.removeEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-        PushNotificationIOS.addEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-      } else {
-        const handleNotificationAndroid = this._handleNotificationAndroid;
-        PushNotification.configure({
-          onNotification: function(notification) {
-            handleNotificationAndroid(notification);
-          },
-
-          requestPermissions: false,
-        });
-      }
-
-      this._willFocus = this.props.navigation.addListener("willFocus", () =>
-        this._setTimer()
-      );
-
-      const remaining = this._getRemaining();
-      this.setState({ remaining, done: remaining === null });
-
-      if (Platform.OS === "ios" && remaining != null) {
-        PushNotificationIOS.removeEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-        PushNotificationIOS.addEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-      }
-
-      this._scheduleNotification();
-
-      if (this.props.navigation.isFocused() && remaining != null) {
-        this._setTimer();
-
-        if (Platform.OS === "ios" && !this.props.pushState.showedSystemPrompt) {
-          setTimeout(() => {
-            this.setState({ showPushModal: true });
-          }, 3000);
-        }
-      }
-    }
-
-    _handleNotificationIOS = (notification: any) => {
-      if (
-        JSON.stringify(notification.getData()) ===
-        JSON.stringify(this._userInfo)
-      ) {
-        this.props.navigation.push(configProps.nextScreen);
-        tracker.logEvent(notificationEvent, {
-          appLaunch: false,
-          timerConfig: configProps.startTimeConfig,
-          message: notification.getMessage(),
-          appStatus: notification.getCategory(),
-        });
-        this._removeNotificationListeners();
-      }
-    };
-
-    _handleNotificationAndroid = (notification: any) => {
-      this.props.navigation.push(configProps.nextScreen);
-      tracker.logEvent(notificationEvent, {
-        appLaunch: false,
-        timerConfig: configProps.startTimeConfig,
-        message: notification.message,
-      });
-    };
-
-    _removeNotificationListeners = () => {
-      if (Platform.OS === "ios") {
-        PushNotificationIOS.removeEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-        PushNotificationIOS.removeEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.removeEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-      }
-    };
-
-    componentWillUnmount() {
-      if (this._willFocus != null) {
-        this._willFocus.remove();
-        this._willFocus = null;
-      }
-    }
-
-    _onNo = () => {
-      const newPushState = {
-        ...this.props.pushState,
-        softResponse: false,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this.setState({ showPushModal: false });
-    };
-
-    _onYes = () => {
-      PushNotificationIOS.requestPermissions();
-      const newPushState = {
-        ...this.props.pushState,
-        softResponse: true,
-        showedSystemPrompt: true,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this.setState({ showPushModal: false });
-    };
-
-    _isDone = () => {
-      return this.state.done;
-    };
-
-    render() {
-      return (
-        <View style={{ alignSelf: "stretch", flex: 1 }}>
-          <PushNotificationModal
-            visible={this.state.showPushModal}
-            onDismiss={this._onNo}
-            onSubmit={this._onYes}
-          />
-          <WrappedComponent
-            {...this.props}
-            done={this._isDone}
-            getRemainingLabel={this.getRemainingLabel}
-            getRemainingTime={this.getRemainingTime}
-            onFastForward={this._onFastForward}
-            onNext={this._removeNotificationListeners}
-          />
-        </View>
-      );
     }
   }
 
-  const timerWithNavigation = withNavigation(Timer);
+  getRemainingLabel(): string {
+    if (this.state.remaining == null) {
+      return "00:00";
+    }
+    // @ts-ignore
+    return this.state.remaining!.toISOString().substr(14, 5);
+  }
 
-  return connect((state: StoreState) => {
-    return {
-      startTimeMs: state.survey[configProps.startTimeConfig],
-      pushState: state.survey.pushState,
+  _setTimer() {
+    if (this.props.navigation.isFocused() && this.state.remaining !== null) {
+      setTimeout(() => {
+        if (
+          this.props.navigation.isFocused() &&
+          this.state.remaining !== null
+        ) {
+          const remaining = this._getRemaining();
+          this.setState({ remaining });
+          if (remaining != null) {
+            this._setTimer();
+          }
+        }
+      }, 1000);
+    }
+  }
+
+  _onNo = () => {
+    const newPushState = { ...this.props.pushState, softResponse: false };
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this.setState({ showPushModal: false });
+  };
+
+  _onYes = () => {
+    PushNotificationIOS.requestPermissions();
+    const newPushState = {
+      ...this.props.pushState,
+      softResponse: true,
+      showedSystemPrompt: true,
     };
-  })(timerWithNavigation);
-};
+    this.props.dispatch(setPushNotificationState(newPushState));
+    this.setState({ showPushModal: false });
+  };
 
-export default timerWithConfigProps;
+  _handleNotificationIOS = (notification: any) => {
+    const { navigation, next, startTimeConfig } = this.props;
+    if (
+      JSON.stringify(notification.getData()) === JSON.stringify(this._userInfo)
+    ) {
+      navigation.push(next);
+      tracker.logEvent(notificationEvent, {
+        appLaunch: false,
+        timerConfig: startTimeConfig,
+        message: notification.getMessage(),
+        appStatus: notification.getCategory(),
+      });
+      this._removeNotificationListeners();
+    }
+  };
+
+  _handleNotificationAndroid = (notification: any) => {
+    const { navigation, next, startTimeConfig } = this.props;
+    navigation.push(next);
+    tracker.logEvent(notificationEvent, {
+      appLaunch: false,
+      timerConfig: startTimeConfig,
+      message: notification.message,
+    });
+  };
+
+  _removeNotificationListeners = () => {
+    if (Platform.OS === "ios") {
+      PushNotificationIOS.removeEventListener(
+        "localNotification",
+        this._handleNotificationIOS
+      );
+      PushNotificationIOS.removeEventListener("register", this._regEvent);
+      PushNotificationIOS.removeEventListener(
+        "registrationError",
+        this._regErrorEvent
+      );
+    }
+  };
+
+  render() {
+    const { isDemo, next, t } = this.props;
+    return this.state.remaining === null ? (
+      <ContinueButton next={next} />
+    ) : (
+      <Fragment>
+        <PushNotificationModal
+          visible={this.state.showPushModal}
+          onDismiss={this._onNo}
+          onSubmit={this._onYes}
+        />
+        <MultiTapContainer
+          active={isDemo}
+          taps={3}
+          onMultiTap={() => this._onFastForward()}
+        >
+          <BorderView
+            style={{
+              alignSelf: "center",
+              borderRadius: BORDER_RADIUS,
+              width: BUTTON_WIDTH,
+            }}
+          >
+            <Text
+              bold={true}
+              content={this.getRemainingLabel()}
+              style={{ color: SECONDARY_COLOR }}
+            />
+          </BorderView>
+        </MultiTapContainer>
+      </Fragment>
+    );
+  }
+}
+
+export default connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+  oneMinuteStartTime: state.survey.oneMinuteStartTime,
+  tenMinuteStartTime: state.survey.tenMinuteStartTime,
+  pushState: state.survey.pushState,
+}))(withNavigation(withNamespaces()(Timer)));

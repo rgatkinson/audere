@@ -93,7 +93,7 @@ export const content = [
   },
   {
     type: "timer",
-    title: strings.firstTimerScreen.title,
+    title: strings.FirstTimer.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "FirstTimer",
   },
@@ -194,7 +194,7 @@ export const content = [
   },
   {
     type: "timer",
-    title: strings.thankYouSurveyScreen.title,
+    title: strings.ThankYouSurvey.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "ThankYouSurvey",
   },

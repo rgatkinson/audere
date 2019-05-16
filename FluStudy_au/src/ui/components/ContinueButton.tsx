@@ -21,7 +21,6 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-@connect()
 class ContinueButton extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
     const { dispatch, dispatchOnNext, navigation, next, validate } = this.props;
@@ -44,4 +43,4 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
   }
 }
 
-export default withNavigation(withNamespaces()(ContinueButton));
+export default connect()(withNavigation(withNamespaces()(ContinueButton)));

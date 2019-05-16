@@ -259,11 +259,9 @@
     "desc": "Place the swab into the tube sitting in box ①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
-  "firstTimerScreen": {
+  "FirstTimer": {
     "title": "Did you know?",
-    "note": "Keep swab in the tube for one minute",
-    "tip": "If you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
-    "tip2": "To avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
+    "desc": "To avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
@@ -296,7 +294,7 @@
     "title": "Symptom Survey",
     "desc": "Questions marked with an * are required."
   },
-  "thankYouSurveyScreen": {
+  "ThankYouSurvey": {
     "title": "Thank you!",
     "desc": "Your answers, along with the tests, help us to understand many factors related to your illness.",
     "waiting": "Now, just wait for the time to end and the app will direct you to the next steps."

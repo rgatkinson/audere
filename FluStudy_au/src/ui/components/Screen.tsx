@@ -35,7 +35,6 @@ interface Props {
   skipButton?: boolean;
   subTitle?: string;
   title?: string;
-  onTitlePress?: () => void;
   onNext?: () => void;
 }
 
@@ -76,7 +75,6 @@ class Screen extends React.Component<Props & WithNamespaces> {
       image,
       menuItem,
       navigation,
-      onTitlePress,
       skipButton,
       subTitle,
       t,
@@ -98,7 +96,7 @@ class Screen extends React.Component<Props & WithNamespaces> {
                   <Divider style={{ marginVertical: GUTTER / 2 }} />
                 </View>
               )}
-              {!!title && <Title label={title} onPress={onTitlePress} />}
+              {!!title && <Title label={title} />}
               {!!desc && (
                 <Text
                   content={desc}
