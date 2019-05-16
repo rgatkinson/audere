@@ -96,7 +96,7 @@ function linkify(
         <SystemText
           key={link.url}
           style={style}
-          onPress={() => (textActions as any)[link.url]()}
+          onPress={() => (textActions as any)[link.url](link.title)}
         >
           {link.title}
         </SystemText>

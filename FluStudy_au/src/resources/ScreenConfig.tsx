@@ -50,13 +50,6 @@ export const AddressConfig: SurveyQuestionData = {
   type: "address",
 };
 
-export const ConsentConfig: SurveyQuestionData = {
-  buttons: [],
-  id: "Consent",
-  title: "consentEmail",
-  type: "checkbox",
-};
-
 export const WhatSymptomsConfig: SurveyQuestionData = {
   buttons: [{ key: "next", primary: true, enabled: true }],
   description: "selectAll",

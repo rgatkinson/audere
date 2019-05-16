@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { toggleSupportCodeModal, Action, StoreState } from "../store";
 import { WorkflowInfo } from "audere-lib/coughProtocol";
+import { getStore } from "../store";
 
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
@@ -35,8 +36,18 @@ export function myDr() {
   Linking.openURL(myDrUrl);
 }
 
-export function emailSupport(params: string = "") {
-  Linking.openURL("mailto:fluhelp@uw.edu" + params);
+export async function emailSupport(title: string) {
+  console.log(title);
+  const barcode = (await getStore()).getState().survey.kitBarcode;
+  const body = !!barcode
+    ? `Regarding kit ${
+        barcode.code
+      } (Please leave this line in your email message so we can find your record when you contact support.)`
+    : "";
+  const subject = !!barcode ? `Regarding kit ${barcode.code}` : "";
+  Linking.openURL(
+    `mailto:${title}?subject=${subject}&body=${body}`
+  );
 }
 
 export function findMedHelp() {

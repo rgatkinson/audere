@@ -5,9 +5,3 @@
 export function isNotNull<T>(item: T | null | undefined): item is T {
   return item != null;
 }
-
-export function isValidEmail(email: string | undefined): boolean {
-  // Top answer in https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-  const validationPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  return !!email && validationPattern.test(email!);
-}

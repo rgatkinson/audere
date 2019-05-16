@@ -50,7 +50,6 @@ export const FunnelEvents = {
 
   // Survey events
   RECEIVED_KIT: "funnel_received_kit",
-  EMAIL_COMPLETED: "funnel_email_completed",
   SCAN_CONFIRMATION: "funnel_scan_confirmation",
   MANUAL_CODE_CONFIRMATION: "funnel_manual_code_confirmation",
   SURVIVED_FIRST_SWAB: "funnel_survived_first_swab",

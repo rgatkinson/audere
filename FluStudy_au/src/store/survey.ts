@@ -22,7 +22,6 @@ export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
   | { type: "SET_CONSENT"; consent: NonPIIConsentInfo }
-  | { type: "SET_EMAIL"; email: string }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
   | { type: "SET_ONE_MINUTE_START_TIME" }
@@ -94,9 +93,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
         consent: action.consent,
         timestamp: new Date().getTime(),
       };
-
-    case "SET_EMAIL":
-      return { ...state, email: action.email, timestamp: new Date().getTime() };
 
     case "SET_KIT_BARCODE":
       return {
@@ -207,13 +203,6 @@ export function setConsent(): SurveyAction {
         i18n.t("Consent:consentFormText"),
       date: format(new Date(), "YYYY-MM-DD"),
     },
-  };
-}
-
-export function setEmail(email: string): SurveyAction {
-  return {
-    type: "SET_EMAIL",
-    email,
   };
 }
 

@@ -85,7 +85,6 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
          * Testing only writing to pouch when the user navigates between screens
          * for performance reasons.
       case "SET_CONSENT":
-      case "SET_EMAIL":
       case "SET_KIT_BARCODE":
       case "SET_TEST_STRIP_IMG":
       case "SET_PUSH_STATE":
