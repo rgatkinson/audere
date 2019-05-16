@@ -177,10 +177,15 @@ data "aws_iam_policy_document" "flu_ecs_create_log_groups" {
   }
 }
 
+resource "aws_iam_policy" "flu_ecs_create_log_groups" {
+  name = "${local.base_name}-ecs-create-log-groups"
+  policy = "${data.aws_iam_policy_document.flu_ecs_create_log_groups.json}"
+}
+
 resource "aws_iam_policy_attachment" "flu_ecs_create_log_groups_attachment" {
   name = "${local.base_name}-ecs-create-groups-attachment"
   roles = ["${aws_iam_role.flu_ecs_role.name}"]
-  policy_arn = "${data.aws_iam_policy_document.flu_ecs_create_log_groups.arn}"
+  policy_arn = "${aws_iam_policy.flu_ecs_create_log_groups.arn}"
 }
 
 // ECS service-linked role
