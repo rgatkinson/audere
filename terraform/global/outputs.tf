@@ -22,3 +22,8 @@ output "infrastructurers_group_name" {
 output "ssm_parameters_key_arn" {
   value = "${aws_kms_key.ssm_parameters.arn}"
 }
+
+output "ecs_service_linked_role_arn" {
+  value = "${aws_iam_service_linked_role.ecs_service_linked_role.arn}"
+}
+

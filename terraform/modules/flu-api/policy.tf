@@ -177,10 +177,3 @@ resource "aws_iam_policy_attachment" "flu_ecs_ecs_attachment" {
    roles = ["${aws_iam_role.flu_ecs_role.name}"]
    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
-
-// ECS service-linked role
-
-resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
-  aws_service_name = "ecs.amazonaws.com"
-  description = "Role to enable Amazon ECS service."
-}

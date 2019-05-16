@@ -38,6 +38,7 @@ module "flu_api" {
   public_cidr = "${module.vpc_cidr.staging_public_cidr}"
   region = "${var.region}"
   service = "${var.service}"
+  service_linked_role_arn = "${data.terraform_remote_state.ecs_service_linked_role_arn}"
   ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }

@@ -406,8 +406,7 @@ resource "aws_ecs_service" "metabase" {
   cluster = "${module.ecs_cluster.id}"
   task_definition = "${aws_ecs_task_definition.metabase.arn}"
   desired_count = 1
-  iam_role = "${aws_iam_service_linked_role.ecs_service_linked_role.arn}"
-  depends_on = ["aws_iam_service_linked_role.ecs_service_linked_role"]
+  iam_role = "${var.ecs_service_linked_role_arn}"
 
   load_balancer {
     elb_name = "${aws_elb.flu_reporting_elb.name}"

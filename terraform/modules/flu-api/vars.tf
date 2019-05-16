@@ -81,3 +81,7 @@ variable "region" {
 variable "metabase_database_address" {
   description = "Address for Metabase datastore"
 }
+
+variable "ecs_service_linked_role_arn" {
+  description = "ARN of the role linked to the ECS service on this account"
+}

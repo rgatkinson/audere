@@ -1295,6 +1295,11 @@ resource "aws_iam_group_membership" "securers" {
   ]
 }
 
+resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
+  aws_service_name = "ecs.amazonaws.com"
+  description = "Role to enable Amazon ECS service."
+}
+
 // --------------------------------------------------------------------------------
 // To set an encrypted parameter in SSM:
 //
