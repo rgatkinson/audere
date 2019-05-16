@@ -13,7 +13,7 @@ import { appendInvalidBarcode, setKitBarcode, Action, StoreState } from "../../.
 import { customRef } from "../CustomRef";
 import { GUTTER, KEYBOARD_BEHAVIOR } from "../../styles";
 import Text from "../Text";
-import TextInput from "../TextInput";
+import NumberInput from "../NumberInput";
 import { invalidBarcodeShapeAlert, validBarcodeShape } from "../../../util/barcodeVerification";
 
 
@@ -38,7 +38,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
     };
   }
 
-  confirmInput = React.createRef<TextInput>();
+  confirmInput = React.createRef<NumberInput>();
 
   _matchingBarcodes = () => {
     return (
@@ -66,9 +66,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
       <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
         <View style={styles.inputContainer}>
           <Text content={"KIT "} style={styles.kitText} />
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
+          <NumberInput
             autoFocus={this.props.navigation.isFocused()}
             placeholder={t("placeholder")}
             returnKeyType="done"
@@ -80,9 +78,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
         </View>
         <View style={styles.inputContainer}>
           <Text content={"KIT "} style={styles.kitText} />
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
+          <NumberInput
             placeholder={t("secondPlaceholder")}
             ref={this.confirmInput}
             returnKeyType="done"

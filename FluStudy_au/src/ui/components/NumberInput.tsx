@@ -9,19 +9,19 @@ import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
-  maxDigits: number;
+  maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
-  value?: string;
+  value?: string | null;
   onChangeText(text: string): void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
 
 interface State {
-  text?: string;
+  text?: string | null;
 }
 
 export default class NumberInput extends React.Component<Props, State> {
@@ -36,9 +36,10 @@ export default class NumberInput extends React.Component<Props, State> {
 
   onChangeText = (text: string) => {
     const numbers = "0123456789";
-    const newText = text
-      .replace(/[^0-9]/g, "")
-      .substring(0, this.props.maxDigits);
+    let newText = text.replace(/[^0-9]/g, "");
+    if (!!this.props.maxDigits) {
+      newText = newText.substring(0, this.props.maxDigits);
+    }
     this.setState({ text: newText });
     this.props.onChangeText(newText);
   };

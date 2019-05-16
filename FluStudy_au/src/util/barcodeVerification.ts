@@ -10,7 +10,7 @@ import { getApiBaseUrl } from "../transport";
 import { getRemoteConfig } from "./remoteConfig";
 import { tracker, BarcodeVerificationEvents } from "./tracker";
 
-const BARCODE_RE = /^[0-9a-f]{8}$/;
+const BARCODE_RE = /^[0-9]{8}$/;
 const BARCODE_CHARS = 8;
 
 export function validBarcodeShape(barcode: string): boolean {
