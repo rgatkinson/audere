@@ -11,7 +11,7 @@
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "${container-name}",
+        "awslogs-group": "${container_name}",
         "awslogs-create-group": "true",
         "awslogs-region": "us-west-2"
       }
