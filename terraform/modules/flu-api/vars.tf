@@ -48,7 +48,6 @@ variable "devs" {
   type = "list"
 }
 
-
 variable "availability_zone" {
   default = "us-west-2a"
 }
@@ -65,4 +64,20 @@ variable "creds_snapshot_id" {
 variable "infra_alerts_sns_topic_arn" {
   description = "ARN of SNS topic for publishing alarms"
   type = "string"
+}
+
+variable "ssm_parameters_key_arn" {
+  description = "ARN of key used to encrypt SSM parameters"
+}
+
+variable "account" {
+  description = "Identifier for the AWS account"
+}
+
+variable "region" {
+  description = "Targeted AWS region"
+}
+
+variable "metabase_database_address" {
+  description = "Address for Metabase datastore"
 }

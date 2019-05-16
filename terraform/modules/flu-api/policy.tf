@@ -15,10 +15,10 @@ resource "aws_iam_role_policy_attachment" "flu_api_send_email" {
 
 resource "aws_iam_role" "flu_api_role" {
   name = "${local.base_name}-role"
-  assume_role_policy = "${data.aws_iam_policy_document.flu_api_role_policy.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.flu_ec2_role_policy.json}"
 }
 
-data "aws_iam_policy_document" "flu_api_role_policy" {
+data "aws_iam_policy_document" "flu_ec2_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -94,4 +94,98 @@ data "aws_iam_policy_document" "ses_send_email" {
     actions = ["ses:SendEmail", "ses:SendRawEmail"]
     resources = ["*"]
   }
+}
+
+// ECS task role
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "${var.environment}-ecs-task"
+  assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy.json}"
+}
+
+data "aws_iam_policy_document" "ecs_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role = "${aws_iam_role.ecs_task_execution_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_iam_policy_document" "ecs_kms_policy" {
+  statement {
+    actions = ["ssm:DescribeParameters"]
+    resources = ["*"]
+    effect = "Allow"
+  }
+
+  statement {
+    actions = ["ssm:GetParameters","ssm:GetParameter"]
+    resources = ["${format("arn:aws:ssm:%s:%s:parameter/metabase-%s.*", var.region, var.account, var.environment)}"]
+    effect = "Allow"
+  }
+
+  statement {
+    actions = ["kms:Decrypt"]
+    resources = ["${var.ssm_parameters_key_arn}"]
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "ecs_kms_policy" {
+  name = "${local.base_name}-ecs-kms"
+  policy = "${data.aws_iam_policy_document.ecs_kms_policy.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_kms_policy" {
+  role = "${aws_iam_role.ecs_task_execution_role.name}"
+  policy_arn = "${aws_iam_policy.ecs_kms_policy.arn}"
+}
+
+// ECS instance role
+
+resource "aws_iam_instance_profile" "flu_ecs" {
+  name = "${local.base_name}-ecs"
+  role = "${aws_iam_role.flu_ecs_role.name}"
+}
+
+resource "aws_iam_role" "flu_ecs_role" {
+  name = "${local.base_name}-ecs"
+  assume_role_policy = "${data.aws_iam_policy_document.flu_ec2_role_policy.json}"
+}
+
+resource "aws_iam_policy_attachment" "flu_ecs_ecs_attachment" {
+   name = "${local.base_name}-ecs-ecs-attachment"
+   roles = ["${aws_iam_role.flu_ecs_role.name}"]
+   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+data "aws_iam_policy_document" "flu_ecs_create_log_groups" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup"
+    ]
+
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
+resource "aws_iam_policy_attachment" "flu_ecs_create_log_groups_attachment" {
+  name = "${local.base_name}-ecs-create-groups-attachment"
+  roles = ["${aws_iam_role.flu_ecs_role.name}"]
+  policy = "${data.aws_iam_policy_document.flu_ecs_create_log_groups.arn}"
+}
+
+// ECS service-linked role
+
+resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
+  aws_service_name = "ecs.amazonaws.com"
+  description = "Role to enable Amazon ECS service."
 }

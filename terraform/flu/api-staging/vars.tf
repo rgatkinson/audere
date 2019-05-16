@@ -28,3 +28,13 @@ variable "commit" {
   description = "Git commit tag (or hash) to sync"
   default = "master"
 }
+
+variable "account" {
+  description = "Identifier for the AWS account"
+  default = "475613123583"
+}
+
+variable "region" {
+  description = "Targeted AWS region"
+  default = "us-west-2"
+}
