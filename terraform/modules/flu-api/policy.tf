@@ -149,6 +149,17 @@ resource "aws_iam_role_policy_attachment" "ecs_kms_policy" {
   policy_arn = "${aws_iam_policy.ecs_kms_policy.arn}"
 }
 
+resource "aws_iam_policy" "ecs_task_cloudwatch" {
+  name = "${local.base_name}-ecs-task-cloudwatch"
+  policy = "${data.aws_iam_policy_document.flu_api_cloudwatch_policy.json}"
+}
+
+resource "aws_iam_policy_attachment" "ecs_task_cloudwatch_attachment" {
+  name = "${local.base_name}-ecs-task-cloudwatch"
+  roles = ["${aws_iam_role.ecs_task_execution_role.name}"]
+  policy_arn = "${aws_iam_policy.ecs_task_cloudwatch.arn}"
+}
+
 // ECS instance role
 
 resource "aws_iam_instance_profile" "flu_ecs" {
@@ -165,27 +176,6 @@ resource "aws_iam_policy_attachment" "flu_ecs_ecs_attachment" {
    name = "${local.base_name}-ecs-ecs-attachment"
    roles = ["${aws_iam_role.flu_ecs_role.name}"]
    policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-}
-
-data "aws_iam_policy_document" "flu_ecs_create_log_groups" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup"
-    ]
-
-    resources = ["arn:aws:logs:*:*:*"]
-  }
-}
-
-resource "aws_iam_policy" "flu_ecs_create_log_groups" {
-  name = "${local.base_name}-ecs-create-log-groups"
-  policy = "${data.aws_iam_policy_document.flu_ecs_create_log_groups.json}"
-}
-
-resource "aws_iam_policy_attachment" "flu_ecs_create_log_groups_attachment" {
-  name = "${local.base_name}-ecs-create-groups-attachment"
-  roles = ["${aws_iam_role.flu_ecs_role.name}"]
-  policy_arn = "${aws_iam_policy.flu_ecs_create_log_groups.arn}"
 }
 
 // ECS service-linked role
