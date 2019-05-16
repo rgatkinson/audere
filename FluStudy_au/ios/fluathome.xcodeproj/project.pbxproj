@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		218947CB2284D31400788F40 /* TestStrip2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947BF2284D31300788F40 /* TestStrip2@2x.png */; };
+		218947CC2284D31400788F40 /* TestStrip2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947C72284D31300788F40 /* TestStrip2@3x.png */; };
+		218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 218947C82284D31300788F40 /* quickvue_ref.jpg */; };
+		218947CE2284D31400788F40 /* ref.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 218947C92284D31300788F40 /* ref.jpg */; };
+		218947CF2284D31400788F40 /* TestStrip2.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947CA2284D31300788F40 /* TestStrip2.png */; };
+		21F42D65228A3FFB0082B8DA /* AVCamPreviewView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D5B228A3FFB0082B8DA /* AVCamPreviewView.mm */; };
+		21F42D66228A3FFB0082B8DA /* ImageProcessor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D5E228A3FFB0082B8DA /* ImageProcessor.mm */; };
+		21F42D69228A3FFB0082B8DA /* ImageQualityViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */; };
+		21F42D6E228A404F0082B8DA /* RDTView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D6A228A404F0082B8DA /* RDTView.mm */; };
+		21F42D6F228A404F0082B8DA /* RDTViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D6B228A404F0082B8DA /* RDTViewManager.mm */; };
 		5968A0132289F0F4002036A6 /* questionsThankYou@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5968A0102289F0F3002036A6 /* questionsThankYou@2x.png */; };
 		5968A0142289F0F4002036A6 /* questionsThankYou@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5968A0112289F0F3002036A6 /* questionsThankYou@3x.png */; };
 		5968A0152289F0F4002036A6 /* questionsThankYou.png in Resources */ = {isa = PBXBuildFile; fileRef = 5968A0122289F0F4002036A6 /* questionsThankYou.png */; };
@@ -220,6 +230,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18C9BF29CBC7B57E98EBFCA2 /* Pods-fluathome.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.staging.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.staging.xcconfig"; sourceTree = "<group>"; };
+		218947BF2284D31300788F40 /* TestStrip2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@2x.png"; path = "../../../assets/images/TestStrip2@2x.png"; sourceTree = "<group>"; };
+		218947C72284D31300788F40 /* TestStrip2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@3x.png"; path = "../../../assets/images/TestStrip2@3x.png"; sourceTree = "<group>"; };
+		218947C82284D31300788F40 /* quickvue_ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref.jpg; path = ../../../assets/images/quickvue_ref.jpg; sourceTree = "<group>"; };
+		218947C92284D31300788F40 /* ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = ref.jpg; path = ../../../assets/images/ref.jpg; sourceTree = "<group>"; };
+		218947CA2284D31300788F40 /* TestStrip2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = TestStrip2.png; path = ../../../assets/images/TestStrip2.png; sourceTree = "<group>"; };
+		21F42D5B228A3FFB0082B8DA /* AVCamPreviewView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVCamPreviewView.mm; sourceTree = "<group>"; };
+		21F42D5D228A3FFB0082B8DA /* ImageQualityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageQualityViewController.h; sourceTree = "<group>"; };
+		21F42D5E228A3FFB0082B8DA /* ImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageProcessor.mm; sourceTree = "<group>"; };
+		21F42D5F228A3FFB0082B8DA /* AVCamPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVCamPreviewView.h; sourceTree = "<group>"; };
+		21F42D61228A3FFB0082B8DA /* ImageProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageProcessor.h; sourceTree = "<group>"; };
+		21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageQualityViewController.mm; sourceTree = "<group>"; };
+		21F42D6A228A404F0082B8DA /* RDTView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RDTView.mm; sourceTree = "<group>"; };
+		21F42D6B228A404F0082B8DA /* RDTViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RDTViewManager.mm; sourceTree = "<group>"; };
+		21F42D6C228A404F0082B8DA /* RDTViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDTViewManager.h; sourceTree = "<group>"; };
+		21F42D6D228A404F0082B8DA /* RDTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDTView.h; sourceTree = "<group>"; };
 		2C1548D9E4CB1AEFA5CCAE6D /* Pods-fluathome.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.debug.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.debug.xcconfig"; sourceTree = "<group>"; };
 		5968A0102289F0F3002036A6 /* questionsThankYou@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "questionsThankYou@2x.png"; path = "../../../../FluStudy_us/assets/images/questionsThankYou@2x.png"; sourceTree = "<group>"; };
 		5968A0112289F0F3002036A6 /* questionsThankYou@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "questionsThankYou@3x.png"; path = "../../../../FluStudy_us/assets/images/questionsThankYou@3x.png"; sourceTree = "<group>"; };
@@ -412,6 +438,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		21F42D53228A392E0082B8DA /* RDTReader */ = {
+			isa = PBXGroup;
+			children = (
+				21F42D5F228A3FFB0082B8DA /* AVCamPreviewView.h */,
+				21F42D5B228A3FFB0082B8DA /* AVCamPreviewView.mm */,
+				21F42D61228A3FFB0082B8DA /* ImageProcessor.h */,
+				21F42D5E228A3FFB0082B8DA /* ImageProcessor.mm */,
+				21F42D5D228A3FFB0082B8DA /* ImageQualityViewController.h */,
+				21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */,
+			);
+			path = RDTReader;
+			sourceTree = "<group>";
+		};
 		5B29BC350A332C58878A9F13 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -444,11 +483,16 @@
 		B56386431DB9693800A0598C /* fluathome */ = {
 			isa = PBXGroup;
 			children = (
+				21F42D6D228A404F0082B8DA /* RDTView.h */,
+				21F42D6A228A404F0082B8DA /* RDTView.mm */,
+				21F42D6C228A404F0082B8DA /* RDTViewManager.h */,
+				21F42D6B228A404F0082B8DA /* RDTViewManager.mm */,
 				F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */,
 				EA054779220D27CD00AC77FF /* fluathome.entitlements */,
 				B56386471DB9693800A0598C /* AppDelegate.h */,
 				B56386481DB9693800A0598C /* AppDelegate.m */,
 				B56386501DB9693800A0598C /* Assets.xcassets */,
+				21F42D53228A392E0082B8DA /* RDTReader */,
 				B563865B1DB96A5E00A0598C /* Supporting */,
 			);
 			path = fluathome;
@@ -457,6 +501,11 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				218947C82284D31300788F40 /* quickvue_ref.jpg */,
+				218947C92284D31300788F40 /* ref.jpg */,
+				218947CA2284D31300788F40 /* TestStrip2.png */,
+				218947BF2284D31300788F40 /* TestStrip2@2x.png */,
+				218947C72284D31300788F40 /* TestStrip2@3x.png */,
 				EA1DC5B222833B9E002DA2A9 /* updatesettings.png */,
 				EA1DC5BB22833B9F002DA2A9 /* updatesettings@2x.png */,
 				EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */,
@@ -824,6 +873,7 @@
 				EAEBD28F22691AB7009815C6 /* collectsamplefromnosethumb.png in Resources */,
 				EAEBD28022691AB7009815C6 /* thanksforyourinterest.png in Resources */,
 				EAEBD27F22691AB7009815C6 /* openteststrip_1@2x.png in Resources */,
+				218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */,
 				B5693E911FABD46800307FA4 /* launch_background_image.png in Resources */,
 				EAEBD27C22691AB7009815C6 /* uwmed@2x.png in Resources */,
 				EAEBD2CA22691AB7009815C6 /* whatsnext@2x.png in Resources */,
@@ -879,6 +929,8 @@
 				EAEBD2D522691AB7009815C6 /* whatsnext@3x.png in Resources */,
 				EAEBD30522691AB7009815C6 /* thanksforparticipating.png in Resources */,
 				EAEBD2A722691AB7009815C6 /* preparingfortest@2x.png in Resources */,
+				218947CB2284D31400788F40 /* TestStrip2@2x.png in Resources */,
+				218947CF2284D31400788F40 /* TestStrip2.png in Resources */,
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				EAEBD32022691AB7009815C6 /* teststripdetail@3x.png in Resources */,
 				EAEBD28622691AB7009815C6 /* teststrippicsuccess@2x.png in Resources */,
@@ -893,10 +945,12 @@
 				F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */,
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,
 				EAEBD31522691AB7009815C6 /* collectmucus.png in Resources */,
+				218947CC2284D31400788F40 /* TestStrip2@3x.png in Resources */,
 				EAEBD2CB22691AB7009815C6 /* opennasalswab@2x.png in Resources */,
 				EAEBD2EF22691AB7009815C6 /* generalexposure@3x.png in Resources */,
 				EAEBD2D822691AB7009815C6 /* shortsplash.png in Resources */,
 				598F6C132280F61300B15B8B /* one.png in Resources */,
+				218947CE2284D31400788F40 /* ref.jpg in Resources */,
 				EAEBD2DF22691AB7009815C6 /* putteststripintubethumb.png in Resources */,
 				EAEBD29222691AB7009815C6 /* finishwithtube.png in Resources */,
 				EAEBD32E22691AB7009815C6 /* welcome@2x.png in Resources */,
@@ -1069,8 +1123,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21F42D66228A3FFB0082B8DA /* ImageProcessor.mm in Sources */,
+				21F42D6E228A404F0082B8DA /* RDTView.mm in Sources */,
 				B56386611DB96A5E00A0598C /* main.m in Sources */,
 				B56386491DB9693800A0598C /* AppDelegate.m in Sources */,
+				21F42D69228A3FFB0082B8DA /* ImageQualityViewController.mm in Sources */,
+				21F42D65228A3FFB0082B8DA /* AVCamPreviewView.mm in Sources */,
+				21F42D6F228A404F0082B8DA /* RDTViewManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

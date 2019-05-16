@@ -79,6 +79,7 @@ target 'fluathome' do
   pod 'Firebase/DynamicLinks', '~> 5.20.1'
   pod 'Firebase/Firestore'
   pod 'Firebase/Storage', '~> 5.20.1'
+  pod 'OpenCV2', '~> 3.4.6'
 
   pod 'React',
     :path => "../node_modules/react-native",

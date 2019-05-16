@@ -15,6 +15,12 @@ import { Action, setRDTPhoto, setTestStripImg, uploader } from "../../store";
 import { newCSRUID } from "../../util/csruid";
 import Chrome from "../components/Chrome";
 import Text from "../components/Text";
+import {
+  RDTReader as RDTReaderComponent,
+  ExternalRDTCapturedArgs,
+  SizeResult,
+  ExposureResult,
+} from "../../native/rdtReader";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../styles";
 import { savePhoto } from "../../store/FirebaseStore";
 
@@ -29,33 +35,35 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this._takePicture = this._takePicture.bind(this);
   }
 
   state = {
     spinner: !DeviceInfo.isEmulator(),
+    enabled: true,
   };
 
   _cameraReady = () => {
     this.setState({ spinner: false });
   };
 
-  async _takePicture() {
+  _onRDTCaptured = async (args: ExternalRDTCapturedArgs) => {
+    const logArgs = { ...args };
+    logArgs.imgBase64 = logArgs.imgBase64.substring(0, 100) + "...";
+    if (!args.testStripFound) {
+      return;
+    }
+    console.log(JSON.stringify(logArgs, null, 2));
+    console.log("SizeResult: " + SizeResult[logArgs.sizeResult]);
+    console.log("ExposureResult: " + ExposureResult[logArgs.exposureResult]);
     if (!this.state.spinner) {
       this.setState({ spinner: true });
 
       try {
-        const photo = await this.camera.current!.takePictureAsync({
-          quality: 0.8,
-          base64: true,
-          orientation: "portrait",
-          fixOrientation: true,
-        });
         const photoId = await newCSRUID();
 
         // PLAT-51: This won't work offline.  But we may not need it to.  More
         // details in the task.
-        savePhoto(photoId, photo.base64);
+        savePhoto(photoId, args.imgBase64);
 
         this.props.dispatch(
           setTestStripImg({
@@ -63,14 +71,15 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
             code: photoId,
           })
         );
-        this.props.dispatch(setRDTPhoto(photo.uri));
-        this.setState({ spinner: false });
-        this.props.navigation.push("TestStripConfirmation");
+        this.setState({ spinner: false, enabled: false });
+        this.props.navigation.push("TestStripConfirmation", {
+          photo: args.imgBase64,
+        });
       } catch (e) {
         this.setState({ spinner: false });
       }
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -78,10 +87,12 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
       <Chrome navigation={this.props.navigation}>
         <View style={{ flex: 1, marginBottom: -1 * SYSTEM_PADDING_BOTTOM }}>
           <Spinner visible={this.state.spinner} />
-          <Camera
+          <RDTReaderComponent
             ref={this.camera}
             style={cameraStyles.camera}
-            onCameraReady={this._cameraReady}
+            onRDTCaptured={this._onRDTCaptured}
+            onRDTCameraReady={this._cameraReady}
+            enabled={this.state.enabled}
           />
           <View style={cameraStyles.overlayContainer}>
             <Text
@@ -91,29 +102,9 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
             />
             <View style={cameraStyles.innerContainer}>
               <Image
-                style={cameraStyles.testStrip}
-                source={{ uri: "teststripdetail" }}
+                style={rdtStyles.testStrip}
+                source={{ uri: "TestStrip2" }}
               />
-              <View style={{ flex: 1, marginLeft: GUTTER }}>
-                <Text
-                  center={true}
-                  content={t("stripHere")}
-                  style={cameraStyles.overlayText}
-                />
-                <View style={cameraStyles.targetBox} />
-              </View>
-            </View>
-            <View style={{ alignItems: "center", alignSelf: "stretch" }}>
-              <Text
-                center={true}
-                content={t("description")}
-                style={cameraStyles.overlayText}
-              />
-              <TouchableOpacity onPress={this._takePicture}>
-                <View style={cameraStyles.outerCircle}>
-                  <View style={cameraStyles.circle} />
-                </View>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -121,8 +112,19 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-
 export const RDTReader = withNamespaces("RDTReader")(RDTReaderScreen);
+
+const rdtStyles = StyleSheet.create({
+  testStrip: {
+    alignSelf: "center",
+    aspectRatio: 0.06,
+    height: "65%",
+    opacity: 0.5,
+    marginTop: GUTTER,
+    marginLeft: GUTTER,
+    width: undefined,
+  },
+});
 
 const cameraStyles = StyleSheet.create({
   camera: {
