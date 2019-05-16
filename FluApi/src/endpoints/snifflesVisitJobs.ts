@@ -32,7 +32,7 @@ export class SnifflesVisitJobs {
     res.json(await this.runJobs());
   }
 
-  public async runJobs(maxVisits = 100) {
+  public async runJobs(maxVisits = 500) {
     const summary = {};
     await Promise.all(
       this.jobs.map(async job => {
