@@ -10,7 +10,17 @@ import {
   setTenMinuteStartTime,
   setOneMinuteStartTime,
 } from "../store";
-import { FunnelEvents } from "../util/tracker";
+import { FunnelEvents, AppHealthEvents } from "../util/tracker";
+import { logFluResult } from "../util/fluResults";
+import {
+  WhatSymptomsConfig,
+  WhenSymptomsConfig,
+  GeneralExposureScreenConfig,
+  GeneralHealthScreenConfig,
+  TestFeedbackConfig,
+  TestStripSurveyConfig,
+  SurveyQuestionData,
+} from "./ScreenConfig";
 import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
@@ -19,8 +29,11 @@ import { BulletPoints } from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
+import Divider from "../ui/components/Divider";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
+import Questions from "../ui/components/Questions";
+import QuestionText from "../ui/components/QuestionText";
 import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
@@ -33,19 +46,38 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: { hideBackButton: true, splashImage: "welcome" },
     key: "Welcome",
-    footer: [{ tag: FooterNavigation, props: { next: "WhatsRequired", hideBackButton: true, stepDots: {step: 1, total: 3} } }],
+    footer: [
+      {
+        tag: FooterNavigation,
+        props: {
+          next: "WhatsRequired",
+          hideBackButton: true,
+          stepDots: { step: 1, total: 3 },
+        },
+      },
+    ],
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText , props: { label: "desc"} }],
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: { hideBackButton: true, splashImage: "welcome" },
     key: "WhatsRequired",
-    footer: [{ tag: FooterNavigation, props: { next: "ReadyToBegin", stepDots: {step: 2, total: 3} } }]
+    footer: [
+      {
+        tag: FooterNavigation,
+        props: { next: "ReadyToBegin", stepDots: { step: 2, total: 3 } },
+      },
+    ],
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText , props: { label: "desc"} }],
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: { hideBackButton: true, splashImage: "welcome" },
     key: "ReadyToBegin",
-    footer: [{ tag: FooterNavigation, props: { next: "Consent", stepDots: {step: 3, total: 3} } }]
+    footer: [
+      {
+        tag: FooterNavigation,
+        props: { next: "Consent", stepDots: { step: 3, total: 3 } },
+      },
+    ],
   },
   {
     body: [
@@ -235,6 +267,66 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
   },
   {
     body: [
+      { tag: Title },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: Divider },
+      {
+        tag: Questions,
+        props: { questions: [WhatSymptomsConfig] },
+        validate: true,
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "WhenSymptoms" } }],
+    key: "WhatSymptoms",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: Divider },
+      {
+        tag: Questions,
+        props: { questions: WhenSymptomsConfig },
+        validate: true,
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "GeneralExposure" } }],
+    key: "WhenSymptoms",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: Divider },
+      { tag: ScreenText, props: { label: "expoDesc" } },
+      { tag: MainImage, props: { uri: "generalexposure" } },
+      { tag: ScreenText, props: { italic: true, label: "expoRef" } },
+      {
+        tag: Questions,
+        props: { questions: GeneralExposureScreenConfig },
+        validate: true,
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "GeneralHealth" } }],
+    key: "GeneralExposure",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: Divider },
+      {
+        tag: Questions,
+        props: { questions: GeneralHealthScreenConfig },
+        validate: true,
+      },
+      { tag: ScreenText, props: { label: "next" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "ThankYouSurvey" } }],
+    key: "GeneralHealth",
+  },
+  {
+    body: [
       { tag: MainImage, props: { uri: "removeteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -264,6 +356,20 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     key: "TestStripConfirmation",
   },
   {
+    body: [
+      { tag: MainImage, props: { uri: "lookatteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: Questions,
+        props: { questions: TestStripSurveyConfig, logOnSave: logFluResult },
+        validate: true,
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "TestResult" } }],
+    key: "TestStripSurvey",
+  },
+  {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     footer: [{ tag: ContinueButton, props: { next: "Advice" } }],
     key: "TestResult",
@@ -281,6 +387,19 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
     key: "CleanTest",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "nicejob" } },
+      { tag: Title },
+      {
+        tag: Questions,
+        props: { questions: [TestFeedbackConfig] },
+        validate: true,
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "Thanks" } }],
+    key: "TestFeedback",
   },
   {
     body: [

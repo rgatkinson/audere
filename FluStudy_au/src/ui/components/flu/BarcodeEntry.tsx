@@ -10,7 +10,7 @@ import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { SampleInfo } from "audere-lib/feverProtocol";
 import { appendInvalidBarcode, setKitBarcode, Action, StoreState } from "../../../store";
-import { customRef } from "../../../util/CustomRef";
+import { customRef } from "../CustomRef";
 import { GUTTER, KEYBOARD_BEHAVIOR } from "../../styles";
 import Text from "../Text";
 import TextInput from "../TextInput";

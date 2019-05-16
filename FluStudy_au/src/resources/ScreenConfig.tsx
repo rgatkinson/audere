@@ -36,7 +36,8 @@ export interface SurveyQuestionData {
   description?: string;
   optionList?: OptionListConfig;
   startDate?: Date;
-  title?: string;
+  subquestion?: boolean;
+  title: string;
   ref?: any;
   required?: boolean;
 }
@@ -81,43 +82,98 @@ export const WhatSymptomsConfig: SurveyQuestionData = {
   type: "optionQuestion",
 };
 
-export const WhenSymptomsScreenConfig: SurveyQuestionData[] = [
-  {
-    id: "SymptomsStart",
-    title: "symptomsStart",
-    description: "symptomsStart",
-    buttons: [
-      { key: "1day", primary: false, enabled: true },
-      { key: "2days", primary: false, enabled: true },
-      { key: "3days", primary: false, enabled: true },
-      { key: "4days", primary: false, enabled: true },
-    ],
-    required: true,
-    type: "radioGrid",
-  },
-  {
-    id: "SymptomsLast48",
-    title: "symptomsLast48",
-    buttons: [
-      { key: "no", primary: false, enabled: true },
-      { key: "yes", primary: false, enabled: true },
-    ],
-    required: true,
-    type: "buttonGrid",
-  },
-  {
-    id: "SymptomsSeverity",
-    title: "symptomsSeverity",
-    description: "symptomsSeverity",
-    buttons: [
-      { key: "mild", primary: false, enabled: true },
-      { key: "moderate", primary: false, enabled: true },
-      { key: "severe", primary: false, enabled: true },
-    ],
-    required: true,
-    type: "buttonGrid",
-  },
-];
+const SymptomsStartConfig: SurveyQuestionData = {
+  id: "SymptomsStart",
+  buttons: [],
+  title: "symptomsStart",
+  description: "symptomsStart",
+  required: true,
+  type: "text",
+};
+
+const SymptomsLast48Config: SurveyQuestionData = {
+  id: "SymptomsLast48",
+  buttons: [],
+  title: "symptomsLast48",
+  required: true,
+  type: "text",
+};
+
+const SymptomsSeverityConfig: SurveyQuestionData = {
+  id: "SymptomsSeverity",
+  buttons: [],
+  title: "symptomsSeverity",
+  description: "symptomsSeverity",
+  required: true,
+  type: "text",
+};
+
+export const WhenSymptomsConfig: SurveyQuestionData[] = [SymptomsStartConfig]
+  .concat(
+    WhatSymptomsConfig.optionList!.options.map(option => {
+      return {
+        ...SymptomsStartConfig,
+        id: SymptomsStartConfig.id + "_" + option,
+        buttons: [
+          { key: "1day", primary: false, enabled: true },
+          { key: "2days", primary: false, enabled: true },
+          { key: "3days", primary: false, enabled: true },
+          { key: "4days", primary: false, enabled: true },
+        ],
+        description: option,
+        condition: {
+          key: "options",
+          id: WhatSymptomsConfig.id,
+          answer: option,
+        },
+        subquestion: true,
+        type: "buttonGrid",
+      };
+    })
+  )
+  .concat([SymptomsLast48Config])
+  .concat(
+    WhatSymptomsConfig.optionList!.options.map(option => {
+      return {
+        ...SymptomsLast48Config,
+        id: SymptomsLast48Config.id + "_" + option,
+        buttons: [
+          { key: "no", primary: false, enabled: true },
+          { key: "yes", primary: false, enabled: true },
+        ],
+        description: option,
+        condition: {
+          key: "options",
+          id: WhatSymptomsConfig.id,
+          answer: option,
+        },
+        subquestion: true,
+        type: "buttonGrid",
+      };
+    })
+  )
+  .concat([SymptomsSeverityConfig])
+  .concat(
+    WhatSymptomsConfig.optionList!.options.map(option => {
+      return {
+        ...SymptomsSeverityConfig,
+        id: SymptomsSeverityConfig.id + "_" + option,
+        buttons: [
+          { key: "mild", primary: false, enabled: true },
+          { key: "moderate", primary: false, enabled: true },
+          { key: "severe", primary: false, enabled: true },
+        ],
+        description: option,
+        condition: {
+          key: "options",
+          id: WhatSymptomsConfig.id,
+          answer: option,
+        },
+        subquestion: true,
+        type: "buttonGrid",
+      };
+    })
+  );
 
 export const InContactConfig: SurveyQuestionData = {
   buttons: [

@@ -20,18 +20,8 @@ import {
   setTestStripImg,
   uploader,
 } from "../../store";
-import {
-  WhenSymptomsScreenConfig,
-  WhatSymptomsConfig,
-  GeneralExposureScreenConfig,
-  BlueLineConfig,
-  RedWhenBlueConfig,
-  TestStripSurveyConfig,
-} from "../../resources/ScreenConfig";
-import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import timerWithConfigProps, { TimerProps } from "../components/Timer";
 import { newCSRUID } from "../../util/csruid";
-import BarcodeEntry from "../components/flu/BarcodeEntry";
 import BorderView from "../components/BorderView";
 import Chrome from "../components/Chrome";
 import Screen from "../components/Screen";
@@ -134,96 +124,6 @@ export const FirstTimer = timerWithConfigProps({
   nextScreen: "RemoveSwabFromTube",
 })(withNamespaces("firstTimerScreen")(FirstTimerScreen));
 
-class WhenSymptomsScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("GeneralExposure");
-  };
-
-  _createQuestions = () => {
-    const questions: any = [];
-
-    WhenSymptomsScreenConfig.forEach((question: any) => {
-      return this.props
-        .getAnswer("options", WhatSymptomsConfig.id)
-        .filter((option: Option) => option.selected)
-        .forEach((option: Option) => {
-          questions.push({
-            buttons: question.buttons,
-            description: option.key,
-            id: question.id + "_" + option.key,
-            required: question.required,
-            title: question.title,
-            type: "buttonGrid",
-          });
-        });
-    });
-    return questions;
-  };
-
-  render() {
-    const { getAnswer, navigation, t, updateAnswer } = this.props;
-    return (
-      <Screen
-        centerDesc={true}
-        questions={this._createQuestions()}
-        desc={t("description")}
-        getAnswer={getAnswer}
-        hasDivider={true}
-        navigation={navigation}
-        title={t("title")}
-        updateAnswer={updateAnswer}
-        onNext={this._onNext}
-      />
-    );
-  }
-}
-export const WhenSymptoms = reduxWriter(
-  withNamespaces("surveyScreen")(WhenSymptomsScreen)
-);
-
-class GeneralExposureScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    this.props.navigation.push("GeneralHealth");
-  };
-
-  render() {
-    const { t, getAnswer, navigation, updateAnswer } = this.props;
-    const header = (
-      <Fragment>
-        <Text content={t("expoDesc")} style={{ marginBottom: GUTTER }} />
-        <Image style={imageStyles.image} source={{ uri: "generalexposure" }} />
-        <Text
-          content={t("expoRef")}
-          italic={true}
-          style={{ marginBottom: GUTTER }}
-        />
-      </Fragment>
-    );
-
-    return (
-      <Screen
-        centerDesc={true}
-        questions={GeneralExposureScreenConfig}
-        desc={t("description")}
-        getAnswer={getAnswer}
-        hasDivider={true}
-        header={header}
-        navigation={navigation}
-        onNext={this._onNext}
-        title={t("generalExposure")}
-        updateAnswer={updateAnswer}
-      />
-    );
-  }
-}
-export const GeneralExposure = reduxWriter(
-  withNamespaces("surveyScreen")(GeneralExposureScreen)
-);
-
 interface ThankYouSurveyProps {
   tenMinuteStartTime: number | undefined;
 }
@@ -291,58 +191,6 @@ export const ThankYouSurvey = timerWithConfigProps({
   startTimeConfig: "tenMinuteStartTime",
   nextScreen: "TestStripReady",
 })(withNamespaces("thankYouSurveyScreen")(ThankYouSurveyScreen));
-
-class TestStripSurveyScreen extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
-    const getAnswer = this.props.getAnswer;
-    const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
-
-    switch (blueAnswer) {
-      case "yes":
-        const redAnswer = getAnswer("selectedButtonKey", RedWhenBlueConfig.id);
-
-        tracker.logEvent(FunnelEvents.RESULT_BLUE);
-        switch (redAnswer) {
-          case "yesAboveBlue":
-          case "yesBelowBlue":
-          case "yesAboveBelowBlue":
-            tracker.logEvent(FunnelEvents.RESULT_BLUE_ANY_RED);
-            break;
-          case "noRed":
-            tracker.logEvent(FunnelEvents.RESULT_BLUE_NO_RED);
-            break;
-        }
-        break;
-
-      case "no":
-        tracker.logEvent(FunnelEvents.RESULT_NO_BLUE);
-        break;
-    }
-
-    this.props.navigation.push("TestResult");
-  };
-
-  render() {
-    const { t } = this.props;
-    return (
-      <Screen
-        desc={t("desc")}
-        image="lookatteststrip"
-        navigation={this.props.navigation}
-        questions={TestStripSurveyConfig}
-        title={t("title")}
-        getAnswer={this.props.getAnswer}
-        onNext={this._onNext}
-        updateAnswer={this.props.updateAnswer}
-      />
-    );
-  }
-}
-export const TestStripSurvey = reduxWriter(
-  withNamespaces("testStripSurveyScreen")(TestStripSurveyScreen)
-);
 
 @connect()
 class RDTReaderScreen extends React.Component<Props & WithNamespaces> {

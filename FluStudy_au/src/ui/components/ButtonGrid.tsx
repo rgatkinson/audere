@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -27,12 +27,9 @@ import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
-  desc?: boolean;
-  onRef?: any;
-  question: SurveyQuestionData;
-  scrollOnMount?: boolean;
   highlighted?: boolean;
-  title?: string;
+  onRef?: RefObject<any>;
+  question: SurveyQuestionData;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -42,10 +39,6 @@ interface State {
 }
 
 class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
-  static defaultProps = {
-    scrollOnMount: false,
-  };
-
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
@@ -54,29 +47,10 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
   }
 
   render() {
-    const {
-      desc,
-      highlighted,
-      onRef,
-      question,
-      scrollOnMount,
-      t,
-      title,
-      updateAnswer,
-    } = this.props;
+    const { highlighted, onRef, question, t, updateAnswer } = this.props;
     return (
-      <ScrollIntoView
-        style={styles.container}
-        ref={onRef}
-        onMount={scrollOnMount}
-      >
-        <QuestionText
-          text={!!title ? title : t("surveyTitle:" + question.title)}
-          subtext={
-            desc ? t("surveyDescription:" + question.description) : undefined
-          }
-          required={!title && question.required}
-        />
+      <ScrollIntoView onMount={false} style={styles.container} ref={onRef}>
+        <QuestionText question={question} />
         <View
           style={[
             styles.buttonContainer,

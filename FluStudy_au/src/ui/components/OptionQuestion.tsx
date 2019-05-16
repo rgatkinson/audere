@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { SurveyQuestionData } from "../../resources/ScreenConfig";
@@ -14,9 +14,8 @@ import { ScrollIntoView } from "react-native-scroll-into-view";
 
 interface Props {
   question: SurveyQuestionData;
-  hideQuestionText?: boolean;
   highlighted?: boolean;
-  onRef?: any;
+  onRef?: RefObject<any>;
   style?: StyleProp<ViewStyle>;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
@@ -24,24 +23,14 @@ interface Props {
 
 class OptionQuestion extends React.Component<Props & WithNamespaces> {
   render() {
-    const { hideQuestionText, style, question, t } = this.props;
+    const { style, question, t } = this.props;
     return (
       <ScrollIntoView
         onMount={false}
         ref={this.props.onRef}
         style={[{ alignSelf: "stretch", marginBottom: GUTTER }]}
       >
-        {!hideQuestionText && (
-          <QuestionText
-            text={t("surveyTitle:" + question.title)}
-            subtext={
-              question.description
-                ? t("surveyDescription:" + question.description)
-                : undefined
-            }
-            required={question.required}
-          />
-        )}
+        <QuestionText question={question} />
         <OptionList
           data={newSelectedOptionsList(
             question.optionList!.options,

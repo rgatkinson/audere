@@ -223,7 +223,7 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.testStripSurveyScreen.title,
+    title: strings.TestStripSurvey.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "TestStripSurvey",
   },

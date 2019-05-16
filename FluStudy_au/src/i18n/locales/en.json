@@ -284,14 +284,17 @@
   "GeneralHealth": {
     "title": "General Health",
     "desc": "Questions marked with an * are required.",
-    "extraText": "Next, we'd like to ask you some questions about your overall health."
+    "next": "Next, we'd like to ask you some questions about your overall health."
   },
-  "surveyScreen": {
-    "title": "Symptom Survey",
-    "description": "Questions marked with an * are required.",
-    "generalExposure": "General Exposure",
+  "GeneralExposure": {
+    "title": "General Exposure",
+    "desc": "Questions marked with an * are required.",
     "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within six feet of them for at least two minutes or physical contact for any amount of time.",
     "expoRef": "For reference, six feet is about the distance between you and someone sitting two rows ahead of you on the bus."
+  },
+  "WhenSymptoms": {
+    "title": "Symptom Survey",
+    "desc": "Questions marked with an * are required."
   },
   "thankYouSurveyScreen": {
     "title": "Thank you!",
@@ -307,7 +310,7 @@
     "doneTitle": "Time Complete",
     "desc": "**Please wait for the timer to end.**"
   },
-  "testStripSurveyScreen": {
+  "TestStripSurvey": {
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
   },

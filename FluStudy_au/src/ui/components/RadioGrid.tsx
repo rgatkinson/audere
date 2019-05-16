@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -32,15 +32,12 @@ import Text from "./Text";
 
 interface Props {
   desc?: boolean;
-  hideQuestion?: boolean;
   highlighted?: boolean;
-  onRef?: any;
+  onRef?: RefObject<any>;
   question: SurveyQuestionData;
-  scrollOnMount?: boolean;
   shouldValidate?: boolean;
   validationError?: string;
   style?: StyleProp<ViewStyle>;
-  title?: string;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -50,10 +47,6 @@ interface State {
 }
 
 class RadioGrid extends React.Component<Props & WithNamespaces, State> {
-  static defaultProps = {
-    scrollOnMount: false,
-  };
-
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
@@ -72,33 +65,15 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const {
-      desc,
-      hideQuestion,
-      highlighted,
-      onRef,
-      question,
-      scrollOnMount,
-      style,
-      t,
-      title,
-    } = this.props;
+    const { desc, highlighted, onRef, question, style, t } = this.props;
 
     return (
       <ScrollIntoView
+        onMount={false}
         style={[styles.container, !!style && style]}
         ref={onRef}
-        onMount={scrollOnMount}
       >
-        {!hideQuestion && (
-          <QuestionText
-            text={!!title ? title : t("surveyTitle:" + question.title)}
-            subtext={
-              desc ? t("surveyDescription:" + question.description) : undefined
-            }
-            required={!title && question.required}
-          />
-        )}
+        <QuestionText question={question} />
         <View>
           {question.buttons.map((buttonConfig, i) => {
             const isSelected = buttonConfig.key == this.state.selected;

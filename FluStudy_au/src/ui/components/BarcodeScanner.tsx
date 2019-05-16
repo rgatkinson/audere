@@ -4,7 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -61,7 +67,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   }
 
   _setTimer() {
-    const { navigation, timeoutScreen }  = this.props;
+    const { navigation, timeoutScreen } = this.props;
     this.setState({ activeScan: false });
     // Timeout after 30 seconds
     this._clearTimer();
@@ -80,7 +86,14 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   }
 
   _onBarCodeScanned = async ({ type, data }: { type: any; data: string }) => {
-    const { dispatch, errorScreen, invalidBarcodes, navigation, next, t } = this.props;
+    const {
+      dispatch,
+      errorScreen,
+      invalidBarcodes,
+      navigation,
+      next,
+      t,
+    } = this.props;
     const barcode = data.toLowerCase();
 
     if (!this.state.activeScan) {

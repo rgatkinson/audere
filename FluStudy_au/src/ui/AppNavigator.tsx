@@ -13,53 +13,29 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import {
-  FirstTimer,
-  WhenSymptoms,
-  GeneralExposure,
-  ThankYouSurvey,
-  TestStripSurvey,
-  RDTReader,
-} from "./screens/SurveyScreens";
+import { FirstTimer, ThankYouSurvey, RDTReader } from "./screens/SurveyScreens";
 import { Menu, generateMenuScreen } from "./screens/MenuScreens";
 import { menuScreens } from "../resources/MenuConfig";
 import { declarativeScreens } from "../resources/DeclarativeScreenConfig";
 import { generateDeclarativeScreen } from "./components/DeclarativeScreen";
-import {
-  simpleScreens,
-  generateSimpleScreen,
-} from "../resources/SimpleScreenConfig";
 
 const mainScreens = {
   FirstTimer,
-  WhenSymptoms,
-  GeneralExposure,
   ThankYouSurvey,
-  TestStripSurvey,
   RDTReader,
 };
 
-const homeRouteConfig = simpleScreens.reduce(
-  (homeRouteConfig, simpleScreenConfig) => ({
+const homeRouteConfig = declarativeScreens.reduce(
+  (homeRouteConfig, config) => ({
     ...homeRouteConfig,
-    [simpleScreenConfig.key]: {
-      screen: generateSimpleScreen(simpleScreenConfig),
+    [config.key]: {
+      screen: generateDeclarativeScreen(config),
     },
   }),
   { ...mainScreens }
 );
 
-const allRouteConfig = declarativeScreens.reduce(
-  (allRouteConfig, declarativeScreenConfig) => ({
-    ...allRouteConfig,
-    [declarativeScreenConfig.key]: {
-      screen: generateDeclarativeScreen(declarativeScreenConfig),
-    },
-  }),
-  { ...homeRouteConfig }
-);
-
-const Home = createStackNavigator(allRouteConfig, {
+const Home = createStackNavigator(homeRouteConfig, {
   initialRouteName: "Welcome",
   // @ts-ignore
   defaultNavigationOptions: {

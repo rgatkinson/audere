@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
+import { wrapScrollView } from "react-native-scroll-into-view";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
 import { Action, StoreState, setWorkflow } from "../../store";
 import { tracker } from "../../util/tracker";
@@ -38,6 +39,8 @@ interface DeclarativeProps {
   workflow: WorkflowInfo;
   dispatch(action: Action): void;
 }
+
+const CustomScrollView = wrapScrollView(ScrollView);
 
 export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
   class DeclarativeScreen extends React.Component<DeclarativeProps> {
@@ -94,7 +97,7 @@ export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
       return (
         <Chrome {...config.chromeProps} navigation={this.props.navigation}>
           <View style={styles.scrollContainer}>
-            <ScrollView
+            <CustomScrollView
               contentContainerStyle={styles.contentContainer}
               keyboardShouldPersistTaps="handled"
             >
@@ -105,7 +108,7 @@ export const generateDeclarativeScreen = (config: DeclarativeScreenConfig) => {
                 {config.footer &&
                   this._generateComponents(config.footer, "footer", config.key)}
               </View>
-            </ScrollView>
+            </CustomScrollView>
           </View>
         </Chrome>
       );
