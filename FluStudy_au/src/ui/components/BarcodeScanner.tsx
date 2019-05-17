@@ -47,6 +47,11 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     activeScan: false,
   };
 
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._setTimer = this._setTimer.bind(this);
+  }
+
   _willFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;

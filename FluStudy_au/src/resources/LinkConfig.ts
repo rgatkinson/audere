@@ -45,9 +45,7 @@ export async function emailSupport(title: string) {
       } (Please leave this line in your email message so we can find your record when you contact support.)`
     : "";
   const subject = !!barcode ? `Regarding kit ${barcode.code}` : "";
-  Linking.openURL(
-    `mailto:${title}?subject=${subject}&body=${body}`
-  );
+  Linking.openURL(`mailto:${title}?subject=${subject}&body=${body}`);
 }
 
 export function findMedHelp() {
