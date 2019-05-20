@@ -1,6 +1,6 @@
 import firebase from "react-native-firebase";
 import { DEVICE_INFO } from "../transport/DeviceInfo";
-import { AppHealthEvents, LogDebugEvent } from "../util/tracker";
+import { AppHealthEvents, logDebugEvent } from "../util/tracker";
 import { sha256 } from "js-sha256";
 import {
   FirestoreProtocolDocument,
@@ -39,7 +39,7 @@ export async function saveSurvey(docId: string, survey: SurveyNonPIIInfo) {
       await existingRef.set(storedSurvey);
     }
   } catch (e) {
-    LogDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, e);
+    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, e);
   }
 }
 

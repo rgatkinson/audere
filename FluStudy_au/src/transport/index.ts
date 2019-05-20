@@ -7,49 +7,27 @@ import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
 import axios from "axios";
 import URL from "url-parse";
-import uuidv4 from "uuid/v4";
 import { Constants } from "expo";
 import { DocumentType, SurveyInfo } from "audere-lib/coughProtocol";
 import { DocumentUploader } from "./DocumentUploader";
-import { LazyUploader, AnalyticsBatcher } from "./AnalyticsBatcher";
-import { EventTracker } from "./EventUtil";
-import { newCSRUID } from "../util/csruid";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 PouchDB.plugin(CryptoPouch);
 
-interface Transport {
-  uploader: TypedDocumentUploader;
-  logger: AnalyticsBatcher;
-  events: EventTracker;
-}
-
-export function createTransport(): Transport {
+export function createTransport(): TypedDocumentUploader {
   const db = new PouchDB("clientDB", { auto_compaction: true });
-  const lazyUploader = new LazyUploader();
-  const batcher = new AnalyticsBatcher(lazyUploader, <any>db, {
-    uploadPriority: 3,
-  });
-  const api = createAxios(batcher);
-  const uploader = new DocumentUploader(db, api, batcher);
+  const api = createAxios();
+  const uploader = new DocumentUploader(db, api);
 
-  lazyUploader.bind(uploader);
-
-  return {
-    uploader: new TypedDocumentUploader(uploader, batcher),
-    logger: batcher,
-    events: batcher,
-  };
+  return new TypedDocumentUploader(uploader);
 }
 
 class TypedDocumentUploader {
   private readonly uploader: DocumentUploader;
-  private readonly batcher: AnalyticsBatcher;
 
-  constructor(uploader: DocumentUploader, batcher: AnalyticsBatcher) {
+  constructor(uploader: DocumentUploader) {
     this.uploader = uploader;
-    this.batcher = batcher;
   }
 
   public async documentsAwaitingUpload(): Promise<number | null> {
@@ -57,20 +35,6 @@ class TypedDocumentUploader {
   }
   public saveSurvey(csruid: string, survey: SurveyInfo) {
     this.uploader.save(csruid, survey, DocumentType.Survey, 1);
-  }
-  public async saveCrashLog(logentry: string) {
-    this.uploader.save(
-      await newCSRUID(),
-      {
-        timestamp: new Date().toISOString(),
-        logs: [],
-        events: [],
-        crash: logentry,
-      },
-      DocumentType.Analytics,
-      0
-    );
-    this.batcher.fatal(logentry);
   }
   public async savePhoto(csruid: string, jpegBase64: string) {
     const timestamp = new Date().toISOString();
@@ -88,29 +52,12 @@ class TypedDocumentUploader {
   }
 }
 
-function createAxios(logger: AnalyticsBatcher) {
+function createAxios() {
   const api = axios.create({
     baseURL: getApiBaseUrl(),
     xsrfCookieName: "csrftoken",
     xsrfHeaderName: "X-CSRFToken",
   });
-
-  if (IS_NODE_ENV_DEVELOPMENT) {
-    const REQUEST_FIELDS = ["method", "baseURL", "url", "data"];
-    api.interceptors.request.use(request => {
-      logger.debug(
-        `HTTP request:\n${JSON.stringify(request, REQUEST_FIELDS, 2)}`
-      );
-      return request;
-    });
-    const RESPONSE_FIELDS = ["status", "headers", "data"];
-    api.interceptors.response.use(response => {
-      logger.debug(
-        `HTTP response: "${JSON.stringify(response, RESPONSE_FIELDS, 2)}"`
-      );
-      return response;
-    });
-  }
   return api;
 }
 

@@ -23,7 +23,6 @@ import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
 import i18n from "./src/i18n";
 import { ErrorProps } from "./src/crashReporter";
 import {
-  reportPreviousCrash,
   setupErrorHandler,
   uploadingErrorHandler,
 } from "./src/util/uploadingErrorHandler";
@@ -31,22 +30,13 @@ import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
 import { initializeFirestore } from "./src/store/FirebaseStore";
 
-type AppProps = {
-  exp?: {
-    errorRecovery: ErrorProps;
-  };
-};
-
-export default class App extends React.Component<AppProps> {
+export default class App extends React.Component {
   state = {
     appReady: false,
   };
 
   async componentWillMount() {
     this._loadAssets();
-    if (this.props.exp) {
-      reportPreviousCrash(this.props.exp.errorRecovery);
-    }
     setupErrorHandler();
 
     // We do these serially, for now, because we actually log things when

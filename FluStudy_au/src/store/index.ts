@@ -18,10 +18,10 @@ import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
-import { logger, uploader, uploaderMiddleware } from "./uploader";
+import { uploader, uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
 
-export { uploader, events, logger } from "./uploader";
+export { uploader } from "./uploader";
 
 export * from "./types";
 
@@ -75,7 +75,6 @@ export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
     (outboundState, key) => {
       const decrypted = encryptor.out(outboundState, key);
       if (decrypted) {
-        logger.debug(`Persisted redux state "${key}" no longer encrypted.`);
         return JSON.stringify(decrypted);
       }
       return outboundState;

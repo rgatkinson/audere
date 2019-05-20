@@ -61,14 +61,10 @@ export interface ResponseItemInfo extends QuestionInfo {
 
 export enum DocumentType {
   Survey = "SURVEY",
-  Analytics = "ANALYTICS",
   Photo = "PHOTO"
 }
 
-export type ProtocolDocument =
-  | SurveyDocument
-  | AnalyticsDocument
-  | PhotoDocument;
+export type ProtocolDocument = SurveyDocument | PhotoDocument;
 
 export type TransportMetadata = {
   sentAt: string;
@@ -143,36 +139,6 @@ export interface WorkflowInfo {
 }
 
 // ================================================================================
-// Analytics
-
-export interface AnalyticsDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.Analytics;
-  schemaId: 1;
-  analytics: AnalyticsInfo;
-}
-
-export interface AnalyticsInfo {
-  timestamp: string;
-  logs: LogRecordInfo[];
-  events: EventInfo[];
-  crash?: string;
-}
-
-export interface LogRecordInfo {
-  timestamp: string;
-  level: LogRecordLevel;
-  text: string;
-}
-
-export enum LogRecordLevel {
-  Debug = "DEBUG",
-  Info = "INFO",
-  Warn = "WARN",
-  Error = "ERROR",
-  Fatal = "FATAL"
-}
-
-// ================================================================================
 // Photo
 
 export interface PhotoDocument extends ProtocolDocumentBase {
@@ -194,12 +160,7 @@ export interface EventInfo extends common.EventInfo {
 }
 
 export enum EventInfoKind {
-  Response = "response",
-  Sample = "sample",
-  Screening = "screening",
-  Survey = "survey",
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
-  Interaction = "interaction",
   Render = "render"
 }

@@ -7,6 +7,7 @@ import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
 import url from "url";
 import { DangerZone } from "expo";
+import { recordErrorToFirebase } from "../crashReporter";
 
 export const tracker = firebase.analytics();
 let { Branch } = DangerZone;
@@ -256,9 +257,16 @@ export function onCSRUIDEstablished(csruid: string) {
   tracker.logEvent(AppEvents.CSRUID_ESTABLISHED, { csruid });
 }
 
-export function LogDebugEvent(event: string, params?: Object) {
+export function logDebugEvent(event: string, params?: Object) {
   if (process.env.NODE_ENV === "development") {
     console.log(`LogEvent: ${event}`, params);
   }
   tracker.logEvent(event, params);
+}
+
+export function reportError(error: Error) {
+  if (process.env.NODE_ENV === "development") {
+    console.error(`ReportError: ${error.message}\n${error.stack}`);
+  }
+  recordErrorToFirebase(error);
 }

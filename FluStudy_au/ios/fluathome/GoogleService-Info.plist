@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1092766149713-1gh5u5m0rn9mcvs7gd2b8frlrvdelffc.apps.googleusercontent.com</string>
+	<string>1092766149713-uftkjd7s06nfk7ahuir0oj1d3fn6sbk4.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1092766149713-1gh5u5m0rn9mcvs7gd2b8frlrvdelffc</string>
+	<string>com.googleusercontent.apps.1092766149713-uftkjd7s06nfk7ahuir0oj1d3fn6sbk4</string>
 	<key>API_KEY</key>
 	<string>AIzaSyA5AdT_FijO5GP0EdG-5wZWbcDId_Yk01U</string>
 	<key>GCM_SENDER_ID</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1092766149713:ios:dd3acba514db24dd</string>
+	<string>1:1092766149713:ios:38f6b7b7e8c08fea</string>
 	<key>DATABASE_URL</key>
 	<string>https://flu-at-home-aus-production.firebaseio.com</string>
 </dict>

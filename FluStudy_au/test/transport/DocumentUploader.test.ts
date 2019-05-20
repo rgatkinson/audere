@@ -22,7 +22,7 @@ import {
 } from "audere-lib/coughProtocol";
 import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
-import { ArrayLogger, axiosResponse, nextCall } from "../util";
+import { axiosResponse, nextCall } from "../util";
 import { DEVICE_INFO } from "../../src/transport/DeviceInfo";
 
 const EMPTY_POUCH_CONTENTS = {
@@ -56,8 +56,6 @@ const FAKE_POST_DOC: ProtocolDocument = {
   survey: FAKE_SURVEY_CONTENTS,
 };
 
-const LOGGER = new ArrayLogger();
-
 describe("DocumentUploader", () => {
   describe("save", () => {
     let uploader: DocumentUploader, mockAxios: AxiosInstance, mockPouchDB: any;
@@ -66,7 +64,7 @@ describe("DocumentUploader", () => {
       mockAxios = spy(api);
       PouchDB.plugin(CryptoPouch);
       mockPouchDB = mock(PouchDB);
-      uploader = new DocumentUploader(instance(mockPouchDB), api, LOGGER);
+      uploader = new DocumentUploader(instance(mockPouchDB), api);
     });
     it("adds survey info to the pouchDB record", async () => {
       when(mockPouchDB.get("fakeUID")).thenReturn({ body: {} });
@@ -121,7 +119,7 @@ describe("DocumentUploader", () => {
       db.destroy({}, done);
     });
     it("returns documents in priority order", async () => {
-      const uploader = new DocumentUploader(db, Axios.create(), LOGGER);
+      const uploader = new DocumentUploader(db, Axios.create());
       const docB = await db.put({
         _id: "documents/1/1",
         body: { data: "b" },

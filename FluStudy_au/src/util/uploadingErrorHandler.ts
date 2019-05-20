@@ -15,7 +15,7 @@ import {
   ErrorProps,
   recordErrorToFirebase,
 } from "../crashReporter";
-import { uploader } from "../store/uploader";
+import { reportError } from "./tracker";
 
 let defaultErrorHandler = (error: Error, isFatal?: boolean) => {};
 
@@ -36,23 +36,10 @@ export function uploadingErrorHandler(
   const errorMessage =
     prependStr != null ? prependStr + "\n" : "" + e.message + "\n" + e.stack;
 
-  recordErrorToFirebase(e);
+  reportError(e);
   if (isFatal) {
     const errorProps: ErrorProps = { errorMessage };
     ErrorRecovery.setRecoveryProps(errorProps);
-  } else {
-    crashlytics.log("Audere error log will be saved");
-    uploader.saveCrashLog(errorMessage);
-    crashlytics.log("Audere error log successfully saved");
   }
   defaultErrorHandler(e, isFatal);
-}
-
-export function reportPreviousCrash(errorProps?: ErrorProps) {
-  if (!errorProps) {
-    return;
-  }
-  crashlytics.log("Audere error log will be saved");
-  uploader.saveCrashLog(errorProps.errorMessage);
-  crashlytics.log("Audere error log successfully saved");
 }

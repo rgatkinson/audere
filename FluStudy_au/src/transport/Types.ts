@@ -3,12 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import {
-  DocumentType,
-  SurveyInfo,
-  AnalyticsInfo,
-  PhotoInfo,
-} from "audere-lib/coughProtocol";
+import { DocumentType, SurveyInfo, PhotoInfo } from "audere-lib/coughProtocol";
 
 // Wrapper document saved in PouchDB.
 export interface PouchDoc {
@@ -33,4 +28,4 @@ export interface UniformObject<T> {
   [key: string]: T;
 }
 
-export type DocumentContents = SurveyInfo | AnalyticsInfo | PhotoInfo;
+export type DocumentContents = SurveyInfo | PhotoInfo;

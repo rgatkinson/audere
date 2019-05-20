@@ -12,13 +12,12 @@ import {
   DocumentType,
   SurveyInfo,
   ProtocolDocument,
-  AnalyticsInfo,
   PhotoInfo,
 } from "audere-lib/coughProtocol";
 import { DEVICE_INFO } from "./DeviceInfo";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
-import { Logger, summarize, truncatingReplacer } from "./LogUtil";
+import { truncatingReplacer } from "./LogUtil";
 import {
   UniformObject,
   DocumentContents,
@@ -71,16 +70,14 @@ export class DocumentUploader {
   private pendingEvents: Event[];
   private readonly timer: Timer;
   private readonly pump: Pump;
-  private readonly logger: Logger;
 
-  constructor(db: any, api: AxiosInstance, logger: Logger) {
+  constructor(db: any, api: AxiosInstance) {
     this.db = db;
     this.api = api;
-    this.logger = logger;
     this.documentUploadKey = createAccessKey();
     this.pendingEvents = [{ type: "DecryptDBEvent" }, { type: "UploadNext" }];
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
-    this.pump = new Pump(() => this.pumpEvents(), logger);
+    this.pump = new Pump(() => this.pumpEvents());
     process.nextTick(() => this.pump.start());
   }
 
@@ -106,22 +103,17 @@ export class DocumentUploader {
   }
 
   private fireEvent(event: Event): void {
-    this.logger.info(`fireEvent "${summarize(event)}"`);
     this.pendingEvents.push(event);
     this.pump.start();
   }
 
   private async pumpEvents(): Promise<void> {
-    if (this.pendingEvents.length === 0) {
-      this.logger.info("pumpEvents: no pending events found");
-    }
     while (this.pendingEvents.length > 0) {
       const running = this.pendingEvents;
       this.pendingEvents = [];
       for (let i = 0; i < running.length; i++) {
         await idleness();
         const event = running[i];
-        this.logger.info(`pumpEvents: running[${i}]: ${summarize(event)}`);
         switch (event.type) {
           case "Save":
             await this.handleSave(event);
@@ -169,7 +161,6 @@ export class DocumentUploader {
         documentType,
         ...attachments,
       };
-      this.logger.debug(`Updating existing '${key}'`);
     } catch (e) {
       pouch = {
         _id: key,
@@ -178,7 +169,6 @@ export class DocumentUploader {
         documentType,
         ...attachments,
       };
-      this.logger.debug(`Saving new '${key}`);
     }
     if (IS_NODE_ENV_DEVELOPMENT) {
       console.log("=== Begin save document ===");
@@ -186,15 +176,12 @@ export class DocumentUploader {
       console.log("=== End save document ===");
     }
     await this.db.put(pouch);
-    this.logger.debug(`Saved ${key}`);
     this.uploadNext();
   }
 
   private async handleUploadNext(): Promise<void> {
-    this.logger.debug("handleUploadNext begins");
     let pouch = await this.firstDocument();
     if (pouch == null) {
-      this.logger.debug("Done uploading for now.");
       // No pending documents--done until next save().
       this.timer.cancel();
       return;
@@ -220,9 +207,7 @@ export class DocumentUploader {
       }
 
       const url = `/fever/documents/${this.documentUploadKey}/${upload.docId}`;
-      this.logger.debug(`Starting upload to ${url}`);
       let result = await this.check200(() => this.api.put(url, upload));
-      this.logger.debug(`Finished upload to ${url}`);
       await idleness();
 
       if (result == null) {
@@ -231,13 +216,9 @@ export class DocumentUploader {
     }
 
     // TODO: don't delete when the device is not shared.
-    this.logger.debug(`Removing ${pouch._id}`);
     const obsolete = await this.db.get(pouch._id);
     if (obsolete != null) {
       await this.db.remove(obsolete);
-      this.logger.debug(`Removed ${obsolete._id}`);
-    } else {
-      this.logger.warn(`Could not retrieve ${pouch._id} when trying to remove`);
     }
     await idleness();
 
@@ -253,9 +234,6 @@ export class DocumentUploader {
     try {
       items = await this.db.allDocs(options);
     } catch (e) {
-      this.logger.debug(
-        `documentsAwaitingUpload returning null because "${e}"`
-      );
       return null;
     }
     return items.rows.length;
@@ -275,20 +253,15 @@ export class DocumentUploader {
     try {
       items = await this.db.allDocs(options);
     } catch (e) {
-      this.logger.debug(`firstDocument returning null because "${e}"`);
       return null;
     }
 
     if (items.rows.length < 1) {
-      this.logger.debug("firstDocument returning null because 0 rows");
       return null;
     }
 
     const item = items.rows[0].doc;
     if (item._id == null || !item._id.startsWith("documents/")) {
-      this.logger.debug(
-        `firstDocument returning null because _id='${item._id}'`
-      );
       return null;
     }
 
@@ -302,14 +275,9 @@ export class DocumentUploader {
       const docs = items.rows.filter((row: any) =>
         row.doc._id.startsWith("documents/")
       ).length;
-      this.logger.debug(
-        `Pouch contents: ${total} entries, of which ${docs} docs`
-      );
       if (IS_NODE_ENV_DEVELOPMENT) {
         console.log(items.rows.map((row: any) => `\n  ${row.id}`));
       }
-    } else {
-      this.logger.debug("Pouch contents: no items found");
     }
   }
 
@@ -383,15 +351,6 @@ function protocolDocument(save: PouchDoc): ProtocolDocument {
         device: DEVICE_INFO,
         survey: asSurveyInfo(save.document),
       };
-    case DocumentType.Analytics:
-      return {
-        documentType: save.documentType,
-        schemaId: 1,
-        device: DEVICE_INFO,
-        docId: save.docId,
-        analytics: asAnalyticsInfo(save.document),
-      };
-
     case DocumentType.Photo: {
       return {
         documentType: save.documentType,
@@ -424,28 +383,6 @@ function isProbablySurveyInfo(contents: any): contents is SurveyInfo {
   );
 }
 
-function asAnalyticsInfo(contents: DocumentContents): AnalyticsInfo {
-  if (isProbablyAnalyticsInfo(contents)) {
-    return contents;
-  }
-  throw new Error(`Expected AnalyticsInfo, got ${contents}`);
-}
-
-function isProbablyAnalyticsInfo(contents: any): contents is AnalyticsInfo {
-  return (
-    isArr(contents.logs) &&
-    contents.logs.every(
-      (item: any) =>
-        isObj(item) &&
-        isStr(item.timestamp) &&
-        isStr(item.level) &&
-        isStr(item.text)
-    ) &&
-    isArr(contents.events) &&
-    contents.events.every((item: any) => isStr(item.kind) && isStr(item.at))
-  );
-}
-
 function asPhotoInfo(contents: DocumentContents): PhotoInfo {
   if (isProbablyPhotoInfo(contents)) {
     return contents;
@@ -457,9 +394,6 @@ function isProbablyPhotoInfo(contents: any): contents is PhotoInfo {
   return isStr(contents.timestamp) && isStr(contents.jpegBase64);
 }
 
-function isArr(x: any) {
-  return isObj(x) && isFn(x.every);
-}
 function isObj(x: any) {
   return typeof x === "object";
 }
@@ -468,7 +402,4 @@ function isStr(x: any) {
 }
 function isFn(x: any) {
   return typeof x === "function";
-}
-function isBool(x: any) {
-  return typeof x === "boolean";
 }

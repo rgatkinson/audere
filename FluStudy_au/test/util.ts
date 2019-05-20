@@ -45,13 +45,3 @@ export function ticks(n: number): Promise<void> {
     ticks(n - 1).then(() => process.nextTick(resolve))
   );
 }
-
-export class ArrayLogger implements Logger {
-  public readonly records: string[] = [];
-
-  debug(s: string): void { this.records.push(s); }
-  info(s: string): void { this.records.push(s); }
-  warn(s: string): void { this.records.push(s); }
-  error(s: string): void { this.records.push(s); }
-  fatal(s: string): void { this.records.push(s); }
-}

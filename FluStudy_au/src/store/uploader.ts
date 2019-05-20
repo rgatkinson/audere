@@ -30,7 +30,7 @@ import {
 import { crashlytics } from "../crashReporter";
 import { saveSurvey } from "./FirebaseStore";
 
-export const { uploader, events, logger } = createTransport();
+export const uploader = createTransport();
 
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
@@ -96,10 +96,6 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
           const survey = redux_to_pouch(state);
 
           saveSurvey(state.survey.csruid, survey);
-        } else {
-          logger.warn(
-            "Skipping survey upload because no csruid is available yet"
-          );
         }
         break;
     }

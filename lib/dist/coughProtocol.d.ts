@@ -16,10 +16,9 @@ export interface ResponseItemInfo extends QuestionInfo {
 }
 export declare enum DocumentType {
     Survey = "SURVEY",
-    Analytics = "ANALYTICS",
     Photo = "PHOTO"
 }
-export declare type ProtocolDocument = SurveyDocument | AnalyticsDocument | PhotoDocument;
+export declare type ProtocolDocument = SurveyDocument | PhotoDocument;
 export declare type TransportMetadata = {
     sentAt: string;
     receivedAt?: string;
@@ -73,29 +72,6 @@ export interface WorkflowInfo {
     skippedScreeningAt?: string;
     [key: string]: string | undefined;
 }
-export interface AnalyticsDocument extends ProtocolDocumentBase {
-    documentType: DocumentType.Analytics;
-    schemaId: 1;
-    analytics: AnalyticsInfo;
-}
-export interface AnalyticsInfo {
-    timestamp: string;
-    logs: LogRecordInfo[];
-    events: EventInfo[];
-    crash?: string;
-}
-export interface LogRecordInfo {
-    timestamp: string;
-    level: LogRecordLevel;
-    text: string;
-}
-export declare enum LogRecordLevel {
-    Debug = "DEBUG",
-    Info = "INFO",
-    Warn = "WARN",
-    Error = "ERROR",
-    Fatal = "FATAL"
-}
 export interface PhotoDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Photo;
     schemaId: 1;
@@ -109,12 +85,7 @@ export interface EventInfo extends common.EventInfo {
     kind: EventInfoKind;
 }
 export declare enum EventInfoKind {
-    Response = "response",
-    Sample = "sample",
-    Screening = "screening",
-    Survey = "survey",
     AppNav = "appNav",
     TimeoutNav = "timeoutNav",
-    Interaction = "interaction",
     Render = "render"
 }
