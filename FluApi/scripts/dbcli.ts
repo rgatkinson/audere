@@ -167,17 +167,6 @@ yargs.command({
       .string("rows"),
   handler: command(cmdShowPath)
 });
-yargs
-  // TODO: This might be subsumed by show-path, remove?
-  .command({
-    command: "survey-path <row> <kind> <path>",
-    builder: yargs =>
-      yargs
-        .string("row")
-        .string("kind")
-        .string("path"),
-    handler: command(cmdSurveyPath)
-  });
 yargs.command({
   command: "photo <csruid>",
   builder: yargs => yargs.string("csruid"),
@@ -189,12 +178,12 @@ yargs.command({
   handler: command(cmdPhotoOf)
 });
 yargs.command({
-  command: "sample-of <release> <row> <type>",
+  command: "sample-of <release> <type> <row>",
   builder: yargs =>
     yargs
       .string("release")
-      .string("row")
-      .string("type"),
+      .string("type")
+      .string("row"),
   handler: command(cmdSampleOf)
 });
 yargs.command({
@@ -213,8 +202,8 @@ yargs.command({
   handler: command(cmdDemo1)
 });
 yargs.command({
-  command: "set-location <row> <value>",
-  builder: yargs => yargs.string("row").string("value"),
+  command: "set-location <value> <row>",
+  builder: yargs => yargs.string("value").string("row"),
   handler: command(cmdSetSnifflesLocation)
 });
 yargs.command({
@@ -249,12 +238,13 @@ yargs.command({
   handler: command(cmdShow)
 });
 yargs.command({
-  command: "edit <release> <kind> <row> <path>",
+  command: "edit <release> <kind> <path> <row>",
   builder: yargs =>
     yargs
+      .string("release")
       .string("kind")
-      .string("row")
-      .string("path"),
+      .string("path")
+      .string("row"),
   handler: command(cmdEdit)
 });
 yargs.command({
@@ -458,44 +448,6 @@ async function cmdSampleOf(argv: SampleOfArgs): Promise<void> {
     default:
       throw failRelease(argv.release);
   }
-}
-
-interface SurveyPathArgs {
-  csruid: string;
-  kind: string;
-  path: string;
-}
-
-async function cmdSurveyPath(argv: SurveyPathArgs): Promise<void> {
-  const path = partPath(argv.path);
-  switch (argv.kind) {
-    case "pii":
-      return getSurveyPii(argv.csruid, path);
-    case "nonpii":
-      return getSurveyNonPii(argv.csruid, path);
-    default:
-      throw failKind(argv.kind);
-  }
-}
-
-async function getSurveyNonPii(csruid: string, path: string[]): Promise<void> {
-  const rows = await feverModels.surveyNonPii.findAll({
-    where: { csruid: { [Op.like]: `${csruid}%` } }
-  });
-  rows.forEach(row => {
-    const part = getPart(row, path);
-    console.log(typeof part === "object" ? JSON.stringify(part) : part);
-  });
-}
-
-async function getSurveyPii(csruid: string, path: string[]): Promise<void> {
-  const rows = await feverModels.surveyPii.findAll({
-    where: { csruid: { [Op.like]: `${csruid}%` } }
-  });
-  rows.forEach(row => {
-    const part = getPart(row, path);
-    console.log(typeof part === "object" ? JSON.stringify(part) : part);
-  });
 }
 
 interface ByDateArgs {
