@@ -202,6 +202,11 @@ yargs.command({
   handler: command(cmdDemo1)
 });
 yargs.command({
+  command: "set-administrator <value> <row>",
+  builder: yargs => yargs.string("value").string("row"),
+  handler: command(cmdSetSnifflesAdministrator)
+});
+yargs.command({
   command: "set-location <value> <row>",
   builder: yargs => yargs.string("value").string("row"),
   handler: command(cmdSetSnifflesLocation)
@@ -959,6 +964,39 @@ async function cmdDemo1(argv: Demo1Args): Promise<void> {
 
     default:
       throw new Error(`Unrecognized release: '${argv.release}`);
+  }
+}
+
+interface AdministratorArgs {
+  row: string;
+  value: string;
+}
+
+async function cmdSetSnifflesAdministrator(argv: AdministratorArgs) {
+  const nonPii = await sniffles.nonPii.load(argv.row.trim());
+  const pii = await sniffles.pii.load(nonPii.csruid);
+
+  console.log(`Updating ${nonPii.csruid.substring(0, 21)} that has events:`);
+  console.log(`${JSON.stringify(nonPii.visit.events, null, 2)}`);
+  if (nonPii.visit.administrator === pii.visit.administrator) {
+    console.log(`Current administrator: '${nonPii.visit.administrator}'`);
+  } else {
+    console.log(`Current non-pii administrator: '${nonPii.visit.administrator}'`);
+    console.log(`Current pii administrator: '${pii.visit.administrator}'`);
+    await expectYes(`Update both administrators to '${argv.value}'? `);
+  }
+
+  const updates = await Promise.all([
+    sniffles.nonPii.updateItem(nonPii, {
+      ...nonPii.visit,
+      administrator: argv.value
+    }),
+    sniffles.pii.updateItem(pii, { ...pii.visit, administrator: argv.value })
+  ]);
+  if (updates.some(x => x)) {
+    console.log(`Updated administrator to '${argv.value}'`);
+  } else {
+    console.log("Nothing changed");
   }
 }
 
