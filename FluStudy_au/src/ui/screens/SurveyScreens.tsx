@@ -17,7 +17,7 @@ import Chrome from "../components/Chrome";
 import Text from "../components/Text";
 import {
   RDTReader as RDTReaderComponent,
-  ExternalRDTCapturedArgs,
+  RDTCapturedArgs,
   SizeResult,
   ExposureResult,
 } from "../../native/rdtReader";
@@ -46,7 +46,7 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
     this.setState({ spinner: false });
   };
 
-  _onRDTCaptured = async (args: ExternalRDTCapturedArgs) => {
+  _onRDTCaptured = async (args: RDTCapturedArgs) => {
     const logArgs = { ...args };
     logArgs.imgBase64 = logArgs.imgBase64.substring(0, 100) + "...";
     if (!args.testStripFound) {
@@ -118,7 +118,7 @@ const rdtStyles = StyleSheet.create({
   testStrip: {
     alignSelf: "center",
     aspectRatio: 0.06,
-    height: "65%",
+    height: "55%",
     opacity: 0.5,
     marginTop: GUTTER,
     marginLeft: GUTTER,

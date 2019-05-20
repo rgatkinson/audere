@@ -14,32 +14,36 @@ export enum SizeResult {
   SMALL,
   INVALID,
 }
-export type RDTCapturedArgs = {
+type InternalRDTCapturedArgs = {
   img: string;
   passed: boolean;
   center: boolean;
   sizeResult: SizeResult;
-  matchDistance: number;
   shadow: boolean;
   target: number;
   sharpness: boolean;
   orientation: boolean;
   exposureResult: ExposureResult;
+  control: boolean;
+  testA: boolean;
+  testB: boolean;
 };
 
-export type ExternalRDTCapturedArgs = {
+export type RDTCapturedArgs = {
   imgBase64: string;
   testStripFound: boolean;
   isCentered: boolean;
   sizeResult: SizeResult;
-  matchDistance: number;
   isFocused: boolean;
   isRightOrientation: boolean;
   exposureResult: ExposureResult;
+  controlLineFound: boolean;
+  testALineFound: boolean;
+  testBLineFound: boolean;
 };
 
 type RDTReaderProps = {
-  onRDTCaptured: (args: ExternalRDTCapturedArgs) => void;
+  onRDTCaptured: (args: RDTCapturedArgs) => void;
   onRDTCameraReady: (args: {}) => void;
   enabled: boolean;
   style: any;
@@ -47,17 +51,19 @@ type RDTReaderProps = {
 
 export class RDTReader extends React.Component<RDTReaderProps> {
   _onRDTCaptured = (event: any) => {
-    const capturedArgs: RDTCapturedArgs = event.nativeEvent;
+    const capturedArgs: InternalRDTCapturedArgs = event.nativeEvent;
     capturedArgs.img = "data:image/jpg;base64, " + capturedArgs.img;
     this.props.onRDTCaptured({
       imgBase64: capturedArgs.img,
       testStripFound: capturedArgs.passed,
       isCentered: capturedArgs.center,
       sizeResult: capturedArgs.sizeResult,
-      matchDistance: capturedArgs.matchDistance,
       isFocused: capturedArgs.sharpness,
       isRightOrientation: capturedArgs.orientation,
       exposureResult: capturedArgs.exposureResult,
+      controlLineFound: capturedArgs.control,
+      testALineFound: capturedArgs.testA,
+      testBLineFound: capturedArgs.testB,
     });
   };
 

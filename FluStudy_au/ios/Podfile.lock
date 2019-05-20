@@ -312,13 +312,13 @@ PODS:
   - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
   - leveldb-library (1.20)
+  - libopencv-contrib (3.4.1)
   - lottie-ios (2.5.3)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - OpenCV2 (3.4.6)
   - Protobuf (3.7.0)
   - React (0.57.1):
     - React/Core (= 0.57.1)
@@ -440,7 +440,7 @@ DEPENDENCIES:
   - Firebase/Storage (~> 5.20.1)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - OpenCV2 (~> 3.4.6)
+  - libopencv-contrib (~> 3.4.1)
   - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -501,9 +501,9 @@ SPEC REPOS:
     - GTMSessionFetcher
     - JKBigInteger2
     - leveldb-library
+    - libopencv-contrib
     - lottie-ios
     - nanopb
-    - OpenCV2
     - Protobuf
 
 EXTERNAL SOURCES:
@@ -672,9 +672,9 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  libopencv-contrib: 01e8f05daf0e93e3f5fa395590fcf41ef312bef3
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  OpenCV2: a868f9c69306c872b862be88804fc8633870a368
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
@@ -684,6 +684,6 @@ SPEC CHECKSUMS:
   ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: c8e28b65d1a65f40ec7cebb9368af9dbd6cea021
+PODFILE CHECKSUM: 55cbe8cf916225715b7b2eb65391ad71c5d36e4d
 
 COCOAPODS: 1.5.3

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		210E30E1228E1A1B0002B676 /* quickvue_ref_v1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */; };
+		210E30E2228E1A1B0002B676 /* quickvue_ref_v0.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 210E30E0228E1A1B0002B676 /* quickvue_ref_v0.jpg */; };
 		218947CB2284D31400788F40 /* TestStrip2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947BF2284D31300788F40 /* TestStrip2@2x.png */; };
 		218947CC2284D31400788F40 /* TestStrip2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947C72284D31300788F40 /* TestStrip2@3x.png */; };
 		218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 218947C82284D31300788F40 /* quickvue_ref.jpg */; };
@@ -173,7 +175,7 @@
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
-		F08F62492230A8C8008CCF6A /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		F08F62492230A8C8008CCF6A /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F09B108922288224002970AA /* libRNFirebase.a */; };
 /* End PBXBuildFile section */
 
@@ -230,7 +232,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		18C9BF29CBC7B57E98EBFCA2 /* Pods-fluathome.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.staging.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.staging.xcconfig"; sourceTree = "<group>"; };
+		210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v1.jpg; path = ../../../assets/images/quickvue_ref_v1.jpg; sourceTree = "<group>"; };
+		210E30E0228E1A1B0002B676 /* quickvue_ref_v0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v0.jpg; path = ../../../assets/images/quickvue_ref_v0.jpg; sourceTree = "<group>"; };
 		218947BF2284D31300788F40 /* TestStrip2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@2x.png"; path = "../../../assets/images/TestStrip2@2x.png"; sourceTree = "<group>"; };
 		218947C72284D31300788F40 /* TestStrip2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@3x.png"; path = "../../../assets/images/TestStrip2@3x.png"; sourceTree = "<group>"; };
 		218947C82284D31300788F40 /* quickvue_ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref.jpg; path = ../../../assets/images/quickvue_ref.jpg; sourceTree = "<group>"; };
@@ -420,7 +423,7 @@
 				EAFF191B2254121D0027CBE8 /* UserNotifications.framework in Frameworks */,
 				EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */,
 				EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */,
-				F08F62492230A8C8008CCF6A /* BuildFile in Frameworks */,
+				F08F62492230A8C8008CCF6A /* (null) in Frameworks */,
 				F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */,
 				F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */,
 			);
@@ -501,6 +504,8 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				210E30E0228E1A1B0002B676 /* quickvue_ref_v0.jpg */,
+				210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */,
 				218947C82284D31300788F40 /* quickvue_ref.jpg */,
 				218947C92284D31300788F40 /* ref.jpg */,
 				218947CA2284D31300788F40 /* TestStrip2.png */,
@@ -912,6 +917,7 @@
 				EAEBD30922691AB7009815C6 /* putswabintube2thumb.png in Resources */,
 				EAEBD2E622691AB7009815C6 /* whatdoidonext@3x.png in Resources */,
 				EAEBD2F322691AB7009815C6 /* preparetube.png in Resources */,
+				210E30E1228E1A1B0002B676 /* quickvue_ref_v1.jpg in Resources */,
 				EAEBD32922691AB7009815C6 /* begin1sttest@3x.png in Resources */,
 				EAEBD2ED22691AB7009815C6 /* barcodesuccess@2x.png in Resources */,
 				EAEBD2A922691AB7009815C6 /* barcode.png in Resources */,
@@ -941,6 +947,7 @@
 				EAEBD2C422691AB7009815C6 /* brotman.png in Resources */,
 				EAEBD2C822691AB7009815C6 /* takephotoofstripthumb.png in Resources */,
 				EAEBD33222691AB7009815C6 /* contactsupport@3x.png in Resources */,
+				210E30E2228E1A1B0002B676 /* quickvue_ref_v0.jpg in Resources */,
 				EAEBD2B722691AB7009815C6 /* splash.png in Resources */,
 				F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */,
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,

@@ -33,7 +33,7 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
         }
         strongSelf.rdtView.onRDTCameraReady(@{});
     };
-    viewController.onRDTCaptured = ^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow){
+    viewController.onRDTDetected = ^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow, bool control, bool testA, bool testB){
         RDTViewManager *strongSelf = weakSelf;
         NSLog(@"Callback called with %@", passed ? @"true" : @"false");
         if (!strongSelf || !strongSelf.rdtView.onRDTCaptured) {
@@ -49,13 +49,15 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
                   @{
                        @"passed": @(passed),
                        @"img": base64img,
-                       @"matchDistance": @(matchDistance),
                        @"exposureResult": @(exposureResult),
                        @"sizeResult": @(sizeResult),
                        @"center": @(center),
                        @"orientation": @(orientation),
                        @"sharpness": @(sharpness),
                        @"shadow": @(shadow),
+                       @"control": @(control),
+                       @"testA": @(testA),
+                       @"testB": @(testB),
                  }
             );
         });

@@ -34,7 +34,7 @@ typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
 @property (nonatomic, getter=isSessionRunning) BOOL sessionRunning;
 @property (nonatomic) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic) BOOL isProcessing;
-@property (nonatomic) ImageProcessorBlock onRDTCaptured;
+@property (nonatomic) void (^onRDTDetected)(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow, bool control, bool testA, bool testB);
 @property (nonatomic) void (^onRDTCameraReady)();
 @property (nonatomic) BOOL disableViewFinder;
 @property (weak, nonatomic) IBOutlet UILabel *positionLabel;

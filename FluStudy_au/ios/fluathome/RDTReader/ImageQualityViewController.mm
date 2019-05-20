@@ -264,19 +264,59 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (startTime == 0)
         startTime = CACurrentMediaTime();
     
-    if (!self.isProcessing) {
-        self.isProcessing = true;
-        [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow) {
+    @synchronized(self) {
+        if (self.isProcessing)
+            return;
+    }
+    
+    //if (!self.isProcessing) {
+        @synchronized (self) {
+            self.isProcessing = true;
+        }
+        [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow, Mat resultWindowMat) {
             NSLog(@"Found = %d, update Pos = %d, update Sharpness = %d, update Brightness = %d, update Shadow = %d", passed, (int)sizeResult, sharpness, (int)exposureResult, shadow);
-            self.isProcessing = false;
-            if (self.onRDTCaptured) {
-                self.onRDTCaptured(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow);
-                return;
-            }
-            // Upstream code to handle captured images removed from here
+            
+            NSString *instructions = [[ImageProcessor sharedProcessor] getInstruction:sizeResult andFor:center andFor:orientation];
+            NSMutableArray *qCheckTexts = [[ImageProcessor sharedProcessor] getQualityCheckTexts:sizeResult andFor:center andFor:orientation andFor:sharpness andFor:exposureResult];
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.positionLabel.text = qCheckTexts[2];
+                self.positionLabel.textColor = sizeResult==RIGHT_SIZE && center && orientation? [UIColor greenColor] : [UIColor redColor];
+                self.sharpnessLabel.text = qCheckTexts[0];
+                self.sharpnessLabel.textColor = sharpness ? [UIColor greenColor] : [UIColor redColor];
+                self.brightnessLabel.text = qCheckTexts[1];
+                self.brightnessLabel.textColor = exposureResult==NORMAL ? [UIColor greenColor] : [UIColor redColor];
+                self.shadowLabel.text = qCheckTexts[3];
+                self.shadowLabel.textColor = shadow ? [UIColor redColor] : [UIColor greenColor];
+                self.instructionsLabel.text = instructions;
+                if(passed == true){
+                    NSLog(@"Moving to result screen");
+                    double captureTime = CACurrentMediaTime() - startTime;
+                    startTime = 0;
+                    
+                    bool control, testA, testB;
+                    // this passees the imgage into the showPhotoViewController
+                    UIImage *testStripImage = [[ImageProcessor sharedProcessor] interpretResultWithResultWindow: resultWindowMat andControlLine:&control andTestA:&testA andTestB:&testB];
+                    if (self.onRDTDetected) {
+                        self.onRDTDetected(passed, testStripImage, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, control, testA, testB);
+                    }
+                } else {
+                    if (self.onRDTDetected) {
+                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, false, false, false);
+                    }
+                    @synchronized (self) {
+                        self.isProcessing = false;
+                    }
+                }
+                
+                
+            });
+            
+
         }];
         
-    }
+    //}
     
 }
 
