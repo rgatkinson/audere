@@ -7,8 +7,11 @@ import {
   SurveyNonPIIInfo,
   DocumentType,
 } from "audere-lib/coughProtocol";
+import { PhotoUploader } from "../transport/PhotoUploader";
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
+
+const photoUploader = new PhotoUploader();
 
 export async function initializeFirestore() {
   // This enables offline caching
@@ -53,16 +56,6 @@ function hashFromSurvey(survey: SurveyNonPIIInfo) {
   return sha256(JSON.stringify(survey));
 }
 
-function getPhotoPath(docId: string): string {
-  return `images/${docId}.jpg`;
-}
-
-export function savePhoto(docId: string, photoBase64: string) {
-  const storage = firebase.storage().ref();
-  const path = getPhotoPath(docId);
-  const dataUri = `data:image/jpg;base64,${photoBase64}`;
-
-  // In upcoming PR, going to implement offline <> online durable file upload
-  // storage.child(path).putFile(dataUri, { contentType: "image/jpeg" });
-  return path;
+export function savePhoto(photoId: string, jpegBase64: string): void {
+  photoUploader.savePhoto(photoId, jpegBase64);
 }

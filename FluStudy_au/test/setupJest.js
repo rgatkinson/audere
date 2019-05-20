@@ -94,6 +94,7 @@ function mockFileSystem() {
     return delay(
       [...files.keys()]
         .filter(k => k.startsWith(canon) && k.lastIndexOf("/") === canon.length)
+        .map(k => k.substring(canon.length + 1))
     );
   }
 
@@ -121,4 +122,8 @@ function mockFileSystem() {
   FileSystem.readAsStringAsync = jest.fn(readAsStringAsync);
   FileSystem.readDirectoryAsync = jest.fn(readDirectoryAsync);
   FileSystem.writeAsStringAsync = jest.fn(writeAsStringAsync);
+  FileSystem.EncodingTypes = {
+    UTF8: "utf8",
+    Base64: "base64"
+  };
 }

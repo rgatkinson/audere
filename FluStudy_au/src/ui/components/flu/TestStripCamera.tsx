@@ -49,13 +49,11 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         });
         const photoId = await newUID();
 
-        // PLAT-51: This won't work offline.  But we may not need it to.  More
-        // details in the task.
         savePhoto(photoId, photo.base64);
 
         dispatch(
           setTestStripImg({
-            sample_type: "TestStripBase64",
+            sample_type: "PhotoGUID",
             code: photoId,
           })
         );

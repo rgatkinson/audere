@@ -54,7 +54,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         savePhoto(photoId, args.imgBase64);
         dispatch(
           setTestStripImg({
-            sample_type: "TestStripBase64",
+            sample_type: "RDTReaderPhotoGUID",
             code: photoId,
           })
         );
