@@ -97,12 +97,11 @@
     "device": "\n**Device:** ",
     "installation": "\n**Installation:** ",
     "apiServer": "\n**API Server:** ",
-    "copy": "Copy",
-    "copyright": "Copyright © 2019 Audere. All rights reserved."
+    "copy": "Copy"
   },
   "Version": {
-    "description": "",
-    "title": "App Version"
+    "title": "App Version",
+    "description": "Copyright © 2019 Audere. All rights reserved."
   },
   "GeneralQuestions": {
     "title": "General Questions",
@@ -110,7 +109,7 @@
   },
   "Problems": {
     "title": "Problems With the App",
-    "description": "**My app unexpectedly closed in the middle of the test. What should I do?**\n\nOpen the app again on your {{device}} and it should be on the same page as when it closed. If you need to go back to a previous step, there is a **←** button at the top left of the screen.\n\n**Something went wrong with the app. What should I do?**\n\nIf the app is stuck, try closing it on your {{device}} and reopening it.\n\nOn an iPhone or iPad with a circle button at the bottom, double click the button, swipe to find the flu@home app, then while touching the app image, swipe it up and off the screen. This will close the open app. After this you can re-open the app. It should return to the original step you were on. If that doesn't work, email us at [flu-support@auderenow.org](EMAIL_SUPPORT).\n\nOn an iPhone with no circle button, swipe up from the bottom to get to the list of active apps, then while touching the app image, swipe it up and off the screen to close the app. Then re-open it to continue."
+    "description": "**My app unexpectedly closed in the middle of the test. What should I do?**\n\nOpen the app again on your device and it should be on the same page as when it closed. If you need to go back to a previous step, there is a **←** button at the top left of the screen.\n\n**Something went wrong with the app. What should I do?**\n\nIf the app is stuck, try closing it on your device and reopening it.\n\nOn an iPhone or iPad with a circle button at the bottom, double click the button, swipe to find the flu@home app, then while touching the app image, swipe it up and off the screen. This will close the open app. After this you can re-open the app. It should return to the original step you were on. If that doesn't work, email us at [flu-support@auderenow.org](EMAIL_SUPPORT).\n\nOn an iPhone with no circle button, swipe up from the bottom to get to the list of active apps, then while touching the app image, swipe it up and off the screen to close the app. Then re-open it to continue."
   },
   "TestQuestions": {
     "title": "Test Questions",
@@ -303,11 +302,6 @@
     "title": "Remove test strip",
     "desc": "Please remove the test strip from the tube and place it flat on the middle of the box, then put the stopper back on the tube."
   },
-  "testStripTimerScreen": {
-    "title": "Time Remaining: **{{time}}**",
-    "doneTitle": "Time Complete",
-    "desc": "**Please wait for the timer to end.**"
-  },
   "TestStripSurvey": {
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
@@ -327,18 +321,11 @@
     "desc": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
     "descAndroid": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
   },
-  "pictureInstructionsScreen": {
-    "title": "Take a photo of the strip",
-    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, take a photo of the test strip.\n\nFirst, lay the test strip on the box with the arrows pointing down towards you:",
-    "tip2": "The app will show you a sample test strip image to use as a guide. Position your test strip inside the dotted lines as shown, holding your camera directly over the test strip. Make sure to focus the image before taking the photo, and try to use good lighting.",
-    "tip3": "Tap **Continue** when you're ready, and we'll take the photo on the next screen.",
-    "skip": "Unable to take a picture? Skip this step"
-  },
-  "testStripCameraScreen": {
+  "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
     "stripHere": "Your strip here",
     "description": "Tap the round button to take a photo",
-    "loading": "Loading..."
+    "error": "There was a processing error, please try again"
   },
   "TestStripConfirmation": {
     "title": "Photo captured!",

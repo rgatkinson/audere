@@ -16,7 +16,7 @@ import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
 import { HIGHLIGHT_STYLE } from "../styles";
-import { SurveyQuestionData } from "../../resources/ScreenConfig";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
 interface Props {

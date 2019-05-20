@@ -13,22 +13,19 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { RDTReader } from "./screens/SurveyScreens";
-import { Menu, generateMenuScreen } from "./screens/MenuScreens";
-import { menuScreens } from "../resources/MenuConfig";
-import { declarativeScreens } from "../resources/DeclarativeScreenConfig";
-import { generateDeclarativeScreen } from "./components/DeclarativeScreen";
+import { Menu } from "./components/Menu";
+import { MenuScreens } from "../resources/MenuConfig";
+import { Screens } from "../resources/ScreenConfig";
+import { generateScreen } from "./components/Screen";
 
-const mainScreens = { RDTReader };
-
-const homeRouteConfig = declarativeScreens.reduce(
+const homeRouteConfig = Screens.reduce(
   (homeRouteConfig, config) => ({
     ...homeRouteConfig,
     [config.key]: {
-      screen: generateDeclarativeScreen(config),
+      screen: generateScreen(config),
     },
   }),
-  { ...mainScreens }
+  {}
 );
 
 const Home = createStackNavigator(homeRouteConfig, {
@@ -87,10 +84,10 @@ Home.router.getStateForAction = withNavigationPreventDuplicate(
   Home.router.getStateForAction
 );
 
-const routeConfig = menuScreens.reduce(
-  (routeConfig, menuConfig) => ({
+const routeConfig = MenuScreens.reduce(
+  (routeConfig, config) => ({
     ...routeConfig,
-    [menuConfig.key]: { screen: generateMenuScreen(menuConfig) },
+    [config.key]: { screen: generateScreen(config) },
   }),
   { Home }
 );

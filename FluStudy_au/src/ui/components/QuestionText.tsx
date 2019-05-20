@@ -8,7 +8,7 @@ import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { ERROR_COLOR, FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
-import { SurveyQuestionData } from "../../resources/ScreenConfig";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 
 interface Props {
   question: SurveyQuestionData;

@@ -5,7 +5,6 @@
 
 import React from "react";
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text as SystemText,
@@ -17,10 +16,7 @@ import {
   SafeAreaView,
 } from "react-navigation";
 import { Feather } from "@expo/vector-icons";
-import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Divider from "./../components/Divider";
-import Screen from "./../components/Screen";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 import i18n from "i18next";
 import {
   GUTTER,
@@ -29,8 +25,6 @@ import {
   SYSTEM_FONT,
   SYSTEM_TEXT,
 } from "./../styles";
-import BuildInfo from "../components/BuildInfo";
-import { menuScreens, MenuConfig } from "../../resources/MenuConfig";
 
 export const Menu = (props: any) => {
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
@@ -94,39 +88,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-interface Props {
-  navigation: NavigationScreenProp<any, any>;
-}
-
-export const generateMenuScreen = (config: MenuConfig) => {
-  class MenuScreen extends React.Component<Props & WithNamespaces> {
-    static navigationOptions = () => {
-      return {
-        title: i18n.t(config.key + ":title"),
-      };
-    };
-
-    render() {
-      const { t } = this.props;
-      return (
-        <Screen
-          desc={t("description", {
-            device: t("common:device:" + DEVICE_INFO.idiomText),
-          })}
-          images={config.images}
-          menuItem={true}
-          navigation={this.props.navigation}
-          skipButton={true}
-          image="colorlogo"
-          subTitle={t(`common:menu:${config.subTitle}`)}
-          title={t("title")}
-        >
-          {!!config.showBuildInfo && <BuildInfo />}
-        </Screen>
-      );
-    }
-  }
-
-  return withNamespaces(config.key)(MenuScreen);
-};

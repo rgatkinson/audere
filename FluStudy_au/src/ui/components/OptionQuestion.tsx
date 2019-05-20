@@ -6,7 +6,7 @@
 import React, { RefObject } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionData } from "../../resources/ScreenConfig";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import OptionList, { newSelectedOptionsList } from "./OptionList";
 import QuestionText from "./QuestionText";
 import { GUTTER } from "../styles";

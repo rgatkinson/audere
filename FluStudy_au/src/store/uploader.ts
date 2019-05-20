@@ -26,7 +26,7 @@ import {
   ChildrenWithChildrenConfig,
   HouseholdChildrenConfig,
   AssignedSexConfig,
-} from "../resources/ScreenConfig";
+} from "../resources/QuestionConfig";
 import { crashlytics } from "../crashReporter";
 import { saveSurvey } from "./FirebaseStore";
 

@@ -61,7 +61,6 @@ class BuildInfo extends React.Component<Props & WithNamespaces> {
           primary={true}
           onPress={this._copyToClipboard}
         />
-        <Text content={t("copyright")} style={styles.footer} />
       </View>
     );
   }
@@ -71,9 +70,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     alignSelf: "stretch",
+    marginBottom: GUTTER,
   },
   content: {
-    marginVertical: GUTTER,
+    marginBottom: GUTTER,
   },
   footer: {
     alignSelf: "stretch",

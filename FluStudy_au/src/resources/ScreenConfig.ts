@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
 import { Platform } from "react-native";
 import {
   setConsent,
@@ -15,13 +14,13 @@ import { logFluResult } from "../util/fluResults";
 import {
   WhatSymptomsConfig,
   WhenSymptomsConfig,
-  GeneralExposureScreenConfig,
-  GeneralHealthScreenConfig,
+  GeneralExposureConfig,
+  GeneralHealthConfig,
   TestFeedbackConfig,
   TestStripSurveyConfig,
   SurveyQuestionData,
-} from "./ScreenConfig";
-import { DeclarativeScreenConfig } from "../ui/components/DeclarativeScreen";
+} from "./QuestionConfig";
+import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
@@ -34,9 +33,11 @@ import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
 import QuestionText from "../ui/components/QuestionText";
+import RDTReader from "../ui/components/flu/RDTReader";
 import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
+import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
@@ -46,7 +47,7 @@ const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
-export const declarativeScreens: DeclarativeScreenConfig[] = [
+export const Screens: ScreenConfig[] = [
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: { hideBackButton: true, splashImage: "welcome" },
@@ -326,7 +327,7 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
       { tag: ScreenText, props: { italic: true, label: "expoRef" } },
       {
         tag: Questions,
-        props: { questions: GeneralExposureScreenConfig },
+        props: { questions: GeneralExposureConfig },
         validate: true,
       },
     ],
@@ -340,7 +341,7 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
       { tag: Divider },
       {
         tag: Questions,
-        props: { questions: GeneralHealthScreenConfig },
+        props: { questions: GeneralHealthConfig },
         validate: true,
       },
       { tag: ScreenText, props: { label: "next" } },
@@ -466,5 +467,14 @@ export const declarativeScreens: DeclarativeScreenConfig[] = [
       },
     ],
     key: "RDTInstructions",
+  },
+  {
+    body: [
+      {
+        tag: Platform.OS === "android" ? TestStripCamera : RDTReader,
+        props: { next: "TestStripConfirmation" },
+      },
+    ],
+    key: "RDTReader",
   },
 ];

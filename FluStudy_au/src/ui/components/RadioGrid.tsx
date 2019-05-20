@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ScrollIntoView } from "react-native-scroll-into-view";
-import { SurveyQuestionData } from "../../resources/ScreenConfig";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
   GUTTER,

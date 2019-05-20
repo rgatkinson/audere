@@ -16,7 +16,7 @@ import {
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionData } from "../resources/ScreenConfig";
+import { SurveyQuestionData } from "../resources/QuestionConfig";
 import { getStore } from "./index";
 
 interface InnerProps {

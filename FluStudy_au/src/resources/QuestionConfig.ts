@@ -221,7 +221,7 @@ export const ChildrenWithChildrenConfig: SurveyQuestionData = {
   type: "buttonGrid",
 };
 
-export const GeneralExposureScreenConfig = [
+export const GeneralExposureConfig = [
   InContactConfig,
   CoughSneezeConfig,
   {
@@ -297,7 +297,7 @@ export const AssignedSexConfig: SurveyQuestionData = {
   type: "buttonGrid",
 };
 
-export const GeneralHealthScreenConfig = [
+export const GeneralHealthConfig = [
   {
     buttons: [],
     description: "selectAll",

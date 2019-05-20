@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { tracker, FunnelEvents } from "./tracker";
-import { BlueLineConfig, RedWhenBlueConfig } from "../resources/ScreenConfig";
+import { BlueLineConfig, RedWhenBlueConfig } from "../resources/QuestionConfig";
 
 export function logFluResult(getAnswer: (key: string, id: string) => string) {
   const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
