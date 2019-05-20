@@ -250,7 +250,8 @@ class Timer extends React.Component<Props & WithNamespaces> {
   _handleNotificationIOS = (notification: any) => {
     const { navigation, next, startTimeConfig } = this.props;
     if (
-      JSON.stringify(notification.getData()) === JSON.stringify(this._userInfo)
+      JSON.stringify(notification.getData()) === JSON.stringify(this._userInfo) &&
+      navigation.isFocused()
     ) {
       navigation.push(next);
       tracker.logEvent(notificationEvent, {
@@ -265,12 +266,14 @@ class Timer extends React.Component<Props & WithNamespaces> {
 
   _handleNotificationAndroid = (notification: any) => {
     const { navigation, next, startTimeConfig } = this.props;
-    navigation.push(next);
-    tracker.logEvent(notificationEvent, {
-      appLaunch: false,
-      timerConfig: startTimeConfig,
-      message: notification.message,
-    });
+    if (navigation.isFocused()) {
+      navigation.push(next);
+      tracker.logEvent(notificationEvent, {
+        appLaunch: false,
+        timerConfig: startTimeConfig,
+        message: notification.message,
+      });
+    }
   };
 
   _removeNotificationListeners = () => {
