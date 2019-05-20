@@ -29,6 +29,7 @@ jest.mock("react-native-firebase", () => {
 
 jest.mock("react-native-device-info", () => {
   return {
+    isEmulator: jest.fn(),
     getDeviceName: jest.fn(),
     getIPAddress: jest.fn(() => {
       return {

@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Platform } from "react-native";
+import DeviceInfo from "react-native-device-info";
 import {
   setConsent,
   setTenMinuteStartTime,
@@ -471,7 +472,10 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       {
-        tag: Platform.OS === "android" ? TestStripCamera : RDTReader,
+        tag:
+          Platform.OS === "android" || DeviceInfo.isEmulator()
+            ? TestStripCamera
+            : RDTReader,
         props: { next: "TestStripConfirmation" },
       },
     ],
