@@ -46,12 +46,12 @@ export const content = [
       {
         type: "text",
         placeholder: strings.barcode.placeholder,
-        default: "aaaaaaaa",
+        default: "34567890",
       },
       {
         type: "text",
         placeholder: strings.barcode.secondPlaceholder,
-        default: "aaaaaaaa",
+        default: "34567890",
       },
     ],
   },
@@ -170,7 +170,7 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.surveyScreen.generalExposure,
+    title: strings.GeneralExposure.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "GeneralExposure",
   },

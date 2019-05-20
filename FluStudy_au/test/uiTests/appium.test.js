@@ -86,7 +86,11 @@ async function input_screen(driver, screen_info) {
     }
   }
   if (await driver.isKeyboardShown()) {
-    await driver.hideDeviceKeyboard();
+    if (PLATFORM == "iOS") {
+      await driver.elementByAccessibilityId(strings.common.button.done).click();
+    } else {
+      await driver.hideDeviceKeyboard();
+    }
   }
   await scroll_to_element(driver, screen_info.button);
   await driver.elementByAccessibilityId(screen_info.button).click();
@@ -141,8 +145,11 @@ async function timer_screen(driver, screen_info) {
   );
   if (PLATFORM == "iOS") {
     await driver.elementByAccessibilityId(strings.common.button.no).click();
+    expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+      true
+    ); //make sure popup closed
   }
-  await driver.elementByAccessibilityId(screen_info.title).click();
+  await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
   await driver.elementByAccessibilityId(screen_info.button).click();
 }
 
@@ -159,7 +166,7 @@ async function change_to_demo_mode(driver) {
   expect(
     await driver.hasElementByAccessibilityId(strings.common.menu.help)
   ).toBe(true);
-  await demo_triple_tap(driver);
+  await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
   expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
@@ -167,21 +174,21 @@ async function change_to_demo_mode(driver) {
 }
 
 //Triple tap needed for getting into demo mode
-async function demo_triple_tap(driver) {
+async function triple_tap(driver, x_coord, y_coord) {
   if (PLATFORM == "iOS") {
     await new wd.TouchAction(driver)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
+      .tap({ x: x_coord, y: y_coord })
       .wait(15)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
+      .tap({ x: x_coord, y: y_coord })
       .wait(15)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
+      .tap({ x: x_coord, y: y_coord })
       .perform();
   } else {
     await new wd.TouchAction(driver)
       .wait(500)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.13 })
+      .tap({ x: x_coord, y: y_coord })
+      .tap({ x: x_coord, y: y_coord })
+      .tap({ x: x_coord, y: y_coord })
       .perform();
   }
 }
