@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { Platform } from "react-native";
 import {
   NavigationAction,
   NavigationActions,
@@ -95,4 +96,6 @@ const routeConfig = MenuScreens.reduce(
 export default createDrawerNavigator(routeConfig, {
   contentComponent: Menu,
   drawerPosition: "right",
+  // @ts-ignore
+  useNativeAnimations: Platform.OS === "ios", // Can't use on Android
 });
