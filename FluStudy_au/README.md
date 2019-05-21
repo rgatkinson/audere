@@ -10,9 +10,12 @@ How to get running from source
 - Install fastlane
   - `sudo gem install fastlane -NV`
 - Run `fastlane certificates` from `FluStudy_au/ios/`
-  - You will be prompted for a passphrase to decrypt the signing certs from the repo. See Terri for this.
+  - You will be prompted for a passphrase to decrypt the signing certs from the repo. Get this from LastPass > Secure Notes > Shared-Engineering > fastlane match passphrase.
   - If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
   - If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
+- Fetch the Firebase config files from LastPass Shared-Engineering folder as follows:
+  - Save content of “flu@home AU Staging google-services.json” note as `FluStudy_au/android/app/google-services.json`
+  - Save content of “flu@home AU Staging GoogleService-Info.plist” note as `FluStudy_au/ios/fluathome/GoogleService-Info.plist`
 - Run `yarn start` from `FluStudy_au/`
 - Open `FluStudy_au/ios/fluathome.xcworkspace` in Xcode
 - Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
