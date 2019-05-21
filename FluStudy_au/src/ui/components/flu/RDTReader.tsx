@@ -15,7 +15,7 @@ import { newCSRUID } from "../../../util/csruid";
 import Text from "../Text";
 import {
   RDTReader as RDTReaderComponent,
-  ExternalRDTCapturedArgs,
+  RDTCapturedArgs,
   SizeResult,
   ExposureResult,
 } from "../../../native/rdtReader";
@@ -41,7 +41,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this.setState({ spinner: false });
   };
 
-  _onRDTCaptured = async (args: ExternalRDTCapturedArgs) => {
+  _onRDTCaptured = async (args: RDTCapturedArgs) => {
     const { dispatch, navigation, next } = this.props;
     const logArgs = { ...args };
     logArgs.imgBase64 = logArgs.imgBase64.substring(0, 100) + "...";
