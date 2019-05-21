@@ -7,7 +7,8 @@ export declare enum LocationType {
     Clinic = "clinic",
     Childcare = "childcare",
     Port = "port",
-    FredHutch = "fredHutch"
+    FredHutch = "fredHutch",
+    PublicSpace = "publicSpace"
 }
 export declare const Locations: {
     [key: string]: {

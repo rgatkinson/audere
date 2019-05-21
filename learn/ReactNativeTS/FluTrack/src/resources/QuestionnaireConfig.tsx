@@ -126,7 +126,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "BirthDate",
       conditionalNext: {
-        location: new Map([["port", "FluShot"]]),
+        location: new Map([["port", "FluShot"], ["publicSpace", "FluShot"]]),
       },
       nextQuestion: "WhereLive",
       title: "birth",
@@ -1084,7 +1084,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "VaccineDate",
       conditionalNext: {
-        location: new Map([["port", "DaysSick"]]),
+        location: new Map([["port", "DaysSick"], ["publicSpace", "DaysSick"]]),
       },
       nextQuestion: "VaccineLocation",
       title: "vacDate",
@@ -1123,7 +1123,7 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "DaysSick",
       conditionalNext: {
-        location: new Map([["port", "AssignedSexAirport"]]),
+        location: new Map([["port", "AssignedSexAirport"], ["publicSpace", "AssignedSexAirport"]]),
       },
       nextQuestion: "DailyInterference",
       title: "daysSick",
@@ -1318,6 +1318,7 @@ export const questionnaire: SurveyQuestion[] = [
         location: new Map([
           ["homelessShelter", "WhereBorn"],
           ["port", "WhereTravelled14"],
+          ["publicSpace", "SeattleVisitor"],
         ]),
       },
       title: "hispanicLatino",
@@ -1326,6 +1327,37 @@ export const questionnaire: SurveyQuestion[] = [
         { key: "no", primary: true, enabled: true },
         { key: "preferNotToSay", primary: false, enabled: true },
       ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "SeattleVisitor",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "CountryResidence"]]),
+      },
+      nextQuestion: "PublicSpaceAddress",
+      title: "seattleVisitor",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+      ],
+    },
+  },
+  {
+    section: demo,
+    data: {
+      id: "PublicSpaceAddress",
+      nextQuestion: "WhereTravelled14",
+      description: {
+        label: "homeAddressDescription",
+        center: false,
+      },
+      title: "address",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
   {
@@ -1434,6 +1466,7 @@ export const questionnaire: SurveyQuestion[] = [
           ["toAnotherUSState", "StatesVisited"],
           ["toAnotherCountry", "CountriesVisited"],
         ]),
+        location: new Map([["publicSpace", "SeattleArrive"]]),
       },
       optionList: {
         options: [
@@ -1457,6 +1490,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "StatesVisited",
       nextQuestion: "AirlineFlightNum",
+      conditionalNext: {
+        location: new Map([["publicSpace", "SeattleArrive"]]),
+      },
       title: "statesVisited",
       description: {
         label: "statesVisitedDescription",
@@ -1497,6 +1533,9 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "CountriesVisited",
       nextQuestion: "AirlineFlightNum",
+      conditionalNext: {
+        location: new Map([["publicSpace", "SeattleArrive"]]),
+      },
       title: "countriesVisited",
       description: {
         label: "countriesVisitedDescription",
@@ -1533,6 +1572,100 @@ export const questionnaire: SurveyQuestion[] = [
     },
   },
   {
+    section: travel,
+    data: {
+      id: "SeattleArrive",
+      nextQuestion: null,
+      title: "seattleArrive",
+      description: {
+        label: "selectAll",
+        center: true,
+      },
+      conditionalNext: {
+        options: new Map([
+          ["cruise+plane", "PlaneThenCruiseDate"], // HACK
+          ["plane", "PlaneDate"],
+          ["cruise", "CruiseDate"],
+        ]),
+      },
+      optionList: {
+        options: [
+          "cruise",
+          "plane",
+          "other",
+        ],
+        multiSelect: true,
+        withOther: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withOption" },
+        { key: "na", primary: false, enabled: true },
+      ],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "PlaneDate",
+      nextQuestion: null,
+      title: "planeDate",
+      dateInput: {
+        mode: "day",
+        placeholder: "selectDate",
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "PlaneThenCruiseDate",
+      nextQuestion: "CruiseDate",
+      title: "planeDate",
+      dateInput: {
+        mode: "day",
+        placeholder: "selectDate",
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "CruiseDate",
+      nextQuestion: "CruiseLine",
+      title: "cruiseDate",
+      dateInput: {
+        mode: "day",
+        placeholder: "selectDate",
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withDate" }],
+    },
+  },
+  {
+    section: travel,
+    data: {
+      id: "CruiseLine",
+      nextQuestion: null,
+      title: "cruiseLine",
+      optionList: {
+        options: [
+          "carnival",
+          "celebrity",
+          "hollandAmerica",
+          "norwegian",
+          "oceania",
+          "princess",
+          "royal",
+          "other",
+        ],
+        multiSelect: false,
+        withOther: false,
+      },
+      buttons: [{ key: "done", primary: true, enabled: "withOption" }],
+    },
+  },
+  {
     section: geography,
     data: {
       id: "CountryResidence",
@@ -1548,6 +1681,9 @@ export const questionnaire: SurveyQuestion[] = [
     section: geography,
     data: {
       id: "AddressCountryResidence",
+      conditionalNext: {
+        location: new Map([["publicSpace", "SeattleOvernight"]]),
+      },
       nextQuestion: "AddressNextWeek",
       description: {
         label: "addressCountryResidenceDescription",
@@ -1559,6 +1695,35 @@ export const questionnaire: SurveyQuestion[] = [
         countryValueFrom: "CountryResidence",
       },
       buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
+    },
+  },
+  {
+    section: geography,
+    data: {
+      id: "SeattleOvernight",
+      conditionalNext: {
+        buttonKeys: new Map([["yes", "SeattleAddress"]]),
+      },
+      nextQuestion: "WhereTravelled14",
+      title: "seattleOvernight",
+      buttons: [
+        { key: "yes", primary: true, enabled: true },
+        { key: "no", primary: true, enabled: true },
+      ],
+    },
+  },
+  {
+    section: geography,
+    data: {
+      id: "SeattleAddress",
+      nextQuestion: "WhereTravelled14",
+      title: "seattleAddress",
+      addressInput: {
+        showLocationField: false,
+      },
+      buttons: [
+        { key: "done", primary: true, enabled: "withAddress" },
+      ],
     },
   },
   {

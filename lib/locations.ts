@@ -12,7 +12,8 @@ export enum LocationType {
   Clinic = "clinic",
   Childcare = "childcare",
   Port = "port",
-  FredHutch = "fredHutch"
+  FredHutch = "fredHutch",
+  PublicSpace = "publicSpace"
 }
 
 export const Locations: {
@@ -114,6 +115,11 @@ export const Locations: {
   },
   FredHutchLobby: {
     type: LocationType.FredHutch,
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318"
+  },
+  WestlakeMall: {
+    type: LocationType.PublicSpace,
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318"
   }
