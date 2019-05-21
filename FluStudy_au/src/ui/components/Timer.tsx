@@ -255,7 +255,8 @@ class Timer extends React.Component<Props & WithNamespaces> {
   _handleNotificationIOS = (notification: any) => {
     const { navigation, next, startTimeConfig } = this.props;
     if (
-      JSON.stringify(notification.getData()) === JSON.stringify(this._userInfo) &&
+      JSON.stringify(notification.getData()) ===
+        JSON.stringify(this._userInfo) &&
       navigation.isFocused()
     ) {
       navigation.push(next);

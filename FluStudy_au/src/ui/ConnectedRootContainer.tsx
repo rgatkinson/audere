@@ -24,7 +24,6 @@ import {
   setShownOfflineWarning,
   setConnectivity,
 } from "../store/";
-import { AppEventsLogger } from "react-native-fbsdk";
 import { Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
 import {
@@ -256,85 +255,35 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   }
 
-  _firebaseLogging(
-    prevState: NavigationState,
-    newState: NavigationState,
-    action: NavigationAction
-  ) {
-    switch (action.type) {
-      case DrawerActions.OPEN_DRAWER:
-      case DrawerActions.CLOSE_DRAWER:
-        const screen = getActiveRouteName(newState);
-        tracker.logEvent(
-          action.type == DrawerActions.OPEN_DRAWER
-            ? DrawerEvents.OPEN
-            : DrawerEvents.CLOSE,
-          { screen }
-        );
-        break;
-      case NavigationActions.NAVIGATE:
-      case NavigationActions.BACK:
-      case StackActions.POP:
-      case StackActions.POP_TO_TOP:
-      case StackActions.PUSH:
-      case StackActions.RESET:
-        const currentScreen = getActiveRouteName(prevState);
-        const nextScreen = getActiveRouteName(newState);
-
-        if (nextScreen && nextScreen !== currentScreen) {
-          const navEvent = this._getNavEvent(action);
-
-          tracker.setCurrentScreen(nextScreen);
-          if (navEvent) {
-            tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
-          }
-        }
-    }
-  }
-
-  _navLogging(
-    prevState: NavigationState,
-    newState: NavigationState,
-    action: NavigationAction
-  ) {
-    switch (action.type) {
-      case NavigationActions.NAVIGATE:
-      case NavigationActions.BACK:
-      case DrawerActions.OPEN_DRAWER:
-      case DrawerActions.CLOSE_DRAWER:
-      case DrawerActions.TOGGLE_DRAWER:
-      case StackActions.POP:
-      case StackActions.POP_TO_TOP:
-      case StackActions.PUSH:
-      case StackActions.RESET:
-        const currentScreen = getActiveRouteName(prevState);
-        const nextScreen = getActiveRouteName(newState);
-        if (nextScreen != null && nextScreen !== currentScreen) {
-          this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
-          AppEventsLogger.logEvent(`navigation:${action.type}`, {
-            from: currentScreen,
-            to: nextScreen,
-          });
-          crashlytics.log(
-            "Navigating from " + currentScreen + " to " + nextScreen
-          );
-        }
-    }
-  }
-
   _handleNavChange(
     prevState: NavigationState,
     newState: NavigationState,
     action: NavigationAction
   ) {
-    const activeRouteName = getActiveRouteName(newState);
-    if (
-      this.props.activeRouteName != activeRouteName &&
-      activeRouteName != null
-    ) {
-      this.props.dispatch(setActiveRouteName(activeRouteName));
-      this._firebaseLogging(prevState, newState, action);
-      this._navLogging(prevState, newState, action);
+    const currentScreen = this.props.activeRouteName;
+    const nextScreen = getActiveRouteName(newState);
+
+    if (nextScreen != null && nextScreen !== currentScreen) {
+      this.props.dispatch(setActiveRouteName(nextScreen));
+      this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
+      crashlytics.log("Navigating from " + currentScreen + " to " + nextScreen);
+      tracker.setCurrentScreen(nextScreen);
+      const navEvent = this._getNavEvent(action);
+      if (navEvent) {
+        tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
+      }
+    }
+
+    switch (action.type) {
+      case DrawerActions.OPEN_DRAWER:
+      case DrawerActions.CLOSE_DRAWER:
+        tracker.logEvent(
+          action.type == DrawerActions.OPEN_DRAWER
+            ? DrawerEvents.OPEN
+            : DrawerEvents.CLOSE,
+          { screen: nextScreen }
+        );
+        break;
     }
   }
 
@@ -344,6 +293,10 @@ class ConnectedRootContainer extends React.Component<Props> {
 
   _loadingIndicator = () => {
     return <SplashScreen onUnmount={this._onLaunch} />;
+  };
+
+  _handleQuadTap = () => {
+    this._handleAppStateChange("quadTap");
   };
 
   render() {
@@ -358,7 +311,7 @@ class ConnectedRootContainer extends React.Component<Props> {
         <MultiTapContainer
           active={this.props.isDemo}
           taps={4}
-          onMultiTap={() => this._handleAppStateChange("quadTap")}
+          onMultiTap={this._handleQuadTap}
         >
           <View style={styles.touchable} />
         </MultiTapContainer>
@@ -392,7 +345,7 @@ export default connect((state: StoreState) => {
 
     const defaults = {
       activeRouteName: "Welcome",
-      isConnected: false,
+      isConnected: true,
       isDemo: false,
       lastUpdate: undefined,
       workflow: {},
