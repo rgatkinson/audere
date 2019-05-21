@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: INPUT_HEIGHT,
     justifyContent: "center",
-    marginBottom: GUTTER,
+    marginBottom: GUTTER * 2,
     width: BUTTON_WIDTH,
   },
   check: {

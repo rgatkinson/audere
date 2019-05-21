@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     aspectRatio: ASPECT_RATIO,
     height: undefined,
-    marginVertical: GUTTER / 2,
+    marginVertical: GUTTER * 2,
     width: IMAGE_WIDTH,
   },
   menuImage: {

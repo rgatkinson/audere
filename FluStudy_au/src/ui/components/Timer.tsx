@@ -16,7 +16,12 @@ import {
   PushRegistrationError,
 } from "audere-lib/coughProtocol";
 import { tracker, notificationEvent } from "../../util/tracker";
-import { BORDER_RADIUS, BUTTON_WIDTH, SECONDARY_COLOR } from "../styles";
+import {
+  BORDER_RADIUS,
+  BUTTON_WIDTH,
+  GUTTER,
+  SECONDARY_COLOR,
+} from "../styles";
 import BorderView from "./BorderView";
 import ContinueButton from "./ContinueButton";
 import Text from "./Text";
@@ -310,6 +315,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
             style={{
               alignSelf: "center",
               borderRadius: BORDER_RADIUS,
+              marginBottom: GUTTER * 2,
               width: BUTTON_WIDTH,
             }}
           >

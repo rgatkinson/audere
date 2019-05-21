@@ -175,7 +175,6 @@
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
-		F08F62492230A8C8008CCF6A /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F09B108922288224002970AA /* libRNFirebase.a */; };
 /* End PBXBuildFile section */
 

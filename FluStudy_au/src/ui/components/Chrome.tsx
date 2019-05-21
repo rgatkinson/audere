@@ -7,11 +7,11 @@ import React from "react";
 import {
   Image,
   ImageBackground,
-  ImageSourcePropType,
   StatusBar,
   StyleSheet,
   View,
 } from "react-native";
+import { LinearGradient } from "expo";
 import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
@@ -21,6 +21,8 @@ import {
   SPLASH_IMAGE,
   SPLASH_RATIO,
   SYSTEM_PADDING_BOTTOM,
+  NAV_BAR_HEIGHT,
+  STATUS_BAR_HEIGHT,
 } from "../styles";
 
 interface Props {
@@ -33,6 +35,13 @@ interface Props {
 
 export default class Chrome extends React.Component<Props> {
   render() {
+    const {
+      children,
+      hideBackButton,
+      menuItem,
+      navigation,
+      splashImage,
+    } = this.props;
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -45,24 +54,31 @@ export default class Chrome extends React.Component<Props> {
             },
           ]}
         >
+          <LinearGradient
+            colors={["rgba(6, 70, 133, 0.8)", "rgba(255, 255, 255, 0.02)"]}
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: 0,
+              height: splashImage ? 300 : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
+            }}
+          />
           <StatusBar
             barStyle="light-content"
             backgroundColor="transparent"
             translucent={true}
           />
           <NavigationBar
-            hideBackButton={this.props.hideBackButton}
-            menuItem={this.props.menuItem}
-            navigation={this.props.navigation}
+            hideBackButton={hideBackButton}
+            menuItem={menuItem}
+            navigation={navigation}
           />
-          {!!this.props.splashImage && (
-            <Image
-              style={styles.image}
-              source={{ uri: this.props.splashImage }}
-            />
+          {!!splashImage && (
+            <Image style={styles.image} source={{ uri: splashImage }} />
           )}
         </ImageBackground>
-        {this.props.children}
+        {children}
       </View>
     );
   }

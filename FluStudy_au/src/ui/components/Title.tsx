@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
+    lineHeight: 30,
     marginTop: GUTTER / 2,
     marginBottom: GUTTER,
   },

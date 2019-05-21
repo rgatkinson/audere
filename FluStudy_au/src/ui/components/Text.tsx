@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
+    lineHeight: 22,
   },
   extraBold: {
     fontFamily: FONT_EXTRA_BOLD,
