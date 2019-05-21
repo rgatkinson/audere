@@ -2,11 +2,11 @@ How to get running from source
 
 - Install cocoapods
   - `sudo gem install cocoapods`
+- Run `yarn install` from `FluStudy_au`
 - Run `pod install` from `FluStudy_au/ios/`
   - If you run into errors about `undefined method 'native_target'`, you'll need to install version 1.5.3
     - `sudo gem uninstall cocoapods` (when asked to remove executables, say yes)
     - `sudo gem install cocoapods -v 1.5.3`
-- Run `yarn install` from `FluStudy_au`
 - Install fastlane
   - `sudo gem install fastlane -NV`
 - Run `fastlane certificates` from `FluStudy_au/ios/`
