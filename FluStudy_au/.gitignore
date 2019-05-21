@@ -27,8 +27,14 @@ android/app/build
 android/local.properties
 ios/Pods
 xcuserdata
+
+# Expo's build constants that keep changing
 ios/fluathome/Supporting/EXBuildConstants.*
 android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java
+
+# Firebase config files 
+ios/fluathome/GoogleService-Info.plist
+android/app/google-services.json
 
 # fastlane generated files
 ios/fastlane/README.md 
