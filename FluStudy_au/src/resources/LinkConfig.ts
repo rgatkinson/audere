@@ -37,7 +37,6 @@ export function myDr() {
 }
 
 export async function emailSupport(title: string) {
-  console.log(title);
   const barcode = (await getStore()).getState().survey.kitBarcode;
   const body = !!barcode
     ? `Regarding kit ${

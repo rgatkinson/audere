@@ -10,7 +10,7 @@ import {
   setTenMinuteStartTime,
   setOneMinuteStartTime,
 } from "../store";
-import { FunnelEvents, AppHealthEvents } from "../util/tracker";
+import { FunnelEvents } from "../util/tracker";
 import { logFluResult } from "../util/fluResults";
 import {
   WhatSymptomsConfig,
@@ -19,13 +19,11 @@ import {
   GeneralHealthConfig,
   TestFeedbackConfig,
   TestStripSurveyConfig,
-  SurveyQuestionData,
 } from "./QuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
-import { BulletPoints } from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
@@ -33,7 +31,6 @@ import Divider from "../ui/components/Divider";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
-import QuestionText from "../ui/components/QuestionText";
 import RDTReader from "../ui/components/flu/RDTReader";
 import RDTImage from "../ui/components/flu/RDTImage";
 import ScreenText from "../ui/components/ScreenText";
@@ -106,7 +103,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "barcodeonbox" } },
+      { tag: MainImage, props: { uri: "scanbarcode" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
@@ -178,7 +175,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "unpackinginstructions" } },
+      { tag: MainImage, props: { uri: "setupkitbox" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
@@ -187,7 +184,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "begin1sttest" } },
+      { tag: MainImage, props: { uri: "preparetube" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       { tag: VideoPlayer, props: { id: "beginFirstTest" } },
@@ -429,7 +426,11 @@ export const Screens: ScreenConfig[] = [
     key: "Advice",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    body: [
+      { tag: Title },
+      { tag: MainImage, props: { uri: "cleanuptest" } },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
     footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
     key: "CleanTest",
   },

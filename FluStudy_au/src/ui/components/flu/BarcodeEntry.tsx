@@ -4,18 +4,31 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Alert, Image, KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { SampleInfo } from "audere-lib/feverProtocol";
-import { appendInvalidBarcode, setKitBarcode, Action, StoreState } from "../../../store";
+import {
+  appendInvalidBarcode,
+  setKitBarcode,
+  Action,
+  StoreState,
+} from "../../../store";
 import { customRef } from "../CustomRef";
 import { GUTTER, KEYBOARD_BEHAVIOR } from "../../styles";
 import Text from "../Text";
 import NumberInput from "../NumberInput";
-import { invalidBarcodeShapeAlert, validBarcodeShape } from "../../../util/barcodeVerification";
-
+import {
+  invalidBarcodeShapeAlert,
+  validBarcodeShape,
+} from "../../../util/barcodeVerification";
 
 interface Props {
   dispatch(action: Action): void;
@@ -63,7 +76,11 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { t } = this.props;
     return (
-      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
+      <KeyboardAvoidingView
+        behavior={KEYBOARD_BEHAVIOR}
+        enabled
+        style={styles.container}
+      >
         <View style={styles.inputContainer}>
           <Text content={"KIT "} style={styles.kitText} />
           <NumberInput
@@ -88,10 +105,8 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
           />
         </View>
         <View style={styles.tipContainer}>
-          <Image style={styles.image} source={{ uri: "barcode" }} />
           <Text content={t("tips")} style={styles.tip} />
         </View>
-
       </KeyboardAvoidingView>
     );
   }
@@ -131,7 +146,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
       return true;
     }
     return false;
-  };
+  }
 }
 
 export default connect((state: StoreState) => ({
@@ -140,9 +155,8 @@ export default connect((state: StoreState) => ({
 }))(withNamespaces("barcode")(withNavigation(customRef(BarcodeEntry))));
 
 const styles = StyleSheet.create({
-  image: {
-    aspectRatio: 2.2,
-    flex: 0.4,
+  container: {
+    marginHorizontal: GUTTER,
   },
   inputContainer: {
     alignSelf: "stretch",
@@ -156,11 +170,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tip: {
-    flex: 0.6,
-    marginLeft: GUTTER,
+    flex: 1,
   },
   tipContainer: {
-    alignItems: "center",
     flexDirection: "row",
   },
 });

@@ -211,22 +211,22 @@
     "dontMatch": "Those barcodes don't match. Please try again.",
     "placeholder": "Enter barcode",
     "secondPlaceholder": "Confirm barcode",
-    "tips": "**Tips:**\n\nFind the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
+    "tips": "**Tips:**\n\nFind the blue barcode on the box. The code is directly below the barcode."
   },
   "Scan": {
     "enterManually": "Enter barcode manually"
   },
   "ScanConfirmation": {
     "title": "Your code was scanned!",
-    "desc": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "desc": "Thank you. Your barcode was successfully scanned. Next up, you'll perform the test and answer some questions about your symptoms."
   },
   "ManualEntry": {
     "title": "Enter barcode manually",
-    "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box."
+    "desc": "Enter the code found on the corner of your flu kit."
   },
   "ManualConfirmation": {
     "title": "Your code was accepted",
-    "desc": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
   "BarcodeContactSupport": {
     "title": "Please Contact Support",
@@ -239,7 +239,7 @@
   },
   "Unpacking": {
     "title": "Set up your kit box",
-    "desc": "Open the box and remove all the items. Take out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
+    "desc": "Open the box and remove all the items.\n\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
   },
   "Swab": {
     "title": "Prepare the tube",
@@ -255,12 +255,12 @@
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube sitting in box ①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times in the tube.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
     "title": "Did you know?",
-    "desc": "To avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
+    "desc": "If you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",

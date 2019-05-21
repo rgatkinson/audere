@@ -25,7 +25,14 @@ class ScreenText extends React.Component<Props & WithNamespaces> {
         center={center}
         content={t(namespace + ":" + label)}
         italic={italic}
-        style={[{ alignSelf: "stretch", marginBottom: GUTTER }, style]}
+        style={[
+          {
+            alignSelf: "stretch",
+            marginBottom: GUTTER,
+            marginHorizontal: GUTTER,
+          },
+          style,
+        ]}
       />
     );
   }

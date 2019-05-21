@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
+    marginHorizontal: GUTTER / 2,
   },
   linkStyle: {
     color: PRIMARY_COLOR,
