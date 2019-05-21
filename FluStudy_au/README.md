@@ -14,7 +14,7 @@ How to get running from source
   - If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
   - If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
 - Run `yarn start` from `FluStudy_au/`
-- Open `FluStudy_au/ios/flutrack.xcworkspace` in Xcode
+- Open `FluStudy_au/ios/fluathome.xcworkspace` in Xcode
 - Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
 
 To run from source on a physical device that has not already been registered:
