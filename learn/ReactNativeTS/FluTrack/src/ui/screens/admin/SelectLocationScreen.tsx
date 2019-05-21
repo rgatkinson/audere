@@ -21,9 +21,7 @@ import OptionList, {
 import ScreenContainer from "../../components/ScreenContainer";
 
 import { Locations as COLLECTION_LOCATIONS } from "audere-lib/locations";
-import {
-  getLocationType,
-} from "../../../resources/LocationConfig";
+import { getLocationType } from "../../../resources/LocationConfig";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;

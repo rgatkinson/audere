@@ -38,7 +38,9 @@ class SurveyStartScreen extends React.Component<Props & WithNamespaces> {
             content={
               t("youAreNowEnrolled") +
               " " +
-              (locationType !== "port" ? t("pleaseAnswerFollowing") : "")
+              (locationType !== "publicSpace" && locationType !== "port"
+                ? t("pleaseAnswerFollowing")
+                : "")
             }
           />
           <Button

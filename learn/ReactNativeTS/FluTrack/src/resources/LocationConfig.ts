@@ -3,7 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Locations as COLLECTION_LOCATIONS, LocationType } from "audere-lib/locations";
+import {
+  Locations as COLLECTION_LOCATIONS,
+  LocationType,
+} from "audere-lib/locations";
 
 export function getLocationType(locationKey: string) {
   return COLLECTION_LOCATIONS[locationKey].type;

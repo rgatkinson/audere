@@ -89,7 +89,7 @@ export class LogBatcher implements Logger {
     // when it becomes usable, but the uploader calls recursively into
     // here so we will find out soon enough once anything interesting
     // happens.
-    if ((uploader == null) || !uploader.getIsDbDecrypted()) {
+    if (uploader == null || !uploader.getIsDbDecrypted()) {
       return;
     }
 
