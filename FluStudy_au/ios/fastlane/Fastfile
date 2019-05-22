@@ -131,7 +131,8 @@ platform :ios do
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
         "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
-        "Changelog since #{lasttag}" => changelog
+        "Changelog since #{lasttag}" => changelog,
+        "Build log" => ENV["CIRCLE_BUILD_URL"]
       }
     )
   end

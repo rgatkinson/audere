@@ -54,7 +54,8 @@ platform :android do
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
-        "Release Type" => ENV["EXPO_RELEASE_CHANNEL"]
+        "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
+        "Build log" => ENV["CIRCLE_BUILD_URL"]
       }
     )
   end
