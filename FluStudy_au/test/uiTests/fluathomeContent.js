@@ -212,7 +212,7 @@ export const content = [
   },
   {
     type: "rdt",
-    title: strings.RDTReader.title,
+    title: strings.TestStripCamera.title,
     dbScreenName: "RDTReader",
   },
   {
