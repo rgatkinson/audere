@@ -1172,6 +1172,14 @@ export async function getFeverMetrics(
   function symptomText(symptoms: string[], check: string): string {
     return symptoms.length > 0 ? symptoms.includes(check).toString() : "";
   }
+  function symptomOnset(row, check: string): string {
+    const start = row.survey.responses[0].item.find(
+      item => item.id == "SymptomsStart_" + check && item.answer.length > 0
+    );
+    if (start) {
+      return start.answerOptions[start.answer[0].valueIndex].text + " ago";
+    }
+  }
 
   let studyIdData = [];
   rowsNonPii.forEach(row => {
@@ -1212,7 +1220,16 @@ export async function getFeverMetrics(
       fatigue: symptomText(part2Symptoms, "fatigue"),
       aches: symptomText(part2Symptoms, "muscleOrBodyAches"),
       runnynose: symptomText(part2Symptoms, "runningNose"),
-      shortnessofbreath: symptomText(part2Symptoms, "shortnessOfBreath")
+      shortnessofbreath: symptomText(part2Symptoms, "shortnessOfBreath"),
+      feveronset: symptomOnset(row, "feelingFeverish"),
+      chillsorsweatsonset: symptomOnset(row, "chillsOrSweats"),
+      sorethroatonset: symptomOnset(row, "soreThroat"),
+      coughonset: symptomOnset(row, "cough"),
+      headacheonset: symptomOnset(row, "headache"),
+      fatigueonset: symptomOnset(row, "fatigue"),
+      achesonset: symptomOnset(row, "muscleOrBodyAches"),
+      runnynoseonset: symptomOnset(row, "runningNose"),
+      shortnessofbreathonset: symptomOnset(row, "shortnessOfBreath")
     });
   });
 
@@ -1663,6 +1680,51 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Shortness of Breath",
       headerStyle: styles.columnHeader,
       width: 75
+    },
+    feveronset: {
+      displayName: "Fever Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    chillsorsweatsonset: {
+      displayName: "Chills or Sweats Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    sorethroatonset: {
+      displayName: "Sore Throat Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    coughonset: {
+      displayName: "Cough Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    headacheonset: {
+      displayName: "Headache Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    fatigueonset: {
+      displayName: "Fatigue Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    achesonset: {
+      displayName: "Muscle or Body Aches Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    runnynoseonset: {
+      displayName: "Runny Nose Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
+    },
+    shortnessofbreathonset: {
+      displayName: "Shortness of Breath Onset",
+      headerStyle: styles.columnHeader,
+      width: 75
     }
   };
 
@@ -1841,6 +1903,11 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       "Symptom Columns",
       null,
       "For each symptom, the cell is TRUE if the user checked that symptom in part 2, FALSE if they did not check the symptom, and blank if they did not get that far"
+    ],
+    [
+      "Symptom Onset Columns",
+      null,
+      "For each symptom, how long ago the symptom began as reported by the user"
     ]
   ];
 
