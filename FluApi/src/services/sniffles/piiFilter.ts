@@ -14,6 +14,8 @@ const PII_RESPONSE_KEYS = new Set([
   "AddressOtherShelter",
   "AddressCountryResidence",
   "AddressNextWeek",
+  "PublicSpaceAddress",
+  "SeattleAddress",
 
   // Clarified with principle investigator that bed assignment is not a
   // "direct identifier", and is therefore not considered PII.

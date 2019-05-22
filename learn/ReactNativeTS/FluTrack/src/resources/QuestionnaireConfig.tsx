@@ -1348,7 +1348,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: demo,
     data: {
       id: "PublicSpaceAddress",
-      nextQuestion: "WhereTravelled14",
+      nextQuestion: null,
       description: {
         label: "homeAddressDescription",
         center: false,
@@ -1458,7 +1458,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: travel,
     data: {
       id: "WhereTravelled14",
-      nextQuestion: "AirlineFlightNum",
+      nextQuestion: null,
       title: "whereTravelled14",
       conditionalNext: {
         options: new Map([
@@ -1466,7 +1466,7 @@ export const questionnaire: SurveyQuestion[] = [
           ["toAnotherUSState", "StatesVisited"],
           ["toAnotherCountry", "CountriesVisited"],
         ]),
-        location: new Map([["publicSpace", "SeattleArrive"]]),
+        location: new Map([["port", "AirlineFlightNum"]]),
       },
       optionList: {
         options: [

@@ -165,6 +165,8 @@ const PII_RESPONSE_KEYS = new Set([
   "AddressOtherShelter",
   "AddressCountryResidence",
   "AddressNextWeek",
+  "SeattleAddress",
+  "PublicSpaceAddress",
   "BedAssignment",
   "BirthDate",
   "WorkAddress"
