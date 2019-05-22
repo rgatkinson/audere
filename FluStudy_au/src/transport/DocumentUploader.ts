@@ -284,7 +284,6 @@ export class DocumentUploader {
   private attachmentsToPouch(
     attachments?: UploadAttachments
   ): { _attachments: PouchAttachmentObject } | {} {
-    console.log("attachmentsToPouch");
     return attachments == null
       ? {}
       : {
