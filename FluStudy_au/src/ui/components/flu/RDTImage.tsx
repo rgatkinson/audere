@@ -22,6 +22,7 @@ class RDTImage extends React.Component<Props> {
         style={{
           alignSelf: "center",
           aspectRatio: screenWidth / screenHeight,
+          resizeMode: "contain",
           width: "50%",
           marginVertical: GUTTER,
         }}

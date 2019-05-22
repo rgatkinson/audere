@@ -67,7 +67,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
             code: photoId,
           })
         );
-        dispatch(setRDTPhoto(`data:image/gif;base64,${args.imgBase64}`));
+        dispatch(setRDTPhoto(args.imgBase64));
 
         this.setState({ spinner: false, enabled: false });
         navigation.push(next);
@@ -90,16 +90,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           enabled={this.state.enabled}
         />
         <View style={styles.overlayContainer}>
-          <Text
-            center={true}
-            content={t("title")}
-            style={styles.overlayText}
-          />
+          <Text center={true} content={t("title")} style={styles.overlayText} />
           <View style={styles.innerContainer}>
-            <Image
-              style={styles.testStrip}
-              source={{ uri: "TestStrip2" }}
-            />
+            <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
           </View>
         </View>
       </View>
@@ -113,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     flex: 1,
     marginBottom: -1 * SYSTEM_PADDING_BOTTOM,
-    marginHorizontal: Platform.OS === "ios" ? -GUTTER: 0,
+    marginHorizontal: Platform.OS === "ios" ? -GUTTER : 0,
   },
   camera: {
     alignSelf: "stretch",

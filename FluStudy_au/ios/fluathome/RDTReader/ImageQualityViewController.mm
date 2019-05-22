@@ -299,7 +299,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     // this passees the imgage into the showPhotoViewController
                     UIImage *testStripImage = [[ImageProcessor sharedProcessor] interpretResultWithResultWindow: resultWindowMat andControlLine:&control andTestA:&testA andTestB:&testB];
                     if (self.onRDTDetected) {
-                        self.onRDTDetected(passed, testStripImage, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, control, testA, testB);
+                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, control, testA, testB);
                     }
                 } else {
                     if (self.onRDTDetected) {
