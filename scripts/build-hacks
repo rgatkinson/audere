@@ -25,7 +25,7 @@ FILEBAK="$NOTIF_FILE.bak"
 sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
 fi
 
-echo "Updating Firebase build search paths and copying RNFirebaseLinks.h"
+echo "Updating Firebase build search paths"
 match='HEADER_SEARCH_PATHS = .+?;'
 replace='HEADER_SEARCH_PATHS = (\
 					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
@@ -36,9 +36,13 @@ perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
 # `pod install` surprisingly does not do this -- move this particular .h to the
 # right place.  Not sure when they will... but in the meantime, we move it
 # manually.  [philipsu]
-cp "$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
-  "$REPO_ROOT_DIR/$1/ios/Pods/Headers/Public/Firebase/"
-
+if [[ "$OSTYPE" == darwin* ]]; then
+  echo "Copying RNFirebaseLinks.h"
+  cp "$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
+    "$REPO_ROOT_DIR/$1/ios/Pods/Headers/Public/Firebase/"
+else 
+  echo "Skipping copy of RNFirebaseLinks.h because OS is $OSTYPE"
+fi 
 
 echo "Updating DeviceInfo build search paths"
 match='HEADER_SEARCH_PATHS = .+?;'
