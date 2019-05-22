@@ -4,27 +4,38 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
-import { GUTTER } from "../styles";
+import { GUTTER, REGULAR_TEXT } from "../styles";
 
 interface Props {
   content: string;
+  customBulletUri?: string;
 }
 
-export default class BulletPoint extends React.Component<Props> {
+export class BulletPoint extends React.Component<Props> {
   render() {
+    const { customBulletUri, content } = this.props;
     return (
       <View style={styles.container}>
-        <Text content={"\u2022  "} />
-        <Text content={this.props.content} style={{ flex: 1 }} />
+        {!!customBulletUri ? (
+          <Image
+            source={{ uri: customBulletUri }}
+            style={styles.customBullet}
+          />
+        ) : (
+          <Text content={"\u2022  "} />
+        )}
+        <Text content={content} style={{ flex: 1 }} />
       </View>
     );
   }
 }
 
 interface BulletProps {
+  customBulletUri?: string;
+  label?: string;
   namespace: string;
 }
 
@@ -32,24 +43,37 @@ class BulletPointsComponent extends React.Component<
   BulletProps & WithNamespaces
 > {
   render() {
-    const { namespace, t } = this.props;
+    const { customBulletUri, label, namespace, t } = this.props;
+
     return (
       <Fragment>
-        {t(namespace + ":bullets")
+        {t(namespace + (!!label ? `:${label}` : ":bullets"))
           .split("\n")
           .map((bullet: string, index: number) => {
-            return <BulletPoint key={`bullet-${index}`} content={bullet} />;
+            return (
+              <BulletPoint
+                key={`bullet-${index}`}
+                content={bullet}
+                customBulletUri={customBulletUri}
+              />
+            );
           })}
       </Fragment>
     );
   }
 }
-export const BulletPoints = withNamespaces()(BulletPointsComponent);
+export default withNamespaces()(BulletPointsComponent);
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     flexDirection: "row",
     marginBottom: GUTTER,
+  },
+  customBullet: {
+    height: REGULAR_TEXT,
+    width: REGULAR_TEXT,
+    marginRight: GUTTER / 2,
+    marginTop: GUTTER / 5,
   },
 });

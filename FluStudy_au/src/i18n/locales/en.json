@@ -239,23 +239,24 @@
   },
   "Unpacking": {
     "title": "Set up your kit box",
-    "desc": "Open the box and remove all the items.\n\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
+    "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box.",
+    "bullets": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
   },
   "Swab": {
     "title": "Prepare the tube",
-    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
+    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\n Do so slowly and carefully so all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
-    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid). Be careful to only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\nBe careful to only touch the handle, not the tip."
   },
   "Mucus": {
     "title": "Collect sample from nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril.\nRub it around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times in the tube.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
+    "desc": "Place the swab into the tube.\nMake sure the swab tip is touching the bottom of the tube and stir it around 4 times in the tube.\nClick \"Start Timer\" below.\nThe swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
@@ -264,15 +265,15 @@
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
-    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out.\nYou want to squeeze as much liquid out of the swab as possible.\nThrow the swab in the trash. You won't need it again."
   },
   "OpenTestStrip": {
     "title": "Open test strip",
-    "desc": "In the white pouch with purple printing there is a test strip. Open this package by tearing from the top where there is already a small cut."
+    "desc": "In the white pouch with purple printing there is a test strip.\nOpen this package by tearing from the top where there is already a small cut."
   },
   "StripInTube": {
     "title": "Put test strip in tube",
-    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\n\n In the meantime, please answer some questions so we can better understand how this illness has affected you."
+    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "WhatSymptoms": {
     "title": "Symptom Survey",
@@ -308,7 +309,7 @@
   },
   "RDTInstructions": {
     "title": "Take a picture of the strip",
-    "desc": "Next, we'd like you to take a picture of the test strip. \n\n **The app will access your device's camera and will automatically take the picture for you.**"
+    "desc": "Next, we'd like you to take a picture of the test strip.\n**The app will access your device's camera and will automatically take the picture for you.**"
   },
   "RDTReader": {
     "title": "RDT READER",

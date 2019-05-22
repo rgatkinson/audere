@@ -24,6 +24,7 @@ import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
+import BulletPointsComponent from "../ui/components/BulletPoint";
 import ConsentText from "../ui/components/ConsentText";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
@@ -63,7 +64,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: { hideBackButton: true, splashImage: "welcome" },
+    chromeProps: { hideBackButton: true, splashImage: "whatsrequired" },
     key: "WhatsRequired",
     footer: [
       {
@@ -74,7 +75,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: { hideBackButton: true, splashImage: "welcome" },
+    chromeProps: { hideBackButton: true, splashImage: "readytobegin" },
     key: "ReadyToBegin",
     footer: [
       {
@@ -177,7 +178,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "setupkitbox" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
     ],
     footer: [{ tag: ContinueButton, props: { next: "Swab" } }],
     key: "Unpacking",
@@ -186,7 +190,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "preparetube" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "beginFirstTest" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "OpenSwab" } }],
@@ -196,7 +203,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "opennasalswab" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
     ],
     footer: [{ tag: ContinueButton, props: { next: "Mucus" } }],
     key: "OpenSwab",
@@ -205,7 +215,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "collectmucus" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "collectSample" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "SwabInTube" } }],
@@ -215,7 +228,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "putswabintube" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
     ],
     footer: [
       {
@@ -252,7 +268,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "removeswabfromtube" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "removeSwabFromTube" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "OpenTestStrip" } }],
@@ -263,7 +282,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "openteststrip" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "openTestStrip" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "StripInTube" } }],
@@ -273,7 +295,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "openteststrip_1" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "putTestStripInTube" } },
     ],
     footer: [
@@ -371,7 +396,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "removeteststrip" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
       { tag: VideoPlayer, props: { id: "removeTestStrip" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "RDTInstructions" } }],
@@ -460,7 +488,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "takepictureteststrip" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
     ],
     footer: [
       {
