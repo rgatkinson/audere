@@ -1,6 +1,11 @@
 {
-  "Welcome": {
-    "title": "Welcome"
+  "Advice": {
+    "desc": "We're sorry you're not feeling well and we'd like to help. Here are a few resources from leading health organisations with tips and information on how to get well."
+  },
+  "Thanks": {
+    "desc": "Your participation could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us."
+  },
+  "surveyButton": {
+    "incorrect": "During the test, I realised I did something incorrectly"
   }
 }
-
