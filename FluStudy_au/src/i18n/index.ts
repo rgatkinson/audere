@@ -6,11 +6,12 @@
 import { Localization } from "expo-localization";
 import i18n from "i18next";
 import enStrings from "./locales/en.json";
+import enAuStrings from "./locales/en-AU.json";
 import esStrings from "./locales/es.json";
 
 const languageDetector = {
   type: "languageDetector",
-  async: true,
+  async: false,
   detect: () => Localization.locale,
   init: () => {},
   cacheUserLanguage: () => {},
@@ -18,6 +19,7 @@ const languageDetector = {
 i18n.use(languageDetector).init({
   fallbackLng: "en",
   resources: {
+    'en-AU': enAuStrings,
     en: enStrings,
     es: esStrings,
   },

@@ -7,6 +7,7 @@
       "cancel": "Cancel",
       "submit": "Submit",
       "done": "Done",
+      "back": "Back",
       "next": "Next",
       "getStarted": "Get Started",
       "ok": "Ok",
@@ -60,11 +61,6 @@
     "october": "October",
     "november": "November",
     "december": "December"
-  },
-
-  "navigationBar": {
-    "back": "Back",
-    "next": "Next"
   },
   "pushNotificationModal": {
     "pushNotificationTitle": "May we send you notifications?",

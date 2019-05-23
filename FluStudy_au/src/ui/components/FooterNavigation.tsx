@@ -36,7 +36,7 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
       <View style={styles.container}>
         <Button
           enabled={!hideBackButton}
-          label={hideBackButton ? " " : t("back")}
+          label={hideBackButton ? " " : t("common:button:back")}
           primary={false}
           style={styles.button}
           onPress={() => navigation.pop()}
@@ -44,7 +44,7 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
         <StepDots step={stepDots.step} total={stepDots.total} />
         <Button
           enabled={true}
-          label={t("next")}
+          label={t("common:button:next")}
           primary={false}
           style={styles.button}
           onPress={this._onNext}
@@ -68,6 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(
-  withNamespaces("navigationBar")(FooterNavigation)
-);
+export default withNavigation(withNamespaces()(FooterNavigation));

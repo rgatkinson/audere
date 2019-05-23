@@ -129,4 +129,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("navigationBar")(NavigationBar);
+export default withNamespaces()(NavigationBar);
