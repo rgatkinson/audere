@@ -141,9 +141,18 @@ export function connectorFromCredentials(
   credentials: Promise<string>
 ): Connector {
   return async () => {
-    const parsed = JSON.parse(await credentials);
-    return firebase.initializeApp({
-      credential: firebase.credential.cert(parsed)
+    return existingApp() || firebase.initializeApp({
+      credential: firebase.credential.cert(JSON.parse(await credentials))
     });
   };
+}
+
+function existingApp(): firebase.app.App | null {
+  // Firebase gets offended if you try to initialize it more than once,
+  // or if you access the app before initializing it.
+  try {
+    return firebase.app();
+  } catch (err) {
+    return null;
+  }
 }
