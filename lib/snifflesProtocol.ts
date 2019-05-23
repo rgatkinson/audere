@@ -127,8 +127,6 @@ export interface VisitCommonInfo {
   location?: string;
   administrator?: string;
   events: EventInfo[];
-  // local uid used on client for this document
-  localUid?: string;
 }
 
 // Information about gift cards given to participants

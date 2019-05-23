@@ -48,7 +48,6 @@ export interface VisitCommonInfo {
     location?: string;
     administrator?: string;
     events: EventInfo[];
-    localUid?: string;
 }
 export interface GiftCardInfo {
     barcodeType: string;

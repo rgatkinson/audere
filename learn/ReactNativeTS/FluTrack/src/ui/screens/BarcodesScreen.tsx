@@ -15,20 +15,12 @@ import {
 } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import ContentContainer from "../components/ContentContainer";
-import { NavigationScreenProp } from "react-navigation";
-import { Constants } from "expo";
 import Button from "../components/Button";
-import {
-  BARCODE_PREFIX,
-  DEMO_TRUE_PREFIX,
-  DEMO_FALSE_PREFIX,
-  uploader,
-} from "../../store/uploader";
+import { BARCODE_PREFIX, DEMO_TRUE_PREFIX } from "../../store/uploader";
 
 interface BarcodeInfo {
   barcode: string;
   guid: string;
-  csruid?: string;
   isDemo: boolean;
 }
 
@@ -65,13 +57,6 @@ export default class ExportBarcodesScreen extends React.Component {
             });
           }
         });
-        const csruids = await uploader.getExistingCSRUIDs(guids);
-        barcodes = barcodes.map(barcodeInfo => {
-          if (csruids.has(barcodeInfo.guid)) {
-            return { ...barcodeInfo, csruid: csruids.get(barcodeInfo.guid) };
-          }
-          return barcodeInfo;
-        });
         this.setState({ barcodes });
       }
     });
@@ -84,14 +69,11 @@ export default class ExportBarcodesScreen extends React.Component {
   _renderItem = ({ item }: { item: BarcodeInfo }) => {
     return (
       <View style={styles.row}>
-        <View style={[{ width: "20%" }, styles.textContainer]}>
+        <View style={[{ width: "25%" }, styles.textContainer]}>
           <Text style={styles.text}>{item.barcode}</Text>
         </View>
-        <View style={[{ width: "30%" }, styles.textContainer]}>
-          <Text style={styles.text}>{item.guid}</Text>
-        </View>
         <View style={[{ flex: 1 }, styles.textContainer]}>
-          <Text style={styles.text}>{item.csruid}</Text>
+          <Text style={styles.text}>{item.guid}</Text>
         </View>
         <View style={[{ width: "3%" }, styles.textContainer]}>
           <Text style={styles.text}>{item.isDemo ? "*" : ""}</Text>
@@ -114,7 +96,6 @@ export default class ExportBarcodesScreen extends React.Component {
               item: {
                 barcode: "BARCODE",
                 guid: "GUID",
-                csruid: "CSRUID",
                 isDemo: false,
               },
             })}

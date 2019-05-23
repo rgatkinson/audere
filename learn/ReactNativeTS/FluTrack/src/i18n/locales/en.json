@@ -229,7 +229,7 @@
     "whereBorn": "What country were you born in?",
     "timeUS": "How long have you been living in the United States?",
     "medInsurance": "We would like to know about your medical insurance.",
-    "whereTravelled14": "Where have you traveled in the past 14 days? (This includes airports where you may have had a layover, and your home country).",
+    "whereTravelled14": "Where have you traveled in the past 14 days? (This includes airports where you may have had a layover, and your home country.)",
     "statesVisited": "What US states have you traveled to in the past 14 days?",
     "countriesVisited": "What countries have you traveled to in the past 14 days?",
     "airlineFlightNum": "What was your airline and flight number to Seattle?",
