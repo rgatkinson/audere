@@ -1348,7 +1348,7 @@ export const questionnaire: SurveyQuestion[] = [
     section: demo,
     data: {
       id: "PublicSpaceAddress",
-      nextQuestion: null,
+      nextQuestion: "WhereTravelled14",
       description: {
         label: "homeAddressDescription",
         center: false,

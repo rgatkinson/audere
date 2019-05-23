@@ -222,7 +222,7 @@
     "seattleVisitor": "Are you a visitor to Seattle?",
     "seattleOvernight": "Do you plan to stay in Seattle overnight (or have you already stayed in Seattle overnight?)",
     "seattleAddress": "What is the address in Seattle where you stayed last night (or plan to stay tonight, if different)?",
-    "seattleArrive": "Did you arrive in Seattle by cruise, airplane, or another method of transportation?",
+    "seattleArrive": "How did you arrive in Seattle?",
     "planeDate": "What day did you arrive in Seattle by airplane?",
     "cruiseDate": "What day did you arrive in Seattle by cruise?",
     "cruiseLine": "Select the cruise line for your arrival to Seattle.",
