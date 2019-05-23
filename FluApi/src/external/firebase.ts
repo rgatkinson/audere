@@ -125,34 +125,33 @@ export class FirebaseReceiver {
   }
 }
 
+let theOneApp: firebase.app.App | null = null;
+
 export function connectorFromSqlSecrets(sql: SplitSql): Connector {
-  const secrets = new SecretConfig(sql);
-  return connectorFromCredentials(
-    secrets.getMaybeEnvFile("FIREBASE_TRANSPORT_CREDENTIALS")
+  return async () => theOneApp || getOrCreateApp(
+    await new SecretConfig(sql).getMaybeEnvFile("FIREBASE_TRANSPORT_CREDENTIALS")
   );
 }
 
 export function connectorFromFilename(path: string): Connector {
-  const asyncContents = fsPromise.readFile(path, { encoding: "utf8" });
-  return connectorFromCredentials(asyncContents);
+  return async () => theOneApp || getOrCreateApp(
+    await fsPromise.readFile(path, { encoding: "utf8" })
+  );
 }
 
 export function connectorFromCredentials(
   credentials: Promise<string>
 ): Connector {
-  return async () => {
-    return existingApp() || firebase.initializeApp({
-      credential: firebase.credential.cert(JSON.parse(await credentials))
-    });
-  };
+  return async () => theOneApp || getOrCreateApp(await credentials);
 }
 
-function existingApp(): firebase.app.App | null {
-  // Firebase gets offended if you try to initialize it more than once,
-  // or if you access the app before initializing it.
-  try {
-    return firebase.app();
-  } catch (err) {
-    return null;
+// Firebase gets offended if you try to initialize it more than once,
+// or if you access the app before initializing it.
+function getOrCreateApp(credentials: string): firebase.app.App {
+  if (theOneApp == null) {
+    theOneApp = firebase.initializeApp({
+      credential: firebase.credential.cert(JSON.parse(credentials))
+    });
   }
+  return theOneApp;
 }
