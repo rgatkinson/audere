@@ -179,7 +179,6 @@
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
 		F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
-		F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F09B108922288224002970AA /* libRNFirebase.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -224,13 +223,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = D8D9DB831C6D03DB009FBC0E;
 			remoteInfo = SMXCrashlytics;
-		};
-		F09B108822288224002970AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F09B108422288224002970AA /* RNFirebase.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = RNFirebase;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -419,7 +411,6 @@
 		F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
-		F09B108422288224002970AA /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -431,7 +422,6 @@
 				EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */,
 				EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */,
 				F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */,
-				F0CB879D222A4752009EDFED /* libRNFirebase.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,7 +670,6 @@
 			children = (
 				F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */,
 				F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */,
-				F09B108422288224002970AA /* RNFirebase.xcodeproj */,
 				EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */,
 			);
 			path = Libraries;
@@ -718,14 +707,6 @@
 			children = (
 			);
 			name = "Recovered References";
-			sourceTree = "<group>";
-		};
-		F09B108522288224002970AA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F09B108922288224002970AA /* libRNFirebase.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -802,10 +783,6 @@
 					ProjectRef = F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */;
 				},
 				{
-					ProductGroup = F09B108522288224002970AA /* Products */;
-					ProjectRef = F09B108422288224002970AA /* RNFirebase.xcodeproj */;
-				},
-				{
 					ProductGroup = F08F62412230A8A8008CCF6A /* Products */;
 					ProjectRef = F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */;
 				},
@@ -858,13 +835,6 @@
 			fileType = archive.ar;
 			path = libSMXCrashlytics.a;
 			remoteRef = F0980ACD223C7C4500E540DE /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F09B108922288224002970AA /* libRNFirebase.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRNFirebase.a;
-			remoteRef = F09B108822288224002970AA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1215,7 +1185,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1355,7 +1325,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (

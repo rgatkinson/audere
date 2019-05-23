@@ -7,7 +7,6 @@
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 NOTIF_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
-FIREBASE_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
 DEVICEINFO_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
 
 if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE";
@@ -24,25 +23,6 @@ insert='HEADER_SEARCH_PATHS = (\
 FILEBAK="$NOTIF_FILE.bak"
 sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
 fi
-
-echo "Updating Firebase build search paths"
-match='HEADER_SEARCH_PATHS = .+?;'
-replace='HEADER_SEARCH_PATHS = (\
-					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
-					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/**",\
-				);'
-FILEBAK="$FIREBASE_FILE.bak"
-perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
-# `pod install` surprisingly does not do this -- move this particular .h to the
-# right place.  Not sure when they will... but in the meantime, we move it
-# manually.  [philipsu]
-if [[ "$OSTYPE" == darwin* ]]; then
-  echo "Copying RNFirebaseLinks.h"
-  cp "$REPO_ROOT_DIR/$1/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
-    "$REPO_ROOT_DIR/$1/ios/Pods/Headers/Public/Firebase/"
-else 
-  echo "Skipping copy of RNFirebaseLinks.h because OS is $OSTYPE"
-fi 
 
 echo "Updating DeviceInfo build search paths"
 match='HEADER_SEARCH_PATHS = .+?;'

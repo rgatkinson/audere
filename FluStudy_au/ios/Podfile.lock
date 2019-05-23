@@ -395,6 +395,9 @@ PODS:
     - Crashlytics
     - Fabric
     - React
+  - RNFirebase (5.2.3):
+    - Firebase/Core
+    - React
   - yoga (0.57.1.React)
 
 DEPENDENCIES:
@@ -459,6 +462,7 @@ DEPENDENCIES:
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - ReactNativeFabric (from `../node_modules/react-native-fabric`)
+  - RNFirebase (from `../node_modules/react-native-firebase/ios`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -590,6 +594,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-video/react-native-video.podspec"
   ReactNativeFabric:
     :path: "../node_modules/react-native-fabric"
+  RNFirebase:
+    :path: "../node_modules/react-native-firebase/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -682,8 +688,9 @@ SPEC CHECKSUMS:
   react-native-netinfo: f4039dc64d3a55da59d6d03d4bd667d0a9f5450e
   react-native-video: 44c6befbc1526283ca1919891fcebe4680feade4
   ReactNativeFabric: 01c1333f76fd4708a5833d71f0a4832a9266bf0f
+  RNFirebase: 57f6c2adb24355b4e6211e028a8e97e473432245
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 55cbe8cf916225715b7b2eb65391ad71c5d36e4d
+PODFILE CHECKSUM: 8071614a2fab74be3425ff2389ebcf6b4a99b89c
 
 COCOAPODS: 1.5.3
