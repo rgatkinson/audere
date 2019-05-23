@@ -12,7 +12,7 @@ import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { Action, setRDTPhoto, setTestStripImg, uploader } from "../../store";
-import { newCSRUID } from "../../util/csruid";
+import { newUID } from "../../util/csruid";
 import Chrome from "../components/Chrome";
 import Text from "../components/Text";
 import {
@@ -59,7 +59,7 @@ class RDTReaderScreen extends React.Component<Props & WithNamespaces> {
       this.setState({ spinner: true });
 
       try {
-        const photoId = await newCSRUID();
+        const photoId = await newUID();
 
         // PLAT-51: This won't work offline.  But we may not need it to.  More
         // details in the task.

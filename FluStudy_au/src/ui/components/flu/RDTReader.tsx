@@ -11,7 +11,7 @@ import { withNavigation, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { Action, setTestStripImg, setRDTPhoto, uploader } from "../../../store";
-import { newCSRUID } from "../../../util/csruid";
+import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import {
   RDTReader as RDTReaderComponent,
@@ -55,7 +55,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       this.setState({ spinner: true });
 
       try {
-        const photoId = await newCSRUID();
+        const photoId = await newUID();
 
         // PLAT-51: This won't work offline.  But we may not need it to.  More
         // details in the task.

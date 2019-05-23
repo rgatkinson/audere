@@ -46,7 +46,7 @@ import {
 import { EventInfoKind, WorkflowInfo } from "audere-lib/coughProtocol";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
-import { newCSRUID } from "../util/csruid";
+import { newUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import { getMarketingProperties, AppHealthEvents } from "../util/tracker";
 import { getRemoteConfig, loadAllRemoteConfigs } from "../util/remoteConfig";
@@ -239,7 +239,7 @@ class ConnectedRootContainer extends React.Component<Props> {
   }
 
   async initializeCSRUID(): Promise<void> {
-    const csruid = await newCSRUID();
+    const csruid = await newUID();
     this.props.dispatch(setCSRUIDIfUnset(csruid));
   }
 
