@@ -6,12 +6,26 @@ import {
   FirestoreProtocolDocument,
   SurveyNonPIIInfo,
   DocumentType,
+  ProtocolDocument,
 } from "audere-lib/coughProtocol";
 import { PhotoUploader } from "../transport/PhotoUploader";
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
+const DEFAULT_PHOTO_COLLECTION = "photos";
 
 const photoUploader = new PhotoUploader();
+
+function getSurveyCollection() {
+  const collectionName =
+    process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
+  return firebase.firestore().collection(collectionName);
+}
+
+function getPhotoCollection() {
+  const collectionName =
+    process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
+  return firebase.firestore().collection(collectionName);
+}
 
 export async function initializeFirestore() {
   // This enables offline caching
@@ -20,42 +34,56 @@ export async function initializeFirestore() {
 
 export async function saveSurvey(docId: string, survey: SurveyNonPIIInfo) {
   try {
-    const existingRef = getSurveyCollection().doc(docId);
-    const existingSnap = await existingRef.get();
-    const storedSurvey: FirestoreProtocolDocument = {
-      _transport: {
-        sentAt: new Date().toISOString(),
-        contentHash: hashFromSurvey(survey),
-        lastWriter: "sender",
-        protocolVersion: 1,
-      },
-      device: DEVICE_INFO,
-      docId,
-      documentType: DocumentType.Survey,
+    const surveyDocument: FirestoreProtocolDocument = frame({
       schemaId: 1,
+      docId,
+      device: DEVICE_INFO,
+      documentType: DocumentType.Survey,
       survey,
-    };
-
-    if (existingSnap.exists) {
-      await existingRef.update(storedSurvey);
-    } else {
-      await existingRef.set(storedSurvey);
-    }
+    });
+    await getSurveyCollection()
+      .doc(docId)
+      .set(surveyDocument);
   } catch (e) {
     logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, e);
   }
 }
 
-function getSurveyCollection() {
-  const collectionName =
-    process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
-  return firebase.firestore().collection(collectionName);
+export async function savePhoto(photoId: string, jpegBase64: string) {
+  try {
+    photoUploader.savePhoto(photoId, jpegBase64);
+  } catch (e) {
+    // Error was already logged
+    return;
+  }
+
+  try {
+    const photoDocument: FirestoreProtocolDocument = frame({
+      schemaId: 1,
+      docId: photoId,
+      device: DEVICE_INFO,
+      documentType: DocumentType.Photo,
+      photo: {
+        timestamp: new Date().toISOString(),
+        photoId,
+      },
+    });
+    await getPhotoCollection()
+      .doc(photoId)
+      .set(photoDocument);
+  } catch (e) {
+    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, e);
+  }
 }
 
-function hashFromSurvey(survey: SurveyNonPIIInfo) {
-  return sha256(JSON.stringify(survey));
-}
-
-export function savePhoto(photoId: string, jpegBase64: string): void {
-  photoUploader.savePhoto(photoId, jpegBase64);
+function frame(document: ProtocolDocument): FirestoreProtocolDocument {
+  return {
+    ...document,
+    _transport: {
+      sentAt: new Date().toISOString(),
+      contentHash: sha256(JSON.stringify(document)),
+      lastWriter: "sender",
+      protocolVersion: 1,
+    },
+  };
 }

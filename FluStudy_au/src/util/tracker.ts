@@ -95,6 +95,7 @@ export const AppHealthEvents = {
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
   SAVE_STORAGE_PASSWORD_ERROR: "save_storage_password_error",
   SMARTY_STREETS_ERROR: "smarty_streets_error",
+  FIRESTORE_SAVE_PHOTO_ERROR: "firestore_save_photo_error",
   FIRESTORE_SAVE_SURVEY_ERROR: "firestore_save_survey_error",
 };
 

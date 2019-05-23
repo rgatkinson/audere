@@ -149,6 +149,10 @@ export interface PhotoDocument extends ProtocolDocumentBase {
 
 export interface PhotoInfo {
   timestamp: string;
+  photoId: string;
+}
+
+export interface PhotoDbInfo extends PhotoInfo {
   jpegBase64: string;
 }
 

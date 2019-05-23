@@ -14,7 +14,11 @@ import {
   jsonColumn,
   unique
 } from "../../util/sql";
-import { DeviceInfo, PhotoInfo, SurveyNonPIIInfo } from "audere-lib/dist/coughProtocol";
+import {
+  DeviceInfo,
+  PhotoDbInfo,
+  SurveyNonPIIInfo
+} from "audere-lib/dist/coughProtocol";
 
 export function defineCoughModels(sql: SplitSql): CoughModels {
   const models: CoughModels = {
@@ -62,7 +66,7 @@ export interface PhotoAttributes {
   id?: string;
   docId: string;
   device: DeviceInfo;
-  photo: PhotoInfo;
+  photo: PhotoDbInfo;
 }
 export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
   return defineModel<PhotoAttributes>(sql.nonPii, "cough_photos", {

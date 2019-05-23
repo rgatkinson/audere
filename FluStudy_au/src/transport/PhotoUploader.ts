@@ -305,7 +305,11 @@ async function logIfError<T>(
   try {
     return await call();
   } catch (err) {
-    throw logError(func, location, err);
+    if ((err as any).logged) {
+      throw err;
+    } else {
+      throw logError(func, location, err);
+    }
   }
 }
 
