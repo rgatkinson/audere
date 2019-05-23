@@ -19,7 +19,7 @@ const languageDetector = {
 i18n.use(languageDetector).init({
   fallbackLng: "en",
   resources: {
-    'en-AU': enAuStrings,
+    "en-AU": enAuStrings,
     en: enStrings,
     es: esStrings,
   },

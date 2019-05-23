@@ -27,11 +27,6 @@ interface Props {
 class TestStripCamera extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._takePicture = this._takePicture.bind(this);
-  }
-
   state = {
     spinner: !DeviceInfo.isEmulator(),
   };
@@ -40,7 +35,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     this.setState({ spinner: false });
   };
 
-  async _takePicture() {
+  _takePicture = async () => {
     const { dispatch, navigation, next, t } = this.props;
     if (!this.state.spinner) {
       this.setState({ spinner: true });

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Image, Platform, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
@@ -30,11 +30,10 @@ interface Props {
 
 @connect()
 class RDTReader extends React.Component<Props & WithNamespaces> {
-  camera = React.createRef<any>();
-
   state = {
     spinner: !DeviceInfo.isEmulator(),
     enabled: true,
+    color: "yellow",
   };
 
   _cameraReady = () => {
@@ -42,25 +41,17 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
-    const { dispatch, navigation, next } = this.props;
-    const logArgs = { ...args };
-    logArgs.imgBase64 = logArgs.imgBase64.substring(0, 100) + "...";
     if (!args.testStripFound) {
+      this._updateFeedback(args);
       return;
     }
-    console.log(JSON.stringify(logArgs, null, 2));
-    console.log("SizeResult: " + SizeResult[logArgs.sizeResult]);
-    console.log("ExposureResult: " + ExposureResult[logArgs.exposureResult]);
+
+    const { dispatch, navigation, next } = this.props;
     if (!this.state.spinner) {
       this.setState({ spinner: true });
-
       try {
         const photoId = await newUID();
-
-        // PLAT-51: This won't work offline.  But we may not need it to.  More
-        // details in the task.
         savePhoto(photoId, args.imgBase64);
-
         dispatch(
           setTestStripImg({
             sample_type: "TestStripBase64",
@@ -68,7 +59,6 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           })
         );
         dispatch(setRDTPhoto(args.imgBase64));
-
         this.setState({ spinner: false, enabled: false });
         navigation.push(next);
       } catch (e) {
@@ -77,22 +67,48 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
   };
 
+  _updateFeedback = (args: RDTCapturedArgs) => {
+    const { isCentered, sizeResult, isFocused, isRightOrientation, exposureResult } = args;
+    const score = 0
+      + (isCentered ? 1 : 0)
+      + (isFocused ? 1 : 0)
+      + (isRightOrientation ? 1 : 0)
+      + (sizeResult === SizeResult.RIGHT_SIZE ? 1 : 0)
+      + (exposureResult === ExposureResult.NORMAL ? 1 : 0);
+
+    if (score > 3) {
+      this.setState({ color: "green" });
+    } else if (score > 1) {
+      this.setState({ color: "greenyellow" });
+    } else {
+      this.setState({ color: "yellow" });
+    }
+  }
+
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner} />
         <RDTReaderComponent
-          ref={this.camera}
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
           enabled={this.state.enabled}
         />
         <View style={styles.overlayContainer}>
-          <Text center={true} content={t("title")} style={styles.overlayText} />
-          <View style={styles.innerContainer}>
-            <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
+          <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
+        </View>
+        <View style={styles.overlayContainer}>
+          <View style={styles.shapeContainer}>
+            <View style={styles.row}>
+              <Image style={styles.shape} source={{ uri: this.state.color + "square" }} />
+              <Image style={styles.shape} source={{ uri: this.state.color + "circle" }} />
+            </View>
+            <View style={styles.row}>
+              <Image style={styles.shape} source={{ uri: this.state.color + "triangle" }} />
+              <Image style={styles.shape} source={{ uri: this.state.color + "hexagon" }} />
+            </View>
           </View>
         </View>
       </View>
@@ -112,13 +128,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     flex: 1,
   },
-  innerContainer: {
-    height: "100%",
-    flexDirection: "row",
-    flex: 1,
-    marginHorizontal: GUTTER * 2,
-    marginBottom: GUTTER,
-  },
   overlayText: {
     color: "white",
     fontSize: LARGE_TEXT,
@@ -129,21 +138,31 @@ const styles = StyleSheet.create({
   },
   overlayContainer: {
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     left: 0,
     right: 0,
     position: "absolute",
     top: 0,
     bottom: 0,
-    marginBottom: GUTTER + SYSTEM_PADDING_BOTTOM,
+    marginBottom: SYSTEM_PADDING_BOTTOM,
   },
   testStrip: {
-    alignSelf: "center",
     aspectRatio: 0.06,
-    height: "65%",
+    height: (Dimensions.get("window").height / 2) - GUTTER,
     opacity: 0.5,
-    marginTop: GUTTER,
-    marginLeft: GUTTER,
     width: undefined,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 80,
+  },
+  shapeContainer: {
+    height: Dimensions.get("window").height / 2,
+    justifyContent: "space-between",
+  },
+  shape: {
+    width: 24,
+    height: 24,
   },
 });

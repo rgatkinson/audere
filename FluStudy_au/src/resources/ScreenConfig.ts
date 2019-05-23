@@ -46,6 +46,8 @@ const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
 
+const useRdtReader = Platform.OS === "ios" && !DeviceInfo.isEmulator();
+
 export const Screens: ScreenConfig[] = [
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
@@ -420,7 +422,7 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: RDTImage },
+      { tag: RDTImage, props: { rdt: useRdtReader } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "TestStripSurvey" } }],
     key: "TestStripConfirmation",
@@ -504,10 +506,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       {
-        tag:
-          Platform.OS === "android" || DeviceInfo.isEmulator()
-            ? TestStripCamera
-            : RDTReader,
+        tag: useRdtReader ? RDTReader : TestStripCamera,
         props: { next: "TestStripConfirmation" },
       },
     ],
