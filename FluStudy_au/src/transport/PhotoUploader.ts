@@ -38,11 +38,11 @@ interface SaveEvent {
 
 interface UploadNextEvent {
   type: "UploadNext";
-  clearFailures: boolean;
 }
 
 export interface Config {
   storage?: FirebaseStorage;
+  network?: NetInfoIsConnected;
   collection?: string;
 }
 
@@ -55,12 +55,22 @@ export type FirebaseStoragePutFileArgs = {
   storagePath: string;
 }
 
+export interface NetInfoIsConnected {
+  addEventListener(eventName: string, listener: NetInfoIsConnectedListener): void;
+  fetch(): Promise<boolean>;
+}
+
+export interface NetInfoIsConnectedListener {
+  (connected: boolean): void;
+}
+
 export class PhotoUploader {
   private pendingEvents: Event[];
   private readonly failedFiles: Set<string>;
   private readonly timer: Timer;
   private readonly pump: Pump;
   private readonly storage: FirebaseStorage;
+  private readonly network: NetInfoIsConnected;
   private readonly idle: IdleManager;
   private readonly collection: string;
 
@@ -69,13 +79,14 @@ export class PhotoUploader {
     this.failedFiles = new Set();
     this.idle = new IdleManager(false);
     this.storage = config.storage || new DefaultFirebaseStorage();
+    this.network = config.network || NetInfo.isConnected;
     this.collection = config.collection || "photos";
     this.pump = new Pump(() => this.pumpEvents());
-    this.timer = new Timer(() => this.uploadNext(true), RETRY_DELAY);
-    NetInfo.isConnected.addEventListener("connectionChange", connected =>
+    this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
+    this.network.addEventListener("connectionChange", connected =>
       this.onConnectionChange(connected)
     );
-    process.nextTick(() => this.uploadNext(true));
+    process.nextTick(() => this.uploadNext());
   }
 
   public async waitForIdleInTest(): Promise<void> {
@@ -98,13 +109,13 @@ export class PhotoUploader {
   private onConnectionChange(connected: boolean) {
     debug(`onConnectionChange ${connected}`);
     if (connected) {
-      this.uploadNext(true);
+      this.uploadNext();
     }
   }
 
-  private uploadNext(clearFailures: boolean) {
-    debug(`uploadNext clearFailures=${clearFailures}`);
-    this.fireEvent({ type: "UploadNext", clearFailures });
+  private uploadNext() {
+    debug("uploadNext");
+    this.fireEvent({ type: "UploadNext" });
   }
 
   private fireEvent(event: Event): void {
@@ -128,7 +139,7 @@ export class PhotoUploader {
               await this.handleSave(event);
               break;
             case "UploadNext":
-              await this.handleUploadNext(event);
+              await this.handleUploadNext();
               break;
           }
         }
@@ -155,50 +166,60 @@ export class PhotoUploader {
       })
     );
     await idleness();
-    this.uploadNext(false);
+    this.uploadNext();
   }
 
-  // TODO: an exception stops us until the next timer, but the timer clears failures.
-  private async handleUploadNext(upload: UploadNextEvent): Promise<void> {
+  private async handleUploadNext(): Promise<void> {
     debug("handleUploadNext");
-    if (upload.clearFailures) {
-      this.failedFiles.clear();
-    }
+
+    // Ensure we keep retrying until we have no pending photos.
+    this.timer.start();
 
     const pendingFiles = await this.pendingFiles();
     await idleness();
 
     if (pendingFiles.length === 0) {
-      debug("pendingFiles.length === 0");
-      // No pending photos.
+      debug("No pending photos, resetting state to dormant");
+      // No pending photos, so reset state.
+      this.failedFiles.clear();
       this.timer.cancel();
       return;
     }
-    this.timer.start();
+
+    const isConnected = await this.network.fetch();
+    if (!isConnected) {
+      debug("Currently offline, so nothing to do.");
+      return;
+    }
 
     const filePath = pendingFiles.find(key => !this.failedFiles.has(key));
     if (filePath == null) {
-      // All pending photos have failed upload.  Retry when the timer fires.
-      debug("filePath == null");
+      // All pending photos have failed upload.  Retry when the timer fires or
+      // when the network comes back up.
+      debug("All pending photos are marked as failed.  Waiting to retry later.");
+      this.failedFiles.clear();
       return;
     }
-    // Presumed guilty until found innocent
-    this.failedFiles.add(filePath);
 
-    const photoId = pendingIdFromPath(filePath);
-    const storagePath = this.storagePathFromId(photoId);
-    await logIfError("handleUploadNext", "putFile", () =>
-      this.storage.putFile({ filePath, storagePath })
-    );
-    await idleness();
+    // Any errors on this file should not affect whether we try uploading other files.
+    try {
+      const photoId = pendingIdFromPath(filePath);
+      const storagePath = this.storagePathFromId(photoId);
 
-    await logIfError("handleUploadNext", "deleteAsync", () =>
-      FileSystem.deleteAsync(filePath)
-    );
-    await idleness();
+      await logIfError("handleUploadNext", "putFile", () =>
+        this.storage.putFile({filePath, storagePath})
+      );
+      await idleness();
 
-    this.failedFiles.delete(filePath);
-    this.uploadNext(false);
+      await logIfError("handleUploadNext", "deleteAsync", () =>
+        FileSystem.deleteAsync(filePath)
+      );
+      await idleness();
+    } catch (err) {
+      this.failedFiles.add(filePath);
+    }
+
+    this.uploadNext();
   }
 
   private async pendingFiles(): Promise<string[]> {

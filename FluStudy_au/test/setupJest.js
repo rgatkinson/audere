@@ -95,6 +95,7 @@ function mockFileSystem() {
       [...files.keys()]
         .filter(k => k.startsWith(canon) && k.lastIndexOf("/") === canon.length)
         .map(k => k.substring(canon.length + 1))
+        .sort()
     );
   }
 
