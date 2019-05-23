@@ -106,6 +106,7 @@ if [[ "$INCREMENT" = true ]]; then
         read -p "Will increment version to $MAJOR.$MINOR.$((PATCH+1)), build number to $((BUILD_NUM+1)) and commit \
 to $BRANCH. Press Enter to continue or Ctrl-C to abort."
         cd "$APP_ROOT_DIR/ios"
+        export FASTLANE_OPT_OUT_USAGE=YES
         fastlane increment_build_number_and_commit versionBump:true
         break;;
       *) 
