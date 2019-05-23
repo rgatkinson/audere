@@ -159,7 +159,9 @@ platform :ios do
       xcodeproj: "fluathome.xcodeproj",
       include: include
     )
-    push_to_git_remote
+    push_to_git_remote(
+      tags: false
+    )
   end
 
   desc "Provision a device for running flu@home from source" 
