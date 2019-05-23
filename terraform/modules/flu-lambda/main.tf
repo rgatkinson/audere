@@ -127,3 +127,15 @@ module "fever_follow_up_surveys_cron" {
   timeout = 300
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
 }
+
+module "cough_firebase_import" {
+  source = "../lambda-cron"
+  name = "${local.base_name}-cough-firebase-import"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  frequency = "rate(1 hour)"
+  url = "http://${var.fluapi_fqdn}:444/api/import/coughDocuments"
+  subnet_id = "${var.lambda_subnet_id}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  timeout = 300
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+}
