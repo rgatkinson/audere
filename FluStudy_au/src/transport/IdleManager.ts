@@ -3,16 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-let counter = 0;
 export class IdleManager {
   private isBusy: boolean;
   private waiter: Waiter | null;
-  private readonly index: number;
 
   constructor(startsBusy: boolean) {
     this.isBusy = startsBusy;
     this.waiter = null;
-    this.index = counter++;
   }
 
   public async waitForIdle(): Promise<void> {

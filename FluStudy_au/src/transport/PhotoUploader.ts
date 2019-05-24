@@ -126,14 +126,14 @@ export class PhotoUploader {
 
   private async pumpEvents(): Promise<void> {
     debug("pumpEvents enter");
-    try {
-      while (this.pendingEvents.length > 0) {
-        const running = this.pendingEvents;
-        this.pendingEvents = [];
-        debug(`pumpEvents processing ${running.length} events`);
-        for (let i = 0; i < running.length; i++) {
-          await idleness();
-          const event = running[i];
+    while (this.pendingEvents.length > 0) {
+      const running = this.pendingEvents;
+      this.pendingEvents = [];
+      debug(`pumpEvents processing ${running.length} events`);
+      for (let i = 0; i < running.length; i++) {
+        await idleness();
+        const event = running[i];
+        try {
           switch (event.type) {
             case "SavePhoto":
               await this.handleSave(event);
@@ -142,16 +142,15 @@ export class PhotoUploader {
               await this.handleUploadNext();
               break;
           }
+        } catch (err) {
+          if (!err.logged) {
+            logError("pumpEvents", "unknown", err);
+            throw err;
+          }
         }
       }
-    } catch (err) {
-      if (!err.logged) {
-        debug(`pumpEvents rethrowing unlogged: ${err.name}: ${err.message}`);
-        throw err;
-      }
-    } finally {
-      this.idle.setIdle();
     }
+    this.idle.setIdle();
     debug("pumpEvents leave");
   }
 
