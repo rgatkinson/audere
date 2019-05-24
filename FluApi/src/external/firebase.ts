@@ -26,7 +26,7 @@ export interface Config {
 }
 
 const DEFAULT_CONFIG = {
-  collection: "documents"
+  collection: "surveys"
 };
 
 // Protocol constants
