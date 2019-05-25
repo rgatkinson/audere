@@ -4,13 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SplitSql } from "../util/sql";
-import { defineCoughModels, CoughModels } from "../models/db/cough";
-import {
-  connectorFromSqlSecrets,
-  FirebaseReceiver
-} from "../external/firebase";
+import { CoughModels, defineCoughModels } from "../models/db/cough";
+import { connectorFromSqlSecrets, FirebaseReceiver } from "../external/firebase";
 import logger from "../util/logger";
 import { requestId } from "../util/expressApp";
+import { DocumentType, SurveyDocument } from "audere-lib/dist/coughProtocol";
 
 export class CoughEndpoint {
   private readonly sql: SplitSql;
@@ -61,10 +59,13 @@ export class CoughEndpoint {
     receiver: FirebaseReceiver,
     id: string
   ): Promise<void> {
-    // TODO specify doc type
-    const doc: any = await receiver.read(id);
+    const snapshot = await receiver.read(id);
+    const doc = snapshot.data() as SurveyDocument;
+    if (doc.schemaId !== 1 || doc.documentType !== DocumentType.Survey) {
+      throw new Error("Unexpected document schema");
+    }
     await this.models.survey.upsert(doc);
-    await receiver.markAsRead(doc);
+    await receiver.markAsRead(snapshot);
   }
 }
 

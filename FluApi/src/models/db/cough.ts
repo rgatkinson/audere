@@ -14,19 +14,11 @@ import {
   jsonColumn,
   unique
 } from "../../util/sql";
-
-// ---------------------------------------------------------------
-// TODO - import these from coughProtocol once that lands
-type DeviceInfo = any;
-type AnalyticsInfo = any;
-type PhotoInfo = any;
-type SurveyNonPIIDbInfo = any;
-// ---------------------------------------------------------------
+import { DeviceInfo, PhotoInfo, SurveyNonPIIInfo } from "audere-lib/dist/coughProtocol";
 
 export function defineCoughModels(sql: SplitSql): CoughModels {
   const models: CoughModels = {
     accessKey: defineAccessKey(sql),
-    clientLogBatch: defineLogBatch(sql),
     photo: definePhoto(sql),
     survey: defineSurvey(sql.nonPii)
   };
@@ -36,9 +28,8 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
 
 export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
-  clientLogBatch: Model<AnalyticsAttributes>;
   photo: Model<PhotoAttributes>;
-  survey: Model<SurveyAttributes<SurveyNonPIIDbInfo>>;
+  survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
 
 // ---------------------------------------------------------------
@@ -59,7 +50,7 @@ interface AccessKeyAttributes {
   valid: boolean;
 }
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
-  return defineModel<AccessKeyAttributes>(sql.nonPii, "fever_access_keys", {
+  return defineModel<AccessKeyAttributes>(sql.nonPii, "cough_access_keys", {
     key: stringColumn(),
     valid: booleanColumn()
   });
@@ -67,37 +58,16 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
 
 // ---------------------------------------------------------------
 
-export interface AnalyticsAttributes {
-  id?: string;
-  device: DeviceInfo;
-  csruid: string;
-  analytics: AnalyticsInfo;
-}
-export type LogBatchInstance = Inst<AnalyticsAttributes>;
-export function defineLogBatch(sql: SplitSql): Model<AnalyticsAttributes> {
-  return defineModel<AnalyticsAttributes>(
-    sql.nonPii,
-    "fever_client_analytics",
-    {
-      device: jsonColumn(),
-      csruid: unique(stringColumn()),
-      analytics: jsonColumn()
-    }
-  );
-}
-
-// ---------------------------------------------------------------
-
 export interface PhotoAttributes {
   id?: string;
+  docId: string;
   device: DeviceInfo;
-  csruid: string;
   photo: PhotoInfo;
 }
 export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
-  return defineModel<PhotoAttributes>(sql.nonPii, "fever_photos", {
+  return defineModel<PhotoAttributes>(sql.nonPii, "cough_photos", {
+    docId: unique(stringColumn("docid")),
     device: jsonColumn(),
-    csruid: unique(stringColumn()),
     photo: jsonColumn()
   });
 }
@@ -106,8 +76,8 @@ export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
 
 export interface SurveyAttributes<Info> {
   id?: string;
+  docId: string;
   device: DeviceInfo;
-  docid: string;
   survey: Info;
 }
 export function defineSurvey<Info>(
@@ -116,10 +86,10 @@ export function defineSurvey<Info>(
 ): SurveyModel<Info> {
   return defineModel<SurveyAttributes<Info>>(
     sql,
-    `fever_${editableType}_surveys`,
+    `cough_${editableType}_surveys`,
     {
+      docId: unique(stringColumn("docid")),
       device: jsonColumn(),
-      docid: unique(stringColumn()),
       survey: jsonColumn()
     }
   );
