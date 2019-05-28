@@ -89,7 +89,7 @@ android {
     abi {
       enable true
       reset()
-      include "x86", "armeabi-v7a"
+      include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
       universalApk false
     }
   }
@@ -98,7 +98,7 @@ android {
 // https://developer.android.com/studio/build/configure-apk-splits.html
 // If versionCode (build number) from version.properties is 88,
 // then ARM versionCode will be 10088 and x86 versionCode will be 20088.
-ext.abiCodes = ['armeabi-v7a':1, 'x86':2]
+ext.abiCodes = ['armeabi-v7a':1, 'x86':2, 'arm64-v8a':3, 'x86_64':4]
 import com.android.build.OutputFile
 android.applicationVariants.all { variant ->
   variant.outputs.each { output ->
