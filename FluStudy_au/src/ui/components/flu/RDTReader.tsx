@@ -10,7 +10,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
-import { Action, setTestStripImg, setRDTPhoto, uploader } from "../../../store";
+import { Action, setTestStripImg, setRDTPhoto } from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import {

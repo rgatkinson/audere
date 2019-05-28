@@ -11,7 +11,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
-import { Action, setRDTPhoto, setTestStripImg, uploader } from "../../store";
+import { Action, setRDTPhoto, setTestStripImg } from "../../store";
 import { newUID } from "../../util/csruid";
 import Chrome from "../components/Chrome";
 import Text from "../components/Text";

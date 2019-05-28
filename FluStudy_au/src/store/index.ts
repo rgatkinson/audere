@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import base64url from "base64url";
 import {
   createStore,
   combineReducers,
@@ -18,10 +19,9 @@ import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
-import { uploader, uploaderMiddleware } from "./uploader";
+import { SecureStore } from "expo";
+import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-
-export { uploader } from "./uploader";
 
 export * from "./types";
 
@@ -40,6 +40,8 @@ export type Action = MetaAction | SurveyAction | ClearStateAction;
 
 import { StoreState } from "./StoreState";
 export { StoreState } from "./StoreState";
+
+const STORAGE_PASSWORD_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 const reducer = combineReducers({
   meta,
@@ -109,7 +111,7 @@ function loggingMiddleware<Ext, S, D extends Dispatch>(
 }
 
 async function getStoreImpl() {
-  const password = await uploader.getEncryptionPassword();
+  const password = await getEncryptionPassword();
   const encryptor = createEncryptor({ secretKey: password });
   const persistConfig = {
     transforms: [immutableTransform(), encryptionRemovalTransform(encryptor)],
@@ -127,4 +129,17 @@ async function getStoreImpl() {
 
 export async function getPersistor() {
   return persistStore(await getStore());
+}
+
+async function getEncryptionPassword(): Promise<string> {
+  let password;
+  try {
+    password = await SecureStore.getItemAsync(STORAGE_PASSWORD_KEY);
+    if (password) {
+      return password;
+    }
+  } catch (e) {}
+  password = base64url(crypto.getRandomValues(new Buffer(32)));
+  await SecureStore.setItemAsync(STORAGE_PASSWORD_KEY, password);
+  return password;
 }

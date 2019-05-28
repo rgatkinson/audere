@@ -5,61 +5,12 @@
 
 import PouchDB from "pouchdb-react-native";
 import CryptoPouch from "crypto-pouch";
-import axios from "axios";
 import URL from "url-parse";
 import { Constants } from "expo";
-import { DocumentType, SurveyInfo } from "audere-lib/coughProtocol";
-import { DocumentUploader } from "./DocumentUploader";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 PouchDB.plugin(CryptoPouch);
-
-export function createTransport(): TypedDocumentUploader {
-  const db = new PouchDB("clientDB", { auto_compaction: true });
-  const api = createAxios();
-  const uploader = new DocumentUploader(db, api);
-
-  return new TypedDocumentUploader(uploader);
-}
-
-class TypedDocumentUploader {
-  private readonly uploader: DocumentUploader;
-
-  constructor(uploader: DocumentUploader) {
-    this.uploader = uploader;
-  }
-
-  public async documentsAwaitingUpload(): Promise<number | null> {
-    return this.uploader.documentsAwaitingUpload();
-  }
-  public saveSurvey(csruid: string, survey: SurveyInfo) {
-    this.uploader.save(csruid, survey, DocumentType.Survey, 1);
-  }
-  public async savePhoto(csruid: string, jpegBase64: string) {
-    const timestamp = new Date().toISOString();
-    this.uploader.save(
-      csruid,
-      { timestamp, jpegBase64: "" },
-      DocumentType.Photo,
-      1,
-      { jpegBase64 }
-    );
-  }
-
-  public async getEncryptionPassword(): Promise<string> {
-    return await this.uploader.getEncryptionPassword();
-  }
-}
-
-function createAxios() {
-  const api = axios.create({
-    baseURL: getApiBaseUrl(),
-    xsrfCookieName: "csrftoken",
-    xsrfHeaderName: "X-CSRFToken",
-  });
-  return api;
-}
 
 export function getApiBaseUrl(): string {
   let api: string;

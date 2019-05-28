@@ -6,7 +6,6 @@
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { Option, SurveyResponse } from "./types";
 import { SurveyState, StoreState } from "./index";
-import { createTransport } from "../transport";
 import {
   NonPIIConsentInfo,
   QuestionAnswerOption,
@@ -29,8 +28,6 @@ import {
 } from "../resources/QuestionConfig";
 import { crashlytics } from "../crashReporter";
 import { saveSurvey } from "./FirebaseStore";
-
-export const uploader = createTransport();
 
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
