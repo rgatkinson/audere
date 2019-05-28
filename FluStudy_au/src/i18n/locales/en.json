@@ -230,7 +230,7 @@
   },
   "BarcodeSupportModal": {
     "supportVerification": "flu@home Support Verification",
-    "enterCode": "Please enter the code you receieved from the flu@home support team",
+    "enterCode": "Please enter the code you received from the flu@home support team",
     "invalidCode": "Sorry, that code is not valid."
   },
   "Unpacking": {
@@ -315,8 +315,8 @@
   },
   "CameraSettings": {
     "title": "Update your settings",
-    "desc": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
-    "descAndroid": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
+    "desc": "To grant access for flu@home to take a picture of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
+    "descAndroid": "To grant access for flu@home to take a picture of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
   },
   "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
