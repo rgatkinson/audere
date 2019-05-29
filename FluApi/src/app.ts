@@ -179,50 +179,50 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/export/getEncounters",
     stats("getencounters"),
-    (req, res, next) => hutchUploader.getEncounters(req, res, next)
+    wrap((req, res, next) => hutchUploader.getEncounters(req, res, next))
   );
 
   internalApp.get(
     "/api/export/sendEncounters",
     stats("sendencounters"),
-    (req, res, next) => hutchUploader.sendEncounters(req, res, next)
+    wrap((req, res, next) => hutchUploader.sendEncounters(req, res, next))
   );
 
   const fever = new FeverCronReportEndpoint(sql);
   internalApp.get(
     "/api/export/sendIncentives",
     stats("sendincentives"),
-    (req, res, next) => fever.sendIncentives(req, res, next)
+    wrap((req, res, next) => fever.sendIncentives(req, res, next))
   );
 
   internalApp.get(
     "/api/export/sendKitOrders",
     stats("sendkitorders"),
-    (req, res, next) => fever.sendKitOrders(req, res, next)
+    wrap((req, res, next) => fever.sendKitOrders(req, res, next))
   );
 
   internalApp.get(
     "/api/export/sendFollowUps",
     stats("sendfollowups"),
-    (req, res, next) => fever.sendSurveys(req, res, next)
+    wrap((req, res, next) => fever.sendSurveys(req, res, next))
   );
 
   internalApp.get(
     "/api/export/provisionBarcodes",
     stats("provisionbarcodes"),
-    (req, res, next) => fever.exportBarcodes(req, res, next)
+    wrap((req, res, next) => fever.exportBarcodes(req, res, next))
   );
 
   internalApp.get(
     "/api/import/receivedKits",
     stats("importreceivedkits"),
-    (req, res, next) => fever.importReceivedKits(req, res, next)
+    wrap((req, res, next) => fever.importReceivedKits(req, res, next))
   );
 
   internalApp.get(
     "/api/import/followUpSurveys",
     stats("importfollowupsurveys"),
-    (req, res, next) => fever.importFollowUpSurveys(req, res, next)
+    wrap((req, res, next) => fever.importFollowUpSurveys(req, res, next))
   );
 
   const feverConsentEmailer =
@@ -231,18 +231,18 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/sendConsentEmails",
     stats("sendconsents"),
-    feverConsentEmailer.handleGet
+    wrap(feverConsentEmailer.handleGet)
   );
   internalApp.get(
     "/api/sendFeverConsentEmails",
     stats("sendfeverconsents"),
-    feverConsentEmailer.handleGet
+    wrap(feverConsentEmailer.handleGet)
   );
 
   internalApp.get(
     "/api/sendSnifflesConsentEmails",
     stats("sendSnifflesConsents"),
-    snifflesConsentEmailer.sendConsentEmails
+    wrap(snifflesConsentEmailer.sendConsentEmails)
   );
 
   const snifflesVisitJobs = new SnifflesVisitJobs(sql, [
@@ -251,7 +251,7 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/runSnifflesJobs",
     stats("runSnifflesJobs"),
-    (res, req) => snifflesVisitJobs.performRequest(res, req)
+    wrap((res, req) => snifflesVisitJobs.performRequest(res, req))
   );
 
   const cough = new CoughEndpoint(sql);
