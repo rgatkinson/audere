@@ -53,10 +53,13 @@ export interface FirebaseStorage {
 export type FirebaseStoragePutFileArgs = {
   filePath: string;
   storagePath: string;
-}
+};
 
 export interface NetInfoIsConnected {
-  addEventListener(eventName: string, listener: NetInfoIsConnectedListener): void;
+  addEventListener(
+    eventName: string,
+    listener: NetInfoIsConnectedListener
+  ): void;
   fetch(): Promise<boolean>;
 }
 
@@ -195,7 +198,9 @@ export class PhotoUploader {
     if (filePath == null) {
       // All pending photos have failed upload.  Retry when the timer fires or
       // when the network comes back up.
-      debug("All pending photos are marked as failed.  Waiting to retry later.");
+      debug(
+        "All pending photos are marked as failed.  Waiting to retry later."
+      );
       this.failedFiles.clear();
       return;
     }
@@ -206,7 +211,7 @@ export class PhotoUploader {
       const storagePath = this.storagePathFromId(photoId);
 
       await logIfError("handleUploadNext", "putFile", () =>
-        this.storage.putFile({filePath, storagePath})
+        this.storage.putFile({ filePath, storagePath })
       );
       await idleness();
 
@@ -231,8 +236,10 @@ export class PhotoUploader {
       return [];
     }
 
-    const files = await logIfError<string[]>("pendingFiles", "readDirectoryAsync", () =>
-      FileSystem.readDirectoryAsync(PENDING_DIR)
+    const files = await logIfError<string[]>(
+      "pendingFiles",
+      "readDirectoryAsync",
+      () => FileSystem.readDirectoryAsync(PENDING_DIR)
     );
     return files.map(x => PENDING_DIR_PREFIX + x);
   }
