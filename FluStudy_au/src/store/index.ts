@@ -22,6 +22,7 @@ import immutableTransform from "redux-persist-transform-immutable";
 import { SecureStore } from "expo";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
+import { tracker, AppHealthEvents } from "../util/tracker";
 
 export * from "./types";
 
@@ -139,7 +140,12 @@ async function getEncryptionPassword(): Promise<string> {
       return password;
     }
   } catch (e) {}
-  password = base64url(crypto.getRandomValues(new Buffer(32)));
-  await SecureStore.setItemAsync(STORAGE_PASSWORD_KEY, password);
+  try {
+    password = base64url(crypto.getRandomValues(new Buffer(32)));
+    await SecureStore.setItemAsync(STORAGE_PASSWORD_KEY, password);
+  } catch (err) {
+    tracker.logEvent(AppHealthEvents.SAVE_STORAGE_PASSWORD_ERROR, err);
+    throw err;
+  }
   return password;
 }
