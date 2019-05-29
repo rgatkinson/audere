@@ -81,7 +81,7 @@ target 'fluathome' do
   pod 'Firebase/DynamicLinks', '~> 5.20.1'
   pod 'Firebase/Firestore'
   pod 'Firebase/Storage', '~> 5.20.1'
-  pod 'libopencv-contrib', '~> 3.4.1'
+  pod 'libopencv-contrib-audere', :podspec => 'opencv/libopencv-contrib-audere.podspec'
 
   pod 'React',
     :path => "../node_modules/react-native",
