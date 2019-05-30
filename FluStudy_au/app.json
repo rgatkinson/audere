@@ -6,6 +6,9 @@
     "icon": "./assets/images/app-icon.png",
     "slug": "FluAtHomeAU",
     "sdkVersion": "32.0.0",
+    "updates": {
+      "enabled": false
+    },
     "ios": {
       "bundleIdentifier": "org.auderenow.fluathome-au",
       "buildNumber": "1",
