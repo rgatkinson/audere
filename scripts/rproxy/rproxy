@@ -3,4 +3,4 @@ set -euo pipefail
 umask 077
 SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-sudo --set-home --user=rproxy "$SELF_DIR/rproxy_connect"
+sudo --set-home --user=rproxy "$SELF_DIR/rproxy_connect" 2>&1
