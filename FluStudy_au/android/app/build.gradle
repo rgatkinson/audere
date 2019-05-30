@@ -172,7 +172,7 @@ dependencies {
   implementation 'me.leolin:ShortcutBadger:1.1.8@aar'
   implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
-  implementation 'com.yqritc:android-scalablevideoview:1.0.1'
+  implementation 'com.yqritc:android-scalablevideoview:1.0.4'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.2.1'
@@ -209,6 +209,7 @@ dependencies {
       exclude group: 'com.squareup.okhttp3', module: 'okhttp'
       exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
+  compile project(':react-native-video')
   api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
   api 'host.exp.exponent:expo-core:2.0.0'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'

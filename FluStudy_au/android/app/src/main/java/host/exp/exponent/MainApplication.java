@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import expolib_v1.okhttp3.OkHttpClient;
+import com.brentvatne.react.ReactVideoPackage;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
@@ -66,7 +67,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new RNFirebaseRemoteConfigPackage(),
             new RNFirebaseFirestorePackage(),
             new RNFirebaseStoragePackage(),
-            new RNGetRandomValuesPackage()
+            new RNGetRandomValuesPackage(),
+            new ReactVideoPackage()
     );
   }
 

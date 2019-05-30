@@ -123,6 +123,7 @@ export default class VideoPlayer extends React.Component<Props> {
           progressUpdateInterval={THREE_SECONDS_MS}
           ref={this._videoPlayer}
           repeat={true}
+          resizeMode={"contain"}
           source={{ uri: this._config.uri }}
           style={styles.video}
           onEnd={this._onEnd}
