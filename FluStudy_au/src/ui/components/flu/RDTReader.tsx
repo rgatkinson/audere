@@ -7,7 +7,7 @@ import React from "react";
 import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import { Action, setTestStripImg, setRDTPhoto } from "../../../store";
@@ -26,15 +26,21 @@ interface Props {
   next: string;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
+  isFocused: boolean;
 }
 
 @connect()
 class RDTReader extends React.Component<Props & WithNamespaces> {
   state = {
-    spinner: !DeviceInfo.isEmulator(),
-    enabled: true,
+    spinner: true,
     color: "yellow",
   };
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (!this.props.isFocused && nextProps.isFocused) {
+      this.setState({ spinner: true });
+    }
+  }
 
   _cameraReady = () => {
     this.setState({ spinner: false });
@@ -59,7 +65,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           })
         );
         dispatch(setRDTPhoto(args.imgBase64));
-        this.setState({ spinner: false, enabled: false });
+        this.setState({ spinner: false });
         navigation.push(next);
       } catch (e) {
         this.setState({ spinner: false });
@@ -68,13 +74,20 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _updateFeedback = (args: RDTCapturedArgs) => {
-    const { isCentered, sizeResult, isFocused, isRightOrientation, exposureResult } = args;
-    const score = 0
-      + (isCentered ? 1 : 0)
-      + (isFocused ? 1 : 0)
-      + (isRightOrientation ? 1 : 0)
-      + (sizeResult === SizeResult.RIGHT_SIZE ? 1 : 0)
-      + (exposureResult === ExposureResult.NORMAL ? 1 : 0);
+    const {
+      isCentered,
+      sizeResult,
+      isFocused,
+      isRightOrientation,
+      exposureResult,
+    } = args;
+    const score =
+      0 +
+      (isCentered ? 1 : 0) +
+      (isFocused ? 1 : 0) +
+      (isRightOrientation ? 1 : 0) +
+      (sizeResult === SizeResult.RIGHT_SIZE ? 1 : 0) +
+      (exposureResult === ExposureResult.NORMAL ? 1 : 0);
 
     if (score > 3) {
       this.setState({ color: "green" });
@@ -83,18 +96,18 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     } else {
       this.setState({ color: "yellow" });
     }
-  }
+  };
 
   render() {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.spinner} />
+        <Spinner visible={this.state.spinner && this.props.isFocused} />
         <RDTReaderComponent
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
-          enabled={this.state.enabled}
+          enabled={this.props.isFocused}
         />
         <View style={styles.overlayContainer}>
           <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
@@ -102,12 +115,24 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         <View style={styles.overlayContainer}>
           <View style={styles.shapeContainer}>
             <View style={styles.row}>
-              <Image style={styles.shape} source={{ uri: this.state.color + "square" }} />
-              <Image style={styles.shape} source={{ uri: this.state.color + "circle" }} />
+              <Image
+                style={styles.shape}
+                source={{ uri: this.state.color + "square" }}
+              />
+              <Image
+                style={styles.shape}
+                source={{ uri: this.state.color + "circle" }}
+              />
             </View>
             <View style={styles.row}>
-              <Image style={styles.shape} source={{ uri: this.state.color + "triangle" }} />
-              <Image style={styles.shape} source={{ uri: this.state.color + "hexagon" }} />
+              <Image
+                style={styles.shape}
+                source={{ uri: this.state.color + "triangle" }}
+              />
+              <Image
+                style={styles.shape}
+                source={{ uri: this.state.color + "hexagon" }}
+              />
             </View>
           </View>
         </View>
@@ -115,7 +140,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default withNavigation(withNamespaces("RDTReader")(RDTReader));
+export default withNavigationFocus(withNamespaces("RDTReader")(RDTReader));
 
 const styles = StyleSheet.create({
   container: {
@@ -148,7 +173,7 @@ const styles = StyleSheet.create({
   },
   testStrip: {
     aspectRatio: 0.06,
-    height: (Dimensions.get("window").height / 2) - GUTTER,
+    height: Dimensions.get("window").height / 2 - GUTTER,
     opacity: 0.5,
     width: undefined,
   },

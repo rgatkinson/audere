@@ -9,9 +9,6 @@
 #import "ImageQualityViewController.h"
 
 @implementation RDTViewManager
-{
-    ImageQualityViewController *viewController;
-}
 
 RCT_EXPORT_MODULE(RDTReader);
 RCT_EXPORT_VIEW_PROPERTY(onRDTCaptured, RCTBubblingEventBlock);
@@ -23,50 +20,7 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
     if (_rdtView) {
         return _rdtView;
     }
-    viewController = [[ImageQualityViewController alloc] init];
-    viewController.disableViewFinder = true;
-    __weak RDTViewManager *weakSelf = self;
-    viewController.onRDTCameraReady = ^() {
-        RDTViewManager *strongSelf = weakSelf;
-        if (!strongSelf || !strongSelf.rdtView.onRDTCameraReady) {
-            return;
-        }
-        strongSelf.rdtView.onRDTCameraReady(@{});
-    };
-    viewController.onRDTDetected = ^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB){
-        RDTViewManager *strongSelf = weakSelf;
-        NSLog(@"Callback called with %@", passed ? @"true" : @"false");
-        if (!strongSelf || !strongSelf.rdtView.onRDTCaptured) {
-            return;
-        }
-        NSLog(@"Calling JS callback");
-        NSString *base64img = @"";
-        if (img) {
-            base64img = [UIImagePNGRepresentation(img) base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            strongSelf.rdtView.onRDTCaptured(
-                  @{
-                       @"passed": @(passed),
-                       @"img": base64img,
-                       @"exposureResult": @(exposureResult),
-                       @"sizeResult": @(sizeResult),
-                       @"center": @(center),
-                       @"orientation": @(orientation),
-                       @"angle": @(angle),
-                       @"sharpness": @(sharpness),
-                       @"shadow": @(shadow),
-                       @"control": @(control),
-                       @"testA": @(testA),
-                       @"testB": @(testB),
-                 }
-            );
-        });
-        return;
-    };
     _rdtView = [[RDTView alloc] init];
-    [_rdtView addSubview:viewController.view];
-    _rdtView.imageQualityViewController = viewController;
     return _rdtView;
 }
 
