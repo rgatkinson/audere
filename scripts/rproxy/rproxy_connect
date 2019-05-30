@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+while true; do
+  echo "$(date): Opening connection"
+  ssh bastion 'killall sleep 2>/dev/null;echo "$(date): Connected";sleep infinity'
+  echo "$(date): Disconnected, waiting before retry"
+  sleep 5
+done
