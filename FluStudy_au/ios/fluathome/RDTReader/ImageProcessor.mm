@@ -26,6 +26,7 @@ const float UNDER_EXP_THRESHOLD = 120;
 const float OVER_EXP_WHITE_COUNT = 100;
 const double SIZE_THRESHOLD = 0.3;
 const double POSITION_THRESHOLD = 0.2;
+const double ANGLE_THRESHOLD = 10.0;
 const double VIEWPORT_SCALE = 0.5;
 const int GOOD_MATCH_COUNT = 7;
 const double minSharpness = FLT_MIN;
@@ -38,10 +39,16 @@ const float INTENSITY_THRESHOLD = 190;
 const float CONTROL_INTENSITY_PEAK_THRESHOLD = 150;
 const float TEST_INTENSITY_PEAK_THRESHOLD = 50;
 const int LINE_SEARCH_WIDTH = 13;
-const int CONTROL_LINE_POSITION = 40;
-const int TEST_A_LINE_POSITION = 10;
-const int TEST_B_LINE_POSITION = 70;
-const cv::Rect RESULT_WINDOW_RECT = cv::Rect(590, 15, 110, 20);
+const int CONTROL_LINE_POSITION = 45;
+const int TEST_A_LINE_POSITION = 15;
+const int TEST_B_LINE_POSITION = 75;
+const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 45/100.0*255.0, 5/100.0*255.0);
+const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 15/100.0*255.0);
+const int CONTROL_LINE_POSITION_MIN = 575;
+const int CONTROL_LINE_POSITION_MAX = 700;
+const int CONTROL_LINE_MIN_HEIGHT = 25;
+const int CONTROL_LINE_MIN_WIDTH = 20;
+const int CONTROL_LINE_MAX_WIDTH = 55;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -79,7 +86,7 @@ Mat siftRefDescriptor;
         UIImage * image = [UIImage imageNamed:@"quickvue_ref_v1.jpg"];
         UIImageToMat(image, refImg);
         NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
-        cvtColor(refImg, refImg, CV_BGRA2GRAY); // Dereference the pointer
+        cvtColor(refImg, refImg, CV_RGBA2GRAY); // Dereference the pointer
         detector->detectAndCompute(refImg, noArray(), refKeypoints, refDescriptor);
         siftDetector->detectAndCompute(refImg, noArray(), siftRefKeypoints, siftRefDescriptor);
         NSLog(@"Successfully set up BRISK Detector and BFHamming matcher");
@@ -107,9 +114,6 @@ Mat siftRefDescriptor;
     unsigned char *pixel = (unsigned char *)CVPixelBufferGetBaseAddress(pixelBuffer);
     Mat mat = Mat((int)bufferHeight,(int)bufferWidth,CV_8UC4, pixel,(int)bytesPerRow); //put buffer in open cv, no memory copied
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
-    //Mat greyMat;
-    //cvtColor(mat, greyMat, CV_BGRA2GRAY);
 
     //mat.release();
     NSLog(@"Mat size: (%d, %d)", mat.size().width, mat.size().height);
@@ -160,9 +164,9 @@ Mat siftRefDescriptor;
 
 //CJ: captureRDT starts
 - (void)captureRDT:(CMSampleBufferRef)sampleBuffer withCompletion:(ImageProcessorBlock)completion {
-    Mat inputMat = [self matFromSampleBuffer:sampleBuffer];
+    Mat inputMat = [self matFromSampleBuffer:sampleBuffer]; //returns BGRA
     Mat greyMat;
-    cvtColor(inputMat, greyMat, CV_BGRA2GRAY);
+    cvtColor(inputMat, greyMat, COLOR_BGRA2GRAY);
     double matchDistance = 0.0;
     bool passed = false;
     
@@ -184,6 +188,7 @@ Mat siftRefDescriptor;
         bool isCentered = false;
         SizeResult sizeResult = INVALID;
         bool isRightOrientation = false;
+        float angle = 0.0;
         
         //[self checkPositionAndSize:boundary isCropped:false inside:greyMat.size()];
         
@@ -191,30 +196,21 @@ Mat siftRefDescriptor;
             isCentered = [self checkIfCentered:boundary inside:greyMat.size()];
             sizeResult = [self checkSize:boundary inside:greyMat.size()];
             isRightOrientation = [self checkOrientation:boundary];
+            angle = [self measureOrientation: boundary];
         }
         
         Mat rgbMat = [self cropRDT:inputMat];
-        Mat resultWindowMat = Mat();
-        bool isControlLine = false;
-        if (boundary.size() > 0) {
-            resultWindowMat = [self checkControlLine: rgbMat andResult: &isControlLine];
-            //if (rgbMat.cols == 110)
-            //    isControlLine = true;
-            //rgbMat = [self cropResultWindow:inputMat with:boundary];
-            //rgbMat = [self interpretResult: inputMat];
-        }
         
-        passed = sizeResult == RIGHT_SIZE && isCentered && isRightOrientation && isControlLine;
+        passed = sizeResult == RIGHT_SIZE && isCentered && isRightOrientation;
         
         NSLog(@"PASSED: %d", passed);
         
-        cvtColor(rgbMat, rgbMat, CV_BGRA2RGBA);
-        
-        completion(passed, MatToUIImage(rgbMat), matchDistance, exposureResult, sizeResult, isCentered, isRightOrientation, isSharp, false, resultWindowMat);
+        cvtColor(rgbMat, rgbMat, COLOR_BGRA2RGBA);
+        completion(passed, MatToUIImage(rgbMat), matchDistance, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false);//, resultWindowMat);
         //completion(passed, MatToUIImage(inputMat), matchDistance, exposureResult, sizeResult, isCentered, isRightOrientation, isSharp, false);
     } else {
         NSLog(@"Found = ENTERED");
-        completion(passed, nil, matchDistance, exposureResult, INVALID, false, false, isSharp, false, Mat());
+        completion(passed, nil, matchDistance, exposureResult, INVALID, false, false, 0.0, isSharp, false);//, Mat());
     }
 }
 // end of caputureRDT
@@ -309,6 +305,13 @@ Mat siftRefDescriptor;
             (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]));
             (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]));
             
+            RotatedRect rotatedRect = cv::minAreaRect(*boundary);
+            Point2f v[4];
+            rotatedRect.points(v);
+
+            for (int i = 0; i < 4; i++)
+                (*boundary)[(i+3)%4] = v[i];
+
             objCorners.release();
             sceneCorners.release();
             
@@ -329,18 +332,22 @@ Mat siftRefDescriptor;
     double height = 0;
     
     if (isUpright) {
-        angle = 90 - abs(rotatedRect.angle);
+        if (rotatedRect.angle < 0) {
+            angle = 90 + rotatedRect.angle;
+        } else {
+            angle = rotatedRect.angle - 90;
+        }
     } else {
-        angle = abs(rotatedRect.angle);
+        angle = rotatedRect.angle;
     }
-    
+
     return angle;
 }
 
 - (bool) checkOrientation:(vector<Point2f>) boundary {
     double angle = [self measureOrientation:boundary];
     
-    bool isOriented = angle < 90.0*POSITION_THRESHOLD;
+    bool isOriented = abs(angle) < ANGLE_THRESHOLD;
     
     return isOriented;
 }
@@ -374,6 +381,12 @@ Mat siftRefDescriptor;
         if (boundary.at(i).x < 0 || boundary.at(i).y)
             invalid = false;
     }
+    
+    RotatedRect rotatedRect = minAreaRect(boundary);
+    cv::Rect rect = boundingRect(boundary);
+    float rotatedArea = rotatedRect.size.height*rotatedRect.size.width;
+    float boundArea = rect.area();
+    NSLog(@"Rotated: %.2f, Bounding: %.2f, diff: %.2f -- BRISK", rotatedArea, boundArea, rotatedArea-boundArea);
     
     SizeResult sizeResult = INVALID;
     
@@ -460,9 +473,7 @@ Mat siftRefDescriptor;
     result[3] = [NSNumber numberWithBool:(height > size.height*VIEWPORT_SCALE*(1+SIZE_THRESHOLD))]; // large
     result[4] = [NSNumber numberWithBool:(height < size.height*VIEWPORT_SCALE*(1-SIZE_THRESHOLD))];// small
 
-    //if (((NSNumber*)result[0]).boolValue && ((NSNumber *)result[1]).boolValue ) {
-        NSLog(@"POS: %.2d, %.2d, Angle: %.2f, Height: %.2f", center.x, center.y, angle, height);
-    //}
+    NSLog(@"POS: %.2d, %.2d, Angle: %.2f, Height: %.2f", center.x, center.y, angle, height);
 
     return result;
 }
@@ -532,29 +543,6 @@ Mat siftRefDescriptor;
     }
     
     return instructions;
-    
-//    if (isCorrectPosSize != nil) {
-//        if (isCorrectPosSize[1] && isCorrectPosSize[0] && isCorrectPosSize[2]) {
-//            instructions = instruction_detected;
-//
-//        } else if (mMoveCloserCount > MOVE_CLOSER_COUNT) {
-//            if (!isCorrectPosSize[5]) {
-//                if (!isCorrectPosSize[0] || (!isCorrectPosSize[1] && isCorrectPosSize[3])) {
-//                    instructions = instruction_pos;
-//                } else if (!isCorrectPosSize[1] && isCorrectPosSize[4]) {
-//                    instructions = instruction_too_small;
-//                    mMoveCloserCount = 0;
-//                }
-//            } else {
-//                instructions = instruction_pos;
-//            }
-//        } else {
-//            instructions = instruction_too_small;
-//            mMoveCloserCount++;
-//        }
-//    }
-//
-//    return instructions;
 }
 
 //needs to change isBright to incorporate both too dark and too bright
@@ -655,26 +643,52 @@ Mat siftRefDescriptor;
     [view.layer insertSublayer:fillLayer above:view.layer.sublayers[0]];
 }
 
--(UIImage *) interpretResult:(Mat) inputMat {
-    
-    vector<Point2f> boundary = [self detectRDTWithSIFT:inputMat];
-    if (boundary.size() <= 0)
-        return MatToUIImage(inputMat);
-    
-    Mat resultMat = [self cropResultWindow:inputMat with:boundary];
-    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
-    //resultMat = [self correctGamma:resultMat withGamma:0.75];
-    
-    bool control = [self readControlLine:resultMat at:cv::Point(CONTROL_LINE_POSITION,0)];
-    bool testA = [self readTestLine:resultMat at:cv::Point(TEST_A_LINE_POSITION,0)];
-    bool testB = [self readTestLine:resultMat at:cv::Point(TEST_B_LINE_POSITION,0)];
-    
-    NSLog(@"Control: %d, TestA: %d, TestB: %d", control, testA, testB);
-    
+-(UIImage *) interpretResult:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+    Mat resultMat = Mat();
+    UIImageToMat(img, resultMat); //returns RGBA
+    resultMat = [self interpretResultWithMat:resultMat andControlLine:control andTestA:testA andTestB:testB];
     return MatToUIImage(resultMat);
 }
 
--(UIImage *) interpretResultWithResultWindow:(Mat) inputMat andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+-(Mat) interpretResultWithMat:(Mat) inputMat andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+    vector<Point2f> boundary;
+    Mat grayMat = Mat();
+    cvtColor(inputMat, grayMat, COLOR_RGBA2GRAY);
+    //[self checkSize:boundary inside:inputMat.size()];
+    //[self checkPositionAndSize:boundary isCropped:false inside:inputMat.size()]
+    int cnt=0;
+    SizeResult isSizeable = INVALID;
+    bool isCentered = false;
+    bool isUpright = false;
+    do {
+        cnt++;
+        boundary = [self detectRDTWithSIFT:grayMat andRansac:cnt];
+        isSizeable = [self checkSize:boundary inside:cv::Size(inputMat.size().width/CROP_RATIO, inputMat.size().height/CROP_RATIO)];
+        isCentered = [self checkIfCentered:boundary inside:inputMat.size()];
+        isUpright = [self checkOrientation:boundary];
+        NSLog(@"SIFT-right size %d, center %d, orientation %d, (%d, %d), cnt %d", isSizeable, isCentered, isUpright, inputMat.size().width, inputMat.size().height, cnt);
+    } while (!(isSizeable==RIGHT_SIZE && isCentered && isUpright) && cnt < 10);
+    
+    if (boundary.size() <= 0)
+        return inputMat;
+
+    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:control];
+    
+    if (!(*control)) {
+        *testA = false;
+        *testB = false;
+        return Mat();
+    }
+    
+    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
+    //resultMat = [self correctGamma:resultMat withGamma:0.75];
+    
+    [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
+    
+    return resultMat;
+}
+
+-(Mat) interpretResultWithResultWindow:(Mat) inputMat andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
     NSLog(@"Result Mat size: (%d, %d) -- interpretation", inputMat.size().width, inputMat.size().height);
     *control = [self readControlLine:inputMat at:cv::Point(CONTROL_LINE_POSITION,0)];
     *testA = [self readTestLine:inputMat at:cv::Point(TEST_A_LINE_POSITION,0)];
@@ -682,34 +696,46 @@ Mat siftRefDescriptor;
     
     NSLog(@"Control: %d, TestA: %d, TestB: %d", *control, *testA, *testB);
     
-    cvtColor(inputMat, inputMat, CV_BGR2RGBA);
-    
-    return MatToUIImage(inputMat);
+    return inputMat;
 }
 
--(Mat) checkControlLine:(Mat) inputMat andResult:(bool *) result {
-    vector<Point2f> boundary = [self detectRDTWithSIFT:inputMat];
-    if (boundary.size() <= 0)
-        return inputMat;
-        //return inputMat;
+-(cv::Rect) checkControlLine:(Mat) inputMat andResult:(bool *) control {
+    Mat hls = Mat();
+    cvtColor(inputMat, hls, COLOR_RGBA2RGB);
+    cvtColor(hls, hls, COLOR_RGB2HLS);
     
-    Mat resultMat = [self cropResultWindow:inputMat with:boundary];
-    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
-    NSLog(@"Result Mat size -- check control line: (%d, %d)", resultMat.size().width, resultMat.size().height);
-    bool control = [self readControlLine:resultMat at:cv::Point(CONTROL_LINE_POSITION,0)];
+    Mat threshold = Mat();
+    inRange(hls, CONTROL_LINE_COLOR_LOWER, CONTROL_LINE_COLOR_UPPER, threshold);
+    Mat element_erode = getStructuringElement(MORPH_ELLIPSE, cv::Size(5, 5));
+    Mat element_dilate = getStructuringElement(MORPH_ELLIPSE, cv::Size(20, 20));
+    erode(threshold, threshold, element_erode);
+    dilate(threshold, threshold, element_dilate);
+    GaussianBlur(threshold, threshold, cv::Size(5, 5), 2, 2);
     
-    NSLog(@"Control: %d", control);
+    vector<vector<cv::Point> > contours;
+    vector<Vec4i> hierarchy;
     
-    *result = control;
-    
-    return resultMat;
-    //return control;// ? resultMat : inputMat;
+    findContours(threshold, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+    cv::Rect controlLineRect;
+    *control = false;
+    for (int i = 0; i < contours.size(); i++)
+    {
+        cv::Rect rect = boundingRect(contours[i]);
+        NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        if (CONTROL_LINE_POSITION_MIN < rect.x && rect.x < CONTROL_LINE_POSITION_MAX && CONTROL_LINE_MIN_HEIGHT < rect.height && CONTROL_LINE_MIN_WIDTH < rect.width && rect.width < CONTROL_LINE_MAX_WIDTH) {
+            controlLineRect = rect;
+            *control = true;
+            NSLog(@"control line rect: %d %d %d %d", controlLineRect.x, controlLineRect.y, controlLineRect.width, controlLineRect.height);
+        }
+    }
+
+    return controlLineRect;
 }
 
 -(bool) readLine:(Mat) inputMat at: (cv::Point) position for: (bool) isControlLine {
     Mat hls = Mat();
-    cvtColor(inputMat, hls, COLOR_BGRA2BGR);
-    cvtColor(hls, hls, COLOR_BGR2HLS);
+    cvtColor(inputMat, hls, COLOR_RGBA2RGB);
+    cvtColor(hls, hls, COLOR_RGB2HLS);
     
     vector<Mat> channels;
     cv::split(hls, channels);
@@ -733,7 +759,6 @@ Mat siftRefDescriptor;
         avgIntensities[i-lower_bound] = sumIntensity/channels[1].rows;
         avgHues[i-lower_bound] = sumHue/channels[0].rows;
         avgSats[i-lower_bound] = sumSat/channels[2].rows;
-        //NSLog(@"Avg HLS: %.2f, %.2f, %.2f", avgHues[i-lower_bound]*2, avgIntensities[i-lower_bound]/255*100, avgSats[i-lower_bound]/255*100);
     }
     
     float min, max;
@@ -745,9 +770,6 @@ Mat siftRefDescriptor;
     NSLog(@"Intensity Maximum HLS (%.2f, %.2f, %.2f) at %lu/%d", avgHues[max_index]*2, max/255*100, avgSats[max_index]/255*100, max_index, upper_bound-lower_bound);
     NSLog(@"Intensity diff %.3f",abs(min-max));
     
-    //cv::line(inputMat, cv::Point(lower_bound+(int)min_index,0), cv::Point(lower_bound+(int)min_index, inputMat.rows), cv::Scalar(0), 1);
-    //cv::line(inputMat, cv::Point(lower_bound+(int)max_index,0), cv::Point(lower_bound+(int)max_index, inputMat.rows), cv::Scalar(255), 1);
-    //cv::rectangle(inputMat, cv::Point(lower_bound, 0), cv::Point(upper_bound, inputMat.rows), cv::Scalar(0), 0.1);
     if (isControlLine) {
         return min < INTENSITY_THRESHOLD && abs(min-max) > CONTROL_INTENSITY_PEAK_THRESHOLD;
     } else {
@@ -767,8 +789,8 @@ Mat siftRefDescriptor;
 -(Mat) enhanceResultWindow:(Mat) inputMat withTile: (cv::Size) tile{
     Mat result = Mat();
     NSLog(@"Enhance Result Mat Type: %d", inputMat.type());
-    cvtColor(inputMat, result, COLOR_BGRA2BGR);
-    cvtColor(result, result, COLOR_BGR2HLS);
+    cvtColor(inputMat, result, COLOR_RGBA2RGB);
+    cvtColor(result, result, COLOR_RGB2HLS);
     
     Ptr<CLAHE> clahe = createCLAHE(10, tile);
     
@@ -785,8 +807,8 @@ Mat siftRefDescriptor;
     
     merge(channels, result);
     
-    cvtColor(result, result, COLOR_HLS2BGR);
-    cvtColor(result, result, COLOR_BGR2BGRA);
+    cvtColor(result, result, COLOR_HLS2RGB);
+    cvtColor(result, result, COLOR_RGB2RGBA);
     
     return result;
 }
@@ -803,7 +825,7 @@ Mat siftRefDescriptor;
     return result;
 }
 
--(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary {
+-(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary with:(bool*) control{
     Mat ref_boundary = Mat(4, 1, CV_32FC2);
     
     ref_boundary.at<Vec2f>(0, 0)[0] = 0;
@@ -836,19 +858,26 @@ Mat siftRefDescriptor;
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
     cv::warpPerspective(inputMat, correctedMat, M, cv::Size(refImg.cols, refImg.rows));
     
-    correctedMat = Mat(correctedMat, RESULT_WINDOW_RECT);
+    cv::Rect controlLineRect = [self checkControlLine:correctedMat andResult:control];
+    
+    if (!(*control)) {
+        return Mat();
+    }
+    
+    cv::Point tl = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0-45, 10);
+    cv::Point br = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0+45, correctedMat.size().height-10);
+    
+    correctedMat = Mat(correctedMat, cv::Rect(tl, br));
     
     return correctedMat;
 }
 
--(vector<Point2f>) detectRDTWithSIFT: (Mat) inputMat{
+-(vector<Point2f>) detectRDTWithSIFT: (Mat) inputMat andRansac: (int) ransac {
     double currentTime = CACurrentMediaTime();
     Mat inDescriptor;
     vector<KeyPoint> inKeypoints;
     vector<cv::Point2f> boundary;
     double avgDist = 0.0;
-    
-    //    InputArray mask;
     
     Mat mask = Mat(inputMat.size().width, inputMat.size().height, CV_8U, Scalar(0));
     
@@ -861,14 +890,13 @@ Mat siftRefDescriptor;
     if (inDescriptor.cols < 1 || inDescriptor.rows < 1) { // No features found!
         NSLog(@"Found no features!");
         NSLog(@"Time taken to detect: %f -- fail -- SIFT", CACurrentMediaTime() - currentTime);
-        return inputMat;
+        return boundary;
     }
     NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
     
     // Matching
     vector<vector<DMatch>> matches;
     siftMatcher->knnMatch(siftRefDescriptor, inDescriptor, matches, 2, noArray(), false);
-    //NSLog(@"Time taken to match: %f", CACurrentMediaTime() - currentTime);
     
     double maxDist = FLT_MIN;
     double minDist = FLT_MAX;
@@ -877,7 +905,6 @@ Mat siftRefDescriptor;
     int count = 0;
     vector<DMatch> goodMatches;
     for (int i = 0; i < matches.size(); i++) {
-        //NSLog(@"matches distance: %.2f", matches[i].distance);
         if (matches[i][0].distance <= 0.80 * matches[i][1].distance) {
             goodMatches.push_back(matches[i][0]);
             sum += matches[i][0].distance;
@@ -885,7 +912,7 @@ Mat siftRefDescriptor;
         }
     }
     
-    vector<Point2f> srcPoints; // Works without allocating space?
+    vector<Point2f> srcPoints;
     vector<Point2f> dstPoints;
     
     for (int i = 0; i < goodMatches.size(); i++) {
@@ -897,7 +924,7 @@ Mat siftRefDescriptor;
     // HOMOGRAPHY!
     NSLog(@"GoodMatches size %lu", goodMatches.size());
     if (goodMatches.size() > GOOD_MATCH_COUNT) {
-        Mat H = findHomography(srcPoints, dstPoints, CV_RANSAC, 5);
+        Mat H = findHomography(srcPoints, dstPoints, CV_RANSAC, ransac);
         
         if (H.cols >= 3 && H.rows >= 3) {
             Mat objCorners = Mat(4, 1, CV_32FC2);
@@ -915,9 +942,7 @@ Mat siftRefDescriptor;
             objCorners.at<Vec2f>(3, 0)[0] = 0;
             objCorners.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
             
-            perspectiveTransform(objCorners, sceneCorners, H); // Not sure! if I'm suppose to dereference
-            //Mat matchMat = inputMat.clone();
-            //polylines(inputMat, sceneCorners, true, Scalar(255), 5);
+            perspectiveTransform(objCorners, sceneCorners, H);
             NSLog(@"DstPts-SIFT:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
                   dstPoints[0].x, dstPoints[0].y,
                   dstPoints[1].x, dstPoints[1].y,
@@ -940,18 +965,34 @@ Mat siftRefDescriptor;
             sceneCorners.release();
             
             avgDist = sum/count;
-            //NSLog(@"Average distance: %.2f", sum/count);
-            //Mat resultMat = Mat();
-            //drawMatches(refImg, siftRefKeypoints, inputMat, inKeypoints, goodMatches, resultMat);
-            //return resultMat;
-            //inputMat = [self cropResultWindow:inputMat with:boundary];
             
-            //return boundary;
+            RotatedRect rotatedRect = minAreaRect(boundary);
+            Point2f v[4];
+            rotatedRect.points(v);
+            
+            for (int i = 0; i < 4; i++) {
+                if(rotatedRect.angle < -45)
+                    boundary[(i+2)%4] = v[i];
+                else
+                    boundary[(i+3)%4] = v[i];
+            }
+            
+            cv::Rect rect = boundingRect(boundary);
+            
+            NSLog(@"Transformed-SIFT-updated: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+                  v[0].x-v[1].x,
+                  v[0].x, v[0].y,
+                  v[1].x, v[1].y,
+                  v[2].x, v[2].y,
+                  v[3].x, v[3].y);
+            
+            float rotatedArea = rotatedRect.size.height*rotatedRect.size.width;
+            float boundArea = rect.area();
+            NSLog(@"Rotated: %.2f, contour: %.2f, diff: %.2f -- SIFT -- angle: %.2f", rotatedArea, contourArea(boundary), rotatedArea-contourArea(boundary), rotatedRect.angle);
         }
     }
     NSLog(@"Time taken to detect: %f -- success -- SIFT", CACurrentMediaTime() - currentTime);
     return boundary;
-    //return inputMat;
 }
 
 @end

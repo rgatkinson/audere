@@ -86,12 +86,10 @@ double startTime = 0.0;
     dispatch_async(self.sessionQueue, ^{
         [self configureSession];
     } );
-    //[self setUpGuidingView];
+
     if (!self.disableViewFinder) {
         [[ImageProcessor sharedProcessor] generateViewFinder:self.view forPreview: self.previewView];
     }
-    //    self.previewView.layer addSublayer:(nonnull CALayer *)
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -219,22 +217,6 @@ double startTime = 0.0;
         return;
     }
     
-    // Add photo output.
-    //    AVCapturePhotoOutput *photoOutput = [[AVCapturePhotoOutput alloc] init];
-    //
-    //    if ( [self.session canAddOutput:photoOutput] ) {
-    //        [self.session addOutput:photoOutput];
-    //        self.photoOutput = photoOutput;
-    //        self.photoOutput.highResolutionCaptureEnabled = HIGH_RESOLUTION_ENABLED;
-    //        self.photoOutput.livePhotoCaptureEnabled = NO;
-    //        self.photoOutput.depthDataDeliveryEnabled = DEPTH_DATA_DELIVERY;
-    //    }else {
-    //        NSLog( @"Could not add photo output to the session" );
-    //        self.setupResult = AVCamSetupResultSessionConfigurationFailed;
-    //        [self.session commitConfiguration];
-    //        return;
-    //    }
-    
     // Add frame processor output
     self.videoDataOutput = [AVCaptureVideoDataOutput new];
     [self.videoDataOutput setAlwaysDiscardsLateVideoFrames:YES];
@@ -265,59 +247,63 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         startTime = CACurrentMediaTime();
     
     @synchronized(self) {
-        if (self.isProcessing)
+        if (self.isProcessing) {
             return;
-    }
-    
-    //if (!self.isProcessing) {
-        @synchronized (self) {
-            self.isProcessing = true;
         }
-        [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, bool sharpness, bool shadow, Mat resultWindowMat) {
-            NSLog(@"Found = %d, update Pos = %d, update Sharpness = %d, update Brightness = %d, update Shadow = %d", passed, (int)sizeResult, sharpness, (int)exposureResult, shadow);
-            
-            NSString *instructions = [[ImageProcessor sharedProcessor] getInstruction:sizeResult andFor:center andFor:orientation];
-            NSMutableArray *qCheckTexts = [[ImageProcessor sharedProcessor] getQualityCheckTexts:sizeResult andFor:center andFor:orientation andFor:sharpness andFor:exposureResult];
-            
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.positionLabel.text = qCheckTexts[2];
-                self.positionLabel.textColor = sizeResult==RIGHT_SIZE && center && orientation? [UIColor greenColor] : [UIColor redColor];
-                self.sharpnessLabel.text = qCheckTexts[0];
-                self.sharpnessLabel.textColor = sharpness ? [UIColor greenColor] : [UIColor redColor];
-                self.brightnessLabel.text = qCheckTexts[1];
-                self.brightnessLabel.textColor = exposureResult==NORMAL ? [UIColor greenColor] : [UIColor redColor];
-                self.shadowLabel.text = qCheckTexts[3];
-                self.shadowLabel.textColor = shadow ? [UIColor redColor] : [UIColor greenColor];
-                self.instructionsLabel.text = instructions;
-                if(passed == true){
-                    NSLog(@"Moving to result screen");
+        self.isProcessing = true;
+    }
+    [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow) {
+        NSLog(@"Found = %d, update Pos = %d, update Angle = %.2f, update Sharpness = %d, update Brightness = %d, update Shadow = %d", passed, (int)sizeResult, angle, sharpness, (int)exposureResult, shadow);
+        
+        NSString *instructions = [[ImageProcessor sharedProcessor] getInstruction:sizeResult andFor:center andFor:orientation];
+        NSMutableArray *qCheckTexts = [[ImageProcessor sharedProcessor] getQualityCheckTexts:sizeResult andFor:center andFor:orientation andFor:sharpness andFor:exposureResult];
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.positionLabel.text = qCheckTexts[2];
+            self.positionLabel.textColor = sizeResult==RIGHT_SIZE && center && orientation? [UIColor greenColor] : [UIColor redColor];
+            self.sharpnessLabel.text = qCheckTexts[0];
+            self.sharpnessLabel.textColor = sharpness ? [UIColor greenColor] : [UIColor redColor];
+            self.brightnessLabel.text = qCheckTexts[1];
+            self.brightnessLabel.textColor = exposureResult==NORMAL ? [UIColor greenColor] : [UIColor redColor];
+            self.shadowLabel.text = qCheckTexts[3];
+            self.shadowLabel.textColor = shadow ? [UIColor redColor] : [UIColor greenColor];
+            self.instructionsLabel.text = instructions;
+            if(passed == true){
+                NSLog(@"Moving to result screen");
+                
+                bool control, testA, testB;
+                // this passees the imgage into the showPhotoViewController
+
+                UIImage *testStripImage = [[ImageProcessor sharedProcessor] interpretResult:img andControlLine:&control andTestA:&testA andTestB:&testB];
+                
+                if (control) {
                     double captureTime = CACurrentMediaTime() - startTime;
                     startTime = 0;
                     
-                    bool control, testA, testB;
-                    // this passees the imgage into the showPhotoViewController
-                    UIImage *testStripImage = [[ImageProcessor sharedProcessor] interpretResultWithResultWindow: resultWindowMat andControlLine:&control andTestA:&testA andTestB:&testB];
                     if (self.onRDTDetected) {
-                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, control, testA, testB);
+                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB);
                     }
                 } else {
+                    //If control line is not found, we capture the strip again. This is based on an assumption that people would try to capture valid strips with control line.
+                    NSLog(@"Control not found!");
                     if (self.onRDTDetected) {
-                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, sharpness, shadow, false, false, false);
+                        self.onRDTDetected(false, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB);
                     }
                     @synchronized (self) {
                         self.isProcessing = false;
                     }
                 }
-                
-                
-            });
-            
-
-        }];
-        
-    //}
-    
+            } else {
+                if (self.onRDTDetected) {
+                    self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false);
+                }
+                @synchronized (self) {
+                    self.isProcessing = false;
+                }
+            }
+        });
+    }];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator

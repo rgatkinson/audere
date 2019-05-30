@@ -23,6 +23,7 @@ type InternalRDTCapturedArgs = {
   target: number;
   sharpness: boolean;
   orientation: boolean;
+  angle: number;
   exposureResult: ExposureResult;
   control: boolean;
   testA: boolean;
@@ -36,6 +37,7 @@ export type RDTCapturedArgs = {
   sizeResult: SizeResult;
   isFocused: boolean;
   isRightOrientation: boolean;
+  angle: number;
   exposureResult: ExposureResult;
   controlLineFound: boolean;
   testALineFound: boolean;
@@ -59,6 +61,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       isCentered: capturedArgs.center,
       sizeResult: capturedArgs.sizeResult,
       isFocused: capturedArgs.sharpness,
+      angle: capturedArgs.angle,
       isRightOrientation: capturedArgs.orientation,
       exposureResult: capturedArgs.exposureResult,
       controlLineFound: capturedArgs.control,
