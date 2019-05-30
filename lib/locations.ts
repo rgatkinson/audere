@@ -118,6 +118,11 @@ export const Locations: {
     contactName: "Dr. Helen Y. Chu",
     contactPhone: "(206) 897-5318"
   },
+  SeattleCenter: {
+    type: LocationType.PublicSpace,
+    contactName: "Dr. Helen Y. Chu",
+    contactPhone: "(206) 897-5318"
+  },
   WestlakeMall: {
     type: LocationType.PublicSpace,
     contactName: "Dr. Helen Y. Chu",
