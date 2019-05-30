@@ -5,12 +5,9 @@
 
 import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
-import url from "url";
-import { DangerZone } from "expo";
 import { recordErrorToFirebase } from "../crashReporter";
 
 export const tracker = firebase.analytics();
-let { Branch } = DangerZone;
 
 const demoModeEvent = "app_demo_mode_change";
 export const notificationEvent = "push_notification_event";
@@ -81,12 +78,6 @@ export const BarcodeVerificationEvents = {
 };
 
 export const AppHealthEvents = {
-  BRANCH_DATA_ERROR: "branch_data_error",
-  BRANCH_GOT_ATTRIBUTION: "branch_got_attribution",
-  BRANCH_NO_ATTRIBUTION: "branch_no_attribution",
-  BRANCH_NOT_FIRST_SESSION: "branch_not_first_session",
-  FIREBASE_GOT_ATTRIBUTION: "firebase_got_attribution",
-  FIREBASE_NO_ATTRIBUTION: "firebase_no_attribution",
   KIT_ORDER_BLOCKED: "kit_order_blocked",
   KIT_ORDER_UNBLOCKED: "kit_order_unblocked",
   PHOTO_UPLOADER_ERROR: "photo_uploader_error",
@@ -132,99 +123,7 @@ function shouldTrack(): boolean {
   return isProduction;
 }
 
-// These User Properties have been created on our Firebase console as a way to
-// segment users
-const marketingUserProperties = [
-  "utm_campaign",
-  "utm_content",
-  "utm_medium",
-  "utm_source",
-];
-
-const parsedMarketingProperties = {};
-
-type BranchData = {
-  error: string | null;
-  uri?: string | null;
-  params: Object | null;
-};
-
-// Called by Branch.io's RN integration when it successfully loads deep link
-// information.
-function onBranchData(data: BranchData) {
-  const { error, params } = data;
-
-  if (error) {
-    tracker.logEvent(AppHealthEvents.BRANCH_DATA_ERROR, { error });
-    return;
-  }
-
-  if (params) {
-    // @ts-ignore
-    if (params["+is_first_session"]) {
-      storeMarketingAttributes(params, false);
-    } else {
-      tracker.logEvent(AppHealthEvents.BRANCH_NOT_FIRST_SESSION, {
-        params: JSON.stringify(params),
-      });
-    }
-  } else {
-    tracker.logEvent(AppHealthEvents.BRANCH_DATA_ERROR, { error: "no params" });
-  }
-}
-
-function storeMarketingAttributes(params: Object, fromFirebase: boolean) {
-  marketingUserProperties.forEach(property => {
-    if (params.hasOwnProperty(property)) {
-      // @ts-ignore
-      parsedMarketingProperties[property] = params[property];
-    }
-  });
-
-  // @ts-ignore
-  if (params["ref"]) {
-    // @ts-ignore
-    parsedMarketingProperties["install_referrer"] = params["ref"];
-  }
-
-  if (Object.keys(parsedMarketingProperties).length > 0) {
-    tracker.setUserProperties(parsedMarketingProperties);
-    tracker.logEvent(
-      fromFirebase
-        ? AppHealthEvents.FIREBASE_GOT_ATTRIBUTION
-        : AppHealthEvents.BRANCH_GOT_ATTRIBUTION,
-      parsedMarketingProperties
-    );
-  } else {
-    tracker.logEvent(
-      fromFirebase
-        ? AppHealthEvents.FIREBASE_NO_ATTRIBUTION
-        : AppHealthEvents.BRANCH_NO_ATTRIBUTION
-    );
-  }
-}
-
-async function recordMarketingAttributions() {
-  const link = await firebase.links().getInitialLink();
-  if (!link) {
-    return;
-  }
-
-  const parsed = url.parse(link, true);
-  if (!parsed || !parsed.query) {
-    return;
-  }
-
-  storeMarketingAttributes(parsed.query, true);
-}
-
-// We export this, instead of directly writing these properties into our store,
-// so that this tracking module doesn't end up generating a dependency cycle.
-export function getMarketingProperties() {
-  return parsedMarketingProperties;
-}
-
-export async function startTracking(): Promise<void> {
+export function startTracking() {
   // getUniqueID returns IDFV on iOS (unique ID per install, not per phone),
   // and on Android it'll change per install too after Oreo).  Tracking IDs
   // will allow us not only to correlate events to the same phone, but also to
@@ -237,9 +136,6 @@ export async function startTracking(): Promise<void> {
   // app launch, when isDemo is false anyway, and we always update
   // the collection status whenever isDemo changes...
   updateCollectionEnabled(false);
-
-  Branch.subscribe(onBranchData);
-  await recordMarketingAttributions();
 }
 
 export function updateCollectionEnabled(isDemo: boolean) {

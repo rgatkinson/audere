@@ -38,14 +38,13 @@ export default class App extends React.Component {
   async componentWillMount() {
     this._loadAssets();
     setupErrorHandler();
+    startTracking();
 
     // We do these serially, for now, because we actually log things when
     // loading remote config, and you could in theory use remote config to
     // change how firestore behaves.  If we become confident that we'll never
-    // use remote config to change firestore's behavior, we can at least
-    // parallelize those two;  but both of those use tracking, and so tracking
-    // needs to be serialized before them for sure.
-    await startTracking();
+    // use remote config to change firestore's behavior, we can
+    // parallelize those two.
     await loadAllRemoteConfigs();
     await initializeFirestore();
   }

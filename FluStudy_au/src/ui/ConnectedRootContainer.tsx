@@ -20,7 +20,6 @@ import {
   clearState,
   setActiveRouteName,
   setCSRUIDIfUnset,
-  setMarketingProperties,
   setShownOfflineWarning,
   setConnectivity,
 } from "../store/";
@@ -48,8 +47,6 @@ import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { getMarketingProperties, AppHealthEvents } from "../util/tracker";
-import { getRemoteConfig, loadAllRemoteConfigs } from "../util/remoteConfig";
 import MultiTapContainer from "./components/MultiTapContainer";
 
 const AppContainer = createAppContainer(AppNavigator);
@@ -109,7 +106,6 @@ class ConnectedRootContainer extends React.Component<Props> {
 
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
-    this.props.dispatch(setMarketingProperties(getMarketingProperties()));
     if (this.props.csruid) {
       onCSRUIDEstablished(this.props.csruid);
     }

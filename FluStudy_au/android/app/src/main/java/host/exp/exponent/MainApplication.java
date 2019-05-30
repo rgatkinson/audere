@@ -16,7 +16,6 @@ import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
-import io.invertase.firebase.links.RNFirebaseLinksPackage;
 import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
@@ -63,7 +62,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new RNDeviceInfo(),
             new RNFirebasePackage(),
             new RNFirebaseAnalyticsPackage(),
-            new RNFirebaseLinksPackage(),
             new RNFirebaseCrashlyticsPackage(),
             new RNFirebaseRemoteConfigPackage(),
             new RNFirebaseFirestorePackage(),

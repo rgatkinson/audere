@@ -78,7 +78,6 @@ target 'fluathome' do
     :path => "../node_modules/react-native-firebase/ios"
   pod 'Firebase/Core', '~> 5.20.1'
   pod 'Firebase/Performance', '~> 5.20.1'
-  pod 'Firebase/DynamicLinks', '~> 5.20.1'
   pod 'Firebase/Firestore'
   pod 'Firebase/Storage', '~> 5.20.1'
   pod 'libopencv-contrib-audere-3.4.6-xcode10.1', :podspec => 'opencv/libopencv-contrib-audere.podspec'

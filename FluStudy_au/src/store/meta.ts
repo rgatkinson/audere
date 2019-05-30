@@ -10,7 +10,6 @@ export type MetaAction =
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_DEMO"; isDemo: boolean }
-  | { type: "SET_MARKETING_PROPERTIES"; marketingProperties: any }
   | { type: "TOGGLE_SUPPORT_CODE_MODAL" };
 
 export type MetaState = {
@@ -37,8 +36,6 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, activeRouteName: action.activeRouteName };
     case "SET_DEMO":
       return { ...state, isDemo: action.isDemo };
-    case "SET_MARKETING_PROPERTIES":
-      return { ...state, marketingProperties: action.marketingProperties };
     case "SET_OFFLINE_WARNING":
       return { ...state, shownOfflineWarning: action.shownOfflineWarning };
     case "SET_CONNECTIVITY":
@@ -65,13 +62,6 @@ export function setDemo(isDemo: boolean): MetaAction {
   return {
     type: "SET_DEMO",
     isDemo,
-  };
-}
-
-export function setMarketingProperties(marketingProperties: any): MetaAction {
-  return {
-    type: "SET_MARKETING_PROPERTIES",
-    marketingProperties,
   };
 }
 
