@@ -44,14 +44,12 @@ export const content = [
     dbScreenName: "ManualEntry",
     input: [
       {
+        name: strings.barcode.placeholder,
         type: "text",
-        placeholder: strings.barcode.placeholder,
-        default: "34567890",
       },
       {
+        name: strings.barcode.secondPlaceholder,
         type: "text",
-        placeholder: strings.barcode.secondPlaceholder,
-        default: "34567890",
       },
     ],
   },
@@ -122,14 +120,19 @@ export const content = [
     dbScreenName: "WhatSymptoms",
     input: [
       {
-        name: strings.surveyOption.feelingFeverish,
+        name: strings.surveyTitle.whatSymptoms,
         type: "checkbox",
-        default: "unchecked",
-      },
-      {
-        name: strings.surveyOption.cough,
-        type: "checkbox",
-        default: "checked",
+        options: [
+          strings.surveyOption.feelingFeverish,
+          strings.surveyOption.chillsOrSweats,
+          strings.surveyOption.cough,
+          strings.surveyOption.soreThroat,
+          strings.surveyOption.headache,
+          strings.surveyOption.fatigue,
+          strings.surveyOption.muscleOrBodyAches,
+          strings.surveyOption.runningNose,
+          strings.surveyOption.shortnessOfBreath,
+        ],
       },
     ],
   },
@@ -141,38 +144,83 @@ export const content = [
     input: [
       {
         name: strings.surveyTitle.symptomsStart,
-        type: "radio",
+        type: "buttonGrid",
         options: [
           strings.surveyButton["1day"],
           strings.surveyButton["2days"],
           strings.surveyButton["3days"],
           strings.surveyButton["4days"],
         ],
-        default: strings.surveyButton["1day"],
       },
       {
         name: strings.surveyTitle.symptomsLast48,
-        type: "radio",
+        type: "buttonGrid",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
-        default: strings.surveyButton.no,
       },
       {
         name: strings.surveyTitle.symptomsSeverity,
-        type: "radio",
+        type: "buttonGrid",
         options: [
           strings.surveyButton.mild,
           strings.surveyButton.moderate,
           strings.surveyButton.severe,
         ],
-        default: strings.surveyButton.mild,
       },
     ],
   },
   {
-    type: "basic",
+    type: "input",
     title: strings.GeneralExposure.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "GeneralExposure",
+    input: [
+      {
+        name: strings.surveyTitle.inContact,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.youngChildren,
+        type: "radio",
+        options: [
+          strings.surveyButton.noContactUnderFive,
+          strings.surveyButton.oneChild,
+          strings.surveyButton.twoToFiveChildren,
+          strings.surveyButton.moreThanFiveChildren,
+          strings.surveyButton.doNotKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.householdChildren,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.peopleInHousehold,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton["1to2"],
+          strings.surveyButton["3to4"],
+          strings.surveyButton["5to7"],
+          strings.surveyButton["8plus"],
+        ],
+      },
+      {
+        name: strings.surveyTitle.bedrooms,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton["0-1"],
+          strings.surveyButton["2"],
+          strings.surveyButton["3"],
+          strings.surveyButton["4"],
+          strings.surveyButton["5plus"],
+        ],
+      },
+    ],
   },
   {
     type: "input",
@@ -181,14 +229,86 @@ export const content = [
     dbScreenName: "GeneralHealth",
     input: [
       {
-        name: strings.surveyTitle.antibiotics,
-        type: "radio",
+        name: strings.surveyTitle.medicalCondition,
+        type: "checkbox",
+        options: [
+          strings.surveyOption.asthma,
+          strings.surveyOption.copd,
+          strings.surveyOption.diabetes,
+          strings.surveyOption.noneOfThese,
+          strings.surveyOption.doNotKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.fluShot,
+        type: "buttonGrid",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
           strings.surveyButton.dontKnow,
         ],
-        default: strings.surveyButton.no,
+      },
+      {
+        name: strings.surveyTitle.smokeTobacco,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.householdTobacco,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.interfering,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.antibiotics,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.assignedSex,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.male,
+          strings.surveyButton.female,
+          strings.surveyButton.other,
+        ],
+      },
+      {
+        name: strings.surveyTitle.race,
+        type: "checkbox",
+        options: [
+          strings.surveyOption.americanIndianOrAlaskaNative,
+          strings.surveyOption.asian,
+          strings.surveyOption.nativeHawaiian,
+          strings.surveyOption.blackOrAfricanAmerican,
+          strings.surveyOption.white,
+          strings.surveyOption.other,
+        ],
+      },
+      {
+        name: strings.surveyTitle.hispanic,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.healthInsurance,
+        type: "checkbox",
+        options: [
+          strings.surveyOption.noInsurance,
+          strings.surveyOption.privateInsuranceEmployer,
+          strings.surveyOption.privateInsuranceSelf,
+          strings.surveyOption.governmentInsurance,
+          strings.surveyOption.other,
+          strings.surveyOption.doNotKnow,
+        ],
       },
     ],
   },

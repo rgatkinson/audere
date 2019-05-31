@@ -7,6 +7,13 @@ import wd from "wd";
 import strings from "../../src/i18n/locales/en.json";
 import { content } from "./fluathomeContent.js";
 
+console.log(
+  "Using test file",
+  process.env.TEST_UI_INPUT ? process.env.TEST_UI_INPUT : "default.js"
+);
+const { inputs } = process.env.TEST_UI_INPUT
+  ? require(process.env.TEST_UI_INPUT)
+  : require("./testInputs/default.js");
 const deviceInfo = require(process.env.TEST_UI_CONFIG);
 const PLATFORM = deviceInfo.PLATFORM;
 const screen_x = deviceInfo.SCREEN_X;
@@ -16,11 +23,11 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 const PORT = 4723;
 const driver = wd.promiseChainRemote("localhost", PORT);
 
-//Drive through app always picking default chocies
+//Drive through app always picking chocies specified in input file
 describe("Happy Path", () => {
   beforeEach(async () => {
     await driver.init(deviceInfo.config);
-    await driver.setImplicitWaitTimeout(10000);
+    await driver.setImplicitWaitTimeout(30000);
   });
 
   afterEach(async () => {
@@ -31,6 +38,7 @@ describe("Happy Path", () => {
     expect(
       await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
+    await driver.setImplicitWaitTimeout(10000);
     await change_to_demo_mode(driver);
 
     for (const screen_info of content) {
@@ -65,26 +73,40 @@ async function input_screen(driver, screen_info) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
-  for (const elt of screen_info.input) {
-    if (elt.type == "text") {
-      await driver.elementByAccessibilityId(elt.placeholder).type(elt.default);
-    } else if (elt.type == "checkbox" && elt.default == "checked") {
-      await driver.elementByAccessibilityId(elt.name).click();
-    } else if (elt.type == "radio") {
-      await scroll_to_element(driver, elt.name);
-      let questionLocation = await get_element_location(driver, elt.name);
-      let buttons = await driver.elementsByAccessibilityId(elt.default);
-      for (const button of buttons) {
-        let buttonLocation = await button.getLocation();
+  for (let i = 0; i < screen_info.input.length; i++) {
+    const question = screen_info.input[i];
+    if (question.name in inputs) {
+      let questionY = await scroll_to_element(driver, question.name);
+      if (questionY > screen_y * 0.6) {
+        await half_scroll(driver);
+      }
 
-        //click the button underneath the question
-        if (buttonLocation.y > questionLocation.y) {
-          await button.click();
-          break;
+      if (question.type == "text") {
+        await driver
+          .elementByAccessibilityId(question.name)
+          .type(inputs[question.name]);
+      } else if (question.type == "checkbox" && question.name in inputs) {
+        for (const item of question.options) {
+          if (inputs[question.name].includes(item)) {
+            await scroll_to_element(driver, item);
+            await driver.elementByAccessibilityId(item).click();
+          }
+        }
+      } else if (question.type == "radio" && question.name in inputs) {
+        await scroll_to_element(driver, inputs[question.name]);
+        await driver.elementByAccessibilityId(inputs[question.name]).click();
+      } else if (question.type == "buttonGrid" && question.name in inputs) {
+        const nextQuestion =
+          i + 1 != screen_info.input.length ? screen_info.input[i + 1] : null;
+        if (PLATFORM == "iOS") {
+          await ios_buttonGrid(driver, question, nextQuestion, screen_info);
+        } else {
+          await android_buttonGrid(driver, question, nextQuestion, screen_info);
         }
       }
     }
   }
+
   if (await driver.isKeyboardShown()) {
     if (PLATFORM == "iOS") {
       await driver.elementByAccessibilityId(strings.common.button.done).click();
@@ -94,6 +116,113 @@ async function input_screen(driver, screen_info) {
   }
   await scroll_to_element(driver, screen_info.button);
   await driver.elementByAccessibilityId(screen_info.button).click();
+}
+
+async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
+  let questionLocation = await get_element_location(driver, question.name);
+  let totalButtons = Array.isArray(inputs[question.name])
+    ? inputs[question.name].length
+    : 1;
+  let numClicked = 0;
+  let lastClickedY = questionLocation.y;
+  let somethingLeftToClick = true;
+  let nextQuestionLocation = await get_element_location(
+    driver,
+    nextQuestion ? nextQuestion.name : screen_info.button
+  );
+  if (!nextQuestionLocation) {
+    nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
+  }
+
+  while (numClicked < totalButtons) {
+    while (somethingLeftToClick && numClicked < totalButtons) {
+      somethingLeftToClick = false;
+      const buttons = await driver.elementsByAccessibilityId(
+        Array.isArray(inputs[question.name])
+          ? inputs[question.name][numClicked]
+          : inputs[question.name]
+      );
+      for (const button of buttons) {
+        let buttonLocation = await button.getLocation();
+        if (
+          buttonLocation.y < nextQuestionLocation.y &&
+          buttonLocation.y > lastClickedY &&
+          buttonLocation.y < screen_y
+        ) {
+          await button.click();
+          somethingLeftToClick = true;
+          numClicked++;
+          lastClickedY = buttonLocation.y;
+          break;
+        }
+      }
+    }
+    if (numClicked < totalButtons) {
+      somethingLeftToClick = true;
+      await half_scroll(driver);
+      nextQuestionLocation = await get_element_location(
+        driver,
+        nextQuestion ? nextQuestion.name : screen_info.button
+      );
+      if (!nextQuestionLocation) {
+        nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
+      }
+
+      buttons = await driver.elementsByAccessibilityId(
+        inputs[question.name][numClicked - 1]
+      );
+      for (const button of buttons) {
+        if ((await button.getAttribute("focused")) == "true") {
+          lastClickedY = (await button.getLocation()).y;
+          break;
+        }
+      }
+    }
+  }
+}
+
+async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
+  let questionLocation = await get_element_location(driver, question.name);
+  let totalButtons = Array.isArray(inputs[question.name])
+    ? inputs[question.name].length
+    : 1;
+  let numClicked = 0;
+  let lastClickedY = questionLocation.y;
+  let nextQuestionLocation = await get_element_location(
+    driver,
+    nextQuestion ? nextQuestion.name : screen_info.button
+  );
+
+  while (numClicked < totalButtons) {
+    const buttons = await driver.elementsByAccessibilityId(
+      Array.isArray(inputs[question.name])
+        ? inputs[question.name][numClicked]
+        : inputs[question.name]
+    );
+    var lastButton;
+    for (const button of buttons) {
+      let buttonLocation = await button.getLocation();
+      if (buttonLocation.y > screen_y) {
+        await full_scroll(driver);
+        buttonLocation = await button.getLocation();
+        nextQuestionLocation = await get_element_location(
+          driver,
+          nextQuestion ? nextQuestion.name : screen_info.button
+        );
+        lastClickedY = lastButton ? (await lastButton.getLocation()).y : 0;
+      }
+      if (
+        buttonLocation.y < nextQuestionLocation.y &&
+        buttonLocation.y > lastClickedY
+      ) {
+        await button.click();
+        numClicked++;
+        lastClickedY = buttonLocation.y;
+        lastButton = button;
+        break;
+      }
+    }
+  }
 }
 
 //Answer camera permissions question and click link for manual barcode entry
@@ -149,7 +278,11 @@ async function timer_screen(driver, screen_info) {
       true
     ); //make sure popup closed
   }
+  //tap until timer is bypassed
   await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
+  while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+    await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
+  }
   await driver.elementByAccessibilityId(screen_info.button).click();
 }
 
@@ -194,6 +327,7 @@ async function triple_tap(driver, x_coord, y_coord) {
 }
 
 //Scroll down the screen until the requested element is visible
+//Return y-coordinate of new location of element
 async function scroll_to_element(driver, element) {
   if (PLATFORM == "iOS") {
     let elementLocation = await get_element_location(driver, element);
@@ -201,21 +335,18 @@ async function scroll_to_element(driver, element) {
       await driver.execute("mobile: swipe", { direction: "up" });
       elementLocation = await get_element_location(driver, element);
     }
+    return elementLocation.y;
   } else {
     await driver.setImplicitWaitTimeout(100);
-    let scroll = new wd.TouchAction(driver)
-      .press({ x: screen_x * 0.5, y: screen_y * 0.9 })
-      .wait(2000)
-      .moveTo({ x: screen_x * 0.5, y: screen_y * 0.1 })
-      .release();
-    await scroll.perform();
     while (!(await driver.hasElementByAccessibilityId(element))) {
-      await scroll.perform();
+      await full_scroll(driver);
     }
     await driver.setImplicitWaitTimeout(10000);
+    return (await get_element_location(driver, element)).y;
   }
 }
 
+//Return coordinates of element
 async function get_element_location(driver, element) {
   if (PLATFORM == "iOS") {
     return await driver
@@ -225,6 +356,45 @@ async function get_element_location(driver, element) {
       )
       .getLocation();
   } else {
-    return await driver.elementByAccessibilityId(element).getLocation();
+    if (await driver.hasElementByAccessibilityId(element)) {
+      return await driver.elementByAccessibilityId(element).getLocation();
+    }
+  }
+}
+
+//Scroll through the whole page
+async function full_scroll(driver) {
+  if (PLATFORM == "iOS") {
+    await driver.execute("mobile: scroll", { direction: "down" });
+  } else {
+    let scroll = new wd.TouchAction(driver)
+      .press({ x: Math.trunc(screen_x * 0.99), y: Math.trunc(screen_y * 0.9) })
+      .wait(2000)
+      .moveTo({
+        x: Math.trunc(screen_x * 0.99),
+        y: Math.trunc(screen_y * 0.01),
+      })
+      .release();
+    await scroll.perform();
+  }
+}
+
+//Scroll through the approximately half the screen
+async function half_scroll(driver) {
+  if (PLATFORM == "iOS") {
+    await driver.execute("mobile: dragFromToForDuration", {
+      duration: 0.5,
+      fromX: Math.trunc(screen_x * 0.99),
+      fromY: Math.trunc(screen_y * 0.3),
+      toX: Math.trunc(screen_x * 0.99),
+      toY: Math.trunc(screen_y * 0.1),
+    });
+  } else {
+    let scroll = new wd.TouchAction(driver)
+      .press({ x: Math.trunc(screen_x * 0.99), y: Math.trunc(screen_y * 0.7) })
+      .wait(2000)
+      .moveTo({ x: Math.trunc(screen_x * 0.99), y: Math.trunc(screen_y * 0.3) })
+      .release();
+    await scroll.perform();
   }
 }
