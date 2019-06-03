@@ -4,7 +4,7 @@ umask 077
 
 while true; do
   echo "$(date): Opening connection"
-  ssh bastion 'killall sleep 2>/dev/null;echo "$(date): Connected";sleep infinity'
+  ssh bastion -N -o ExitOnForwardFailure=yes -R localhost:12894:localhost:22
   echo "$(date): Disconnected, waiting before retry"
   sleep 5
 done
