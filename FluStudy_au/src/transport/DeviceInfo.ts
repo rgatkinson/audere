@@ -29,7 +29,7 @@ function loadBuildInfo() {
 
 function getBuildNumber() {
   if (Constants.platform.ios) {
-    return Constants.platform.ios.buildNumber;
+    return +Constants.platform.ios.buildNumber;
   } else if (Constants.platform.android) {
     return Constants.platform.android.versionCode;
   } else {
