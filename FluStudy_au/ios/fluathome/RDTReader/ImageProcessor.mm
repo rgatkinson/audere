@@ -43,12 +43,14 @@ const int CONTROL_LINE_POSITION = 45;
 const int TEST_A_LINE_POSITION = 15;
 const int TEST_B_LINE_POSITION = 75;
 const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 45/100.0*255.0, 5/100.0*255.0);
-const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 15/100.0*255.0);
+const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 100/100.0*255.0);
 const int CONTROL_LINE_POSITION_MIN = 575;
 const int CONTROL_LINE_POSITION_MAX = 700;
 const int CONTROL_LINE_MIN_HEIGHT = 25;
 const int CONTROL_LINE_MIN_WIDTH = 20;
 const int CONTROL_LINE_MAX_WIDTH = 55;
+const int RESULT_WINDOW_RECT_HEIGHT = 90;
+const int RESULT_WINDOW_RECT_WIDTH_PADDING = 10;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -656,7 +658,7 @@ Mat siftRefDescriptor;
     cvtColor(inputMat, grayMat, COLOR_RGBA2GRAY);
     //[self checkSize:boundary inside:inputMat.size()];
     //[self checkPositionAndSize:boundary isCropped:false inside:inputMat.size()]
-    int cnt=0;
+    int cnt=3;
     SizeResult isSizeable = INVALID;
     bool isCentered = false;
     bool isUpright = false;
@@ -667,7 +669,7 @@ Mat siftRefDescriptor;
         isCentered = [self checkIfCentered:boundary inside:inputMat.size()];
         isUpright = [self checkOrientation:boundary];
         NSLog(@"SIFT-right size %d, center %d, orientation %d, (%d, %d), cnt %d", isSizeable, isCentered, isUpright, inputMat.size().width, inputMat.size().height, cnt);
-    } while (!(isSizeable==RIGHT_SIZE && isCentered && isUpright) && cnt < 10);
+    } while (!(isSizeable==RIGHT_SIZE && isCentered && isUpright) && cnt < 8);
     
     if (boundary.size() <= 0)
         return inputMat;
@@ -864,8 +866,8 @@ Mat siftRefDescriptor;
         return Mat();
     }
     
-    cv::Point tl = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0-45, 10);
-    cv::Point br = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0+45, correctedMat.size().height-10);
+    cv::Point tl = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0-RESULT_WINDOW_RECT_HEIGHT/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
+    cv::Point br = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0+RESULT_WINDOW_RECT_HEIGHT/2.0, correctedMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
     
     correctedMat = Mat(correctedMat, cv::Rect(tl, br));
     
