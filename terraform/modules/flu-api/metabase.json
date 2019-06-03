@@ -16,7 +16,7 @@
         "awslogs-region": "us-west-2"
       }
     },
-    "memoryReservation": 600,
+    "memoryReservation": 1024,
     "essential": true,
     "environment": [
       {
@@ -34,6 +34,10 @@
       {
         "name": "MB_DB_PORT",
         "value": "5432"
+      },
+      {
+        "name": "JAVA_OPTIONS",
+        "value": "-Xmx1024m"
       }
     ],
     "secrets": [
