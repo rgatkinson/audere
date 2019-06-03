@@ -18,6 +18,6 @@ module.exports = {
   ],
   testPathIgnorePatterns: ["\\.snap$", "<rootDir>/node_modules/", "appium.*"],
   transformIgnorePatterns: [
-    "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|pouchdb-adapter-asyncstorage|@react-native-community/netinfo))",
+    "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|@react-native-community/netinfo))",
   ],
 };

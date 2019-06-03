@@ -14,11 +14,3 @@ declare module "react-redux";
 declare module "expo";
 declare module "i18next";
 declare module "expo-pixi";
-declare module "crypto-pouch";
-
-// pouch-crypto extension
-namespace PouchDB {
-  interface Database {
-    crypto(password: string): void;
-  }
-}
