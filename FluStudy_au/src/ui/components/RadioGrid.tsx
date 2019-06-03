@@ -3,8 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { RefObject } from "react";
+import React, { RefObject, Fragment } from "react";
 import {
+  Image,
   StyleProp,
   StyleSheet,
   TouchableOpacity,
@@ -44,6 +45,7 @@ interface Props {
 
 interface State {
   selected: string | undefined;
+  helpSelected: number | null;
 }
 
 class RadioGrid extends React.Component<Props & WithNamespaces, State> {
@@ -51,22 +53,36 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     super(props);
     this.state = {
       selected: props.getAnswer("selectedButtonKey", props.question.id),
+      helpSelected: null,
     };
   }
 
   _onPress = (key: string) => {
     const selected = key;
 
-    this.setState({ selected });
+    this.setState({ selected, helpSelected: null });
     this.props.updateAnswer(
       { selectedButtonKey: selected },
       this.props.question
     );
   };
 
-  render() {
-    const { desc, highlighted, onRef, question, style, t } = this.props;
+  _toggleHelp = (key: number) => {
+    const isSelected = key === this.state.helpSelected ? null : key;
+    this.setState({ helpSelected: isSelected });
+  };
 
+  render() {
+    const {
+      highlighted,
+      onRef,
+      question,
+      shouldValidate,
+      style,
+      t,
+      validationError,
+    } = this.props;
+    const { helpSelected, selected } = this.state;
     return (
       <ScrollIntoView
         onMount={false}
@@ -76,24 +92,26 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
         <QuestionText question={question} />
         <View>
           {question.buttons.map((buttonConfig, i) => {
-            const isSelected = buttonConfig.key == this.state.selected;
+            const isSelected = buttonConfig.key == selected;
+            const { helpImageUri, key } = buttonConfig;
             return (
-              <TouchableOpacity
-                key={buttonConfig.key}
-                onPress={() => this._onPress(buttonConfig.key)}
-                style={
-                  i === question.buttons.length - 1
-                    ? styles.radioRowLast
-                    : styles.radioRow
-                }
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                  }}
+              <Fragment key={`${key}-fragment`}>
+                <TouchableOpacity
+                  key={key}
+                  onPress={() => this._onPress(key)}
+                  style={
+                    i === question.buttons.length - 1
+                      ? styles.radioRowLast
+                      : styles.radioRow
+                  }
                 >
-                  <View style={{ justifyContent: "center" }}>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      flex: 1,
+                      flexDirection: "row",
+                    }}
+                  >
                     <View
                       style={[
                         styles.radioButton,
@@ -103,27 +121,50 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
                     >
                       {isSelected && <View style={styles.radioButtonCenter} />}
                     </View>
-                  </View>
-                  <View style={{ flex: 1, justifyContent: "center" }}>
                     <Text
                       style={[
                         styles.radioText,
                         isSelected && styles.selectedRadioColor,
                       ]}
-                      content={t(`surveyButton:${buttonConfig.key}`)}
+                      content={t(`surveyButton:${key}`)}
                     />
+                    {!!helpImageUri && (
+                      <TouchableOpacity
+                        key={`${key}-touchable`}
+                        onPress={() => this._toggleHelp(i)}
+                      >
+                        <View style={styles.helpIcon}>
+                          <Text
+                            bold={true}
+                            style={{ color: "white" }}
+                            content={"?"}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    )}
                   </View>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+                {helpSelected === i && (
+                  <TouchableOpacity
+                    style={{ height: 200 }}
+                    key={`${buttonConfig.key}-image-button`}
+                    onPress={() => this.setState({ helpSelected: null })}
+                  >
+                    <Image
+                      key={`${key}-image`}
+                      resizeMode={"contain"}
+                      style={styles.helpImage}
+                      source={{ uri: buttonConfig.helpImageUri }}
+                    />
+                  </TouchableOpacity>
+                )}
+              </Fragment>
             );
           })}
-          {this.props.shouldValidate &&
-            !this.state.selected &&
-            this.props.validationError && (
-              <Text
-                content={this.props.validationError}
-                style={styles.errorText}
-              />
+          {shouldValidate &&
+            !selected &&
+            validationError && (
+              <Text content={validationError} style={styles.errorText} />
             )}
         </View>
       </ScrollIntoView>
@@ -141,6 +182,22 @@ const styles = StyleSheet.create({
     color: ERROR_COLOR,
     fontFamily: FONT_NORMAL,
     marginTop: GUTTER / 4,
+  },
+  helpIcon: {
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR,
+    borderWidth: 1,
+    borderRadius: 20,
+    height: 25,
+    width: 25,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  helpImage: {
+    flex: 1,
+    height: undefined,
+    marginVertical: GUTTER / 2,
+    width: undefined,
   },
   radioButton: {
     borderColor: TEXT_COLOR,
@@ -168,6 +225,7 @@ const styles = StyleSheet.create({
     minHeight: RADIO_BUTTON_HEIGHT,
   },
   radioText: {
+    flex: 3,
     fontSize: REGULAR_TEXT,
     margin: GUTTER / 2,
   },

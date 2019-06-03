@@ -9,6 +9,7 @@ export interface ButtonConfig {
   key: string;
   primary: boolean;
   enabled: boolean;
+  helpImageUri?: string;
   subtextKey?: string;
 }
 
@@ -412,38 +413,59 @@ export const BlueLineConfig: SurveyQuestionData = {
     { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
   ],
+  required: true,
   type: "buttonGrid",
 };
 
-export const RedWhenBlueConfig: SurveyQuestionData = {
-  id: "RedWhenBlue",
+export const PinkWhenBlueConfig: SurveyQuestionData = {
+  id: "PinkWhenBlue",
   condition: {
     key: "selectedButtonKey",
     id: BlueLineConfig.id,
     answer: "yes",
   },
-  title: "redLine",
+  title: "pinkLine",
   description: "selectOne",
   buttons: [
-    { key: "noRed", primary: false, enabled: true },
-    { key: "yesAboveBlue", primary: false, enabled: true },
-    { key: "yesBelowBlue", primary: false, enabled: true },
-    { key: "yesAboveBelowBlue", primary: false, enabled: true },
+    {
+      key: "noPink",
+      primary: false,
+      enabled: true,
+    },
+    {
+      key: "yesAboveBlue",
+      primary: false,
+      enabled: true,
+      helpImageUri: "pinklineaboveblueline",
+    },
+    {
+      key: "yesBelowBlue",
+      primary: false,
+      enabled: true,
+      helpImageUri: "pinklinebelowblueline",
+    },
+    {
+      key: "yesAboveBelowBlue",
+      primary: false,
+      enabled: true,
+      helpImageUri: "pinklineabovebelow",
+    },
   ],
+  required: true,
   type: "radioGrid",
 };
 
-export const RedLineConfig: SurveyQuestionData = {
-  id: "RedLine",
+export const PinkLineConfig: SurveyQuestionData = {
+  id: "PinkLine",
   condition: {
     key: "selectedButtonKey",
     id: BlueLineConfig.id,
     answer: "no",
   },
-  title: "redLine",
+  title: "pinkLine",
   description: "selectOne",
   buttons: [
-    { key: "noRed", primary: false, enabled: true },
+    { key: "noPink", primary: false, enabled: true, helpImageUri: "one" },
     { key: "yesOneRed", primary: false, enabled: true },
     { key: "yesTwoRed", primary: false, enabled: true },
   ],
@@ -452,8 +474,8 @@ export const RedLineConfig: SurveyQuestionData = {
 
 export const TestStripSurveyConfig = [
   BlueLineConfig,
-  RedWhenBlueConfig,
-  RedLineConfig,
+  PinkWhenBlueConfig,
+  PinkLineConfig,
 ];
 
 export const TestFeedbackConfig: SurveyQuestionData = {
