@@ -188,10 +188,6 @@
     "title": "Ready to begin?",
     "desc": "Please get comfortable and find a location away from pets or children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 15 minutes."
   },
-  "PushNotifications": {
-    "title": "May we send you push notifications?",
-    "desc": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
-  },
   "ScanInstructions": {
     "title": "Scan the barcode",
     "desc": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"

@@ -1488,9 +1488,9 @@
   integrity sha512-mNhVdZHdtKHMMxbqzNK3RzkBcN1cux3AvuCYGTvjEIQT2uheH3eCAyYsbMbh2Bq8nXkeOWs1kyDiF7geWRFQ4Q==
 
 "@types/react-native-push-notification@^3.0.4":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@types/react-native-push-notification/-/react-native-push-notification-3.0.4.tgz#b3f151a23c4a866f5797c47c16a3ded6c8884ec2"
-  integrity sha512-x3rv5C7KPrgf9pLdAQ2SR9m3EtAbd4ZbYTMAOmlQScRYPHia6iVuzbhFcH+l4DSF2nCTBrYC0PTI18RUtxzwkQ==
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@types/react-native-push-notification/-/react-native-push-notification-3.0.5.tgz#9e80a3015cae9ffb3b4a2601ea655481f64da940"
+  integrity sha512-pIvo2I/i9vVisDGGxP/stAbZ8ODnwHhPWEU7GweWZU/mqwmUXDbAgq824AsDAzbeI1ApDLE7MdLDVjQDYueaqA==
 
 "@types/react-native-vector-icons@*":
   version "4.6.4"
