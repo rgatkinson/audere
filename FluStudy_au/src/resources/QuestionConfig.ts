@@ -3,6 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { monthAsDate } from "../util/date";
+
 export interface ButtonConfig {
   key: string;
   primary: boolean;
@@ -274,7 +276,7 @@ export const FluShotConfig: SurveyQuestionData = {
   type: "buttonGrid",
 };
 
-const FLUSHOT_START_DATE = new Date(2018, 0);
+const FLUSHOT_START_DATE = monthAsDate(2018, 0);
 
 export const FluShotDateConfig: SurveyQuestionData = {
   buttons: [],

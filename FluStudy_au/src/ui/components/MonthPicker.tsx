@@ -21,6 +21,7 @@ import {
   LINK_COLOR,
   SECONDARY_COLOR,
 } from "../styles";
+import { monthAsDate } from "../../util/date";
 
 const months = [
   "january",
@@ -134,7 +135,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     }
 
     while (currentYear < endYear || currentMonth <= endMonth) {
-      options.push(new Date(currentYear, currentMonth));
+      options.push(monthAsDate(currentYear, currentMonth));
       if (currentMonth < months.length - 1) {
         currentMonth += 1;
       } else {
@@ -148,7 +149,6 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { date, onDateChange, t } = this.props;
-    const now = new Date();
 
     return (
       <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
