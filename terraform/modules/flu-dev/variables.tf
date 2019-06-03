@@ -17,6 +17,11 @@ variable "devs" {
   type = "list"
 }
 
+variable "proxies" {
+  description = "Userids for proxy accounts who need bastion access but not a dev machine"
+  default = []
+}
+
 variable "dev_cidr" {
   description = "CIDR block in which to allocate subnets for this environment"
 }

@@ -73,7 +73,7 @@ data "template_file" "provision_bastion_sh" {
   template = "${file("${path.module}/provision-bastion.sh")}"
   vars {
     bastion_port = "${local.bastion_port}"
-    ssh_public_key_map = "${module.devs.ssh_key_json}"
+    ssh_public_key_map = "${module.devs_and_proxies.ssh_key_json}"
     util_sh = "${file("${path.module}/../assets/util.sh")}"
   }
 }
@@ -217,6 +217,11 @@ module "devs" {
   userids = "${var.devs}"
 }
 
+module "devs_and_proxies" {
+  source = "../devs"
+
+  userids = "${concat(var.devs, var.proxies)}"
+}
 data "aws_route53_zone" "auderenow_io" {
   name = "auderenow.io."
 }

@@ -54,6 +54,7 @@ module "flu_dev" {
   fludev_ssh_client_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_client_sg_id}"
   fluapi_internal_elb_client_sg_id = "${module.flu_api.elbinternal_sg_client_id}"
   gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
+  proxies = [ "rproxy" ]
   vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
 
