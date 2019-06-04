@@ -296,7 +296,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "openteststrip_1" } },
+      { tag: MainImage, props: { uri: "putteststripintube" } },
       { tag: Title },
       {
         tag: BulletPointsComponent,
