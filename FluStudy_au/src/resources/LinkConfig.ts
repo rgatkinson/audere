@@ -76,6 +76,13 @@ export const LinkPropProvider = (LinkComponent: any) =>
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
+    "changeResultAnswer",
+    {
+      action: ({ navigation }) => navigation.pop(),
+      key: "changeResultAnswer",
+    },
+  ],
+  [
     "learnMore",
     {
       action: () => learnMore(),

@@ -11,7 +11,7 @@ import {
   setOneMinuteStartTime,
 } from "../store";
 import { FunnelEvents } from "../util/tracker";
-import { logFluResult } from "../util/fluResults";
+import { getFluResultScreen, logFluResult } from "../util/fluResults";
 import {
   WhatSymptomsConfig,
   WhenSymptomsConfig,
@@ -36,6 +36,8 @@ import RDTImage from "../ui/components/flu/RDTImage";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
+import TestResult from "../ui/components/flu/TestResult";
+import TestResultExplanation from "../ui/components/flu/TestResultExplanation";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
@@ -437,13 +439,37 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "TestResult" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: getFluResultScreen },
+      },
+    ],
     key: "TestStripSurvey",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    body: [
+      { tag: MainImage, props: { uri: "lookatteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: TestResult },
+      { tag: ScreenText, props: { label: "why" } },
+      { tag: TestResultExplanation },
+      { tag: Links, props: { links: ["changeResultAnswer"] } },
+      { tag: Divider },
+      { tag: ScreenText, props: { label: "disclaimer" } },
+    ],
     footer: [{ tag: ContinueButton, props: { next: "Advice" } }],
     key: "TestResult",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "defectiveteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "CleanTest" } }],
+    key: "InvalidResult",
   },
   {
     body: [

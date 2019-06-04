@@ -9,6 +9,13 @@ import {
   PinkWhenBlueConfig,
 } from "../resources/QuestionConfig";
 
+export function getFluResultScreen(
+  getAnswer: (key: string, id: string) => string
+) {
+  const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
+  return blueAnswer === "yes" ? "TestResult" : "InvalidResult";
+}
+
 export function logFluResult(getAnswer: (key: string, id: string) => string) {
   const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
 

@@ -192,6 +192,17 @@
     "title": "Scan the barcode",
     "desc": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
   },
+  "testResult": {
+    "influenzaA": "**POSITIVE** for **INFLUENZA-A**",
+    "influenzaB": "**POSITIVE** for **INFLUENZA-B**",
+    "influenzaAandB": "**POSITIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
+    "negative": "**NEGATIVE** for **ALL FLU STRAINS**",
+    "blueLine": "A blue line in the middle of your test strip",
+    "pinkAboveBlue": "A pink line above the blue line",
+    "pinkBelowBlue": "A pink line below the blue line",
+    "pinkAboveAndBelowBlue": "A pink line above and below the blue line",
+    "noPink": "No pink line"
+  },
   "barcode": {
     "yourCode": "**Your code**: KIT {{barcode}}",
     "sorry": "Sorry",
@@ -231,8 +242,7 @@
   },
   "Unpacking": {
     "title": "Set up your kit box",
-    "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box.",
-    "bullets": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
+    "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
   },
   "Swab": {
     "title": "Prepare the tube",
@@ -326,11 +336,17 @@
   },
   "TestResult": {
     "title": "Your test result",
-    "desc": "Base on your answers, your test indicates you may be: \n\n"
+    "desc": "Based on your answers, your test indicates you may be:",
+    "why": "**Why did I get this result?**\n\nYou indicated you saw the following on your test strip:",
+    "disclaimer": "Please remember that this is not an official medical diagnosis and the interpretation of your result may differ from a medical test conducted in a clinical lab environment."
   },
   "Advice": {
     "title": "What do I do now?",
     "desc": "We're sorry you're not feeling well and we'd like to help. Here are a few resources from leading health organizations with tips and information on how to get well."
+  },
+  "InvalidResult": {
+    "title": "Your test strip is defective",
+    "desc": "We're sorry, but something went wrong with your test or test strip, since there was no visible blue line. Thanks for participating, and make sure to seek help if you're still ill."
   },
   "CleanTest": {
     "title": "Clean up the test",
@@ -347,6 +363,7 @@
   "links": {
     "ausGov": "Australian Government Department of Health: All about influenza",
     "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
+    "changeResultAnswer": "**Change your answers >**",
     "haveKitAlready": "I already have my kit",
     "learnMore": "Learn more about this flu study",
     "findMedHelp": "Search Maps for urgent care clinics nearby",

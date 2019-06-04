@@ -7,7 +7,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
-import { GUTTER, PRIMARY_COLOR } from "../styles";
+import { GUTTER, SECONDARY_COLOR } from "../styles";
 import {
   linkConfig,
   LinkConfig,
@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
-    marginHorizontal: GUTTER / 2,
+    marginHorizontal: GUTTER,
   },
   linkStyle: {
-    color: PRIMARY_COLOR,
+    color: SECONDARY_COLOR,
     marginBottom: GUTTER / 2,
   },
 });

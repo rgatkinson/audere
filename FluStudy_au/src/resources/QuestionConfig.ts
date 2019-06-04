@@ -466,8 +466,8 @@ export const PinkLineConfig: SurveyQuestionData = {
   description: "selectOne",
   buttons: [
     { key: "noPink", primary: false, enabled: true, helpImageUri: "one" },
-    { key: "yesOneRed", primary: false, enabled: true },
-    { key: "yesTwoRed", primary: false, enabled: true },
+    { key: "yesOnePink", primary: false, enabled: true },
+    { key: "yesTwoPink", primary: false, enabled: true },
   ],
   type: "radioGrid",
 };
