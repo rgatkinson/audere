@@ -465,7 +465,7 @@ export const PinkLineConfig: SurveyQuestionData = {
   title: "pinkLine",
   description: "selectOne",
   buttons: [
-    { key: "noPink", primary: false, enabled: true, helpImageUri: "one" },
+    { key: "noPink", primary: false, enabled: true },
     { key: "yesOnePink", primary: false, enabled: true },
     { key: "yesTwoPink", primary: false, enabled: true },
   ],
