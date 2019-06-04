@@ -68,6 +68,7 @@
 		EAA1BB8122A5F975005C16A9 /* defectiveteststrip@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAA1BB7822A5F974005C16A9 /* defectiveteststrip@2x.png */; };
 		EAA1BB8222A5F975005C16A9 /* defectiveteststrip@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAA1BB7F22A5F975005C16A9 /* defectiveteststrip@3x.png */; };
 		EAA1BB8322A5F975005C16A9 /* defectiveteststrip.png in Resources */ = {isa = PBXBuildFile; fileRef = EAA1BB8022A5F975005C16A9 /* defectiveteststrip.png */; };
+		EAA1BBB422A72AF1005C16A9 /* greensquare.png in Resources */ = {isa = PBXBuildFile; fileRef = EAE02F9B22971991000C88F6 /* greensquare.png */; };
 		EAE02F9C22971991000C88F6 /* greenyellowcircle.png in Resources */ = {isa = PBXBuildFile; fileRef = EAE02F8E22971990000C88F6 /* greenyellowcircle.png */; };
 		EAE02F9D22971991000C88F6 /* greencircle.png in Resources */ = {isa = PBXBuildFile; fileRef = EAE02F9522971990000C88F6 /* greencircle.png */; };
 		EAE02F9E22971991000C88F6 /* greenyellowhexagon.png in Resources */ = {isa = PBXBuildFile; fileRef = EAE02F9622971990000C88F6 /* greenyellowhexagon.png */; };
@@ -960,6 +961,7 @@
 				EAEBD29122691AB7009815C6 /* putteststripintube.png in Resources */,
 				EAEBD31622691AB7009815C6 /* preparetubethumb.png in Resources */,
 				EAEBD32D22691AB7009815C6 /* takepictureteststrip@2x.png in Resources */,
+				EAA1BBB422A72AF1005C16A9 /* greensquare.png in Resources */,
 				EAEBD31E22691AB7009815C6 /* lookatteststrip.png in Resources */,
 				EAEBD2B522691AB7009815C6 /* lookatteststrip@2x.png in Resources */,
 				59EDB815229F08B9001B7F12 /* readytobegin.png in Resources */,

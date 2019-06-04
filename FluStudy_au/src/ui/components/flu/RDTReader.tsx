@@ -5,6 +5,7 @@
 
 import React from "react";
 import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
@@ -33,6 +34,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   state = {
     spinner: true,
     color: "yellow",
+    isCentered: false,
+    isRightOrientation: false,
+    isFocused: false,
+    sizeResult: SizeResult.INVALID,
+    exposureResult: ExposureResult.UNDER_EXPOSED,
   };
 
   _willFocus: any;
@@ -94,23 +100,19 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
 
     const { dispatch, navigation, next } = this.props;
-    if (!this.state.spinner) {
-      this.setState({ spinner: true });
-      try {
-        const photoId = await newUID();
-        savePhoto(photoId, args.imgBase64);
-        dispatch(
-          setTestStripImg({
-            sample_type: "RDTReaderPhotoGUID",
-            code: photoId,
-          })
-        );
-        dispatch(setRDTPhoto(args.imgBase64));
-        this.setState({ spinner: false });
-        navigation.push(next);
-      } catch (e) {
-        this.setState({ spinner: false });
-      }
+    try {
+      const photoId = await newUID();
+      dispatch(setRDTPhoto(args.imgBase64));
+      dispatch(
+        setTestStripImg({
+          sample_type: "RDTReaderPhotoGUID",
+          code: photoId,
+        })
+      );
+      savePhoto(photoId, args.imgBase64);
+      navigation.push(next);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -122,6 +124,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       isRightOrientation,
       exposureResult,
     } = args;
+
     const score =
       0 +
       (isCentered ? 1 : 0) +
@@ -130,13 +133,23 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       (sizeResult === SizeResult.RIGHT_SIZE ? 1 : 0) +
       (exposureResult === ExposureResult.NORMAL ? 1 : 0);
 
+    let color = this.state.color;
     if (score > 3) {
-      this.setState({ color: "green" });
+      color = "green";
     } else if (score > 1) {
-      this.setState({ color: "greenyellow" });
+      color = "greenyellow";
     } else {
-      this.setState({ color: "yellow" });
+      color = "yellow";
     }
+
+    this.setState({
+      color,
+      isCentered,
+      sizeResult,
+      isFocused,
+      isRightOrientation,
+      exposureResult,
+    });
   };
 
   render() {
@@ -150,6 +163,41 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           onRDTCameraReady={this._cameraReady}
           enabled={this.props.isFocused}
         />
+        <View style={[styles.overlayContainer, { alignItems: "flex-start" }]}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text content="Centered:" />
+            {this.state.isCentered ?
+              <Feather name="check" color="green" size={20} /> :
+              <Feather name="x" color="red" size={20} />}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Text content="Focused:" />
+          {this.state.isFocused ?
+            <Feather name="check" color="green" size={20} /> :
+            <Feather name="x" color="red" size={20} />}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Text content="Orientation:" />
+          {this.state.isRightOrientation ?
+            <Feather name="check" color="green" size={20} /> :
+            <Feather name="x" color="red" size={20} />}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Text content="Size:" />
+          {this.state.sizeResult === SizeResult.RIGHT_SIZE ?
+            <Feather name="check" color="green" size={20} /> :
+            (this.state.sizeResult === SizeResult.LARGE ?
+              <Text content=" LARGE" style={{ color: "red" }} /> :
+              <Text content=" SMALL" style={{ color: "red" }} />
+            )}
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Text content="Exposure:" />
+          {this.state.exposureResult === ExposureResult.NORMAL ?
+            <Feather name="check" color="green" size={20} /> :
+            <Feather name="x" color="red" size={20} />}
+          </View>
+        </View>
         <View style={styles.overlayContainer}>
           <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
         </View>
