@@ -9,7 +9,6 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
-import DeviceInfo from "react-native-device-info";
 import { Action, setTestStripImg, setRDTPhoto } from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
@@ -23,18 +22,60 @@ import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
 import { savePhoto } from "../../../store/FirebaseStore";
 
 interface Props {
+  fallback: string;
   next: string;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   isFocused: boolean;
 }
 
-@connect()
 class RDTReader extends React.Component<Props & WithNamespaces> {
   state = {
     spinner: true,
     color: "yellow",
   };
+
+  _willFocus: any;
+  _willBlur: any;
+  _timer: NodeJS.Timeout | null | undefined;
+
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this._setTimer = this._setTimer.bind(this);
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this._willFocus = navigation.addListener("willFocus", () =>
+      this._setTimer()
+    );
+    this._willBlur = navigation.addListener("willBlur", () =>
+      this._clearTimer()
+    );
+  }
+
+  componentWillUnmount() {
+    this._willFocus.remove();
+    this._willBlur.remove();
+  }
+
+  _setTimer() {
+    const { fallback, isFocused, navigation } = this.props;
+    // Timeout after 30 seconds
+    this._clearTimer();
+    this._timer = setTimeout(() => {
+      if (isFocused) {
+        navigation.push(fallback);
+      }
+    }, 30000);
+  }
+
+  _clearTimer() {
+    if (this._timer != null) {
+      clearTimeout(this._timer);
+      this._timer = null;
+    }
+  }
 
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isFocused && nextProps.isFocused) {
@@ -140,7 +181,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default withNavigationFocus(withNamespaces("RDTReader")(RDTReader));
+export default connect()(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
 
 const styles = StyleSheet.create({
   container: {

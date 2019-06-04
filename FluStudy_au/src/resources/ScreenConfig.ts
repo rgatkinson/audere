@@ -32,8 +32,8 @@ import Divider from "../ui/components/Divider";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
-import RDTReader from "../ui/components/flu/RDTReader";
 import RDTImage from "../ui/components/flu/RDTImage";
+import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
@@ -45,8 +45,7 @@ import FooterNavigation from "../ui/components/FooterNavigation";
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
-
-const useRdtReader = Platform.OS === "ios" && !DeviceInfo.isEmulator();
+const CAN_USE_RDT = Platform.OS === "ios" && !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
@@ -422,7 +421,7 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: RDTImage, props: { rdt: useRdtReader } },
+      { tag: RDTImage },
     ],
     footer: [{ tag: ContinueButton, props: { next: "TestStripSurvey" } }],
     key: "TestStripConfirmation",
@@ -498,7 +497,10 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: CameraPermissionContinueButton,
-        props: { grantedNext: "RDTReader", deniedNext: "CameraSettings" },
+        props: {
+          grantedNext: CAN_USE_RDT ? "RDTReader" : "TestStripCamera",
+          deniedNext: "CameraSettings",
+        },
       },
     ],
     key: "RDTInstructions",
@@ -506,10 +508,19 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       {
-        tag: useRdtReader ? RDTReader : TestStripCamera,
-        props: { next: "TestStripConfirmation" },
+        tag: RDTReader,
+        props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
       },
     ],
     key: "RDTReader",
+  },
+  {
+    body: [
+      {
+        tag: TestStripCamera,
+        props: { next: "TestStripConfirmation" },
+      },
+    ],
+    key: "TestStripCamera",
   },
 ];

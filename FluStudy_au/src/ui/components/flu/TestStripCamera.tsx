@@ -11,7 +11,7 @@ import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
-import { Action, setTestStripImg, setRDTPhoto } from "../../../store";
+import { Action, setTestStripImg, setPhoto } from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
@@ -23,7 +23,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect()
 class TestStripCamera extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 
@@ -57,7 +56,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
             code: photoId,
           })
         );
-        dispatch(setRDTPhoto(photo.uri));
+        dispatch(setPhoto(photo.uri));
 
         this.setState({ spinner: false });
         navigation.push(next);
@@ -109,7 +108,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default withNavigation(withNamespaces("TestStripCamera")(TestStripCamera));
+export default connect()(withNavigation(withNamespaces("TestStripCamera")(TestStripCamera)));
 
 const styles = StyleSheet.create({
   container: {

@@ -30,26 +30,29 @@ export type SurveyAction =
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
   | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
+  | { type: "SET_PHOTO"; photoUri: string }
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_SUPPORT_CODE"; supportCode: string };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
+  csruid?: string;
   email?: string;
   events: EventInfo[];
-  csruid?: string;
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
-  testStripImg?: SampleInfo;
+  oneMinuteStartTime?: number;
+  photoUri?: string;
   pushState: PushNotificationState;
   rdtPhotoUri?: string;
   responses: SurveyResponse[];
   supportCode?: string;
-  oneMinuteStartTime?: number;
   tenMinuteStartTime?: number;
+  testStripImg?: SampleInfo;
   timestamp?: number;
   workflow: WorkflowInfo;
   [key: string]:
+    | boolean
     | NonPIIConsentInfo
     | string
     | EventInfo[]
@@ -127,6 +130,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
         };
       }
       return state;
+
+    case "SET_PHOTO":
+      return {
+        ...state,
+        photoUri: action.photoUri,
+        timestamp: new Date().getTime(),
+      };
 
     case "SET_PUSH_STATE":
       return {
@@ -260,6 +270,13 @@ export function setCSRUIDIfUnset(csruid: string): SurveyAction {
   return {
     type: "SET_CSRUID_IF_UNSET",
     csruid,
+  };
+}
+
+export function setPhoto(photoUri: string): SurveyAction {
+  return {
+    type: "SET_PHOTO",
+    photoUri,
   };
 }
 

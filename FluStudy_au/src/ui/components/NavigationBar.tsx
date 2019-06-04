@@ -33,9 +33,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
 }
 
-@connect((state: StoreState) => ({
-  demoMode: state.meta.isDemo,
-}))
 class NavigationBar extends React.Component<Props & WithNamespaces> {
   _debounce = 0;
 
@@ -129,4 +126,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces()(NavigationBar);
+export default connect((state: StoreState) => ({
+  demoMode: state.meta.isDemo,
+}))(withNamespaces()(NavigationBar));

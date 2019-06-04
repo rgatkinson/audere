@@ -47,5 +47,6 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState) => ({
-  uri: state.survey.rdtPhotoUri,
+  rdt: !!state.survey.rdtPhotoUri,
+  uri: !!state.survey.rdtPhotoUri ? state.survey.rdtPhoto : state.survey.photoUri,
 }))(RDTImage);
