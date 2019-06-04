@@ -12,3 +12,5 @@ const scope: any = global;
 if (scope && typeof scope.self === "undefined") {
   scope.self = scope;
 }
+
+global.Buffer = global.Buffer || require('buffer').Buffer
