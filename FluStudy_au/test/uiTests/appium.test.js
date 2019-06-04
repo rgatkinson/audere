@@ -19,7 +19,7 @@ const PLATFORM = deviceInfo.PLATFORM;
 const screen_x = deviceInfo.SCREEN_X;
 const screen_y = deviceInfo.SCREEN_Y;
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;
 const PORT = 4723;
 const driver = wd.promiseChainRemote("localhost", PORT);
 
@@ -192,6 +192,9 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
     driver,
     nextQuestion ? nextQuestion.name : screen_info.button
   );
+  if (!nextQuestionLocation) {
+    nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
+  }
 
   while (numClicked < totalButtons) {
     const buttons = await driver.elementsByAccessibilityId(
@@ -209,6 +212,9 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
           driver,
           nextQuestion ? nextQuestion.name : screen_info.button
         );
+        if (!nextQuestionLocation) {
+          nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
+        }
         lastClickedY = lastButton ? (await lastButton.getLocation()).y : 0;
       }
       if (
@@ -272,12 +278,6 @@ async function timer_screen(driver, screen_info) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
-  if (PLATFORM == "iOS") {
-    await driver.elementByAccessibilityId(strings.common.button.no).click();
-    expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
-      true
-    ); //make sure popup closed
-  }
   //tap until timer is bypassed
   await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
   while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
@@ -337,7 +337,7 @@ async function scroll_to_element(driver, element) {
     }
     return elementLocation.y;
   } else {
-    await driver.setImplicitWaitTimeout(100);
+    await driver.setImplicitWaitTimeout(500);
     while (!(await driver.hasElementByAccessibilityId(element))) {
       await full_scroll(driver);
     }
@@ -349,12 +349,20 @@ async function scroll_to_element(driver, element) {
 //Return coordinates of element
 async function get_element_location(driver, element) {
   if (PLATFORM == "iOS") {
-    return await driver
-      .element(
-        "-ios predicate string",
-        `name BEGINSWITH '${element.slice(0, 127)}'`
-      )
-      .getLocation();
+    await driver.setImplicitWaitTimeout(500);
+    const found = await driver.hasElement(
+      "-ios predicate string",
+      `name BEGINSWITH '${element.slice(0, 127)}'`
+    );
+    await driver.setImplicitWaitTimeout(10000);
+    if (found) {
+      return await driver
+        .element(
+          "-ios predicate string",
+          `name BEGINSWITH '${element.slice(0, 127)}'`
+        )
+        .getLocation();
+    }
   } else {
     if (await driver.hasElementByAccessibilityId(element)) {
       return await driver.elementByAccessibilityId(element).getLocation();
@@ -372,7 +380,7 @@ async function full_scroll(driver) {
       .wait(2000)
       .moveTo({
         x: Math.trunc(screen_x * 0.99),
-        y: Math.trunc(screen_y * 0.01),
+        y: Math.trunc(screen_y * 0.1),
       })
       .release();
     await scroll.perform();

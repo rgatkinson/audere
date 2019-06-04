@@ -184,6 +184,15 @@ export const content = [
         ],
       },
       {
+        name: strings.surveyTitle.coughSneeze,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
         name: strings.surveyTitle.youngChildren,
         type: "radio",
         options: [
@@ -198,6 +207,15 @@ export const content = [
         name: strings.surveyTitle.householdChildren,
         type: "buttonGrid",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.childrenWithChildren,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
       },
       {
         name: strings.surveyTitle.peopleInHousehold,
@@ -342,10 +360,27 @@ export const content = [
     dbScreenName: "TestStripConfirmation",
   },
   {
-    type: "basic",
+    type: "input",
     title: strings.TestStripSurvey.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "TestStripSurvey",
+    input: [
+      {
+        name: strings.surveyTitle.blueLine,
+        type: "buttonGrid",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.pinkLine,
+        type: "radio",
+        options: [
+          strings.surveyButton.noPink,
+          strings.surveyButton.yesAboveBlue,
+          strings.surveyButton.yesBelowBlue,
+          strings.surveyButton.yesAboveBelowBlue,
+        ],
+      },
+    ],
   },
   {
     type: "basic",
@@ -366,10 +401,22 @@ export const content = [
     dbScreenName: "CleanTest",
   },
   {
-    type: "basic",
+    type: "input",
     title: strings.TestFeedback.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "TestFeedback",
+    input: [
+      {
+        name: strings.surveyTitle.TestFeedback,
+        type: "radio",
+        options: [
+          strings.surveyButton.easyCorrect,
+          strings.surveyButton.confusingCorrect,
+          strings.surveyButton.confusingNotCorrect,
+          strings.surveyButton.incorrect,
+        ],
+      },
+    ],
   },
   {
     type: "basic",

@@ -13,4 +13,6 @@ export const inputs = {
   [strings.surveyTitle.symptomsLast48]: strings.surveyButton.no,
   [strings.surveyTitle.symptomsSeverity]: strings.surveyButton.mild,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
+  [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
 };

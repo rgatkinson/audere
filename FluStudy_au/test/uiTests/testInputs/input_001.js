@@ -36,9 +36,11 @@ export const inputs = {
     strings.surveyButton.moderate,
     strings.surveyButton.mild,
   ],
-  [strings.surveyTitle.inContact]: strings.surveyButton.no,
+  [strings.surveyTitle.inContact]: strings.surveyButton.yes,
+  [strings.surveyTitle.coughSneeze]: strings.surveyButton.no,
   [strings.surveyTitle.youngChildren]: strings.surveyButton.twoToFiveChildren,
-  [strings.surveyTitle.householdChildren]: strings.surveyButton.no,
+  [strings.surveyTitle.householdChildren]: strings.surveyButton.yes,
+  [strings.surveyTitle.childrenWithChildren]: strings.surveyButton.no,
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton["1to2"],
   [strings.surveyTitle.bedrooms]: strings.surveyButton["3"],
   [strings.surveyTitle.medicalCondition]: [
@@ -57,4 +59,7 @@ export const inputs = {
   ],
   [strings.surveyTitle.hispanic]: strings.surveyButton.no,
   [strings.surveyTitle.healthInsurance]: [strings.surveyOption.noInsurance],
+  [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
+  [strings.surveyTitle.TestFeedback]: strings.surveyButton.easyCorrect,
 };
