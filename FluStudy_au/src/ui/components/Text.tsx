@@ -167,32 +167,27 @@ export default class Text extends React.Component<Props> {
     }
 
     if (Platform.OS === "android") {
-      let letter = "";
+      let uri = "";
 
       switch (character) {
         case "①":
-          letter = "\u2776";
+          uri = "one";
           break;
         case "②":
-          letter = "\u2777";
+          uri = "two";
           break;
         case "③":
-          letter = "\u2778";
+          uri = "three";
           break;
         default:
           break;
       }
 
       return (
-        <SystemText
-          style={{
-            fontFamily: "Numbers",
-            fontWeight: "bold",
-            color: config.circleFillColor,
-          }}
-        >
-          {letter}
-        </SystemText>
+        <Image
+          source={{ uri }}
+          style={{ height: REGULAR_TEXT, width: REGULAR_TEXT }}
+        />
       );
     }
 
