@@ -5,6 +5,7 @@
 
 import Sequelize, {
   DefineModelAttributes,
+  DefineOptions,
   Sequelize as Sql,
   BOOLEAN as SQL_BOOLEAN,
   DATE as SQL_DATE,
@@ -68,10 +69,14 @@ export function createSplitSql(): SplitSql {
 export function defineModel<Attr>(
   sql: Sql,
   name: string,
-  attr: DefineModelAttributes<Attr>
+  attr: DefineModelAttributes<Attr>,
+  options: DefineOptions<Inst<Attr>> = {}
 ): Model<Attr> {
   // The sequelize type definition makes define return SqlModel<any,any>, so cast to recover type info.
-  return sql.define<Inst<Attr>, Attr>(name, attr, { freezeTableName: true });
+  return sql.define<Inst<Attr>, Attr>(name, attr, {
+    ...options,
+    freezeTableName: true
+  });
 }
 
 export function primaryKey(column) {

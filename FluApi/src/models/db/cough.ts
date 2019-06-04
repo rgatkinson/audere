@@ -20,6 +20,8 @@ import {
   SurveyNonPIIInfo
 } from "audere-lib/dist/coughProtocol";
 
+const schema = "cough";
+
 export function defineCoughModels(sql: SplitSql): CoughModels {
   const models: CoughModels = {
     accessKey: defineAccessKey(sql),
@@ -54,10 +56,15 @@ interface AccessKeyAttributes {
   valid: boolean;
 }
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
-  return defineModel<AccessKeyAttributes>(sql.nonPii, "cough_access_keys", {
-    key: stringColumn(),
-    valid: booleanColumn()
-  });
+  return defineModel<AccessKeyAttributes>(
+    sql.nonPii,
+    "access_keys",
+    {
+      key: stringColumn(),
+      valid: booleanColumn()
+    },
+    { schema }
+  );
 }
 
 // ---------------------------------------------------------------
@@ -69,11 +76,16 @@ export interface PhotoAttributes {
   photo: PhotoDbInfo;
 }
 export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
-  return defineModel<PhotoAttributes>(sql.nonPii, "cough_photos", {
-    docId: unique(stringColumn("docid")),
-    device: jsonColumn(),
-    photo: jsonColumn()
-  });
+  return defineModel<PhotoAttributes>(
+    sql.nonPii,
+    "photos",
+    {
+      docId: unique(stringColumn("docid")),
+      device: jsonColumn(),
+      photo: jsonColumn()
+    },
+    { schema }
+  );
 }
 
 // ---------------------------------------------------------------
@@ -90,12 +102,13 @@ export function defineSurvey<Info>(
 ): SurveyModel<Info> {
   return defineModel<SurveyAttributes<Info>>(
     sql,
-    `cough_${editableType}_surveys`,
+    `${editableType}_surveys`,
     {
       docId: unique(stringColumn("docid")),
       device: jsonColumn(),
       survey: jsonColumn()
-    }
+    },
+    { schema }
   );
 }
 export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
