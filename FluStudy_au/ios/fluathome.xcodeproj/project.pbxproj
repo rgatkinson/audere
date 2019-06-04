@@ -212,8 +212,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v1.jpg; path = ../../../assets/images/quickvue_ref_v1.jpg; sourceTree = "<group>"; };
-		210E30E0228E1A1B0002B676 /* quickvue_ref_v0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v0.jpg; path = ../../../assets/images/quickvue_ref_v0.jpg; sourceTree = "<group>"; };
 		218947BF2284D31300788F40 /* TestStrip2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@2x.png"; path = "../../../assets/images/TestStrip2@2x.png"; sourceTree = "<group>"; };
 		218947C72284D31300788F40 /* TestStrip2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "TestStrip2@3x.png"; path = "../../../assets/images/TestStrip2@3x.png"; sourceTree = "<group>"; };
 		218947C82284D31300788F40 /* quickvue_ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref.jpg; path = ../../../assets/images/quickvue_ref.jpg; sourceTree = "<group>"; };

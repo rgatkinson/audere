@@ -66,6 +66,7 @@ export default class App extends React.Component {
         Bold: require("./assets/fonts/Roboto-Bold.ttf"),
         ExtraBold: require("./assets/fonts/Roboto-Black.ttf"),
         Italic: require("./assets/fonts/Roboto-Italic.ttf"),
+        Numbers: require("./assets/fonts/calibri-bold.ttf"),
       }),
       getStore().then(store => (this.store = store)),
       getPersistor().then(persistor => (this.persistor = persistor)),
