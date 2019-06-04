@@ -64,9 +64,8 @@ class MonthModal extends React.Component<
     } else {
       if (Platform.OS === "android") {
         this.props.onDismiss(new Date(selected));
-      } else {
-        this.setState({ date: new Date(selected) });
       }
+      this.setState({ date: new Date(selected) });
     }
   };
 
