@@ -76,6 +76,14 @@ export const BarcodeVerificationEvents = {
   INVALID_SUPPORT_CODE: "invalid_support_code",
 };
 
+export const TransportEvents = {
+  SURVEY_UPDATED: "survey_updated",
+  SURVEY_SYNCED: "survey_synced",
+  PHOTO_UPDATED: "photo_updated",
+  PHOTO_UPLOADED: "photo_uploaded",
+  PHOTO_SYNCED: "photo_synced",
+};
+
 export const AppHealthEvents = {
   KIT_ORDER_BLOCKED: "kit_order_blocked",
   KIT_ORDER_UNBLOCKED: "kit_order_unblocked",

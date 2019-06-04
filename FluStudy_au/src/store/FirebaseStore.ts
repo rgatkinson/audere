@@ -1,6 +1,17 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import firebase from "react-native-firebase";
+import { DocumentReference } from "react-native-firebase/firestore";
 import { DEVICE_INFO } from "../transport/DeviceInfo";
-import { AppHealthEvents, logDebugEvent } from "../util/tracker";
+import {
+  AppHealthEvents,
+  logDebugEvent,
+  tracker,
+  TransportEvents,
+} from "../util/tracker";
 import { sha256 } from "js-sha256";
 import {
   FirestoreProtocolDocument,
@@ -8,12 +19,9 @@ import {
   DocumentType,
   ProtocolDocument,
 } from "audere-lib/coughProtocol";
-import { PhotoUploader } from "../transport/PhotoUploader";
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
-
-const photoUploader = new PhotoUploader();
 
 function getSurveyCollection() {
   const collectionName =
@@ -32,7 +40,7 @@ export async function initializeFirestore() {
   await firebase.firestore().settings({ persistence: true });
 }
 
-export async function saveSurvey(docId: string, survey: SurveyNonPIIInfo) {
+export async function syncSurvey(docId: string, survey: SurveyNonPIIInfo) {
   try {
     const surveyDocument: FirestoreProtocolDocument = frame({
       schemaId: 1,
@@ -41,38 +49,37 @@ export async function saveSurvey(docId: string, survey: SurveyNonPIIInfo) {
       documentType: DocumentType.Survey,
       survey,
     });
-    await getSurveyCollection()
-      .doc(docId)
-      .set(surveyDocument);
+    const doc = getSurveyCollection().doc(docId);
+    await doc.set(surveyDocument);
+    tracker.logEvent(TransportEvents.SURVEY_SYNCED, { docId, path: doc.path });
   } catch (e) {
-    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, e);
+    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, {
+      docId,
+      error: e.message,
+    });
   }
 }
 
-export async function savePhoto(photoId: string, jpegBase64: string) {
-  try {
-    photoUploader.savePhoto(photoId, jpegBase64);
-  } catch (e) {
-    // Error was already logged
-    return;
-  }
-
+export async function syncPhoto(docId: string) {
   try {
     const photoDocument: FirestoreProtocolDocument = frame({
       schemaId: 1,
-      docId: photoId,
+      docId: docId,
       device: DEVICE_INFO,
       documentType: DocumentType.Photo,
       photo: {
         timestamp: new Date().toISOString(),
-        photoId,
+        photoId: docId,
       },
     });
-    await getPhotoCollection()
-      .doc(photoId)
-      .set(photoDocument);
+    const doc = getPhotoCollection().doc(docId);
+    await doc.set(photoDocument);
+    tracker.logEvent(TransportEvents.PHOTO_SYNCED, { docId, path: doc.path });
   } catch (e) {
-    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, e);
+    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, {
+      docId,
+      error: e.message,
+    });
   }
 }
 

@@ -22,7 +22,8 @@ import immutableTransform from "redux-persist-transform-immutable";
 import { SecureStore } from "expo";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-import { tracker, AppHealthEvents } from "../util/tracker";
+import { tracker, AppHealthEvents, TransportEvents } from "../util/tracker";
+import { PhotoUploader } from "../transport/PhotoUploader";
 
 export * from "./types";
 
@@ -68,6 +69,13 @@ export function getStore(): Promise<Store> {
     return storePromise;
   }
   return (storePromise = getStoreImpl());
+}
+
+const photoUploader = new PhotoUploader();
+
+export function savePhoto(photoId: string, jpegBase64: string) {
+  tracker.logEvent(TransportEvents.PHOTO_UPDATED, { photoId });
+  return photoUploader.savePhoto(photoId, jpegBase64);
 }
 
 export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>

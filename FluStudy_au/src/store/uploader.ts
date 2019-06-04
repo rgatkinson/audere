@@ -27,7 +27,8 @@ import {
   AssignedSexConfig,
 } from "../resources/QuestionConfig";
 import { crashlytics } from "../crashReporter";
-import { saveSurvey } from "./FirebaseStore";
+import { tracker, TransportEvents } from "../util/tracker";
+import { syncSurvey } from "./FirebaseStore";
 
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
@@ -90,9 +91,10 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_DEMO":
          */
         if (state.survey.csruid) {
+          const docId = state.survey.csruid;
           const survey = redux_to_pouch(state);
-
-          saveSurvey(state.survey.csruid, survey);
+          tracker.logEvent(TransportEvents.SURVEY_UPDATED, { docId });
+          syncSurvey(docId, survey);
         }
         break;
     }

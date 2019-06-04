@@ -20,7 +20,7 @@ import {
   ExposureResult,
 } from "../../../native/rdtReader";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
-import { savePhoto } from "../../../store/FirebaseStore";
+import { savePhoto } from "../../../store";
 
 interface Props {
   fallback: string;

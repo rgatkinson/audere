@@ -15,7 +15,7 @@ import { Action, setTestStripImg, setPhoto } from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
-import { savePhoto } from "../../../store/FirebaseStore";
+import { savePhoto } from "../../../store";
 
 interface Props {
   next: string;
