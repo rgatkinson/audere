@@ -7,6 +7,7 @@ import React from "react";
 import {
   Dimensions,
   Picker,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -61,46 +62,55 @@ class MonthModal extends React.Component<
     if (selected === this.props.t("selectDate")) {
       this.setState({ date: null });
     } else {
-      this.setState({ date: new Date(selected) });
+      if (Platform.OS === "android") {
+        this.props.onDismiss(new Date(selected));
+      } else {
+        this.setState({ date: new Date(selected) });
+      }
     }
   };
 
-  render() {
+  _renderPicker() {
     const { t } = this.props;
-    const { width } = Dimensions.get("window");
     const selectDate = t("selectDate");
     return (
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Picker
+          selectedValue={
+            this.state.date ? this.state.date!.getTime() : selectDate
+          }
+          style={{ alignSelf: "stretch", justifyContent: "center" }}
+          onValueChange={this._onValueChange}
+        >
+          {this.props.options.map(date => (
+            <Picker.Item
+              label={t(months[date.getMonth()]) + " " + date.getFullYear()}
+              value={date.getTime()}
+              key={date.getTime()}
+            />
+          ))}
+          <Picker.Item label={selectDate} value={selectDate} key={selectDate} />
+        </Picker>
+      </View>
+    );
+  }
+
+  render() {
+    const { date, onDismiss, t, visible } = this.props;
+    const { width } = Dimensions.get("window");
+    return Platform.OS === "ios" ? (
       <Modal
         height={280}
         width={width * 0.75}
         submitText={t("common:button:done")}
-        visible={this.props.visible}
-        onDismiss={() => this.props.onDismiss(this.props.date)}
-        onSubmit={() => this.props.onDismiss(this.state.date)}
+        visible={visible}
+        onDismiss={() => onDismiss(date)}
+        onSubmit={() => onDismiss(this.state.date)}
       >
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <Picker
-            selectedValue={
-              this.state.date ? this.state.date!.getTime() : selectDate
-            }
-            style={{ alignSelf: "stretch", justifyContent: "center" }}
-            onValueChange={this._onValueChange}
-          >
-            {this.props.options.map(date => (
-              <Picker.Item
-                label={t(months[date.getMonth()]) + " " + date.getFullYear()}
-                value={date.getTime()}
-                key={date.getTime()}
-              />
-            ))}
-            <Picker.Item
-              label={selectDate}
-              value={selectDate}
-              key={selectDate}
-            />
-          </Picker>
-        </View>
+        {this._renderPicker()}
       </Modal>
+    ) : (
+      this._renderPicker()
     );
   }
 }
@@ -152,19 +162,21 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
 
     return (
       <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
-        <TouchableOpacity
-          style={styles.pickerContainer}
-          onPress={() => this.setState({ pickerOpen: true })}
-        >
-          <Text
-            content={
-              !!date
-                ? t(months[date.getMonth()]) + " " + date.getFullYear()
-                : t("selectDate")
-            }
-            style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
-          />
-        </TouchableOpacity>
+        {Platform.OS === "ios" && (
+          <TouchableOpacity
+            style={styles.pickerContainer}
+            onPress={() => this.setState({ pickerOpen: true })}
+          >
+            <Text
+              content={
+                !!date
+                  ? t(months[date.getMonth()]) + " " + date.getFullYear()
+                  : t("selectDate")
+              }
+              style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
+            />
+          </TouchableOpacity>
+        )}
         <TranslatedMonthModal
           options={this._getOptions()}
           date={!!date ? date : null}
