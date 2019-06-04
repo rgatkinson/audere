@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { RefObject } from "react";
-import { Dissoc } from "subtractiontype.ts";
 
 interface InnerProps {
   customRef: RefObject<any>;

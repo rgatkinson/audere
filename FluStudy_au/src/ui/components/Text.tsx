@@ -220,31 +220,32 @@ export default class Text extends React.Component<Props> {
   }
 
   _makeBold(content: string, bold: boolean, contentKey: string) {
+    const { extraBold, linkStyle } = this.props;
     return bold ? (
       <SystemText
         key={contentKey + content}
-        style={this.props.extraBold ? styles.extraBold : styles.bold}
+        style={extraBold ? styles.extraBold : styles.bold}
       >
-        {linkify(content, this.props.linkStyle || styles.linkStyle)}
+        {linkify(content, linkStyle || styles.linkStyle)}
       </SystemText>
     ) : (
-      linkify(content, this.props.linkStyle || styles.linkStyle)
+      linkify(content, linkStyle || styles.linkStyle)
     );
   }
 
   render() {
-    const content = this.props.content;
+    const { bold, center, content, italic, style, onPress } = this.props;
     return (
       <SystemText
         selectable={true}
         style={[
           styles.text,
-          this.props.bold && styles.bold,
-          this.props.center && styles.center,
-          this.props.italic && styles.italic,
-          this.props.style,
+          bold && styles.bold,
+          center && styles.center,
+          italic && styles.italic,
+          style,
         ]}
-        onPress={this.props.onPress}
+        onPress={onPress}
         accessibilityLabel={content}
       >
         {content

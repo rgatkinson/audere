@@ -32,7 +32,6 @@ import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
-  desc?: boolean;
   highlighted?: boolean;
   onRef?: RefObject<any>;
   question: SurveyQuestionData;

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Image, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../../store";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";

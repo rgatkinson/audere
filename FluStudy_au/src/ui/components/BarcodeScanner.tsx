@@ -34,7 +34,6 @@ interface Props {
   errorScreen: string;
   invalidBarcodes: SampleInfo[];
   navigation: NavigationScreenProp<any, any>;
-  namespace: string;
   next: string;
   timeoutScreen: string;
 }
@@ -135,7 +134,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { namespace, t } = this.props;
+    const { t } = this.props;
     return (
       <View style={styles.container}>
         <BarCodeScanner
@@ -150,7 +149,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
           >
             <Text
               center={true}
-              content={t(namespace + ":enterManually")}
+              content={t("enterManually")}
               style={styles.overlayText}
             />
           </TouchableOpacity>

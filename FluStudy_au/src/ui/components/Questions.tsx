@@ -28,11 +28,6 @@ interface State {
   triedToProceed: boolean;
 }
 
-interface RequiredQuestion {
-  ref: RefObject<View>;
-  type: string;
-}
-
 class Questions extends React.Component<
   Props & WithNamespaces & ReduxWriterProps,
   State
@@ -145,7 +140,6 @@ class Questions extends React.Component<
           case "radioGrid":
             return (
               <RadioGrid
-                desc={!!config.description}
                 key={`${config.id}-${index}`}
                 highlighted={highlighted}
                 onRef={this._requiredQuestions.get(config.id)}

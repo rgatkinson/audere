@@ -482,8 +482,8 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: Title },
       { tag: MainImage, props: { uri: "cleanuptest" } },
+      { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],

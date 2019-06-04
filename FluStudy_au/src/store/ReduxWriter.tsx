@@ -54,9 +54,9 @@ export const getPriorAnswer = async (key: string, id: string): Promise<any> => {
   });
 };
 
-export default function reduxWriter<P extends ReduxWriterProps>(
-  WrappedComponent: React.ComponentType<P>
-) {
+export default function reduxWriter<P extends object>(
+  WrappedComponent: React.ComponentType<ReduxWriterProps & P>
+): React.ComponentType<P> {
   class ReduxWriter extends React.Component<
     InnerProps & OuterProps<P> & WithNamespaces
   > {

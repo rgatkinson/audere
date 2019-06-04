@@ -34,11 +34,12 @@ class SupportCodeModal extends React.Component<Props & WithNamespaces> {
   };
 
   _onSupportCodeSubmit = (supportCode: string) => {
+    const { dispatch, navigation } = this.props;
     if (verifiedSupportCode(supportCode)) {
       this.setState({ invalidCode: false });
-      this.props.dispatch(setSupportCode(supportCode));
-      this.props.dispatch(toggleSupportCodeModal());
-      this.props.navigation.push("ManualEntry");
+      dispatch(setSupportCode(supportCode));
+      dispatch(toggleSupportCodeModal());
+      navigation.push("ManualEntry");
     } else {
       this.setState({ invalidCode: true });
     }

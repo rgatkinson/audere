@@ -9,7 +9,6 @@ import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { Action, StoreState } from "../../store";
-
 import Button from "./Button";
 
 interface Props {

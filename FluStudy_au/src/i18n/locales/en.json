@@ -216,7 +216,7 @@
     "secondPlaceholder": "Confirm barcode",
     "tips": "**Tips:**\n\nFind the blue barcode on the box. The code is directly below the barcode."
   },
-  "Scan": {
+  "BarcodeScanner": {
     "enterManually": "Enter barcode manually"
   },
   "ScanConfirmation": {

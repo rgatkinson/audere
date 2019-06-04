@@ -20,9 +20,7 @@ import Text from "./Text";
 import { getApiBaseUrl } from "../../transport";
 import { GUTTER } from "../styles";
 
-interface Props {}
-
-class BuildInfo extends React.Component<Props & WithNamespaces> {
+class BuildInfo extends React.Component<WithNamespaces> {
   _copyToClipboard = async () => {
     await Clipboard.setString(this._getBuildContent());
   };

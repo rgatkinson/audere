@@ -27,7 +27,6 @@ export interface OptionListConfig {
   defaultOptions?: string[];
   otherPlaceholder?: string;
   exclusiveOptions?: string[];
-  inclusiveOption?: string;
 }
 
 export interface SurveyQuestionData {

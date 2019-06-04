@@ -59,7 +59,6 @@ export interface LinkConfigProps {
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
   workflow: WorkflowInfo;
-  zipcode: string;
 }
 
 export interface LinkConfig {
