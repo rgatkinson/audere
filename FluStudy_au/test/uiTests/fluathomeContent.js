@@ -33,7 +33,7 @@ export const content = [
   },
   {
     type: "camera",
-    popup: strings.Scan.cameraWarning,
+    popup: strings.BarcodeScanner.cameraWarning,
     button: strings.BarcodeScanner.enterManually,
     dbScreenName: "Scan",
   },
