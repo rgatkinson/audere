@@ -100,17 +100,11 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
                   onPress={() => this._onPress(key)}
                   style={
                     i === question.buttons.length - 1
-                      ? styles.radioRowLast
-                      : styles.radioRow
+                      ? styles.radioRowButtonLast
+                      : styles.radioRowButton
                   }
                 >
-                  <View
-                    style={{
-                      alignItems: "center",
-                      flex: 1,
-                      flexDirection: "row",
-                    }}
-                  >
+                  <View style={styles.radioRow}>
                     <View
                       style={[
                         styles.radioButton,
@@ -131,6 +125,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
                       <TouchableOpacity
                         key={`${key}-touchable`}
                         onPress={() => this._toggleHelp(i)}
+                        style={styles.helpIconButton}
                       >
                         <View style={styles.helpIcon}>
                           <Text
@@ -187,10 +182,16 @@ const styles = StyleSheet.create({
     borderColor: SECONDARY_COLOR,
     borderWidth: 1,
     borderRadius: 20,
-    height: 25,
-    width: 25,
+    height: RADIO_BUTTON_HEIGHT / 2,
+    width: RADIO_BUTTON_HEIGHT / 2,
     alignItems: "center",
     justifyContent: "center",
+  },
+  helpIconButton: {
+    alignItems: "center",
+    height: RADIO_BUTTON_HEIGHT,
+    justifyContent: "center",
+    width: RADIO_BUTTON_HEIGHT,
   },
   helpImage: {
     flex: 1,
@@ -213,11 +214,16 @@ const styles = StyleSheet.create({
     width: RADIO_INPUT_HEIGHT / 2,
   },
   radioRow: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+  },
+  radioRowButton: {
     borderColor: BORDER_COLOR,
     borderTopWidth: StyleSheet.hairlineWidth,
     minHeight: RADIO_BUTTON_HEIGHT,
   },
-  radioRowLast: {
+  radioRowButtonLast: {
     borderColor: BORDER_COLOR,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
