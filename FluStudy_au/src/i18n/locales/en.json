@@ -196,7 +196,7 @@
     "influenzaA": "**POSITIVE** for **INFLUENZA-A**",
     "influenzaB": "**POSITIVE** for **INFLUENZA-B**",
     "influenzaAandB": "**POSITIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
-    "negative": "**NEGATIVE** for **ALL FLU STRAINS**",
+    "negative": "**NEGATIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
     "blueLine": "A blue line in the middle of your test strip",
     "pinkAboveBlue": "A pink line above the blue line",
     "pinkBelowBlue": "A pink line below the blue line",
