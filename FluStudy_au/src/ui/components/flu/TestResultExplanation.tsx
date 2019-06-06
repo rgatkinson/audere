@@ -8,9 +8,14 @@ import { BulletPoint } from "../BulletPoint";
 import Text from "../Text";
 import { GUTTER } from "../../styles";
 
-class TestResultExplanation extends React.Component<WithNamespaces & ReduxWriterProps> {
+class TestResultExplanation extends React.Component<
+  WithNamespaces & ReduxWriterProps
+> {
   _getExplanation = () => {
-    const redAnswer = this.props.getAnswer("selectedButtonKey", PinkWhenBlueConfig.id);
+    const redAnswer = this.props.getAnswer(
+      "selectedButtonKey",
+      PinkWhenBlueConfig.id
+    );
     switch (redAnswer) {
       case "yesAboveBlue":
         return "pinkAboveBlue";
@@ -26,9 +31,12 @@ class TestResultExplanation extends React.Component<WithNamespaces & ReduxWriter
   render() {
     const { t } = this.props;
     return (
-      <View style={{ marginHorizontal: GUTTER }} >
+      <View style={{ marginHorizontal: GUTTER }}>
         <BulletPoint content={t("blueLine")} customBulletUri="listarrow" />
-        <BulletPoint content={t(this._getExplanation())} customBulletUri="listarrow" />
+        <BulletPoint
+          content={t(this._getExplanation())}
+          customBulletUri="listarrow"
+        />
       </View>
     );
   }

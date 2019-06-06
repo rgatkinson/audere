@@ -9,7 +9,10 @@ import { GUTTER } from "../../styles";
 
 class TestResult extends React.Component<WithNamespaces & ReduxWriterProps> {
   _getResult = () => {
-    const redAnswer = this.props.getAnswer("selectedButtonKey", PinkWhenBlueConfig.id);
+    const redAnswer = this.props.getAnswer(
+      "selectedButtonKey",
+      PinkWhenBlueConfig.id
+    );
     switch (redAnswer) {
       case "yesAboveBlue":
         return "influenzaA";

@@ -27,7 +27,6 @@ interface Props {
 }
 
 class SupportCodeModal extends React.Component<Props & WithNamespaces> {
-
   state = {
     invalidCode: false,
     supportCode: "",
@@ -72,10 +71,7 @@ class SupportCodeModal extends React.Component<Props & WithNamespaces> {
           enabled
         >
           <View style={{ justifyContent: "space-between", padding: GUTTER }}>
-            <Text
-              content={t("enterCode")}
-              style={{ paddingBottom: GUTTER }}
-            />
+            <Text content={t("enterCode")} style={{ paddingBottom: GUTTER }} />
             <DigitInput
               digits={5}
               style={

@@ -80,23 +80,27 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           onCameraReady={this._cameraReady}
         />
         <View style={styles.overlayContainer}>
-          <Text
-            center={true}
-            content={t("title")}
-            style={styles.overlayText}
-          />
+          <Text center={true} content={t("title")} style={styles.overlayText} />
           <View style={styles.innerContainer}>
             <Image
               style={styles.testStrip}
               source={{ uri: "teststripdetail" }}
             />
             <View style={{ flex: 1, marginLeft: GUTTER }}>
-              <Text center={true} content={t("stripHere")} style={styles.overlayText} />
+              <Text
+                center={true}
+                content={t("stripHere")}
+                style={styles.overlayText}
+              />
               <View style={styles.targetBox} />
             </View>
           </View>
           <View style={{ alignItems: "center", alignSelf: "stretch" }}>
-            <Text center={true} content={t("description")} style={styles.overlayText} />
+            <Text
+              center={true}
+              content={t("description")}
+              style={styles.overlayText}
+            />
             <TouchableOpacity onPress={this._takePicture}>
               <View style={styles.outerCircle}>
                 <View style={styles.circle} />
@@ -108,7 +112,9 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     );
   }
 }
-export default connect()(withNavigation(withNamespaces("TestStripCamera")(TestStripCamera)));
+export default connect()(
+  withNavigation(withNamespaces("TestStripCamera")(TestStripCamera))
+);
 
 const styles = StyleSheet.create({
   container: {

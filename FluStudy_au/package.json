@@ -34,7 +34,7 @@
     "test-ui-android": "TEST_UI_CONFIG=./android.config.js jest -c test/jest.config.ui.js",
     "test-ui-ios": "TEST_UI_CONFIG=./ios.config.js jest -c test/jest.config.ui.js",
     "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
-    "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}",
+    "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}; prettier --write *.{j,t} src/**/**/**/*.ts{,x}",
     "typecheck": "tsc --noEmit"
   },
   "prettier": {

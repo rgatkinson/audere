@@ -41,12 +41,14 @@ const styles = StyleSheet.create({
   rdt: {
     height: width,
     resizeMode: "contain",
-    transform: [{ rotate: '90deg' }],
+    transform: [{ rotate: "90deg" }],
     width: height,
   },
 });
 
 export default connect((state: StoreState) => ({
   rdt: !!state.survey.rdtPhotoUri,
-  uri: !!state.survey.rdtPhotoUri ? state.survey.rdtPhotoUri : state.survey.photoUri,
+  uri: !!state.survey.rdtPhotoUri
+    ? state.survey.rdtPhotoUri
+    : state.survey.photoUri,
 }))(RDTImage);
