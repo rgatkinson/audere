@@ -197,7 +197,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc", customBulletUri: "listarrow" },
       },
-      { tag: VideoPlayer, props: { id: "beginFirstTest" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "OpenSwab" } }],
     key: "Swab",
@@ -289,7 +288,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc", customBulletUri: "listarrow" },
       },
-      { tag: VideoPlayer, props: { id: "openTestStrip" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "StripInTube" } }],
     key: "OpenTestStrip",
@@ -302,7 +300,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc", customBulletUri: "listarrow" },
       },
-      { tag: VideoPlayer, props: { id: "putTestStripInTube" } },
     ],
     footer: [
       {
@@ -403,7 +400,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc", customBulletUri: "listarrow" },
       },
-      { tag: VideoPlayer, props: { id: "removeTestStrip" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "RDTInstructions" } }],
     key: "TestStripReady",
