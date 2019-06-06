@@ -1,4 +1,4 @@
-How to get running from source
+How to get running from source on iOS
 
 - Install cocoapods
   - `sudo gem install cocoapods`
@@ -13,6 +13,7 @@ How to get running from source
   - You will be prompted for a passphrase to decrypt the signing certs from the repo. Get this from LastPass > Secure Notes > Shared-Engineering > fastlane match passphrase.
   - If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
   - If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
+  - If it hangs when cloning the repo, try `cd ~/.ssh; ssh-add` first. If it still hangs, try `fastlane certificates --verbose` and note the git command that's hanging. Ctrl+C back to the command prompt and manually enter that noted git command - you'll likely get a prompt of some kind to answer, e.g. Do you want to connect to GitHub.com, and answer yes. Then, re-run `fastlane certificates`.
 - Fetch the Firebase config files from LastPass Shared-Engineering folder as follows:
   - Save content of “flu@home AU Staging google-services.json” note as `FluStudy_au/android/app/google-services.json`
   - Save content of “flu@home AU Staging GoogleService-Info.plist” note as `FluStudy_au/ios/fluathome/GoogleService-Info.plist`
@@ -20,14 +21,17 @@ How to get running from source
 - Open `FluStudy_au/ios/fluathome.xcworkspace` in Xcode
 - Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
 
-To run from source on a physical device that has not already been registered:
+
+To run from source on a physical iPhone that has not already been registered:
 
 - Connect the device to your Mac using the USB hub
 - Run this command on command line to find your device's udid:
   - `system_profiler SPUSBDataType | grep -A 11 -w "iPad\|iPhone"`
-- In the FluStudy_au/ios directory run
-  - `fastlane run register_device username:YourAppleIDEmail` and enter your device's name and udid when prompted
-- `fastlane match development --force_for_new_devices` (If this fails asking for ios-dev password, ask Michael or Terri to run this step for you)
+- Send your device udid to Terri (or other AppStoreConnect Admin) for her to register with our AppStoreConnect team. She will run
+  - `fastlane run register_device`
+  - `fastlane match development --force_for_new_devices`
+  
+  after which you can re-run `fastlane match development --readonly` to install the updated profile on your Mac
 - Restart XCode and now you should be able to select fluathome Debug > your device as the run target
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
