@@ -1,0 +1,21 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euo pipefail
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+source "$REPO_ROOT_DIR/scripts/build-hacks"
+do_FluStudy_hacks FluStudy_au
+
+ANDROID_DIR="$REPO_ROOT_DIR/FluStudy_au/android"
+if [[ ! -d "$ANDROID_DIR/openCVLibrary341-contrib" ]]; then
+    echo "Downloading android opencv files..."
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib.zip > /tmp/openCVLibrary341-contrib.zip
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib-jniLibs.zip > /tmp/openCVLibrary341-contrib-jniLibs.zip
+    unzip /tmp/openCVLibrary341-contrib.zip -d "$ANDROID_DIR"
+    unzip /tmp/openCVLibrary341-contrib-jniLibs.zip -d "$ANDROID_DIR"
+    rm /tmp/openCVLibrary341-contrib.zip
+    rm /tmp/openCVLibrary341-contrib-jniLibs.zip
+fi

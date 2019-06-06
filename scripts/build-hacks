@@ -1,68 +1,68 @@
 #!/bin/bash
-# Copyright (c) 2018 by Audere
+# Copyright (c) 2019 by Audere
 #
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-NOTIF_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
-DEVICEINFO_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
+function do_FluStudy_hacks() {
+  update_PushNotificationIOS "$1"
+  update_RNDeviceInfo "$1"
+  maybe_create_ExpoBuildConstants "$1"
+}
 
-if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE";
-then
- echo "No need to update"
-else
-echo "Updating RCTNotification build search paths"
-match='LIBRARY_SEARCH_PATHS'
-insert='HEADER_SEARCH_PATHS = (\
-					"\\"$(SRCROOT)\/..\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/\\"\/**",\
-					"\\"$(SRCROOT)\/..\/..\/ReactCommon\/yoga\\"",\
-				);\
-				'
-FILEBAK="$NOTIF_FILE.bak"
-sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
-fi
+function update_PushNotificationIOS() {
+  NOTIF_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj/project.pbxproj"
+  if grep -q HEADER_SEARCH_PATH "$NOTIF_FILE"; then
+    echo "No need to update RCTNotification"
+  else
+    echo "Updating RCTNotification build search paths"
+    match='LIBRARY_SEARCH_PATHS'
+    insert='HEADER_SEARCH_PATHS = (\
+  					"\\"$(SRCROOT)\/..\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/\\"\/**",\
+  					"\\"$(SRCROOT)\/..\/..\/ReactCommon\/yoga\\"",\
+  				);\
+  				'
+    FILEBAK="$NOTIF_FILE.bak"
+    sed -i.bak "s/$match/$insert$match/" $NOTIF_FILE && rm $FILEBAK
+  fi
+}
 
-echo "Updating DeviceInfo build search paths"
-match='HEADER_SEARCH_PATHS = .+?;'
-replace='HEADER_SEARCH_PATHS = (\
-					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
-				);'
-FILEBAK="$DEVICEINFO_FILE.bak"
-perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
+function update_RNDeviceInfo() {
+  echo "Updating DeviceInfo build search paths"
+  DEVICEINFO_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj/project.pbxproj"
+  match='HEADER_SEARCH_PATHS = .+?;'
+  replace='HEADER_SEARCH_PATHS = (\
+  					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
+  				);'
+  FILEBAK="$DEVICEINFO_FILE.bak"
+  perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
+}
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233
-EXBUILDCONSTANTS="$REPO_ROOT_DIR/$1/ios/fluathome/Supporting/EXBuildConstants.plist"
-if [[ ! -f "$EXBUILDCONSTANTS" ]]; then
-  echo "Creating EXBuildConstants.plist"
-  cat >"$EXBUILDCONSTANTS" <<EOT
+function maybe_create_ExpoBuildConstants() {
+  EXBUILDCONSTANTS="$REPO_ROOT_DIR/$1/ios/fluathome/Supporting/EXBuildConstants.plist"
+  if [[ ! -f "$EXBUILDCONSTANTS" ]]; then
+    echo "Creating EXBuildConstants.plist"
+    cat >"$EXBUILDCONSTANTS" <<EOT
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
 <dict>
 </dict>
 </plist>
 EOT
-fi
+  fi
 
-DETACHBUILDCONSTANTS="$REPO_ROOT_DIR/$1/android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java"
-if [[ ! -f "$DETACHBUILDCONSTANTS" ]]; then 
-  echo "Creating DetachBuildConstants.java"
-  cat >"$DETACHBUILDCONSTANTS" <<EOT
+  DETACHBUILDCONSTANTS="$REPO_ROOT_DIR/$1/android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java"
+  if [[ ! -f "$DETACHBUILDCONSTANTS" ]]; then 
+    echo "Creating DetachBuildConstants.java"
+    cat >"$DETACHBUILDCONSTANTS" <<EOT
 package host.exp.exponent.generated;
 
 public class DetachBuildConstants {
   public static final String DEVELOPMENT_URL = "";
 }
 EOT
-fi
-
-if [[ ! -d "$REPO_ROOT_DIR/$1/android/openCVLibrary341-contrib" ]]; then
-    echo "Downloading android opencv files..."
-    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib.zip > /tmp/openCVLibrary341-contrib.zip
-    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib-jniLibs.zip > /tmp/openCVLibrary341-contrib-jniLibs.zip
-    unzip /tmp/openCVLibrary341-contrib.zip -d $REPO_ROOT_DIR/$1/android/
-    unzip /tmp/openCVLibrary341-contrib-jniLibs.zip -d $REPO_ROOT_DIR/$1/android/
-    rm /tmp/openCVLibrary341-contrib.zip
-    rm /tmp/openCVLibrary341-contrib-jniLibs.zip
-fi
+  fi
+}

@@ -26,7 +26,7 @@
   },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "../scripts/build-hacks FluStudy_us; ../scripts/generate-build-info FluStudy_us; expo start",
+    "start": "scripts/build-hacks; ../scripts/generate-build-info FluStudy_us; expo start",
     "start-localapi": "REACT_NATIVE_USE_LOCAL_SERVER=1 yarn run start",
     "stop": "expo stop",
     "eject": "expo eject",
