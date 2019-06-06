@@ -28,6 +28,7 @@ export class CoughEndpoint {
 
   public importCoughDocuments = async (req, res, next) => {
     const reqId = requestId(req);
+    logger.info(`${reqId}: enter importCoughDocuments`);
     const result = {
       successes: [],
       errors: [],
@@ -36,6 +37,9 @@ export class CoughEndpoint {
     };
     await this.importSurveys(reqId, result);
     await this.importPhotos(reqId, result);
+    logger.info(
+      `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
+    );
     res.json(result);
   };
 
