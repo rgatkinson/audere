@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView
+        android:id="@+id/imageQualityActivity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--<include
+            android:id="@+id/imageQualityActivityChildren"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/image_quality_view"/>-->
+    </edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView>
+</LinearLayout>

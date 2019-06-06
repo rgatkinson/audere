@@ -56,3 +56,13 @@ public class DetachBuildConstants {
 }
 EOT
 fi
+
+if [[ ! -d "$REPO_ROOT_DIR/$1/android/openCVLibrary341-contrib" ]]; then
+    echo "Downloading android opencv files..."
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib.zip > /tmp/openCVLibrary341-contrib.zip
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib-jniLibs.zip > /tmp/openCVLibrary341-contrib-jniLibs.zip
+    unzip /tmp/openCVLibrary341-contrib.zip -d $REPO_ROOT_DIR/$1/android/
+    unzip /tmp/openCVLibrary341-contrib-jniLibs.zip -d $REPO_ROOT_DIR/$1/android/
+    rm /tmp/openCVLibrary341-contrib.zip
+    rm /tmp/openCVLibrary341-contrib-jniLibs.zip
+fi

@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="ViewportUsingBitmap">
+        <attr name="area" format="float" />
+        <attr name="heightScale" format="float" />
+        <attr name="widthScale" format="float" />
+    </declare-styleable>
+    <declare-styleable name="ImageQualityView"></declare-styleable>
+</resources>

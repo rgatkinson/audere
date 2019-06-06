@@ -12,9 +12,14 @@ import com.brentvatne.react.ReactVideoPackage;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
 import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
+
+import edu.washington.cs.ubicomplab.rdt_reader.RDTReaderManager;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
@@ -52,11 +57,22 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   // Needed for `react-native link`
   public List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
-        // Add your own packages here!
-        // TODO: add native modules!
+            // Add your own packages here!
+            // TODO: add native modules!
+            new ReactPackage() {
+              @Override
+              public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+                return Arrays.asList();
+              }
 
-        // Needed for `react-native link`
-        // new MainReactPackage(),
+              @Override
+              public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+                return Arrays.<ViewManager>asList(new RDTReaderManager());
+              }
+            },
+
+            // Needed for `react-native link`
+            // new MainReactPackage(),
             new NetInfoPackage(),
             new ReactNativePushNotificationPackage(),
             new FBSDKPackage(mCallbackManager),

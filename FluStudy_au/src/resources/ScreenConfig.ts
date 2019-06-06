@@ -47,7 +47,7 @@ import FooterNavigation from "../ui/components/FooterNavigation";
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
-const CAN_USE_RDT = Platform.OS === "ios" && !DeviceInfo.isEmulator();
+const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {

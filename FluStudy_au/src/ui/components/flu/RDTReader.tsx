@@ -154,6 +154,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
+    if (!this.props.isFocused) {
+      return null;
+    }
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner && this.props.isFocused} />

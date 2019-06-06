@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { BarCodeScanner } from "expo";
@@ -36,6 +36,7 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   next: string;
   timeoutScreen: string;
+  isFocused: boolean;
 }
 
 @connect((state: StoreState) => ({
@@ -134,7 +135,10 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { isFocused, t } = this.props;
+    if (!isFocused) {
+      return null;
+    }
     return (
       <View style={styles.container}>
         <BarCodeScanner
@@ -159,7 +163,9 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   }
 }
 
-export default withNavigation(withNamespaces("BarcodeScanner")(BarcodeScanner));
+export default withNavigationFocus(
+  withNamespaces("BarcodeScanner")(BarcodeScanner)
+);
 
 const styles = StyleSheet.create({
   container: {
