@@ -133,8 +133,8 @@ jobs:
           name: flu@home Tests
           command: |
             ./scripts/generate-build-info FluStudy_au
-            ./scripts/build-hacks FluStudy_au
             cd FluStudy_au
+            ./scripts/build-hacks 
             yarn typecheck
             yarn test
       - run:
@@ -440,7 +440,7 @@ jobs:
           name: Run setup scripts
           command: |
             ../scripts/generate-build-info `basename "$PWD"`
-            ../scripts/build-hacks `basename "$PWD"`
+            ./scripts/build-hacks
       - run: *set_firebase_config
       - run:
           name: flu@home Tests
@@ -504,7 +504,7 @@ jobs:
           name: Run setup scripts
           command: |
             ../scripts/generate-build-info `basename "$PWD"`
-            ../scripts/build-hacks `basename "$PWD"`
+            ./scripts/build-hacks
       - run: *set_firebase_config
       - restore_cache:
           key: gradlejars-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
