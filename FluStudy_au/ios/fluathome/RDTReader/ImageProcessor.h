@@ -36,6 +36,7 @@ typedef void (^ImageProcessorBlock)(bool passed, UIImage *img, double matchDista
 - (NSString *) getInstruction: (SizeResult) sizeResult andFor: (bool) isCentered andFor: (bool) isRightOrientation;
 - (NSMutableArray *) getQualityCheckTexts: (SizeResult) sizeResult andFor: (bool) isCentered andFor: (bool) isRightOrientation andFor: (bool) isSharp andFor:(ExposureResult) exposureResult;
 - (void) configureCamera: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
+- (void) toggleFlash: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
 - (void) generateViewFinder: (UIView *) view forPreview: (UIView *) previewView;
 - (UIImage *) interpretResult:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
 @end

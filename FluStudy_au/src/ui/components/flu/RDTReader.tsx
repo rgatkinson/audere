@@ -165,6 +165,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
           enabled={this.props.isFocused}
+          flashEnabled={true}
         />
         <View style={[styles.overlayContainer, { alignItems: "flex-start" }]}>
           <View style={{ flexDirection: 'row' }}>

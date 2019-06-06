@@ -10,6 +10,5 @@
 @interface RDTView : UIView
 @property (nonatomic, copy) RCTBubblingEventBlock onRDTCaptured;
 @property (nonatomic, copy) RCTBubblingEventBlock onRDTCameraReady;
-@property (nonatomic) BOOL enabled;
 @property (nonatomic) ImageQualityViewController * imageQualityViewController;
 @end

@@ -24,6 +24,7 @@ typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
 
 @interface ImageQualityViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate>
 
+@property (weak, nonatomic) IBOutlet UIButton *flashButton;
 @property (nonatomic) dispatch_queue_t sessionQueue;
 @property (nonatomic) dispatch_queue_t videoDataOutputQueue;
 @property (nonatomic) AVCaptureSession *session;
@@ -43,7 +44,9 @@ typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
 @property (weak, nonatomic) IBOutlet UILabel *shadowLabel;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (nonatomic) UIImage *image;
-
+- (IBAction)didTouchUp:(id)sender;
+- (IBAction)toggleFlash;
+- (BOOL) isFlashEnabled;
 @end
 
 NS_ASSUME_NONNULL_END

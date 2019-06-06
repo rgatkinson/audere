@@ -48,6 +48,7 @@ type RDTReaderProps = {
   onRDTCaptured: (args: RDTCapturedArgs) => void;
   onRDTCameraReady: (args: {}) => void;
   enabled: boolean;
+  flashEnabled: boolean;
   style: any;
 };
 

@@ -20,7 +20,7 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 using namespace std;
 
-const float SHARPNESS_THRESHOLD = 0.0;
+const float SHARPNESS_THRESHOLD = 0.7;
 const float OVER_EXP_THRESHOLD = 255;
 const float UNDER_EXP_THRESHOLD = 120;
 const float OVER_EXP_WHITE_COUNT = 100;
@@ -29,8 +29,7 @@ const double POSITION_THRESHOLD = 0.2;
 const double ANGLE_THRESHOLD = 10.0;
 const double VIEWPORT_SCALE = 0.5;
 const int GOOD_MATCH_COUNT = 7;
-const double minSharpness = FLT_MIN;
-const double maxSharpness = FLT_MAX; //this value is set to min because blur check is not needed.
+double refImgSharpness = FLT_MIN;
 const int MOVE_CLOSER_COUNT = 5;
 const double CROP_RATIO = 0.6;
 const double VIEW_FINDER_SCALE_W = 0.15;
@@ -42,8 +41,8 @@ const int LINE_SEARCH_WIDTH = 13;
 const int CONTROL_LINE_POSITION = 45;
 const int TEST_A_LINE_POSITION = 15;
 const int TEST_B_LINE_POSITION = 75;
-const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 45/100.0*255.0, 5/100.0*255.0);
-const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 100/100.0*255.0);
+const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 20/100.0*255.0, 0/100.0*255.0);
+const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 50/100.0*255.0);
 const int CONTROL_LINE_POSITION_MIN = 575;
 const int CONTROL_LINE_POSITION_MAX = 700;
 const int CONTROL_LINE_MIN_HEIGHT = 25;
@@ -88,6 +87,11 @@ Mat siftRefDescriptor;
         UIImage * image = [UIImage imageNamed:@"quickvue_ref_v1.jpg"];
         UIImageToMat(image, refImg);
         NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
+        
+        GaussianBlur(refImg, refImg, cv::Size(5, 5), 0, 0);
+        refImgSharpness = [sharedWrapper calculateSharpness:refImg];
+        NSLog(@"mRefImg sharpness: %.2f", refImgSharpness);
+        
         cvtColor(refImg, refImg, CV_RGBA2GRAY); // Dereference the pointer
         detector->detectAndCompute(refImg, noArray(), refKeypoints, refDescriptor);
         siftDetector->detectAndCompute(refImg, noArray(), siftRefKeypoints, siftRefDescriptor);
@@ -154,11 +158,18 @@ Mat siftRefDescriptor;
 }
 
 - (bool)checkSharpness:(Mat)inputMat {
+    Mat resized = Mat();
+    double scale = (double)refImg.size().width/(double)inputMat.size().width;
+    cv::resize(inputMat, resized, cv::Size(inputMat.size().width*scale, inputMat.size().height*scale));
+
+    double sharpness = [self calculateSharpness:resized];
     
-    double sharpness = [self calculateSharpness:inputMat];
+    NSLog(@"inputMat sharpness: %.2f", sharpness);
     
     //CJ: checkSharpness starts
-    bool isSharp = sharpness > (minSharpness * SHARPNESS_THRESHOLD);
+    bool isSharp = sharpness > (refImgSharpness * (1-SHARPNESS_THRESHOLD));
+    
+    resized.release();
     
     return isSharp;
 }
@@ -177,7 +188,7 @@ Mat siftRefDescriptor;
     //isRightBrightness = false;
     
     //check sharpness (refactored)
-    bool isSharp = [self checkSharpness:greyMat];
+    bool isSharp = [self checkSharpness:greyMat([self getViewfinderRect:greyMat])];
     //isSharp = false;
     
     //preform detectRDT only if those two quality checks are passed
@@ -565,6 +576,25 @@ Mat siftRefDescriptor;
     texts[3] = @"Shadow: PASSED";
     
     return texts;
+}
+
+-(void) toggleFlash: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue {
+    dispatch_async( sessionQueue, ^{
+        NSError *error = nil;
+        if ( [device lockForConfiguration:&error] ) {
+            if ([device isTorchAvailable] && [device isTorchModeSupported:AVCaptureTorchModeOn]) {
+                if (device.torchMode == AVCaptureTorchModeOn){
+                    [device setTorchMode:AVCaptureTorchModeOff];
+                } else if (device.torchMode == AVCaptureTorchModeOff) {
+                    [device setTorchMode:AVCaptureTorchModeOn];
+                    [device setTorchModeOnWithLevel:1.0 error:nil];
+                }
+            }
+            [device unlockForConfiguration];
+        } else {
+            NSLog( @"Could not lock device for configuration: %@", error );
+        }
+    });
 }
 
 -(void) configureCamera: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue {
@@ -995,6 +1025,12 @@ Mat siftRefDescriptor;
     }
     NSLog(@"Time taken to detect: %f -- success -- SIFT", CACurrentMediaTime() - currentTime);
     return boundary;
+}
+
+-(cv::Rect) getViewfinderRect: (Mat) inputMat {
+    cv::Point p1 = cv::Point(inputMat.size().width*(1-VIEW_FINDER_SCALE_H)/2, inputMat.size().height*(1-VIEW_FINDER_SCALE_W)/2);
+    cv::Point p2 = cv::Point(inputMat.size().width-p1.x, inputMat.size().height-p1.y);
+    return cv::Rect(p1, p2);
 }
 
 @end

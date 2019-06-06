@@ -68,4 +68,12 @@
         [self.imageQualityViewController.view removeFromSuperview];
     }
 }
+
+- (void) setFlashEnabled:(BOOL) flashEnabled
+{
+    BOOL flashCurrentlyEnabled = [self.imageQualityViewController isFlashEnabled];
+    if (flashCurrentlyEnabled != flashEnabled) {
+        [self.imageQualityViewController toggleFlash];
+    }
+}
 @end
