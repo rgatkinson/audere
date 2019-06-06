@@ -19,7 +19,6 @@ import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 
-import edu.washington.cs.ubicomplab.rdt_reader.RDTReaderManager;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;

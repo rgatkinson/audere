@@ -1,9 +1,13 @@
-package edu.washington.cs.ubicomplab.rdt_reader;
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
+package host.exp.exponent;
 
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.facebook.react.bridge.Arguments;
@@ -11,7 +15,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import host.exp.exponent.R;
+import edu.washington.cs.ubicomplab.rdt_reader.ImageProcessor;
+import edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView;
 
 public class RDTReader extends LinearLayout implements ImageQualityView.ImageQualityViewListener {
     private Activity mActivity;
