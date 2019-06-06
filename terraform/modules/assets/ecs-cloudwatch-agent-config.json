@@ -1,0 +1,139 @@
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/messages",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/dmesg",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/dmesg",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/docker",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/docker",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/ecs/ecs-init.log",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/ecs/ecs-init.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/ecs/ecs-agent.log.*",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/ecs/ecs-agent.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/ecs/audit.log.*",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/var/log/ecs/audit.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/setup.log",
+            "log_group_name": "TF_ENVIRONMENT/ecs-cluster",
+            "log_stream_name": "{instance_id}/setup.log",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    }
+  },
+  "metrics":{
+    "metrics_collected":{
+      "cpu": {
+        "resources": [
+          "*"
+        ],
+        "measurement": [
+          {"name": "cpu_usage_idle", "unit": "Percent"},
+          {"name": "cpu_usage_nice", "unit": "Percent"},
+          "cpu_usage_guest"
+        ],
+        "totalcpu": false
+      },
+      "disk": {
+        "resources": [
+          "/",
+          "/tmp"
+        ],
+        "measurement": [
+          {"name": "free", "unit": "Gigabytes"},
+          "total",
+          "used"
+        ],
+        "ignore_file_system_types": [
+          "sysfs", "devtmpfs"
+        ]
+      },
+      "diskio": {
+        "resources": [
+          "*"
+        ],
+        "measurement": [
+          "reads",
+          "writes",
+          "read_time",
+          "write_time",
+          "io_time"
+        ]
+      },
+      "swap": {
+        "measurement": [
+          "swap_used",
+          "swap_free",
+          "swap_used_percent"
+        ]
+      },
+      "mem": {
+        "measurement": [
+          "mem_used",
+          "mem_cached",
+          "mem_total"
+        ]
+      },
+      "net": {
+        "resources": [
+          "eth0"
+        ],
+        "measurement": [
+          "bytes_sent",
+          "bytes_recv",
+          "drop_in",
+          "drop_out"
+        ]
+      },
+      "netstat": {
+        "measurement": [
+          "tcp_established",
+          "tcp_syn_sent",
+          "tcp_close"
+        ]
+      },
+      "processes": {
+        "measurement": [
+          "running",
+          "sleeping",
+          "dead"
+        ]
+      },
+      "statsd":{}
+    },
+    "append_dimensions": {
+      "ImageId": "${aws:ImageId}",
+      "InstanceId": "${aws:InstanceId}",
+      "InstanceType": "${aws:InstanceType}",
+      "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
+    }
+  }
+}

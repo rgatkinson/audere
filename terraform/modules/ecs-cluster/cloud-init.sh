@@ -68,7 +68,7 @@ EOF
 function echo_cloudwatch_agent_config() {
   sed \
     -e 's/TF_ENVIRONMENT/${environment}/' \
-    "$TF_ASSETS/cloudwatch-agent-config.json"
+    "$TF_ASSETS/ecs-cloudwatch-agent-config.json"
 }
 
 function install_cloudwatch_agent() {
