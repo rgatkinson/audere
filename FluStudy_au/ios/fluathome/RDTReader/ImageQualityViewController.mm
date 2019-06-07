@@ -316,11 +316,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         self.previewView.videoPreviewLayer.connection.videoOrientation = (AVCaptureVideoOrientation)deviceOrientation;
     }
 }
-- (IBAction)toggleFlash {
+
+- (IBAction)toggleFlash:(nullable id)sender {
     if (!self.videoDeviceInput || !self.videoDeviceInput.device) {
         return;
     }
     [[ImageProcessor sharedProcessor] toggleFlash:self.videoDeviceInput.device with:self.sessionQueue];
+}
+
+- (void)toggleFlash {
+    [self toggleFlash:NULL];
 }
 
 - (BOOL)isFlashEnabled {

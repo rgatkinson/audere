@@ -45,7 +45,8 @@ typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (nonatomic) UIImage *image;
 - (IBAction)didTouchUp:(id)sender;
-- (IBAction)toggleFlash;
+- (void)toggleFlash;
+- (IBAction)toggleFlash:(nullable id)sender;
 - (BOOL) isFlashEnabled;
 @end
 
