@@ -279,7 +279,10 @@ export const FluShotConfig: SurveyQuestionData = {
   type: "buttonGrid",
 };
 
-const FLUSHOT_START_DATE = monthAsDate(2018, 0);
+const FLUSHOT_START_DATE = monthAsDate(
+  new Date().getFullYear() - 1,
+  new Date().getMonth()
+);
 
 export const FluShotDateConfig: SurveyQuestionData = {
   buttons: [],
