@@ -37,6 +37,7 @@ export interface SurveyQuestionData {
   dateInput?: boolean;
   description?: string;
   optionList?: OptionListConfig;
+  placeholder?: string;
   startDate?: Date;
   subquestion?: boolean;
   title: string;
@@ -60,14 +61,15 @@ export const WhatSymptomsConfig: SurveyQuestionData = {
     multiSelect: true,
     options: [
       "feelingFeverish",
-      "chillsOrSweats",
       "cough",
+      "fatigue",
+      "chillsOrSweats",
       "soreThroat",
       "headache",
-      "fatigue",
       "muscleOrBodyAches",
       "runningNose",
       "shortnessOfBreath",
+      "vomiting",
     ],
     withOther: false,
   },
@@ -133,8 +135,8 @@ export const WhenSymptomsConfig: SurveyQuestionData[] = [SymptomsStartConfig]
         ...SymptomsLast48Config,
         id: SymptomsLast48Config.id + "_" + option,
         buttons: [
-          { key: "no", primary: false, enabled: true },
           { key: "yes", primary: false, enabled: true },
+          { key: "no", primary: false, enabled: true },
         ],
         description: option,
         condition: {
@@ -172,8 +174,8 @@ export const WhenSymptomsConfig: SurveyQuestionData[] = [SymptomsStartConfig]
 
 export const InContactConfig: SurveyQuestionData = {
   buttons: [
-    { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
   id: "InContact",
@@ -183,8 +185,8 @@ export const InContactConfig: SurveyQuestionData = {
 
 export const CoughSneezeConfig: SurveyQuestionData = {
   buttons: [
-    { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
   condition: {
@@ -199,8 +201,9 @@ export const CoughSneezeConfig: SurveyQuestionData = {
 
 export const HouseholdChildrenConfig: SurveyQuestionData = {
   buttons: [
-    { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
   ],
   id: "HouseholdChildren",
   title: "householdChildren",
@@ -211,8 +214,8 @@ export const ChildrenWithChildrenConfig: SurveyQuestionData = {
   id: "ChildrenWithChildren",
   title: "childrenWithChildren",
   buttons: [
-    { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
   condition: {
@@ -232,7 +235,7 @@ export const GeneralExposureConfig = [
       { key: "oneChild", primary: false, enabled: true },
       { key: "twoToFiveChildren", primary: false, enabled: true },
       { key: "moreThanFiveChildren", primary: false, enabled: true },
-      { key: "doNotKnow", primary: false, enabled: true },
+      { key: "dontKnow", primary: false, enabled: true },
     ],
     id: "YoungChildren",
     title: "youngChildren",
@@ -267,8 +270,8 @@ export const GeneralExposureConfig = [
 
 export const FluShotConfig: SurveyQuestionData = {
   buttons: [
-    { key: "no", primary: false, enabled: true },
     { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
   id: "FluShot",
@@ -288,15 +291,60 @@ export const FluShotDateConfig: SurveyQuestionData = {
   type: "datePicker",
 };
 
+const FluShotNationalImmunization: SurveyQuestionData = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  condition: { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
+  id: "FluShotNationalImmunization",
+  title: "fluShotNationalImmunization",
+  type: "buttonGrid",
+};
+
+const FluShotNationalImmunizationCondition: SurveyQuestionData = {
+  buttons: [],
+  condition: {
+    key: "selectedButtonKey",
+    id: FluShotNationalImmunization.id,
+    answer: "yes",
+  },
+  id: "FluShotNationalImmunizationCondition",
+  title: "fluShotNationalImmunizationCondition",
+  type: "textInput",
+};
+
+const PreviousSeason: SurveyQuestionData = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+    { key: "neverFlu", primary: false, enabled: true },
+  ],
+  id: "PreviousSeason",
+  title: "previousSeason",
+  type: "radioGrid",
+};
+
+export const InfluenzaVaccinationConfig = [
+  FluShotConfig,
+  FluShotDateConfig,
+  FluShotNationalImmunization,
+  FluShotNationalImmunizationCondition,
+  PreviousSeason,
+];
+
 export const AssignedSexConfig: SurveyQuestionData = {
   buttons: [
     { key: "male", primary: false, enabled: true },
     { key: "female", primary: false, enabled: true },
+    { key: "indeterminate", primary: false, enabled: true },
     { key: "other", primary: false, enabled: true },
   ],
   id: "AssignedSex",
   title: "assignedSex",
-  type: "buttonGrid",
+  type: "radioGrid",
 };
 
 export const GeneralHealthConfig = [
@@ -313,12 +361,20 @@ export const GeneralHealthConfig = [
     title: "medicalCondition",
     type: "optionQuestion",
   },
-  FluShotConfig,
-  FluShotDateConfig,
   {
     buttons: [
-      { key: "no", primary: false, enabled: true },
       { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
+      { key: "dontKnow", primary: false, enabled: true },
+    ],
+    id: "HealthcareWorker",
+    title: "healthcareWorker",
+    type: "buttonGrid",
+  },
+  {
+    buttons: [
+      { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
     ],
     id: "SmokeTobacco",
     title: "smokeTobacco",
@@ -326,8 +382,8 @@ export const GeneralHealthConfig = [
   },
   {
     buttons: [
-      { key: "no", primary: false, enabled: true },
       { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
     ],
     id: "HouseholdTobacco",
     title: "householdTobacco",
@@ -335,8 +391,8 @@ export const GeneralHealthConfig = [
   },
   {
     buttons: [
-      { key: "no", primary: false, enabled: true },
       { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
     ],
     id: "Interfering",
     title: "interfering",
@@ -344,8 +400,8 @@ export const GeneralHealthConfig = [
   },
   {
     buttons: [
-      { key: "no", primary: false, enabled: true },
       { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
       { key: "dontKnow", primary: false, enabled: true },
     ],
     id: "Antibiotics",
@@ -353,17 +409,52 @@ export const GeneralHealthConfig = [
     title: "antibiotics",
     type: "buttonGrid",
   },
+  {
+    buttons: [],
+    optionList: {
+      multiSelect: true,
+      options: [
+        "18to19",
+        "20to24",
+        "25to29",
+        "30to34",
+        "35to39",
+        "40to44",
+        "45to49",
+        "50to54",
+        "55to59",
+        "60to64",
+        "65to69",
+        "70to74",
+        "75to79",
+        "80to84",
+        "85to89",
+        "90+",
+      ],
+      withOther: false,
+      exclusiveOptions: ["noneOfThese", "doNotKnow"],
+    },
+    id: "Age",
+    placeholder: "selectAge",
+    title: "age",
+    type: "dropdown",
+  },
   AssignedSexConfig,
   {
     buttons: [],
     description: "selectAll",
     optionList: {
       options: [
-        "americanIndianOrAlaskaNative",
+        "aboriginal",
+        "torresStraitIslander",
+        "pacificIslander",
         "asian",
-        "nativeHawaiian",
-        "blackOrAfricanAmerican",
-        "white",
+        "african",
+        "european",
+        "whiteAustralian",
+        "southAndCentralAmerican",
+        "middleEastNorthAfrican",
+        "indianSubcontinent",
         "other",
       ],
       multiSelect: true,
@@ -371,35 +462,6 @@ export const GeneralHealthConfig = [
     },
     id: "Race",
     title: "race",
-    type: "optionQuestion",
-  },
-  {
-    buttons: [
-      { key: "no", primary: false, enabled: true },
-      { key: "yes", primary: false, enabled: true },
-    ],
-    id: "Hispanic",
-    title: "hispanic",
-    type: "buttonGrid",
-  },
-  {
-    buttons: [],
-    description: "selectAll",
-    id: "HealthInsurance",
-    optionList: {
-      options: [
-        "noInsurance",
-        "privateInsuranceEmployer",
-        "privateInsuranceSelf",
-        "governmentInsurance",
-        "other",
-        "doNotKnow",
-      ],
-      multiSelect: true,
-      withOther: false,
-      exclusiveOptions: ["noInsurance", "doNotKnow"],
-    },
-    title: "healthInsurance",
     type: "optionQuestion",
   },
 ];

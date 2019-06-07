@@ -3,19 +3,20 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { RefObject } from "react";
-import { connect } from "react-redux";
-import { Alert, View } from "react-native";
+import React, { RefObject, Fragment } from "react";
+import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ScrollIntoView } from "react-native-scroll-into-view";
-import { Action, Option, StoreState } from "../../store";
+import { Option } from "../../store";
 import { customRef } from "./CustomRef";
 import MonthPicker from "./MonthPicker";
 import OptionQuestion from "./OptionQuestion";
 import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
-import { HIGHLIGHT_STYLE } from "../styles";
+import TextInput from "./TextInput";
+import DropDown from "./DropDown";
+import { HIGHLIGHT_STYLE, BORDER_COLOR } from "../styles";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
@@ -179,6 +180,52 @@ class Questions extends React.Component<
                   }}
                 />
               </ScrollIntoView>
+            );
+          case "textInput":
+            return (
+              <ScrollIntoView
+                onMount={false}
+                ref={this._requiredQuestions.get(config.id)}
+                style={!!highlighted && HIGHLIGHT_STYLE}
+                key={`${config.id}-${index}`}
+              >
+                <QuestionText question={config} />
+                <TextInput
+                  style={{
+                    height: 50,
+                    borderWidth: StyleSheet.hairlineWidth,
+                    borderColor: BORDER_COLOR,
+                  }}
+                  key={`${config.id}-${index}`}
+                  placeholder={""}
+                  returnKeyType={"done"}
+                  onEndEditing={(e: any) =>
+                    updateAnswer(
+                      { eligibleMedicalCondition: e.nativeEvent.text },
+                      config
+                    )
+                  }
+                />
+              </ScrollIntoView>
+            );
+          case "dropdown":
+            const selected = getAnswer(config.title, config.id);
+            return (
+              <Fragment key={`${config.id}-${index}`}>
+                <QuestionText
+                  key={`${config.id}-${index}-question`}
+                  question={config}
+                />
+                <DropDown
+                  key={`${config.id}-${index}-dropdown`}
+                  options={config.optionList!.options}
+                  placeholder={!!config.placeholder ? config.placeholder : ""}
+                  onChange={(text: string | null) => {
+                    updateAnswer({ [config.title]: text }, config);
+                  }}
+                  selected={selected}
+                />
+              </Fragment>
             );
           default:
             break;

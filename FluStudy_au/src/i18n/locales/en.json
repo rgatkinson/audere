@@ -126,7 +126,7 @@
   "surveyTitle": {
     "address": "Your address:",
     "whereKit": "Where did you get your kit?",
-    "ageTitle": "How old are you?",
+    "age": "How old are you?",
     "consentEmail": "Email me a copy of this consent form",
     "symptomTitle": "Describe your symptoms",
     "consent": "Consent",
@@ -134,7 +134,6 @@
     "symptomsStart": "How long ago did symptoms start?",
     "symptomsLast48": "Were these symptoms present in the last 48 hours?",
     "symptomsSeverity": "How severe were your symptoms?",
-    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "youngChildren": "In the past week, have you been in contact with any children under five years old for over an hour?",
     "householdChildren": "Are there any children under 18 years old in your household?",
@@ -142,8 +141,6 @@
     "peopleInHousehold": "How many people live in your household (including you)?",
     "bedrooms": "How many bedrooms are in your home?",
     "medicalCondition": "Have you ever been told by a doctor that you have one of the following medical conditions?",
-    "fluShot": "Did you get a flu shot in the last year?",
-    "fluShotDate": "What was the date of your flu shot?",
     "smokeTobacco": "Do you smoke tobacco?",
     "householdTobacco": "Does anyone in your household smoke tobacco?",
     "interfering": "Is your illness preventing you from going to work or school, going to social events, or exercising/working out?",
@@ -154,7 +151,15 @@
     "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "pinkLine": "Is there a pink line on your test strip?",
-    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?"
+    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
+    "vaccinationDate": "Did you get a flu vaccine in the last year?",
+    "fluShotNationalImmunization": "Did you receive a free influenza vaccine under the National Immunisation Program?",
+    "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccine?",
+    "previousSeason": "Did you receive an influenza vaccine last year (2018)?",
+    "healthcareWorker": "Are you a healthcare (or aged care) worker (i.e. do you directly work with patients/aged care residents in your job)?",
+    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
+    "fluShot": "Did you get a flu vaccine in the last year?",
+    "fluShotDate": "What was the approximate date of your flu vaccine?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
@@ -171,6 +176,7 @@
     "headache": "Headache",
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
+    "vomiting": "Vomiting",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
     "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
@@ -286,11 +292,15 @@
     "desc": "Questions marked with an * are required.",
     "next": "Next, we'd like to ask you some questions about your overall health."
   },
+  "InfluenzaVaccination": {
+    "title": "Influenza Vaccination",
+    "desc": "We would like to ask you some questions about your influenza vaccination history. This information will be used to determine how effective the vaccine is."
+  },
   "GeneralExposure": {
     "title": "General Exposure",
     "desc": "Questions marked with an * are required.",
-    "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within six feet of them for at least two minutes or physical contact for any amount of time.",
-    "expoRef": "For reference, six feet is about the distance between you and someone sitting two rows ahead of you on the bus."
+    "expoDesc": "In the next section, the questions are going to be about being **in contact** with people who seemed to have a cold or the flu. **In contact** means being within two meters of them for at least two minutes or physical contact for any amount of time.",
+    "expoRef": "For reference, two meters is about the distance between you and someone sitting two rows ahead of you on the bus."
   },
   "WhenSymptoms": {
     "title": "Symptom Survey",
@@ -360,6 +370,25 @@
     "title": "Thanks for participating",
     "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us."
   },
+  "dropDown": {
+    "selectAge": "Select age",
+    "18to19": "18 to 19",
+    "20to24": "20 to 24",
+    "25to29": "25 to 29",
+    "30to34": "30 to 34",
+    "35to39": "35 to 39",
+    "40to44": "40 to 44",
+    "45to49": "45 to 49",
+    "50to54": "50 to 54",
+    "55to59": "55 to 59",
+    "60to64": "60 to 64",
+    "65to69": "65 to 69",
+    "70to74": "70 to 74",
+    "75to79": "75 to 79",
+    "80to84": "80 to 84",
+    "85to89": "85 to 89",
+    "90+": "90 and older"
+  },
   "links": {
     "ausGov": "Australian Government Department of Health: All about influenza",
     "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
@@ -381,7 +410,7 @@
     "feelingFeverish": "Fever",
     "chillsOrSweats": "Chills or sweats",
     "cough": "Cough",
-    "fatigue": "Feeling tired or more tired than usual",
+    "fatigue": "Feeling more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
     "soreThroat": "Sore throat",
     "headache": "Headache",
@@ -398,7 +427,6 @@
     "noneOfThese": "None of these",
     "doNotKnow": "Do not know",
     "americanIndianOrAlaskaNative": "American Indian or Alaska Native",
-    "asian": "Asian",
     "nativeHawaiian": "Native Hawaiian or Other Pacific Islander",
     "blackOrAfricanAmerican": "Black or African American",
     "white": "White",
@@ -406,7 +434,18 @@
     "preferNotToSay": "Prefer not to say",
     "contactMeNextSeason": "Contact me next flu season",
     "sendMeStudy": "Send me the study outcome report",
-    "contactMeForFollowUpStudy": "Contact me in a couple months to participate in a follow-up study (Note: You will be compensated for your time)"
+    "contactMeForFollowUpStudy": "Contact me in a couple months to participate in a follow-up study (Note: You will be compensated for your time)",
+    "vomiting": "Vomiting",
+    "aboriginal": "Aboriginal",
+    "torresStraitIslander": "Torres Strait Islander",
+    "pacificIslander": "Pacific Islander",
+    "european": "European",
+    "african": "African",
+    "whiteAustralian": "White Australian",
+    "southAndCentralAmerican": "South and Central American",
+    "middleEastNorthAfrican": "Middle East/North African",
+    "indianSubcontinent": "Indian Subcontinent",
+    "asian": "North or East Asian"
   },
   "surveyButton": {
     "done": "Done",
@@ -460,6 +499,8 @@
     "easyCorrect": "It was easy to follow and I think I completed the test correctly",
     "confusingCorrect": "It was a little confusing but I think I did the test correctly",
     "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
-    "incorrect": "During the test, I realized I did something incorrectly"
+    "incorrect": "During the test, I realized I did something incorrectly",
+    "neverFlu": "I’ve never received an influenza vaccine",
+    "indeterminate": "Indeterminate"
   }
 }

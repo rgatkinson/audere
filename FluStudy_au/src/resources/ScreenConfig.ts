@@ -19,6 +19,7 @@ import {
   GeneralHealthConfig,
   TestFeedbackConfig,
   TestStripSurveyConfig,
+  InfluenzaVaccinationConfig,
 } from "./QuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
@@ -354,7 +355,7 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "GeneralHealth" } }],
+    footer: [{ tag: ContinueButton, props: { next: "InfluenzaVaccination" } }],
     key: "GeneralExposure",
   },
   {
@@ -364,10 +365,23 @@ export const Screens: ScreenConfig[] = [
       { tag: Divider },
       {
         tag: Questions,
+        props: { questions: InfluenzaVaccinationConfig },
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "GeneralHealth" } }],
+    key: "InfluenzaVaccination",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: Divider },
+      { tag: ScreenText, props: { center: true, label: "next" } },
+      {
+        tag: Questions,
         props: { questions: GeneralHealthConfig },
         validate: true,
       },
-      { tag: ScreenText, props: { label: "next" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "ThankYouSurvey" } }],
     key: "GeneralHealth",
