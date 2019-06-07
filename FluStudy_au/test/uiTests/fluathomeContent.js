@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 import strings from "../../src/i18n/locales/en.json";
 
 export const content = [
@@ -124,14 +129,15 @@ export const content = [
         type: "checkbox",
         options: [
           strings.surveyOption.feelingFeverish,
-          strings.surveyOption.chillsOrSweats,
           strings.surveyOption.cough,
+          strings.surveyOption.fatigue,
+          strings.surveyOption.chillsOrSweats,
           strings.surveyOption.soreThroat,
           strings.surveyOption.headache,
-          strings.surveyOption.fatigue,
           strings.surveyOption.muscleOrBodyAches,
           strings.surveyOption.runningNose,
           strings.surveyOption.shortnessOfBreath,
+          strings.surveyOption.vomiting,
         ],
       },
     ],
@@ -242,6 +248,51 @@ export const content = [
   },
   {
     type: "input",
+    title: strings.InfluenzaVaccination.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "InfluenzaVaccination",
+    input: [
+      {
+        name: strings.surveyTitle.fluShot,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.fluShotDate,
+        type: "select",
+        options: [],
+      },
+      {
+        name: strings.surveyTitle.fluShotNationalImmunization,
+        type: "buttonGrid",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.fluShotNationalImmunizationCondition,
+        type: "text",
+      },
+      {
+        name: strings.surveyTitle.previousSeason,
+        type: "radio",
+        options: [
+          strings.surveyButton.yes,
+          strings.surveyButton.no,
+          strings.surveyButton.dontKnow,
+          strings.surveyButton.neverFlu,
+        ],
+      },
+    ],
+  },
+  {
+    type: "input",
     title: strings.GeneralHealth.title,
     button: strings.common.button.continue.toUpperCase(),
     dbScreenName: "GeneralHealth",
@@ -253,12 +304,13 @@ export const content = [
           strings.surveyOption.asthma,
           strings.surveyOption.copd,
           strings.surveyOption.diabetes,
+          strings.surveyOption.heartDisease,
           strings.surveyOption.noneOfThese,
           strings.surveyOption.doNotKnow,
         ],
       },
       {
-        name: strings.surveyTitle.fluShot,
+        name: strings.surveyTitle.healthcareWorker,
         type: "buttonGrid",
         options: [
           strings.surveyButton.no,
@@ -285,9 +337,31 @@ export const content = [
         name: strings.surveyTitle.antibiotics,
         type: "buttonGrid",
         options: [
-          strings.surveyButton.no,
+          strings.dropDown.no,
           strings.surveyButton.yes,
           strings.surveyButton.dontKnow,
+        ],
+      },
+      {
+        name: strings.surveyTitle.age,
+        type: "select",
+        options: [
+          strings.dropDown["18to19"],
+          strings.dropDown["20to24"],
+          strings.dropDown["25to29"],
+          strings.dropDown["30to34"],
+          strings.dropDown["35to39"],
+          strings.dropDown["40to44"],
+          strings.dropDown["45to49"],
+          strings.dropDown["50to54"],
+          strings.dropDown["55to59"],
+          strings.dropDown["60to64"],
+          strings.dropDown["65to69"],
+          strings.dropDown["70to74"],
+          strings.dropDown["75to79"],
+          strings.dropDown["80to84"],
+          strings.dropDown["85to89"],
+          strings.dropDown["90+"],
         ],
       },
       {
@@ -296,6 +370,7 @@ export const content = [
         options: [
           strings.surveyButton.male,
           strings.surveyButton.female,
+          strings.surveyButton.indeterminate,
           strings.surveyButton.other,
         ],
       },
@@ -303,11 +378,16 @@ export const content = [
         name: strings.surveyTitle.race,
         type: "checkbox",
         options: [
-          strings.surveyOption.americanIndianOrAlaskaNative,
+          strings.surveyOption.aboriginal,
+          strings.surveyOption.torresStraitIslander,
+          strings.surveyOption.pacificIslander,
           strings.surveyOption.asian,
-          strings.surveyOption.nativeHawaiian,
-          strings.surveyOption.blackOrAfricanAmerican,
-          strings.surveyOption.white,
+          strings.surveyOption.african,
+          strings.surveyOption.european,
+          strings.surveyOption.whiteAustralian,
+          strings.surveyOption.southAndCentralAmerican,
+          strings.surveyOption.middleEastNorthAfrican,
+          strings.surveyOption.indianSubcontinent,
           strings.surveyOption.other,
         ],
       },
@@ -351,7 +431,7 @@ export const content = [
   {
     type: "rdt",
     title: strings.TestStripCamera.title,
-    dbScreenName: "RDTReader",
+    dbScreenName: "TestStripCamera",
   },
   {
     type: "basic",
