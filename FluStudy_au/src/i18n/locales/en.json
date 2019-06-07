@@ -424,6 +424,7 @@
     "asthma": "Asthma",
     "copd": "COPD/emphysema",
     "diabetes": "Diabetes",
+    "heartDisease": "Heart disease",
     "noneOfThese": "None of these",
     "doNotKnow": "Do not know",
     "americanIndianOrAlaskaNative": "American Indian or Alaska Native",
