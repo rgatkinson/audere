@@ -405,7 +405,7 @@ jobs:
             echo "About to build iOS binary $IOS_BUILD_NUM for $EXPO_RELEASE_CHANNEL"
             expo build:ios --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
             export IPA_URL=`expo url:ipa`
-            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1.\", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
+            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1. \nBuild output: <$CIRCLE_BUILD_URL>\", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
 
   build_deploy_fluathome: &build_deploy_fluathome
     environment:
