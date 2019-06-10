@@ -18,19 +18,29 @@ interface Props {
 }
 
 class MainImage extends React.Component<Props> {
+  _toggleDemoMode = () => {
+    this.props.dispatch(setDemo(!this.props.isDemo));
+  };
+
   render() {
     const { menuItem, uri } = this.props;
-    return (
+    const image = (
+      <Image
+        style={[styles.image, menuItem && styles.menuImage]}
+        source={{ uri }}
+      />
+    );
+
+    return !!menuItem ? (
       <MultiTapContainer
-        active={!!this.props.menuItem}
+        active={true}
         taps={3}
-        onMultiTap={() => this.props.dispatch(setDemo(!this.props.isDemo))}
+        onMultiTap={this._toggleDemoMode}
       >
-        <Image
-          style={[styles.image, menuItem && styles.menuImage]}
-          source={{ uri }}
-        />
+        {image}
       </MultiTapContainer>
+    ) : (
+      image
     );
   }
 }

@@ -357,7 +357,14 @@ export const GeneralHealthConfig = [
     id: "MedicalCondition",
     optionList: {
       multiSelect: true,
-      options: ["asthma", "copd", "diabetes", "heartDisease", "noneOfThese", "doNotKnow"],
+      options: [
+        "asthma",
+        "copd",
+        "diabetes",
+        "heartDisease",
+        "noneOfThese",
+        "doNotKnow",
+      ],
       withOther: false,
       exclusiveOptions: ["noneOfThese", "doNotKnow"],
     },

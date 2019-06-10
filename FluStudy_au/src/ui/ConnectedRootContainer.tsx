@@ -9,7 +9,6 @@ import {
   AppState,
   Dimensions,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
@@ -306,11 +305,10 @@ class ConnectedRootContainer extends React.Component<Props> {
         />
         <MultiTapContainer
           active={this.props.isDemo}
+          style={styles.touchable}
           taps={4}
           onMultiTap={this._handleQuadTap}
-        >
-          <View style={styles.touchable} />
-        </MultiTapContainer>
+        />
       </View>
     );
   }

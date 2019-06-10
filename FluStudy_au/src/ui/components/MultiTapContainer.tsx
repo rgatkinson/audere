@@ -4,18 +4,24 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { TouchableWithoutFeedback, View } from "react-native";
+import {
+  StyleProp,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from "react-native";
 
 interface Props {
   active: boolean;
-  children: any;
+  children?: any;
+  style?: StyleProp<ViewStyle>;
   taps: number;
   onMultiTap(): void;
 }
 
 const PRESS_DELAY = 500;
 
-export default class MultiTapContainer extends React.Component<Props> {
+export default class MultiTapContainer extends React.PureComponent<Props> {
   _taps: number[] = [];
 
   _handleTap = () => {
@@ -36,7 +42,7 @@ export default class MultiTapContainer extends React.Component<Props> {
   render() {
     return (
       <TouchableWithoutFeedback onPress={this._handleTap}>
-        <View>{this.props.children}</View>
+        <View style={this.props.style}>{this.props.children}</View>
       </TouchableWithoutFeedback>
     );
   }
