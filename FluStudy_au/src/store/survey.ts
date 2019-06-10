@@ -10,6 +10,8 @@ import {
   EventInfoKind,
   NonPIIConsentInfo,
   PushNotificationState,
+  RDTInfo,
+  RDTReaderResult,
   SampleInfo,
   WorkflowInfo,
 } from "audere-lib/coughProtocol";
@@ -32,6 +34,7 @@ export type SurveyAction =
   | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
   | { type: "SET_PHOTO"; photoUri: string }
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
+  | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
   | { type: "SET_SUPPORT_CODE"; supportCode: string };
 
 export type SurveyState = {
@@ -45,6 +48,7 @@ export type SurveyState = {
   photoUri?: string;
   pushState: PushNotificationState;
   rdtPhotoUri?: string;
+  rdtInfo?: RDTInfo;
   responses: SurveyResponse[];
   supportCode?: string;
   tenMinuteStartTime?: number;
@@ -59,6 +63,7 @@ export type SurveyState = {
     | SampleInfo[]
     | SampleInfo
     | PushNotificationState
+    | RDTInfo
     | SurveyResponse[]
     | number
     | WorkflowInfo
@@ -152,6 +157,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
         timestamp: new Date().getTime(),
       };
 
+    case "SET_RDT_READER_RESULT":
+      return {
+        ...state,
+        rdtInfo: { ...state.rdtInfo, rdtReaderResult: action.rdtReaderResult },
+        timestamp: new Date().getTime(),
+      };
+  
     case "SET_RESPONSES":
       return {
         ...state,
@@ -284,6 +296,13 @@ export function setRDTPhoto(rdtPhotoUri: string): SurveyAction {
   return {
     type: "SET_RDT_PHOTO",
     rdtPhotoUri,
+  };
+}
+
+export function setRDTReaderResult(rdtReaderResult: RDTReaderResult): SurveyAction {
+  return {
+    type:"SET_RDT_READER_RESULT",
+    rdtReaderResult,
   };
 }
 

@@ -109,6 +109,8 @@ export interface SurveyNonPIIInfo extends CommonInfo {
 
   // Filtered to include only non-PII, like health data.
   responses: ResponseInfo[];
+ 
+  rdtInfo?: RDTInfo;
 }
 
 export interface PushNotificationState {
@@ -167,4 +169,43 @@ export enum EventInfoKind {
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
   Render = "render"
+}
+
+// ================================================================================
+// RDTReader
+
+export interface RDTInfo {
+  rdtReaderResult?: RDTReaderResult,
+
+  // Other RDT reader information can go here:
+  //  e.g. time taken to capture, length of time test strip was in solution, etc.
+}
+
+export interface RDTReaderResult {
+  testStripFound: boolean,
+  skippedDueToMemWarning?: boolean,
+  isCentered?: boolean,
+  sizeResult?: RDTReaderSizeResult,
+  isFocused?: boolean,
+  angle?: number,
+  isRightOrientation?: boolean,
+  exposureResult?: RDTReaderExposureResult,
+  controlLineFound?: boolean,
+  testALineFound?: boolean,
+  testBLineFound?: boolean,
+}
+
+// Must be kept in sync with native RDTReader/ImageProcessor.h
+export enum RDTReaderExposureResult {
+  UNDER_EXPOSED,
+  NORMAL,
+  OVER_EXPOSED,
+}
+
+// Must be kept in sync with native RDTReader/ImageProcessor.h
+export enum RDTReaderSizeResult {
+  RIGHT_SIZE,
+  LARGE,
+  SMALL,
+  INVALID,
 }

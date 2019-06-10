@@ -113,6 +113,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     responses: [],
     events: state.survey.events,
     workflow: state.survey.workflow,
+    rdtInfo: state.survey.rdtInfo,
   };
 
   when(getGender(survey), x => (pouch.gender = x));

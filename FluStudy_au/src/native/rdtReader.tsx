@@ -1,30 +1,23 @@
 import { requireNativeComponent } from "react-native";
 import * as React from "react";
+import {
+  RDTReaderExposureResult,
+  RDTReaderSizeResult,
+} from "audere-lib/coughProtocol";
 
 const NativeRDTReader = requireNativeComponent("RDTReader");
 
-export enum ExposureResult {
-  UNDER_EXPOSED,
-  NORMAL,
-  OVER_EXPOSED,
-}
-export enum SizeResult {
-  RIGHT_SIZE,
-  LARGE,
-  SMALL,
-  INVALID,
-}
 type InternalRDTCapturedArgs = {
   img: string;
   passed: boolean;
   center: boolean;
-  sizeResult: SizeResult;
+  sizeResult: RDTReaderSizeResult;
   shadow: boolean;
   target: number;
   sharpness: boolean;
   orientation: boolean;
   angle: number;
-  exposureResult: ExposureResult;
+  exposureResult: RDTReaderExposureResult;
   control: boolean;
   testA: boolean;
   testB: boolean;
@@ -34,11 +27,11 @@ export type RDTCapturedArgs = {
   imgBase64: string;
   testStripFound: boolean;
   isCentered: boolean;
-  sizeResult: SizeResult;
+  sizeResult: RDTReaderSizeResult;
   isFocused: boolean;
   isRightOrientation: boolean;
   angle: number;
-  exposureResult: ExposureResult;
+  exposureResult: RDTReaderExposureResult;
   controlLineFound: boolean;
   testALineFound: boolean;
   testBLineFound: boolean;

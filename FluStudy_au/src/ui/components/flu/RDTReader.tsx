@@ -4,25 +4,29 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
+import { AppState, Dimensions, Image, Platform, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
-import { Action, setTestStripImg, setRDTPhoto } from "../../../store";
+import { Action, setTestStripImg, setRDTReaderResult, setRDTPhoto, StoreState } from "../../../store";
 import { newUID } from "../../../util/csruid";
+import MultiTapContainer from "../MultiTapContainer";
 import Text from "../Text";
 import {
   RDTReader as RDTReaderComponent,
   RDTCapturedArgs,
-  SizeResult,
-  ExposureResult,
 } from "../../../native/rdtReader";
+import {
+  RDTReaderSizeResult,
+  RDTReaderExposureResult,
+} from "audere-lib/coughProtocol";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
 import { savePhoto } from "../../../store";
 
 interface Props {
+  isDemo: boolean;
   fallback: string;
   next: string;
   dispatch(action: Action): void;
@@ -37,8 +41,8 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     isCentered: false,
     isRightOrientation: false,
     isFocused: false,
-    sizeResult: SizeResult.INVALID,
-    exposureResult: ExposureResult.UNDER_EXPOSED,
+    sizeResult: RDTReaderSizeResult.INVALID,
+    exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
   };
 
   _willFocus: any;
@@ -58,20 +62,23 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._willBlur = navigation.addListener("willBlur", () =>
       this._clearTimer()
     );
+    AppState.addEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
   componentWillUnmount() {
     this._willFocus.remove();
     this._willBlur.remove();
+    AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
   _setTimer() {
-    const { fallback, isFocused, navigation } = this.props;
+    const { dispatch, fallback, isFocused, navigation } = this.props;
     // Timeout after 30 seconds
     this._clearTimer();
     this._timer = setTimeout(() => {
       if (isFocused) {
         navigation.push(fallback);
+        dispatch(setRDTReaderResult({ testStripFound: false }));
       }
     }, 30000);
   }
@@ -80,6 +87,14 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     if (this._timer != null) {
       clearTimeout(this._timer);
       this._timer = null;
+    }
+  }
+
+  _handleMemoryWarning = () => {
+    const { dispatch, fallback, isFocused, navigation } = this.props;
+    if (isFocused) {
+      navigation.push(fallback);
+      dispatch(setRDTReaderResult({ testStripFound: false, skippedDueToMemWarning: true }));
     }
   }
 
@@ -111,6 +126,20 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         })
       );
       savePhoto(photoId, args.imgBase64);
+      dispatch(
+        setRDTReaderResult({
+          testStripFound: args.testStripFound,
+          isCentered: args.isCentered,
+          sizeResult: args.sizeResult,
+          isFocused: args.isFocused,
+          angle: args.angle,
+          isRightOrientation: args.isRightOrientation,
+          exposureResult: args.exposureResult,
+          controlLineFound: args.controlLineFound,
+          testALineFound: args.testALineFound,
+          testBLineFound: args.testBLineFound,
+        })
+      );
       navigation.push(next);
     } catch (e) {
       console.log(e);
@@ -137,19 +166,47 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     });
   };
 
+  // Simulate negative RDT result
+  _forceNegativeResult = () => {
+    const { dispatch, navigation, next } = this.props;
+    dispatch(
+      setRDTReaderResult({
+        testStripFound: true,
+        controlLineFound: true,
+        testALineFound: false,
+        testBLineFound: false,
+      })
+    );
+    navigation.push(next);
+  };
+
+  // Simulate positive RDT result of Flu-A
+  _forcePositiveResult = () => {
+    const { dispatch, navigation, next } = this.props;
+    dispatch(
+      setRDTReaderResult({
+        testStripFound: true,
+        controlLineFound: true,
+        testALineFound: true,
+        testBLineFound: false,
+      })
+    );
+    navigation.push(next);
+  };
+
   render() {
-    const { t } = this.props;
-    if (!this.props.isFocused) {
+    const { isDemo, isFocused } = this.props;
+    if (!isFocused) {
       return null;
     }
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.spinner && this.props.isFocused} />
+        <Spinner visible={this.state.spinner && isFocused} />
         <RDTReaderComponent
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
-          enabled={this.props.isFocused}
+          enabled={isFocused}
           flashEnabled={true}
         />
         <View style={styles.overlayContainer}>
@@ -188,7 +245,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               <Feather
                 name="check"
                 color={
-                  this.state.sizeResult === SizeResult.RIGHT_SIZE
+                  this.state.sizeResult === RDTReaderSizeResult.RIGHT_SIZE
                     ? "green"
                     : "gray"
                 }
@@ -196,11 +253,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               />
               <Text
                 content={
-                  this.state.sizeResult === SizeResult.RIGHT_SIZE
+                  this.state.sizeResult === RDTReaderSizeResult.RIGHT_SIZE
                     ? ""
-                    : this.state.sizeResult === SizeResult.LARGE
+                    : this.state.sizeResult === RDTReaderSizeResult.LARGE
                       ? "large"
-                      : this.state.sizeResult === SizeResult.SMALL
+                      : this.state.sizeResult === RDTReaderSizeResult.SMALL
                         ? "small"
                         : "invalid"
                 }
@@ -212,7 +269,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               <Feather
                 name="check"
                 color={
-                  this.state.exposureResult === ExposureResult.NORMAL
+                  this.state.exposureResult === RDTReaderExposureResult.NORMAL
                     ? "green"
                     : "gray"
                 }
@@ -220,9 +277,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               />
               <Text
                 content={
-                  this.state.exposureResult === ExposureResult.NORMAL
+                  this.state.exposureResult === RDTReaderExposureResult.NORMAL
                     ? ""
-                    : this.state.exposureResult === ExposureResult.OVER_EXPOSED
+                    : this.state.exposureResult === RDTReaderExposureResult.OVER_EXPOSED
                       ? "over"
                       : "under"
                 }
@@ -231,13 +288,25 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
             </View>
           </View>
         </View>
+        <MultiTapContainer
+          active={isDemo}
+          style={styles.touchableLeft}
+          taps={3}
+          onMultiTap={this._forceNegativeResult}
+        />
+        <MultiTapContainer
+            active={isDemo}
+            style={styles.touchableRight}
+            taps={3}
+            onMultiTap={this._forcePositiveResult}
+        />
       </View>
     );
   }
 }
-export default connect()(
-  withNavigationFocus(withNamespaces("RDTReader")(RDTReader))
-);
+export default connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+}))(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
 
 const styles = StyleSheet.create({
   camera: {
@@ -288,7 +357,21 @@ const styles = StyleSheet.create({
   },
   testStripContainer: {
     borderColor: "rgba(0, 0, 0, 0.7)",
-    borderWidth: 1000,
+    borderWidth: Dimensions.get("window").width / 2 - GUTTER * 2,
     padding: GUTTER * 2,
+  },
+  touchableLeft: {
+    left: 0,
+    top: 0,
+    height: Dimensions.get("window").height / 2,
+    width: Dimensions.get("window").width / 3,
+    position: "absolute",
+  },
+  touchableRight: {
+    left: Dimensions.get("window").width * 2 / 3,
+    top: 0,
+    height: Dimensions.get("window").height / 2,
+    width: Dimensions.get("window").width / 3,
+    position: "absolute",
   },
 });

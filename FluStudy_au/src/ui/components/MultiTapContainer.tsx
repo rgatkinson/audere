@@ -35,6 +35,7 @@ export default class MultiTapContainer extends React.PureComponent<Props> {
 
       if (this._taps.length == taps && now - this._taps[0] < PRESS_DELAY) {
         onMultiTap();
+        this._taps = [];
       }
     }
   };
