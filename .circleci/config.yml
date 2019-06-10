@@ -140,7 +140,7 @@ jobs:
             yarn typecheck
             yarn test
       - save_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }
+          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
           paths:
             - FluStudy_au/android/openCVLibrary341-contrib
             - FluStudy_au/android/app/src/main/jniLibs
@@ -500,7 +500,7 @@ jobs:
       - restore_cache:
           key: athomeprod-android-node-cache-{{ checksum "package.json" }}
       - restore_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }
+          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
       - run:
           name: flu@home Yarn Install
           command: |
