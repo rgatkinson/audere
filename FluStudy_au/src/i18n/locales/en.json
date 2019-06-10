@@ -144,7 +144,7 @@
     "smokeTobacco": "Do you smoke tobacco?",
     "householdTobacco": "Does anyone in your household smoke tobacco?",
     "interfering": "Is your illness preventing you from going to work or school, going to social events, or exercising/working out?",
-    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, Z-pack, Bactrim, Augmentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?",
+    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, azithromycin, co-trimoxazole (Bactrim), co-amoxiclav (Augmentin)) or antivirals (e.g. Tamiflu, Xofluza, Relenza) prescribed by a doctor (GP or hospital) for this illness?",
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
     "hispanic": "Are you Hispanic or Latino?",
