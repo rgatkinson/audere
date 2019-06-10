@@ -14,7 +14,7 @@ import {
   EncounterKey,
   KeyedEncounter
 } from "./encounterDetailsService";
-import { generateSHA256 } from "../util/crypto";
+import { sha256 } from "../util/crypto";
 import { GeocodingResponse, GeocodedAddress } from "../models/geocoding";
 import {
   NonPIIEncounterDetails,
@@ -148,7 +148,7 @@ export class EncountersService {
       if (includeCityAndState) {
         return {
           use: use,
-          id: generateSHA256(this.hashSecret, streetAddress),
+          id: sha256(this.hashSecret, streetAddress),
           region: region,
           city: city,
           state: state
@@ -156,7 +156,7 @@ export class EncountersService {
       } else {
         return {
           use: use,
-          id: generateSHA256(this.hashSecret, streetAddress),
+          id: sha256(this.hashSecret, streetAddress),
           region: region,
           city: undefined,
           state: undefined
@@ -173,7 +173,7 @@ export class EncountersService {
     birthDate,
     postalCode
   }: ParticipantIdentifierParts): string {
-    return generateSHA256(
+    return sha256(
       this.hashSecret,
       canonicalizeName(name),
       gender,

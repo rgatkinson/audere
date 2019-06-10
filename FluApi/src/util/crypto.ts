@@ -23,7 +23,7 @@ export function generateRandomBytes(numBytes: number): Promise<Buffer> {
   });
 }
 
-export function generateSHA256(...values: string[]): string {
+export function sha256(...values: string[]): string {
   const hash = crypto.createHash("SHA256");
   hash.update([...values].join(" "));
   return hash.digest("hex");

@@ -10,6 +10,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Inst, SplitSql } from "../../util/sql";
 import { defineSiteUserModels, SiteUserModels, UserAttributes } from "./models";
 import logger from "../../util/logger";
+import { sha256 } from "../../util/crypto";
 
 export class AuthManager {
   private readonly models: SiteUserModels;
@@ -29,7 +30,7 @@ export class AuthManager {
             logger.debug(`passport.local: could not find user for '${userid}'`);
             const message = "Invalid userid/password combination";
             return done(null, false, { message });
-          } else if (hash(user.salt, userid, password) !== user.token) {
+          } else if (sha256(user.salt, userid, password) !== user.token) {
             logger.debug(`passport.local: password invalid for '${userid}'`);
             const message = "Invalid userid/password combination";
             return done(null, false, { message });
@@ -158,13 +159,7 @@ interface TokenParts {
   password: string;
 }
 function makeToken({ salt, userid, password }: TokenParts): string {
-  return hash(salt, userid, password);
-}
-
-function hash(...args: (string | Buffer)[]): string {
-  const hash = crypto.createHash("sha256");
-  args.forEach(arg => hash.update(arg));
-  return hash.digest("hex").toString();
+  return sha256(salt, userid, password);
 }
 
 export const Permissions = {
