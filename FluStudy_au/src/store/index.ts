@@ -41,6 +41,7 @@ export function clearState(): ClearStateAction {
 export type Action = MetaAction | SurveyAction | ClearStateAction;
 
 import { StoreState } from "./StoreState";
+import { photoCollectionName } from "./FirebaseStore";
 export { StoreState } from "./StoreState";
 
 const STORAGE_PASSWORD_KEY = "FluAtHome.PouchDbEncryptionPassword";
@@ -71,7 +72,9 @@ export function getStore(): Promise<Store> {
   return (storePromise = getStoreImpl());
 }
 
-const photoUploader = new PhotoUploader();
+const photoUploader = new PhotoUploader({
+  collection: photoCollectionName(),
+});
 
 export function savePhoto(photoId: string, jpegBase64: string) {
   tracker.logEvent(TransportEvents.PHOTO_UPDATED, { photoId });

@@ -29,10 +29,11 @@ function getSurveyCollection() {
   return firebase.firestore().collection(collectionName);
 }
 
+export function photoCollectionName() {
+  return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
+}
 function getPhotoCollection() {
-  const collectionName =
-    process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
-  return firebase.firestore().collection(collectionName);
+  return firebase.firestore().collection(photoCollectionName());
 }
 
 export async function initializeFirestore() {

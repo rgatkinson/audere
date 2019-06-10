@@ -6,6 +6,10 @@
 import wd from "wd";
 import strings from "../../src/i18n/locales/en.json";
 import { content } from "./fluathomeContent.js";
+import { createSplitSql } from "../../../FluApi/src/util/sql";
+import { defineCoughModels } from "../../../FluApi/src/models/db/cough";
+import { Op } from "sequelize";
+import axios from "axios";
 
 console.log(
   "Using test file",
@@ -25,6 +29,20 @@ const driver = wd.promiseChainRemote("localhost", PORT);
 
 //Drive through app always picking chocies specified in input file
 describe("Happy Path", () => {
+  let sql;
+  let models;
+
+  beforeAll(async done => {
+    sql = createSplitSql();
+    models = defineCoughModels(sql);
+    done();
+  });
+
+  afterAll(async done => {
+    await sql.close();
+    done();
+  });
+
   beforeEach(async () => {
     await driver.init(deviceInfo.config);
     await driver.setImplicitWaitTimeout(30000);
@@ -39,7 +57,7 @@ describe("Happy Path", () => {
       await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await driver.setImplicitWaitTimeout(10000);
-    await change_to_demo_mode(driver);
+    const installationId = await app_setup_for_automation(driver);
 
     for (const screen_info of content) {
       if (screen_info.type == "basic") {
@@ -54,6 +72,7 @@ describe("Happy Path", () => {
         await rdt_screen(driver, screen_info);
       }
     }
+    await verify_db_contents(driver, models, installationId);
   });
 });
 
@@ -286,8 +305,41 @@ async function timer_screen(driver, screen_info) {
   await driver.elementByAccessibilityId(screen_info.button).click();
 }
 
-//Go to version menu, change to demo mode, return to app
-async function change_to_demo_mode(driver) {
+async function verify_db_contents(driver, models, installationId) {
+  await driver.sleep(3000); // Let firestore sync
+  const response = await axios.get(
+    "http://localhost:3200/api/import/coughDocuments"
+  );
+  if (response.status !== 200) {
+    throw new Error(`Expected 200, got ${response.status}`);
+  }
+
+  const dbRow = await models.survey.findOne({
+    where: {
+      device: {
+        installation: {
+          [Op.eq]: installationId,
+        },
+      },
+    },
+  });
+
+  const expected = content
+    // Android skips barcode camera
+    .filter(item => !isAndroidBarcodeScan(item))
+    .map(item => item.dbScreenName);
+  const actual = dbRow.survey.events
+    .slice(1) // db has version screen before app starts
+    .map(item => item.refId);
+  expect(actual).toEqual(expected);
+
+  function isAndroidBarcodeScan(item) {
+    return PLATFORM === "Android" && item.dbScreenName === "Scan";
+  }
+}
+
+//Go to version menu, change to demo mode, return installation id
+async function app_setup_for_automation(driver) {
   expect(await driver.hasElementByAccessibilityId("flu@home")).toBe(true);
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.95, y: screen_y * 0.06 })
@@ -301,9 +353,19 @@ async function change_to_demo_mode(driver) {
   ).toBe(true);
   await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
   expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
+  await driver
+    .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
+    .click();
+  const versionInfo = Buffer.from(
+    await driver.getClipboard(),
+    "base64"
+  ).toString();
+  const installation = /Installation:\*\* (.*)/.exec(versionInfo);
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
     .perform();
+  expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
+  return installation[1];
 }
 
 //Triple tap needed for getting into demo mode

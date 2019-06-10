@@ -17,6 +17,17 @@ import {
   PhotoDocument
 } from "audere-lib/dist/coughProtocol";
 
+const DEFAULT_SURVEY_COLLECTION = "surveys";
+const DEFAULT_PHOTO_COLLECTION = "photos";
+
+function getSurveyCollection() {
+  return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
+}
+
+function getPhotoCollection() {
+  return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
+}
+
 export class CoughEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
@@ -44,7 +55,7 @@ export class CoughEndpoint {
   };
 
   private async importSurveys(reqId: string, result: ImportResult) {
-    const collection = "surveys";
+    const collection = getSurveyCollection();
     const receiver = new FirebaseReceiver(connectorFromSqlSecrets(this.sql), {
       collection
     });
@@ -62,7 +73,7 @@ export class CoughEndpoint {
   }
 
   private async importPhotos(reqId: string, result: ImportResult) {
-    const collection = "photos";
+    const collection = getPhotoCollection();
     const connector = connectorFromSqlSecrets(this.sql);
     const receiver = new FirebaseReceiver(connector, { collection });
     const updates = await receiver.updates();

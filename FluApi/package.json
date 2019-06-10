@@ -70,6 +70,7 @@
     "winston-transport": "^4.3.0"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.4.5",
     "@types/body-parser": "^1.17.0",
     "@types/buffer-xor": "^2.0.0",
     "@types/consolidate": "^0.0.34",
