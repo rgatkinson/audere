@@ -38,17 +38,18 @@ const float INTENSITY_THRESHOLD = 190;
 const float CONTROL_INTENSITY_PEAK_THRESHOLD = 150;
 const float TEST_INTENSITY_PEAK_THRESHOLD = 50;
 const int LINE_SEARCH_WIDTH = 13;
-const int CONTROL_LINE_POSITION = 45;
-const int TEST_A_LINE_POSITION = 15;
-const int TEST_B_LINE_POSITION = 75;
-const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 20/100.0*255.0, 0/100.0*255.0);
-const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 50/100.0*255.0);
-const int CONTROL_LINE_POSITION_MIN = 575;
-const int CONTROL_LINE_POSITION_MAX = 700;
-const int CONTROL_LINE_MIN_HEIGHT = 25;
-const int CONTROL_LINE_MIN_WIDTH = 20;
-const int CONTROL_LINE_MAX_WIDTH = 55;
-const int RESULT_WINDOW_RECT_HEIGHT = 90;
+const int CONTROL_LINE_POSITION = 40;
+const int TEST_A_LINE_POSITION = 10;
+const int TEST_B_LINE_POSITION = 70;
+const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 20/100.0*255.0, 10/100.0*255.0);
+const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 100/100.0*255.0);
+const int FIDUCIAL_POSITION_MIN = 300;
+const int FIDUCIAL_POSITION_MAX = 500;
+const int FIDUCIAL_MIN_HEIGHT = 25;
+const int FIDUCIAL_MIN_WIDTH = 20;
+const int FIDUCIAL_MAX_WIDTH = 55;
+const int FIDUCIAL_TO_CONTROL_LINE_OFFSET = 215;
+const int RESULT_WINDOW_RECT_HEIGHT = 80;
 const int RESULT_WINDOW_RECT_WIDTH_PADDING = 10;
 
 NSString *instruction_detected = @"RDT detected at the center!";
@@ -731,7 +732,7 @@ Mat siftRefDescriptor;
     return inputMat;
 }
 
--(cv::Rect) checkControlLine:(Mat) inputMat andResult:(bool *) control {
+-(cv::Rect) checkFiducial:(Mat) inputMat andResult:(bool *) fiducial {
     Mat hls = Mat();
     cvtColor(inputMat, hls, COLOR_RGBA2RGB);
     cvtColor(hls, hls, COLOR_RGB2HLS);
@@ -748,20 +749,20 @@ Mat siftRefDescriptor;
     vector<Vec4i> hierarchy;
     
     findContours(threshold, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-    cv::Rect controlLineRect;
-    *control = false;
+    cv::Rect fudicialRect;
+    *fiducial = false;
     for (int i = 0; i < contours.size(); i++)
     {
         cv::Rect rect = boundingRect(contours[i]);
         NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
-        if (CONTROL_LINE_POSITION_MIN < rect.x && rect.x < CONTROL_LINE_POSITION_MAX && CONTROL_LINE_MIN_HEIGHT < rect.height && CONTROL_LINE_MIN_WIDTH < rect.width && rect.width < CONTROL_LINE_MAX_WIDTH) {
-            controlLineRect = rect;
-            *control = true;
-            NSLog(@"control line rect: %d %d %d %d", controlLineRect.x, controlLineRect.y, controlLineRect.width, controlLineRect.height);
+        if (FIDUCIAL_POSITION_MIN < rect.x && rect.x < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
+            fudicialRect = rect;
+            *fiducial = true;
+            NSLog(@"control line rect: %d %d %d %d", fudicialRect.x, fudicialRect.y, fudicialRect.width, fudicialRect.height);
         }
     }
 
-    return controlLineRect;
+    return fudicialRect;
 }
 
 -(bool) readLine:(Mat) inputMat at: (cv::Point) position for: (bool) isControlLine {
@@ -857,7 +858,7 @@ Mat siftRefDescriptor;
     return result;
 }
 
--(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary with:(bool*) control{
+-(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary with:(bool*) fiducial{
     Mat ref_boundary = Mat(4, 1, CV_32FC2);
     
     ref_boundary.at<Vec2f>(0, 0)[0] = 0;
@@ -890,14 +891,14 @@ Mat siftRefDescriptor;
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
     cv::warpPerspective(inputMat, correctedMat, M, cv::Size(refImg.cols, refImg.rows));
     
-    cv::Rect controlLineRect = [self checkControlLine:correctedMat andResult:control];
+    cv::Rect fiducialRect = [self checkFiducial:correctedMat andResult:fiducial];
     
-    if (!(*control)) {
+    if (!(*fiducial)) {
         return Mat();
     }
     
-    cv::Point tl = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0-RESULT_WINDOW_RECT_HEIGHT/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
-    cv::Point br = cv::Point((controlLineRect.tl().x+controlLineRect.br().x)/2.0+RESULT_WINDOW_RECT_HEIGHT/2.0, correctedMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
+    cv::Point tl = cv::Point((fiducialRect.tl().x+fiducialRect.br().x)/2.0+FIDUCIAL_TO_CONTROL_LINE_OFFSET-RESULT_WINDOW_RECT_HEIGHT/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
+    cv::Point br = cv::Point((fiducialRect.tl().x+fiducialRect.br().x)/2.0+FIDUCIAL_TO_CONTROL_LINE_OFFSET+RESULT_WINDOW_RECT_HEIGHT/2.0, correctedMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
     
     correctedMat = Mat(correctedMat, cv::Rect(tl, br));
     
