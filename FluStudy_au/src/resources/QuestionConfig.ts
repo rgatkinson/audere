@@ -10,7 +10,6 @@ export interface ButtonConfig {
   primary: boolean;
   enabled: boolean;
   helpImageUri?: string;
-  subtextKey?: string;
 }
 
 export interface conditionalQuestionConfig {

@@ -13,8 +13,12 @@ import {
   ViewStyle,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { ScrollIntoView } from "react-native-scroll-into-view";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import {
+  ButtonConfig,
+  SurveyQuestionData,
+} from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
   GUTTER,
@@ -33,6 +37,8 @@ import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
+  isFocused: boolean;
+  navigation: NavigationScreenProp<any, any>;
   onRef?: RefObject<any>;
   question: SurveyQuestionData;
   shouldValidate?: boolean;
@@ -44,11 +50,11 @@ interface Props {
 
 interface State {
   selected: string | undefined;
-  helpSelected: number | null;
+  helpSelected: string | null;
 }
 
-class RadioGrid extends React.Component<Props & WithNamespaces, State> {
-  constructor(props: Props & WithNamespaces) {
+class RadioGrid extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       selected: props.getAnswer("selectedButtonKey", props.question.id),
@@ -56,9 +62,12 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     };
   }
 
+  shouldComponentUpdate(props: Props) {
+    return props.isFocused;
+  }
+
   _onPress = (key: string) => {
     const selected = key;
-
     this.setState({ selected, helpSelected: null });
     this.props.updateAnswer(
       { selectedButtonKey: selected },
@@ -66,7 +75,7 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
     );
   };
 
-  _toggleHelp = (key: number) => {
+  _toggleHelp = (key: string) => {
     const isSelected = key === this.state.helpSelected ? null : key;
     this.setState({ helpSelected: isSelected });
   };
@@ -78,7 +87,6 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
       question,
       shouldValidate,
       style,
-      t,
       validationError,
     } = this.props;
     const { helpSelected, selected } = this.state;
@@ -89,83 +97,114 @@ class RadioGrid extends React.Component<Props & WithNamespaces, State> {
         ref={onRef}
       >
         <QuestionText question={question} />
-        <View>
-          {question.buttons.map((buttonConfig, i) => {
-            const isSelected = buttonConfig.key == selected;
-            const { helpImageUri, key } = buttonConfig;
-            return (
-              <Fragment key={`${key}-fragment`}>
-                <TouchableOpacity
-                  key={key}
-                  onPress={() => this._onPress(key)}
-                  style={
-                    i === question.buttons.length - 1
-                      ? styles.radioRowButtonLast
-                      : styles.radioRowButton
-                  }
-                >
-                  <View style={styles.radioRow}>
-                    <View
-                      style={[
-                        styles.radioButton,
-                        isSelected && styles.selectedRadioColor,
-                        !!highlighted && HIGHLIGHT_STYLE,
-                      ]}
-                    >
-                      {isSelected && <View style={styles.radioButtonCenter} />}
-                    </View>
-                    <Text
-                      style={[
-                        styles.radioText,
-                        isSelected && styles.selectedRadioColor,
-                      ]}
-                      content={t(`surveyButton:${key}`)}
-                    />
-                    {!!helpImageUri && (
-                      <TouchableOpacity
-                        key={`${key}-touchable`}
-                        onPress={() => this._toggleHelp(i)}
-                        style={styles.helpIconButton}
-                      >
-                        <View style={styles.helpIcon}>
-                          <Text
-                            bold={true}
-                            style={{ color: "white" }}
-                            content={"?"}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </TouchableOpacity>
-                {helpSelected === i && (
-                  <TouchableOpacity
-                    style={{ height: 200 }}
-                    key={`${buttonConfig.key}-image-button`}
-                    onPress={() => this.setState({ helpSelected: null })}
-                  >
-                    <Image
-                      key={`${key}-image`}
-                      resizeMode={"contain"}
-                      style={styles.helpImage}
-                      source={{ uri: buttonConfig.helpImageUri }}
-                    />
-                  </TouchableOpacity>
-                )}
-              </Fragment>
-            );
-          })}
+        <Fragment>
+          {question.buttons.map((buttonConfig, i) => (
+            <RadioGridItem
+              config={buttonConfig}
+              helpSelected={helpSelected === buttonConfig.key}
+              highlighted={!!highlighted}
+              key={buttonConfig.key}
+              last={question.buttons.length - 1 === i}
+              selected={buttonConfig.key === selected}
+              onPress={this._onPress}
+              toggleHelp={this._toggleHelp}
+            />
+          ))}
           {shouldValidate &&
             !selected &&
             validationError && (
               <Text content={validationError} style={styles.errorText} />
             )}
-        </View>
+        </Fragment>
       </ScrollIntoView>
     );
   }
 }
-export default withNamespaces()(RadioGrid);
+export default withNavigationFocus(RadioGrid);
+
+interface ItemProps {
+  config: ButtonConfig;
+  helpSelected: boolean;
+  highlighted: boolean;
+  last: boolean;
+  selected: boolean;
+  onPress: (key: string) => void;
+  toggleHelp: (key: string) => void;
+}
+
+class Item extends React.Component<ItemProps & WithNamespaces, State> {
+  shouldComponentUpdate(props: ItemProps & WithNamespaces) {
+    return (
+      props.selected != this.props.selected ||
+      props.helpSelected != this.props.helpSelected ||
+      props.highlighted != this.props.highlighted
+    );
+  }
+
+  _onPress = () => {
+    this.props.onPress(this.props.config.key);
+  };
+
+  _toggleHelp = () => {
+    this.props.toggleHelp(this.props.config.key);
+  };
+
+  render() {
+    const { config, helpSelected, highlighted, last, selected, t } = this.props;
+    const { key, helpImageUri } = config;
+    return (
+      <Fragment>
+        <TouchableOpacity
+          onPress={this._onPress}
+          style={last ? styles.radioRowButtonLast : styles.radioRowButton}
+        >
+          <View style={styles.radioRow}>
+            <View
+              style={[
+                styles.radioButton,
+                selected && styles.selectedRadioColor,
+                !!highlighted && HIGHLIGHT_STYLE,
+              ]}
+            >
+              {selected && <View style={styles.radioButtonCenter} />}
+            </View>
+            <Text
+              style={[styles.radioText, selected && styles.selectedRadioColor]}
+              content={t(`surveyButton:${key}`)}
+            />
+            {!!helpImageUri && (
+              <TouchableOpacity
+                key={`${key}-touchable`}
+                onPress={this._toggleHelp}
+                style={styles.helpIconButton}
+              >
+                <View style={styles.helpIcon}>
+                  <Text bold={true} style={{ color: "white" }} content={"?"} />
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
+        {helpSelected &&
+          !!helpImageUri && (
+            <TouchableOpacity
+              style={{ height: 200 }}
+              key={`${key}-image-button`}
+              onPress={this._toggleHelp}
+            >
+              <Image
+                key={`${key}-image`}
+                resizeMode={"contain"}
+                style={styles.helpImage}
+                source={{ uri: helpImageUri }}
+              />
+            </TouchableOpacity>
+          )}
+      </Fragment>
+    );
+  }
+}
+const RadioGridItem = withNamespaces()(Item);
 
 const styles = StyleSheet.create({
   container: {
