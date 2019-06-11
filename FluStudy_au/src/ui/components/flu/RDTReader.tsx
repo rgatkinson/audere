@@ -4,13 +4,26 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { AppState, Dimensions, Image, Platform, StyleSheet, View } from "react-native";
+import {
+  AppState,
+  Dimensions,
+  Image,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
-import { Action, setTestStripImg, setRDTReaderResult, setRDTPhoto, StoreState } from "../../../store";
+import {
+  Action,
+  setTestStripImg,
+  setRDTReaderResult,
+  setRDTPhoto,
+  StoreState,
+} from "../../../store";
 import { newUID } from "../../../util/csruid";
 import MultiTapContainer from "../MultiTapContainer";
 import Text from "../Text";
@@ -94,9 +107,14 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     const { dispatch, fallback, isFocused, navigation } = this.props;
     if (isFocused) {
       navigation.push(fallback);
-      dispatch(setRDTReaderResult({ testStripFound: false, skippedDueToMemWarning: true }));
+      dispatch(
+        setRDTReaderResult({
+          testStripFound: false,
+          skippedDueToMemWarning: true,
+        })
+      );
     }
-  }
+  };
 
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isFocused && nextProps.isFocused) {
@@ -279,7 +297,8 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
                 content={
                   this.state.exposureResult === RDTReaderExposureResult.NORMAL
                     ? ""
-                    : this.state.exposureResult === RDTReaderExposureResult.OVER_EXPOSED
+                    : this.state.exposureResult ===
+                      RDTReaderExposureResult.OVER_EXPOSED
                       ? "over"
                       : "under"
                 }
@@ -295,10 +314,10 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           onMultiTap={this._forceNegativeResult}
         />
         <MultiTapContainer
-            active={isDemo}
-            style={styles.touchableRight}
-            taps={3}
-            onMultiTap={this._forcePositiveResult}
+          active={isDemo}
+          style={styles.touchableRight}
+          taps={3}
+          onMultiTap={this._forcePositiveResult}
         />
       </View>
     );
@@ -368,7 +387,7 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   touchableRight: {
-    left: Dimensions.get("window").width * 2 / 3,
+    left: (Dimensions.get("window").width * 2) / 3,
     top: 0,
     height: Dimensions.get("window").height / 2,
     width: Dimensions.get("window").width / 3,

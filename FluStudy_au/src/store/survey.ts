@@ -163,7 +163,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
         rdtInfo: { ...state.rdtInfo, rdtReaderResult: action.rdtReaderResult },
         timestamp: new Date().getTime(),
       };
-  
+
     case "SET_RESPONSES":
       return {
         ...state,
@@ -299,9 +299,11 @@ export function setRDTPhoto(rdtPhotoUri: string): SurveyAction {
   };
 }
 
-export function setRDTReaderResult(rdtReaderResult: RDTReaderResult): SurveyAction {
+export function setRDTReaderResult(
+  rdtReaderResult: RDTReaderResult
+): SurveyAction {
   return {
-    type:"SET_RDT_READER_RESULT",
+    type: "SET_RDT_READER_RESULT",
     rdtReaderResult,
   };
 }
