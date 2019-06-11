@@ -12,11 +12,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
   BORDER_COLOR,
+  HIGHLIGHT_STYLE,
   GUTTER,
   INPUT_HEIGHT,
   LINK_COLOR,
@@ -41,6 +44,7 @@ const months = [
 
 interface MonthModalProps {
   date: Date | null;
+  isFocused: boolean;
   options: Date[];
   visible: boolean;
   onDismiss(date: Date | null): void;
@@ -54,6 +58,10 @@ class MonthModal extends React.Component<
   MonthModalProps & WithNamespaces,
   MonthModalState
 > {
+  shouldComponentUpdate(props: MonthModalProps & WithNamespaces) {
+    return props.isFocused;
+  }
+
   state = {
     date: this.props.date,
   };
@@ -94,8 +102,17 @@ class MonthModal extends React.Component<
     );
   }
 
+  _onCancel = () => {
+    this.setState({ date: this.props.date });
+    this.props.onDismiss(this.props.date);
+  };
+
+  _onSubmit = () => {
+    this.props.onDismiss(this.state.date);
+  };
+
   render() {
-    const { date, onDismiss, t, visible } = this.props;
+    const { t, visible } = this.props;
     const { width } = Dimensions.get("window");
     return Platform.OS === "ios" ? (
       <Modal
@@ -103,8 +120,8 @@ class MonthModal extends React.Component<
         width={width * 0.75}
         submitText={t("common:button:done")}
         visible={visible}
-        onDismiss={() => onDismiss(date)}
-        onSubmit={() => onDismiss(this.state.date)}
+        onDismiss={this._onCancel}
+        onSubmit={this._onSubmit}
       >
         {this._renderPicker()}
       </Modal>
@@ -116,19 +133,26 @@ class MonthModal extends React.Component<
 const TranslatedMonthModal = withNamespaces("monthPicker")(MonthModal);
 
 interface Props {
-  date?: Date;
-  startDate: Date;
-  endDate: Date;
-  onDateChange(date: Date | null): void;
+  highlighted?: boolean;
+  isFocused: boolean;
+  navigation: NavigationScreenProp<any, any>;
+  question: SurveyQuestionData;
+  getAnswer(key: string, id: string): any;
+  updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.isFocused;
+  }
+
   state = {
     pickerOpen: false,
   };
 
   _getOptions(): Date[] {
-    const { endDate, startDate } = this.props;
+    const startDate = this.props.question.startDate!;
+    const endDate = new Date(Date.now());
     const options = [];
 
     let currentMonth = startDate.getMonth();
@@ -156,15 +180,30 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
+  _onDateChange = (dateInput: Date | null) => {
+    this.setState({ pickerOpen: false });
+    this.props.updateAnswer({ dateInput }, this.props.question);
+  };
+
+  _openModal = () => {
+    this.setState({ pickerOpen: true });
+  };
+
   render() {
-    const { date, onDateChange, t } = this.props;
+    const { highlighted, isFocused, question, t, getAnswer } = this.props;
+    const date = getAnswer("dateInput", question.id);
 
     return (
-      <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
+      <View
+        style={[
+          { alignSelf: "stretch", marginBottom: GUTTER / 2 },
+          !!highlighted && HIGHLIGHT_STYLE,
+        ]}
+      >
         {Platform.OS === "ios" && (
           <TouchableOpacity
             style={styles.pickerContainer}
-            onPress={() => this.setState({ pickerOpen: true })}
+            onPress={this._openModal}
           >
             <Text
               content={
@@ -177,13 +216,11 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
           </TouchableOpacity>
         )}
         <TranslatedMonthModal
+          isFocused={isFocused}
           options={this._getOptions()}
           date={!!date ? date : null}
           visible={this.state.pickerOpen}
-          onDismiss={(date: Date | null) => {
-            this.setState({ pickerOpen: false });
-            onDateChange(date);
-          }}
+          onDismiss={this._onDateChange}
         />
       </View>
     );
@@ -200,4 +237,4 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default withNamespaces("monthPicker")(MonthPicker);
+export default withNavigationFocus(withNamespaces("monthPicker")(MonthPicker));

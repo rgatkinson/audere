@@ -366,6 +366,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Questions,
         props: { questions: InfluenzaVaccinationConfig },
+        validate: true,
       },
     ],
     footer: [{ tag: ContinueButton, props: { next: "GeneralHealth" } }],

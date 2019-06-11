@@ -161,23 +161,19 @@ class Questions extends React.Component<
               />
             );
           case "datePicker":
-            const dateAnswer = getAnswer("dateInput", config.id);
             return (
               <ScrollIntoView
                 onMount={false}
                 ref={this._requiredQuestions.get(config.id)}
-                style={!!highlighted && HIGHLIGHT_STYLE}
                 key={`${config.id}-${index}`}
               >
                 <QuestionText question={config} />
                 <MonthPicker
                   key={`${config.id}-${index}`}
-                  date={dateAnswer === null ? dateAnswer : new Date(dateAnswer)}
-                  startDate={config.startDate!}
-                  endDate={new Date(Date.now())}
-                  onDateChange={(dateInput: Date | null) => {
-                    updateAnswer({ dateInput }, config);
-                  }}
+                  highlighted={highlighted}
+                  question={config}
+                  getAnswer={getAnswer}
+                  updateAnswer={updateAnswer}
                 />
               </ScrollIntoView>
             );
