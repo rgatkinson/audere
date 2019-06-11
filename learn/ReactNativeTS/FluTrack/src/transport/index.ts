@@ -47,12 +47,6 @@ class TypedDocumentUploader {
     return this.uploader.documentsAwaitingUpload();
   }
 
-  public async getExistingCSRUIDs(
-    localUids: string[]
-  ): Promise<Map<string, string>> {
-    return this.uploader.getExistingCSRUIDs(localUids);
-  }
-
   public saveVisit(localUid: string, visit: VisitInfo) {
     this.uploader.save(localUid, visit, DocumentType.Visit, 1);
   }
