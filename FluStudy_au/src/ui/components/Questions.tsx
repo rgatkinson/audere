@@ -10,7 +10,7 @@ import { ScrollIntoView } from "react-native-scroll-into-view";
 import { Option } from "../../store";
 import { customRef } from "./CustomRef";
 import MonthPicker from "./MonthPicker";
-import OptionQuestion from "./OptionQuestion";
+import OptionList from "./OptionList";
 import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
@@ -129,7 +129,7 @@ class Questions extends React.Component<
             );
           case "optionQuestion":
             return (
-              <OptionQuestion
+              <OptionList
                 key={`${config.id}-${index}`}
                 question={config}
                 highlighted={highlighted}

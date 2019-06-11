@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -13,7 +13,11 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import Grid from "./Grid";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
+import { ScrollIntoView } from "react-native-scroll-into-view";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import { Option } from "../../store/types";
+import QuestionText from "./QuestionText";
 import Text from "./Text";
 import {
   BORDER_COLOR,
@@ -27,60 +31,58 @@ import {
   SMALL_TEXT,
 } from "../styles";
 
-interface Option {
-  key: string;
-  selected: boolean;
-}
-
 interface Props {
-  data: Option[];
-  exclusiveOptions?: string[];
+  question: SurveyQuestionData;
   highlighted?: boolean;
-  inclusiveOption?: string;
-  multiSelect: boolean;
-  numColumns: number;
-  style?: StyleProp<ViewStyle>;
-  onChange(data: Option[]): void;
+  isFocused: boolean;
+  navigation: NavigationScreenProp<any, any>;
+  onRef?: RefObject<any>;
+  getAnswer(key: string, id: string): any;
+  updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
 
-export const emptyList = (data: string[]) => {
-  return data.map(option => {
+const emptyList = (data: string[]) =>
+  data.map(option => {
     return {
       key: option,
       selected: false,
     };
   });
-};
 
-const newSelectedOptionsList = (
-  options: string[],
-  selected?: Option[]
-): Option[] => {
-  return selected ? selected.slice(0) : emptyList(options);
-};
-
-export { newSelectedOptionsList };
-
-class OptionList extends React.Component<Props & WithNamespaces> {
-  _isExclusive(id: string): boolean {
-    return (this.props.exclusiveOptions || []).some(key => key === id);
+class OptionList extends React.Component<Props> {
+  shouldComponentUpdate(props: Props) {
+    return props.isFocused;
   }
 
+  _isExclusive(id: string): boolean {
+    return (this.props.question.optionList!.exclusiveOptions || []).some(
+      key => key === id
+    );
+  }
+
+  _getData = () => {
+    const { getAnswer, question } = this.props;
+    const answer = getAnswer("options", question.id);
+    return !!answer ? answer : emptyList(question.optionList!.options);
+  };
+
   _onPressItem = (id: string) => {
-    const dataItem = this.props.data.find(option => option.key === id);
+    const { updateAnswer, question } = this.props;
+    const inclusiveOption = question.optionList!.inclusiveOption;
+
+    const dataItem = this._getData().find(
+      (option: Option) => option.key === id
+    );
     if (!!dataItem) {
       const toggled = !dataItem.selected;
 
       let data =
-        !this.props.multiSelect || this._isExclusive(id)
-          ? emptyList(this.props.data.map(option => option.key))
-          : this.props.data.slice(0);
+        !question.optionList!.multiSelect || this._isExclusive(id)
+          ? emptyList(question.optionList!.options)
+          : this._getData().slice(0);
 
-      data = data.map(option => {
-        if (
-          this.props.inclusiveOption === id &&
-          !this._isExclusive(option.key)
-        ) {
+      data = data.map((option: Option) => {
+        if (inclusiveOption === id && !this._isExclusive(option.key)) {
           return {
             key: option.key,
             selected: true,
@@ -94,10 +96,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           };
         }
 
-        if (
-          this.props.inclusiveOption === option.key &&
-          this.props.inclusiveOption !== id
-        ) {
+        if (inclusiveOption === option.key && inclusiveOption !== id) {
           return {
             key: option.key,
             selected: false,
@@ -110,61 +109,63 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         };
       });
 
-      this.props.onChange(data);
+      updateAnswer({ options: data }, question);
     }
   };
 
   render() {
-    const { t } = this.props;
-    const totalOptions = this.props.data.length;
-    const lastKey =
-      totalOptions > 0
-        ? this.props.data[this.props.data.length - 1].key
-        : undefined;
+    const { highlighted, onRef, question } = this.props;
+    const options = question.optionList!.options;
     return (
-      <Grid
-        columns={this.props.numColumns}
-        items={this.props.data}
-        keyExtractor={item => item.key}
-        renderItem={(item, width) => (
-          <TranslatedListItem
-            highlighted={this.props.highlighted}
-            id={item.key}
-            selected={item.selected}
-            style={item.key === lastKey && styles.itemLast}
-            width={width}
+      <ScrollIntoView onMount={false} style={styles.container} ref={onRef}>
+        <QuestionText question={question} />
+        {this._getData().map((option: Option) => (
+          <OptionItem
+            highlighted={highlighted}
+            id={option.key}
+            key={option.key}
+            selected={option.selected}
+            style={
+              option.key === options[options.length - 1] && styles.itemLast
+            }
             onPressItem={this._onPressItem}
           />
-        )}
-        style={this.props.style}
-      />
+        ))}
+      </ScrollIntoView>
     );
   }
 }
-export default withNamespaces("optionList")(OptionList);
+export default withNavigationFocus(OptionList);
 
 interface ItemProps {
   highlighted?: boolean;
   id: string;
   selected: boolean;
   style?: StyleProp<ViewStyle>;
-  width: number;
   onPressItem(id: string): void;
 }
 
 const featherSize = 20;
 
-class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
+class Item extends React.Component<ItemProps & WithNamespaces> {
+  shouldComponentUpdate(props: ItemProps & WithNamespaces) {
+    return (
+      this.props.highlighted != props.highlighted ||
+      this.props.selected != props.selected ||
+      this.props.id != props.id
+    );
+  }
+
   _onPress = () => {
     this.props.onPressItem(this.props.id);
   };
 
   render() {
-    const { highlighted, id, selected, t, width } = this.props;
+    const { highlighted, id, selected, t } = this.props;
 
     return (
       <TouchableOpacity
-        style={[styles.item, { width }, this.props.style]}
+        style={[styles.item, this.props.style]}
         onPress={this._onPress}
       >
         <View
@@ -180,11 +181,7 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
         </View>
         <Text
           content={t(`surveyOption:${id}`)}
-          style={[
-            styles.itemText,
-            selected && styles.selectedItemText,
-            { width: width - featherSize - GUTTER - GUTTER / 4 },
-          ]}
+          style={[styles.itemText, selected && styles.selectedItemText]}
         />
       </TouchableOpacity>
     );
@@ -202,6 +199,11 @@ const styles = StyleSheet.create({
   checkboxSelected: {
     backgroundColor: SECONDARY_COLOR,
     borderColor: SECONDARY_COLOR,
+  },
+  container: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    marginBottom: GUTTER,
   },
   item: {
     alignItems: "center",
@@ -227,4 +229,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const TranslatedListItem = withNamespaces()(ListItem);
+const OptionItem = withNamespaces()(Item);
