@@ -13,7 +13,7 @@
     "@types/url-parse": "^1.4.1",
     "@types/uuid": "^3.4.4",
     "babel-preset-expo": "^5.0.0",
-    "jest-expo": "^32.0.0",
+    "jest-expo": "^33.0.2",
     "prettier": "^1.14.3",
     "react-native-typescript-transformer": "^1.2.10",
     "react-test-renderer": "16.3.1",
@@ -88,7 +88,7 @@
     "redux-persist": "^5.10.0",
     "redux-persist-transform-encrypt": "^2.0.1",
     "redux-persist-transform-immutable": "^5.0.0",
-    "snyk": "^1.136.0",
+    "snyk": "^1.175.2",
     "url-parse": "^1.4.4",
     "uuid": "^3.3.2",
     "wd": "^1.11.2"
