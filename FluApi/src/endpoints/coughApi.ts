@@ -16,6 +16,7 @@ import {
   SurveyDocument,
   PhotoDocument
 } from "audere-lib/dist/coughProtocol";
+import { DerivedTableService } from "../services/derivedTableService";
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
@@ -125,6 +126,19 @@ export class CoughEndpoint {
       }
     });
     await receiver.markAsRead(snapshot);
+  }
+
+  public updateDerivedTables = async (req, res, next) => {
+    const service = new DerivedTableService(this.sql);
+    const reqId = requestId(req);
+    logger.info(`${reqId}: enter updateDerivedTables`);
+    try {
+      await service.update();
+    } catch (err) {
+      logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
+    }
+    logger.info(`${reqId}: leave updateDerivedTables`);
+    res.json({});
   }
 
   private async wrap(

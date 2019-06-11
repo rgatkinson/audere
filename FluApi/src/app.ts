@@ -256,6 +256,11 @@ export function createInternalApp(config: AppConfig) {
 
   const cough = new CoughEndpoint(sql);
   internalApp.get(
+    "/api/cough/updateDerivedTables",
+    stats("coughUpdateDerivedTables"),
+    wrap(cough.updateDerivedTables)
+  );
+  internalApp.get(
     "/api/import/coughDocuments",
     stats("importcoughDocuments"),
     wrap(cough.importCoughDocuments)
