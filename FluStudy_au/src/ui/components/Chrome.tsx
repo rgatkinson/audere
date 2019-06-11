@@ -11,7 +11,6 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { LinearGradient } from "expo";
 import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
@@ -54,8 +53,9 @@ export default class Chrome extends React.Component<Props> {
             },
           ]}
         >
-          <LinearGradient
-            colors={["rgba(6, 70, 133, 0.8)", "rgba(255, 255, 255, 0.02)"]}
+          <Image
+            resizeMode={"stretch"}
+            source={{ uri: "gradient" }}
             style={{
               position: "absolute",
               left: 0,

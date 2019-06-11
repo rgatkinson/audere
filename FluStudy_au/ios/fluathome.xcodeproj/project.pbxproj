@@ -25,6 +25,7 @@
 		598F6C122280F61300B15B8B /* three.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C0F2280F61200B15B8B /* three.png */; };
 		598F6C132280F61300B15B8B /* one.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C102280F61300B15B8B /* one.png */; };
 		598F6C142280F61300B15B8B /* two.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C112280F61300B15B8B /* two.png */; };
+		59A01E1122AEC2600030AC38 /* gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 59A01E1022AEC2600030AC38 /* gradient.png */; };
 		59D64621229DA6F000EA64E6 /* barcodesuccess.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D6461E229DA6F000EA64E6 /* barcodesuccess.png */; };
 		59D64622229DA6F000EA64E6 /* barcodesuccess@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D6461F229DA6F000EA64E6 /* barcodesuccess@3x.png */; };
 		59D64623229DA6F000EA64E6 /* barcodesuccess@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D64620229DA6F000EA64E6 /* barcodesuccess@2x.png */; };
@@ -227,6 +228,7 @@
 		598F6C0F2280F61200B15B8B /* three.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = three.png; path = ../../../assets/images/three.png; sourceTree = "<group>"; };
 		598F6C102280F61300B15B8B /* one.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = one.png; path = ../../../assets/images/one.png; sourceTree = "<group>"; };
 		598F6C112280F61300B15B8B /* two.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = two.png; path = ../../../assets/images/two.png; sourceTree = "<group>"; };
+		59A01E1022AEC2600030AC38 /* gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gradient.png; path = ../../../assets/images/gradient.png; sourceTree = "<group>"; };
 		59D6461E229DA6F000EA64E6 /* barcodesuccess.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = barcodesuccess.png; path = ../../../assets/images/barcodesuccess.png; sourceTree = "<group>"; };
 		59D6461F229DA6F000EA64E6 /* barcodesuccess@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "barcodesuccess@3x.png"; path = "../../../assets/images/barcodesuccess@3x.png"; sourceTree = "<group>"; };
 		59D64620229DA6F000EA64E6 /* barcodesuccess@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "barcodesuccess@2x.png"; path = "../../../assets/images/barcodesuccess@2x.png"; sourceTree = "<group>"; };
@@ -504,6 +506,7 @@
 				59EDB562229DBA39001B7F12 /* generalexposure.png */,
 				59EDB560229DBA39001B7F12 /* generalexposure@2x.png */,
 				59EDB561229DBA39001B7F12 /* generalexposure@3x.png */,
+				59A01E1022AEC2600030AC38 /* gradient.png */,
 				EAEBD1DF22691A9E009815C6 /* fredhutch.png */,
 				EAEBD1BA22691A9A009815C6 /* fredhutch@2x.png */,
 				EAEBD26322691AB4009815C6 /* fredhutch@3x.png */,
@@ -781,6 +784,7 @@
 				EAEBD27322691AB7009815C6 /* welcome@3x.png in Resources */,
 				598F6C142280F61300B15B8B /* two.png in Resources */,
 				EAE02FAA229719A0000C88F6 /* yellowhexagon.png in Resources */,
+				59A01E1122AEC2600030AC38 /* gradient.png in Resources */,
 				EAE02FA222971991000C88F6 /* greenyellowsquare.png in Resources */,
 				218947CB2284D31400788F40 /* TestStrip2@2x.png in Resources */,
 				EAEBD32E22691AB7009815C6 /* welcome@2x.png in Resources */,
