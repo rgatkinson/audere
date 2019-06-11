@@ -106,7 +106,7 @@
     "snyk": "^1.175.2",
     "sqlite": "^3.0.0",
     "supertest": "^3.3.0",
-    "ts-jest": "^23.10.1",
+    "ts-jest": "^24.0.2",
     "ts-mockito": "^2.3.1",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.3",
