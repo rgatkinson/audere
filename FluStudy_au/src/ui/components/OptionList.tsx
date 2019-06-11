@@ -14,10 +14,8 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
-import { ScrollIntoView } from "react-native-scroll-into-view";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import { Option } from "../../store/types";
-import QuestionText from "./QuestionText";
 import Text from "./Text";
 import {
   BORDER_COLOR,
@@ -36,7 +34,6 @@ interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  onRef?: RefObject<any>;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
@@ -114,11 +111,10 @@ class OptionList extends React.Component<Props> {
   };
 
   render() {
-    const { highlighted, onRef, question } = this.props;
+    const { highlighted, question } = this.props;
     const options = question.optionList!.options;
     return (
-      <ScrollIntoView onMount={false} style={styles.container} ref={onRef}>
-        <QuestionText question={question} />
+      <View style={styles.container}>
         {this._getData().map((option: Option) => (
           <OptionItem
             highlighted={highlighted}
@@ -131,7 +127,7 @@ class OptionList extends React.Component<Props> {
             onPressItem={this._onPressItem}
           />
         ))}
-      </ScrollIntoView>
+      </View>
     );
   }
 }

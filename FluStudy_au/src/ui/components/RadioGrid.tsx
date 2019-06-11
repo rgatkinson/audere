@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { RefObject, Fragment } from "react";
+import React, { Fragment, RefObject } from "react";
 import {
   Image,
   StyleProp,
@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
-import { ScrollIntoView } from "react-native-scroll-into-view";
 import {
   ButtonConfig,
   SurveyQuestionData,
@@ -32,17 +31,13 @@ import {
   RADIO_INPUT_HEIGHT,
   TEXT_COLOR,
 } from "../styles";
-import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  onRef?: RefObject<any>;
   question: SurveyQuestionData;
-  shouldValidate?: boolean;
-  validationError?: string;
   style?: StyleProp<ViewStyle>;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
@@ -81,42 +76,23 @@ class RadioGrid extends React.Component<Props, State> {
   };
 
   render() {
-    const {
-      highlighted,
-      onRef,
-      question,
-      shouldValidate,
-      style,
-      validationError,
-    } = this.props;
+    const { highlighted, question } = this.props;
     const { helpSelected, selected } = this.state;
     return (
-      <ScrollIntoView
-        onMount={false}
-        style={[styles.container, !!style && style]}
-        ref={onRef}
-      >
-        <QuestionText question={question} />
-        <Fragment>
-          {question.buttons.map((buttonConfig, i) => (
-            <RadioGridItem
-              config={buttonConfig}
-              helpSelected={helpSelected === buttonConfig.key}
-              highlighted={!!highlighted}
-              key={buttonConfig.key}
-              last={question.buttons.length - 1 === i}
-              selected={buttonConfig.key === selected}
-              onPress={this._onPress}
-              toggleHelp={this._toggleHelp}
-            />
-          ))}
-          {shouldValidate &&
-            !selected &&
-            validationError && (
-              <Text content={validationError} style={styles.errorText} />
-            )}
-        </Fragment>
-      </ScrollIntoView>
+      <View style={styles.container}>
+        {question.buttons.map((buttonConfig, i) => (
+          <RadioGridItem
+            config={buttonConfig}
+            helpSelected={helpSelected === buttonConfig.key}
+            highlighted={!!highlighted}
+            key={buttonConfig.key}
+            last={question.buttons.length - 1 === i}
+            selected={buttonConfig.key === selected}
+            onPress={this._onPress}
+            toggleHelp={this._toggleHelp}
+          />
+        ))}
+      </View>
     );
   }
 }
@@ -210,11 +186,6 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
-  },
-  errorText: {
-    color: ERROR_COLOR,
-    fontFamily: FONT_NORMAL,
-    marginTop: GUTTER / 4,
   },
   helpIcon: {
     backgroundColor: SECONDARY_COLOR,

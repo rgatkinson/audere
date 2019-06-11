@@ -5,7 +5,7 @@
 
 import React, { RefObject, Fragment } from "react";
 import { StyleSheet, View } from "react-native";
-import { WithNamespaces, withNamespaces } from "react-i18next";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { Option } from "../../store";
 import { customRef } from "./CustomRef";
@@ -16,11 +16,12 @@ import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
 import TextInputQuestion from "./TextInputQuestion";
 import DropDown from "./DropDown";
-import { HIGHLIGHT_STYLE } from "../styles";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
 interface Props {
+  isFocused: boolean;
+  navigation: NavigationScreenProp<any, any>;
   questions: SurveyQuestionData[];
   logOnSave?: (getAnswer: (key: string, id: string) => string) => void;
 }
@@ -29,13 +30,10 @@ interface State {
   triedToProceed: boolean;
 }
 
-class Questions extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps,
-  State
-> {
+class Questions extends React.Component<Props & ReduxWriterProps, State> {
   _requiredQuestions: Map<string, RefObject<any>>;
 
-  constructor(props: Props & WithNamespaces & ReduxWriterProps) {
+  constructor(props: Props & ReduxWriterProps) {
     super(props);
     this.state = { triedToProceed: false };
     this._requiredQuestions = new Map<string, RefObject<any>>();
@@ -44,6 +42,10 @@ class Questions extends React.Component<
         this._requiredQuestions.set(config.id, React.createRef());
       }
     });
+  }
+
+  shouldComponentUpdate(props: Props & ReduxWriterProps) {
+    return props.isFocused;
   }
 
   _evaluateConditional(config: SurveyQuestionData): boolean {
@@ -112,114 +114,83 @@ class Questions extends React.Component<
     }
   };
 
+  _renderQuestion = (config: SurveyQuestionData) => {
+    const highlighted =
+      config.required && this.state.triedToProceed && !this._hasAnswer(config);
+    const { getAnswer, updateAnswer } = this.props;
+    switch (config.type) {
+      case "optionQuestion":
+        return (
+          <OptionList
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "radioGrid":
+        return (
+          <RadioGrid
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "buttonGrid":
+        return (
+          <ButtonGrid
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "datePicker":
+        return (
+          <MonthPicker
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "textInput":
+        return (
+          <TextInputQuestion
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "dropdown":
+        return (
+          <DropDown
+            highlighted={highlighted}
+            question={config}
+            getAnswer={getAnswer}
+            updateAnswer={updateAnswer}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   render() {
-    const { questions, getAnswer, t, updateAnswer } = this.props;
-
-    return questions.map((config, index) => {
+    return this.props.questions.map(config => {
       if (this._evaluateConditional(config)) {
-        const highlighted =
-          config.required &&
-          this.state.triedToProceed &&
-          !this._hasAnswer(config);
-
-        switch (config.type) {
-          case "text":
-            return (
-              <QuestionText key={`${config.id}-${index}`} question={config} />
-            );
-          case "optionQuestion":
-            return (
-              <OptionList
-                key={`${config.id}-${index}`}
-                question={config}
-                highlighted={highlighted}
-                onRef={this._requiredQuestions.get(config.id)}
-                getAnswer={getAnswer}
-                updateAnswer={updateAnswer}
-              />
-            );
-          case "radioGrid":
-            return (
-              <RadioGrid
-                key={`${config.id}-${index}`}
-                highlighted={highlighted}
-                onRef={this._requiredQuestions.get(config.id)}
-                question={config}
-                getAnswer={getAnswer}
-                updateAnswer={updateAnswer}
-              />
-            );
-          case "buttonGrid":
-            return (
-              <ButtonGrid
-                key={`${config.id}-${index}`}
-                onRef={this._requiredQuestions.get(config.id)}
-                question={config}
-                highlighted={highlighted}
-                getAnswer={getAnswer}
-                updateAnswer={updateAnswer}
-              />
-            );
-          case "datePicker":
-            return (
-              <ScrollIntoView
-                onMount={false}
-                ref={this._requiredQuestions.get(config.id)}
-                key={`${config.id}-${index}`}
-              >
-                <QuestionText question={config} />
-                <MonthPicker
-                  key={`${config.id}-${index}`}
-                  highlighted={highlighted}
-                  question={config}
-                  getAnswer={getAnswer}
-                  updateAnswer={updateAnswer}
-                />
-              </ScrollIntoView>
-            );
-          case "textInput":
-            return (
-              <ScrollIntoView
-                onMount={false}
-                ref={this._requiredQuestions.get(config.id)}
-                style={!!highlighted && HIGHLIGHT_STYLE}
-                key={`${config.id}-${index}`}
-              >
-                <QuestionText question={config} />
-                <TextInputQuestion
-                  key={`${config.id}-${index}`}
-                  highlighted={highlighted}
-                  question={config}
-                  getAnswer={getAnswer}
-                  updateAnswer={updateAnswer}
-                />
-              </ScrollIntoView>
-            );
-          case "dropdown":
-            const selected = getAnswer(config.title, config.id);
-            return (
-              <Fragment key={`${config.id}-${index}`}>
-                <QuestionText
-                  key={`${config.id}-${index}-question`}
-                  question={config}
-                />
-                <DropDown
-                  key={`${config.id}-${index}-dropdown`}
-                  options={config.optionList!.options}
-                  placeholder={!!config.placeholder ? config.placeholder : ""}
-                  onChange={(text: string | null) => {
-                    updateAnswer({ [config.title]: text }, config);
-                  }}
-                  selected={selected}
-                />
-              </Fragment>
-            );
-          default:
-            break;
-        }
+        const ref = this._requiredQuestions.get(config.id);
+        return (
+          <ScrollIntoView onMount={false} ref={ref} key={config.id}>
+            <QuestionText question={config} />
+            {this._renderQuestion(config)}
+          </ScrollIntoView>
+        );
       }
     });
   }
 }
 
-export default reduxWriter(withNamespaces()(customRef(Questions)));
+export default reduxWriter(withNavigationFocus(customRef(Questions)));

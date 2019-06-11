@@ -13,11 +13,13 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
   BORDER_COLOR,
   GUTTER,
+  HIGHLIGHT_STYLE,
   INPUT_HEIGHT,
   LINK_COLOR,
   SECONDARY_COLOR,
@@ -25,6 +27,7 @@ import {
 
 interface DropDownModalProps {
   options: string[];
+  placeholder: string;
   selected: string | null;
   visible: boolean;
   onDismiss(selected: string | null): void;
@@ -38,40 +41,66 @@ class DropDownModal extends React.Component<
   DropDownModalProps & WithNamespaces,
   DropDownModalState
 > {
-  state = {
-    selected: this.props.selected,
-  };
+  constructor(props: DropDownModalProps & WithNamespaces) {
+    super(props);
+    this.state = {
+      selected: props.selected,
+    };
+  }
+
+  shouldComponentUpdate(
+    props: DropDownModalProps & WithNamespaces,
+    state: DropDownModalState
+  ) {
+    return (
+      this.state.selected != state.selected ||
+      this.props.visible != props.visible
+    );
+  }
 
   _onValueChange = (value: string) => {
-    const { t } = this.props;
-    if (value === this.props.t("selectAge")) {
+    const { placeholder, t } = this.props;
+    if (value === placeholder) {
       this.setState({ selected: null });
     } else {
-      if (Platform.OS === "android") {
-        this.props.onDismiss(t(value));
-      }
       this.setState({ selected: value });
+      if (Platform.OS === "android") {
+        this.props.onDismiss(value);
+      }
     }
   };
 
   _renderPicker() {
-    const { t } = this.props;
-    const selectAge = t("selectAge");
+    const { placeholder, t } = this.props;
     return (
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <Picker
-          selectedValue={this.state.selected ? this.state.selected : selectAge}
+          selectedValue={
+            this.state.selected ? this.state.selected : placeholder
+          }
           style={{ alignSelf: "stretch", justifyContent: "center" }}
           onValueChange={this._onValueChange}
         >
           {this.props.options.map(option => (
-            <Picker.Item label={t(option)} value={t(option)} key={option} />
+            <Picker.Item label={t(option)} value={option} key={option} />
           ))}
-          <Picker.Item label={selectAge} value={selectAge} key={selectAge} />
+          <Picker.Item
+            label={t(placeholder)}
+            value={placeholder}
+            key={placeholder}
+          />
         </Picker>
       </View>
     );
   }
+
+  _onDismiss = () => {
+    this.props.onDismiss(this.props.selected);
+  };
+
+  _onSubmit = () => {
+    this.props.onDismiss(this.state.selected);
+  };
 
   render() {
     const { selected, onDismiss, t, visible } = this.props;
@@ -82,8 +111,8 @@ class DropDownModal extends React.Component<
         width={width * 0.75}
         submitText={t("common:button:done")}
         visible={visible}
-        onDismiss={() => onDismiss(selected)}
-        onSubmit={() => onDismiss(this.state.selected)}
+        onDismiss={this._onDismiss}
+        onSubmit={this._onSubmit}
       >
         {this._renderPicker()}
       </Modal>
@@ -95,54 +124,66 @@ class DropDownModal extends React.Component<
 const TranslatedModal = withNamespaces("dropDown")(DropDownModal);
 
 interface Props {
-  options: any[];
-  placeholder: string;
-  selected: string | null;
-  onChange(text: string | null): void;
+  highlighted?: boolean;
+  question: SurveyQuestionData;
+  getAnswer(key: string, id: string): any;
+  updateAnswer(answer: object, data: SurveyQuestionData): void;
 }
 
-class DropDown extends React.Component<Props & WithNamespaces> {
+interface State {
+  pickerOpen: boolean;
+}
+
+class DropDown extends React.Component<Props & WithNamespaces, State> {
   state = {
     pickerOpen: false,
   };
 
-  _getOptions(): string[] {
-    const { options } = this.props;
-
-    return options.map((item: any) => {
-      return item.key;
-    });
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state.pickerOpen ||
+      this.state.pickerOpen ||
+      props.highlighted != this.props.highlighted
+    );
   }
 
+  _openPicker = () => {
+    this.setState({ pickerOpen: true });
+  };
+
+  _onDismiss = (text: string | null) => {
+    this.setState({ pickerOpen: false });
+    this.props.updateAnswer({ selectedButtonKey: text }, this.props.question);
+  };
+
   render() {
-    const { onChange, placeholder, selected, t } = this.props;
+    const { highlighted, question, t, getAnswer } = this.props;
+    const selected = getAnswer("selectedButtonKey", question.id);
+    const text = (
+      <Text
+        content={!!selected ? t(selected) : t(question.placeholder)}
+        style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
+      />
+    );
 
     return (
-      <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
+      <View style={[styles.container, highlighted && HIGHLIGHT_STYLE]}>
         {Platform.OS === "ios" ? (
           <TouchableOpacity
             style={styles.pickerContainer}
-            onPress={() => this.setState({ pickerOpen: true })}
+            onPress={this._openPicker}
           >
-            <Text
-              content={!!selected ? t(selected) : t(placeholder)}
-              style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
-            />
+            {text}
           </TouchableOpacity>
         ) : (
-          <Text
-            content={!!selected ? t(selected) : t(placeholder)}
-            style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
-          />
+          text
         )}
         <TranslatedModal
-          options={this.props.options}
+          options={question.buttons.map(buttonConfig => buttonConfig.key)}
+          placeholder={question.placeholder!}
           selected={!!selected ? selected : null}
           visible={this.state.pickerOpen}
-          onDismiss={(text: string | null) => {
-            this.setState({ pickerOpen: false });
-            onChange(text);
-          }}
+          onDismiss={this._onDismiss}
         />
       </View>
     );
@@ -150,6 +191,10 @@ class DropDown extends React.Component<Props & WithNamespaces> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignSelf: "stretch",
+    marginBottom: GUTTER / 2,
+  },
   pickerContainer: {
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,

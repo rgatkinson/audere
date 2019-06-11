@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { ScrollIntoView } from "react-native-scroll-into-view";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
@@ -24,14 +23,12 @@ import {
   SECONDARY_COLOR,
   TEXT_COLOR,
 } from "../styles";
-import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  onRef?: RefObject<any>;
   question: SurveyQuestionData;
   getAnswer(key: string, id: string): any;
   updateAnswer(answer: object, data: SurveyQuestionData): void;
@@ -63,29 +60,26 @@ class ButtonGrid extends React.Component<Props, State> {
   };
 
   render() {
-    const { highlighted, onRef, question } = this.props;
+    const { highlighted, question } = this.props;
     return (
-      <ScrollIntoView onMount={false} style={styles.container} ref={onRef}>
-        <QuestionText question={question} />
-        <View
-          style={[
-            styles.buttonContainer,
-            question.buttons.length < 3 && { width: "67%" },
-          ]}
-        >
-          {question.buttons.map((button, index) => (
-            <ButtonGridItem
-              buttonKey={button.key}
-              first={index === 0}
-              key={button.key}
-              highlighted={!!highlighted}
-              last={index === question.buttons.length - 1}
-              selected={this.state.selected === button.key}
-              onPress={this._onPress}
-            />
-          ))}
-        </View>
-      </ScrollIntoView>
+      <View
+        style={[
+          styles.container,
+          question.buttons.length < 3 && { width: "67%" },
+        ]}
+      >
+        {question.buttons.map((button, index) => (
+          <ButtonGridItem
+            buttonKey={button.key}
+            first={index === 0}
+            key={button.key}
+            highlighted={!!highlighted}
+            last={index === question.buttons.length - 1}
+            selected={this.state.selected === button.key}
+            onPress={this._onPress}
+          />
+        ))}
+      </View>
     );
   }
 }
@@ -139,9 +133,6 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
 const ButtonGridItem = withNamespaces()(Item);
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: "row",
-  },
   button: {
     borderColor: TEXT_COLOR,
     borderBottomWidth: BORDER_WIDTH,
@@ -166,6 +157,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
+    flexDirection: "row",
     marginBottom: GUTTER,
   },
   selectedButton: {

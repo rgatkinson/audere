@@ -30,8 +30,9 @@ export default class TextInputQuestion extends React.Component<Props> {
     return (
       <TextInput
         style={[styles.text, highlighted && HIGHLIGHT_STYLE]}
-        placeholder={!!answer ? answer : ""}
+        placeholder={""}
         returnKeyType="done"
+        value={answer}
         onEndEditing={this._onEndEditing}
       />
     );
