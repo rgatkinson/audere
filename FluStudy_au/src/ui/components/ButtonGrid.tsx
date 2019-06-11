@@ -11,6 +11,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
@@ -28,6 +29,8 @@ import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
+  isFocused: boolean;
+  navigation: NavigationScreenProp<any, any>;
   onRef?: RefObject<any>;
   question: SurveyQuestionData;
   getAnswer(key: string, id: string): any;
@@ -38,16 +41,29 @@ interface State {
   selected: string | undefined;
 }
 
-class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
-  constructor(props: Props & WithNamespaces) {
+class ButtonGrid extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       selected: props.getAnswer("selectedButtonKey", props.question.id),
     };
   }
 
+  shouldComponentUpdate(props: Props) {
+    return props.isFocused;
+  }
+
+  _onPress = (buttonKey: string) => {
+    const selected = this.state.selected === buttonKey ? undefined : buttonKey;
+    this.setState({ selected });
+    this.props.updateAnswer(
+      { selectedButtonKey: selected },
+      this.props.question
+    );
+  };
+
   render() {
-    const { highlighted, onRef, question, t, updateAnswer } = this.props;
+    const { highlighted, onRef, question } = this.props;
     return (
       <ScrollIntoView onMount={false} style={styles.container} ref={onRef}>
         <QuestionText question={question} />
@@ -57,43 +73,70 @@ class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
             question.buttons.length < 3 && { width: "67%" },
           ]}
         >
-          {question.buttons.map((button, index) => {
-            return (
-              <TouchableOpacity
-                key={button.key}
-                onPress={() => {
-                  const selected =
-                    this.state.selected === button.key ? undefined : button.key;
-                  this.setState({ selected });
-                  updateAnswer({ selectedButtonKey: selected }, question);
-                }}
-                style={[
-                  styles.button,
-                  index === 0 && styles.buttonFirst,
-                  index === question.buttons.length - 1 && styles.buttonLast,
-                  this.state.selected === button.key && styles.selectedButton,
-                  !!highlighted && HIGHLIGHT_STYLE,
-                ]}
-              >
-                <Text
-                  bold={true}
-                  center={true}
-                  content={t("surveyButton:" + button.key)}
-                  style={[
-                    styles.buttonText,
-                    this.state.selected === button.key &&
-                      styles.selectedButtonText,
-                  ]}
-                />
-              </TouchableOpacity>
-            );
-          })}
+          {question.buttons.map((button, index) => (
+            <ButtonGridItem
+              buttonKey={button.key}
+              first={index === 0}
+              key={button.key}
+              highlighted={!!highlighted}
+              last={index === question.buttons.length - 1}
+              selected={this.state.selected === button.key}
+              onPress={this._onPress}
+            />
+          ))}
         </View>
       </ScrollIntoView>
     );
   }
 }
-export default withNamespaces()(ButtonGrid);
+export default withNavigationFocus(ButtonGrid);
+
+interface ItemProps {
+  buttonKey: string;
+  first: boolean;
+  highlighted: boolean;
+  last: boolean;
+  selected: boolean;
+  onPress: (key: string) => void;
+}
+
+class Item extends React.Component<ItemProps & WithNamespaces> {
+  shouldComponentUpdate(props: ItemProps & WithNamespaces) {
+    return (
+      props.selected != this.props.selected ||
+      props.highlighted != this.props.highlighted
+    );
+  }
+
+  _onPress = () => {
+    this.props.onPress(this.props.buttonKey);
+  };
+
+  render() {
+    const { buttonKey, first, highlighted, last, selected, t } = this.props;
+    return (
+      <TouchableOpacity
+        onPress={this._onPress}
+        style={[
+          styles.button,
+          first && styles.buttonFirst,
+          last && styles.buttonLast,
+          selected && styles.selectedButton,
+          !!highlighted && HIGHLIGHT_STYLE,
+        ]}
+      >
+        <Text
+          bold={true}
+          center={true}
+          content={t("surveyButton:" + buttonKey)}
+          style={[styles.buttonText, selected && styles.selectedButtonText]}
+        />
+      </TouchableOpacity>
+    );
+  }
+}
+
+const ButtonGridItem = withNamespaces()(Item);
 
 const styles = StyleSheet.create({
   buttonContainer: {
