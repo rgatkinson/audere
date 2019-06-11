@@ -14,9 +14,9 @@ import OptionList from "./OptionList";
 import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
-import TextInput from "./TextInput";
+import TextInputQuestion from "./TextInputQuestion";
 import DropDown from "./DropDown";
-import { HIGHLIGHT_STYLE, BORDER_COLOR } from "../styles";
+import { HIGHLIGHT_STYLE } from "../styles";
 import { SurveyQuestionData } from "../../resources/QuestionConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
@@ -186,21 +186,12 @@ class Questions extends React.Component<
                 key={`${config.id}-${index}`}
               >
                 <QuestionText question={config} />
-                <TextInput
-                  style={{
-                    height: 50,
-                    borderWidth: StyleSheet.hairlineWidth,
-                    borderColor: BORDER_COLOR,
-                  }}
+                <TextInputQuestion
                   key={`${config.id}-${index}`}
-                  placeholder={""}
-                  returnKeyType={"done"}
-                  onEndEditing={(e: any) =>
-                    updateAnswer(
-                      { eligibleMedicalCondition: e.nativeEvent.text },
-                      config
-                    )
-                  }
+                  highlighted={highlighted}
+                  question={config}
+                  getAnswer={getAnswer}
+                  updateAnswer={updateAnswer}
                 />
               </ScrollIntoView>
             );
