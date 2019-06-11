@@ -136,7 +136,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     const { dispatch, navigation, next } = this.props;
     try {
       const photoId = await newUID();
-      dispatch(setRDTPhoto(args.imgBase64));
+      dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
       dispatch(
         setTestStripImg({
           sample_type: "RDTReaderPhotoGUID",

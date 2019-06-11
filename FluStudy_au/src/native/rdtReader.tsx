@@ -48,7 +48,6 @@ type RDTReaderProps = {
 export class RDTReader extends React.Component<RDTReaderProps> {
   _onRDTCaptured = (event: any) => {
     const capturedArgs: InternalRDTCapturedArgs = event.nativeEvent;
-    capturedArgs.img = "data:image/png;base64, " + capturedArgs.img;
     this.props.onRDTCaptured({
       imgBase64: capturedArgs.img,
       testStripFound: capturedArgs.passed,
