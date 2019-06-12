@@ -16,7 +16,7 @@ import {
 import { Dissoc } from "subtractiontype.ts";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionData } from "../resources/QuestionConfig";
+import { OptionQuestion, SurveyQuestion } from "../resources/QuestionConfig";
 import { getStore } from "./index";
 
 interface InnerProps {
@@ -26,7 +26,7 @@ interface InnerProps {
 }
 
 export interface ReduxWriterProps {
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  updateAnswer(answer: object, data: SurveyQuestion): void;
   getAnswer(key: string, id: string): any;
 }
 
@@ -60,7 +60,9 @@ export default function reduxWriter<P extends object>(
   class ReduxWriter extends React.Component<
     InnerProps & OuterProps<P> & WithNamespaces
   > {
-    _initializeResponse = (data: SurveyQuestionData): SurveyResponse => {
+    _initializeResponse = (
+      data: SurveyQuestion | OptionQuestion
+    ): SurveyResponse => {
       const { t } = this.props;
       const buttonLabels: ButtonLabel[] = [];
       data.buttons.forEach(button => {
@@ -71,8 +73,9 @@ export default function reduxWriter<P extends object>(
       });
 
       const optionLabels: OptionLabel[] = [];
-      if (!!data.optionList) {
-        data.optionList.options.forEach(option => {
+      if (data.type === "optionQuestion") {
+        const optionQuestion = data as OptionQuestion;
+        optionQuestion.options.forEach((option: string) => {
           optionLabels.push({
             key: option,
             label: t("surveyOption:" + option),
@@ -93,7 +96,7 @@ export default function reduxWriter<P extends object>(
       };
     };
 
-    _updateAnswer = (update: SurveyAnswer, data: SurveyQuestionData) => {
+    _updateAnswer = (update: SurveyAnswer, data: SurveyQuestion) => {
       const responses = this.props.responses.slice(0);
       let response = responses.find(
         response => response.questionId === data.id

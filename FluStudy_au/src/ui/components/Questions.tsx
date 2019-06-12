@@ -16,13 +16,18 @@ import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
 import TextInputQuestion from "./TextInputQuestion";
 import DropDown from "./DropDown";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import {
+  DropDownQuestion,
+  MonthQuestion,
+  OptionQuestion,
+  SurveyQuestion,
+} from "../../resources/QuestionConfig";
 import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
 interface Props {
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  questions: SurveyQuestionData[];
+  questions: SurveyQuestion[];
   logOnSave?: (getAnswer: (key: string, id: string) => string) => void;
 }
 
@@ -48,7 +53,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
     return props.isFocused;
   }
 
-  _evaluateConditional(config: SurveyQuestionData): boolean {
+  _evaluateConditional(config: SurveyQuestion): boolean {
     const { getAnswer } = this.props;
     const condition = config.condition;
 
@@ -91,7 +96,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
     return valid;
   };
 
-  _hasAnswer = (config: SurveyQuestionData) => {
+  _hasAnswer = (config: SurveyQuestion) => {
     const { getAnswer } = this.props;
     switch (config.type) {
       case "text":
@@ -114,7 +119,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
     }
   };
 
-  _renderQuestion = (config: SurveyQuestionData) => {
+  _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
     const { getAnswer, updateAnswer } = this.props;
@@ -123,7 +128,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
         return (
           <OptionList
             highlighted={highlighted}
-            question={config}
+            question={config as OptionQuestion}
             getAnswer={getAnswer}
             updateAnswer={updateAnswer}
           />
@@ -150,7 +155,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
         return (
           <MonthPicker
             highlighted={highlighted}
-            question={config}
+            question={config as MonthQuestion}
             getAnswer={getAnswer}
             updateAnswer={updateAnswer}
           />
@@ -168,7 +173,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
         return (
           <DropDown
             highlighted={highlighted}
-            question={config}
+            question={config as DropDownQuestion}
             getAnswer={getAnswer}
             updateAnswer={updateAnswer}
           />

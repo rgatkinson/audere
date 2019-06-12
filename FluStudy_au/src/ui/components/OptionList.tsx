@@ -14,7 +14,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import { OptionQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import { Option } from "../../store/types";
 import Text from "./Text";
 import {
@@ -30,12 +30,12 @@ import {
 } from "../styles";
 
 interface Props {
-  question: SurveyQuestionData;
+  question: OptionQuestion;
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  updateAnswer(answer: object, data: SurveyQuestion): void;
 }
 
 const emptyList = (data: string[]) =>
@@ -52,20 +52,18 @@ class OptionList extends React.Component<Props> {
   }
 
   _isExclusive(id: string): boolean {
-    return (this.props.question.optionList!.exclusiveOptions || []).some(
-      key => key === id
-    );
+    return (this.props.question.exclusiveOptions || []).some(key => key === id);
   }
 
   _getData = () => {
     const { getAnswer, question } = this.props;
     const answer = getAnswer("options", question.id);
-    return !!answer ? answer : emptyList(question.optionList!.options);
+    return !!answer ? answer : emptyList(question.options);
   };
 
   _onPressItem = (id: string) => {
     const { updateAnswer, question } = this.props;
-    const inclusiveOption = question.optionList!.inclusiveOption;
+    const inclusiveOption = question.inclusiveOption;
 
     const dataItem = this._getData().find(
       (option: Option) => option.key === id
@@ -73,10 +71,9 @@ class OptionList extends React.Component<Props> {
     if (!!dataItem) {
       const toggled = !dataItem.selected;
 
-      let data =
-        !question.optionList!.multiSelect || this._isExclusive(id)
-          ? emptyList(question.optionList!.options)
-          : this._getData().slice(0);
+      let data = this._isExclusive(id)
+        ? emptyList(question.options)
+        : this._getData().slice(0);
 
       data = data.map((option: Option) => {
         if (inclusiveOption === id && !this._isExclusive(option.key)) {
@@ -112,7 +109,7 @@ class OptionList extends React.Component<Props> {
 
   render() {
     const { highlighted, question } = this.props;
-    const options = question.optionList!.options;
+    const options = question.options;
     return (
       <View style={styles.container}>
         {this._getData().map((option: Option) => (

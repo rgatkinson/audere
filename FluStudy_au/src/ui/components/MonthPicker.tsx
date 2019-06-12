@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import { MonthQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
@@ -136,9 +136,9 @@ interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  question: SurveyQuestionData;
+  question: MonthQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  updateAnswer(answer: object, data: SurveyQuestion): void;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
@@ -151,7 +151,12 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
   };
 
   _getOptions(): Date[] {
-    const startDate = this.props.question.startDate!;
+    const monthRange = this.props.question.monthRange;
+    const startDate = monthAsDate(
+      new Date().getFullYear() - Math.floor(monthRange / 12),
+      new Date().getMonth() - (monthRange % 12)
+    );
+
     const endDate = new Date(Date.now());
     const options = [];
 

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import { SurveyQuestion } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
   BUTTON_BORDER_RADIUS,
@@ -29,9 +29,9 @@ interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  question: SurveyQuestionData;
+  question: SurveyQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  updateAnswer(answer: object, data: SurveyQuestion): void;
 }
 
 interface State {

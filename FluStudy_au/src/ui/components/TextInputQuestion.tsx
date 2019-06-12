@@ -5,15 +5,15 @@
 
 import React from "react";
 import { StyleSheet } from "react-native";
-import { SurveyQuestionData } from "../../resources/QuestionConfig";
+import { SurveyQuestion } from "../../resources/QuestionConfig";
 import { BORDER_COLOR, HIGHLIGHT_STYLE } from "../styles";
 import TextInput from "./TextInput";
 
 interface Props {
   highlighted?: boolean;
-  question: SurveyQuestionData;
+  question: SurveyQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  updateAnswer(answer: object, data: SurveyQuestion): void;
 }
 
 export default class TextInputQuestion extends React.Component<Props> {
