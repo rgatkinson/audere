@@ -238,8 +238,8 @@
     "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
   "BarcodeContactSupport": {
-    "title": "Please Contact Support",
-    "desc": "We're sorry but the kit barcode you entered did not match our records.\n\nPlease take a picture of your blue kit barcode and email the picture to **[flu-support@auderenow.org](EMAIL_SUPPORT)** for help."
+    "title": "Please contact your clinic",
+    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement."
   },
   "BarcodeSupportModal": {
     "supportVerification": "flu@home Support Verification",
