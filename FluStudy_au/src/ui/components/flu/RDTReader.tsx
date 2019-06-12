@@ -8,7 +8,6 @@ import {
   AppState,
   Dimensions,
   Image,
-  Platform,
   StyleSheet,
   View,
 } from "react-native";
@@ -229,7 +228,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={styles.testStripContainer}>
-            <Image style={styles.testStrip} source={{ uri: "TestStrip2" }} />
+            <Image style={styles.testStrip} source={{ uri: "teststrip2" }} />
           </View>
         </View>
         <View style={styles.overlayContainer}>
@@ -336,7 +335,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     flex: 1,
     marginBottom: -1 * SYSTEM_PADDING_BOTTOM,
-    marginHorizontal: Platform.OS === "ios" ? -GUTTER : 0,
+    marginHorizontal: -GUTTER,
   },
   overlayContainer: {
     alignItems: "center",
