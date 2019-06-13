@@ -290,7 +290,7 @@ async function android_select(driver, question) {
 }
 
 async function ios_select(driver, question) {
-  await driver.elementByAccessibilityId(question.name).click();
+  await driver.elementByAccessibilityId(question.link).click();
   const pickerWheel = await driver.elementByClassName(
     "XCUIElementTypePickerWheel"
   );

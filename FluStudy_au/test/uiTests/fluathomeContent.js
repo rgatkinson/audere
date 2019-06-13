@@ -262,8 +262,9 @@ export const content = [
         ],
       },
       {
-        name: strings.monthPicker.selectDate,
+        name: strings.surveyTitle.fluShotDate,
         type: "select",
+        link: strings.monthPicker.selectDate,
         options: [],
       },
       {
@@ -343,8 +344,9 @@ export const content = [
         ],
       },
       {
-        name: strings.dropDown.selectAge,
+        name: strings.surveyTitle.age,
         type: "select",
+        link: strings.dropDown.selectAge,
         options: [
           strings.dropDown["18to19"],
           strings.dropDown["20to24"],
