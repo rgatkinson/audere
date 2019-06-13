@@ -52,6 +52,7 @@ export const generateScreen = (config: ScreenConfig) => {
     };
 
     _toValidate: Map<string, RefObject<any>>;
+    _noRendering: boolean;
 
     constructor(props: Props) {
       super(props);
@@ -61,6 +62,7 @@ export const generateScreen = (config: ScreenConfig) => {
           this._toValidate.set("body" + index, React.createRef<any>());
         }
       });
+      this._noRendering = true;
     }
 
     componentDidMount() {
@@ -72,6 +74,9 @@ export const generateScreen = (config: ScreenConfig) => {
         workflow[config.workflowEvent] = new Date().toISOString();
         this.props.dispatch(setWorkflow(workflow));
       }
+
+      this.props.navigation.addListener('willFocus', () => { this._noRendering = false; this.forceUpdate(); });
+      this.props.navigation.addListener('didBlur', () => { this._noRendering = true; });
     }
 
     _generateComponents = (
@@ -101,7 +106,7 @@ export const generateScreen = (config: ScreenConfig) => {
     };
 
     render() {
-      return (
+      return this._noRendering ? null : (
         <Chrome {...config.chromeProps} navigation={this.props.navigation}>
           <View style={styles.scrollContainer}>
             <CustomScrollView
