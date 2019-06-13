@@ -45,7 +45,7 @@ export const inputs = {
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton["1to2"],
   [strings.surveyTitle.bedrooms]: strings.surveyButton["3"],
   [strings.surveyTitle.fluShot]: strings.surveyButton.yes,
-  [strings.surveyTitle.fluShotDate]: `${new Intl.DateTimeFormat("en-US", {
+  [strings.monthPicker.selectDate]: `${new Intl.DateTimeFormat("en-US", {
     month: "long",
   }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.no,

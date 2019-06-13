@@ -262,7 +262,7 @@ export const content = [
         ],
       },
       {
-        name: strings.surveyTitle.fluShotDate,
+        name: strings.monthPicker.selectDate,
         type: "select",
         options: [],
       },
