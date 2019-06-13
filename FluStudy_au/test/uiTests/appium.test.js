@@ -322,7 +322,7 @@ async function camera_screen(driver, screen_info) {
       true
     );
     await new wd.TouchAction(driver)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.82 })
+      .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
       .perform();
   }
 }
