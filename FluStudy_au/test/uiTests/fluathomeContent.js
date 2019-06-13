@@ -343,7 +343,7 @@ export const content = [
         ],
       },
       {
-        name: strings.surveyTitle.age,
+        name: strings.dropDown.selectAge,
         type: "select",
         options: [
           strings.dropDown["18to19"],
@@ -389,23 +389,6 @@ export const content = [
           strings.surveyOption.middleEastNorthAfrican,
           strings.surveyOption.indianSubcontinent,
           strings.surveyOption.other,
-        ],
-      },
-      {
-        name: strings.surveyTitle.hispanic,
-        type: "buttonGrid",
-        options: [strings.surveyButton.no, strings.surveyButton.yes],
-      },
-      {
-        name: strings.surveyTitle.healthInsurance,
-        type: "checkbox",
-        options: [
-          strings.surveyOption.noInsurance,
-          strings.surveyOption.privateInsuranceEmployer,
-          strings.surveyOption.privateInsuranceSelf,
-          strings.surveyOption.governmentInsurance,
-          strings.surveyOption.other,
-          strings.surveyOption.doNotKnow,
         ],
       },
     ],

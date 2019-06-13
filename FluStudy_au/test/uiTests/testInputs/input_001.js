@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import strings from "../../../src/i18n/locales/en.json";
+const today = new Date();
 
 export const inputs = {
   [strings.barcode.placeholder]: "00100100",
@@ -44,6 +45,9 @@ export const inputs = {
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton["1to2"],
   [strings.surveyTitle.bedrooms]: strings.surveyButton["3"],
   [strings.surveyTitle.fluShot]: strings.surveyButton.yes,
+  [strings.surveyTitle.fluShotDate]: `${new Intl.DateTimeFormat("en-US", {
+    month: "long",
+  }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.no,
   [strings.surveyTitle.previousSeason]: strings.surveyButton.neverFlu,
   [strings.surveyTitle.medicalCondition]: [
@@ -55,6 +59,7 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.interfering]: strings.surveyButton.no,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
+  [strings.dropDown.selectAge]: strings.dropDown["65to69"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [
     strings.surveyOption.pacificIslander,

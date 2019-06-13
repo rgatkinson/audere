@@ -122,6 +122,12 @@ async function input_screen(driver, screen_info) {
         } else {
           await android_buttonGrid(driver, question, nextQuestion, screen_info);
         }
+      } else if (question.type == "select" && question.name in inputs) {
+        if (PLATFORM == "iOS") {
+          await ios_select(driver, question);
+        } else {
+          await android_select(driver, question);
+        }
       }
     }
   }
@@ -248,6 +254,56 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
       }
     }
   }
+}
+
+async function android_select(driver, question) {
+  await driver.elementByClassName("android.widget.TextView").click();
+  let foundChoice = false;
+  while (!foundChoice) {
+    let dropdown_items = await driver.elementsByClassName(
+      "android.widget.CheckedTextView"
+    );
+    for (const item of dropdown_items) {
+      const text = await item.text();
+      if (text === inputs[question.name]) {
+        item.click();
+        foundChoice = true;
+        break;
+      }
+    }
+    if (!foundChoice) {
+      //scroll up to see more choices
+      let scroll = new wd.TouchAction(driver)
+        .press({
+          x: Math.trunc(screen_x * 0.5),
+          y: Math.trunc(screen_y * 0.3),
+        })
+        .wait(2000)
+        .moveTo({
+          x: Math.trunc(screen_x * 0.5),
+          y: Math.trunc(screen_y * 0.7),
+        })
+        .release();
+      await scroll.perform();
+    }
+  }
+}
+
+async function ios_select(driver, question) {
+  await driver.elementByAccessibilityId(question.name).click();
+  const pickerWheel = await driver.elementByClassName(
+    "XCUIElementTypePickerWheel"
+  );
+  await driver.setImplicitWaitTimeout(100);
+  while (!(await driver.hasElementByAccessibilityId(inputs[question.name]))) {
+    await driver.execute("mobile: selectPickerWheelValue", {
+      element: pickerWheel,
+      order: "previous",
+      offset: 0.1,
+    });
+  }
+  await driver.elementByAccessibilityId(strings.common.button.done).click();
+  await driver.setImplicitWaitTimeout(10000);
 }
 
 //Answer camera permissions question and click link for manual barcode entry
