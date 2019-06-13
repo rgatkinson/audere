@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  AppState,
-  Dimensions,
-  Image,
-  StyleSheet,
-  View,
-} from "react-native";
+import { AppState, Dimensions, Image, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";

@@ -15,7 +15,13 @@ import {
   SampleInfo,
   WorkflowInfo,
 } from "audere-lib/coughProtocol";
-import { SurveyResponse } from "./types";
+import {
+  ButtonLabel,
+  OptionLabel,
+  SurveyAnswer,
+  SurveyResponse,
+} from "./types";
+import { OptionQuestion, SurveyQuestion } from "../resources/QuestionConfig";
 import { onCSRUIDEstablished } from "../util/tracker";
 import { DEVICE_INFO, ios } from "../transport/DeviceInfo";
 import i18n from "i18next";
@@ -35,7 +41,12 @@ export type SurveyAction =
   | { type: "SET_PHOTO"; photoUri: string }
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
-  | { type: "SET_SUPPORT_CODE"; supportCode: string };
+  | { type: "SET_SUPPORT_CODE"; supportCode: string }
+  | {
+      type: "UPDATE_RESPONSES";
+      answer: SurveyAnswer;
+      question: OptionQuestion | SurveyQuestion;
+    };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
@@ -193,6 +204,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
         supportCode: action.supportCode,
       };
 
+    case "UPDATE_RESPONSES":
+      return {
+        ...state,
+        responses: updateResponses(state, action.answer, action.question),
+        timestamp: new Date().getTime(),
+      };
+
     default:
       return state;
   }
@@ -315,6 +333,17 @@ export function setSupportCode(supportCode: string): SurveyAction {
   };
 }
 
+export function updateAnswer(
+  answer: SurveyAnswer,
+  question: SurveyQuestion
+): SurveyAction {
+  return {
+    type: "UPDATE_RESPONSES",
+    answer,
+    question,
+  };
+}
+
 function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {
   let newEvents = state.events.slice(0);
   newEvents.push({
@@ -330,4 +359,56 @@ function pushInvalidBarcode(state: SurveyState, barcode: SampleInfo) {
     state.invalidBarcodes == null ? [] : state.invalidBarcodes.slice(0);
   newInvalidBarcodes.push(barcode);
   return newInvalidBarcodes;
+}
+
+function initializeResponse(
+  data: OptionQuestion | SurveyQuestion
+): SurveyResponse {
+  const buttonLabels: ButtonLabel[] = [];
+  data.buttons.forEach(button => {
+    buttonLabels.push({
+      key: button.key,
+      label: i18n.t("surveyButton:" + button.key),
+    });
+  });
+
+  const optionLabels: OptionLabel[] = [];
+  if (data.type === "optionQuestion") {
+    const optionQuestion = data as OptionQuestion;
+    optionQuestion.options.forEach((option: string) => {
+      optionLabels.push({
+        key: option,
+        label: i18n.t("surveyOption:" + option),
+      });
+    });
+  }
+
+  return {
+    answer: {},
+    buttonLabels,
+    optionLabels,
+    questionId: data.id,
+    questionText: (
+      (data.title ? i18n.t("surveyTitle:" + data.title) : "") +
+      " " +
+      (data.description ? i18n.t("surveyDescription:" + data.description) : "")
+    ).trim(),
+  };
+}
+
+function updateResponses(
+  state: SurveyState,
+  answer: SurveyAnswer,
+  question: SurveyQuestion
+) {
+  const responses = state.responses.slice(0);
+  let response = responses.find(
+    response => response.questionId === question.id
+  );
+  if (response == null) {
+    response = initializeResponse(question);
+    responses.push(response);
+  }
+  response.answer = { ...response.answer, ...answer };
+  return responses;
 }

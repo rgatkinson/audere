@@ -5,6 +5,8 @@
 
 import React from "react";
 import { StyleSheet } from "react-native";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import { SurveyQuestion } from "../../resources/QuestionConfig";
 import { BORDER_COLOR, HIGHLIGHT_STYLE } from "../styles";
 import TextInput from "./TextInput";
@@ -13,19 +15,18 @@ interface Props {
   highlighted?: boolean;
   question: SurveyQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
+  dispatch(action: Action): void;
 }
 
-export default class TextInputQuestion extends React.Component<Props> {
+class TextInputQuestion extends React.Component<Props> {
   _onEndEditing = (e: any) => {
-    this.props.updateAnswer(
-      { textInput: e.nativeEvent.text },
-      this.props.question
+    this.props.dispatch(
+      updateAnswer({ textInput: e.nativeEvent.text }, this.props.question)
     );
   };
 
   render() {
-    const { highlighted, question, getAnswer, updateAnswer } = this.props;
+    const { highlighted, question, getAnswer } = this.props;
     const answer = getAnswer("textInput", question.id);
     return (
       <TextInput
@@ -38,6 +39,8 @@ export default class TextInputQuestion extends React.Component<Props> {
     );
   }
 }
+
+export default connect()(TextInputQuestion);
 
 const styles = StyleSheet.create({
   text: {

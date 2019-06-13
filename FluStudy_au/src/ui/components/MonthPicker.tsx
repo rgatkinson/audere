@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import { MonthQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
@@ -43,15 +45,15 @@ const months = [
 ];
 
 interface MonthModalProps {
-  date: Date | null;
+  date: Date | undefined;
   isFocused: boolean;
   options: Date[];
   visible: boolean;
-  onDismiss(date: Date | null): void;
+  onDismiss(date: Date | undefined): void;
 }
 
 interface MonthModalState {
-  date: Date | null;
+  date: Date | undefined;
 }
 
 class MonthModal extends React.Component<
@@ -68,7 +70,7 @@ class MonthModal extends React.Component<
 
   _onValueChange = (selected: number | string) => {
     if (selected === this.props.t("selectDate")) {
-      this.setState({ date: null });
+      this.setState({ date: undefined });
     } else {
       if (Platform.OS === "android") {
         this.props.onDismiss(new Date(selected));
@@ -137,8 +139,8 @@ interface Props {
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   question: MonthQuestion;
+  dispatch(action: Action): void;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
@@ -185,9 +187,9 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
-  _onDateChange = (dateInput: Date | null) => {
+  _onDateChange = (dateInput: Date | undefined) => {
     this.setState({ pickerOpen: false });
-    this.props.updateAnswer({ dateInput }, this.props.question);
+    this.props.dispatch(updateAnswer({ dateInput }, this.props.question));
   };
 
   _openModal = () => {
@@ -223,7 +225,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
         <TranslatedMonthModal
           isFocused={isFocused}
           options={this._getOptions()}
-          date={!!date ? date : null}
+          date={!!date ? date : undefined}
           visible={this.state.pickerOpen}
           onDismiss={this._onDateChange}
         />
@@ -242,4 +244,6 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default withNavigationFocus(withNamespaces("monthPicker")(MonthPicker));
+export default connect()(
+  withNavigationFocus(withNamespaces("monthPicker")(MonthPicker))
+);

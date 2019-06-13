@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import { ButtonConfig, SurveyQuestion } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
@@ -37,7 +39,7 @@ interface Props {
   question: SurveyQuestion;
   style?: StyleProp<ViewStyle>;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
+  dispatch(action: Action): void;
 }
 
 interface State {
@@ -61,9 +63,8 @@ class RadioGrid extends React.Component<Props, State> {
   _onPress = (key: string) => {
     const selected = key;
     this.setState({ selected, helpSelected: null });
-    this.props.updateAnswer(
-      { selectedButtonKey: selected },
-      this.props.question
+    this.props.dispatch(
+      updateAnswer({ selectedButtonKey: selected }, this.props.question)
     );
   };
 
@@ -93,7 +94,7 @@ class RadioGrid extends React.Component<Props, State> {
     );
   }
 }
-export default withNavigationFocus(RadioGrid);
+export default connect()(withNavigationFocus(RadioGrid));
 
 interface ItemProps {
   config: ButtonConfig;

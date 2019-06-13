@@ -13,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import {
   DropDownQuestion,
   SurveyQuestion,
@@ -31,13 +33,13 @@ import {
 interface DropDownModalProps {
   options: string[];
   placeholder: string;
-  selected: string | null;
+  selected: string | undefined;
   visible: boolean;
-  onDismiss(selected: string | null): void;
+  onDismiss(selected: string | undefined): void;
 }
 
 interface DropDownModalState {
-  selected: string | null;
+  selected: string | undefined;
 }
 
 class DropDownModal extends React.Component<
@@ -64,7 +66,7 @@ class DropDownModal extends React.Component<
   _onValueChange = (value: string) => {
     const { placeholder, t } = this.props;
     if (value === placeholder) {
-      this.setState({ selected: null });
+      this.setState({ selected: undefined });
     } else {
       this.setState({ selected: value });
       if (Platform.OS === "android") {
@@ -130,7 +132,7 @@ interface Props {
   highlighted?: boolean;
   question: DropDownQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
+  dispatch(action: Action): void;
 }
 
 interface State {
@@ -154,9 +156,11 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
     this.setState({ pickerOpen: true });
   };
 
-  _onDismiss = (text: string | null) => {
+  _onDismiss = (text: string | undefined) => {
     this.setState({ pickerOpen: false });
-    this.props.updateAnswer({ selectedButtonKey: text }, this.props.question);
+    this.props.dispatch(
+      updateAnswer({ selectedButtonKey: text }, this.props.question)
+    );
   };
 
   render() {
@@ -182,7 +186,7 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
         <TranslatedModal
           options={question.buttons.map(buttonConfig => buttonConfig.key)}
           placeholder={question.placeholder}
-          selected={!!selected ? selected : null}
+          selected={!!selected ? selected : undefined}
           visible={this.state.pickerOpen}
           onDismiss={this._onDismiss}
         />
@@ -205,4 +209,4 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default withNamespaces("dropDown")(DropDown);
+export default connect()(withNamespaces("dropDown")(DropDown));

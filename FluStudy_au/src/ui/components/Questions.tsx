@@ -122,7 +122,7 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
-    const { getAnswer, updateAnswer } = this.props;
+    const { getAnswer } = this.props;
     switch (config.type) {
       case "optionQuestion":
         return (
@@ -130,7 +130,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config as OptionQuestion}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       case "radioGrid":
@@ -139,7 +138,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       case "buttonGrid":
@@ -148,7 +146,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       case "datePicker":
@@ -157,7 +154,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config as MonthQuestion}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       case "textInput":
@@ -166,7 +162,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       case "dropdown":
@@ -175,7 +170,6 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
             highlighted={highlighted}
             question={config as DropDownQuestion}
             getAnswer={getAnswer}
-            updateAnswer={updateAnswer}
           />
         );
       default:

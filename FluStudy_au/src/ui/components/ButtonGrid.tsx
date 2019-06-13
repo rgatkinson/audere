@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import { SurveyQuestion } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
@@ -31,7 +33,7 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   question: SurveyQuestion;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
+  dispatch(action: Action): void;
 }
 
 interface State {
@@ -53,9 +55,8 @@ class ButtonGrid extends React.Component<Props, State> {
   _onPress = (buttonKey: string) => {
     const selected = this.state.selected === buttonKey ? undefined : buttonKey;
     this.setState({ selected });
-    this.props.updateAnswer(
-      { selectedButtonKey: selected },
-      this.props.question
+    this.props.dispatch(
+      updateAnswer({ selectedButtonKey: selected }, this.props.question)
     );
   };
 
@@ -83,7 +84,7 @@ class ButtonGrid extends React.Component<Props, State> {
     );
   }
 }
-export default withNavigationFocus(ButtonGrid);
+export default connect()(withNavigationFocus(ButtonGrid));
 
 interface ItemProps {
   buttonKey: string;

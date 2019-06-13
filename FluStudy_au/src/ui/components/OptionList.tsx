@@ -14,6 +14,8 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
+import { connect } from "react-redux";
+import { Action, updateAnswer } from "../../store";
 import { OptionQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import { Option } from "../../store/types";
 import Text from "./Text";
@@ -35,7 +37,7 @@ interface Props {
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestion): void;
+  dispatch(action: Action): void;
 }
 
 const emptyList = (data: string[]) =>
@@ -62,7 +64,7 @@ class OptionList extends React.Component<Props> {
   };
 
   _onPressItem = (id: string) => {
-    const { updateAnswer, question } = this.props;
+    const { dispatch, question } = this.props;
     const inclusiveOption = question.inclusiveOption;
 
     const dataItem = this._getData().find(
@@ -103,7 +105,7 @@ class OptionList extends React.Component<Props> {
         };
       });
 
-      updateAnswer({ options: data }, question);
+      dispatch(updateAnswer({ options: data }, question));
     }
   };
 
@@ -128,7 +130,7 @@ class OptionList extends React.Component<Props> {
     );
   }
 }
-export default withNavigationFocus(OptionList);
+export default connect()(withNavigationFocus(OptionList));
 
 interface ItemProps {
   highlighted?: boolean;
