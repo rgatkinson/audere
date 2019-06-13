@@ -14,7 +14,6 @@ variable "bastion_ingress_sg_id" {
 
 variable "bastion_port" {
   description = "Port to open on the bastion host."
-  type = "number"
   default = 12893
 }
 

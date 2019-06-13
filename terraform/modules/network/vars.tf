@@ -21,7 +21,6 @@ variable "bastion_cidr_whitelist" {
 
 variable "bastion_port" {
   description = "Port to open on the bastion host."
-  type = "number"
   default = 12893
 }
 
