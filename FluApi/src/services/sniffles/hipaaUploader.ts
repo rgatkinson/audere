@@ -62,6 +62,7 @@ export class HipaaUploader {
             `${visit.pii.visit.consents[0].date}_${visit.nonPii.id}.html`,
             document
           );
+          results.set(visit.nonPii.id, { result: { success: true } });
         } catch (e) {
           logger.error(
             `Failed to upload hipaa form for visit ${visit.nonPii.id}`
