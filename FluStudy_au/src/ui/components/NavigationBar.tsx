@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  ImageBackground,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
@@ -23,7 +17,6 @@ import {
   STATUS_BAR_HEIGHT,
   SYSTEM_FONT,
   SYSTEM_TEXT,
-  SPLASH_IMAGE,
 } from "../styles";
 
 interface Props {
@@ -57,14 +50,24 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     this.props.navigation.openDrawer();
   };
 
+  _getContent = () => {
+    const { navigation, demoMode } = this.props;
+    const currentRoute = navigation.state.routeName;
+    return demoMode
+      ? "Demo Mode"
+      : currentRoute === "Scan"
+        ? "flu@home: barcode scan"
+        : "flu@home";
+  };
+
   render() {
-    const { t } = this.props;
+    const { demoMode, hideBackButton, menuItem, navigation } = this.props;
     return (
       <View style={styles.container}>
-        {this.props.demoMode && <View style={styles.demoView} />}
-        {!!this.props.hideBackButton ? (
+        {demoMode && <View style={styles.demoView} />}
+        {!!hideBackButton ? (
           <View style={{ width: 30 }} />
-        ) : !!this.props.menuItem ? (
+        ) : !!menuItem ? (
           <TouchableOpacity
             style={styles.actionContainer}
             onPress={this._goHome}
@@ -79,11 +82,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
         )}
-        <Text
-          style={styles.title}
-          center={true}
-          content={this.props.demoMode ? "Demo Mode" : "flu@home"}
-        />
+        <Text style={styles.title} center={true} content={this._getContent()} />
         <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />
         </TouchableOpacity>

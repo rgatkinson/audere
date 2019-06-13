@@ -27,7 +27,7 @@ import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
 } from "../../util/barcodeVerification";
-import { GUTTER } from "../styles";
+import { GUTTER, PRIMARY_COLOR } from "../styles";
 
 interface Props {
   dispatch(action: Action): void;
@@ -147,6 +147,10 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={styles.targetBox} />
+          <Text
+            style={[styles.overlayText, styles.instructionsText]}
+            content={t("instructions")}
+          />
           <TouchableOpacity
             style={styles.overlay}
             onPress={this._onManualEntry}
@@ -170,28 +174,35 @@ export default withNavigationFocus(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: Platform.OS === "ios" ? -GUTTER : 0,
+    marginHorizontal: -GUTTER,
+  },
+  instructionsText: {
+    paddingHorizontal: GUTTER,
+    paddingTop: GUTTER * 2,
+    marginBottom: GUTTER,
   },
   overlayText: {
     color: "white",
-    textDecorationLine: "underline",
   },
   overlay: {
     alignItems: "center",
+    backgroundColor: PRIMARY_COLOR,
+    bottom: 0,
     height: 50,
     justifyContent: "center",
-    marginTop: 50,
-    width: 300,
+    left: 0,
+    position: "absolute",
+    right: 0,
   },
   overlayContainer: {
     alignItems: "center",
     backgroundColor: "transparent",
-    height: Dimensions.get("window").height,
-    left: -GUTTER,
+    bottom: 0,
     justifyContent: "center",
+    left: 0,
     position: "absolute",
+    right: 0,
     top: 0,
-    width: Dimensions.get("window").width,
   },
   targetBox: {
     borderColor: "#F5A623",
