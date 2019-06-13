@@ -106,7 +106,7 @@ class DropDownModal extends React.Component<
   };
 
   render() {
-    const { selected, onDismiss, t, visible } = this.props;
+    const { t, visible } = this.props;
     const { width } = Dimensions.get("window");
     return Platform.OS === "ios" ? (
       <Modal
@@ -171,15 +171,13 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
 
     return (
       <View style={[styles.container, highlighted && HIGHLIGHT_STYLE]}>
-        {Platform.OS === "ios" ? (
+        {Platform.OS === "ios" && (
           <TouchableOpacity
             style={styles.pickerContainer}
             onPress={this._openPicker}
           >
             {text}
           </TouchableOpacity>
-        ) : (
-          text
         )}
         <TranslatedModal
           options={question.buttons.map(buttonConfig => buttonConfig.key)}
