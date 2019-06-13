@@ -5,12 +5,12 @@
 
 // See epoch/provision documentation in modules/flu-db/main.tf
 
-variable "mode" {
-  description = "See 'mode' in modules/flu-db/vars.tf"
-  default = "run"
-}
-
 variable "admins" {
   description = "List of admin userids."
   type = "list"
+}
+
+variable "mode" {
+  description = "See 'mode' in modules/flu-db/vars.tf"
+  default = "run"
 }

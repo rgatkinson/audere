@@ -68,20 +68,19 @@ data "template_file" "service_init_sh" {
   }
 }
 
-
 // --------------------------------------------------------------------------------
 // Sequelize migration
 
 resource "aws_instance" "migrate_instance" {
   ami = "${module.ami.ubuntu}"
   instance_type = "t2.small"
-  subnet_id = "${aws_subnet.transient.id}"
+  subnet_id = "${var.transient_subnet_id}"
   user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
 
   vpc_security_group_ids = [
-    "${aws_security_group.internet_egress.id}",
-    "${var.fludb_client_sg_id}",
-    "${var.fludev_ssh_server_sg_id}",
+    "${var.internet_egress_sg_id}",
+    "${var.db_client_sg_id}",
+    "${var.dev_ssh_server_sg_id}",
   ]
 
   ebs_block_device {
@@ -143,10 +142,7 @@ resource "aws_autoscaling_group" "flu_api" {
   ]
   max_size = 1
   min_size = 1
-  load_balancers = [
-    "${aws_elb.flu_api_internal_elb.name}",
-  ]
-  vpc_zone_identifier = ["${aws_subnet.api.id}"]
+  vpc_zone_identifier = ["${var.app_subnet_id}"]
   wait_for_elb_capacity = 1
 
   tag {
@@ -193,11 +189,11 @@ resource "aws_elb" "flu_api_elb" {
     bucket_prefix = "public"
   }
 
-  subnets = ["${aws_subnet.api.id}"]
+  subnets = ["${var.app_subnet_id}"]
 
   security_groups = [
-    "${aws_security_group.public_http.id}",
-    "${module.fluapi_sg.client_id}",
+    "${var.public_http_sg_id}",
+    "${var.fluapi_client_sg_id}",
   ]
 
   listener {
@@ -232,12 +228,12 @@ resource "aws_elb" "flu_api_internal_elb" {
     bucket_prefix = "internal"
   }
 
-  subnets = ["${aws_subnet.api.id}"]
+  subnets = ["${var.app_subnet_id}"]
   internal = true
 
   security_groups = [
-    "${module.fluapi_sg.client_id}",
-    "${module.elbinternal_sg.server_id}",
+    "${var.fluapi_client_sg_id}",
+    "${var.fluapi_internal_server_sg_id}",
   ]
 
   listener {
@@ -271,11 +267,11 @@ resource "aws_elb" "flu_reporting_elb" {
     bucket_prefix = "reporting"
   }
 
-  subnets = ["${aws_subnet.api.id}"]
+  subnets = ["${var.app_subnet_id}"]
 
   security_groups = [
-    "${aws_security_group.public_http.id}",
-    "${module.elbreporting_sg.client_id}",
+    "${var.public_http_sg_id}",
+    "${var.reporting_client_sg_id}",
   ]
 
   listener {
@@ -309,10 +305,10 @@ resource "aws_launch_configuration" "flu_api_instance" {
   user_data = "${data.template_file.service_init_sh.rendered}"
 
   security_groups = [
-    "${aws_security_group.internet_egress.id}",
-    "${module.fluapi_sg.server_id}",
-    "${var.fludb_client_sg_id}",
-    "${var.fludev_ssh_server_sg_id}",
+    "${var.internet_egress_sg_id}",
+    "${var.fluapi_server_sg_id}",
+    "${var.db_client_sg_id}",
+    "${var.dev_ssh_server_sg_id}",
   ]
 
   ebs_block_device {
@@ -386,12 +382,12 @@ module "ecs_cluster" {
   devs = "${var.devs}"
   environment = "${var.environment}"
   iam_instance_profile = "${aws_iam_instance_profile.flu_ecs.id}"
-  subnet_ids = ["${aws_subnet.api.id}"]
+  subnet_ids = ["${var.app_subnet_id}"]
   security_groups = [
-    "${aws_security_group.internet_egress.id}",
-    "${module.elbreporting_sg.server_id}",
-    "${var.fludb_client_sg_id}",
-    "${var.fludev_ssh_server_sg_id}",
+    "${var.internet_egress_sg_id}",
+    "${var.reporting_server_sg_id}",
+    "${var.db_client_sg_id}",
+    "${var.dev_ssh_server_sg_id}",
   ]
 }
 

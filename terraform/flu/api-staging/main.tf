@@ -24,42 +24,59 @@ module "flu_api" {
   source = "../../modules/flu-api"
 
   account = "${var.account}"
-  api_cidr = "${module.vpc_cidr.staging_api_cidr}"
+  app_subnet_id = "${data.terraform_remote_state.network.app_subnet_id}"
   commit = "${var.commit}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
+  db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
+  dev_ssh_server_sg_id = "${data.terraform_remote_state.network.dev_ssh_server_sg_id}"
   devs = "${var.devs}"
   ecs_service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
   environment = "staging"
-  fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
-  fludev_ssh_server_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_server_sg_id}"
-  gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
+  fluapi_client_sg_id = "${data.terraform_remote_state.network.fluapi_client_sg_id}"
+  fluapi_internal_client_sg_id = "${data.terraform_remote_state.network.fluapi_internal_client_sg_id}"
+  fluapi_internal_server_sg_id = "${data.terraform_remote_state.network.fluapi_internal_server_sg_id}"
+  fluapi_server_sg_id = "${data.terraform_remote_state.network.fluapi_server_sg_id}"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
+  internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
   metabase_database_address = "${data.terraform_remote_state.flu_db.metabase_database_address}"
   migrate = "${var.migrate}"
-  public_cidr = "${module.vpc_cidr.staging_public_cidr}"
+  public_http_sg_id = "${data.terraform_remote_state.network.public_http_sg_id}"
   region = "${var.region}"
+  reporting_client_sg_id = "${data.terraform_remote_state.network.reporting_client_sg_id}"
+  reporting_server_sg_id = "${data.terraform_remote_state.network.reporting_server_sg_id}"
   service = "${var.service}"
   ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
-  vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
+  transient_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
 }
 
 module "flu_dev" {
   source = "../../modules/flu-dev"
 
-  bastion_cidr_whitelist = "${var.bastion_cidr_whitelist}"
+  bastion_ingress_sg_id = "${data.terraform_remote_state.network.bastion_ingress_sg_id}"
+  bastion_subnet_id = "${data.terraform_remote_state.network.bastion_subnet_id}"
+  db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
+  dev_machine_client_sg_id = "${data.terraform_remote_state.network.dev_machine_client_sg_id}"
+  dev_machine_server_sg_id = "${data.terraform_remote_state.network.dev_machine_server_sg_id}"
+  dev_machine_subnet_id = "${data.terraform_remote_state.network.dev_machine_subnet_id}"
+  dev_ssh_client_sg_id = "${data.terraform_remote_state.network.dev_ssh_client_sg_id}"
   devs = "${var.devs}"
-  dev_cidr = "${module.vpc_cidr.staging_dev_cidr}"
+  fluapi_internal_client_sg_id = "${data.terraform_remote_state.network.fluapi_internal_client_sg_id}"
   environment = "staging"
-  fludb_client_sg_id = "${data.terraform_remote_state.flu_db.fludb_client_sg_id}"
-  fludev_ssh_client_sg_id = "${data.terraform_remote_state.flu_db.fludev_ssh_client_sg_id}"
-  fluapi_internal_elb_client_sg_id = "${module.flu_api.elbinternal_sg_client_id}"
-  gateway_id = "${data.terraform_remote_state.flu_db.gateway_id}"
+  internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
   proxies = [ "rproxy" ]
-  vpc_id = "${data.terraform_remote_state.flu_db.vpc_id}"
 }
 
 module "vpc_cidr" {
   source = "../../modules/vpc-cidr"
+}
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  config {
+    bucket = "flu-staging-terraform.auderenow.io"
+    key = "network/terraform.state"
+    region = "us-west-2"
+  }
 }
 
 data "terraform_remote_state" "flu_db" {

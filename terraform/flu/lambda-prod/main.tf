@@ -26,9 +26,9 @@ module "flu_lambda" {
   environment = "prod"
   fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_internal_fqdn}"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
-  internal_elb_access_sg = "${data.terraform_remote_state.flu_api.elbinternal_sg_client_id}"
-  internet_egress_sg = "${data.terraform_remote_state.flu_api.internet_egress_sg_id}"
-  lambda_subnet_id = "${data.terraform_remote_state.flu_api.transient_subnet_id}"
+  internet_egress_sg = "${data.terraform_remote_state.network.internet_egress_sg_id}"
+  internal_elb_access_sg = "${data.terraform_remote_state.network.fluapi_internal_client_sg_id}"
+  lambda_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
 }
 
 data "terraform_remote_state" "flu_api" {
@@ -45,6 +45,15 @@ data "terraform_remote_state" "flu_notifier" {
   config {
     bucket = "flu-prod-terraform.auderenow.io"
     key = "notifier/terraform.state"
+    region = "us-west-2"
+  }
+}
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  config {
+    bucket = "flu-prod-terraform.auderenow.io"
+    key = "network/terraform.state"
     region = "us-west-2"
   }
 }

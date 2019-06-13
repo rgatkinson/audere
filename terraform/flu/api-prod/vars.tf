@@ -3,25 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-variable "bastion_cidr_whitelist" {
-  description = "CIDR blocks for source IPs allowed to connect to bastion server"
-  type = "list"
-}
-
-variable "devs" {
-  description = "Userids of developers who should have a dev machine allocated"
-  type = "list"
-}
-
-
-variable "service" {
-  description = "Service mode, one of 'offline', 'single', 'elb'"
-  default = "elb"
-}
-
-variable "migrate" {
-  description = "Cycle this false -> true -> false to run a db migration"
-  default = "false"
+variable "account" {
+  description = "Identifier for the AWS account"
+  default = "475613123583"
 }
 
 variable "commit" {
@@ -29,12 +13,22 @@ variable "commit" {
   default = "master"
 }
 
-variable "account" {
-  description = "Identifier for the AWS account"
-  default = "475613123583"
+variable "devs" {
+  description = "Userids of developers who should have a dev machine allocated"
+  type = "list"
+}
+
+variable "migrate" {
+  description = "Cycle this false -> true -> false to run a db migration"
+  default = "false"
 }
 
 variable "region" {
   description = "Targeted AWS region"
   default = "us-west-2"
+}
+
+variable "service" {
+  description = "Service mode, one of 'offline', 'single', 'elb'"
+  default = "elb"
 }

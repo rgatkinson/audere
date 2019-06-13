@@ -15,8 +15,8 @@ output "prod_dev_cidr" {
   value = "${local.prod_dev_cidr}"
 }
 
-output "prod_api_cidr" {
-  value = "${local.prod_api_cidr}"
+output "prod_app_cidr" {
+  value = "${local.prod_app_cidr}"
 }
 
 output "prod_public_cidr" {
@@ -36,8 +36,8 @@ output "staging_dev_cidr" {
   value = "${local.staging_dev_cidr}"
 }
 
-output "staging_api_cidr" {
-  value = "${local.staging_api_cidr}"
+output "staging_app_cidr" {
+  value = "${local.staging_app_cidr}"
 }
 
 output "staging_public_cidr" {

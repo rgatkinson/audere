@@ -32,13 +32,45 @@ variable "admins" {
   type = "list"
 }
 
+variable "availability_zone" {
+  default = "us-west-2a"
+}
+
+variable "db_client_sg_id" {
+  description = "Security group to open database client traffic"
+  type = "string"
+}
+
+variable "db_nonpii_subnet_id" {
+  description = "Subnet in which non-PII databases should be deployed"
+  type = "string"
+}
+
+variable "db_pii_subnet_id" {
+  description = "Subnet in which PII databases should be deployed"
+  type = "string"
+}
+
+variable "db_server_sg_id" {
+  description = "Security group to open database server traffic"
+  type = "string"
+}
+
+variable "db_setup_password_filename" {
+  default = "../../../local/flu/creds/db_setup_password"
+}
+
 variable "environment" {
   description = "One of 'staging' or 'prod'"
   type = "string"
 }
 
-variable "db_cidr" {
-  description = "CIDR for db tier."
+variable "github_tar_bz2_base64_filename" {
+  default = "../../../local/flu/creds/github.tar.bz2.base64"
+}
+
+variable "internet_egress_sg_id" {
+  description = "Security group to open internet egress"
   type = "string"
 }
 
@@ -47,46 +79,24 @@ variable "log_archive_bucket_name" {
   type = "string"
 }
 
-variable "vpc_cidr" {
-  description = "CIDR for VPC containing all subnets for this environment."
-  type = "string"
-}
-
-variable "vpc_flow_log_arn" {
-  description = "ARN for aws_flow_log.log_destination to set up VPC flow logging."
-  type = "string"
-}
-
-variable "vpc_flow_log_role_arn" {
-  description = "ARN for aws_flow_log.iam_role_arn to set up VPC flow logging."
-  type = "string"
-}
-
 variable "mode" {
   description = "One of 'provision0', 'provision1', 'add-admin', or 'run'"
   default = "run"
 }
 
-variable "db_setup_password_filename" {
-  default = "../../../local/flu/creds/db_setup_password"
-}
-
-variable "github_tar_bz2_base64_filename" {
-  default = "../../../local/flu/creds/github.tar.bz2.base64"
+variable "pii_availability_zone" {
+  default = "us-west-2b"
 }
 
 variable "random_seed_filename" {
   default = "../../../local/flu/creds/random_seed"
 }
 
+variable "transient_subnet_id" {
+  description = "Subnet in which the transient resources, such as Lambdas and bootstrap/provisioning, should be deployed"
+  type = "string"
+}
+
 variable "vpc_dhparam_filename" {
   default = "../../../local/flu/creds/vpc.dhparam"
-}
-
-variable "availability_zone" {
-  default = "us-west-2a"
-}
-
-variable "pii_availability_zone" {
-  default = "us-west-2b"
 }

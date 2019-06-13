@@ -7,13 +7,15 @@ module "flu_db" {
   source = "../../modules/flu-db"
 
   admins = "${var.admins}"
-  db_cidr = "${module.vpc_cidr.staging_db_cidr}"
+  db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
+  db_nonpii_subnet_id = "${data.terraform_remote_state.network.db_nonpii_subnet_id}"
+  db_pii_subnet_id = "${data.terraform_remote_state.network.db_pii_subnet_id}"
+  db_server_sg_id = "${data.terraform_remote_state.network.db_server_sg_id}"
   environment = "staging"
+  internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
   log_archive_bucket_name = "${data.terraform_remote_state.global.database_log_archive_bucket_name}"
   mode = "${var.mode}"
-  vpc_cidr = "${module.vpc_cidr.vpc_staging_cidr}"
-  vpc_flow_log_arn = "${data.terraform_remote_state.global.vpc_flow_log_arn}"
-  vpc_flow_log_role_arn = "${data.terraform_remote_state.global.vpc_flow_log_role_arn}"
+  transient_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
 }
 
 module "ami" {
@@ -40,10 +42,25 @@ data "terraform_remote_state" "global" {
   }
 }
 
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  config {
+    bucket = "flu-staging-terraform.auderenow.io"
+    key = "network/terraform.state"
+    region = "us-west-2"
+  }
+}
+
 terraform {
   backend "s3" {
     bucket = "flu-staging-terraform.auderenow.io"
     key = "db/terraform.state"
     region = "us-west-2"
+  }
+}
+data "terraform_remote_state" "flu_db" {
+  backend = "local"
+  config {
+    path = "/Users/billy/Downloads/terraform-staging/db/terraform.state"
   }
 }

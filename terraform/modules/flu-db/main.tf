@@ -27,7 +27,7 @@ resource "aws_db_instance" "fludb_pii" {
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "${local.my_userid}"
   vpc_security_group_ids = [
-    "${module.fludb_sg.server_id}",
+    "${var.db_server_sg_id}",
   ]
 
   tags {
@@ -63,7 +63,7 @@ resource "aws_db_instance" "fludb_nonpii" {
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "${local.my_userid}"
   vpc_security_group_ids = [
-    "${module.fludb_sg.server_id}",
+    "${var.db_server_sg_id}",
   ]
 
   tags {
@@ -98,7 +98,7 @@ resource "aws_db_instance" "fludb_postgis" {
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "postgisa"
   vpc_security_group_ids = [
-    "${module.fludb_sg.server_id}",
+    "${var.db_server_sg_id}",
   ]
 
   tags {
@@ -127,7 +127,7 @@ resource "aws_db_instance" "metabase" {
   db_subnet_group_name = "${aws_db_subnet_group.fludb.name}"
   username = "metabasea"
   vpc_security_group_ids = [
-    "${module.fludb_sg.server_id}",
+    "${var.db_server_sg_id}",
   ]
 
   tags {
@@ -173,12 +173,12 @@ resource "aws_instance" "provision0" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
-  subnet_id = "${aws_subnet.provision.id}"
+  subnet_id = "${var.transient_subnet_id}"
   user_data = "${data.template_file.provision0_sh.rendered}"
 
   vpc_security_group_ids = [
-    "${aws_security_group.provision.id}",
-    "${module.fludb_sg.client_id}",
+    "${var.internet_egress_sg_id}",
+    "${var.db_client_sg_id}",
   ]
 
   tags {
@@ -229,12 +229,12 @@ resource "aws_instance" "add_admin" {
   ami = "${module.ami.ubuntu}"
   availability_zone = "${var.availability_zone}"
   instance_type = "t2.micro"
-  subnet_id = "${aws_subnet.provision.id}"
+  subnet_id = "${var.transient_subnet_id}"
   user_data = "${data.template_file.add_admin_sh.rendered}"
 
   vpc_security_group_ids = [
-    "${aws_security_group.provision.id}",
-    "${module.fludb_sg.client_id}",
+    "${var.internet_egress_sg_id}",
+    "${var.db_client_sg_id}",
   ]
 
   tags {

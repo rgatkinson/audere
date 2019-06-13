@@ -44,6 +44,7 @@ resource "aws_ecs_cluster" "cluster" {
 
 module "asg" {
   source = "terraform-aws-modules/autoscaling/aws"
+  version = "~> v2.0"
   name = "${local.full_name}"
 
   # Launch configuration
