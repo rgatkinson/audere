@@ -14,8 +14,9 @@ import {
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { Action, updateAnswer, StoreState } from "../../store";
 import { SurveyQuestion } from "../../resources/QuestionConfig";
+import { getSelectedButton } from "../../util/survey";
 import {
   BORDER_WIDTH,
   BUTTON_BORDER_RADIUS,
@@ -32,36 +33,24 @@ interface Props {
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   question: SurveyQuestion;
-  getAnswer(key: string, id: string): any;
+  selected?: string;
   dispatch(action: Action): void;
 }
 
-interface State {
-  selected: string | undefined;
-}
-
-class ButtonGrid extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      selected: props.getAnswer("selectedButtonKey", props.question.id),
-    };
-  }
-
+class ButtonGrid extends React.Component<Props> {
   shouldComponentUpdate(props: Props) {
     return props.isFocused;
   }
 
   _onPress = (buttonKey: string) => {
-    const selected = this.state.selected === buttonKey ? undefined : buttonKey;
-    this.setState({ selected });
+    const selected = this.props.selected === buttonKey ? undefined : buttonKey;
     this.props.dispatch(
       updateAnswer({ selectedButtonKey: selected }, this.props.question)
     );
   };
 
   render() {
-    const { highlighted, question } = this.props;
+    const { highlighted, selected, question } = this.props;
     return (
       <View
         style={[
@@ -76,7 +65,7 @@ class ButtonGrid extends React.Component<Props, State> {
             key={button.key}
             highlighted={!!highlighted}
             last={index === question.buttons.length - 1}
-            selected={this.state.selected === button.key}
+            selected={selected === button.key}
             onPress={this._onPress}
           />
         ))}
@@ -84,7 +73,9 @@ class ButtonGrid extends React.Component<Props, State> {
     );
   }
 }
-export default connect()(withNavigationFocus(ButtonGrid));
+export default connect((state: StoreState, props: Props) => ({
+  selected: getSelectedButton(state, props.question),
+}))(withNavigationFocus(ButtonGrid));
 
 interface ItemProps {
   buttonKey: string;

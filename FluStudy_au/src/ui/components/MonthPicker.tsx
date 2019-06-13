@@ -15,7 +15,8 @@ import {
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { getAnswer } from "../../util/survey";
+import { Action, updateAnswer, StoreState } from "../../store";
 import { MonthQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
@@ -135,12 +136,12 @@ class MonthModal extends React.Component<
 const TranslatedMonthModal = withNamespaces("monthPicker")(MonthModal);
 
 interface Props {
+  date?: Date;
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   question: MonthQuestion;
   dispatch(action: Action): void;
-  getAnswer(key: string, id: string): any;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
@@ -197,8 +198,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { highlighted, isFocused, question, t, getAnswer } = this.props;
-    const date = getAnswer("dateInput", question.id);
+    const { date, highlighted, isFocused, question, t } = this.props;
 
     return (
       <View
@@ -244,6 +244,6 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default connect()(
-  withNavigationFocus(withNamespaces("monthPicker")(MonthPicker))
-);
+export default connect((state: StoreState, props: Props) => ({
+  date: getAnswer(state, props.question),
+}))(withNavigationFocus(withNamespaces("monthPicker")(MonthPicker)));

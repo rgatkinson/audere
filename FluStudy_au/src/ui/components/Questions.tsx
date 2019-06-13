@@ -7,7 +7,9 @@ import React, { RefObject, Fragment } from "react";
 import { StyleSheet, View } from "react-native";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { ScrollIntoView } from "react-native-scroll-into-view";
-import { Option } from "../../store";
+import { connect } from "react-redux";
+import { getAnswer, getAnswerForID } from "../../util/survey";
+import { Action, Option, StoreState } from "../../store";
 import { customRef } from "./CustomRef";
 import MonthPicker from "./MonthPicker";
 import OptionList from "./OptionList";
@@ -22,23 +24,24 @@ import {
   OptionQuestion,
   SurveyQuestion,
 } from "../../resources/QuestionConfig";
-import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 
 interface Props {
+  answers: Map<string, any>;
+  conditionals: Map<string, any>;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
   questions: SurveyQuestion[];
-  logOnSave?: (getAnswer: (key: string, id: string) => string) => void;
+  logOnSave?(): Promise<void>;
 }
 
 interface State {
   triedToProceed: boolean;
 }
 
-class Questions extends React.Component<Props & ReduxWriterProps, State> {
+class Questions extends React.Component<Props, State> {
   _requiredQuestions: Map<string, RefObject<any>>;
 
-  constructor(props: Props & ReduxWriterProps) {
+  constructor(props: Props) {
     super(props);
     this.state = { triedToProceed: false };
     this._requiredQuestions = new Map<string, RefObject<any>>();
@@ -49,23 +52,24 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
     });
   }
 
-  shouldComponentUpdate(props: Props & ReduxWriterProps) {
+  shouldComponentUpdate(props: Props) {
     return props.isFocused;
   }
 
-  _evaluateConditional(config: SurveyQuestion): boolean {
-    const { getAnswer } = this.props;
+  _evaluateConditional = (config: SurveyQuestion) => {
     const condition = config.condition;
 
     if (condition == null) {
       return true;
     }
 
+    const answer = this.props.conditionals.get(config.id);
+
     switch (condition.key) {
       case "selectedButtonKey":
-        return getAnswer(condition.key, condition.id) === condition.answer;
+        return condition.answer === answer;
       case "options":
-        const options: Option[] = getAnswer("options", condition.id);
+        const options: Option[] = answer;
         return options.reduce(
           (result: boolean, option: Option) =>
             result || (option.selected && option.key === condition.answer),
@@ -73,10 +77,10 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
         );
     }
     return false;
-  }
+  };
 
   validate = () => {
-    const { questions, getAnswer, logOnSave } = this.props;
+    const { questions, logOnSave } = this.props;
     let valid = true;
     questions.forEach(config => {
       if (
@@ -91,18 +95,17 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
       }
     });
 
-    valid && !!logOnSave && logOnSave(getAnswer);
+    valid && !!logOnSave && logOnSave();
 
     return valid;
   };
 
   _hasAnswer = (config: SurveyQuestion) => {
-    const { getAnswer } = this.props;
     switch (config.type) {
       case "text":
         return true;
       case "optionQuestion":
-        const options: Option[] | any = getAnswer("options", config.id);
+        const options: Option[] | undefined = this.props.answers.get(config.id);
         return options
           ? options.reduce(
               (result: boolean, option: Option) => result || option.selected,
@@ -111,9 +114,9 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
           : false;
       case "radioGrid":
       case "buttonGrid":
-        return getAnswer("selectedButtonKey", config.id) !== null;
       case "datePicker":
-        return getAnswer("dateInput", config.id) !== null;
+      case "textInput":
+        return this.props.answers.get(config.id) != null;
       default:
         return false;
     }
@@ -122,54 +125,34 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
-    const { getAnswer } = this.props;
     switch (config.type) {
       case "optionQuestion":
         return (
           <OptionList
             highlighted={highlighted}
             question={config as OptionQuestion}
-            getAnswer={getAnswer}
           />
         );
       case "radioGrid":
-        return (
-          <RadioGrid
-            highlighted={highlighted}
-            question={config}
-            getAnswer={getAnswer}
-          />
-        );
+        return <RadioGrid highlighted={highlighted} question={config} />;
       case "buttonGrid":
-        return (
-          <ButtonGrid
-            highlighted={highlighted}
-            question={config}
-            getAnswer={getAnswer}
-          />
-        );
+        return <ButtonGrid highlighted={highlighted} question={config} />;
       case "datePicker":
         return (
           <MonthPicker
             highlighted={highlighted}
             question={config as MonthQuestion}
-            getAnswer={getAnswer}
           />
         );
       case "textInput":
         return (
-          <TextInputQuestion
-            highlighted={highlighted}
-            question={config}
-            getAnswer={getAnswer}
-          />
+          <TextInputQuestion highlighted={highlighted} question={config} />
         );
       case "dropdown":
         return (
           <DropDown
             highlighted={highlighted}
             question={config as DropDownQuestion}
-            getAnswer={getAnswer}
           />
         );
       default:
@@ -192,4 +175,28 @@ class Questions extends React.Component<Props & ReduxWriterProps, State> {
   }
 }
 
-export default reduxWriter(withNavigationFocus(customRef(Questions)));
+export default connect((state: StoreState, props: Props) => ({
+  answers: props.questions
+    .map(question => ({
+      id: question.id,
+      answer: getAnswer(state, question),
+    }))
+    .reduce((map, obj) => {
+      map.set(obj.id, obj.answer);
+      return map;
+    }, new Map<string, any>()),
+  conditionals: props.questions
+    .filter(question => !!question.condition)
+    .map(question => ({
+      id: question.id,
+      answer: getAnswerForID(
+        state,
+        question.condition!.id,
+        question.condition!.key
+      ),
+    }))
+    .reduce((map, obj) => {
+      map.set(obj.id, obj.answer);
+      return map;
+    }, new Map<string, any>()),
+}))(withNavigationFocus(customRef(Questions)));

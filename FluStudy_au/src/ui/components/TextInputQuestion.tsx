@@ -6,15 +6,16 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { Action, updateAnswer, StoreState } from "../../store";
+import { getAnswer } from "../../util/survey";
 import { SurveyQuestion } from "../../resources/QuestionConfig";
 import { BORDER_COLOR, HIGHLIGHT_STYLE } from "../styles";
 import TextInput from "./TextInput";
 
 interface Props {
+  answer?: string;
   highlighted?: boolean;
   question: SurveyQuestion;
-  getAnswer(key: string, id: string): any;
   dispatch(action: Action): void;
 }
 
@@ -26,8 +27,7 @@ class TextInputQuestion extends React.Component<Props> {
   };
 
   render() {
-    const { highlighted, question, getAnswer } = this.props;
-    const answer = getAnswer("textInput", question.id);
+    const { answer, highlighted, question } = this.props;
     return (
       <TextInput
         style={[styles.text, highlighted && HIGHLIGHT_STYLE]}
@@ -39,8 +39,9 @@ class TextInputQuestion extends React.Component<Props> {
     );
   }
 }
-
-export default connect()(TextInputQuestion);
+export default connect((state: StoreState, props: Props) => ({
+  answer: getAnswer(state, props.question),
+}))(TextInputQuestion);
 
 const styles = StyleSheet.create({
   text: {

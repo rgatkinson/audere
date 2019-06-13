@@ -4,10 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Linking, Platform } from "react-native";
-import { connect } from "react-redux";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import { toggleSupportCodeModal, Action, StoreState } from "../store";
-import { WorkflowInfo } from "audere-lib/coughProtocol";
 import { getStore } from "../store";
 
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
@@ -56,9 +53,7 @@ function learnMore() {
 }
 
 export interface LinkConfigProps {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
-  workflow: WorkflowInfo;
 }
 
 export interface LinkConfig {
@@ -67,11 +62,7 @@ export interface LinkConfig {
 }
 
 export const LinkPropProvider = (LinkComponent: any) =>
-  connect((state: StoreState) => {
-    return {
-      workflow: state.survey.workflow,
-    };
-  })(withNavigation(LinkComponent));
+  withNavigation(LinkComponent);
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
@@ -100,13 +91,6 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     {
       action: ({ navigation }) => navigation.push("ManualEntry"),
       key: "inputManually",
-    },
-  ],
-  [
-    "supportCode",
-    {
-      action: ({ dispatch }) => dispatch(toggleSupportCodeModal()),
-      key: "supportCode",
     },
   ],
   [

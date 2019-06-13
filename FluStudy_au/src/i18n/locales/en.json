@@ -198,17 +198,6 @@
     "title": "Scan the barcode",
     "desc": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
   },
-  "testResult": {
-    "influenzaA": "**POSITIVE** for **INFLUENZA-A**",
-    "influenzaB": "**POSITIVE** for **INFLUENZA-B**",
-    "influenzaAandB": "**POSITIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
-    "negative": "**NEGATIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
-    "blueLine": "A blue line in the middle of your test strip",
-    "pinkAboveBlue": "A pink line above the blue line",
-    "pinkBelowBlue": "A pink line below the blue line",
-    "pinkAboveAndBelowBlue": "A pink line above and below the blue line",
-    "noPink": "No pink line"
-  },
   "barcode": {
     "yourCode": "**Your code**: KIT {{barcode}}",
     "sorry": "Sorry",
@@ -349,7 +338,16 @@
     "title": "Your test result",
     "desc": "Based on your answers, your test indicates you may be:",
     "why": "**Why did I get this result?**\n\nYou indicated you saw the following on your test strip:",
-    "disclaimer": "Please remember that this is not an official medical diagnosis and the interpretation of your result may differ from a medical test conducted in a clinical lab environment."
+    "disclaimer": "Please remember that this is not an official medical diagnosis and the interpretation of your result may differ from a medical test conducted in a clinical lab environment.",
+    "influenzaA": "**POSITIVE** for **INFLUENZA-A**",
+    "influenzaB": "**POSITIVE** for **INFLUENZA-B**",
+    "influenzaAandB": "**POSITIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
+    "negative": "**NEGATIVE** for **INFLUENZA-A** and **INFLUENZA-B**",
+    "blueLine": "A blue line in the middle of your test strip",
+    "pinkAboveBlue": "A pink line above the blue line",
+    "pinkBelowBlue": "A pink line below the blue line",
+    "pinkAboveAndBelowBlue": "A pink line above and below the blue line",
+    "noPink": "No pink line"
   },
   "Advice": {
     "title": "What do I do now?",

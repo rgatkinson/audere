@@ -90,7 +90,6 @@ import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
 import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
 import TestResult from "../ui/components/flu/TestResult";
-import TestResultExplanation from "../ui/components/flu/TestResultExplanation";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
@@ -585,8 +584,6 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       { tag: TestResult },
-      { tag: ScreenText, props: { label: "why" } },
-      { tag: TestResultExplanation },
       { tag: Links, props: { links: ["changeResultAnswer"] } },
       { tag: Divider },
       { tag: ScreenText, props: { label: "disclaimer" } },

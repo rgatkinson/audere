@@ -14,11 +14,12 @@ import {
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { Action, updateAnswer, StoreState } from "../../store";
 import {
   DropDownQuestion,
   SurveyQuestion,
 } from "../../resources/QuestionConfig";
+import { getSelectedButton } from "../../util/survey";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
@@ -131,7 +132,7 @@ const TranslatedModal = withNamespaces("dropDown")(DropDownModal);
 interface Props {
   highlighted?: boolean;
   question: DropDownQuestion;
-  getAnswer(key: string, id: string): any;
+  selected?: string;
   dispatch(action: Action): void;
 }
 
@@ -164,8 +165,7 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { highlighted, question, t, getAnswer } = this.props;
-    const selected = getAnswer("selectedButtonKey", question.id);
+    const { highlighted, question, selected, t } = this.props;
     const text = (
       <Text
         content={!!selected ? t(selected) : t(question.placeholder)}
@@ -209,4 +209,6 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default connect()(withNamespaces("dropDown")(DropDown));
+export default connect((state: StoreState, props: Props) => ({
+  selected: getSelectedButton(state, props.question),
+}))(withNamespaces("dropDown")(DropDown));

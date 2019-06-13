@@ -24,7 +24,14 @@ export interface SurveyQuestion {
   required?: boolean;
   subquestion?: boolean;
   title: string;
-  type: string;
+  type:
+    | "buttonGrid"
+    | "radioGrid"
+    | "text"
+    | "textInput"
+    | "optionQuestion"
+    | "datePicker"
+    | "dropdown";
 }
 
 export interface OptionQuestion extends SurveyQuestion {

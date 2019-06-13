@@ -15,7 +15,8 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { Action, updateAnswer, StoreState } from "../../store";
+import { getSelectedButton } from "../../util/survey";
 import { ButtonConfig, SurveyQuestion } from "../../resources/QuestionConfig";
 import {
   BORDER_WIDTH,
@@ -38,33 +39,27 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   question: SurveyQuestion;
   style?: StyleProp<ViewStyle>;
-  getAnswer(key: string, id: string): any;
+  selected?: string;
   dispatch(action: Action): void;
 }
 
 interface State {
-  selected: string | undefined;
   helpSelected: string | null;
 }
 
 class RadioGrid extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      selected: props.getAnswer("selectedButtonKey", props.question.id),
-      helpSelected: null,
-    };
-  }
+  state = {
+    helpSelected: null,
+  };
 
   shouldComponentUpdate(props: Props) {
     return props.isFocused;
   }
 
   _onPress = (key: string) => {
-    const selected = key;
-    this.setState({ selected, helpSelected: null });
+    this.setState({ helpSelected: null });
     this.props.dispatch(
-      updateAnswer({ selectedButtonKey: selected }, this.props.question)
+      updateAnswer({ selectedButtonKey: key }, this.props.question)
     );
   };
 
@@ -74,8 +69,8 @@ class RadioGrid extends React.Component<Props, State> {
   };
 
   render() {
-    const { highlighted, question } = this.props;
-    const { helpSelected, selected } = this.state;
+    const { highlighted, selected, question } = this.props;
+    const { helpSelected } = this.state;
     return (
       <View style={styles.container}>
         {question.buttons.map((buttonConfig, i) => (
@@ -94,7 +89,9 @@ class RadioGrid extends React.Component<Props, State> {
     );
   }
 }
-export default connect()(withNavigationFocus(RadioGrid));
+export default connect((state: StoreState, props: Props) => ({
+  selected: getSelectedButton(state, props.question),
+}))(withNavigationFocus(RadioGrid));
 
 interface ItemProps {
   config: ButtonConfig;

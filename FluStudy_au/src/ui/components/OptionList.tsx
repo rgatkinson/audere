@@ -15,7 +15,8 @@ import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, updateAnswer } from "../../store";
+import { getAnswer } from "../../util/survey";
+import { Action, updateAnswer, StoreState } from "../../store";
 import { OptionQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
 import { Option } from "../../store/types";
 import Text from "./Text";
@@ -36,7 +37,7 @@ interface Props {
   highlighted?: boolean;
   isFocused: boolean;
   navigation: NavigationScreenProp<any, any>;
-  getAnswer(key: string, id: string): any;
+  options?: Option[];
   dispatch(action: Action): void;
 }
 
@@ -58,9 +59,8 @@ class OptionList extends React.Component<Props> {
   }
 
   _getData = () => {
-    const { getAnswer, question } = this.props;
-    const answer = getAnswer("options", question.id);
-    return !!answer ? answer : emptyList(question.options);
+    const { options, question } = this.props;
+    return !!options ? options : emptyList(question.options);
   };
 
   _onPressItem = (id: string) => {
@@ -130,7 +130,9 @@ class OptionList extends React.Component<Props> {
     );
   }
 }
-export default connect()(withNavigationFocus(OptionList));
+export default connect((state: StoreState, props: Props) => ({
+  options: getAnswer(state, props.question),
+}))(withNavigationFocus(OptionList));
 
 interface ItemProps {
   highlighted?: boolean;

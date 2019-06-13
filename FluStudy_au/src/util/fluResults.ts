@@ -4,25 +4,26 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { tracker, FunnelEvents } from "./tracker";
+import { getStore } from "../store";
+import { getSelectedButton } from "./survey";
 import {
   BlueLineConfig,
   PinkWhenBlueConfig,
 } from "../resources/QuestionConfig";
 
-export function getFluResultScreen(
-  getAnswer: (key: string, id: string) => string
-) {
-  const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
+export async function getFluResultScreen() {
+  const state = (await getStore()).getState();
+  const blueAnswer = getSelectedButton(state, BlueLineConfig);
   return blueAnswer === "yes" ? "TestResult" : "InvalidResult";
 }
 
-export function logFluResult(getAnswer: (key: string, id: string) => string) {
-  const blueAnswer = getAnswer("selectedButtonKey", BlueLineConfig.id);
+export async function logFluResult() {
+  const state = (await getStore()).getState();
+  const blueAnswer = getSelectedButton(state, BlueLineConfig);
 
   switch (blueAnswer) {
     case "yes":
-      const redAnswer = getAnswer("selectedButtonKey", PinkWhenBlueConfig.id);
-
+      const redAnswer = getSelectedButton(state, PinkWhenBlueConfig);
       tracker.logEvent(FunnelEvents.RESULT_BLUE);
       switch (redAnswer) {
         case "yesAboveBlue":

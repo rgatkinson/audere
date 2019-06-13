@@ -7,7 +7,6 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import reduxWriter, { ReduxWriterProps } from "../../store/ReduxWriter";
 import { Action, StoreState } from "../../store";
 import Button from "./Button";
 
@@ -19,17 +18,14 @@ interface Props {
   next?: string;
   validate?(): boolean;
   dispatch(action: Action): void;
-  surveyGetNextFn?: (getAnswer: (key: string, id: string) => string) => string;
+  surveyGetNextFn?(): Promise<string>;
 }
 
-class ContinueButton extends React.Component<
-  Props & WithNamespaces & ReduxWriterProps
-> {
-  _onNext = () => {
+class ContinueButton extends React.Component<Props & WithNamespaces> {
+  _onNext = async () => {
     const {
       dispatch,
       dispatchOnNext,
-      getAnswer,
       navigation,
       next,
       surveyGetNextFn,
@@ -38,7 +34,8 @@ class ContinueButton extends React.Component<
     if (!validate || validate()) {
       dispatchOnNext && dispatch(dispatchOnNext());
       if (!!surveyGetNextFn) {
-        navigation.push(surveyGetNextFn(getAnswer));
+        const nextFromFn = await surveyGetNextFn();
+        navigation.push(nextFromFn);
       } else {
         next && navigation.push(next);
       }
@@ -58,6 +55,4 @@ class ContinueButton extends React.Component<
   }
 }
 
-export default connect()(
-  reduxWriter(withNavigation(withNamespaces()(ContinueButton)))
-);
+export default connect()(withNavigation(withNamespaces()(ContinueButton)));
