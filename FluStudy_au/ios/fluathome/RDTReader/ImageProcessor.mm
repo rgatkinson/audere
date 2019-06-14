@@ -24,33 +24,39 @@ const float SHARPNESS_THRESHOLD = 0.7;
 const float OVER_EXP_THRESHOLD = 255;
 const float UNDER_EXP_THRESHOLD = 120;
 const float OVER_EXP_WHITE_COUNT = 100;
-const double SIZE_THRESHOLD = 0.3;
+const double SIZE_THRESHOLD = 0.1;
 const double POSITION_THRESHOLD = 0.2;
 const double ANGLE_THRESHOLD = 10.0;
-const double VIEWPORT_SCALE = 0.5;
 const int GOOD_MATCH_COUNT = 7;
 double refImgSharpness = FLT_MIN;
 const int MOVE_CLOSER_COUNT = 5;
-const double CROP_RATIO = 0.6;
+const double CROP_RATIO = 1.0;
 const double VIEW_FINDER_SCALE_W = 0.15;
-const double VIEW_FINDER_SCALE_H = 0.52;
+const double VIEW_FINDER_SCALE_H = 0.60;
 const float INTENSITY_THRESHOLD = 190;
 const float CONTROL_INTENSITY_PEAK_THRESHOLD = 150;
 const float TEST_INTENSITY_PEAK_THRESHOLD = 50;
 const int LINE_SEARCH_WIDTH = 13;
-const int CONTROL_LINE_POSITION = 40;
-const int TEST_A_LINE_POSITION = 10;
-const int TEST_B_LINE_POSITION = 70;
-const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(160/2.0, 20/100.0*255.0, 10/100.0*255.0);
-const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(260/2.0, 90/100.0*255.0, 100/100.0*255.0);
-const int FIDUCIAL_POSITION_MIN = 300;
+const int CONTROL_LINE_POSITION = 45;
+const int TEST_A_LINE_POSITION = 15;
+const int TEST_B_LINE_POSITION = 75;
+const vector<Scalar> CONTROL_LINE_COLOR_LOWER = {Scalar(0/2.0, 20/100.0*255.0, 20/100.0*255.0),
+                                                Scalar(300/2.0, 20/100.0*255.0, 20/100.0*255.0)};
+const vector<Scalar> CONTROL_LINE_COLOR_UPPER = {Scalar(60/2.0, 85/100.0*255.0, 100/100.0*255.0),
+                                                Scalar(360/2.0, 85/100.0*255.0, 100/100.0*255.0)};
+
+//const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(130/2.0, 20/100.0*255.0, 20/100.0*255.0);
+//const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(270/2.0, 85/100.0*255.0, 100/100.0*255.0);
+const int FIDUCIAL_POSITION_MIN = 250;
 const int FIDUCIAL_POSITION_MAX = 500;
-const int FIDUCIAL_MIN_HEIGHT = 25;
+const int FIDUCIAL_MIN_HEIGHT = 45;
 const int FIDUCIAL_MIN_WIDTH = 20;
-const int FIDUCIAL_MAX_WIDTH = 55;
+const int FIDUCIAL_MAX_WIDTH = 60;
 const int FIDUCIAL_TO_CONTROL_LINE_OFFSET = 215;
-const int RESULT_WINDOW_RECT_HEIGHT = 80;
+const int RESULT_WINDOW_RECT_HEIGHT = 90;
 const int RESULT_WINDOW_RECT_WIDTH_PADDING = 10;
+const int FIDUCIAL_DISTANCE = 120;
+const int FIDUCIAL_COUNT = 2;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -85,7 +91,7 @@ Mat siftRefDescriptor;
         siftDetector = SIFT::create();
         siftMatcher = BFMatcher::create(cv::NORM_L2);
         
-        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v1.jpg"];
+        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v3.jpg"];
         UIImageToMat(image, refImg);
         NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
         
@@ -97,7 +103,7 @@ Mat siftRefDescriptor;
         detector->detectAndCompute(refImg, noArray(), refKeypoints, refDescriptor);
         siftDetector->detectAndCompute(refImg, noArray(), siftRefKeypoints, siftRefDescriptor);
         NSLog(@"Successfully set up BRISK Detector and BFHamming matcher");
-        NSLog(@"Successfully detect and compute reference RDT, currently there are %lu keypoints",refKeypoints.size());
+        NSLog(@"Successfully detect and compute reference RDT, currently there are %lu %lu keypoints",refKeypoints.size(), siftRefKeypoints.size());
     });
     return sharedWrapper;
 }
@@ -111,7 +117,7 @@ Mat siftRefDescriptor;
 
 // CJ: this is just a util function to convert an image object of iOS to Mat object of OpenCV
 // Get Mat from buffer
-- (cv::Mat)matFromSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+- (cv::Mat)matBGRAFromSampleBuffer:(CMSampleBufferRef)sampleBuffer {
     
     CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
@@ -124,6 +130,12 @@ Mat siftRefDescriptor;
 
     //mat.release();
     NSLog(@"Mat size: (%d, %d)", mat.size().width, mat.size().height);
+    return mat;
+}
+
+- (cv::Mat)matRGBAFromSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    Mat mat = [self matBGRAFromSampleBuffer:sampleBuffer];
+    cvtColor(mat, mat, CV_BGRA2RGBA);
     return mat;
 }
 
@@ -170,6 +182,7 @@ Mat siftRefDescriptor;
     //CJ: checkSharpness starts
     bool isSharp = sharpness > (refImgSharpness * (1-SHARPNESS_THRESHOLD));
     
+    inputMat.release();
     resized.release();
     
     return isSharp;
@@ -178,10 +191,9 @@ Mat siftRefDescriptor;
 
 //CJ: captureRDT starts
 - (void)captureRDT:(CMSampleBufferRef)sampleBuffer withCompletion:(ImageProcessorBlock)completion {
-    Mat inputMat = [self matFromSampleBuffer:sampleBuffer]; //returns BGRA
+    Mat inputMat = [self matRGBAFromSampleBuffer:sampleBuffer];
     Mat greyMat;
-    cvtColor(inputMat, greyMat, COLOR_BGRA2GRAY);
-    double matchDistance = 0.0;
+    cvtColor(inputMat, greyMat, COLOR_RGBA2GRAY);
     bool passed = false;
     
     //check brightness (refactored)
@@ -195,10 +207,10 @@ Mat siftRefDescriptor;
     //preform detectRDT only if those two quality checks are passed
     if (exposureResult == NORMAL && isSharp) {
         //CJ: detectRDT starts
-        
         //CJ: detectRDT ends inside of "performBRISKSearchOnMat". Check "performBRISKSearchOnMat" for the end of detectRDT.
         vector<Point2f> boundary;
-        matchDistance = [self detectRDT:greyMat andReturn: &boundary];
+        //boundary = [self detectRDT:greyMat andRansac: 5];
+        boundary = [self detectRDTWithSIFT:greyMat andRansac: 5];
         bool isCentered = false;
         SizeResult sizeResult = INVALID;
         bool isRightOrientation = false;
@@ -217,19 +229,32 @@ Mat siftRefDescriptor;
         
         passed = sizeResult == RIGHT_SIZE && isCentered && isRightOrientation;
         
+        bool fiducial = false;
+        if (passed) {
+            Mat resultWindow = [self cropResultWindow:inputMat with:boundary with:&fiducial];
+            resultWindow.release();
+            passed = passed & fiducial;
+        }
+        
         NSLog(@"PASSED: %d", passed);
         
-        cvtColor(rgbMat, rgbMat, COLOR_BGRA2RGBA);
-        completion(passed, MatToUIImage(rgbMat), matchDistance, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false);//, resultWindowMat);
-        //completion(passed, MatToUIImage(inputMat), matchDistance, exposureResult, sizeResult, isCentered, isRightOrientation, isSharp, false);
+        UIImage *img = MatToUIImage(rgbMat);
+        rgbMat.release();
+        inputMat.release();
+        greyMat.release();
+        completion(passed, img, fiducial, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false, boundary);
     } else {
         NSLog(@"Found = ENTERED");
-        completion(passed, nil, matchDistance, exposureResult, INVALID, false, false, 0.0, isSharp, false);//, Mat());
+        vector<Point2f> empty;
+        inputMat.release();
+        greyMat.release();
+        completion(passed, nil, false, exposureResult, INVALID, false, false, 0.0, isSharp, false, empty);//, Mat());
     }
 }
 // end of caputureRDT
 
-- (double)detectRDT:(Mat)inputMat andReturn: (vector<Point2f> *) boundary{
+- (vector<Point2f>)detectRDT:(Mat)inputMat andRansac: (int) ransac {
+    vector<Point2f> boundary;
     double currentTime = CACurrentMediaTime();
     Mat inDescriptor;
     vector<KeyPoint> inKeypoints;
@@ -250,7 +275,7 @@ Mat siftRefDescriptor;
     if (inDescriptor.cols < 1 || inDescriptor.rows < 1) { // No features found!
         NSLog(@"Found no features!");
         NSLog(@"Time taken to detect: %f -- fail -- BRISK", CACurrentMediaTime() - currentTime);
-        return 0.0;
+        return boundary;
     }
     NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
     
@@ -314,17 +339,21 @@ Mat siftRefDescriptor;
                   sceneCorners.at<Vec2f>(3, 0)[0], sceneCorners.at<Vec2f>(3, 0)[1]);
             
             
-            (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]));
-            (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(1,0)[0], sceneCorners.at<Vec2f>(1,0)[1]));
-            (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]));
-            (*boundary).push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]));
+            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]));
+            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(1,0)[0], sceneCorners.at<Vec2f>(1,0)[1]));
+            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]));
+            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]));
             
-            RotatedRect rotatedRect = cv::minAreaRect(*boundary);
+            RotatedRect rotatedRect = cv::minAreaRect(boundary);
             Point2f v[4];
             rotatedRect.points(v);
 
-            for (int i = 0; i < 4; i++)
-                (*boundary)[(i+3)%4] = v[i];
+            for (int i = 0; i < 4; i++) {
+                if(rotatedRect.angle < -45)
+                    boundary[(i+2)%4] = v[i];
+                else
+                    boundary[(i+3)%4] = v[i];
+            }
 
             objCorners.release();
             sceneCorners.release();
@@ -335,7 +364,7 @@ Mat siftRefDescriptor;
         }
     }
     NSLog(@"Time taken to detect: %f - success - BRISK", CACurrentMediaTime() - currentTime);
-    return avgDist;
+    return boundary;
 }
 
 - (double) measureOrientation:(vector<Point2f>) boundary {
@@ -388,7 +417,7 @@ Mat siftRefDescriptor;
 - (SizeResult) checkSize:(vector<Point2f>) boundary inside:(cv::Size) size {
     double height = [self measureSize:boundary];
     //bool isRightSize = height < size.width*VIEWPORT_SCALE+VIEWPORT_SCALE*SIZE_THRESHOLD) && height > size.width*VIEWPORT_SCALE*(1-SIZE_THRESHOLD);
-    bool isRightSize = height < size.width*VIEWPORT_SCALE+100 && height > size.width*VIEWPORT_SCALE-100;
+    bool isRightSize = height < size.width*VIEW_FINDER_SCALE_H+size.width*SIZE_THRESHOLD && height > size.width*VIEW_FINDER_SCALE_H-size.width*SIZE_THRESHOLD;
     
     bool invalid = true;
     for(int i = 0; i < boundary.size(); i++) {
@@ -408,9 +437,9 @@ Mat siftRefDescriptor;
         if (isRightSize) {
             sizeResult = RIGHT_SIZE;
         } else {
-            if (height > size.width*VIEWPORT_SCALE+100) {
+            if (height > size.width*VIEW_FINDER_SCALE_H+size.width*SIZE_THRESHOLD) {
                 sizeResult = LARGE;
-            } else if (height < size.width*VIEWPORT_SCALE-100) {
+            } else if (height < size.width*VIEW_FINDER_SCALE_H-size.width*SIZE_THRESHOLD) {
                 sizeResult = SMALL;
             } else {
                 sizeResult = INVALID;
@@ -476,7 +505,7 @@ Mat siftRefDescriptor;
     bool isOriented = angle < 90.0*POSITION_THRESHOLD;
     //CJ: checkOrientation ends
 
-    bool isRightSize = height < size.height*VIEWPORT_SCALE*(1+SIZE_THRESHOLD) && height > size.height*VIEWPORT_SCALE*(1-SIZE_THRESHOLD);
+    bool isRightSize = height < size.height*VIEW_FINDER_SCALE_H*(1+SIZE_THRESHOLD) && height > size.height*VIEW_FINDER_SCALE_H*(1-SIZE_THRESHOLD);
     //CJ: checkSize ends
 
     result[0] = [NSNumber numberWithBool:isCentered];
@@ -484,8 +513,8 @@ Mat siftRefDescriptor;
     result[2] = [NSNumber numberWithBool:isOriented];
 
     //CJ: for size, we have to return whether the image is large or small to provide instruction.
-    result[3] = [NSNumber numberWithBool:(height > size.height*VIEWPORT_SCALE*(1+SIZE_THRESHOLD))]; // large
-    result[4] = [NSNumber numberWithBool:(height < size.height*VIEWPORT_SCALE*(1-SIZE_THRESHOLD))];// small
+    result[3] = [NSNumber numberWithBool:(height > size.height*VIEW_FINDER_SCALE_H*(1+SIZE_THRESHOLD))]; // large
+    result[4] = [NSNumber numberWithBool:(height < size.height*VIEW_FINDER_SCALE_H*(1-SIZE_THRESHOLD))];// small
 
     NSLog(@"POS: %.2d, %.2d, Angle: %.2f, Height: %.2f", center.x, center.y, angle, height);
 
@@ -529,11 +558,11 @@ Mat siftRefDescriptor;
     vector<float> histogramRanges;
     histogramRanges.push_back(0.0);
     histogramRanges.push_back(256.0);
-    cv::Size sizeRgba = input.size();
+    cv::Size sizeBgra = input.size();
     vector<int> channel = {0};
     vector<Mat> allMat = {input};
     calcHist(allMat, channel, Mat(), hist, mHistSize, histogramRanges);
-    normalize(hist, hist, sizeRgba.height/2, 0, NORM_INF);
+    normalize(hist, hist, sizeBgra.height/2, 0, NORM_INF);
     mBuff.assign((float*)hist.datastart, (float*)hist.dataend);
     return mBuff;
 }
@@ -676,11 +705,37 @@ Mat siftRefDescriptor;
     [view.layer insertSublayer:fillLayer above:view.layer.sublayers[0]];
 }
 
--(UIImage *) interpretResult:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+-(UIImage *) interpretResultFromImage:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
     Mat resultMat = Mat();
     UIImageToMat(img, resultMat); //returns RGBA
     resultMat = [self interpretResultWithMat:resultMat andControlLine:control andTestA:testA andTestB:testB];
     return MatToUIImage(resultMat);
+}
+
+-(UIImage *) interpretResultWithBoundaryFromImage:(UIImage*) img withBoundary:(vector<Point2f>) boundary andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+    Mat resultMat = Mat();
+    UIImageToMat(img, resultMat); //returns RGBA
+    resultMat = [self interpretResultWithBoundary:resultMat withBoundary:boundary andControlLine:control andTestA:testA andTestB:testB];
+    return MatToUIImage(resultMat);
+}
+
+-(Mat) interpretResultWithBoundary: (Mat) inputMat withBoundary:(vector<Point2f>) boundary andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
+    bool fiducial = false;
+    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:&fiducial];
+
+    if (!fiducial) {
+        *control = false;
+        *testA = false;
+        *testB = false;
+        return Mat();
+    }
+
+    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
+    //resultMat = [self correctGamma:resultMat withGamma:0.75];
+
+    [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
+
+    return resultMat;
 }
 
 -(Mat) interpretResultWithMat:(Mat) inputMat andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
@@ -705,9 +760,11 @@ Mat siftRefDescriptor;
     if (boundary.size() <= 0)
         return inputMat;
 
-    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:control];
+    bool fiducial = false;
+    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:&fiducial];
     
-    if (!(*control)) {
+    if (!fiducial) {
+        *control = false;
         *testA = false;
         *testB = false;
         return Mat();
@@ -732,15 +789,24 @@ Mat siftRefDescriptor;
     return inputMat;
 }
 
--(cv::Rect) checkFiducial:(Mat) inputMat andResult:(bool *) fiducial {
+-(cv::Rect) checkFiducialAndReturnResultWindowRect:(Mat) inputMat andResult:(bool *) fiducial {
     Mat hls = Mat();
+    
     cvtColor(inputMat, hls, COLOR_RGBA2RGB);
     cvtColor(hls, hls, COLOR_RGB2HLS);
     
-    Mat threshold = Mat();
-    inRange(hls, CONTROL_LINE_COLOR_LOWER, CONTROL_LINE_COLOR_UPPER, threshold);
+    vector<Mat> thresholds = {Mat(), Mat()};
+    
+    Mat threshold = Mat(inputMat.rows, inputMat.cols, CV_8U);
+    
+    for (int i = 0; i < CONTROL_LINE_COLOR_LOWER.size(); i++) {
+        inRange(hls, CONTROL_LINE_COLOR_LOWER[i], CONTROL_LINE_COLOR_UPPER[i], thresholds[i]);
+        add(threshold, thresholds[i], threshold);
+    }
+    
     Mat element_erode = getStructuringElement(MORPH_ELLIPSE, cv::Size(5, 5));
-    Mat element_dilate = getStructuringElement(MORPH_ELLIPSE, cv::Size(20, 20));
+    Mat element_dilate = getStructuringElement(MORPH_ELLIPSE, cv::Size(15, 15));
+    
     erode(threshold, threshold, element_erode);
     dilate(threshold, threshold, element_dilate);
     GaussianBlur(threshold, threshold, cv::Size(5, 5), 2, 2);
@@ -749,20 +815,47 @@ Mat siftRefDescriptor;
     vector<Vec4i> hierarchy;
     
     findContours(threshold, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-    cv::Rect fudicialRect;
+    vector<cv::Rect> fiducialRects;
+    cv::Rect fiducialRect;
     *fiducial = false;
     for (int i = 0; i < contours.size(); i++)
     {
         cv::Rect rect = boundingRect(contours[i]);
         NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
-        if (FIDUCIAL_POSITION_MIN < rect.x && rect.x < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
-            fudicialRect = rect;
-            *fiducial = true;
-            NSLog(@"control line rect: %d %d %d %d", fudicialRect.x, fudicialRect.y, fudicialRect.width, fudicialRect.height);
+        double rectCenter = rect.x + rect.width/2.0;
+        if (FIDUCIAL_POSITION_MIN < rectCenter && rectCenter < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
+            fiducialRects.push_back(rect);
+            NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
         }
     }
-
-    return fudicialRect;
+    
+    if (fiducialRects.size() == FIDUCIAL_COUNT) { //should
+        double center0 = fiducialRects[0].x + fiducialRects[0].width/2.0;
+        double center1 = fiducialRects[1].x + fiducialRects[1].width/2.0;
+        
+        int midpoint = (int)((center0+center1)/2);
+        double diff = abs(center0-center1);
+        
+        double scale = diff/FIDUCIAL_DISTANCE;
+        double offset = scale*FIDUCIAL_TO_CONTROL_LINE_OFFSET;
+        
+        cv::Point tl = cv::Point(midpoint+offset-RESULT_WINDOW_RECT_HEIGHT*scale/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
+        cv::Point br = cv::Point(midpoint+offset+RESULT_WINDOW_RECT_HEIGHT*scale/2.0, inputMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
+        
+        fiducialRect = cv::Rect(tl, br);
+        
+        *fiducial = true;
+    }
+    
+    for(int i = 0; i < CONTROL_LINE_COLOR_LOWER.size(); i++) {
+        thresholds[i].release();
+    }
+    threshold.release();
+    hls.release();
+    element_erode.release();
+    element_dilate.release();
+    
+    return fiducialRect;
 }
 
 -(bool) readLine:(Mat) inputMat at: (cv::Point) position for: (bool) isControlLine {
@@ -891,16 +984,14 @@ Mat siftRefDescriptor;
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
     cv::warpPerspective(inputMat, correctedMat, M, cv::Size(refImg.cols, refImg.rows));
     
-    cv::Rect fiducialRect = [self checkFiducial:correctedMat andResult:fiducial];
+    cv::Rect resultWindowRect = [self checkFiducialAndReturnResultWindowRect:correctedMat andResult:fiducial];
     
     if (!(*fiducial)) {
         return Mat();
     }
     
-    cv::Point tl = cv::Point((fiducialRect.tl().x+fiducialRect.br().x)/2.0+FIDUCIAL_TO_CONTROL_LINE_OFFSET-RESULT_WINDOW_RECT_HEIGHT/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
-    cv::Point br = cv::Point((fiducialRect.tl().x+fiducialRect.br().x)/2.0+FIDUCIAL_TO_CONTROL_LINE_OFFSET+RESULT_WINDOW_RECT_HEIGHT/2.0, correctedMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
-    
-    correctedMat = Mat(correctedMat, cv::Rect(tl, br));
+    correctedMat = Mat(correctedMat, resultWindowRect);
+    resize(correctedMat, correctedMat, cv::Size(RESULT_WINDOW_RECT_HEIGHT, refImg.rows-2*RESULT_WINDOW_RECT_WIDTH_PADDING));
     
     return correctedMat;
 }
@@ -917,16 +1008,14 @@ Mat siftRefDescriptor;
     cv::Point p1 = cv::Point(0, inputMat.size().height*(1-VIEW_FINDER_SCALE_W/CROP_RATIO)/2);
     cv::Point p2 = cv::Point(inputMat.size().width-p1.x, inputMat.size().height-p1.y);
     rectangle(mask, p1, p2, Scalar(255), -1);
-    
-    siftDetector->detectAndCompute(inputMat, mask, inKeypoints, inDescriptor);
-    
+    siftDetector->detectAndCompute(inputMat(cv::Rect(p1, p2)), noArray(), inKeypoints, inDescriptor);
+    NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
     if (inDescriptor.cols < 1 || inDescriptor.rows < 1) { // No features found!
         NSLog(@"Found no features!");
         NSLog(@"Time taken to detect: %f -- fail -- SIFT", CACurrentMediaTime() - currentTime);
         return boundary;
     }
-    NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
-    
+
     // Matching
     vector<vector<DMatch>> matches;
     siftMatcher->knnMatch(siftRefDescriptor, inDescriptor, matches, 2, noArray(), false);
@@ -989,10 +1078,10 @@ Mat siftRefDescriptor;
                   sceneCorners.at<Vec2f>(3, 0)[0], sceneCorners.at<Vec2f>(3, 0)[1]);
             
             
-            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]));
-            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(1,0)[0], sceneCorners.at<Vec2f>(1,0)[1]));
-            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]));
-            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]));
+            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]+p1.y));
+            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(1,0)[0], sceneCorners.at<Vec2f>(1,0)[1]+p1.y));
+            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]+p1.y));
+            (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]+p1.y));
             
             objCorners.release();
             sceneCorners.release();
@@ -1023,8 +1112,12 @@ Mat siftRefDescriptor;
             float boundArea = rect.area();
             NSLog(@"Rotated: %.2f, contour: %.2f, diff: %.2f -- SIFT -- angle: %.2f", rotatedArea, contourArea(boundary), rotatedArea-contourArea(boundary), rotatedRect.angle);
         }
+
+        H.release();
     }
     NSLog(@"Time taken to detect: %f -- success -- SIFT", CACurrentMediaTime() - currentTime);
+    inDescriptor.release();
+    mask.release();
     return boundary;
 }
 

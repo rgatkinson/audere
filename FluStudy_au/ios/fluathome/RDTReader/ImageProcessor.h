@@ -31,14 +31,15 @@ typedef NS_ENUM(NSInteger, SizeResult ) {
 };
 
 + (ImageProcessor *)sharedProcessor;
-typedef void (^ImageProcessorBlock)(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow);//, Mat resultWindowMat); // Return hashmap features to client
+typedef void (^ImageProcessorBlock)(bool passed, UIImage *img, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, std::vector<Point2f> boundary);//, Mat resultWindowMat); // Return hashmap features to client
 - (void)captureRDT:(CMSampleBufferRef)sampleBuffer withCompletion:(ImageProcessorBlock)completion;
 - (NSString *) getInstruction: (SizeResult) sizeResult andFor: (bool) isCentered andFor: (bool) isRightOrientation;
 - (NSMutableArray *) getQualityCheckTexts: (SizeResult) sizeResult andFor: (bool) isCentered andFor: (bool) isRightOrientation andFor: (bool) isSharp andFor:(ExposureResult) exposureResult;
 - (void) configureCamera: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
 - (void) toggleFlash: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
 - (void) generateViewFinder: (UIView *) view forPreview: (UIView *) previewView;
-- (UIImage *) interpretResult:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
+- (UIImage *) interpretResultFromImage:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
+-(UIImage *) interpretResultWithBoundaryFromImage:(UIImage*) img withBoundary:(std::vector<Point2f>) boundary andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
 @end
 
 NS_ASSUME_NONNULL_END

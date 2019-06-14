@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		210E30E1228E1A1B0002B676 /* quickvue_ref_v1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */; };
+		21548C7C22B40E7500878E09 /* quickvue_ref_v3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 21548C7522B40E7500878E09 /* quickvue_ref_v3.jpg */; };
 		218947CB2284D31400788F40 /* teststrip2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947BF2284D31300788F40 /* teststrip2@2x.png */; };
 		218947CC2284D31400788F40 /* teststrip2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947C72284D31300788F40 /* teststrip2@3x.png */; };
 		218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 218947C82284D31300788F40 /* quickvue_ref.jpg */; };
@@ -204,6 +205,7 @@
 /* Begin PBXFileReference section */
 		210E30DF228E1A1B0002B676 /* quickvue_ref_v1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v1.jpg; path = ../../../assets/images/quickvue_ref_v1.jpg; sourceTree = "<group>"; };
 		210E30E0228E1A1B0002B676 /* quickvue_ref_v0.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v0.jpg; path = ../../../assets/images/quickvue_ref_v0.jpg; sourceTree = "<group>"; };
+		21548C7522B40E7500878E09 /* quickvue_ref_v3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v3.jpg; path = ../../../assets/images/quickvue_ref_v3.jpg; sourceTree = "<group>"; };
 		218947BF2284D31300788F40 /* teststrip2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "teststrip2@2x.png"; path = "../../../assets/images/teststrip2@2x.png"; sourceTree = "<group>"; };
 		218947C72284D31300788F40 /* teststrip2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "teststrip2@3x.png"; path = "../../../assets/images/teststrip2@3x.png"; sourceTree = "<group>"; };
 		218947C82284D31300788F40 /* quickvue_ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref.jpg; path = ../../../assets/images/quickvue_ref.jpg; sourceTree = "<group>"; };
@@ -455,6 +457,7 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				21548C7522B40E7500878E09 /* quickvue_ref_v3.jpg */,
 				EAA1BB8022A5F975005C16A9 /* defectiveteststrip.png */,
 				EAA1BB7822A5F974005C16A9 /* defectiveteststrip@2x.png */,
 				EAA1BB7F22A5F975005C16A9 /* defectiveteststrip@3x.png */,
@@ -902,6 +905,7 @@
 				5906FF232295F47800A8C878 /* cleanuptest@3x.png in Resources */,
 				EAEBD29422691AB7009815C6 /* brotman@2x.png in Resources */,
 				59D64621229DA6F000EA64E6 /* barcodesuccess.png in Resources */,
+				21548C7C22B40E7500878E09 /* quickvue_ref_v3.jpg in Resources */,
 				EAEBD2A322691AB7009815C6 /* fredhutch.png in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 				EAEBD2E722691AB7009815C6 /* oneminutetimer@2x.png in Resources */,

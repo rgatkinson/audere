@@ -116,7 +116,7 @@ class RDTReader extends React.Component<Props> {
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this._updateFeedback(args);
 
-    if (!args.testStripFound) {
+    if (!args.testStripFound || !args.fiducialFound) {
       return;
     }
 
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   testStrip: {
     aspectRatio: 0.06,
-    height: Dimensions.get("window").height / 2,
+    height: Dimensions.get("window").height,
     opacity: 0.5,
   },
   testStripContainer: {

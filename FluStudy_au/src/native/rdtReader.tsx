@@ -1,4 +1,4 @@
-import { requireNativeComponent } from "react-native";
+import { Platform, requireNativeComponent } from "react-native";
 import * as React from "react";
 import {
   RDTReaderExposureResult,
@@ -11,6 +11,7 @@ type InternalRDTCapturedArgs = {
   img: string;
   passed: boolean;
   center: boolean;
+  fiducial: boolean;
   sizeResult: RDTReaderSizeResult;
   shadow: boolean;
   target: number;
@@ -26,6 +27,7 @@ type InternalRDTCapturedArgs = {
 export type RDTCapturedArgs = {
   imgBase64: string;
   testStripFound: boolean;
+  fiducialFound: boolean;
   isCentered: boolean;
   sizeResult: RDTReaderSizeResult;
   isFocused: boolean;
@@ -52,6 +54,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       imgBase64: capturedArgs.img,
       testStripFound: capturedArgs.passed,
       isCentered: capturedArgs.center,
+      fiducialFound: capturedArgs.fiducial || Platform.OS === "android",
       sizeResult: capturedArgs.sizeResult,
       isFocused: capturedArgs.sharpness,
       angle: capturedArgs.angle,

@@ -13,7 +13,7 @@
 using namespace std;
 using namespace cv;
 
-AVCaptureSessionPreset GLOBAL_CAMERA_PRESET = AVCaptureSessionPresetPhoto;
+AVCaptureSessionPreset GLOBAL_CAMERA_PRESET = AVCaptureSessionPresetHigh;
 BOOL HIGH_RESOLUTION_ENABLED = NO;
 BOOL DEPTH_DATA_DELIVERY = NO;
 AVCaptureExposureMode EXPOSURE_MODE = AVCaptureExposureModeContinuousAutoExposure;
@@ -164,7 +164,7 @@ double startTime = 0.0;
      We do not create an AVCaptureMovieFileOutput when setting up the session because the
      AVCaptureMovieFileOutput does not support movie recording with AVCaptureSessionPresetPhoto.
      */
-    // self.session.sessionPreset = GLOBAL_CAMERA_PRESET;
+    self.session.sessionPreset = GLOBAL_CAMERA_PRESET;
     
     // Add video input.
     
@@ -208,6 +208,7 @@ double startTime = 0.0;
             }
             
             self.previewView.videoPreviewLayer.connection.videoOrientation = initialVideoOrientation;
+            self.previewView.videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
         } );
     }
     else {
@@ -252,7 +253,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         self.isProcessing = true;
     }
-    [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow) {
+    [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *testStripImage, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, vector<Point2f> boundary) {
         NSLog(@"Found = %d, update Pos = %d, update Angle = %.2f, update Sharpness = %d, update Brightness = %d, update Shadow = %d", passed, (int)sizeResult, angle, sharpness, (int)exposureResult, shadow);
         
         NSString *instructions = [[ImageProcessor sharedProcessor] getInstruction:sizeResult andFor:center andFor:orientation];
@@ -269,34 +270,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             self.shadowLabel.text = qCheckTexts[3];
             self.shadowLabel.textColor = shadow ? [UIColor redColor] : [UIColor greenColor];
             self.instructionsLabel.text = instructions;
+            double captureTime = CACurrentMediaTime() - startTime;
             if(passed == true){
                 NSLog(@"Moving to result screen");
                 
                 bool control, testA, testB;
                 // this passees the imgage into the showPhotoViewController
 
-                UIImage *testStripImage = [[ImageProcessor sharedProcessor] interpretResult:img andControlLine:&control andTestA:&testA andTestB:&testB];
+                UIImage *resultWindowImage = [[ImageProcessor sharedProcessor] interpretResultWithBoundaryFromImage:testStripImage withBoundary: boundary andControlLine:&control andTestA:&testA andTestB:&testB];
                 
-                if (control) {
-                    double captureTime = CACurrentMediaTime() - startTime;
-                    startTime = 0;
-                    
-                    if (self.onRDTDetected) {
-                        self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB);
-                    }
-                } else {
-                    //If control line is not found, we capture the strip again. This is based on an assumption that people would try to capture valid strips with control line.
-                    NSLog(@"Control not found!");
-                    if (self.onRDTDetected) {
-                        self.onRDTDetected(false, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB);
-                    }
-                    @synchronized (self) {
-                        self.isProcessing = false;
-                    }
+                captureTime = CACurrentMediaTime() - startTime;
+                startTime = 0;
+                
+                if (self.onRDTDetected) {
+                    self.onRDTDetected(passed, testStripImage, resultWindowImage, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB, captureTime);
                 }
             } else {
                 if (self.onRDTDetected) {
-                    self.onRDTDetected(passed, img, matchDistance, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false);
+                    self.onRDTDetected(passed, testStripImage, NULL, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false, captureTime);
                 }
                 @synchronized (self) {
                     self.isProcessing = false;

@@ -25,7 +25,7 @@
         }
         strongSelf.onRDTCameraReady(@{});
     };
-    viewController.onRDTDetected = ^(bool passed, UIImage *img, double matchDistance, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB){
+    viewController.onRDTDetected = ^(bool passed, UIImage *testStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime){
         RDTView *strongSelf = weakSelf;
         NSLog(@"Callback called with %@", passed ? @"true" : @"false");
         if (!strongSelf || !strongSelf.onRDTCaptured) {
@@ -33,14 +33,15 @@
         }
         NSLog(@"Calling JS callback");
         NSString *base64img = @"";
-        if (img) {
-            base64img = [UIImagePNGRepresentation(img) base64EncodedStringWithOptions: 0];
+        if (testStrip) {
+            base64img = [UIImagePNGRepresentation(testStrip) base64EncodedStringWithOptions: 0];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             strongSelf.onRDTCaptured(
                 @{
                     @"passed": @(passed),
                     @"img": base64img,
+                    @"fiducial": @(fiducial),
                     @"exposureResult": @(exposureResult),
                     @"sizeResult": @(sizeResult),
                     @"center": @(center),
