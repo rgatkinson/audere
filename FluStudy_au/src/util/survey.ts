@@ -10,7 +10,7 @@ export function getAnswerType(questionType: string) {
     case "optionQuestion":
       return "options";
     case "datePicker":
-      return "date";
+      return "dateInput";
     case "textInput":
       return "textInput";
     case "text":
