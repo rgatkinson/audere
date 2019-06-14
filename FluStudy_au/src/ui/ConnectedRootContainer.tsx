@@ -82,13 +82,6 @@ class ConnectedRootContainer extends React.Component<Props> {
     appState: "active",
   };
 
-  constructor(props: Props) {
-    super(props);
-    this._handleNavChange = this._handleNavChange.bind(this);
-    this._loadingIndicator = this._loadingIndicator.bind(this);
-    this._onLaunch = this._onLaunch.bind(this);
-  }
-
   navigator = React.createRef<NavigationContainerComponent>();
 
   _handleConnectivityChange = async (isConnected: boolean) => {
@@ -248,11 +241,11 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   }
 
-  _handleNavChange(
+  _handleNavChange = (
     prevState: NavigationState,
     newState: NavigationState,
     action: NavigationAction
-  ) {
+  ) => {
     const currentScreen = this.props.activeRouteName;
     const nextScreen = getActiveRouteName(newState);
 
@@ -278,7 +271,7 @@ class ConnectedRootContainer extends React.Component<Props> {
         );
         break;
     }
-  }
+  };
 
   _onLaunch = async () => {
     await this._handleAppStateChange("launch");

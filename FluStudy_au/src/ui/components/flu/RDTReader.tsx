@@ -54,11 +54,6 @@ class RDTReader extends React.Component<Props> {
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
 
-  constructor(props: Props) {
-    super(props);
-    this._setTimer = this._setTimer.bind(this);
-  }
-
   componentDidMount() {
     const { navigation } = this.props;
     this._willFocus = navigation.addListener("willFocus", () =>
@@ -76,7 +71,7 @@ class RDTReader extends React.Component<Props> {
     AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
-  _setTimer() {
+  _setTimer = () => {
     const { dispatch, fallback, isFocused, navigation } = this.props;
     // Timeout after 30 seconds
     this._clearTimer();
@@ -86,7 +81,7 @@ class RDTReader extends React.Component<Props> {
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
     }, 30000);
-  }
+  };
 
   _clearTimer() {
     if (this._timer != null) {

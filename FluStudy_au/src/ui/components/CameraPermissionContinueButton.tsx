@@ -19,12 +19,7 @@ interface Props {
 class CameraPermissionContinueButton extends React.Component<
   Props & WithNamespaces
 > {
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._onNext = this._onNext.bind(this);
-  }
-
-  async _onNext() {
+  _onNext = async () => {
     const { deniedNext, grantedNext, navigation } = this.props;
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === "granted") {
@@ -32,7 +27,7 @@ class CameraPermissionContinueButton extends React.Component<
     } else {
       this.props.navigation.push(deniedNext);
     }
-  }
+  };
 
   render() {
     const { t } = this.props;

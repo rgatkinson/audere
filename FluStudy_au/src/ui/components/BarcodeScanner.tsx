@@ -43,11 +43,6 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     activeScan: false,
   };
 
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._setTimer = this._setTimer.bind(this);
-  }
-
   _willFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
@@ -67,7 +62,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     this._willBlur.remove();
   }
 
-  _setTimer() {
+  _setTimer = () => {
     const { navigation, timeoutScreen } = this.props;
     this.setState({ activeScan: false });
     // Timeout after 30 seconds
@@ -77,7 +72,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         navigation.push(timeoutScreen);
       }
     }, 30000);
-  }
+  };
 
   _clearTimer() {
     if (this._timer != null) {
