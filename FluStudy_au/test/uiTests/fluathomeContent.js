@@ -51,6 +51,7 @@ export const content = [
       {
         name: strings.barcode.placeholder,
         type: "text",
+        dbLocation: "samples",
       },
       {
         name: strings.barcode.secondPlaceholder,
@@ -127,6 +128,7 @@ export const content = [
       {
         name: strings.surveyTitle.whatSymptoms,
         type: "checkbox",
+        dbLocation: "responses",
         options: [
           strings.surveyOption.feelingFeverish,
           strings.surveyOption.cough,
@@ -151,6 +153,7 @@ export const content = [
       {
         name: strings.surveyTitle.symptomsStart,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton["1day"],
           strings.surveyButton["2days"],
@@ -161,11 +164,13 @@ export const content = [
       {
         name: strings.surveyTitle.symptomsLast48,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.symptomsSeverity,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.mild,
           strings.surveyButton.moderate,
@@ -183,6 +188,7 @@ export const content = [
       {
         name: strings.surveyTitle.inContact,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -192,6 +198,7 @@ export const content = [
       {
         name: strings.surveyTitle.coughSneeze,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -201,6 +208,7 @@ export const content = [
       {
         name: strings.surveyTitle.youngChildren,
         type: "radio",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.noContactUnderFive,
           strings.surveyButton.oneChild,
@@ -212,11 +220,13 @@ export const content = [
       {
         name: strings.surveyTitle.householdChildren,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.childrenWithChildren,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -226,6 +236,7 @@ export const content = [
       {
         name: strings.surveyTitle.peopleInHousehold,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton["1to2"],
           strings.surveyButton["3to4"],
@@ -236,6 +247,7 @@ export const content = [
       {
         name: strings.surveyTitle.bedrooms,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton["0-1"],
           strings.surveyButton["2"],
@@ -255,6 +267,7 @@ export const content = [
       {
         name: strings.surveyTitle.fluShot,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -270,6 +283,7 @@ export const content = [
       {
         name: strings.surveyTitle.fluShotNationalImmunization,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -283,6 +297,7 @@ export const content = [
       {
         name: strings.surveyTitle.previousSeason,
         type: "radio",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.yes,
           strings.surveyButton.no,
@@ -301,6 +316,7 @@ export const content = [
       {
         name: strings.surveyTitle.medicalCondition,
         type: "checkbox",
+        dbLocation: "responses",
         options: [
           strings.surveyOption.asthma,
           strings.surveyOption.copd,
@@ -313,6 +329,7 @@ export const content = [
       {
         name: strings.surveyTitle.healthcareWorker,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.no,
           strings.surveyButton.yes,
@@ -322,21 +339,25 @@ export const content = [
       {
         name: strings.surveyTitle.smokeTobacco,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.householdTobacco,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.interfering,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.antibiotics,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.dropDown.no,
           strings.surveyButton.yes,
@@ -369,6 +390,7 @@ export const content = [
       {
         name: strings.surveyTitle.assignedSex,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.male,
           strings.surveyButton.female,
@@ -379,6 +401,7 @@ export const content = [
       {
         name: strings.surveyTitle.race,
         type: "checkbox",
+        dbLocation: "responses",
         options: [
           strings.surveyOption.aboriginal,
           strings.surveyOption.torresStraitIslander,
@@ -433,11 +456,13 @@ export const content = [
       {
         name: strings.surveyTitle.blueLine,
         type: "buttonGrid",
+        dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
       {
         name: strings.surveyTitle.pinkLine,
         type: "radio",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.noPink,
           strings.surveyButton.yesAboveBlue,
@@ -474,6 +499,7 @@ export const content = [
       {
         name: strings.surveyTitle.TestFeedback,
         type: "radio",
+        dbLocation: "responses",
         options: [
           strings.surveyButton.easyCorrect,
           strings.surveyButton.confusingCorrect,

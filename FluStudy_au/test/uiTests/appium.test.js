@@ -380,6 +380,7 @@ async function verify_db_contents(driver, models, installationId) {
     },
   });
 
+  //verify navigation events
   const expected = content
     // Android skips barcode camera
     .filter(item => !isAndroidBarcodeScan(item))
@@ -389,9 +390,58 @@ async function verify_db_contents(driver, models, installationId) {
     .map(item => item.refId);
   expect(actual).toEqual(expected);
 
-  function isAndroidBarcodeScan(item) {
-    return PLATFORM === "Android" && item.dbScreenName === "Scan";
-  }
+  //verify user responses
+  const inputScreens = content.filter(item => "input" in item);
+  inputScreens.forEach(screen => {
+    const questions = screen.input.filter(
+      question => "dbLocation" in question && question.name in inputs
+    );
+    questions.forEach(question => {
+      if (
+        [
+          strings.surveyTitle.symptomsStart,
+          strings.surveyTitle.symptomsLast48,
+          strings.surveyTitle.symptomsSeverity,
+        ].includes(question.name)
+      ) {
+        const symptoms = inputs[strings.surveyTitle.whatSymptoms];
+        for (let i = 0; i < symptoms.length; i++) {
+          const questionDb = dbRow.survey.responses[0].item.find(
+            item => item.text === `${question.name} ${symptoms[i]}`
+          );
+          const answerDb =
+            questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
+          const answerApp = Array.isArray(inputs[question.name])
+            ? inputs[question.name][i]
+            : inputs[question.name];
+          expect(questionDb.answer).toHaveLength(1);
+          expect(answerApp).toEqual(answerDb);
+        }
+      } else if (question.dbLocation === "responses") {
+        const questionDb = dbRow.survey.responses[0].item.find(item =>
+          item.text.startsWith(question.name)
+        );
+        if (Array.isArray(inputs[question.name])) {
+          expect(questionDb.answer).toHaveLength(inputs[question.name].length);
+          for (answer of questionDb.answer) {
+            const answerDb = questionDb.answerOptions[answer.valueIndex].text;
+            expect(inputs[question.name]).toContain(answerDb);
+          }
+        } else {
+          const answerDb =
+            questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
+          expect(questionDb.answer).toHaveLength(1);
+          expect(inputs[question.name]).toEqual(answerDb);
+        }
+      } else if (question.dbLocation === "samples") {
+        expect(dbRow.survey.samples[0].code).toEqual(inputs[question.name]);
+      }
+    });
+  });
+}
+
+function isAndroidBarcodeScan(item) {
+  return PLATFORM === "Android" && item.dbScreenName === "Scan";
 }
 
 //Go to version menu, change to demo mode, return installation id

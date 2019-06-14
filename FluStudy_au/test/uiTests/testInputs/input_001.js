@@ -10,8 +10,8 @@ export const inputs = {
   [strings.barcode.placeholder]: "00100100",
   [strings.barcode.secondPlaceholder]: "00100100",
   [strings.surveyTitle.whatSymptoms]: [
-    strings.surveyOption.cough,
     strings.surveyOption.feelingFeverish,
+    strings.surveyOption.cough,
     strings.surveyOption.chillsOrSweats,
     strings.surveyOption.soreThroat,
     strings.surveyOption.shortnessOfBreath,
