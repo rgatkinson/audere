@@ -101,33 +101,6 @@ export const AppEvents = {
   CSRUID_ESTABLISHED: "csruid_established",
 };
 
-// By default, we don't log demo mode and non-production builds.  If you're
-// debugging logging, set this to true on your own machine to bypass all those
-// logging exclusions. Please don't commit true to our codebase unless you're
-// absolutely positive.
-const forceMeToBeTracked = false; // DO NOT COMMIT `true`!
-
-// NOTE: We have a build flag (-FIRDebugEnabled) in Xcode that causes firebase
-// events to be sent to firebase's web-based debug page.  shouldTrack
-// acts BEFORE that's taken into account:  meaning you first decide whether
-// any tracking data should be sent at all, and then the build flag decides
-// whether that data goes into firebase's debug stream vs. prod stream.
-//
-// So: to see your debug data online in firebase's debug stream, set
-// forceMeToBeTracked = true AND make sure you're running a debug build
-// (which by default contains -FIRDebugEnabled).
-function shouldTrack(): boolean {
-  if (forceMeToBeTracked) {
-    console.log("[Tracker] Overriding exclusions and sending tracking info!");
-    return true;
-  }
-
-  const isProduction =
-    process.env.REACT_NATIVE_API_SERVER === "https://api.auderenow.io/api";
-
-  return isProduction;
-}
-
 export function startTracking() {
   // getUniqueID returns IDFV on iOS (unique ID per install, not per phone),
   // and on Android it'll change per install too after Oreo).  Tracking IDs
@@ -144,8 +117,6 @@ export function startTracking() {
 }
 
 export function updateCollectionEnabled(isDemo: boolean) {
-  const should = shouldTrack();
-
   // We need to filter out, in Firebase, all the users who've ever toggled
   // demo mode ON (at least for that instance of the app installation).  Note
   // that this needs to go _before_ setAnalyticsCollectionEnabled below, because
@@ -154,7 +125,7 @@ export function updateCollectionEnabled(isDemo: boolean) {
     tracker.setUserProperty("demo_mode_aware", "true");
   }
   tracker.logEvent(demoModeEvent, { isDemo });
-  tracker.setAnalyticsCollectionEnabled(should);
+  tracker.setAnalyticsCollectionEnabled(true);
 }
 
 export function onCSRUIDEstablished(csruid: string) {
