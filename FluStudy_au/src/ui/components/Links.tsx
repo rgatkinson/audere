@@ -15,43 +15,60 @@ import {
   LinkPropProvider,
 } from "../../resources/LinkConfig";
 
+interface LinkProps {
+  center?: boolean;
+  link: LinkConfig;
+  onPress: (link: LinkConfig) => void;
+}
+
+class Link extends React.Component<LinkProps & WithNamespaces> {
+  _onPress = () => {
+    this.props.onPress(this.props.link);
+  };
+
+  render() {
+    const { center, link, t } = this.props;
+    return (
+      <TouchableOpacity key={link.key} onPress={this._onPress}>
+        <Text center={center} content={t(link.key)} style={styles.linkStyle} />
+      </TouchableOpacity>
+    );
+  }
+}
+const LinkWithNS = withNamespaces("links")(Link);
+
 interface Props {
   center?: boolean;
   links: string[];
 }
 
-class Links extends React.Component<Props & LinkConfigProps & WithNamespaces> {
+class Links extends React.Component<Props & LinkConfigProps> {
   _links: LinkConfig[];
 
-  constructor(props: Props & LinkConfigProps & WithNamespaces) {
+  constructor(props: Props & LinkConfigProps) {
     super(props);
     this._links = props.links
       .filter(linkId => linkConfig.has(linkId))
       .map(linkId => linkConfig.get(linkId)!);
   }
 
+  _onPress = (link: LinkConfig) => {
+    link.action(this.props);
+  };
+
   render() {
-    const { t } = this.props;
+    const { center } = this.props;
     return (
       <View style={styles.container}>
         {this._links.map(link => (
-          <TouchableOpacity
-            key={link.key}
-            onPress={() => link.action(this.props)}
-          >
-            <Text
-              center={this.props.center}
-              content={t(link.key)}
-              style={styles.linkStyle}
-            />
-          </TouchableOpacity>
+          <LinkWithNS center={center} key={link.key} link={link} onPress={this._onPress} />
         ))}
       </View>
     );
   }
 }
 
-export default LinkPropProvider(withNamespaces("links")(Links));
+export default LinkPropProvider(Links);
 
 const styles = StyleSheet.create({
   container: {

@@ -27,6 +27,13 @@ import {
 } from "./../styles";
 
 export const Menu = (props: any) => {
+  const close = () => {
+    props.navigation.closeDrawer();
+    if (props.activeItemKey !== "Home") {
+      props.navigation.navigate("Home");
+    }
+  };
+
   const aboutItems = { ...props, items: props.items.slice(1, 4) };
   const helpItems = { ...props, items: props.items.slice(4) };
   return (
@@ -35,15 +42,7 @@ export const Menu = (props: any) => {
         style={styles.container}
         forceInset={{ top: "always", horizontal: "never" }}
       >
-        <TouchableOpacity
-          style={styles.icon}
-          onPress={() => {
-            props.navigation.closeDrawer();
-            if (props.activeItemKey !== "Home") {
-              props.navigation.navigate("Home");
-            }
-          }}
-        >
+        <TouchableOpacity style={styles.icon} onPress={close}>
           <Feather color={PRIMARY_COLOR} name="x" size={30} />
         </TouchableOpacity>
         <SystemText style={styles.header}>

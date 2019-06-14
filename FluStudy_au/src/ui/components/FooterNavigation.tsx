@@ -29,8 +29,12 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
     next && navigation.push(next);
   };
 
+  _pop = () => {
+    this.props.navigation.pop();
+  };
+
   render() {
-    const { hideBackButton, navigation, stepDots, t } = this.props;
+    const { hideBackButton, stepDots, t } = this.props;
 
     return (
       <View style={styles.container}>
@@ -39,7 +43,7 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
           label={hideBackButton ? " " : t("common:button:back")}
           primary={false}
           style={styles.button}
-          onPress={() => navigation.pop()}
+          onPress={this._pop}
         />
         <StepDots step={stepDots.step} total={stepDots.total} />
         <Button

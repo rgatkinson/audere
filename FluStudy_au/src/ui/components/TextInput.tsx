@@ -41,6 +41,10 @@ interface Props {
 export default class TextInput extends React.Component<Props> {
   textInput = React.createRef<SystemTextInput>();
 
+  _onSubmitEditing = () => {
+    !!this.props.onSubmitEditing && this.props.onSubmitEditing();
+  };
+
   render() {
     return (
       <SystemTextInput
@@ -62,9 +66,7 @@ export default class TextInput extends React.Component<Props> {
         value={this.props.value !== null ? this.props.value : undefined}
         onChangeText={this.props.onChangeText}
         onKeyPress={this.props.onKeyPress}
-        onSubmitEditing={() =>
-          !!this.props.onSubmitEditing && this.props.onSubmitEditing()
-        }
+        onSubmitEditing={this._onSubmitEditing}
         accessibilityLabel={this.props.placeholder}
       />
     );

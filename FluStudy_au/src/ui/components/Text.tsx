@@ -71,6 +71,22 @@ function findMarkdownLinks(text: string): LinkData[] {
   return links;
 }
 
+const textActionLink = (link: LinkData, style?: StyleProp<TextStyle>) => {
+  const onPress = () => {
+    if (textActions.hasOwnProperty(link.url)) {
+      (textActions as any)[link.url](link.title);
+    } else {
+      Linking.openURL(link.url);
+    }
+  };
+
+  return (
+    <SystemText key={link.url} style={style} onPress={onPress}>
+      {link.title}
+    </SystemText>
+  );
+};
+
 function linkify(
   text: string,
   style?: StyleProp<TextStyle>
@@ -91,29 +107,7 @@ function linkify(
     }
 
     // Now the link itself
-    if (textActions.hasOwnProperty(link.url)) {
-      elements.push(
-        <SystemText
-          key={link.url}
-          style={style}
-          onPress={() => (textActions as any)[link.url](link.title)}
-        >
-          {link.title}
-        </SystemText>
-      );
-    } else {
-      elements.push(
-        <SystemText
-          key={link.url}
-          style={style}
-          onPress={() => {
-            Linking.openURL(link.url);
-          }}
-        >
-          {link.title}
-        </SystemText>
-      );
-    }
+    elements.push(textActionLink(link, style));
 
     toProcess = toProcess.substr(link.startIndex + link.length);
   });

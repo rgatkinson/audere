@@ -82,7 +82,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
     }
   }
 
-  _onFastForward(): void {
+  _onFastForward = () => {
     if (this.state.startTimeMs != null) {
       const { totalTimeMs } = this.props;
       this._fastForwardMillis =
@@ -91,7 +91,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
         new Date().getTime() -
         5 * SECOND_MS;
     }
-  }
+  };
 
   _getRemaining(): Date | null {
     const { totalTimeMs } = this.props;
@@ -148,7 +148,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
       <MultiTapContainer
         active={isDemo}
         taps={3}
-        onMultiTap={() => this._onFastForward()}
+        onMultiTap={this._onFastForward}
       >
         <BorderView
           style={{
