@@ -16,7 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
-import { MonthQuestion, SurveyQuestion } from "../../resources/QuestionConfig";
+import { MonthQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {

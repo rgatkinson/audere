@@ -8,7 +8,7 @@ import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { ERROR_COLOR, FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
-import { SurveyQuestion } from "../../resources/QuestionConfig";
+import { SurveyQuestion } from "audere-lib/coughQuestionConfig";
 
 interface Props {
   question: SurveyQuestion;

@@ -16,6 +16,16 @@ export interface ConditionalQuestionConfig {
   key: string;
 }
 
+export enum SurveyQuestionType {
+  ButtonGrid = "buttonGrid",
+  DatePicker = "datePicker",
+  Dropdown = "dropdown",
+  OptionQuestion = "optionQuestion",
+  RadioGrid = "radioGrid",
+  Text = "text",
+  TextInput = "textInput",
+}
+
 export interface SurveyQuestion {
   buttons: ButtonConfig[];
   condition?: ConditionalQuestionConfig;
@@ -24,14 +34,7 @@ export interface SurveyQuestion {
   required?: boolean;
   subquestion?: boolean;
   title: string;
-  type:
-    | "buttonGrid"
-    | "radioGrid"
-    | "text"
-    | "textInput"
-    | "optionQuestion"
-    | "datePicker"
-    | "dropdown";
+  type: SurveyQuestionType;
 }
 
 export interface OptionQuestion extends SurveyQuestion {
@@ -66,7 +69,7 @@ export const WhatSymptomsConfig: OptionQuestion = {
   ],
   required: true,
   title: "whatSymptoms",
-  type: "optionQuestion",
+  type: SurveyQuestionType.OptionQuestion,
 };
 
 export const SymptomsStartConfig: SurveyQuestion = {
@@ -75,7 +78,7 @@ export const SymptomsStartConfig: SurveyQuestion = {
   title: "symptomsStart",
   description: "symptomsStart",
   required: true,
-  type: "text",
+  type: SurveyQuestionType.Text,
 };
 
 export const FeverStartConfig: SurveyQuestion = {
@@ -95,7 +98,7 @@ export const FeverStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const CoughStartConfig: SurveyQuestion = {
@@ -115,7 +118,7 @@ export const CoughStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FatigueStartConfig: SurveyQuestion = {
@@ -135,7 +138,7 @@ export const FatigueStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ChillsStartConfig: SurveyQuestion = {
@@ -155,7 +158,7 @@ export const ChillsStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SoreThroatStartConfig: SurveyQuestion = {
@@ -175,7 +178,7 @@ export const SoreThroatStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const HeadacheStartConfig: SurveyQuestion = {
@@ -195,7 +198,7 @@ export const HeadacheStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const AchesStartConfig: SurveyQuestion = {
@@ -215,7 +218,7 @@ export const AchesStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const RunningNoseStartConfig: SurveyQuestion = {
@@ -235,7 +238,7 @@ export const RunningNoseStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ShortBreathStartConfig: SurveyQuestion = {
@@ -255,7 +258,7 @@ export const ShortBreathStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const VomitingStartConfig: SurveyQuestion = {
@@ -275,7 +278,7 @@ export const VomitingStartConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsStart",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SymptomsLast48Config: SurveyQuestion = {
@@ -283,7 +286,7 @@ export const SymptomsLast48Config: SurveyQuestion = {
   buttons: [],
   title: "symptomsLast48",
   required: true,
-  type: "text",
+  type: SurveyQuestionType.Text,
 };
 
 export const FeverLast48Config: SurveyQuestion = {
@@ -301,7 +304,7 @@ export const FeverLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const CoughLast48Config: SurveyQuestion = {
@@ -319,7 +322,7 @@ export const CoughLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FatigueLast48Config: SurveyQuestion = {
@@ -337,7 +340,7 @@ export const FatigueLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ChillsLast48Config: SurveyQuestion = {
@@ -355,7 +358,7 @@ export const ChillsLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SoreThroatLast48Config: SurveyQuestion = {
@@ -373,7 +376,7 @@ export const SoreThroatLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const HeadacheLast48Config: SurveyQuestion = {
@@ -391,7 +394,7 @@ export const HeadacheLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const AchesLast48Config: SurveyQuestion = {
@@ -409,7 +412,7 @@ export const AchesLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const RunningNoseLast48Config: SurveyQuestion = {
@@ -427,7 +430,7 @@ export const RunningNoseLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ShortBreathLast48Config: SurveyQuestion = {
@@ -445,7 +448,7 @@ export const ShortBreathLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const VomitingLast48Config: SurveyQuestion = {
@@ -463,7 +466,7 @@ export const VomitingLast48Config: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsLast48",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SymptomsSeverityConfig: SurveyQuestion = {
@@ -472,7 +475,7 @@ export const SymptomsSeverityConfig: SurveyQuestion = {
   title: "symptomsSeverity",
   description: "symptomsSeverity",
   required: true,
-  type: "text",
+  type: SurveyQuestionType.Text,
 };
 
 export const FeverSeverityConfig: SurveyQuestion = {
@@ -491,7 +494,7 @@ export const FeverSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const CoughSeverityConfig: SurveyQuestion = {
@@ -510,7 +513,7 @@ export const CoughSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FatigueSeverityConfig: SurveyQuestion = {
@@ -529,7 +532,7 @@ export const FatigueSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ChillsSeverityConfig: SurveyQuestion = {
@@ -548,7 +551,7 @@ export const ChillsSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SoreThroatSeverityConfig: SurveyQuestion = {
@@ -567,7 +570,7 @@ export const SoreThroatSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const HeadacheSeverityConfig: SurveyQuestion = {
@@ -586,7 +589,7 @@ export const HeadacheSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const AchesSeverityConfig: SurveyQuestion = {
@@ -605,7 +608,7 @@ export const AchesSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const RunningNoseSeverityConfig: SurveyQuestion = {
@@ -624,7 +627,7 @@ export const RunningNoseSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ShortBreathSeverityConfig: SurveyQuestion = {
@@ -643,7 +646,7 @@ export const ShortBreathSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const VomitingSeverityConfig: SurveyQuestion = {
@@ -662,7 +665,7 @@ export const VomitingSeverityConfig: SurveyQuestion = {
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const InContactConfig: SurveyQuestion = {
@@ -673,7 +676,7 @@ export const InContactConfig: SurveyQuestion = {
   ],
   id: "InContact",
   title: "inContact",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const CoughSneezeConfig: SurveyQuestion = {
@@ -689,7 +692,7 @@ export const CoughSneezeConfig: SurveyQuestion = {
   },
   id: "CoughSneeze",
   title: "coughSneeze",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const HouseholdChildrenConfig: SurveyQuestion = {
@@ -700,7 +703,7 @@ export const HouseholdChildrenConfig: SurveyQuestion = {
   ],
   id: "HouseholdChildren",
   title: "householdChildren",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const ChildrenWithChildrenConfig: SurveyQuestion = {
@@ -716,7 +719,7 @@ export const ChildrenWithChildrenConfig: SurveyQuestion = {
     id: HouseholdChildrenConfig.id,
     answer: "yes",
   },
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const YoungChildrenConfig: SurveyQuestion = {
@@ -729,7 +732,7 @@ export const YoungChildrenConfig: SurveyQuestion = {
   ],
   id: "YoungChildren",
   title: "youngChildren",
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const PeopleInHouseholdConfig: SurveyQuestion = {
@@ -741,7 +744,7 @@ export const PeopleInHouseholdConfig: SurveyQuestion = {
   ],
   id: "PeopleInHousehold",
   title: "peopleInHousehold",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const BedroomsConfig: SurveyQuestion = {
@@ -754,7 +757,7 @@ export const BedroomsConfig: SurveyQuestion = {
   ],
   id: "Bedrooms",
   title: "bedrooms",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FluShotConfig: SurveyQuestion = {
@@ -765,7 +768,7 @@ export const FluShotConfig: SurveyQuestion = {
   ],
   id: "FluShot",
   title: "fluShot",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FluShotDateConfig: MonthQuestion = {
@@ -774,7 +777,7 @@ export const FluShotDateConfig: MonthQuestion = {
   id: "FluShotDate",
   monthRange: 12,
   title: "fluShotDate",
-  type: "datePicker",
+  type: SurveyQuestionType.DatePicker,
 };
 
 export const FluShotNationalImmunization: SurveyQuestion = {
@@ -786,7 +789,7 @@ export const FluShotNationalImmunization: SurveyQuestion = {
   condition: { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
   id: "FluShotNationalImmunization",
   title: "fluShotNationalImmunization",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const FluShotNationalImmunizationCondition: SurveyQuestion = {
@@ -798,7 +801,7 @@ export const FluShotNationalImmunizationCondition: SurveyQuestion = {
   },
   id: "FluShotNationalImmunizationCondition",
   title: "fluShotNationalImmunizationCondition",
-  type: "textInput",
+  type: SurveyQuestionType.TextInput,
 };
 
 export const PreviousSeason: SurveyQuestion = {
@@ -810,7 +813,7 @@ export const PreviousSeason: SurveyQuestion = {
   ],
   id: "PreviousSeason",
   title: "previousSeason",
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const AssignedSexConfig: SurveyQuestion = {
@@ -822,7 +825,7 @@ export const AssignedSexConfig: SurveyQuestion = {
   ],
   id: "AssignedSex",
   title: "assignedSex",
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const MedicalConditionConfig: OptionQuestion = {
@@ -839,7 +842,7 @@ export const MedicalConditionConfig: OptionQuestion = {
   ],
   exclusiveOptions: ["noneOfThese", "doNotKnow"],
   title: "medicalCondition",
-  type: "optionQuestion",
+  type: SurveyQuestionType.OptionQuestion,
 };
 
 export const HealthCareWorkerConfig: SurveyQuestion = {
@@ -850,7 +853,7 @@ export const HealthCareWorkerConfig: SurveyQuestion = {
   ],
   id: "HealthcareWorker",
   title: "healthcareWorker",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SmokeTobaccoConfig: SurveyQuestion = {
@@ -860,7 +863,7 @@ export const SmokeTobaccoConfig: SurveyQuestion = {
   ],
   id: "SmokeTobacco",
   title: "smokeTobacco",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const HouseholdTobaccoConfig: SurveyQuestion = {
@@ -870,7 +873,7 @@ export const HouseholdTobaccoConfig: SurveyQuestion = {
   ],
   id: "HouseholdTobacco",
   title: "householdTobacco",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const InterferingConfig: SurveyQuestion = {
@@ -880,7 +883,7 @@ export const InterferingConfig: SurveyQuestion = {
   ],
   id: "Interfering",
   title: "interfering",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const AntibioticsConfig: SurveyQuestion = {
@@ -892,7 +895,7 @@ export const AntibioticsConfig: SurveyQuestion = {
   id: "Antibiotics",
   required: true,
   title: "antibiotics",
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const AgeConfig: DropDownQuestion = {
@@ -916,7 +919,7 @@ export const AgeConfig: DropDownQuestion = {
   id: "Age",
   placeholder: "selectAge",
   title: "age",
-  type: "dropdown",
+  type: SurveyQuestionType.Dropdown,
 };
 
 export const RaceConfig: OptionQuestion = {
@@ -937,7 +940,7 @@ export const RaceConfig: OptionQuestion = {
   ],
   id: "Race",
   title: "race",
-  type: "optionQuestion",
+  type: SurveyQuestionType.OptionQuestion,
 };
 
 export const BlueLineConfig: SurveyQuestion = {
@@ -949,7 +952,7 @@ export const BlueLineConfig: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
   ],
   required: true,
-  type: "buttonGrid",
+  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const PinkWhenBlueConfig: SurveyQuestion = {
@@ -987,7 +990,7 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
     },
   ],
   required: true,
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const PinkLineConfig: SurveyQuestion = {
@@ -1004,7 +1007,7 @@ export const PinkLineConfig: SurveyQuestion = {
     { key: "yesOnePink", primary: false, enabled: true },
     { key: "yesTwoPink", primary: false, enabled: true },
   ],
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const TestFeedbackConfig: SurveyQuestion = {
@@ -1017,5 +1020,67 @@ export const TestFeedbackConfig: SurveyQuestion = {
     { key: "confusingNotCorrect", primary: false, enabled: true },
     { key: "incorrect", primary: false, enabled: true },
   ],
-  type: "radioGrid",
+  type: SurveyQuestionType.RadioGrid,
 };
+
+export const SURVEY_QUESTIONS = [
+  WhatSymptomsConfig,
+  SymptomsStartConfig,
+  FeverStartConfig,
+  CoughStartConfig,
+  FatigueStartConfig,
+  ChillsStartConfig,
+  SoreThroatStartConfig,
+  HeadacheStartConfig,
+  AchesStartConfig,
+  RunningNoseStartConfig,
+  ShortBreathStartConfig,
+  VomitingStartConfig,
+  SymptomsLast48Config,
+  FeverLast48Config,
+  CoughLast48Config,
+  FatigueLast48Config,
+  ChillsLast48Config,
+  SoreThroatLast48Config,
+  HeadacheLast48Config,
+  AchesLast48Config,
+  RunningNoseLast48Config,
+  ShortBreathLast48Config,
+  VomitingLast48Config,
+  SymptomsSeverityConfig,
+  FeverSeverityConfig,
+  CoughSeverityConfig,
+  FatigueSeverityConfig,
+  ChillsSeverityConfig,
+  SoreThroatSeverityConfig,
+  HeadacheSeverityConfig,
+  AchesSeverityConfig,
+  RunningNoseSeverityConfig,
+  ShortBreathSeverityConfig,
+  VomitingSeverityConfig,
+  InContactConfig,
+  CoughSneezeConfig,
+  HouseholdChildrenConfig,
+  ChildrenWithChildrenConfig,
+  YoungChildrenConfig,
+  PeopleInHouseholdConfig,
+  BedroomsConfig,
+  FluShotConfig,
+  FluShotDateConfig,
+  FluShotNationalImmunization,
+  FluShotNationalImmunizationCondition,
+  PreviousSeason,
+  AssignedSexConfig,
+  MedicalConditionConfig,
+  HealthCareWorkerConfig,
+  SmokeTobaccoConfig,
+  HouseholdTobaccoConfig,
+  InterferingConfig,
+  AntibioticsConfig,
+  AgeConfig,
+  RaceConfig,
+  BlueLineConfig,
+  PinkWhenBlueConfig,
+  PinkLineConfig,
+  TestFeedbackConfig
+];

@@ -1,4 +1,4 @@
-import { SurveyQuestion } from "../resources/QuestionConfig";
+import { SurveyQuestion } from "audere-lib/coughQuestionConfig";
 import { StoreState } from "../store";
 
 export function getAnswerType(questionType: string) {

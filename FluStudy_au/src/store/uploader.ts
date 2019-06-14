@@ -25,7 +25,7 @@ import {
   ChildrenWithChildrenConfig,
   HouseholdChildrenConfig,
   AssignedSexConfig,
-} from "../resources/QuestionConfig";
+} from "audere-lib/coughQuestionConfig";
 import { crashlytics } from "../crashReporter";
 import { tracker, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";

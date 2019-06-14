@@ -72,7 +72,7 @@ import {
   BlueLineConfig,
   PinkWhenBlueConfig,
   PinkLineConfig,
-} from "./QuestionConfig";
+} from "audere-lib/coughQuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";

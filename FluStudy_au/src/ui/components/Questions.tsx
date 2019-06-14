@@ -22,7 +22,8 @@ import {
   MonthQuestion,
   OptionQuestion,
   SurveyQuestion,
-} from "../../resources/QuestionConfig";
+  SurveyQuestionType,
+} from "audere-lib/coughQuestionConfig";
 
 interface Props {
   answers: Map<string, any>;
@@ -95,9 +96,9 @@ class Questions extends React.PureComponent<Props, State> {
 
   _hasAnswer = (config: SurveyQuestion) => {
     switch (config.type) {
-      case "text":
+      case SurveyQuestionType.Text:
         return true;
-      case "optionQuestion":
+      case SurveyQuestionType.OptionQuestion:
         const options: Option[] | undefined = this.props.answers.get(config.id);
         return options
           ? options.reduce(
@@ -105,10 +106,10 @@ class Questions extends React.PureComponent<Props, State> {
               false
             )
           : false;
-      case "radioGrid":
-      case "buttonGrid":
-      case "datePicker":
-      case "textInput":
+      case SurveyQuestionType.RadioGrid:
+      case SurveyQuestionType.ButtonGrid:
+      case SurveyQuestionType.DatePicker:
+      case SurveyQuestionType.TextInput:
         return this.props.answers.get(config.id) != null;
       default:
         return false;
@@ -119,29 +120,29 @@ class Questions extends React.PureComponent<Props, State> {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
     switch (config.type) {
-      case "optionQuestion":
+      case SurveyQuestionType.OptionQuestion:
         return (
           <OptionList
             highlighted={highlighted}
             question={config as OptionQuestion}
           />
         );
-      case "radioGrid":
+      case SurveyQuestionType.RadioGrid:
         return <RadioGrid highlighted={highlighted} question={config} />;
-      case "buttonGrid":
+      case SurveyQuestionType.ButtonGrid:
         return <ButtonGrid highlighted={highlighted} question={config} />;
-      case "datePicker":
+      case SurveyQuestionType.DatePicker:
         return (
           <MonthPicker
             highlighted={highlighted}
             question={config as MonthQuestion}
           />
         );
-      case "textInput":
+      case SurveyQuestionType.TextInput:
         return (
           <TextInputQuestion highlighted={highlighted} question={config} />
         );
-      case "dropdown":
+      case SurveyQuestionType.Dropdown:
         return (
           <DropDown
             highlighted={highlighted}

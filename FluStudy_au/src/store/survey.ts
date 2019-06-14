@@ -21,7 +21,7 @@ import {
   SurveyAnswer,
   SurveyResponse,
 } from "./types";
-import { OptionQuestion, SurveyQuestion } from "../resources/QuestionConfig";
+import { OptionQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
 import { onCSRUIDEstablished } from "../util/tracker";
 import { DEVICE_INFO, ios } from "../transport/DeviceInfo";
 import i18n from "i18next";

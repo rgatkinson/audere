@@ -18,7 +18,7 @@ import { Action, updateAnswer, StoreState } from "../../store";
 import {
   DropDownQuestion,
   SurveyQuestion,
-} from "../../resources/QuestionConfig";
+} from "audere-lib/coughQuestionConfig";
 import { getSelectedButton } from "../../util/survey";
 import Modal from "./Modal";
 import Text from "./Text";

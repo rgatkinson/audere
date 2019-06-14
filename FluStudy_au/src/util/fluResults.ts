@@ -9,7 +9,7 @@ import { getSelectedButton } from "./survey";
 import {
   BlueLineConfig,
   PinkWhenBlueConfig,
-} from "../resources/QuestionConfig";
+} from "audere-lib/coughQuestionConfig";
 
 export async function getFluResultScreen() {
   const state = (await getStore()).getState();

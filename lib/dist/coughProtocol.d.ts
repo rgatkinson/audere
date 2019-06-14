@@ -48,6 +48,7 @@ export interface SurveyNonPIIInfo extends CommonInfo {
     samples: SampleInfo[];
     invalidBarcodes?: SampleInfo[];
     responses: ResponseInfo[];
+    rdtInfo?: RDTInfo;
 }
 export interface PushNotificationState {
     showedSystemPrompt: boolean;
@@ -91,4 +92,31 @@ export declare enum EventInfoKind {
     AppNav = "appNav",
     TimeoutNav = "timeoutNav",
     Render = "render"
+}
+export interface RDTInfo {
+    rdtReaderResult?: RDTReaderResult;
+}
+export interface RDTReaderResult {
+    testStripFound: boolean;
+    skippedDueToMemWarning?: boolean;
+    isCentered?: boolean;
+    sizeResult?: RDTReaderSizeResult;
+    isFocused?: boolean;
+    angle?: number;
+    isRightOrientation?: boolean;
+    exposureResult?: RDTReaderExposureResult;
+    controlLineFound?: boolean;
+    testALineFound?: boolean;
+    testBLineFound?: boolean;
+}
+export declare enum RDTReaderExposureResult {
+    UNDER_EXPOSED = 0,
+    NORMAL = 1,
+    OVER_EXPOSED = 2
+}
+export declare enum RDTReaderSizeResult {
+    RIGHT_SIZE = 0,
+    LARGE = 1,
+    SMALL = 2,
+    INVALID = 3
 }

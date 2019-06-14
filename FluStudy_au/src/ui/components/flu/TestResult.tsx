@@ -4,7 +4,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
 import { getSelectedButton } from "../../../util/survey";
-import { PinkWhenBlueConfig } from "../../../resources/QuestionConfig";
+import { PinkWhenBlueConfig } from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Text from "../Text";
