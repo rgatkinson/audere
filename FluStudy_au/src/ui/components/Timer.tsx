@@ -20,10 +20,12 @@ import Text from "./Text";
 import MultiTapContainer from "./MultiTapContainer";
 
 const SECOND_MS = 1000;
+const SECONDS_MINUTE = 60;
+const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
+const FAST_FORWARD_MS = 5 * SECOND_MS;
 
-interface TimerState {
-  remaining: Date | null | undefined;
-  startTimeMs: number | null;
+interface State {
+  remainingMs: number | null | undefined;
 }
 
 interface Props {
@@ -31,48 +33,33 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   next: string;
   startTimeConfig: string;
+  startTimeMs: number;
   totalTimeMs: number;
 }
 
 class Timer extends React.Component<Props & WithNamespaces> {
   state = {
-    remaining: undefined,
-    startTimeMs: null,
+    remainingMs: undefined,
   };
 
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
-  _fastForwardMillis = 0;
-  _userInfo = {};
 
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this._userInfo = { id: props.startTimeConfig };
-  }
-
-  static getDerivedStateFromProps(
-    props: Props & WithNamespaces,
-    state: TimerState
-  ) {
-    // @ts-ignore
-    const startTimeMs = props[props.startTimeConfig];
-    if (startTimeMs !== state.startTimeMs) {
-      return { startTimeMs };
-    }
-    return null;
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state != this.state ||
+      props.isDemo != this.props.isDemo ||
+      props.startTimeMs != this.props.startTimeMs ||
+      props.totalTimeMs != this.props.totalTimeMs
+    );
   }
 
   componentDidMount() {
     this._willFocus = this.props.navigation.addListener("willFocus", () =>
-      this._setTimer()
+      this._startClock()
     );
 
-    const remaining = this._getRemaining();
-    this.setState({ remaining });
-
-    if (this.props.navigation.isFocused() && remaining != null) {
-      this._setTimer();
-    }
+    this._startClock();
   }
 
   componentWillUnmount() {
@@ -83,66 +70,60 @@ class Timer extends React.Component<Props & WithNamespaces> {
   }
 
   _onFastForward = () => {
-    if (this.state.startTimeMs != null) {
-      const { totalTimeMs } = this.props;
-      this._fastForwardMillis =
-        this.state.startTimeMs! +
-        totalTimeMs -
-        new Date().getTime() -
-        5 * SECOND_MS;
+    this.setState({ remainingMs: FAST_FORWARD_MS });
+  };
+
+  _getRemainingMs(): number | null {
+    const { startTimeMs, totalTimeMs } = this.props;
+    const deltaMillis = startTimeMs + totalTimeMs - new Date().getTime();
+    return deltaMillis > SECOND_MS ? deltaMillis : null;
+  }
+
+  _getRemainingLabel = (): string => {
+    const { remainingMs } = this.state;
+    if (remainingMs == null) {
+      return "00:00";
+    }
+
+    const minutes = Math.floor(remainingMs / MINUTE_MS).toString();
+    const seconds = (Math.floor(remainingMs % MINUTE_MS) / SECOND_MS).toFixed();
+
+    // @ts-ignore
+    return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
+  };
+
+  _startClock = () => {
+    if (this.props.navigation.isFocused()) {
+      const remainingMs = this._getRemainingMs();
+      this.setState({ remainingMs });
+      if (remainingMs != null) {
+        this._setTimer();
+      }
     }
   };
 
-  _getRemaining(): Date | null {
-    const { totalTimeMs } = this.props;
-    // @ts-ignore
-    const remaining = new Date(null);
-    if (this.state.startTimeMs == null) {
-      remaining.setMilliseconds(totalTimeMs);
-      return remaining;
-    } else {
-      const deltaMillis =
-        this.state.startTimeMs! +
-        totalTimeMs -
-        new Date().getTime() -
-        this._fastForwardMillis;
-      if (deltaMillis > 0) {
-        remaining.setMilliseconds(deltaMillis);
-        return remaining;
-      } else {
-        return null;
-      }
-    }
-  }
-
-  getRemainingLabel(): string {
-    if (this.state.remaining == null) {
-      return "00:00";
-    }
-    // @ts-ignore
-    return this.state.remaining!.toISOString().substr(14, 5);
-  }
-
-  _setTimer() {
-    if (this.props.navigation.isFocused() && this.state.remaining !== null) {
-      setTimeout(() => {
-        if (
-          this.props.navigation.isFocused() &&
-          this.state.remaining !== null
-        ) {
-          const remaining = this._getRemaining();
-          this.setState({ remaining });
-          if (remaining != null) {
-            this._setTimer();
+  _setTimer = () => {
+    if (this._timer == null) {
+      this._timer = setTimeout(() => {
+        this._timer = undefined;
+        if (this.props.navigation.isFocused()) {
+          if (this.state.remainingMs != null) {
+            const remainingMs = this.state.remainingMs! - SECOND_MS;
+            if (remainingMs < SECOND_MS) {
+              this.setState({ remainingMs: null });
+            } else {
+              this.setState({ remainingMs });
+              this._setTimer();
+            }
           }
         }
-      }, 1000);
+      }, SECOND_MS);
     }
-  }
+  };
 
   render() {
     const { isDemo, next, t } = this.props;
-    return this.state.remaining === null ? (
+    return this.state.remainingMs === null ? (
       <ContinueButton next={next} />
     ) : (
       <MultiTapContainer
@@ -160,7 +141,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
         >
           <Text
             bold={true}
-            content={this.getRemainingLabel()}
+            content={this._getRemainingLabel()}
             style={{ color: SECONDARY_COLOR }}
           />
         </BorderView>
@@ -169,8 +150,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
   }
 }
 
-export default connect((state: StoreState) => ({
+export default connect((state: StoreState, props: Props & WithNamespaces) => ({
   isDemo: state.meta.isDemo,
-  oneMinuteStartTime: state.survey.oneMinuteStartTime,
-  tenMinuteStartTime: state.survey.tenMinuteStartTime,
+  startTimeMs: state.survey[props.startTimeConfig],
 }))(withNavigation(withNamespaces()(Timer)));
