@@ -42,7 +42,7 @@ interface Props {
   links: string[];
 }
 
-class Links extends React.Component<Props & LinkConfigProps> {
+class Links extends React.PureComponent<Props & LinkConfigProps> {
   _links: LinkConfig[];
 
   constructor(props: Props & LinkConfigProps) {

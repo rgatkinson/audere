@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
@@ -47,7 +46,6 @@ const months = [
 
 interface MonthModalProps {
   date: Date | undefined;
-  isFocused: boolean;
   options: Date[];
   visible: boolean;
   onDismiss(date: Date | undefined): void;
@@ -61,10 +59,6 @@ class MonthModal extends React.Component<
   MonthModalProps & WithNamespaces,
   MonthModalState
 > {
-  shouldComponentUpdate(props: MonthModalProps & WithNamespaces) {
-    return props.isFocused;
-  }
-
   state = {
     date: this.props.date,
   };
@@ -138,17 +132,11 @@ const TranslatedMonthModal = withNamespaces("monthPicker")(MonthModal);
 interface Props {
   date?: Date;
   highlighted?: boolean;
-  isFocused: boolean;
-  navigation: NavigationScreenProp<any, any>;
   question: MonthQuestion;
   dispatch(action: Action): void;
 }
 
 class MonthPicker extends React.Component<Props & WithNamespaces> {
-  shouldComponentUpdate(props: Props & WithNamespaces) {
-    return props.isFocused;
-  }
-
   state = {
     pickerOpen: false,
   };
@@ -198,7 +186,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { date, highlighted, isFocused, question, t } = this.props;
+    const { date, highlighted, question, t } = this.props;
 
     return (
       <View
@@ -223,7 +211,6 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
           </TouchableOpacity>
         )}
         <TranslatedMonthModal
-          isFocused={isFocused}
           options={this._getOptions()}
           date={!!date ? date : undefined}
           visible={this.state.pickerOpen}
@@ -246,4 +233,4 @@ const styles = StyleSheet.create({
 });
 export default connect((state: StoreState, props: Props) => ({
   date: getAnswer(state, props.question),
-}))(withNavigationFocus(withNamespaces("monthPicker")(MonthPicker)));
+}))(withNamespaces("monthPicker")(MonthPicker));

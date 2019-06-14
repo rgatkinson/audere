@@ -152,7 +152,7 @@ const circleConfigs: Map<string, CircleConfig> = new Map<string, CircleConfig>([
   ],
 ]);
 
-export default class Text extends React.Component<Props> {
+export default class Text extends React.PureComponent<Props> {
   _makeCircle(character: string) {
     const config = circleConfigs.get(character);
     if (config == null) {

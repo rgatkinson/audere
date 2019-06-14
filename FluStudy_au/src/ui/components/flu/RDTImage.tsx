@@ -9,7 +9,7 @@ interface Props {
   uri: string;
 }
 
-class RDTImage extends React.Component<Props> {
+class RDTImage extends React.PureComponent<Props> {
   render() {
     const { rdt, uri } = this.props;
     if (uri == null) {

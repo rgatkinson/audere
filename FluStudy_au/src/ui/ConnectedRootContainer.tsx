@@ -54,7 +54,7 @@ interface SplashProps {
   onUnmount(): void;
 }
 
-class SplashScreen extends React.Component<SplashProps> {
+class SplashScreen extends React.PureComponent<SplashProps> {
   componentWillUnmount() {
     this.props.onUnmount();
   }

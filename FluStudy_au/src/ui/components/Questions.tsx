@@ -5,7 +5,6 @@
 
 import React, { RefObject, Fragment } from "react";
 import { StyleSheet, View } from "react-native";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { connect } from "react-redux";
 import { getAnswer, getAnswerForID } from "../../util/survey";
@@ -28,8 +27,6 @@ import {
 interface Props {
   answers: Map<string, any>;
   conditionals: Map<string, any>;
-  isFocused: boolean;
-  navigation: NavigationScreenProp<any, any>;
   questions: SurveyQuestion[];
   logOnSave?(): Promise<void>;
 }
@@ -38,7 +35,7 @@ interface State {
   triedToProceed: boolean;
 }
 
-class Questions extends React.Component<Props, State> {
+class Questions extends React.PureComponent<Props, State> {
   _requiredQuestions: Map<string, RefObject<any>>;
 
   constructor(props: Props) {
@@ -50,10 +47,6 @@ class Questions extends React.Component<Props, State> {
         this._requiredQuestions.set(config.id, React.createRef());
       }
     });
-  }
-
-  shouldComponentUpdate(props: Props) {
-    return props.isFocused;
   }
 
   _evaluateConditional = (config: SurveyQuestion) => {
@@ -199,4 +192,4 @@ export default connect((state: StoreState, props: Props) => ({
       map.set(obj.id, obj.answer);
       return map;
     }, new Map<string, any>()),
-}))(withNavigationFocus(customRef(Questions)));
+}))(customRef(Questions));

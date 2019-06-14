@@ -32,7 +32,7 @@ interface Props {
   splashImage?: string;
 }
 
-export default class Chrome extends React.Component<Props> {
+export default class Chrome extends React.PureComponent<Props> {
   render() {
     const {
       children,

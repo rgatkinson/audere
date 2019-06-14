@@ -24,7 +24,7 @@ interface State {
   text?: string | null;
 }
 
-export default class NumberInput extends React.Component<Props, State> {
+export default class NumberInput extends React.PureComponent<Props, State> {
   textInput = React.createRef<TextInput>();
 
   constructor(props: Props) {

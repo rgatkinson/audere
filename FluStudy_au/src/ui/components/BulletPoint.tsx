@@ -14,7 +14,7 @@ interface Props {
   customBulletUri?: string;
 }
 
-export class BulletPoint extends React.Component<Props> {
+export class BulletPoint extends React.PureComponent<Props> {
   render() {
     const { customBulletUri, content } = this.props;
     return (

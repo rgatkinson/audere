@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
@@ -35,8 +34,6 @@ import {
 interface Props {
   question: OptionQuestion;
   highlighted?: boolean;
-  isFocused: boolean;
-  navigation: NavigationScreenProp<any, any>;
   options?: Option[];
   dispatch(action: Action): void;
 }
@@ -49,11 +46,7 @@ const emptyList = (data: string[]) =>
     };
   });
 
-class OptionList extends React.Component<Props> {
-  shouldComponentUpdate(props: Props) {
-    return props.isFocused;
-  }
-
+class OptionList extends React.PureComponent<Props> {
   _isExclusive(id: string): boolean {
     return (this.props.question.exclusiveOptions || []).some(key => key === id);
   }
@@ -132,7 +125,7 @@ class OptionList extends React.Component<Props> {
 }
 export default connect((state: StoreState, props: Props) => ({
   options: getAnswer(state, props.question),
-}))(withNavigationFocus(OptionList));
+}))(OptionList);
 
 interface ItemProps {
   highlighted?: boolean;
@@ -149,6 +142,7 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
     return (
       this.props.highlighted != props.highlighted ||
       this.props.selected != props.selected ||
+      this.props.style != props.style ||
       this.props.id != props.id
     );
   }

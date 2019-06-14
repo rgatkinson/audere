@@ -11,7 +11,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
@@ -30,18 +29,12 @@ import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
-  isFocused: boolean;
-  navigation: NavigationScreenProp<any, any>;
   question: SurveyQuestion;
   selected?: string;
   dispatch(action: Action): void;
 }
 
-class ButtonGrid extends React.Component<Props> {
-  shouldComponentUpdate(props: Props) {
-    return props.isFocused;
-  }
-
+class ButtonGrid extends React.PureComponent<Props> {
   _onPress = (buttonKey: string) => {
     const selected = this.props.selected === buttonKey ? undefined : buttonKey;
     this.props.dispatch(
@@ -75,7 +68,7 @@ class ButtonGrid extends React.Component<Props> {
 }
 export default connect((state: StoreState, props: Props) => ({
   selected: getSelectedButton(state, props.question),
-}))(withNavigationFocus(ButtonGrid));
+}))(ButtonGrid);
 
 interface ItemProps {
   buttonKey: string;

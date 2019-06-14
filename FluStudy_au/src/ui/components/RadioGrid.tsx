@@ -13,7 +13,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
 import { getSelectedButton } from "../../util/survey";
@@ -35,8 +34,6 @@ import Text from "./Text";
 
 interface Props {
   highlighted?: boolean;
-  isFocused: boolean;
-  navigation: NavigationScreenProp<any, any>;
   question: SurveyQuestion;
   style?: StyleProp<ViewStyle>;
   selected?: string;
@@ -47,14 +44,10 @@ interface State {
   helpSelected: string | null;
 }
 
-class RadioGrid extends React.Component<Props, State> {
+class RadioGrid extends React.PureComponent<Props, State> {
   state = {
     helpSelected: null,
   };
-
-  shouldComponentUpdate(props: Props) {
-    return props.isFocused;
-  }
 
   _onPress = (key: string) => {
     this.setState({ helpSelected: null });
@@ -91,7 +84,7 @@ class RadioGrid extends React.Component<Props, State> {
 }
 export default connect((state: StoreState, props: Props) => ({
   selected: getSelectedButton(state, props.question),
-}))(withNavigationFocus(RadioGrid));
+}))(RadioGrid);
 
 interface ItemProps {
   config: ButtonConfig;

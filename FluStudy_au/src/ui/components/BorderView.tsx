@@ -18,7 +18,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-export default class BorderView extends React.Component<Props> {
+export default class BorderView extends React.PureComponent<Props> {
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
