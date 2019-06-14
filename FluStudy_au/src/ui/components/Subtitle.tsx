@@ -15,6 +15,10 @@ interface Props {
 }
 
 class Subtitle extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.label != this.props.label;
+  }
+
   render() {
     const { label, t } = this.props;
     return (

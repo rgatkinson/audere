@@ -78,6 +78,10 @@ interface Props {
 }
 
 class ConnectedRootContainer extends React.Component<Props> {
+  shouldComponentUpdate(props: Props) {
+    return props.isDemo != this.props.isDemo;
+  }
+
   state = {
     appState: "active",
   };

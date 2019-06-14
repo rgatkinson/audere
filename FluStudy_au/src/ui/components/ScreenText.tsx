@@ -16,6 +16,15 @@ interface Props {
 }
 
 class ScreenText extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.center != this.props.center ||
+      props.label != this.props.label ||
+      props.namespace != this.props.namespace ||
+      props.italic != this.props.italic
+    );
+  }
+
   render() {
     const { center, italic, namespace, label, t } = this.props;
     return (

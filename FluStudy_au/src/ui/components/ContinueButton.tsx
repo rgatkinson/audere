@@ -22,6 +22,12 @@ interface Props {
 }
 
 class ContinueButton extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.label != this.props.label || props.namespace != this.props.namespace
+    );
+  }
+
   _onNext = async () => {
     const {
       dispatch,

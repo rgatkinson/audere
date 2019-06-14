@@ -63,6 +63,18 @@ class MonthModal extends React.Component<
     date: this.props.date,
   };
 
+  shouldComponentUpdate(
+    props: MonthModalProps & WithNamespaces,
+    state: MonthModalState
+  ) {
+    return (
+      state != this.state ||
+      props.date != this.props.date ||
+      props.visible != this.props.visible ||
+      props.options != this.props.options
+    );
+  }
+
   _onValueChange = (selected: number | string) => {
     if (selected === this.props.t("selectDate")) {
       this.setState({ date: undefined });
@@ -136,10 +148,23 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class MonthPicker extends React.Component<Props & WithNamespaces> {
+interface State {
+  pickerOpen: boolean;
+}
+
+class MonthPicker extends React.Component<Props & WithNamespaces, State> {
   state = {
     pickerOpen: false,
   };
+
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state != this.state ||
+      props.date != this.props.date ||
+      props.highlighted != this.props.highlighted ||
+      props.question != this.props.question
+    );
+  }
 
   _getOptions(): Date[] {
     const monthRange = this.props.question.monthRange;

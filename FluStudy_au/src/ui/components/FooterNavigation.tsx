@@ -23,6 +23,13 @@ interface Props {
 }
 
 class FooterNavigation extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.hideBackButton != this.props.hideBackButton ||
+      props.stepDots != this.props.stepDots
+    );
+  }
+
   _onNext = () => {
     const { navigation, next } = this.props;
     next && navigation.push(next);

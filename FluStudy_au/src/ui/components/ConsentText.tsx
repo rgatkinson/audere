@@ -11,6 +11,10 @@ import Text from "./Text";
 import { GUTTER, SMALL_TEXT } from "../styles";
 
 class ConsentText extends React.Component<WithNamespaces> {
+  shouldComponentUpdate() {
+    return false;
+  }
+
   render() {
     const { t } = this.props;
     return (

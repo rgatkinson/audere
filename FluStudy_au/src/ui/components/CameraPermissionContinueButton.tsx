@@ -19,6 +19,10 @@ interface Props {
 class CameraPermissionContinueButton extends React.Component<
   Props & WithNamespaces
 > {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return false;
+  }
+
   _onNext = async () => {
     const { deniedNext, grantedNext, navigation } = this.props;
     const { status } = await Permissions.askAsync(Permissions.CAMERA);

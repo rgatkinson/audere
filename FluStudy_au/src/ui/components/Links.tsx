@@ -22,6 +22,10 @@ interface LinkProps {
 }
 
 class Link extends React.Component<LinkProps & WithNamespaces> {
+  shouldComponentUpdate(props: LinkProps & WithNamespaces) {
+    return props.center != this.props.center || props.link != this.props.link;
+  }
+
   _onPress = () => {
     this.props.onPress(this.props.link);
   };

@@ -42,6 +42,14 @@ interface BulletProps {
 class BulletPointsComponent extends React.Component<
   BulletProps & WithNamespaces
 > {
+  shouldComponentUpdate(props: BulletProps & WithNamespaces) {
+    return (
+      props.customBulletUri != this.props.customBulletUri ||
+      props.label != this.props.label ||
+      props.namespace != this.props.namespace
+    );
+  }
+
   render() {
     const { customBulletUri, label, namespace, t } = this.props;
 

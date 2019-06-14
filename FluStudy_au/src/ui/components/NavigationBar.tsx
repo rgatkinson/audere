@@ -27,6 +27,14 @@ interface Props {
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.demoMode != this.props.demoMode ||
+      props.hideBackButton != this.props.hideBackButton ||
+      props.menuItem != this.props.menuItem
+    );
+  }
+
   _debounce = 0;
 
   _goHome = () => {

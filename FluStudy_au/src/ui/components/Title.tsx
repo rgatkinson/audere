@@ -20,6 +20,12 @@ interface Props {
 }
 
 class Title extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.label != this.props.label || props.namespace != this.props.namespace
+    );
+  }
+
   _getContent = () => {
     const { label, namespace, t } = this.props;
     if (namespace != null) {

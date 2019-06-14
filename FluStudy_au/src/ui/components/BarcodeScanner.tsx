@@ -43,6 +43,10 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     activeScan: false,
   };
 
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.isFocused != this.props.isFocused;
+  }
+
   _willFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;

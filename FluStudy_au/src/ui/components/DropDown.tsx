@@ -54,6 +54,19 @@ class DropDownModal extends React.Component<
     };
   }
 
+  shouldComponentUpdate(
+    props: DropDownModalProps & WithNamespaces,
+    state: DropDownModalState
+  ) {
+    return (
+      this.state != state ||
+      this.props.visible != props.visible ||
+      this.props.options != props.options ||
+      this.props.placeholder != props.placeholder ||
+      this.props.selected != props.selected
+    );
+  }
+
   _onValueChange = (value: string) => {
     const { placeholder, t } = this.props;
     if (value === placeholder) {
@@ -135,6 +148,15 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
   state = {
     pickerOpen: false,
   };
+
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state != this.state ||
+      props.highlighted != this.props.highlighted ||
+      props.question != this.props.question ||
+      props.selected != this.props.selected
+    );
+  }
 
   _openPicker = () => {
     this.setState({ pickerOpen: true });

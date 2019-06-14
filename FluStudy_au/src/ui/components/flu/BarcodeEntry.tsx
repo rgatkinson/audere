@@ -50,6 +50,10 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
     };
   }
 
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return props.kitBarcode != this.props.kitBarcode || state != this.state;
+  }
+
   confirmInput = React.createRef<NumberInput>();
 
   _matchingBarcodes = () => {

@@ -15,6 +15,10 @@ interface Props {
 }
 
 class QuestionText extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.question != this.props.question;
+  }
+
   render() {
     const { question, t } = this.props;
     const description = t("surveyDescription:" + question.description);
