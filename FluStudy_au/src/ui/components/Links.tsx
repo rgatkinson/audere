@@ -61,7 +61,12 @@ class Links extends React.Component<Props & LinkConfigProps> {
     return (
       <View style={styles.container}>
         {this._links.map(link => (
-          <LinkWithNS center={center} key={link.key} link={link} onPress={this._onPress} />
+          <LinkWithNS
+            center={center}
+            key={link.key}
+            link={link}
+            onPress={this._onPress}
+          />
         ))}
       </View>
     );

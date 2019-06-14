@@ -34,13 +34,13 @@ import {
 interface DropDownModalProps {
   options: string[];
   placeholder: string;
-  selected: string | undefined;
+  selected?: string;
   visible: boolean;
   onDismiss(selected: string | undefined): void;
 }
 
 interface DropDownModalState {
-  selected: string | undefined;
+  selected?: string;
 }
 
 class DropDownModal extends React.Component<
@@ -52,16 +52,6 @@ class DropDownModal extends React.Component<
     this.state = {
       selected: props.selected,
     };
-  }
-
-  shouldComponentUpdate(
-    props: DropDownModalProps & WithNamespaces,
-    state: DropDownModalState
-  ) {
-    return (
-      this.state.selected != state.selected ||
-      this.props.visible != props.visible
-    );
   }
 
   _onValueChange = (value: string) => {
@@ -101,6 +91,7 @@ class DropDownModal extends React.Component<
   }
 
   _onDismiss = () => {
+    this.setState({ selected: this.props.selected });
     this.props.onDismiss(this.props.selected);
   };
 
@@ -144,14 +135,6 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
   state = {
     pickerOpen: false,
   };
-
-  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
-    return (
-      state.pickerOpen ||
-      this.state.pickerOpen ||
-      props.highlighted != this.props.highlighted
-    );
-  }
 
   _openPicker = () => {
     this.setState({ pickerOpen: true });

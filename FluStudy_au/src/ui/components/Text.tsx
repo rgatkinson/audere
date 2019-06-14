@@ -33,7 +33,6 @@ interface Props {
   italic?: boolean;
   style?: StyleProp<TextStyle>;
   linkStyle?: StyleProp<TextStyle>;
-  onPress?: () => any;
 }
 
 interface LinkData {
@@ -228,7 +227,7 @@ export default class Text extends React.Component<Props> {
   }
 
   render() {
-    const { bold, center, content, italic, style, onPress } = this.props;
+    const { bold, center, content, italic, style } = this.props;
     return (
       <SystemText
         selectable={true}
@@ -239,7 +238,6 @@ export default class Text extends React.Component<Props> {
           italic && styles.italic,
           style,
         ]}
-        onPress={onPress}
         accessibilityLabel={content}
       >
         {content

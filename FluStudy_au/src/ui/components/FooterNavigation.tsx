@@ -18,7 +18,6 @@ interface StepConfig {
 interface Props {
   hideBackButton?: boolean;
   navigation: NavigationScreenProp<any, any>;
-  namespace: string;
   next?: string;
   stepDots: StepConfig;
 }

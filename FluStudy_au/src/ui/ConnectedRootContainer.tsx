@@ -70,12 +70,10 @@ class SplashScreen extends React.Component<SplashProps> {
 
 interface Props {
   activeRouteName: string;
-  isConnected: boolean;
   isDemo: boolean;
   lastUpdate?: number;
   workflow: WorkflowInfo;
   csruid?: string;
-  appState: string;
   dispatch(action: Action): void;
 }
 
@@ -328,7 +326,6 @@ export default connect((state: StoreState) => {
   try {
     return {
       activeRouteName: state.meta.activeRouteName,
-      isConnected: state.meta.isConnected,
       isDemo: state.meta.isDemo,
       lastUpdate: state.survey.timestamp,
       workflow: state.survey.workflow,
@@ -339,7 +336,6 @@ export default connect((state: StoreState) => {
 
     const defaults = {
       activeRouteName: "Welcome",
-      isConnected: true,
       isDemo: false,
       lastUpdate: undefined,
       workflow: {},
@@ -354,7 +350,6 @@ export default connect((state: StoreState) => {
       activeRouteName: !!state.meta
         ? state.meta.activeRouteName
         : defaults.activeRouteName,
-      isConnected: !!state.meta ? state.meta.isConnected : defaults.isConnected,
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,

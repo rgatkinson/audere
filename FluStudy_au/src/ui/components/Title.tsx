@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import {
@@ -17,7 +17,6 @@ import {
 interface Props {
   label?: string;
   namespace?: string;
-  style?: StyleProp<ViewStyle>;
 }
 
 class Title extends React.Component<Props & WithNamespaces> {
@@ -35,7 +34,7 @@ class Title extends React.Component<Props & WithNamespaces> {
         center={true}
         content={this._getContent()}
         extraBold={true}
-        style={[styles.title, this.props.style && this.props.style]}
+        style={styles.title}
       />
     );
   }

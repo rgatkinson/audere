@@ -7,7 +7,6 @@ import React from "react";
 import { AppState, Dimensions, Image, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import {
@@ -40,7 +39,7 @@ interface Props {
   isFocused: boolean;
 }
 
-class RDTReader extends React.Component<Props & WithNamespaces> {
+class RDTReader extends React.Component<Props> {
   state = {
     spinner: true,
     angle: 0,
@@ -55,7 +54,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
 
-  constructor(props: Props & WithNamespaces) {
+  constructor(props: Props) {
     super(props);
     this._setTimer = this._setTimer.bind(this);
   }
@@ -318,7 +317,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 }
 export default connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
-}))(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
+}))(withNavigationFocus(RDTReader));
 
 const styles = StyleSheet.create({
   camera: {
