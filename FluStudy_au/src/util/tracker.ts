@@ -72,8 +72,6 @@ export const VideoEvents = {
 export const BarcodeVerificationEvents = {
   SERVER_RESPONSE: "barcode_verification_server_response",
   EXCEPTION: "barcode_verification_exception",
-  VALID_SUPPORT_CODE: "valid_support_code",
-  INVALID_SUPPORT_CODE: "invalid_support_code",
 };
 
 export const TransportEvents = {

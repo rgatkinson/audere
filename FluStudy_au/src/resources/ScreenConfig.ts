@@ -88,7 +88,6 @@ import Questions from "../ui/components/Questions";
 import RDTImage from "../ui/components/flu/RDTImage";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
-import SupportCodeModal from "../ui/components/flu/SupportCodeModal";
 import TestResult from "../ui/components/flu/TestResult";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import Timer from "../ui/components/Timer";
@@ -179,7 +178,6 @@ export const Screens: ScreenConfig[] = [
         props: {
           next: "ScanConfirmation",
           timeoutScreen: "ManualEntry",
-          errorScreen: "BarcodeContactSupport",
         },
       },
     ],
@@ -217,17 +215,6 @@ export const Screens: ScreenConfig[] = [
     funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
     key: "ManualConfirmation",
     workflowEvent: "surveyStartedAt",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "contactsupport" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: SupportCodeModal },
-    ],
-    chromeProps: { hideBackButton: true },
-    footer: [{ tag: Links, props: { center: true, links: ["supportCode"] } }],
-    key: "BarcodeContactSupport",
   },
   {
     body: [

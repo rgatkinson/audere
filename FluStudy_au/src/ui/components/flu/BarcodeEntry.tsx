@@ -32,7 +32,6 @@ import {
 
 interface Props {
   dispatch(action: Action): void;
-  invalidBarcodes: SampleInfo[];
   kitBarcode: SampleInfo;
   navigation: NavigationScreenProp<any, any>;
 }
@@ -122,20 +121,13 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
     } else if (!validBarcodeShape(this.state.barcode1)) {
-      const priorUnverifiedAttempts = !!this.props.invalidBarcodes
-        ? this.props.invalidBarcodes.length
-        : 0;
       this.props.dispatch(
         appendInvalidBarcode({
           sample_type: "manualEntry",
           code: this.state.barcode1!.trim(),
         })
       );
-      if (priorUnverifiedAttempts > 2) {
-        this.props.navigation.push("BarcodeContactSupport");
-      } else {
-        invalidBarcodeShapeAlert(this.state.barcode1);
-      }
+      invalidBarcodeShapeAlert(this.state.barcode1);
     } else {
       this.props.dispatch(
         setKitBarcode({
@@ -150,7 +142,6 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
 }
 
 export default connect((state: StoreState) => ({
-  invalidBarcodes: state.survey.invalidBarcodes,
   kitBarcode: state.survey.kitBarcode,
 }))(withNamespaces("barcode")(withNavigation(customRef(BarcodeEntry))));
 

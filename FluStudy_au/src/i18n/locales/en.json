@@ -227,15 +227,6 @@
     "title": "Your code was accepted",
     "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
-  "BarcodeContactSupport": {
-    "title": "Please contact your clinic",
-    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement."
-  },
-  "BarcodeSupportModal": {
-    "supportVerification": "flu@home Support Verification",
-    "enterCode": "Please enter the code you received from the flu@home support team",
-    "invalidCode": "Sorry, that code is not valid."
-  },
   "Unpacking": {
     "title": "Set up your kit box",
     "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
@@ -397,7 +388,6 @@
     "findMedHelp": "Search Maps for urgent care clinics nearby",
     "inputManually": "Enter barcode manually",
     "myDr": "myDr.com.au: Flu treatment",
-    "supportCode": "I have a support code",
     "skipTestStripPhoto": "Unable to take a picture? Skip this step"
   },
   "surveyOption": {

@@ -31,17 +31,13 @@ import { GUTTER, PRIMARY_COLOR } from "../styles";
 
 interface Props {
   dispatch(action: Action): void;
-  errorScreen: string;
-  invalidBarcodes: SampleInfo[];
   navigation: NavigationScreenProp<any, any>;
   next: string;
   timeoutScreen: string;
   isFocused: boolean;
 }
 
-@connect((state: StoreState) => ({
-  invalidBarcodes: state.survey.invalidBarcodes,
-}))
+@connect()
 class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   state = {
     activeScan: false,
@@ -91,33 +87,19 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   }
 
   _onBarCodeScanned = async ({ type, data }: { type: any; data: string }) => {
-    const {
-      dispatch,
-      errorScreen,
-      invalidBarcodes,
-      navigation,
-      next,
-      t,
-    } = this.props;
+    const { dispatch, navigation, next, t } = this.props;
     const barcode = data.toLowerCase();
 
     if (!this.state.activeScan) {
       this.setState({ activeScan: true });
       if (!validBarcodeShape(barcode)) {
-        const priorUnverifiedAttempts = !!invalidBarcodes
-          ? invalidBarcodes.length
-          : 0;
         dispatch(
           appendInvalidBarcode({
             sample_type: type,
             code: barcode,
           })
         );
-        if (priorUnverifiedAttempts > 2) {
-          navigation.push(errorScreen);
-        } else {
-          invalidBarcodeShapeAlert(barcode, this._setTimer);
-        }
+        invalidBarcodeShapeAlert(barcode, this._setTimer);
       } else {
         dispatch(
           setKitBarcode({

@@ -9,12 +9,10 @@ import { tracker, AppHealthEvents } from "../util/tracker";
 import { Constants } from "expo";
 
 interface RemoteConfig {
-  barcodeSupportCodes: string[];
   blockKitOrders: boolean;
   rdtReader: boolean;
   showVideos: boolean;
   validateBarcodes: boolean;
-  validateSupportCodes: boolean;
   [key: string]: boolean | string[];
 }
 
@@ -26,7 +24,6 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
-  barcodeSupportCodes: [],
   // Pessimistically assume we have no kits.  Currently only on iOS because
   // we're busy getting remoteConfig working on Android (struggling with 403
   // Forbidden issues).
@@ -34,13 +31,11 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   rdtReader: false,
   showVideos: true,
   validateBarcodes: false,
-  validateSupportCodes: true,
 };
 
 // Values you put into here will always be applied on top of remote config
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {
-  barcodeSupportCodes: ["11111"],
   blockKitOrders: false,
   rdtReader: true,
   showVideos: true,

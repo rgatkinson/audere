@@ -37,25 +37,6 @@ export function invalidBarcodeShapeAlert(
   );
 }
 
-export function verifiedSupportCode(code: string): boolean {
-  const validateSupportCodes = getRemoteConfig("validateSupportCodes");
-  if (!validateSupportCodes) {
-    return true;
-  }
-  const supportCodes = getRemoteConfig("barcodeSupportCodes");
-
-  if (supportCodes.includes(code)) {
-    tracker.logEvent(BarcodeVerificationEvents.VALID_SUPPORT_CODE, { code });
-    return true;
-  } else {
-    tracker.logEvent(BarcodeVerificationEvents.INVALID_SUPPORT_CODE, {
-      code,
-      supportCodes,
-    });
-    return false;
-  }
-}
-
 export function unverifiedBarcodeAlert(
   action: string,
   onPress: () => void = () => {}

@@ -41,7 +41,6 @@ export type SurveyAction =
   | { type: "SET_PHOTO"; photoUri: string }
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
-  | { type: "SET_SUPPORT_CODE"; supportCode: string }
   | {
       type: "UPDATE_RESPONSES";
       answer: SurveyAnswer;
@@ -61,7 +60,6 @@ export type SurveyState = {
   rdtPhotoUri?: string;
   rdtInfo?: RDTInfo;
   responses: SurveyResponse[];
-  supportCode?: string;
   tenMinuteStartTime?: number;
   testStripImg?: SampleInfo;
   timestamp?: number;
@@ -198,12 +196,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
       }
       return state;
 
-    case "SET_SUPPORT_CODE":
-      return {
-        ...state,
-        supportCode: action.supportCode,
-      };
-
     case "UPDATE_RESPONSES":
       return {
         ...state,
@@ -323,13 +315,6 @@ export function setRDTReaderResult(
   return {
     type: "SET_RDT_READER_RESULT",
     rdtReaderResult,
-  };
-}
-
-export function setSupportCode(supportCode: string): SurveyAction {
-  return {
-    type: "SET_SUPPORT_CODE",
-    supportCode,
   };
 }
 

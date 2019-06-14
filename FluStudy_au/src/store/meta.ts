@@ -9,8 +9,7 @@ export type MetaAction =
   | { type: "SET_ACTIVE_ROUTE_NAME"; activeRouteName: string }
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
-  | { type: "SET_DEMO"; isDemo: boolean }
-  | { type: "TOGGLE_SUPPORT_CODE_MODAL" };
+  | { type: "SET_DEMO"; isDemo: boolean };
 
 export type MetaState = {
   activeRouteName: string;
@@ -18,7 +17,6 @@ export type MetaState = {
   isDemo: boolean;
   marketingProperties: any;
   shownOfflineWarning: boolean;
-  supportCodeModalVisible: boolean;
 };
 
 const initialState: MetaState = {
@@ -27,7 +25,6 @@ const initialState: MetaState = {
   isDemo: false,
   marketingProperties: undefined,
   shownOfflineWarning: false,
-  supportCodeModalVisible: false,
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -40,11 +37,6 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, shownOfflineWarning: action.shownOfflineWarning };
     case "SET_CONNECTIVITY":
       return { ...state, isConnected: action.isConnected };
-    case "TOGGLE_SUPPORT_CODE_MODAL":
-      return {
-        ...state,
-        supportCodeModalVisible: !state.supportCodeModalVisible,
-      };
     default:
       return state;
   }
@@ -78,11 +70,5 @@ export function setConnectivity(isConnected: boolean): MetaAction {
   return {
     type: "SET_CONNECTIVITY",
     isConnected,
-  };
-}
-
-export function toggleSupportCodeModal(): MetaAction {
-  return {
-    type: "TOGGLE_SUPPORT_CODE_MODAL",
   };
 }
