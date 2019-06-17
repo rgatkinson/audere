@@ -47,13 +47,13 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     return props.isFocused != this.props.isFocused;
   }
 
-  _willFocus: any;
+  _didFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
 
   componentDidMount() {
     const { navigation } = this.props;
-    this._willFocus = navigation.addListener("willFocus", () =>
+    this._didFocus = navigation.addListener("didFocus", () =>
       this._setTimer()
     );
     this._willBlur = navigation.addListener("willBlur", () =>
@@ -62,7 +62,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   }
 
   componentWillUnmount() {
-    this._willFocus.remove();
+    this._didFocus.remove();
     this._willBlur.remove();
   }
 

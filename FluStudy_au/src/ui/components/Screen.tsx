@@ -75,9 +75,35 @@ export const generateScreen = (config: ScreenConfig) => {
         this.props.dispatch(setWorkflow(workflow));
       }
 
-      this.props.navigation.addListener('willFocus', () => { this._noRendering = false; this.forceUpdate(); });
+      // Prevent screen rendering when not focused, and allow screen rendering when
+      // focused. We use willFocus so the screen renders during incoming transitions,
+      // and didBlur so the screen stops rendering after outgoing transitions.
+      //
+      // If we simply used isFocused then the screen would be blank during
+      // transitions, since that property is effectively true after didFocus and false
+      // after willBlur.
+      //
+      // Note a side-effect of this optimization is that willFocus will not fire for
+      // components that are contained by the screen since they'll only get rendered
+      // *after* the willFocus of the screen fires, and that event isn't propogated after
+      // the fact.
+      //
+      // We also include didFocus to check rendering state for the case where a screen
+      // gets navigated to during another view's transition to focused state - this won't
+      // fire a willFocus event. This is rare but achievable if a user quickly navigates
+      // away during a transition.
+      //
+      this.props.navigation.addListener('willFocus', this._handleFocus);
+      this.props.navigation.addListener('didFocus', this._handleFocus);
       this.props.navigation.addListener('didBlur', () => { this._noRendering = true; });
     }
+
+    _handleFocus = () => {
+      if (this._noRendering) {
+        this._noRendering = false;
+        this.forceUpdate();
+      }
+  };
 
     _generateComponents = (
       components: Component[],
