@@ -17,9 +17,11 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import edu.washington.cs.ubicomplab.rdt_reader.ImageProcessor;
 import edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView;
+import edu.washington.cs.ubicomplab.rdt_reader.ImageUtil;
 
 public class RDTReader extends LinearLayout implements ImageQualityView.ImageQualityViewListener {
     private Activity mActivity;
+    private ImageQualityView mImageQualityView;
     public RDTReader(Context context, Activity activity) {
         super(context);
         mActivity = activity;
@@ -36,10 +38,9 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                inflate(getContext(), R.layout.rdt_reader_view, self);
-                ImageQualityView imageQualityView = findViewById(R.id.imageQualityActivity);
-                imageQualityView.setActivity(mActivity);
-                imageQualityView.setImageQualityViewListener(self);
+                inflate(mActivity, R.layout.rdt_reader_view, self);
+                mImageQualityView = findViewById(R.id.imageQualityView);
+                mImageQualityView.setImageQualityViewListener(self);
                 Log.i("RDTReader", "width" + getWidth());
                 Log.i("RDTReader", "height" + getHeight());
                 requestLayout();
@@ -71,34 +72,43 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
     }
 
     @Override
-    public void onRDTDetected(
-            String img,
-            boolean passed,
-            boolean center,
-            ImageProcessor.SizeResult sizeResult,
-            boolean shadow,
-            double target,
-            boolean sharpness,
-            boolean orientation,
-            double angle,
-            ImageProcessor.ExposureResult exposureResult,
-            boolean control,
-            boolean testA,
-            boolean testB) {
+    public ImageQualityView.RDTDectedResult onRDTDetected(
+            ImageProcessor.CaptureResult captureResult,
+            ImageProcessor.InterpretationResult interpretationResult,
+            long timeTaken) {
+        if (interpretationResult == null) {
+            interpretationResult = new ImageProcessor.InterpretationResult();
+        }
         WritableMap event = Arguments.createMap();
-        event.putString("img", img);
-        event.putBoolean("passed", passed);
-        event.putBoolean("center", center);
-        event.putInt("sizeResult", sizeResult.ordinal());
-        event.putBoolean("shadow", shadow);
-        event.putDouble("target", target);
-        event.putBoolean("sharpness", sharpness);
-        event.putBoolean("orientation", orientation);
-        event.putDouble("angle", angle);
-        event.putInt("exposureResult", exposureResult.ordinal());
-        event.putBoolean("control", control);
-        event.putBoolean("testA", testA);
-        event.putBoolean("testB", testB);
+        event.putString("img", captureResult.allChecksPassed && interpretationResult.control ? ImageUtil.matToBase64(captureResult.resultMat) : "");
+        event.putBoolean("passed", captureResult.allChecksPassed && interpretationResult.control);
+        event.putBoolean("center", captureResult.isCentered);
+        event.putInt("sizeResult", captureResult.sizeResult.ordinal());
+        event.putBoolean("shadow", captureResult.isShadow);
+        event.putBoolean("sharpness", captureResult.isSharp);
+        event.putBoolean("orientation", captureResult.isRightOrientation);
+        event.putDouble("angle", captureResult.angle);
+        event.putInt("exposureResult", captureResult.exposureResult.ordinal());
+        event.putBoolean("control", interpretationResult.control);
+        event.putBoolean("testA", interpretationResult.testA);
+        event.putBoolean("testB", interpretationResult.testB);
         callReactCallback("RDTCaptured", event);
+        return ImageQualityView.RDTDectedResult.CONTINUE;
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mImageQualityView != null) {
+            mImageQualityView.onResume();
+        }
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mImageQualityView != null) {
+            mImageQualityView.onPause();
+        }
     }
 }

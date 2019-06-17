@@ -11,4 +11,13 @@
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
   <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
+
+  <string name="progress_final">Captured! Analyzing the image…</string>
+  <string name="instruction_detected"><![CDATA[RDT detected at the center!]]></string>
+  <string name="instruction_pos"><![CDATA[Place RDT at the center.\nFit RDT to the rectangle.]]></string>
+  <string name="instruction_too_small"><![CDATA[Place RDT at the center.\nFit RDT to the rectangle.\nMove closer.]]></string>
+  <string name="instruction_focusing"><![CDATA[Place RDT at the center.\nFit RDT to the rectangle.\nCamera is focusing. \nStay still.]]></string>
+  <string name="instruction_unfocused"><![CDATA[Place RDT at the center.\n Fit RDT to the rectangle.\nCamera is not focused. \nMove further away.]]></string>
+  <string name="quality_msg_format"> <![CDATA[POSITION/SIZE: %s <br> SHARPNESS: %s <br> BRIGHTNESS: %s <br> NO SHADOW: %s]]></string>
+  <string name="quality_msg_format_text"> <![CDATA[%s <br> %s <br> %s <br> %s]]></string>
 </resources>

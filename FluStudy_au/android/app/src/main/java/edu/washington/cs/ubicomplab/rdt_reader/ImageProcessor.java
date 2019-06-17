@@ -100,17 +100,17 @@ public class ImageProcessor {
 
     }
 
-    public class CaptureResult {
-        boolean allChecksPassed;
-        Mat resultMat;
-        double matchDistance;
-        ExposureResult exposureResult;
-        SizeResult sizeResult;
-        boolean isCentered;
-        boolean isRightOrientation;
-        boolean isSharp;
-        boolean isShadow;
-        double angle;
+    public static class CaptureResult {
+        public boolean allChecksPassed;
+        public Mat resultMat;
+        public double matchDistance;
+        public ExposureResult exposureResult;
+        public SizeResult sizeResult;
+        public boolean isCentered;
+        public boolean isRightOrientation;
+        public boolean isSharp;
+        public boolean isShadow;
+        public double angle;
 
         public CaptureResult(boolean allChecksPassed, Mat resultMat, double matchDistance,
                              ExposureResult exposureResult, SizeResult sizeResult,  boolean isCentered,
@@ -128,12 +128,12 @@ public class ImageProcessor {
         }
     }
 
-    public class InterpretationResult {
-        boolean control;
-        boolean testA;
-        boolean testB;
-        Mat resultMat;
-        Bitmap resultBitmap;
+    public static class InterpretationResult {
+        public boolean control;
+        public boolean testA;
+        public boolean testB;
+        public Mat resultMat;
+        public Bitmap resultBitmap;
 
         public InterpretationResult() {
             control = false;
@@ -586,6 +586,26 @@ public class ImageProcessor {
         Mat cropped = new Mat(inputMat, roi);
 
         return cropped;
+    }
+
+    public int getInstructionText(SizeResult sizeResult, boolean isCentered, boolean isRightOrientation) {
+        int instructions = R.string.instruction_pos;
+
+        if (sizeResult == SizeResult.RIGHT_SIZE && isCentered && isRightOrientation){
+            instructions = R.string.instruction_detected;
+        } else if (mMoveCloserCount > MOVE_CLOSER_COUNT) {
+            if (sizeResult != SizeResult.INVALID && sizeResult == SizeResult.SMALL) {
+                instructions = R.string.instruction_too_small;
+                mMoveCloserCount = 0;
+            }
+        } else {
+            instructions = R.string.instruction_too_small;
+            mMoveCloserCount++;
+        }
+
+        return instructions;
+
+
     }
 
     public String[] getQualityCheckText(SizeResult sizeResult, boolean isCentered, boolean isRightOrientation, boolean isSharp, ExposureResult exposureResult) {

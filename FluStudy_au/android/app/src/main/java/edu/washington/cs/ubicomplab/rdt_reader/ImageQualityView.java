@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -45,6 +46,7 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -54,12 +56,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfKeyPoint;
 
-import org.opencv.features2d.BFMatcher;
-import org.opencv.features2d.BRISK;
-
-import java.io.File;
 import java.util.Arrays;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -75,15 +72,23 @@ import static edu.washington.cs.ubicomplab.rdt_reader.Constants.*;
 public class ImageQualityView extends LinearLayout implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
     private ImageProcessor processor;
     private Activity mActivity;
+    private TextView mImageQualityFeedbackView;
+    private TextView mProgressText;
+    private ProgressBar mProgress;
+    private ProgressBar mCaptureProgressBar;
+    private View mProgressBackgroundView;
+    private TextView mInstructionText;
     private State mCurrentState = State.QUALITY_CHECK;
-    private ImageQualityViewListener mImageQualityViewListener;
-    private boolean openCVLoaded = false;
+    private boolean showViewport;
+    private boolean showFeedback;
 
     private long timeTaken = 0;
 
     private ViewportUsingBitmap mViewport;
 
     private FocusState mFocusState = FocusState.INACTIVE;
+
+    private ImageQualityViewListener mImageQualityViewListener;
 
     private enum State {
         QUALITY_CHECK, FINAL_CHECK
@@ -93,31 +98,31 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
         INACTIVE, FOCUSING, FOCUSED, UNFOCUSED
     }
 
+    public enum RDTDectedResult {
+        STOP, CONTINUE
+    }
     public interface ImageQualityViewListener {
         void onRDTCameraReady();
-        void onRDTDetected(
-                String img,
-                boolean passed,
-                boolean center,
-                ImageProcessor.SizeResult sizeResult,
-                boolean shadow,
-                double target,
-                boolean sharpness,
-                boolean orientation,
-                double angle,
-                ImageProcessor.ExposureResult exposureResult,
-                boolean control,
-                boolean testA,
-                boolean testB
+        RDTDectedResult onRDTDetected(
+                ImageProcessor.CaptureResult captureResult,
+                ImageProcessor.InterpretationResult interpretationResult,
+                long timeTaken
         );
     }
 
-    //private Activity thisActivity = this;
-
     public ImageQualityView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.i(TAG,"Constructing ImageQualityView");
+        if (context instanceof Activity) {
+            mActivity = (Activity) context;
+        } else {
+            throw new Error("ImageQualityView must be created in an activity");
+        }
         inflate(context, R.layout.image_quality_view, this);
+
+        TypedArray styleAttrs = context.getTheme().obtainStyledAttributes(
+                attrs, R.styleable.ImageQualityView, 0, 0);
+        showViewport = styleAttrs.getBoolean(R.styleable.ImageQualityView_showViewport, true);
+        showFeedback = styleAttrs.getBoolean(R.styleable.ImageQualityView_showFeedback, true);
 
         mTextureView = findViewById(R.id.texture);
 
@@ -127,20 +132,13 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
 
     }
 
-    public void setActivity(Activity activity) {
-        mActivity = activity;
-        if (processor == null && openCVLoaded) {
-            processor = ImageProcessor.getInstance(mActivity);
-        }
+    public boolean isExternalIntent() {
+        Intent i = mActivity.getIntent();
+        return i != null && "medic.mrdt.verify".equals(i.getAction());
     }
 
     public void setImageQualityViewListener(ImageQualityViewListener listener) {
         mImageQualityViewListener = listener;
-    }
-
-    @Override
-    public void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
     }
 
     /**
@@ -181,34 +179,31 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
      * {@link TextureView}.
      */
-    private final TextureView.SurfaceTextureListener mSurfaceTextureListener;
+    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+            = new TextureView.SurfaceTextureListener() {
 
-    {
-        mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+            openCamera(width, height);
+        }
 
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-                Log.i(TAG, "surface texture available");
-                openCamera(width, height);
-            }
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+            configureTransform(width, height);
+        }
 
-            @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
-                configureTransform(width, height);
-            }
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+            return true;
+        }
 
-            @Override
-            public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
-                return true;
-            }
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture texture) {
 
-            @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+        }
 
-            }
+    };
 
-        };
-    }
 
 
     /**
@@ -301,6 +296,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
 
             final Image image = reader.acquireLatestImage();
             Log.d(TAG, "OnImageAvailableListener: image acquired! " + System.currentTimeMillis());
+
             if (image == null) {
                 return;
             }
@@ -331,73 +327,48 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
             final Mat rgbaMat = ImageUtil.imageToRGBMat(image);
             final ImageProcessor.CaptureResult captureResult = processor.captureRDT(rgbaMat);
             //ImageProcessor.SizeResult sizeResult, boolean isCentered, boolean isRightOrientation, boolean isSharp, ImageProcessor.ExposureResult exposureResult
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    displayQualityResult(captureResult.sizeResult, captureResult.isCentered, captureResult.isRightOrientation, captureResult.isSharp, captureResult.exposureResult);
+                }
+            });
+
             Log.d(TAG, String.format("Capture time: %d", System.currentTimeMillis() - timeTaken));
             Log.d(TAG, String.format("Captured result: %b", captureResult.allChecksPassed));
+
+            ImageProcessor.InterpretationResult interpretationResult = null;
             if (captureResult.allChecksPassed) {
                 Log.d(TAG, String.format("Captured MAT size: %s", captureResult.resultMat.size()));
 
                 //interpretation
-                final ImageProcessor.InterpretationResult interpretationResult = processor.interpretResult(captureResult.resultMat);
+                interpretationResult = processor.interpretResult(captureResult.resultMat);
 
-                if (interpretationResult.control) {
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            moveToResultActivity(captureResult.resultMat, interpretationResult.resultMat,
-                                    interpretationResult.control, interpretationResult.testA, interpretationResult.testB);
-                        }
-                    });
-                } else {
-                    imageQueue.remove();
-                    image.close();
-                }
-                if (mImageQualityViewListener != null) {
-                    mImageQualityViewListener.onRDTDetected(
-                            ImageUtil.matToBase64(captureResult.resultMat),
-                            captureResult.allChecksPassed && interpretationResult.control,
-                            captureResult.isCentered,
-                            captureResult.sizeResult,
-                            captureResult.isShadow,
-                            0,
-                            captureResult.isSharp,
-                            captureResult.isRightOrientation,
-                            captureResult.angle,
-                            captureResult.exposureResult,
-                            interpretationResult.control,
-                            interpretationResult.testA,
-                            interpretationResult.testB
-                    );
-                }
-
-            } else {
-                if (mImageQualityViewListener != null) {
-                    mImageQualityViewListener.onRDTDetected(
-                            ImageUtil.matToBase64(captureResult.resultMat),
-                            captureResult.allChecksPassed,
-                            captureResult.isCentered,
-                            captureResult.sizeResult,
-                            captureResult.isShadow,
-                            0,
-                            captureResult.isSharp,
-                            captureResult.isRightOrientation,
-                            captureResult.angle,
-                            captureResult.exposureResult,
-                            false,
-                            false,
-                            false
-                    );
-                }
-
-                imageQueue.remove();
-                image.close();
             }
+            imageQueue.remove();
+            image.close();
+
+            RDTDectedResult result = RDTDectedResult.CONTINUE;
+            if (mImageQualityViewListener != null) {
+                result = mImageQualityViewListener.onRDTDetected(
+                        captureResult,
+                        interpretationResult,
+                        System.currentTimeMillis() - timeTaken
+                );
+            }
+            if (captureResult.resultMat != null) {
+                captureResult.resultMat.release();
+            }
+            if (interpretationResult != null &&
+                    interpretationResult.resultMat != null) {
+                interpretationResult.resultMat.release();
+            }
+            if (result == RDTDectedResult.STOP) {
+                mOnImageAvailableThread.interrupt();
+            }
+
             return null;
-
         }
-    }
-
-    private void moveToResultActivity(Mat captureMat, Mat windowMat, boolean control, boolean testA, boolean testB) {
-        mOnImageAvailableThread.interrupt();
     }
 
     /**
@@ -447,13 +418,22 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
                     } else {
                         //Log.d(TAG, "FOCUS STATE: unknown state " + result.get(CaptureResult.CONTROL_AF_STATE).toString());
                     }
+
+                    if (showFeedback && previousFocusState != mFocusState) {
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayQualityResultFocusChanged();
+                            }
+                        });
+                    }
                 }
             }
 
-            if (!Build.MODEL.equals("TECNO-W3")) {
-                if (counter++ % 10 == 0)
-                    updateRepeatingRequest();
-            }
+            //if (!Build.MODEL.equals("TECNO-W3")) {
+            //    if (counter++ % 10 == 0)
+            //        updateRepeatingRequest();
+            //}
         }
 
         @Override
@@ -488,37 +468,23 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
         }
     }
 
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
+    public void onResume() {
         startBackgroundThread();
-        Log.i(TAG, "onAttachedToWindow");
-        Log.i(TAG, "width: " + getWidth());
-        Log.i(TAG, "height: " + getHeight());
-
 
         // When the screen is turned off and turned back on, the SurfaceTexture is already
         // available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (mTextureView.isAvailable()) {
-            Log.i(TAG, "mTextureView is available");
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
         } else {
-            Log.i(TAG, "mTextureView is not available");
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-            ImageProcessor.loadOpenCV(getContext(), mLoaderCallback);
+            ImageProcessor.loadOpenCV(mActivity.getApplicationContext(), mLoaderCallback);
         }
 
     }
 
-    @Override
-    public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        Log.i(TAG, "onDetachedFromWindow");
-
-
-
+    public void onPause() {
         closeCamera();
         stopBackgroundThread();
     }
@@ -540,7 +506,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      * @param height The height of available size for camera preview
      */
     private void setUpCameraOutputs(int width, int height) {
-        CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = (CameraManager) mActivity.getSystemService(Context.CAMERA_SERVICE);
         try {
             for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics
@@ -624,8 +590,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      * Opens the camera specified by {@link #mCameraId}.
      */
     private void openCamera(int width, int height) throws SecurityException {
-        Log.i(TAG, "openCamera");
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
             return;
@@ -633,8 +598,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
 
         setUpCameraOutputs(width, height);
         configureTransform(width, height);
-        Context activity = getContext();
-        CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+        CameraManager manager = (CameraManager) mActivity.getSystemService(Context.CAMERA_SERVICE);
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -714,8 +678,9 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
                 return;
             }
             mCaptureSession = cameraCaptureSession;
-
-            mImageQualityViewListener.onRDTCameraReady();
+            if (mImageQualityViewListener != null) {
+                mImageQualityViewListener.onRDTCameraReady();
+            }
 
             updateRepeatingRequest();
         }
@@ -732,7 +697,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
     private void updateRepeatingRequest() {
         // When the session is ready, we start displaying the preview.
         try {
-            CameraManager manager = (CameraManager) getContext().getSystemService(Context.CAMERA_SERVICE);
+            CameraManager manager = (CameraManager) mActivity.getSystemService(Context.CAMERA_SERVICE);
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraId);
 
 
@@ -782,7 +747,6 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
     private void createCameraPreviewSession() {
         try {
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
-            mTextureView.setOpaque(false);
             assert texture != null;
 
             // We configure the size of default buffer to be the size of camera preview we want.
@@ -820,11 +784,10 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      * @param viewHeight The height of `mTextureView`
      */
     private void configureTransform(int viewWidth, int viewHeight) {
-        Context activity = getContext();
-        if (null == mTextureView || null == mPreviewSize || null == activity) {
+        if (null == mTextureView || null == mPreviewSize || null == mActivity) {
             return;
         }
-        int rotation = 0; // activity.getWindowManager().getDefaultDisplay().getRotation();
+        int rotation = mActivity.getWindowManager().getDefaultDisplay().getRotation();
         Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
@@ -844,7 +807,6 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
         mTextureView.setTransform(matrix);
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -861,16 +823,13 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      **/
 
 
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getContext()) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(mActivity) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-                    if (mActivity != null) {
-                        processor = ImageProcessor.getInstance(mActivity);
-                    }
-                    openCVLoaded = true;
+                    processor = ImageProcessor.getInstance(mActivity);
                 }
                 break;
                 default: {
@@ -882,7 +841,137 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
     };
 
     private void initViews() {
+        mActivity.setTitle("Image Quality Checker");
+
+        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // Instructions are set here
+
         mViewport = findViewById(R.id.img_quality_check_viewport);
-        mViewport.setVisibility(GONE);
+        if (showViewport) {
+            mViewport.setOnClickListener(this);
+        } else {
+            mViewport.setVisibility(GONE);
+        }
+        mImageQualityFeedbackView = findViewById(R.id.img_quality_feedback_view);
+        mProgress = findViewById(R.id.progressCircularBar);
+        mProgressBackgroundView = findViewById(R.id.progressBackground);
+        mProgressText = findViewById(R.id.progressText);
+        mCaptureProgressBar = findViewById(R.id.captureProgressBar);
+        mCaptureProgressBar.setMax(CAPTURE_COUNT);
+        mCaptureProgressBar.setProgress(0);
+        mInstructionText = findViewById(R.id.textInstruction);
+
+        if (showFeedback) {
+            setProgressUI(mCurrentState);
+        } else {
+            mImageQualityFeedbackView.setVisibility(GONE);
+            mProgressBackgroundView.setVisibility(GONE);
+            mProgress.setVisibility(GONE);
+            mProgressText.setVisibility(GONE);
+            mInstructionText.setVisibility(GONE);
+            mCaptureProgressBar.setVisibility(GONE);
+        }
     }
+
+    private void setProgressUI(State CurrentState) {
+        if (!showFeedback) {
+            return;
+        }
+
+        switch (CurrentState) {
+            case QUALITY_CHECK:
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgress.setVisibility(View.GONE);
+                        mProgressBackgroundView.setVisibility(View.GONE);
+                        mProgressText.setVisibility(View.GONE);
+                        mCaptureProgressBar.setVisibility(View.GONE);
+                    }
+                });
+                break;
+            case FINAL_CHECK:
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgress.setVisibility(View.VISIBLE);
+                        mProgressBackgroundView.setVisibility(View.VISIBLE);
+                        mProgressText.setText(R.string.progress_final);
+                        mProgressText.setVisibility(View.VISIBLE);
+                        mCaptureProgressBar.setVisibility(View.GONE);
+                    }
+                });
+                break;
+        }
+
+    }
+
+    private void displayQualityResult(ImageProcessor.SizeResult sizeResult, boolean isCentered, boolean isRightOrientation, boolean isSharp, ImageProcessor.ExposureResult exposureResult) {
+        if (!showFeedback) {
+            return;
+        }
+
+        FocusState currFocusState;
+
+        synchronized (focusStateLock) {
+            currFocusState = mFocusState;
+        }
+
+        if (currFocusState == FocusState.FOCUSED) {
+            String[] qChecks = processor.getQualityCheckText(sizeResult, isCentered, isRightOrientation, isSharp, exposureResult);
+            String message = String.format(getResources().getString(R.string.quality_msg_format_text), qChecks[0], qChecks[1], qChecks[2], qChecks[3]);
+
+            mInstructionText.setText(getResources().getText(processor.getInstructionText(sizeResult, isCentered, isRightOrientation)));
+
+            mImageQualityFeedbackView.setText(Html.fromHtml(message));
+            if (sizeResult == ImageProcessor.SizeResult.RIGHT_SIZE && isCentered && isRightOrientation && isSharp && exposureResult == ImageProcessor.ExposureResult.NORMAL) {
+                if (mViewport.getBackgroundColorId() != R.color.green_overlay) {
+                    mViewport.setBackgroundColoId(R.color.green_overlay);
+                }
+            } else {
+                if (mViewport.getBackgroundColorId() != R.color.red_overlay) {
+                    mViewport.setBackgroundColoId(R.color.red_overlay);
+                }
+            }
+        } else if (currFocusState == FocusState.INACTIVE) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_pos));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        } else if (currFocusState == FocusState.UNFOCUSED) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_unfocused));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        } else if (currFocusState == FocusState.FOCUSING) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_focusing));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        }
+    }
+
+    private void displayQualityResultFocusChanged() {
+        if (!showFeedback) {
+            return;
+        }
+
+        FocusState currFocusState;
+
+        synchronized (focusStateLock) {
+            currFocusState = mFocusState;
+        }
+
+        if (currFocusState == FocusState.FOCUSED) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_pos));
+            String message = String.format(getResources().getString(R.string.quality_msg_format), "FAILED", "FAILED", "FAILED", "FAILED");
+            mImageQualityFeedbackView.setText(Html.fromHtml(message));
+        } else if (currFocusState == FocusState.INACTIVE) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_pos));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        } else if (currFocusState == FocusState.UNFOCUSED) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_unfocused));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        } else if (currFocusState == FocusState.FOCUSING) {
+            mInstructionText.setText(getResources().getString(R.string.instruction_focusing));
+            mViewport.setBackgroundColoId(R.color.red_overlay);
+        }
+    }
+
 }
