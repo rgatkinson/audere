@@ -14,7 +14,7 @@ variable "commit" {
 }
 
 variable "devs" {
-  description = "Userids of developers who should have a dev machine allocated"
+  description = "Userids of developers who have SSH keys to copy to machines"
   type = "list"
 }
 

@@ -49,22 +49,6 @@ module "flu_api" {
   transient_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
 }
 
-module "flu_dev" {
-  source = "../../modules/flu-dev"
-
-  bastion_ingress_sg_id = "${data.terraform_remote_state.network.bastion_ingress_sg_id}"
-  bastion_subnet_id = "${data.terraform_remote_state.network.bastion_subnet_id}"
-  db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
-  dev_machine_client_sg_id = "${data.terraform_remote_state.network.dev_machine_client_sg_id}"
-  dev_machine_server_sg_id = "${data.terraform_remote_state.network.dev_machine_server_sg_id}"
-  dev_machine_subnet_id = "${data.terraform_remote_state.network.dev_machine_subnet_id}"
-  dev_ssh_client_sg_id = "${data.terraform_remote_state.network.dev_ssh_client_sg_id}"
-  devs = "${var.devs}"
-  fluapi_internal_client_sg_id = "${data.terraform_remote_state.network.fluapi_internal_client_sg_id}"
-  environment = "prod"
-  internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
-}
-
 module "vpc_cidr" {
   source = "../../modules/vpc-cidr"
 }
