@@ -212,6 +212,7 @@ class RDTReader extends React.Component<Props> {
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
           enabled={isFocused}
+          showDefaultViewfinder={false}
           flashEnabled={true}
         />
         <View style={styles.overlayContainer}>

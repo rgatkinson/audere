@@ -50,4 +50,9 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
             view.disable();
         }
     }
+
+    @ReactProp(name = "showDefaultViewfinder")
+    public void setShowDefaultViewFinder(RDTReader view, boolean showDefaultViewFinder) {
+        view.setShowViewfinder(showDefaultViewFinder);
+    }
 }

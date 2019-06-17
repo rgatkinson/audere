@@ -678,7 +678,7 @@ Mat siftRefDescriptor;
     });
 }
 
-- (void) generateViewFinder: (UIView *) view forPreview:(UIView *)previewView{
+- (CALayer *) generateViewFinder: (UIView *) view forPreview:(UIView *)previewView{
     double width = previewView.frame.size.width * VIEW_FINDER_SCALE_W;
     double height = previewView.frame.size.height * VIEW_FINDER_SCALE_H;
     
@@ -703,6 +703,7 @@ Mat siftRefDescriptor;
     fillLayer.strokeColor = [UIColor whiteColor].CGColor;
     fillLayer.lineWidth = 5.0;
     [view.layer insertSublayer:fillLayer above:view.layer.sublayers[0]];
+    return fillLayer;
 }
 
 -(UIImage *) interpretResultFromImage:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {

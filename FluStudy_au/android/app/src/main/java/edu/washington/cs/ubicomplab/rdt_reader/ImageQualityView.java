@@ -875,6 +875,11 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
         }
     }
 
+    public void setShowViewfinder(boolean showViewport) {
+        this.showViewport = showViewport;
+        mViewport.setVisibility(showViewport ? VISIBLE : GONE);
+    }
+
     private void setProgressUI(State CurrentState) {
         if (!showFeedback) {
             return;

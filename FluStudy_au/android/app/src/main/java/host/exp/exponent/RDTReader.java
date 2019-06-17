@@ -21,6 +21,7 @@ import edu.washington.cs.ubicomplab.rdt_reader.ImageUtil;
 
 public class RDTReader extends LinearLayout implements ImageQualityView.ImageQualityViewListener {
     private Activity mActivity;
+    private boolean showViewfinder = false;
     private ImageQualityView mImageQualityView;
     public RDTReader(Context context, Activity activity) {
         super(context);
@@ -41,6 +42,7 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
                 inflate(mActivity, R.layout.rdt_reader_view, self);
                 mImageQualityView = findViewById(R.id.imageQualityView);
                 mImageQualityView.setImageQualityViewListener(self);
+                mImageQualityView.setShowViewfinder(showViewfinder);
                 Log.i("RDTReader", "width" + getWidth());
                 Log.i("RDTReader", "height" + getHeight());
                 requestLayout();
@@ -109,6 +111,13 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
         super.onDetachedFromWindow();
         if (mImageQualityView != null) {
             mImageQualityView.onPause();
+        }
+    }
+
+    public void setShowViewfinder(boolean showViewfinder) {
+        this.showViewfinder = showViewfinder;
+        if (mImageQualityView != null) {
+            mImageQualityView.setShowViewfinder(showViewfinder);
         }
     }
 }

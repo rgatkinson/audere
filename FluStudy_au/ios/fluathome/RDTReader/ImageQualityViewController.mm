@@ -22,7 +22,6 @@ CGFloat X = 0.5;
 CGFloat Y = 0.5;
 double startTime = 0.0;
 
-
 @implementation ImageQualityViewController
 
 - (void)viewDidLoad {
@@ -88,8 +87,20 @@ double startTime = 0.0;
     } );
 
     if (!self.disableViewFinder) {
-        [[ImageProcessor sharedProcessor] generateViewFinder:self.view forPreview: self.previewView];
+        [self showViewFinder];
     }
+}
+
+- (void) showViewFinder {
+    self.viewFinder = [[ImageProcessor sharedProcessor] generateViewFinder:self.view forPreview: self.previewView];
+}
+
+- (void) hideViewFinder {
+    if (self.viewFinder == NULL) {
+        return;
+    }
+    [self.viewFinder removeFromSuperlayer];
+    self.viewFinder = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated

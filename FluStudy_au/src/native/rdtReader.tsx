@@ -44,6 +44,7 @@ type RDTReaderProps = {
   onRDTCameraReady: (args: {}) => void;
   enabled: boolean;
   flashEnabled: boolean;
+  showDefaultViewfinder?: boolean;
   style: any;
 };
 

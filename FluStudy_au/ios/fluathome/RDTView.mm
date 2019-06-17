@@ -77,4 +77,14 @@
         [self.imageQualityViewController toggleFlash];
     }
 }
+
+- (void) setShowDefaultViewfinder:(BOOL) showDefaultViewFinder
+{
+    if (showDefaultViewFinder) {
+        [self.imageQualityViewController showViewFinder];
+    } else {
+        [self.imageQualityViewController hideViewFinder];
+    }
+}
+
 @end

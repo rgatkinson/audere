@@ -37,7 +37,7 @@ typedef void (^ImageProcessorBlock)(bool passed, UIImage *img, bool fiducial, Ex
 - (NSMutableArray *) getQualityCheckTexts: (SizeResult) sizeResult andFor: (bool) isCentered andFor: (bool) isRightOrientation andFor: (bool) isSharp andFor:(ExposureResult) exposureResult;
 - (void) configureCamera: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
 - (void) toggleFlash: (AVCaptureDevice *) device with: (dispatch_queue_t) sessionQueue;
-- (void) generateViewFinder: (UIView *) view forPreview: (UIView *) previewView;
+- (CALayer *) generateViewFinder: (UIView *) view forPreview: (UIView *) previewView;
 - (UIImage *) interpretResultFromImage:(UIImage*) img andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
 -(UIImage *) interpretResultWithBoundaryFromImage:(UIImage*) img withBoundary:(std::vector<Point2f>) boundary andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB;
 @end
