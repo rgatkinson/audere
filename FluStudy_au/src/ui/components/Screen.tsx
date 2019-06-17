@@ -85,7 +85,7 @@ export const generateScreen = (config: ScreenConfig) => {
       //
       // Note a side-effect of this optimization is that willFocus will not fire for
       // components that are contained by the screen since they'll only get rendered
-      // *after* the willFocus of the screen fires, and that event isn't propogated after
+      // *after* the willFocus of the screen fires, and that event isn't propagated after
       // the fact.
       //
       // We also include didFocus to check rendering state for the case where a screen
