@@ -33,7 +33,7 @@
         }
         NSLog(@"Calling JS callback");
         NSString *base64img = @"";
-        if (testStrip) {
+        if (testStrip && passed && fiducial) {
             base64img = [UIImagePNGRepresentation(testStrip) base64EncodedStringWithOptions: 0];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
