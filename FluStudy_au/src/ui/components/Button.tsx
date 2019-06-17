@@ -11,12 +11,10 @@ import {
   Text,
   TextStyle,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import {
-  BORDER_COLOR,
   BORDER_RADIUS,
   BORDER_WIDTH,
   BUTTON_WIDTH,
@@ -25,7 +23,6 @@ import {
   INPUT_HEIGHT,
   PRIMARY_COLOR,
   REGULAR_TEXT,
-  SECONDARY_COLOR,
 } from "../styles";
 
 interface Props {

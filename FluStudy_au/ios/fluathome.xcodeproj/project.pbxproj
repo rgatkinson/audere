@@ -27,6 +27,9 @@
 		598F6C132280F61300B15B8B /* one.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C102280F61300B15B8B /* one.png */; };
 		598F6C142280F61300B15B8B /* two.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C112280F61300B15B8B /* two.png */; };
 		59A01E1122AEC2600030AC38 /* gradient.png in Resources */ = {isa = PBXBuildFile; fileRef = 59A01E1022AEC2600030AC38 /* gradient.png */; };
+		59AC902022B8319700277C62 /* nointernetconnection.png in Resources */ = {isa = PBXBuildFile; fileRef = 59AC901722B8319700277C62 /* nointernetconnection.png */; };
+		59AC902122B8319700277C62 /* nointernetconnection@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59AC901E22B8319700277C62 /* nointernetconnection@3x.png */; };
+		59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59AC901F22B8319700277C62 /* nointernetconnection@2x.png */; };
 		59D64621229DA6F000EA64E6 /* barcodesuccess.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D6461E229DA6F000EA64E6 /* barcodesuccess.png */; };
 		59D64622229DA6F000EA64E6 /* barcodesuccess@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D6461F229DA6F000EA64E6 /* barcodesuccess@3x.png */; };
 		59D64623229DA6F000EA64E6 /* barcodesuccess@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59D64620229DA6F000EA64E6 /* barcodesuccess@2x.png */; };
@@ -231,6 +234,9 @@
 		598F6C102280F61300B15B8B /* one.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = one.png; path = ../../../assets/images/one.png; sourceTree = "<group>"; };
 		598F6C112280F61300B15B8B /* two.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = two.png; path = ../../../assets/images/two.png; sourceTree = "<group>"; };
 		59A01E1022AEC2600030AC38 /* gradient.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gradient.png; path = ../../../assets/images/gradient.png; sourceTree = "<group>"; };
+		59AC901722B8319700277C62 /* nointernetconnection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = nointernetconnection.png; path = ../../../assets/images/nointernetconnection.png; sourceTree = "<group>"; };
+		59AC901E22B8319700277C62 /* nointernetconnection@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "nointernetconnection@3x.png"; path = "../../../assets/images/nointernetconnection@3x.png"; sourceTree = "<group>"; };
+		59AC901F22B8319700277C62 /* nointernetconnection@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "nointernetconnection@2x.png"; path = "../../../assets/images/nointernetconnection@2x.png"; sourceTree = "<group>"; };
 		59D6461E229DA6F000EA64E6 /* barcodesuccess.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = barcodesuccess.png; path = ../../../assets/images/barcodesuccess.png; sourceTree = "<group>"; };
 		59D6461F229DA6F000EA64E6 /* barcodesuccess@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "barcodesuccess@3x.png"; path = "../../../assets/images/barcodesuccess@3x.png"; sourceTree = "<group>"; };
 		59D64620229DA6F000EA64E6 /* barcodesuccess@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "barcodesuccess@2x.png"; path = "../../../assets/images/barcodesuccess@2x.png"; sourceTree = "<group>"; };
@@ -524,6 +530,9 @@
 				EAEBD1E922691AA0009815C6 /* nicejob.png */,
 				EAEBD1AE22691A99009815C6 /* nicejob@2x.png */,
 				EAEBD1C322691A9A009815C6 /* nicejob@3x.png */,
+				59AC901722B8319700277C62 /* nointernetconnection.png */,
+				59AC901F22B8319700277C62 /* nointernetconnection@2x.png */,
+				59AC901E22B8319700277C62 /* nointernetconnection@3x.png */,
 				EAEBD24222691AAE009815C6 /* oneminutetimer.png */,
 				EAEBD22322691AA9009815C6 /* oneminutetimer@2x.png */,
 				EAEBD25922691AB3009815C6 /* oneminutetimer@3x.png */,
@@ -803,6 +812,7 @@
 				59EDB821229F0925001B7F12 /* setupkitbox.png in Resources */,
 				EAEBD2B722691AB7009815C6 /* splash.png in Resources */,
 				EAE02F9C22971991000C88F6 /* greenyellowcircle.png in Resources */,
+				59AC902122B8319700277C62 /* nointernetconnection@3x.png in Resources */,
 				EAE02FA022971991000C88F6 /* greenyellowtriangle.png in Resources */,
 				218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */,
 				EAEBD2DE22691AB7009815C6 /* app-icon.png in Resources */,
@@ -896,6 +906,8 @@
 				EAEBD2B122691AB7009815C6 /* openteststrip@3x.png in Resources */,
 				EAEBD2C922691AB7009815C6 /* openteststrip@2x.png in Resources */,
 				EAEBD31222691AB7009815C6 /* uwmed@3x.png in Resources */,
+				59AC902022B8319700277C62 /* nointernetconnection.png in Resources */,
+				59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */,
 				59EDB814229F08B9001B7F12 /* readytobegin@2x.png in Resources */,
 				5906FF482296030300A8C878 /* listarrow.png in Resources */,
 				EAA1BB8222A5F975005C16A9 /* defectiveteststrip@3x.png in Resources */,

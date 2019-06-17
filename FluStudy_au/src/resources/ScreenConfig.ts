@@ -94,6 +94,8 @@ import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
+import PendingButton from "../ui/components/PendingButton";
+import { hasPendingData, pendingNavigation } from "../util/pendingData";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -615,9 +617,22 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Thanks" } }],
+    footer: [
+      { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
+    ],
     key: "TestFeedback",
   },
+  {
+    body: [{ tag: MainImage, props: {uri: "nointernetconnection"} }, { tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [
+      {
+        tag: PendingButton,
+        props: { hasPendingFn: hasPendingData },
+      },
+    ],
+    key: "PendingData",
+  },
+
   {
     body: [
       { tag: MainImage, props: { uri: "finalthanks" } },

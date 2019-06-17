@@ -7,7 +7,7 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { Action, StoreState } from "../../store";
+import { Action } from "../../store";
 import Button from "./Button";
 
 interface Props {
@@ -38,18 +38,18 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
       validate,
     } = this.props;
     if (!validate || validate()) {
-      dispatchOnNext && dispatch(dispatchOnNext());
       if (!!surveyGetNextFn) {
-        const nextFromFn = await surveyGetNextFn();
-        navigation.push(nextFromFn);
+        navigation.push(await surveyGetNextFn());
       } else {
         next && navigation.push(next);
       }
+      dispatchOnNext && dispatch(dispatchOnNext());
     }
   };
 
   render() {
     const { label, namespace, t } = this.props;
+
     return (
       <Button
         enabled={true}

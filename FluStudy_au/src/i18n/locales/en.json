@@ -6,6 +6,7 @@
       "select": "Select",
       "cancel": "Cancel",
       "submit": "Submit",
+      "tryAgain": "Try Again",
       "done": "Done",
       "back": "Back",
       "next": "Next",
@@ -359,6 +360,10 @@
   "Thanks": {
     "title": "Thanks for participating",
     "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us."
+  },
+  "PendingData": {
+    "title": "Connect to upload photo",
+    "desc": "We could not connect to upload your photo. Once you are connected please come back to the app and click Try Again."
   },
   "dropDown": {
     "selectAge": "Select age",

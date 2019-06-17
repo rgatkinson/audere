@@ -172,6 +172,11 @@ export class PhotoUploader {
     this.uploadNext();
   }
 
+  async hasPendingPhotos() {
+    const pendingFiles = await this.pendingFiles();
+    return pendingFiles.length > 0;
+  }
+
   private async handleUploadNext(): Promise<void> {
     debug("handleUploadNext");
 

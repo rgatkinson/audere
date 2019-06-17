@@ -81,6 +81,10 @@ export function savePhoto(photoId: string, jpegBase64: string) {
   return photoUploader.savePhoto(photoId, jpegBase64);
 }
 
+export async function hasPendingPhotos() {
+  return await photoUploader.hasPendingPhotos();
+}
+
 export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
   createTransform(
     (inboundState, key) => {
