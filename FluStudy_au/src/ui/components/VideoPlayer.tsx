@@ -122,7 +122,7 @@ export default class VideoPlayer extends React.Component<Props> {
           playInBackground={false}
           progressUpdateInterval={THREE_SECONDS_MS}
           ref={this._videoPlayer}
-          repeat={true}
+          repeat={false}
           resizeMode={"contain"}
           source={{ uri: this._config.uri }}
           style={styles.video}
