@@ -174,7 +174,13 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
 
     if (nextAppState === "quadTap") {
-      this.resetState(nextAppState);
+      this.props.dispatch(
+        appendEvent(
+          EventInfoKind.TimeoutNav,
+          "app:" + nextAppState + ":redirectToScreeningStart"
+        )
+      );
+      this.clearState();
     } else if (nextAppState === "launch" || nextAppState === "active") {
       if (elapsedHours > HOURS_IN_DAY) {
         const { t } = this.props;
@@ -185,7 +191,13 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
             {
               text: t("relaunch:button:newUser"),
               onPress: () => {
-                this.resetState(nextAppState);
+                this.props.dispatch(
+                  appendEvent(
+                    EventInfoKind.TimeoutNav,
+                    "app:" + nextAppState + ":newUserRedirectToScreeningStart"
+                  )
+                );
+                this.clearState();
               },
             },
             { text: t("relaunch:button:returningUser"), onPress: () => {} },
@@ -204,27 +216,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     }
   };
 
-  resetState(nextAppState: string) {
-    if (this.props.workflow.surveyCompletedAt) {
-      // Successfully completed survey, clear state
-      this.props.dispatch(
-        appendEvent(
-          EventInfoKind.TimeoutNav,
-          "app:" + nextAppState + ":surveyCompleteRedirectToScreeningStart"
-        )
-      );
-    } else if (this.props.workflow.surveyStartedAt) {
-      // Started survey but did not finish, clear state
-      this.props.dispatch(
-        appendEvent(
-          EventInfoKind.TimeoutNav,
-          "app:" +
-            nextAppState +
-            ":surveyIncompleteExpirationRedirectToScreeningStart"
-        )
-      );
-    }
-
+  clearState() {
     this.navigator &&
       this.navigator.current &&
       this.navigator.current.dispatch(
