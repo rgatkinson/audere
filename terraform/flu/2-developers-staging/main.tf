@@ -35,7 +35,7 @@ data "terraform_remote_state" "network" {
 
 terraform {
   backend "s3" {
-    bucket = "flu-prod-terraform.auderenow.io"
+    bucket = "flu-staging-terraform.auderenow.io"
     key = "dev/terraform.state"
     region = "us-west-2"
   }
