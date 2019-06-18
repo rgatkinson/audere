@@ -477,7 +477,7 @@ jobs:
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish --non-interactive
+            expo publish --max-workers 2 --non-interactive
       - run:
           name: Fastlane
           command: |
@@ -544,7 +544,7 @@ jobs:
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)"
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish --non-interactive
+            expo publish --max-workers 2 --non-interactive
       - run:
           name: Prepare signing artifacts
           command: |
