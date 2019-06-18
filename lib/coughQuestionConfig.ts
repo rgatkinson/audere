@@ -904,6 +904,7 @@ export const AgeConfig: DropDownQuestion = {
     { key: "20to24", primary: false, enabled: true },
     { key: "25to29", primary: false, enabled: true },
     { key: "30to34", primary: false, enabled: true },
+    { key: "35to39", primary: false, enabled: true },
     { key: "40to44", primary: false, enabled: true },
     { key: "45to49", primary: false, enabled: true },
     { key: "50to54", primary: false, enabled: true },
