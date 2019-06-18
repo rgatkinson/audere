@@ -500,7 +500,7 @@ jobs:
       - restore_cache:
           key: athomeprod-android-node-cache-{{ checksum "package.json" }}
       - restore_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
+          key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
       - run:
           name: flu@home Yarn Install
           command: |
