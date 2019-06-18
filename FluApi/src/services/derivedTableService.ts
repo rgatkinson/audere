@@ -47,18 +47,30 @@ export class DerivedTableService {
   }
 }
 
-async function drop(sql: Sequelize, meta: SqlObjectMetadata, noun: string): Promise<void> {
+async function drop(
+  sql: Sequelize,
+  meta: SqlObjectMetadata,
+  noun: string
+): Promise<void> {
   const name = scopedName(meta);
   await runQuery(sql, `drop ${noun} if exists ${name}`);
 }
 
-async function createType(sql: Sequelize, meta: SqlObjectMetadata, spec?: string): Promise<void> {
+async function createType(
+  sql: Sequelize,
+  meta: SqlObjectMetadata,
+  spec?: string
+): Promise<void> {
   const name = scopedName(meta);
   if (spec != null) {
     await runQuery(sql, `create type ${name} as ${spec};`);
   }
 }
-async function createView(sql: Sequelize, meta: SqlObjectMetadata, query?: string): Promise<void> {
+async function createView(
+  sql: Sequelize,
+  meta: SqlObjectMetadata,
+  query?: string
+): Promise<void> {
   const name = scopedName(meta);
   if (query != null) {
     await runQuery(sql, `create view ${name} as ${query};`);
@@ -78,7 +90,7 @@ function scopedName(meta: SqlObjectMetadata): string {
 interface SqlObjectMetadata {
   schema?: string; // Typically `derivedSchema(original)`.
   name: string;
-  pii?: string;    // Command to create in pii database, if applicable.
+  pii?: string; // Command to create in pii database, if applicable.
   nonPii?: string; // Command to create in non-pii database, if applicable.
 }
 
@@ -108,7 +120,7 @@ function getViewsMetadata(): SqlObjectMetadata[] {
       nonPii: `
         select * from cough.current_surveys
         where survey->>'isDemo' = 'false'
-      `,
+      `
     },
     {
       schema: derivedSchema("cough"),
@@ -124,7 +136,7 @@ function getViewsMetadata(): SqlObjectMetadata[] {
           ${namedResponseColumns(SURVEY_QUESTIONS).join(",\n  ")},
           ${namedSampleColumns().join(",\n  ")}
         from ${derivedSchema("cough")}.non_demo_surveys
-      `,
+      `
     },
     {
       schema: derivedSchema("cough"),
@@ -179,7 +191,7 @@ function getViewsMetadata(): SqlObjectMetadata[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
         from ${derivedSchema("cough")}.survey_named_array_items
       `
-    },
+    }
   ];
 }
 
@@ -209,28 +221,44 @@ function namedSampleColumns(): string[] {
     `
       jsonb_extract_path(
         survey->'samples',
-        (${selectIndexOfKeyValue("survey->'samples'", "sample_type", "manualEntry")})::text
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "manualEntry"
+        )})::text
       )->>'code' as samples_manualentry
     `,
     `
       jsonb_extract_path(
         survey->'samples',
-        (${selectIndexOfKeyValue("survey->'samples'", "sample_type", "org.iso.Code128")})::text
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "org.iso.Code128"
+        )})::text
       )->>'code' as samples_code128
     `,
     `
       jsonb_extract_path(
         survey->'samples',
-        (${selectIndexOfKeyValue("survey->'samples'", "sample_type", "PhotoGUID")})::text
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "PhotoGUID"
+        )})::text
       )->>'code' as samples_photoguid
     `,
     `
       jsonb_extract_path(
         survey->'samples',
-        (${selectIndexOfKeyValue("survey->'samples'", "sample_type", "RDTReaderPhotoGUID")})::text
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "RDTReaderPhotoGUID"
+        )})::text
       )->>'code' as samples_rdtreaderphotoguid
     `
-  ]
+  ];
 }
 
 function sampleColumns(): string[] {
@@ -240,7 +268,7 @@ function sampleColumns(): string[] {
     "samples_photoguid",
     "samples_rdtreaderphotoguid",
     `coalesce(samples_code128, samples_manualentry) as samples_barcode`,
-    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`,
+    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`
   ];
 }
 
@@ -248,7 +276,9 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
   return flatMap(columns, questions);
 
   function columns(question: SurveyQuestion): string[] {
-    debug(`=== Generating Columns for ===\n${JSON.stringify(question, null, 2)}`);
+    debug(
+      `=== Generating Columns for ===\n${JSON.stringify(question, null, 2)}`
+    );
     const qid = question.id.toLowerCase();
     switch (question.type) {
       // Text is just a label, and results in no data in db.
@@ -257,14 +287,18 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
 
       // `.answer` is a string with the data we want
       case SurveyQuestionType.DatePicker:
-        return [`
+        return [
+          `
           response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
-        `];
+        `
+        ];
 
       case SurveyQuestionType.TextInput:
-        return [`
+        return [
+          `
           response_${qid}->'answer'->0->>'valueString' as ${qid}
-        `];
+        `
+        ];
 
       case SurveyQuestionType.ButtonGrid:
       case SurveyQuestionType.Dropdown:
@@ -289,7 +323,8 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
         // `.answerOptions` is `[{"id":"","text":""},...]
         // So we want to return a yes/no answer for each `.answerOption`
         // select answer @> '[{"valueIndex":${i}}]'::jsonb
-        return optionQuestion.options.map((option, i) => `
+        return optionQuestion.options.map(
+          (option, i) => `
           (
             select (
               ${selectIndexOfKeyValue(
@@ -302,7 +337,8 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
             is not null
           )
           as ${qid}_${option.toLowerCase()}
-        `);
+        `
+        );
       }
 
       default:
@@ -311,12 +347,21 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
   }
 }
 
-function selectIndexOfKeyValue(array: string, key: string, value: string, cond?: string): string {
+function selectIndexOfKeyValue(
+  array: string,
+  key: string,
+  value: string,
+  cond?: string
+): string {
   return `
     select * from generate_series(0, jsonb_array_length(${array})-1) as index
-      where jsonb_extract_path(${array}, index::text)->>'${key}' = '${value}'${cond ? `
+      where jsonb_extract_path(${array}, index::text)->>'${key}' = '${value}'${
+    cond
+      ? `
         and ${cond}
-      ` : ""}
+      `
+      : ""
+  }
 
   `;
 }
@@ -325,8 +370,8 @@ function derivedSchema(original: string): string {
   return `${original}_derived`;
 }
 
-function flatMap<I,O>(f: (input: I) => O[], inputs: I[]): O[] {
-  return inputs.reduce((acc, x) => [ ...acc, ...f(x) ], []);
+function flatMap<I, O>(f: (input: I) => O[], inputs: I[]): O[] {
+  return inputs.reduce((acc, x) => [...acc, ...f(x)], []);
 }
 
 function debug(s: string) {

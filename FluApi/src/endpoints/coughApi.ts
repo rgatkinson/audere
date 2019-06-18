@@ -133,7 +133,7 @@ export class CoughEndpoint {
     const reqId = requestId(req);
     await this.updateDerived(reqId);
     res.json({});
-  }
+  };
 
   private async updateDerived(reqId: string) {
     const service = new DerivedTableService(this.sql);
