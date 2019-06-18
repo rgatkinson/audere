@@ -52,6 +52,7 @@ export class CoughEndpoint {
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
+    await this.updateDerived(reqId);
     res.json(result);
   };
 
@@ -129,8 +130,13 @@ export class CoughEndpoint {
   }
 
   public updateDerivedTables = async (req, res, next) => {
-    const service = new DerivedTableService(this.sql);
     const reqId = requestId(req);
+    await this.updateDerived(reqId);
+    res.json({});
+  }
+
+  private async updateDerived(reqId: string) {
+    const service = new DerivedTableService(this.sql);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
       await service.update();
@@ -138,7 +144,6 @@ export class CoughEndpoint {
       logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
     }
     logger.info(`${reqId}: leave updateDerivedTables`);
-    res.json({});
   }
 
   private async wrap(
