@@ -115,6 +115,12 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r224109'
   }
+  resolutionStrategy {
+    force "com.google.android.gms:play-services-tasks:16.0.1"
+  }
+  resolutionStrategy {
+    force "com.google.android.gms:play-services-gcm:16.1.0"
+  }
 }
 
 
