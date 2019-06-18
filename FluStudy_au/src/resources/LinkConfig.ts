@@ -33,6 +33,11 @@ export function myDr() {
   Linking.openURL(myDrUrl);
 }
 
+export function callNumber(phoneNumber: string) {
+  const cleanedPhoneNumber = phoneNumber.replace(/[^0-9.]/, "");
+  Linking.openURL(`tel:${cleanedPhoneNumber}`);
+}
+
 export async function emailSupport(title: string) {
   const barcode = (await getStore()).getState().survey.kitBarcode;
   const body = !!barcode

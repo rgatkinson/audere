@@ -19,18 +19,12 @@ class ConsentText extends React.Component<WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Divider style={styles.darkDivider} />
         <Text
-          center={true}
+          center={false}
           content={t("consentFormHeader1")}
           style={styles.text}
         />
         <Divider style={styles.thinDivider} />
-        <Text
-          center={true}
-          content={t("consentFormHeader2")}
-          style={styles.text}
-        />
         <Text content={t("consentFormText")} style={styles.text} />
       </View>
     );
@@ -43,16 +37,13 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: GUTTER,
   },
-  darkDivider: {
-    borderBottomColor: "#444",
-    borderBottomWidth: 1,
-  },
   text: {
     fontSize: SMALL_TEXT,
   },
   thinDivider: {
-    borderBottomColor: "#666",
-    width: "90%",
     alignSelf: "center",
+    borderBottomColor: "#666",
+    marginTop: GUTTER,
+    width: "100%",
   },
 });

@@ -36,6 +36,7 @@ export const MenuScreens: ScreenConfig[] = [
   menuScreen("Partners", "about", [
     { tag: ScreenImages, props: { images: ["brotman", "uwmed", "fredhutch"] } },
   ]),
+  menuScreen("Report", "about"),
   menuScreen("GeneralQuestions", "help"),
   menuScreen("Problems", "help"),
   menuScreen("TestQuestions", "help"),

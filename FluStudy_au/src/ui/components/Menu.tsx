@@ -33,9 +33,8 @@ export const Menu = (props: any) => {
       props.navigation.navigate("Home");
     }
   };
-
-  const aboutItems = { ...props, items: props.items.slice(1, 4) };
-  const helpItems = { ...props, items: props.items.slice(4) };
+  const aboutItems = { ...props, items: props.items.slice(1, 5) };
+  const helpItems = { ...props, items: props.items.slice(5) };
   return (
     <ScrollView>
       <SafeAreaView

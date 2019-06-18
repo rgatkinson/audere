@@ -13,6 +13,7 @@ import {
 import { FunnelEvents } from "../util/tracker";
 import { getFluResultScreen, logFluResult } from "../util/fluResults";
 import {
+  ConsentConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,
@@ -78,10 +79,10 @@ import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import BulletPointsComponent from "../ui/components/BulletPoint";
-import ConsentText from "../ui/components/ConsentText";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
 import Divider from "../ui/components/Divider";
+import HighlightText from "../ui/components/HighlightText";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
@@ -96,6 +97,9 @@ import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
 import PendingButton from "../ui/components/PendingButton";
 import { hasPendingData, pendingNavigation } from "../util/pendingData";
+import ConsentText from "../ui/components/ConsentText";
+import BackButton from "../ui/components/BackButton";
+import { BACKROUND_HIGHLIGHT_COLOR } from "../ui/styles";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -136,15 +140,69 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: FooterNavigation,
-        props: { next: "Consent", stepDots: { step: 3, total: 3 } },
+        props: {
+          next: "ParticipantInformation",
+          stepDots: { step: 3, total: 3 },
+        },
       },
     ],
   },
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
-      { tag: ConsentText },
+      {
+        tag: ScreenText,
+        props: {
+          center: false,
+          label: "desc",
+          style: { marginHorizontal: 0 },
+        },
+      },
+      {
+        tag: ScreenText,
+        props: {
+          center: false,
+          label: "desc2",
+          style: { marginHorizontal: 0 },
+        },
+      },
+      {
+        tag: ScreenText,
+        props: {
+          center: false,
+          label: "desc3",
+          style: { marginHorizontal: 0 },
+        },
+      },
+    ],
+    key: "ParticipantInformation",
+    footer: [{ tag: ContinueButton, props: { next: "Consent" } }],
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ConsentText, props: { questions: ConsentConfig } },
+      {
+        tag: Questions,
+        props: { questions: ConsentConfig },
+        validate: true,
+      },
+      {
+        tag: ScreenText,
+        props: {
+          center: false,
+          label: "consentFormText2",
+          style: { marginHorizontal: 0 },
+        },
+      },
+      {
+        tag: HighlightText,
+        props: {
+          center: true,
+          color: BACKROUND_HIGHLIGHT_COLOR,
+          label: "viewForm",
+        },
+      },
     ],
     key: "Consent",
     footer: [
@@ -156,7 +214,32 @@ export const Screens: ScreenConfig[] = [
           next: "ScanInstructions",
         },
       },
+      {
+        tag: ContinueButton,
+        props: {
+          alert: {
+            title: "areYouSure",
+            subtitle: "ifNoConsent",
+            buttons: [
+              { text: "noThanks", next: "ConsentDeclined" },
+              { text: "viewConsent" },
+            ],
+          },
+          label: "noThanks",
+          primary: false,
+        },
+      },
     ],
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: MainImage, props: { uri: "thanksforyourinterest" } },
+      { tag: ScreenText, props: { center: true, label: "desc" } },
+    ],
+    footer: [{ tag: BackButton, props: { label: "backToConsent" } }],
+    funnelEvent: FunnelEvents.CONSENT_DECLINED,
+    key: "ConsentDeclined",
   },
   {
     body: [

@@ -47,6 +47,29 @@ export interface DropDownQuestion extends SurveyQuestion {
   placeholder: string;
 }
 
+export const ConsentConfig: SurveyQuestion[] = [
+  {
+    buttons: [
+      { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
+    ],
+    id: "ResearchByTheseResearchers",
+    required: true,
+    title: "researchByTheseResearchers",
+    type: SurveyQuestionType.ButtonGrid,
+  },
+  {
+    buttons: [
+      { key: "yes", primary: false, enabled: true },
+      { key: "no", primary: false, enabled: true },
+    ],
+    id: "ResearchByAnyResearchers",
+    required: true,
+    title: "researchByAnyResearchers",
+    type: SurveyQuestionType.ButtonGrid,
+  },
+];
+
 export interface MonthQuestion extends SurveyQuestion {
   monthRange: number;
 }
