@@ -8,7 +8,6 @@ import i18n from "i18next";
 import axios from "axios";
 import { getApiBaseUrl } from "../transport";
 import { getRemoteConfig } from "./remoteConfig";
-import { tracker, BarcodeVerificationEvents } from "./tracker";
 
 const BARCODE_RE = /^[0-9]{8}$/;
 const BARCODE_CHARS = 8;

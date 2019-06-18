@@ -25,40 +25,20 @@ export const DrawerEvents = {
 
 export const FunnelEvents = {
   // Screening events
-  MET_SYMPTOMS: "funnel_met_symptoms",
   CONSENT_INELIGIBLE: "funnel_consent_ineligible",
   CONSENT_COMPLETED: "funnel_consent_completed",
-  ADDRESS_ATTEMPTED: "funnel_address_attempted",
-  ADDRESS_STATE_INVALID: "funnel_address_state_invalid",
-  ADDRESS_PO_BOX_EXCLUDED: "funnel_address_po_box_excluded",
-  ADDRESS_VERIFICATION_RESULTS_OBTAINED:
-    "funnel_address_verification_results_obtained",
-  ADDRESS_VERIFICATION_SKIPPED_DEMO: "funnel_address_verification_skipped_demo",
-  ADDRESS_VERIFICATION_SKIPPED_NO_INTERNET:
-    "funnel_address_verification_skipped_no_internet",
-  ADDRESS_CORRECTION_CHOSEN: "funnel_address_correction_chosen",
-  ADDRESS_SUGGESTION_IGNORED: "funnel_address_suggestion_ignored",
-  ADDRESS_COMPLETED: "funnel_address_completed",
-  AGE_INELIGIBLE: "funnel_age_ineligible",
-  SYMPTOMS_INELIGIBLE: "funnel_symptoms_ineligible",
-  STATE_INELIGIBLE: "funnel_state_ineligible",
-  ADDRESS_INELIGIBLE: "funnel_address_ineligible",
-  PO_BOX_INELIGIBLE: "po_box_ineligible",
 
   // Survey events
-  RECEIVED_KIT: "funnel_received_kit",
   SCAN_CONFIRMATION: "funnel_scan_confirmation",
   MANUAL_CODE_CONFIRMATION: "funnel_manual_code_confirmation",
-  SURVIVED_FIRST_SWAB: "funnel_survived_first_swab",
+  SURVIVED_SWAB: "funnel_survived_swab",
   PASSED_FIRST_TIMER: "funnel_passed_first_timer",
   COMPLETED_SURVEY: "funnel_completed_survey",
   RESULT_NO_BLUE: "funnel_result_no_blue",
   RESULT_BLUE: "funnel_result_blue",
   RESULT_BLUE_NO_PINK: "funnel_result_blue_no_pink",
   RESULT_BLUE_ANY_PINK: "funnel_result_blue_any_pink",
-  COMPLETED_FIRST_TEST: "funnel_completed_first_test",
-  COMPLETED_SECOND_TEST: "funnel_completed_second_test",
-  COMPLETED_SHIPPING: "funnel_completed_shipping",
+  COMPLETED_TEST: "funnel_completed_test",
 };
 
 // You should include { video: <uri> } with these events,
@@ -67,11 +47,6 @@ export const VideoEvents = {
   START_VIDEO: "video_view_started",
   VIDEO_PROGRESS: "video_view_progress",
   COMPLETE_VIDEO: "video_view_completed",
-};
-
-export const BarcodeVerificationEvents = {
-  SERVER_RESPONSE: "barcode_verification_server_response",
-  EXCEPTION: "barcode_verification_exception",
 };
 
 export const TransportEvents = {
@@ -83,14 +58,11 @@ export const TransportEvents = {
 };
 
 export const AppHealthEvents = {
-  KIT_ORDER_BLOCKED: "kit_order_blocked",
-  KIT_ORDER_UNBLOCKED: "kit_order_unblocked",
   PHOTO_UPLOADER_ERROR: "photo_uploader_error",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
   REMOTE_CONFIG_OVERRIDDEN: "remote_config_overridden",
   SAVE_STORAGE_PASSWORD_ERROR: "save_storage_password_error",
-  SMARTY_STREETS_ERROR: "smarty_streets_error",
   FIRESTORE_SAVE_PHOTO_ERROR: "firestore_save_photo_error",
   FIRESTORE_SAVE_SURVEY_ERROR: "firestore_save_survey_error",
 };

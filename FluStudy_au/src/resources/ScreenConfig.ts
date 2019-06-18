@@ -214,7 +214,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
-    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
     key: "ManualConfirmation",
     workflowEvent: "surveyStartedAt",
   },
@@ -286,7 +286,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    funnelEvent: FunnelEvents.SURVIVED_FIRST_SWAB,
+    funnelEvent: FunnelEvents.SURVIVED_SWAB,
     key: "SwabInTube",
   },
   {
@@ -623,7 +623,11 @@ export const Screens: ScreenConfig[] = [
     key: "TestFeedback",
   },
   {
-    body: [{ tag: MainImage, props: {uri: "nointernetconnection"} }, { tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    body: [
+      { tag: MainImage, props: { uri: "nointernetconnection" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
     footer: [
       {
         tag: PendingButton,
