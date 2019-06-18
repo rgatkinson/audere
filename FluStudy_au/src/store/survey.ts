@@ -34,6 +34,7 @@ export type SurveyAction =
   | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
   | { type: "SET_ONE_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
+  | { type: "SET_TOTAL_TEST_STRIP_TIME" }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
@@ -141,6 +142,24 @@ export default function reducer(state = initialState, action: SurveyAction) {
           ...state,
           tenMinuteStartTime: new Date().getTime(),
           timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_TOTAL_TEST_STRIP_TIME":
+      // We only write the total test strip time the first time around.  If you
+      // back up and retraverse the screens, we don't update the total time.
+      if (
+        state.tenMinuteStartTime &&
+        !(state.rdtInfo && state.rdtInfo.totalTestStripTime)
+      ) {
+        const timeNow = new Date().getTime();
+        const deltaMS = timeNow - state.tenMinuteStartTime;
+
+        return {
+          ...state,
+          rdtInfo: { ...state.rdtInfo, totalTestStripTime: deltaMS },
+          timestamp: timeNow,
         };
       }
       return state;
@@ -261,6 +280,12 @@ export function setOneMinuteStartTime(): SurveyAction {
 export function setTenMinuteStartTime(): SurveyAction {
   return {
     type: "SET_TEN_MINUTE_START_TIME",
+  };
+}
+
+export function setTotalTestStripTime(): SurveyAction {
+  return {
+    type: "SET_TOTAL_TEST_STRIP_TIME",
   };
 }
 

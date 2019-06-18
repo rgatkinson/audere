@@ -9,6 +9,7 @@ import {
   setConsent,
   setTenMinuteStartTime,
   setOneMinuteStartTime,
+  setTotalTestStripTime,
 } from "../store";
 import { FunnelEvents } from "../util/tracker";
 import { getFluResultScreen, logFluResult } from "../util/fluResults";
@@ -605,7 +606,15 @@ export const Screens: ScreenConfig[] = [
         props: { label: "desc", customBulletUri: "listarrow" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "RDTInstructions" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          dispatchOnNext: setTotalTestStripTime,
+          next: "RDTInstructions",
+        },
+      },
+    ],
     key: "TestStripReady",
   },
   {
