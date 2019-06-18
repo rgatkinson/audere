@@ -6,6 +6,7 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Alert,
   AppState,
   Dimensions,
   StyleSheet,
@@ -32,6 +33,7 @@ import {
   AppEvents,
 } from "../util/tracker";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   DrawerActions,
   NavigationAction,
@@ -77,7 +79,7 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class ConnectedRootContainer extends React.Component<Props> {
+class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
   shouldComponentUpdate(props: Props) {
     return props.isDemo != this.props.isDemo;
   }
@@ -171,37 +173,24 @@ class ConnectedRootContainer extends React.Component<Props> {
     const elapsedHours =
       intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
 
-    if (
-      nextAppState === "launch" ||
-      nextAppState === "active" ||
-      nextAppState === "quadTap"
-    ) {
-      if (
-        this.props.workflow.surveyCompletedAt &&
-        (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
-      ) {
-        // Successfully completed survey and 1 day has passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" + nextAppState + ":surveyCompleteRedirectToScreeningStart"
-          )
+    if (nextAppState === "quadTap") {
+      this.resetState(nextAppState);
+    } else if (nextAppState === "launch" || nextAppState === "active") {
+      if (elapsedHours > HOURS_IN_DAY) {
+        const { t } = this.props;
+        Alert.alert(
+          t("relaunch:returningOrNewTitle"),
+          t("relaunch:returningOrNewBody"),
+          [
+            {
+              text: t("relaunch:button:newUser"),
+              onPress: () => {
+                this.resetState(nextAppState);
+              },
+            },
+            { text: t("relaunch:button:returningUser"), onPress: () => {} },
+          ]
         );
-        this.clearState();
-      } else if (
-        this.props.workflow.surveyStartedAt &&
-        (nextAppState === "quadTap" || elapsedHours > 4 * HOURS_IN_DAY)
-      ) {
-        // Started survey but did not finish, at least 4 days have passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":surveyIncompleteExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
       } else if (this.props.activeRouteName === "CameraSettings") {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         if (status === "granted") {
@@ -215,7 +204,27 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   };
 
-  clearState() {
+  resetState(nextAppState: string) {
+    if (this.props.workflow.surveyCompletedAt) {
+      // Successfully completed survey, clear state
+      this.props.dispatch(
+        appendEvent(
+          EventInfoKind.TimeoutNav,
+          "app:" + nextAppState + ":surveyCompleteRedirectToScreeningStart"
+        )
+      );
+    } else if (this.props.workflow.surveyStartedAt) {
+      // Started survey but did not finish, clear state
+      this.props.dispatch(
+        appendEvent(
+          EventInfoKind.TimeoutNav,
+          "app:" +
+            nextAppState +
+            ":surveyIncompleteExpirationRedirectToScreeningStart"
+        )
+      );
+    }
+
     this.navigator &&
       this.navigator.current &&
       this.navigator.current.dispatch(
@@ -353,4 +362,4 @@ export default connect((state: StoreState) => {
       csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
     };
   }
-})(ConnectedRootContainer);
+})(withNamespaces()(ConnectedRootContainer));

@@ -70,6 +70,14 @@
   "optionList": {
     "pleaseSpecify": "Please specify:"
   },
+  "relaunch": {
+    "returningOrNewTitle": "Are you returning to the app or are you a new user?",
+    "returningOrNewBody": "Selecting \"New User\" will reset the flu@home app to start over.",
+    "button": {
+      "newUser": "New User",
+      "returningUser": "Returning User"
+    }
+  },
   "menu": {
     "aboutFluAtHome": "ABOUT FLU@HOME",
     "helpAndSupport": "HELP & SUPPORT"
