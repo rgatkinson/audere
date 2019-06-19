@@ -9,10 +9,8 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StoreState } from "../../store";
 import Text from "./Text";
-import strings from "../../i18n/locales/en.json";
 
-const DID_YOU_KNOW_TEXTS = strings.didYouKnow;
-const NUM_TEXTS = DID_YOU_KNOW_TEXTS.length;
+const TIP_COUNT = 13;
 
 interface State {
   currentTextNum: number | null | undefined;
@@ -34,7 +32,8 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.currentText = DID_YOU_KNOW_TEXTS[this._getCurrentTextNum()];
+    const { t } = this.props;
+    this.currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
   }
 
   shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
@@ -58,14 +57,15 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   _getCurrentTextNum(): number {
     const { startTimeMs, msPerItem } = this.props;
     return Math.floor(
-      ((new Date().getTime() - startTimeMs) / msPerItem) % NUM_TEXTS
+      ((new Date().getTime() - startTimeMs) / msPerItem) % TIP_COUNT
     );
   }
 
   _startCycle = () => {
     if (this.props.navigation.isFocused()) {
+      const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
-      const currentText = DID_YOU_KNOW_TEXTS[currentTextNum];
+      const currentText = t("didYouKnow:tip" + currentTextNum);
       this.setState({ currentTextNum });
       if (currentText != null) {
         this._setTimer();
@@ -75,12 +75,12 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 
   _setTimer = () => {
     if (this._timer == null) {
-      const { msPerItem } = this.props;
+      const { msPerItem, t } = this.props;
       this._timer = setTimeout(() => {
         this._timer = undefined;
         if (this.props.navigation.isFocused()) {
           const currentTextNum = this._getCurrentTextNum();
-          this.currentText = DID_YOU_KNOW_TEXTS[currentTextNum];
+          this.currentText = t("didYouKnow:tip" + currentTextNum);
           this.setState({ currentTextNum });
           this._setTimer();
         }
