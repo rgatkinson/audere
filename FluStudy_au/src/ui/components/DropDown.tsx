@@ -131,7 +131,7 @@ class DropDownModal extends React.Component<
     );
   }
 }
-const TranslatedModal = withNamespaces("dropDown")(DropDownModal);
+const TranslatedModal = withNamespaces("surveyButton")(DropDownModal);
 
 interface Props {
   highlighted?: boolean;
@@ -216,4 +216,4 @@ const styles = StyleSheet.create({
 });
 export default connect((state: StoreState, props: Props) => ({
   selected: getSelectedButton(state, props.question),
-}))(withNamespaces("dropDown")(DropDown));
+}))(withNamespaces("surveyButton")(DropDown));
