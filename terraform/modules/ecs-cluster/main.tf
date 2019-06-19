@@ -14,17 +14,17 @@ data "aws_ami" "amazon_linux_ecs" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-ecs-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+    values = ["amzn2-ami-ecs-*-x86_64-ebs"]
   }
 
   filter {
     name   = "owner-alias"
     values = ["amazon"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
