@@ -28,6 +28,7 @@ import {
   validBarcodeShape,
 } from "../../util/barcodeVerification";
 import { GUTTER, PRIMARY_COLOR } from "../styles";
+import { tracker, AppEvents } from "../../util/tracker";
 
 interface Props {
   dispatch(action: Action): void;
@@ -73,6 +74,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     this._clearTimer();
     this._timer = setTimeout(() => {
       if (navigation.isFocused()) {
+        tracker.logEvent(AppEvents.BARCODE_TIMEOUT);
         navigation.push(timeoutScreen);
       }
     }, 30000);

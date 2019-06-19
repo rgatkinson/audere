@@ -71,6 +71,8 @@ export const AppEvents = {
   APP_FOREGROUNDED: "app_foregrounded",
   APP_BACKGROUNDED: "app_backgrounded",
   CSRUID_ESTABLISHED: "csruid_established",
+  BARCODE_TIMEOUT: "barcode_scanner_timeout",
+  RDT_TIMEOUT: "RDT_reader_timeout",
 };
 
 export function startTracking() {

@@ -29,6 +29,7 @@ import {
 } from "audere-lib/coughProtocol";
 import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
 import { savePhoto } from "../../../store";
+import { tracker, AppEvents } from "../../../util/tracker";
 
 interface Props {
   isDemo: boolean;
@@ -77,6 +78,7 @@ class RDTReader extends React.Component<Props> {
     this._timer = setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
+        tracker.logEvent(AppEvents.RDT_TIMEOUT);
         navigation.push(fallback);
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
