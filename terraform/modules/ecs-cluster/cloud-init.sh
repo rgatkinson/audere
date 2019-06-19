@@ -27,7 +27,7 @@ function download_assets() {
 
 function main() {
   yum -y update
-  yum -y install tar bzip2 jq unzip
+  yum -y install tar bzip2 jq unzip wget
 
   add_developer_accounts
   download_assets
@@ -76,13 +76,10 @@ function install_cloudwatch_agent() {
   (cd /tmp/cw-agent
   wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
   unzip AmazonCloudWatchAgent.zip
-  dpkg -i amazon-cloudwatch-agent.deb
+  rpm -U ./amazon-cloudwatch-agent.rpm
   rm *)
   echo_cloudwatch_agent_config | sudo tee "/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json"
-  /opt/aws/amazon-cloudwatch-agent/bin/config-translator \
-    --input /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\
-    --output /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.toml
-  systemctl enable amazon-cloudwatch-agent
+  /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s
 }
 
 function add_to_ecs_cluster() {
