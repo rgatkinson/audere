@@ -61,7 +61,12 @@ class Questions extends React.PureComponent<Props, State> {
 
     switch (condition.key) {
       case "selectedButtonKey":
-        return condition.answer === answer;
+        if (!!condition.anythingBut) {
+          return condition.answer !== answer;
+        } else {
+          return condition.answer === answer;
+        }
+
       case "options":
         const options: Option[] = answer;
         return options.reduce(
