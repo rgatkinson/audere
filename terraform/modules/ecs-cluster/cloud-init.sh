@@ -32,7 +32,7 @@ function main() {
   add_developer_accounts
   download_assets
 
-  #install_cloudwatch_agent
+  install_cloudwatch_agent
   add_to_ecs_cluster
 }
 
