@@ -184,13 +184,13 @@
     "pinkLine": "Is there a pink line on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "vaccinationDate": "Did you receive an influenza vaccination in the last year?",
-    "fluShot": "Did you receive a flu vaccination this year (2019)?",
+    "fluShot": "Did you receive an influenza vaccination this year (2019)?",
     "fluShotNationalImmunization": "Did you receive a free influenza vaccine under the National Immunisation Program in 2019?",
     "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccine?",
-    "previousSeason": "Did you receive an influenza vaccine last year (2018)?",
+    "previousSeason": "Did you receive an influenza vaccination last year (2018)?",
     "healthcareWorker": "Are you a healthcare (or aged care) worker (i.e. do you directly work with patients/aged care residents in your job)?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
-    "fluShotDate": "What was the approximate date of your flu vaccine?"
+    "fluShotDate": "What was the approximate date of your influenza vaccine?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
@@ -518,7 +518,6 @@
     "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
     "incorrect": "During the test, I realized I did something incorrectly",
     "neverFlu": "I’ve never received an influenza vaccine",
-    "indeterminate/other": "Indeterminate/Other",
-    "unknown": "unknown"
+    "indeterminate": "Indeterminate"
   }
 }
