@@ -10,18 +10,12 @@ locals {
   }
   api_subdomain = "${local.api_subdomains["${var.environment}"]}"
   api_full_domain = "${local.api_subdomain}.auderenow.io"
-  reporting_subdomains = {
-    prod = "reporting"
-    staging = "reporting.staging"
-  }
-  reporting_subdomain = "${local.reporting_subdomains["${var.environment}"]}"
-  reporting_full_domain = "${local.reporting_subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
   instance_port = 3000
   service_url = "http://localhost:${local.instance_port}"
   assets_sha256 = "${chomp(file("${path.module}/../../../local/terraform-assets/sha256sum.txt"))}"
 
-  availability_zones = ["us-west-2a"]
+  availability_zones = ["${var.availability_zone}"]
 
   // TODO: archive_file can create a .zip
   init_tar_bz2_base64_filename = "${path.module}/../../../local/flu-api-staging-init.tar.bz2.base64"
@@ -30,12 +24,6 @@ locals {
 
 module "ami" {
   source = "../ami"
-}
-
-data "aws_acm_certificate" "auderenow_io" {
-  domain = "auderenow.io"
-  types = ["AMAZON_ISSUED"]
-  most_recent = true
 }
 
 data "template_file" "sequelize_migrate_sh" {
@@ -99,32 +87,14 @@ resource "aws_instance" "migrate_instance" {
 // --------------------------------------------------------------------------------
 // ELB (multi-instance) mode
 
-data "aws_route53_zone" "auderenow_io" {
-  name = "auderenow.io."
-}
-
 resource "aws_route53_record" "api_record" {
-  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.api_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
+  zone_id = "${var.auderenow_route53_zone_id}"
+  name = "${local.api_subdomain}.${var.auderenow_route53_zone_name}"
   type = "A"
 
   alias {
     name = "${aws_elb.flu_api_elb.dns_name}"
     zone_id = "${aws_elb.flu_api_elb.zone_id}"
-    evaluate_target_health = true
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_route53_record" "reporting_record" {
-  zone_id = "${data.aws_route53_zone.auderenow_io.id}"
-  name = "${local.reporting_subdomain}.${data.aws_route53_zone.auderenow_io.name}"
-  type = "A"
-
-  alias {
-    name = "${aws_elb.flu_reporting_elb.dns_name}"
-    zone_id = "${aws_elb.flu_reporting_elb.zone_id}"
     evaluate_target_health = true
   }
 
@@ -158,34 +128,11 @@ resource "aws_autoscaling_group" "flu_api" {
   }
 }
 
-resource "aws_s3_bucket" "elb_logs" {
-  bucket = "${local.base_name}-elb-logs"
-  force_destroy = true
-}
-
-resource "aws_s3_bucket_policy" "elb_s3" {
-  bucket = "${aws_s3_bucket.elb_logs.id}"
-  policy = "${data.aws_iam_policy_document.allow_us_west_2_elb.json}"
-}
-
-data "aws_iam_policy_document" "allow_us_west_2_elb" {
-  statement {
-    sid       = "ELBWriteToS3"
-    actions   = ["s3:PutObject"]
-    resources = ["${aws_s3_bucket.elb_logs.arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["797873946194"]
-    }
-  }
-}
-
 resource "aws_elb" "flu_api_elb" {
   name = "${local.base_name}-public"
 
   access_logs {
-    bucket = "${aws_s3_bucket.elb_logs.id}"
+    bucket = "${var.elb_logs_bucket_id}"
     bucket_prefix = "public"
   }
 
@@ -201,7 +148,7 @@ resource "aws_elb" "flu_api_elb" {
     lb_protocol = "https"
     instance_port = 443
     instance_protocol = "https"
-    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
+    ssl_certificate_id = "${var.auderenow_certificate_arn}"
   }
 
   health_check {
@@ -224,7 +171,7 @@ resource "aws_elb" "flu_api_internal_elb" {
   name = "${local.base_name}-internal"
 
   access_logs {
-    bucket = "${aws_s3_bucket.elb_logs.id}"
+    bucket = "${var.elb_logs_bucket_id}"
     bucket_prefix = "internal"
   }
 
@@ -254,44 +201,6 @@ resource "aws_elb" "flu_api_internal_elb" {
   tags {
     Name = "${local.base_name}-internal"
     LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-resource "aws_elb" "flu_reporting_elb" {
-  name = "${local.base_name}-reporting"
-
-  access_logs {
-    bucket = "${aws_s3_bucket.elb_logs.id}"
-    bucket_prefix = "reporting"
-  }
-
-  subnets = ["${var.app_subnet_id}"]
-
-  security_groups = [
-    "${var.public_http_sg_id}",
-    "${var.reporting_client_sg_id}",
-  ]
-
-  listener {
-    lb_port = 443
-    lb_protocol = "https"
-    instance_port = 80
-    instance_protocol = "http"
-    ssl_certificate_id = "${data.aws_acm_certificate.auderenow_io.arn}"
-  }
-
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-    target = "HTTP:80/api/health"
-  }
-
-  tags {
-    Name = "${local.base_name}-reporting"
   }
 
   count = "${var.service == "elb" ? 1 : 0}"
@@ -355,58 +264,5 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
         sse_algorithm = "aws:kms"
       }
     }
-  }
-}
-
-// --------------------------------------------------------------------------------
-// Metabase & ECS
-
-data "template_file" "metabase" {
-  template = "${file("${path.module}/metabase.json")}"
-
-  vars {
-    account = "${var.account}"
-    container_name = "metabase-${var.environment}"
-    db_host = "${var.metabase_database_address}"
-    db_pass_key = "metabase-${var.environment}.pass"
-    db_user_key = "metabase-${var.environment}.user"
-    encryption_secret_key = "metabase-${var.environment}.secret"
-    image = "metabase/metabase:v0.32.5"
-    region = "${var.region}"
-  }
-}
-
-module "ecs_cluster" {
-  source = "../ecs-cluster"
-  cluster_name = "${local.base_name}-ecs"
-  devs = "${var.devs}"
-  environment = "${var.environment}"
-  iam_instance_profile = "${aws_iam_instance_profile.flu_ecs.id}"
-  subnet_ids = ["${var.app_subnet_id}"]
-  security_groups = [
-    "${var.internet_egress_sg_id}",
-    "${var.reporting_server_sg_id}",
-    "${var.db_client_sg_id}",
-    "${var.dev_ssh_server_sg_id}",
-  ]
-}
-
-resource "aws_ecs_task_definition" "metabase" {
-  family = "metabase-${var.environment}"
-  container_definitions = "${data.template_file.metabase.rendered}"
-  execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
-}
-
-resource "aws_ecs_service" "metabase" {
-  name = "metabase-${var.environment}"
-  cluster = "${module.ecs_cluster.id}"
-  task_definition = "${aws_ecs_task_definition.metabase.arn}"
-  desired_count = 1
-  iam_role = "${var.ecs_service_linked_role_arn}"
-
-  load_balancer {
-    elb_name = "${aws_elb.flu_reporting_elb.name}"
-    container_name = "metabase-${var.environment}"
-    container_port = 3000
   }
 }
