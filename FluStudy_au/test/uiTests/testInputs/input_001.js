@@ -51,7 +51,6 @@ export const inputs = {
     month: "long",
   }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.no,
-  [strings.surveyTitle.previousSeason]: strings.surveyButton.neverFlu,
   [strings.surveyTitle.medicalCondition]: [
     strings.surveyOption.copd,
     strings.surveyOption.diabetes,
@@ -61,7 +60,7 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.interfering]: strings.surveyButton.no,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
-  [strings.surveyTitle.age]: strings.dropDown["65to69"],
+  [strings.surveyTitle.age]: strings.surveyButton["65to69"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [
     strings.surveyOption.pacificIslander,
