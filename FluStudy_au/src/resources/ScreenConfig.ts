@@ -101,6 +101,7 @@ import { hasPendingData, pendingNavigation } from "../util/pendingData";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import { BACKROUND_HIGHLIGHT_COLOR } from "../ui/styles";
+import DidYouKnow from "../ui/components/DidYouKnow";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -384,7 +385,13 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "oneminutetimer" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: DidYouKnow,
+        props: {
+          startTimeConfig: "oneMinuteStartTime",
+          msPerItem: 10000,
+        },
+      },
     ],
     footer: [
       {

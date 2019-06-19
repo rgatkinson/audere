@@ -93,9 +93,11 @@ export const generateScreen = (config: ScreenConfig) => {
       // fire a willFocus event. This is rare but achievable if a user quickly navigates
       // away during a transition.
       //
-      this.props.navigation.addListener('willFocus', this._handleFocus);
-      this.props.navigation.addListener('didFocus', this._handleFocus);
-      this.props.navigation.addListener('didBlur', () => { this._noRendering = true; });
+      this.props.navigation.addListener("willFocus", this._handleFocus);
+      this.props.navigation.addListener("didFocus", this._handleFocus);
+      this.props.navigation.addListener("didBlur", () => {
+        this._noRendering = true;
+      });
     }
 
     _handleFocus = () => {
@@ -103,7 +105,7 @@ export const generateScreen = (config: ScreenConfig) => {
         this._noRendering = false;
         this.forceUpdate();
       }
-  };
+    };
 
     _generateComponents = (
       components: Component[],
