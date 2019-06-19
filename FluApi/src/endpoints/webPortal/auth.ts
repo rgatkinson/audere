@@ -10,7 +10,6 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Inst, SplitSql } from "../../util/sql";
 import { defineSiteUserModels, SiteUserModels, UserAttributes } from "./models";
 import logger from "../../util/logger";
-import { sha256 } from "../../util/crypto";
 
 export class AuthManager {
   private readonly models: SiteUserModels;
@@ -185,4 +184,10 @@ export function authorizationMiddleware(
     }
     next();
   };
+}
+
+function sha256(...args: (string | Buffer)[]): string {
+  const hash = crypto.createHash("sha256");
+  args.forEach(arg => hash.update(arg));
+  return hash.digest("hex").toString();
 }
