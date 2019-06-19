@@ -26,9 +26,29 @@ export const content = [
   },
   {
     type: "basic",
+    title: strings.ParticipantInformation.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "ParticipantInformation",
+  },
+  {
+    type: "input",
     title: strings.Consent.title,
     button: strings.Consent.accept.toUpperCase(),
     dbScreenName: "Consent",
+    input: [
+      {
+        name: strings.surveyTitle.researchByTheseResearchers,
+        type: "buttonGrid",
+        dbLocation: "responses",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+      {
+        name: strings.surveyTitle.researchByAnyResearchers,
+        type: "buttonGrid",
+        dbLocation: "responses",
+        options: [strings.surveyButton.no, strings.surveyButton.yes],
+      },
+    ],
   },
   {
     type: "basic",
