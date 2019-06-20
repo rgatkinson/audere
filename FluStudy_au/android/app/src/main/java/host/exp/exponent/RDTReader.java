@@ -84,7 +84,10 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
             interpretationResult = new ImageProcessor.InterpretationResult();
         }
         WritableMap event = Arguments.createMap();
-        event.putString("img", captureResult.allChecksPassed && interpretationResult.control ? ImageUtil.matToBase64(captureResult.resultMat) : "");
+        if (captureResult.allChecksPassed && interpretationResult.control) {
+            event.putString("img", ImageUtil.matToBase64(captureResult.resultMat));
+            event.putString("resultWindowImg", ImageUtil.matToBase64(interpretationResult.resultMat));
+        }
         event.putBoolean("passed", captureResult.allChecksPassed && interpretationResult.control);
         event.putBoolean("center", captureResult.isCentered);
         event.putInt("sizeResult", captureResult.sizeResult.ordinal());

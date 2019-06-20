@@ -33,14 +33,17 @@
         }
         NSLog(@"Calling JS callback");
         NSString *base64img = @"";
+        NSString *base64ResultWindowImg = @"";
         if (testStrip && passed && fiducial) {
             base64img = [UIImagePNGRepresentation(testStrip) base64EncodedStringWithOptions: 0];
+            base64ResultWindowImg = [UIImagePNGRepresentation(resultWindow) base64EncodedStringWithOptions: 0];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             strongSelf.onRDTCaptured(
                 @{
                     @"passed": @(passed),
                     @"img": base64img,
+                    @"resultWindowImg": base64ResultWindowImg,
                     @"fiducial": @(fiducial),
                     @"exposureResult": @(exposureResult),
                     @"sizeResult": @(sizeResult),
@@ -64,7 +67,11 @@
 - (void) setEnabled:(BOOL)enabled
 {
     if (enabled) {
-        [self createImageQualityViewController];
+        if (!self.imageQualityViewController) {
+            [self createImageQualityViewController];
+        } else {
+            [self addSubview:self.imageQualityViewController.view];
+        }
     } else {
         [self.imageQualityViewController.view removeFromSuperview];
     }

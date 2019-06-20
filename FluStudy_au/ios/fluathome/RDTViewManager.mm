@@ -15,6 +15,7 @@ RCT_EXPORT_VIEW_PROPERTY(onRDTCaptured, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onRDTCameraReady, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(showDefaultViewfinder, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(flashEnabled, BOOL);
 
 - (UIView *) view
 {

@@ -9,6 +9,7 @@ const NativeRDTReader = requireNativeComponent("RDTReader");
 
 type InternalRDTCapturedArgs = {
   img: string;
+  resultWindowImg: string;
   passed: boolean;
   center: boolean;
   fiducial: boolean;
@@ -26,6 +27,7 @@ type InternalRDTCapturedArgs = {
 
 export type RDTCapturedArgs = {
   imgBase64: string;
+  resultWindowImgBase64: string;
   testStripFound: boolean;
   fiducialFound: boolean;
   isCentered: boolean;
@@ -53,6 +55,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
     const capturedArgs: InternalRDTCapturedArgs = event.nativeEvent;
     this.props.onRDTCaptured({
       imgBase64: capturedArgs.img,
+      resultWindowImgBase64: capturedArgs.resultWindowImg,
       testStripFound: capturedArgs.passed,
       isCentered: capturedArgs.center,
       fiducialFound: capturedArgs.fiducial || Platform.OS === "android",
