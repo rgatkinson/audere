@@ -10,10 +10,11 @@ import { connect } from "react-redux";
 import { StoreState } from "../../store";
 import Text from "./Text";
 
+// This component will render up to this number of tips
 const TIP_COUNT = 13;
 
 interface State {
-  currentTextNum: number | null | undefined;
+  currentText: string | null | undefined;
 }
 
 interface Props {
@@ -24,7 +25,9 @@ interface Props {
 }
 
 class DidYouKnow extends React.Component<Props & WithNamespaces> {
-  state = {};
+  state = {
+    currentText: undefined,
+  };
 
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
@@ -33,18 +36,13 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     const { t } = this.props;
-    this.currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
-  }
-
-  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
-    return state != this.state;
+    const currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
+    this.currentText = currentText;
+    this.state = { currentText };
   }
 
   componentDidMount() {
-    this._willFocus = this.props.navigation.addListener("willFocus", () =>
-      this._startCycle()
-    );
-    this._startCycle();
+    this._setTimer();
   }
 
   componentWillUnmount() {
@@ -61,35 +59,29 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     );
   }
 
-  _startCycle = () => {
+  _showNextTip = () => {
     if (this.props.navigation.isFocused()) {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
       const currentText = t("didYouKnow:tip" + currentTextNum);
-      this.setState({ currentTextNum });
-      if (currentText != null) {
-        this._setTimer();
-      }
+      this.currentText = currentText;
+      this.setState({ currentText });
     }
   };
 
   _setTimer = () => {
-    if (this._timer == null) {
-      const { msPerItem, t } = this.props;
+    if (!this._timer && this.props.navigation.isFocused()) {
+      const { msPerItem } = this.props;
       this._timer = setTimeout(() => {
         this._timer = undefined;
-        if (this.props.navigation.isFocused()) {
-          const currentTextNum = this._getCurrentTextNum();
-          this.currentText = t("didYouKnow:tip" + currentTextNum);
-          this.setState({ currentTextNum });
-          this._setTimer();
-        }
+        this._showNextTip();
+        this._setTimer();
       }, msPerItem);
     }
   };
 
   render() {
-    return <Text content={this.currentText} />;
+    return <Text content={this.state.currentText} />;
   }
 }
 
