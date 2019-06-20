@@ -49,17 +49,23 @@ class RDTReader extends React.Component<Props> {
     isFocused: false,
     sizeResult: RDTReaderSizeResult.INVALID,
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
+    fps: 0,
   };
 
   _didFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
+  _callbackTimestamps: number[] = [];
+  _fpsCounterInterval?: NodeJS.Timeout;
 
   componentDidMount() {
-    const { navigation } = this.props;
-    this._didFocus = navigation.addListener("didFocus", () =>
-      this._setTimer()
-    );
+    const { isDemo, navigation } = this.props;
+    this._didFocus = navigation.addListener("didFocus", () => {
+      this._setTimer();
+      if (isDemo) {
+        this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
+      }
+    });
     this._willBlur = navigation.addListener("willBlur", () =>
       this._clearTimer()
     );
@@ -69,6 +75,9 @@ class RDTReader extends React.Component<Props> {
   componentWillUnmount() {
     this._didFocus.remove();
     this._willBlur.remove();
+    if (this._fpsCounterInterval) {
+      clearInterval(this._fpsCounterInterval);
+    }
     AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
@@ -117,6 +126,9 @@ class RDTReader extends React.Component<Props> {
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this._updateFeedback(args);
+    if (this.props.isDemo) {
+      this._callbackTimestamps.push(Date.now());
+    }
 
     if (!args.testStripFound || !args.fiducialFound) {
       return;
@@ -171,6 +183,24 @@ class RDTReader extends React.Component<Props> {
       isRightOrientation,
       exposureResult,
     });
+  };
+
+  _updateFPSCounter = () => {
+    const now = Date.now();
+    if (this._callbackTimestamps.length < 2) {
+      this.setState({ fps: 0 });
+    } else {
+      const first = this._callbackTimestamps[0];
+      const last = this._callbackTimestamps[
+        this._callbackTimestamps.length - 1
+      ];
+      this.setState({
+        fps: ((this._callbackTimestamps.length - 1) / (last - first)) * 1000,
+      });
+      this._callbackTimestamps = this._callbackTimestamps.slice(
+        this._callbackTimestamps.length - 2
+      );
+    }
   };
 
   // Simulate negative RDT result
@@ -309,6 +339,11 @@ class RDTReader extends React.Component<Props> {
           taps={3}
           onMultiTap={this._forcePositiveResult}
         />
+        {isDemo ? (
+          <View style={styles.fpsCounter}>
+            <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -383,4 +418,5 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width / 3,
     position: "absolute",
   },
+  fpsCounter: {},
 });
