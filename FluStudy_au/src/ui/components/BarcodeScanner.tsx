@@ -171,12 +171,14 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={styles.targetBox} />
-          {this.state.showHelpText && (
-            <Text
-              style={[styles.overlayText, styles.instructionsText]}
-              content={t("instructions")}
-            />
-          )}
+          <View style={styles.helpBox}>
+            {this.state.showHelpText && (
+              <Text
+                style={[styles.overlayText, styles.instructionsText]}
+                content={t("instructions")}
+              />
+            )}
+          </View>
           <TouchableOpacity
             style={styles.overlay}
             onPress={this._onManualEntry}
@@ -201,6 +203,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: -GUTTER,
+  },
+  helpBox: {
+    height: 100,
   },
   instructionsText: {
     paddingHorizontal: GUTTER,
