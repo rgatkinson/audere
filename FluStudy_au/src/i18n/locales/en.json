@@ -136,7 +136,7 @@
   },
   "Consent": {
     "title": "Consent form",
-    "desc": "Please read and accept the consent form by scrolling to the bottom and tapping \"I consent\"\n\nPlease note: * = **required question**",
+    "desc": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\nPlease note: * = **required question**",
     "accept": "I consent",
     "noThanks": "No, Thanks",
     "areYouSure": "Are you sure?",
