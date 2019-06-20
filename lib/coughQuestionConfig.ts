@@ -29,7 +29,7 @@ export enum SurveyQuestionType {
 
 export interface SurveyQuestion {
   buttons: ButtonConfig[];
-  condition?: ConditionalQuestionConfig;
+  conditions?: ConditionalQuestionConfig[];
   description?: string;
   id: string;
   required?: boolean;
@@ -113,11 +113,13 @@ export const FeverStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "feelingFeverish"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "feelingFeverish"
+    }
+  ],
   description: "feelingFeverish",
   required: true,
   subquestion: true,
@@ -133,11 +135,13 @@ export const CoughStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "cough"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "cough"
+    }
+  ],
   description: "cough",
   required: true,
   subquestion: true,
@@ -153,11 +157,13 @@ export const FatigueStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "fatigue"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "fatigue"
+    }
+  ],
   description: "fatigue",
   required: true,
   subquestion: true,
@@ -173,11 +179,13 @@ export const ChillsStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "chillsOrSweats"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "chillsOrSweats"
+    }
+  ],
   description: "chillsOrSweats",
   required: true,
   subquestion: true,
@@ -193,11 +201,13 @@ export const SoreThroatStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "soreThroat"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "soreThroat"
+    }
+  ],
   description: "soreThroat",
   required: true,
   subquestion: true,
@@ -213,11 +223,13 @@ export const HeadacheStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "headache"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "headache"
+    }
+  ],
   description: "headache",
   required: true,
   subquestion: true,
@@ -233,11 +245,13 @@ export const AchesStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "muscleOrBodyAches"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "muscleOrBodyAches"
+    }
+  ],
   description: "muscleOrBodyAches",
   required: true,
   subquestion: true,
@@ -253,11 +267,13 @@ export const RunningNoseStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "runningNose"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "runningNose"
+    }
+  ],
   description: "runningNose",
   required: true,
   subquestion: true,
@@ -273,11 +289,13 @@ export const ShortBreathStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "shortnessOfBreath"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "shortnessOfBreath"
+    }
+  ],
   description: "shortnessOfBreath",
   required: true,
   subquestion: true,
@@ -293,11 +311,13 @@ export const VomitingStartConfig: SurveyQuestion = {
     { key: "3days", primary: false, enabled: true },
     { key: "4days", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "vomiting"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "vomiting"
+    }
+  ],
   description: "vomiting",
   required: true,
   subquestion: true,
@@ -319,11 +339,13 @@ export const FeverLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "feelingFeverish"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "feelingFeverish"
+    }
+  ],
   description: "feelingFeverish",
   required: true,
   subquestion: true,
@@ -337,11 +359,13 @@ export const CoughLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "cough"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "cough"
+    }
+  ],
   description: "cough",
   required: true,
   subquestion: true,
@@ -355,11 +379,13 @@ export const FatigueLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "fatigue"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "fatigue"
+    }
+  ],
   description: "fatigue",
   required: true,
   subquestion: true,
@@ -373,11 +399,13 @@ export const ChillsLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "chillsOrSweats"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "chillsOrSweats"
+    }
+  ],
   description: "chillsOrSweats",
   required: true,
   subquestion: true,
@@ -391,11 +419,13 @@ export const SoreThroatLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "soreThroat"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "soreThroat"
+    }
+  ],
   description: "soreThroat",
   required: true,
   subquestion: true,
@@ -409,11 +439,13 @@ export const HeadacheLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "headache"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "headache"
+    }
+  ],
   description: "headache",
   required: true,
   subquestion: true,
@@ -427,11 +459,13 @@ export const AchesLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "muscleOrBodyAches"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "muscleOrBodyAches"
+    }
+  ],
   description: "muscleOrBodyAches",
   required: true,
   subquestion: true,
@@ -445,11 +479,13 @@ export const RunningNoseLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "runningNose"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "runningNose"
+    }
+  ],
   description: "runningNose",
   required: true,
   subquestion: true,
@@ -463,11 +499,13 @@ export const ShortBreathLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "shortnessOfBreath"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "shortnessOfBreath"
+    }
+  ],
   description: "shortnessOfBreath",
   required: true,
   subquestion: true,
@@ -481,11 +519,13 @@ export const VomitingLast48Config: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "vomiting"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "vomiting"
+    }
+  ],
   description: "vomiting",
   required: true,
   subquestion: true,
@@ -509,11 +549,13 @@ export const FeverSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "feelingFeverish"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "feelingFeverish"
+    }
+  ],
   description: "feelingFeverish",
   required: true,
   subquestion: true,
@@ -528,11 +570,13 @@ export const CoughSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "cough"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "cough"
+    }
+  ],
   description: "cough",
   required: true,
   subquestion: true,
@@ -547,11 +591,13 @@ export const FatigueSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "fatigue"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "fatigue"
+    }
+  ],
   description: "fatigue",
   required: true,
   subquestion: true,
@@ -566,11 +612,13 @@ export const ChillsSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "chillsOrSweats"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "chillsOrSweats"
+    }
+  ],
   description: "chillsOrSweats",
   required: true,
   subquestion: true,
@@ -585,11 +633,13 @@ export const SoreThroatSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "soreThroat"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "soreThroat"
+    }
+  ],
   description: "soreThroat",
   required: true,
   subquestion: true,
@@ -604,11 +654,13 @@ export const HeadacheSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "headache"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "headache"
+    }
+  ],
   description: "headache",
   required: true,
   subquestion: true,
@@ -623,11 +675,13 @@ export const AchesSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "muscleOrBodyAches"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "muscleOrBodyAches"
+    }
+  ],
   description: "muscleOrBodyAches",
   required: true,
   subquestion: true,
@@ -642,11 +696,13 @@ export const RunningNoseSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "runningNose"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "runningNose"
+    }
+  ],
   description: "runningNose",
   required: true,
   subquestion: true,
@@ -661,11 +717,13 @@ export const ShortBreathSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "shortnessOfBreath"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "shortnessOfBreath"
+    }
+  ],
   description: "shortnessOfBreath",
   required: true,
   subquestion: true,
@@ -680,11 +738,13 @@ export const VomitingSeverityConfig: SurveyQuestion = {
     { key: "moderate", primary: false, enabled: true },
     { key: "severe", primary: false, enabled: true }
   ],
-  condition: {
-    key: "options",
-    id: WhatSymptomsConfig.id,
-    answer: "vomiting"
-  },
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "vomiting"
+    }
+  ],
   description: "vomiting",
   required: true,
   subquestion: true,
@@ -709,11 +769,13 @@ export const CoughSneezeConfig: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true }
   ],
-  condition: {
-    key: "selectedButtonKey",
-    id: InContactConfig.id,
-    answer: "yes"
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: InContactConfig.id,
+      answer: "yes"
+    }
+  ],
   id: "CoughSneeze",
   title: "coughSneeze",
   type: SurveyQuestionType.ButtonGrid
@@ -738,11 +800,13 @@ export const ChildrenWithChildrenConfig: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true }
   ],
-  condition: {
-    key: "selectedButtonKey",
-    id: HouseholdChildrenConfig.id,
-    answer: "yes"
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: HouseholdChildrenConfig.id,
+      answer: "yes"
+    }
+  ],
   type: SurveyQuestionType.ButtonGrid
 };
 
@@ -798,7 +862,9 @@ export const FluShotConfig: SurveyQuestion = {
 
 export const FluShotDateConfig: MonthQuestion = {
   buttons: [],
-  condition: { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
+  conditions: [
+    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" }
+  ],
   id: "FluShotDate",
   monthRange: new Date().getMonth(),
   title: "fluShotDate",
@@ -811,7 +877,9 @@ export const FluShotNationalImmunization: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true }
   ],
-  condition: { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
+  conditions: [
+    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" }
+  ],
   id: "FluShotNationalImmunization",
   title: "fluShotNationalImmunization",
   type: SurveyQuestionType.ButtonGrid
@@ -819,11 +887,18 @@ export const FluShotNationalImmunization: SurveyQuestion = {
 
 export const FluShotNationalImmunizationCondition: SurveyQuestion = {
   buttons: [],
-  condition: {
-    key: "selectedButtonKey",
-    id: FluShotNationalImmunization.id,
-    answer: "yes"
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: FluShotConfig.id,
+      answer: "yes"
+    },
+    {
+      key: "selectedButtonKey",
+      id: FluShotNationalImmunization.id,
+      answer: "yes"
+    }
+  ],
   id: "FluShotNationalImmunizationCondition",
   title: "fluShotNationalImmunizationCondition",
   type: SurveyQuestionType.TextInput
@@ -835,12 +910,14 @@ export const PreviousSeason: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true }
   ],
-  condition: {
-    key: "selectedButtonKey",
-    id: FluShotConfig.id,
-    answer: "neverFlu",
-    anythingBut: true
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: FluShotConfig.id,
+      answer: "neverFlu",
+      anythingBut: true
+    }
+  ],
   id: "PreviousSeason",
   title: "previousSeason",
   type: SurveyQuestionType.RadioGrid
@@ -988,11 +1065,13 @@ export const BlueLineConfig: SurveyQuestion = {
 
 export const PinkWhenBlueConfig: SurveyQuestion = {
   id: "PinkWhenBlue",
-  condition: {
-    key: "selectedButtonKey",
-    id: BlueLineConfig.id,
-    answer: "yes"
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: BlueLineConfig.id,
+      answer: "yes"
+    }
+  ],
   title: "pinkLine",
   description: "selectOne",
   buttons: [
@@ -1026,11 +1105,13 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
 
 export const PinkLineConfig: SurveyQuestion = {
   id: "PinkLine",
-  condition: {
-    key: "selectedButtonKey",
-    id: BlueLineConfig.id,
-    answer: "no"
-  },
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: BlueLineConfig.id,
+      answer: "no"
+    }
+  ],
   title: "pinkLine",
   description: "selectOne",
   buttons: [

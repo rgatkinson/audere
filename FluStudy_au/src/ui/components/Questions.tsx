@@ -51,31 +51,32 @@ class Questions extends React.PureComponent<Props, State> {
   }
 
   _evaluateConditional = (config: SurveyQuestion) => {
-    const condition = config.condition;
+    const conditions = config.conditions;
 
-    if (condition == null) {
+    if (conditions == null) {
       return true;
     }
-
-    const answer = this.props.conditionals.get(config.id);
-
-    switch (condition.key) {
-      case "selectedButtonKey":
-        if (!!condition.anythingBut) {
-          return condition.answer !== answer;
-        } else {
-          return condition.answer === answer;
-        }
-
-      case "options":
-        const options: Option[] = answer;
-        return options.reduce(
-          (result: boolean, option: Option) =>
-            result || (option.selected && option.key === condition.answer),
-          false
-        );
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+      const answer = this.props.conditionals.get(condition.id);
+      switch (condition.key) {
+        case "selectedButtonKey":
+          if (!!condition.anythingBut) {
+            return answer != undefined && condition.answer !== answer;
+          } else if (condition.answer !== answer) return false;
+          break;
+        case "options":
+          const options: Option[] = answer;
+          const reduced = options.reduce(
+            (result: boolean, option: Option) =>
+              result || (option.selected && option.key === condition.answer),
+            false
+          );
+          if (!reduced) return reduced;
+          break;
+      }
     }
-    return false;
+    return true;
   };
 
   validate = () => {
@@ -185,17 +186,27 @@ export default connect((state: StoreState, props: Props) => ({
       return map;
     }, new Map<string, any>()),
   conditionals: props.questions
-    .filter(question => !!question.condition)
-    .map(question => ({
-      id: question.id,
-      answer: getAnswerForID(
-        state,
-        question.condition!.id,
-        question.condition!.key
-      ),
-    }))
+    .map(question => {
+      if (!!question.conditions) {
+        return question.conditions!.map(condition => ({
+          id: condition.id,
+          answer: getAnswerForID(state, condition!.id, condition!.key),
+        }));
+      } else {
+        return {
+          id: question.id,
+          answer: getAnswer(state, question),
+        };
+      }
+    })
     .reduce((map, obj) => {
-      map.set(obj.id, obj.answer);
+      if (Array.isArray(obj)) {
+        obj.forEach(item => {
+          map.set(item.id, item.answer);
+        });
+      } else {
+        map.set(obj.id, obj.answer);
+      }
       return map;
     }, new Map<string, any>()),
 }))(customRef(Questions));
