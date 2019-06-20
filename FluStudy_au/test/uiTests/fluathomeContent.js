@@ -234,7 +234,7 @@ export const content = [
           strings.surveyButton.oneChild,
           strings.surveyButton.twoToFiveChildren,
           strings.surveyButton.moreThanFiveChildren,
-          strings.surveyButton.doNotKnow,
+          strings.surveyButton.dontKnow,
         ],
       },
       {
@@ -343,7 +343,7 @@ export const content = [
           strings.surveyOption.diabetes,
           strings.surveyOption.heartDisease,
           strings.surveyOption.noneOfThese,
-          strings.surveyOption.doNotKnow,
+          strings.surveyOption.dontKnow,
         ],
       },
       {

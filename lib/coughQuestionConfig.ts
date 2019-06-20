@@ -868,9 +868,9 @@ export const MedicalConditionConfig: OptionQuestion = {
     "diabetes",
     "heartDisease",
     "noneOfThese",
-    "doNotKnow"
+    "dontKnow"
   ],
-  exclusiveOptions: ["noneOfThese", "doNotKnow"],
+  exclusiveOptions: ["noneOfThese", "dontKnow"],
   title: "medicalCondition",
   type: SurveyQuestionType.OptionQuestion
 };
