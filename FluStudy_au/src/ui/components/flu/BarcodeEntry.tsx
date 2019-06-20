@@ -29,9 +29,12 @@ import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
 } from "../../../util/barcodeVerification";
+import { maxAttempts } from "../../../resources/BarCodeConfig";
 
 interface Props {
   dispatch(action: Action): void;
+  errorScreen: string;
+  invalidBarcodes: SampleInfo[];
   kitBarcode: SampleInfo;
   navigation: NavigationScreenProp<any, any>;
 }
@@ -77,7 +80,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { t } = this.props;
+    const { navigation, t } = this.props;
     return (
       <KeyboardAvoidingView
         behavior={KEYBOARD_BEHAVIOR}
@@ -87,7 +90,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
         <View style={styles.inputContainer}>
           <Text content={"KIT "} style={styles.kitText} />
           <NumberInput
-            autoFocus={this.props.navigation.isFocused()}
+            autoFocus={navigation.isFocused()}
             placeholder={t("placeholder")}
             returnKeyType="done"
             style={styles.textInput}
@@ -115,8 +118,9 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   }
 
   validate() {
-    const { t } = this.props;
-    if (this.state.barcode1 == null) {
+    const { errorScreen, invalidBarcodes, t } = this.props;
+    const { barcode1 } = this.state;
+    if (barcode1 == null) {
       Alert.alert("", t("barcodeRequired"), [
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
@@ -124,14 +128,21 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
       Alert.alert("", t("dontMatch"), [
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
-    } else if (!validBarcodeShape(this.state.barcode1)) {
+    } else if (!validBarcodeShape(barcode1)) {
+      const priorUnverifiedAttempts = !!invalidBarcodes
+        ? invalidBarcodes.length
+        : 0;
       this.props.dispatch(
         appendInvalidBarcode({
           sample_type: "manualEntry",
-          code: this.state.barcode1!.trim(),
+          code: barcode1!.trim(),
         })
       );
-      invalidBarcodeShapeAlert(this.state.barcode1);
+      if (priorUnverifiedAttempts > maxAttempts) {
+        this.props.navigation.push(errorScreen);
+      } else {
+        invalidBarcodeShapeAlert(barcode1);
+      }
     } else {
       this.props.dispatch(
         setKitBarcode({
@@ -146,6 +157,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
 }
 
 export default connect((state: StoreState) => ({
+  invalidBarcodes: state.survey.invalidBarcodes,
   kitBarcode: state.survey.kitBarcode,
 }))(withNamespaces("barcode")(withNavigation(customRef(BarcodeEntry))));
 

@@ -264,6 +264,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           next: "ScanConfirmation",
           timeoutScreen: "ManualEntry",
+          errorScreen: "BarcodeContactSupport",
         },
       },
     ],
@@ -273,7 +274,11 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: BarcodeEntry, validate: true },
+      {
+        tag: BarcodeEntry,
+        validate: true,
+        props: { errorScreen: "BarcodeContactSupport" },
+      },
     ],
     footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
     key: "ManualEntry",
@@ -301,6 +306,15 @@ export const Screens: ScreenConfig[] = [
     funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
     key: "ManualConfirmation",
     workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "contactsupport" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    chromeProps: { hideBackButton: true },
+    key: "BarcodeContactSupport",
   },
   {
     body: [

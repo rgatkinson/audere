@@ -262,6 +262,10 @@
     "title": "Set up your kit box",
     "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
   },
+  "BarcodeContactSupport": {
+    "title": "Please contact your clinic",
+    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement."
+  },
   "Swab": {
     "title": "Prepare the tube",
     "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\n Do so slowly and carefully so all the liquid gets into the tube."
