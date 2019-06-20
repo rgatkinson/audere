@@ -88,9 +88,9 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   };
 
   _clearHelpTimer = () => {
-    if (this._timeoutTimer != null) {
-      clearTimeout(this._timeoutTimer);
-      this._timeoutTimer = null;
+    if (this._helpTimer != null) {
+      clearTimeout(this._helpTimer);
+      this._helpTimer = null;
     }
   };
 
