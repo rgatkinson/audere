@@ -26,22 +26,16 @@ interface Props {
 
 class DidYouKnow extends React.Component<Props & WithNamespaces> {
   state = {
-    currentText: undefined,
+    currentText: "",
   };
 
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
-  currentText: string;
-
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    const { t } = this.props;
-    const currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
-    this.currentText = currentText;
-    this.state = { currentText };
-  }
 
   componentDidMount() {
+    const { t } = this.props;
+    const currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
+    this.setState({ currentText });
     this._setTimer();
   }
 
@@ -64,7 +58,6 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
       const currentText = t("didYouKnow:tip" + currentTextNum);
-      this.currentText = currentText;
       this.setState({ currentText });
     }
   };
@@ -81,7 +74,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    return <Text content={this.currentText} />;
+    return <Text content={this.state.currentText} />;
   }
 }
 
