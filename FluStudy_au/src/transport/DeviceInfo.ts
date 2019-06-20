@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Constants } from "expo";
+import { Platform } from "react-native";
 
 export const ios = Constants.platform.ios;
 
@@ -14,7 +15,7 @@ export const DEVICE_INFO = {
   yearClass: Constants.deviceYearClass,
   // ios.userInterfaceIdiom will return "handset" or "tablet"
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
-  platform: JSON.stringify(Constants.platform),
+  platform: JSON.stringify(getPlatformInfo()),
 };
 
 export type DeviceInfo = typeof DEVICE_INFO;
@@ -34,5 +35,18 @@ function getBuildNumber() {
     return Constants.platform.android.versionCode;
   } else {
     return undefined;
+  }
+}
+
+function getPlatformInfo() {
+  if (ios) {
+    return Constants.platform;
+  } else {
+    let androidInfo = Constants.platform;
+    if (!!androidInfo.android) {
+      androidInfo.android.model = Constants.deviceName;
+      androidInfo.android.systemVersion = Platform.Version;
+    }
+    return androidInfo;
   }
 }
