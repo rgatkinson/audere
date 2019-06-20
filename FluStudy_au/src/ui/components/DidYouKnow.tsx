@@ -81,7 +81,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    return <Text content={this.state.currentText} />;
+    return <Text content={this.currentText} />;
   }
 }
 
