@@ -40,6 +40,19 @@ interface Props {
   isFocused: boolean;
 }
 
+interface FeedbackCheck {
+  predicate: (result: RDTCapturedArgs) => boolean;
+  duration: number;
+  action: () => void;
+  cooldown: number;
+}
+
+interface FeedbackCheckState {
+  active: boolean;
+  started?: number;
+  lastRan?: number;
+}
+
 class RDTReader extends React.Component<Props> {
   state = {
     spinner: true,
@@ -49,6 +62,7 @@ class RDTReader extends React.Component<Props> {
     isFocused: false,
     sizeResult: RDTReaderSizeResult.INVALID,
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
+    flashEnabled: true,
     fps: 0,
   };
 
@@ -57,6 +71,19 @@ class RDTReader extends React.Component<Props> {
   _timer: NodeJS.Timeout | null | undefined;
   _callbackTimestamps: number[] = [];
   _fpsCounterInterval?: NodeJS.Timeout;
+
+  _feedbackChecks: { [key: string]: FeedbackCheck } = {
+    exposureFlash: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
+      duration: 5000,
+      action: () => this.setState({ flashEnabled: false }),
+      cooldown: Infinity,
+    },
+  };
+  _feedbackCheckState: {
+    [key: string]: FeedbackCheckState;
+  } = {};
 
   componentDidMount() {
     const { isDemo, navigation } = this.props;
@@ -183,6 +210,39 @@ class RDTReader extends React.Component<Props> {
       isRightOrientation,
       exposureResult,
     });
+
+    for (let key in this._feedbackChecks) {
+      const check = this._feedbackChecks[key];
+      const state = this._feedbackCheckState[key] || { active: false };
+      if (!check.predicate(args)) {
+        this._feedbackCheckState[key] = {
+          ...state,
+          active: false,
+          started: undefined,
+        };
+        continue;
+      }
+      const now = Date.now();
+      if (!state.active || state.started === undefined) {
+        this._feedbackCheckState[key] = {
+          ...state,
+          active: true,
+          started: now,
+        };
+        continue;
+      }
+      if (
+        now - state.started > check.duration &&
+        (state.lastRan === undefined || now - state.lastRan > check.cooldown)
+      ) {
+        this._feedbackCheckState[key] = {
+          ...state,
+          active: false,
+          lastRan: now,
+        };
+        check.action();
+      }
+    }
   };
 
   _updateFPSCounter = () => {
@@ -245,7 +305,7 @@ class RDTReader extends React.Component<Props> {
           onRDTCameraReady={this._cameraReady}
           enabled={isFocused}
           showDefaultViewfinder={false}
-          flashEnabled={true}
+          flashEnabled={this.state.flashEnabled}
         />
         <View style={styles.overlayContainer}>
           <View style={styles.testStripContainer}>

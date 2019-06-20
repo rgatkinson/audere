@@ -55,4 +55,9 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
     public void setShowDefaultViewFinder(RDTReader view, boolean showDefaultViewFinder) {
         view.setShowViewfinder(showDefaultViewFinder);
     }
+
+    @ReactProp(name = "flashEnabled")
+    public void setFlashEnabled(RDTReader view, boolean flashEnabled) {
+        view.setFlashEnabled(flashEnabled);
+    }
 }

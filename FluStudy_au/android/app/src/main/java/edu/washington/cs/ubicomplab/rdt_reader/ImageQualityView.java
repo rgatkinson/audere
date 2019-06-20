@@ -81,6 +81,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
     private State mCurrentState = State.QUALITY_CHECK;
     private boolean showViewport;
     private boolean showFeedback;
+    private boolean flashEnabled = true;
 
     private long timeTaken = 0;
 
@@ -139,6 +140,16 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
 
     public void setImageQualityViewListener(ImageQualityViewListener listener) {
         mImageQualityViewListener = listener;
+    }
+
+    public void setFlashEnabled(boolean flashEnabled) {
+        if (this.flashEnabled == flashEnabled) {
+            return;
+        }
+        this.flashEnabled = flashEnabled;
+        if (mCameraId != null) {
+            this.updateRepeatingRequest();
+        }
     }
 
     /**
@@ -719,7 +730,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AWB_REGIONS,
                     new MeteringRectangle[]{mr});
 
-            mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+            mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashEnabled ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
             mPreviewRequest = mPreviewRequestBuilder.build();
 
             try {
