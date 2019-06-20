@@ -47,22 +47,31 @@ interface Props {
 class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   state = {
     activeScan: false,
+    showHelpText: false,
   };
 
-  shouldComponentUpdate(props: Props & WithNamespaces) {
-    return props.isFocused != this.props.isFocused;
+  shouldComponentUpdate(nextProps: Props & WithNamespaces, nextState: any) {
+    return (
+      this.state.showHelpText !== nextState.showHelpText ||
+      nextProps.isFocused != this.props.isFocused
+    );
   }
 
   _didFocus: any;
   _willBlur: any;
-  _timer: NodeJS.Timeout | null | undefined;
+  _timeoutTimer: NodeJS.Timeout | null | undefined;
+  _helpTimer: NodeJS.Timeout | null | undefined;
 
   componentDidMount() {
     const { navigation } = this.props;
-    this._didFocus = navigation.addListener("didFocus", () => this._setTimer());
-    this._willBlur = navigation.addListener("willBlur", () =>
-      this._clearTimer()
-    );
+    this._didFocus = navigation.addListener("didFocus", () => {
+      this._setTimeoutTimer();
+      this._setHelpTimer();
+    });
+    this._willBlur = navigation.addListener("willBlur", () => {
+      this._clearTimeoutTimer();
+      this._clearHelpTimer();
+    });
   }
 
   componentWillUnmount() {
@@ -70,12 +79,27 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     this._willBlur.remove();
   }
 
-  _setTimer = () => {
+  _setHelpTimer = () => {
+    this.setState({ showHelpText: false });
+    this._clearHelpTimer();
+    this._helpTimer = setTimeout(() => {
+      this.setState({ showHelpText: true });
+    }, 8000);
+  };
+
+  _clearHelpTimer = () => {
+    if (this._timeoutTimer != null) {
+      clearTimeout(this._timeoutTimer);
+      this._timeoutTimer = null;
+    }
+  };
+
+  _setTimeoutTimer = () => {
     const { navigation, timeoutScreen } = this.props;
     this.setState({ activeScan: false });
     // Timeout after 30 seconds
-    this._clearTimer();
-    this._timer = setTimeout(() => {
+    this._clearTimeoutTimer();
+    this._timeoutTimer = setTimeout(() => {
       if (navigation.isFocused()) {
         tracker.logEvent(AppEvents.BARCODE_TIMEOUT);
         navigation.push(timeoutScreen);
@@ -83,10 +107,10 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     }, 30000);
   };
 
-  _clearTimer() {
-    if (this._timer != null) {
-      clearTimeout(this._timer);
-      this._timer = null;
+  _clearTimeoutTimer() {
+    if (this._timeoutTimer != null) {
+      clearTimeout(this._timeoutTimer);
+      this._timeoutTimer = null;
     }
   }
 
@@ -116,7 +140,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         if (priorUnverifiedAttempts > maxAttempts) {
           navigation.push(errorScreen);
         } else {
-          invalidBarcodeShapeAlert(barcode, this._setTimer);
+          invalidBarcodeShapeAlert(barcode, this._setTimeoutTimer);
         }
       } else {
         dispatch(
@@ -147,10 +171,12 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={styles.targetBox} />
-          <Text
-            style={[styles.overlayText, styles.instructionsText]}
-            content={t("instructions")}
-          />
+          {this.state.showHelpText && (
+            <Text
+              style={[styles.overlayText, styles.instructionsText]}
+              content={t("instructions")}
+            />
+          )}
           <TouchableOpacity
             style={styles.overlay}
             onPress={this._onManualEntry}

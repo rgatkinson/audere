@@ -243,7 +243,7 @@
     "tips": "**Tips:**\n\nFind the blue barcode on the box. The code is directly below the barcode."
   },
   "BarcodeScanner": {
-    "instructions": "Hold the camera so the barcode on your kit box is in the middle of the outline above.\n\nIf it's too dark or too bright, please adjust your lighting.",
+    "instructions": "Position the barcode in the middle of the outline above.\nTry adjusting your distance or angle if the scan is taking a while.",
     "enterManually": "Enter barcode manually"
   },
   "ScanConfirmation": {

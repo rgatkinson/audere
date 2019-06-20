@@ -58,18 +58,8 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     this.props.navigation.openDrawer();
   };
 
-  _getContent = () => {
-    const { navigation, demoMode } = this.props;
-    const currentRoute = navigation.state.routeName;
-    return demoMode
-      ? "Demo Mode"
-      : currentRoute === "Scan"
-        ? "flu@home: barcode scan"
-        : "flu@home";
-  };
-
   render() {
-    const { demoMode, hideBackButton, menuItem, navigation } = this.props;
+    const { demoMode, hideBackButton, menuItem } = this.props;
     return (
       <View style={styles.container}>
         {demoMode && <View style={styles.demoView} />}
@@ -90,7 +80,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
         )}
-        <Text style={styles.title} center={true} content={this._getContent()} />
+        <Text style={styles.title} center={true} content={demoMode ? "demoMode" : "flu@home"} />
         <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />
         </TouchableOpacity>
