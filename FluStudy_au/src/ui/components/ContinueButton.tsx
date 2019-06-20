@@ -17,22 +17,10 @@ interface Props {
   namespace: string;
   next?: string;
   primary?: boolean;
-  alert?: AlertConfig;
   dispatch(action: Action): void;
   dispatchOnNext?: () => Action;
   surveyGetNextFn?(): Promise<string>;
   validate?(): boolean;
-}
-
-interface AlertButtonConfig {
-  text: string;
-  next?: string;
-}
-
-interface AlertConfig {
-  title: string;
-  subtitle?: string;
-  buttons: AlertButtonConfig[];
 }
 
 class ContinueButton extends React.Component<Props & WithNamespaces> {
@@ -44,7 +32,6 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
 
   _onNext = async () => {
     const {
-      alert,
       dispatch,
       dispatchOnNext,
       namespace,
@@ -57,20 +44,6 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
     if (!validate || validate()) {
       if (!!surveyGetNextFn) {
         navigation.push(await surveyGetNextFn());
-      } else if (!!alert) {
-        const buttons = alert.buttons.map(item => {
-          return {
-            text: t(namespace + ":" + item.text),
-            onPress: () => {
-              if (!!item.next) navigation.push(item.next);
-            },
-          };
-        });
-        Alert.alert(
-          t(namespace + ":" + alert.title),
-          !!alert.subtitle ? t(namespace + ":" + alert.subtitle) : "",
-          buttons
-        );
       } else {
         next && navigation.push(next);
       }

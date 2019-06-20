@@ -218,15 +218,8 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ContinueButton,
         props: {
-          alert: {
-            title: "areYouSure",
-            subtitle: "ifNoConsent",
-            buttons: [
-              { text: "noThanks", next: "ConsentDeclined" },
-              { text: "viewConsent" },
-            ],
-          },
           label: "noThanks",
+          next: "ConsentDeclined",
           primary: false,
         },
       },
