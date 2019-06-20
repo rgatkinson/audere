@@ -80,7 +80,11 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
             <Feather color="white" name="arrow-left" size={30} />
           </TouchableOpacity>
         )}
-        <Text style={styles.title} center={true} content={demoMode ? "demoMode" : "flu@home"} />
+        <Text
+          style={styles.title}
+          center={true}
+          content={demoMode ? "Demo Mode" : "flu@home"}
+        />
         <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />
         </TouchableOpacity>
