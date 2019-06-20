@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from "react-native";
 import { NavigationEvents } from "react-navigation";
 import { Ionicons } from "@expo/vector-icons";
@@ -122,7 +123,7 @@ export default class VideoPlayer extends React.Component<Props> {
           playInBackground={false}
           progressUpdateInterval={THREE_SECONDS_MS}
           ref={this._videoPlayer}
-          repeat={false}
+          repeat={Platform.OS === "ios" ? true : false}
           resizeMode={"contain"}
           source={{ uri: this._config.uri }}
           style={styles.video}
