@@ -119,7 +119,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           next: "WhatsRequired",
           hideBackButton: true,
-          stepDots: { step: 1, total: 3 },
+          stepDots: { step: 1, total: 4 },
         },
       },
     ],
@@ -131,7 +131,21 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: FooterNavigation,
-        props: { next: "ReadyToBegin", stepDots: { step: 2, total: 3 } },
+        props: { next: "ResearchStudy", stepDots: { step: 2, total: 4 } },
+      },
+    ],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    chromeProps: { hideBackButton: true },
+    key: "ResearchStudy",
+    footer: [
+      {
+        tag: FooterNavigation,
+        props: {
+          next: "ReadyToBegin",
+          stepDots: { step: 3, total: 4 },
+        },
       },
     ],
   },
@@ -144,7 +158,7 @@ export const Screens: ScreenConfig[] = [
         tag: FooterNavigation,
         props: {
           next: "ParticipantInformation",
-          stepDots: { step: 3, total: 3 },
+          stepDots: { step: 4, total: 4 },
         },
       },
     ],

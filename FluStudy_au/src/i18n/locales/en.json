@@ -219,13 +219,17 @@
     "title": "What's required?",
     "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera - to scan the kit's barcode and take a photo of your test strip."
   },
+  "ResearchStudy": {
+    "title": "Research Study",
+    "desc": "Please note, this is a research study.\n\nThis application and its communication of flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner."
+  },
   "ReadyToBegin": {
     "title": "Ready to begin?",
-    "desc": "Please get comfortable and find a location away from pets or children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 15 minutes."
+    "desc": "Please get comfortable and find a location away from pets and children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 15 minutes."
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
+    "desc": "First, we'd like you to scan the barcode found on the outside of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
   },
   "barcode": {
     "yourCode": "**Your code**: KIT {{barcode}}",
@@ -238,7 +242,7 @@
     "dontMatch": "Those barcodes don't match. Please try again.",
     "placeholder": "Enter barcode",
     "secondPlaceholder": "Confirm barcode",
-    "tips": "**Tips:**\n\nFind the blue barcode on the box. The code is directly below the barcode."
+    "tips": "**Tips:**\n\nFind the white barcode on the box. The code is directly below the barcode."
   },
   "BarcodeScanner": {
     "instructions": "Position the barcode in the middle of the outline above.\nTry adjusting your distance or angle if the scan is taking a while.",
@@ -266,7 +270,7 @@
   },
   "Swab": {
     "title": "Prepare the tube",
-    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\n Do so slowly and carefully so all the liquid gets into the tube."
+    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\nDo so slowly and carefully so all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
@@ -287,7 +291,7 @@
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
-    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out.\nYou want to squeeze as much liquid out of the swab as possible.\nThrow the swab in the trash. You won't need it again."
+    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out.\nSqueeze as much liquid out of the swab as possible.\nThrow the swab in the bin. You won't need it again."
   },
   "OpenTestStrip": {
     "title": "Open test strip",
@@ -322,8 +326,8 @@
   },
   "ThankYouSurvey": {
     "title": "Thank you!",
-    "desc": "Your answers, along with the tests, help us to understand many factors related to your illness.",
-    "waiting": "Now, just wait for the time to end and the app will direct you to the next steps."
+    "desc": "Your answers, along with the test, help us to understand many factors related to your illness.",
+    "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps."
   },
   "TestStripReady": {
     "title": "Remove test strip",
