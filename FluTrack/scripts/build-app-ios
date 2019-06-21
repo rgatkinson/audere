@@ -43,7 +43,7 @@ fi
 
 if [ "$INCREMENT" = true ]; then 
   REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-  source "$REPO_ROOT_DIR"/learn/ReactNativeTS/FluTrack/scripts/increment-ios-build-number
+  source "$REPO_ROOT_DIR"/FluTrack/scripts/increment-ios-build-number
 fi 
 
 if [[ "${COMMIT:-}" == "" ]]; then

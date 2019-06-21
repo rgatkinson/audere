@@ -5,8 +5,7 @@ function audere-init() {
   _au_self="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"/audere
   _au_github="$HOME/github"
   AUDERE="$HOME/audere"
-  LEARN_RN_TS="$AUDERE/learn/ReactNativeTS"
-  FLU_TS="$LEARN_RN_TS/FluTrack"
+  FLU_TS="$AUDERE/FluTrack"
   GITHUB_MEDIC="$_au_github/medic"
   GITHUB_MEDIC_WEBAPP="$GITHUB_MEDIC/medic-webapp"
   GITHUB_DIMAGI="$_au_github/dimagi"

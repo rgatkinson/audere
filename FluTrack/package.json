@@ -26,7 +26,7 @@
   },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "../../../scripts/generate-build-info learn/ReactNativeTS/FluTrack; expo start",
+    "start": "../../../scripts/generate-build-info FluTrack; expo start",
     "start-localapi": "REACT_NATIVE_USE_LOCAL_SERVER=1 yarn run start",
     "stop": "expo stop",
     "eject": "expo eject",

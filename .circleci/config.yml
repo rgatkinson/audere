@@ -95,7 +95,7 @@ jobs:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
       - restore_cache:
-          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
@@ -105,7 +105,7 @@ jobs:
       - run:
           name: FluTrack Yarn Install
           command: |
-            cd learn/ReactNativeTS/FluTrack
+            cd FluTrack
             yarn install
             ls node_modules
             if [[ -e package-lock.json ]]; then
@@ -127,8 +127,8 @@ jobs:
       - run:
           name: FluTrack Tests
           command: |
-            ./scripts/generate-build-info learn/ReactNativeTS/FluTrack
-            cd learn/ReactNativeTS/FluTrack
+            ./scripts/generate-build-info FluTrack
+            cd FluTrack
             yarn typecheck
             yarn test
       - run:
@@ -207,9 +207,9 @@ jobs:
             yarn build
             yarn test
       - save_cache:
-          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
           paths:
-            - learn/ReactNativeTS/FluTrack/node_modules
+            - FluTrack/node_modules
       - save_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
@@ -221,7 +221,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - learn/ReactNativeTS/FluTrack
+            - FluTrack
             - lib
 
   snyk_scan:
@@ -233,7 +233,7 @@ jobs:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
       - restore_cache:
-          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
@@ -241,7 +241,7 @@ jobs:
       - run:
           name: FluTrack Yarn Install
           command: |
-            cd learn/ReactNativeTS/FluTrack
+            cd FluTrack
             yarn install
             ls node_modules
             if [[ -e package-lock.json ]]; then
@@ -252,7 +252,7 @@ jobs:
       - run:
           name: Snyk FluTrack Scan
           command: |
-            cd learn/ReactNativeTS/FluTrack
+            cd FluTrack
             yarn list --json > ~/current_packages
             git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
             git show $(git merge-base HEAD origin/master):./package.json > package.json
@@ -314,9 +314,9 @@ jobs:
               snyk test --org=auderenow --severity-threshold=high
             fi
       - save_cache:
-          key: app-node-cache-{{ checksum "learn/ReactNativeTS/FluTrack/package.json" }}
+          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
           paths:
-            - learn/ReactNativeTS/FluTrack/node_modules
+            - FluTrack/node_modules
       - save_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
@@ -328,7 +328,7 @@ jobs:
 
   publish_sniffles: &publish_sniffles
     <<: *defaults
-    working_directory: ~/repo/learn/ReactNativeTS/FluTrack
+    working_directory: ~/repo/FluTrack
     steps:
       - attach_workspace:
           at: ~/repo
@@ -366,7 +366,7 @@ jobs:
       PRODUCT: sniffles
       <<: *const
     <<: *defaults
-    working_directory: ~/repo/learn/ReactNativeTS/FluTrack
+    working_directory: ~/repo/FluTrack
     steps:
       - checkout:
           path: ~/repo
@@ -385,7 +385,7 @@ jobs:
           name: App Yarn Install
           command: |
             yarn install
-            ../../../scripts/generate-build-info learn/ReactNativeTS/FluTrack
+            ../../../scripts/generate-build-info FluTrack
       - run:
           name: App Tests
           command: |

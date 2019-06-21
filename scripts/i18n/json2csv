@@ -17,7 +17,7 @@ esac
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
 case "$1" in 
-  "FluTrack") APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack";;
+  "FluTrack") APP_DIR="$REPO_ROOT_DIR/FluTrack";;
   "FluStudy_au") APP_DIR="$REPO_ROOT_DIR/FluStudy_au";;
   *) echo 1>&2 "$USAGE"; exit 1;;
 esac

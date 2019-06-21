@@ -11,7 +11,7 @@ Flu is an experimental project under active development for use in a Seattle are
 Flu tracks consent and survey information about flu symptoms in participants. The application has two primary components, a React Native application for participants and a data collection API that persists participant data. These applications are built using CircleCI and deployed to AWS.
 
 * [FluStudy](https://github.com/AudereNow/learn/tree/master/FluStudy)
-* [FluTrack](https://github.com/AudereNow/learn/tree/master/learn/ReactNativeTS/FluTrack)
+* [FluTrack](https://github.com/AudereNow/learn/tree/master/FluTrack)
 * [FluApi](https://github.com/AudereNow/learn/tree/master/FluApi)
 * [Terraform scripts](https://github.com/AudereNow/learn/tree/master/terraform)
 

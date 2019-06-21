@@ -6,7 +6,7 @@ FluTrack is a React Native application to collect information about the spread o
 
 ## Developer setup
 
-This project shuld be installed using Yarn. Once it has been installed the application can be started using `yarn start`. Other script options are documented in the [Create React Native App docs](https://github.com/AudereNow/learn/blob/master/learn/ReactNativeTS/FluTrack/APP.md).
+This project shuld be installed using Yarn. Once it has been installed the application can be started using `yarn start`. Other script options are documented in the [Create React Native App docs](https://github.com/AudereNow/learn/blob/master/FluTrack/APP.md).
 
 ### FluApi
 
@@ -18,4 +18,4 @@ In order to push documents to your local API instance you will need a valid acce
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app) and is deployed using Expo.
 
-For more details about working with Create React Native App refer to the [app documentation](https://github.com/AudereNow/learn/blob/master/learn/ReactNativeTS/FluTrack/APP.md).
+For more details about working with Create React Native App refer to the [app documentation](https://github.com/AudereNow/learn/blob/master/FluTrack/APP.md).

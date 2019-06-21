@@ -15,7 +15,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
-APP_DIR="$REPO_ROOT_DIR/learn/ReactNativeTS/FluTrack"
+APP_DIR="$REPO_ROOT_DIR/FluTrack"
 BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 VERSION_FILE="$APP_DIR/app.json"
 IOS_BUILD_NUM="$(node --eval 'console.log(require("'$VERSION_FILE'").expo.ios.buildNumber)')"
