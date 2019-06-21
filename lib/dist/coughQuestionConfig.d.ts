@@ -8,6 +8,7 @@ export interface ConditionalQuestionConfig {
     answer: string;
     id: string;
     key: string;
+    anythingBut?: boolean;
 }
 export declare enum SurveyQuestionType {
     ButtonGrid = "buttonGrid",
@@ -20,7 +21,7 @@ export declare enum SurveyQuestionType {
 }
 export interface SurveyQuestion {
     buttons: ButtonConfig[];
-    condition?: ConditionalQuestionConfig;
+    conditions?: ConditionalQuestionConfig[];
     description?: string;
     id: string;
     required?: boolean;
@@ -36,6 +37,7 @@ export interface OptionQuestion extends SurveyQuestion {
 export interface DropDownQuestion extends SurveyQuestion {
     placeholder: string;
 }
+export declare const ConsentConfig: SurveyQuestion[];
 export interface MonthQuestion extends SurveyQuestion {
     monthRange: number;
 }

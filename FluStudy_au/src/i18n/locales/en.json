@@ -519,7 +519,8 @@
     "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
     "incorrect": "During the test, I realized I did something incorrectly",
     "neverFlu": "I’ve never received an influenza vaccine",
-    "indeterminate": "Indeterminate"
+    "indeterminate": "Indeterminate/Other",
+    "unknown": "Unknown"
   },
   "didYouKnow": {
     "tip0": "A cold is a viral infection which affects the nose, throat and upper airways. Common symptoms include coughing, fever, sore throat, sneezing, blocked or runny nose, and general congestion. The flu is a viral infection affecting your nose, throat, and sometimes your lungs. Typical symptoms of flu include fever, sore throat, tiredness and muscle aches. Both colds and flu can also lead to complications, such as pneumonia. Source: https://www.healthdirect.gov.au/colds-and-flu",
