@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import uuidv4 from "uuid/v4";
 import { format } from "date-fns";
 import {
   EventInfo,
@@ -23,7 +22,6 @@ import {
 } from "./types";
 import { OptionQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
 import { onCSRUIDEstablished } from "../util/tracker";
-import { DEVICE_INFO, ios } from "../transport/DeviceInfo";
 import i18n from "i18next";
 
 export type SurveyAction =
@@ -249,9 +247,13 @@ export function setConsent(): SurveyAction {
       terms:
         i18n.t("Consent:consentFormHeader1") +
         "\n" +
-        i18n.t("Consent:consentFormHeader2") +
+        i18n.t("Consent:consentFormText") +
         "\n" +
-        i18n.t("Consent:consentFormText"),
+        i18n.t("surveyTitle:researchByTheseResearchers") +
+        "\n" +
+        i18n.t("surveyTitle:researchByAnyResearchers") +
+        "\n" +
+        i18n.t("Consent:consentFormText2"),
       date: format(new Date(), "YYYY-MM-DD"),
     },
   };

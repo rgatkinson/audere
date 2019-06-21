@@ -100,8 +100,8 @@ import PendingButton from "../ui/components/PendingButton";
 import { hasPendingData, pendingNavigation } from "../util/pendingData";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
-import { BACKROUND_HIGHLIGHT_COLOR } from "../ui/styles";
 import DidYouKnow from "../ui/components/DidYouKnow";
+import { BACKROUND_HIGHLIGHT_COLOR, SMALL_TEXT } from "../ui/styles";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -183,7 +183,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ConsentText, props: { questions: ConsentConfig } },
+      { tag: ConsentText },
       {
         tag: Questions,
         props: { questions: ConsentConfig },
@@ -194,7 +194,10 @@ export const Screens: ScreenConfig[] = [
         props: {
           center: false,
           label: "consentFormText2",
-          style: { marginHorizontal: 0 },
+          style: {
+            marginHorizontal: 0,
+            fontSize: SMALL_TEXT,
+          },
         },
       },
       {

@@ -7,12 +7,14 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { GUTTER } from "../styles";
+import { StyleProp, TextStyle } from "react-native";
 
 interface Props {
   center?: boolean;
   label: string;
   namespace: string;
   italic?: boolean;
+  style?: StyleProp<TextStyle>;
 }
 
 class ScreenText extends React.Component<Props & WithNamespaces> {
@@ -26,17 +28,20 @@ class ScreenText extends React.Component<Props & WithNamespaces> {
   }
 
   render() {
-    const { center, italic, namespace, label, t } = this.props;
+    const { center, italic, namespace, label, style, t } = this.props;
     return (
       <Text
         center={center}
         content={t(namespace + ":" + label)}
         italic={italic}
-        style={{
-          alignSelf: "stretch",
-          marginBottom: GUTTER,
-          marginHorizontal: GUTTER,
-        }}
+        style={[
+          {
+            alignSelf: "stretch",
+            marginBottom: GUTTER,
+            marginHorizontal: GUTTER,
+          },
+          style,
+        ]}
       />
     );
   }

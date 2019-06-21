@@ -3,12 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { RefObject, Fragment } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { RefObject } from "react";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { connect } from "react-redux";
 import { getAnswer, getAnswerForID } from "../../util/survey";
-import { Action, Option, StoreState } from "../../store";
+import { Option, StoreState } from "../../store";
 import { customRef } from "./CustomRef";
 import MonthPicker from "./MonthPicker";
 import OptionList from "./OptionList";
