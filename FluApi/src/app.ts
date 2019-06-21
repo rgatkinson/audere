@@ -25,6 +25,7 @@ import logger from "./util/logger";
 import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";
 import { HipaaUploader } from "./services/sniffles/hipaaUploader";
 import { CoughEndpoint } from "./endpoints/coughApi";
+import { SqlLock } from "./util/sqlLock";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -158,6 +159,7 @@ export function createInternalApp(config: AppConfig) {
   }
 
   const sql = config.sql;
+  const sqlLock = new SqlLock(sql.nonPii);
 
   // Internal app should be intranet only.
   const internalApp = createApp();
@@ -263,10 +265,20 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/import/coughDocuments",
     stats("importcoughDocuments"),
-    wrap(cough.importCoughDocuments)
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/coughDocuments",
+        cough.importCoughDocuments,
+        jsonNoOp
+      )
+    )
   );
 
   return useOuch(internalApp);
+}
+
+async function jsonNoOp(req, res, next): Promise<void> {
+  res.json({});
 }
 
 const MORGAN_FORMAT =
