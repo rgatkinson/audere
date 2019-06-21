@@ -41,7 +41,7 @@ if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
   usage "Unrecognized commit '$commit'"
 fi
 
-API_DIR="$(cd "$SELF_DIR/../terraform/flu/5-api-$environment" && pwd)"
+API_DIR="$(cd "$SELF_DIR/../terraform/$environment/5-api" && pwd)"
 API_MODULE_DIR="$(cd "$SELF_DIR/../terraform/modules/flu-api" && pwd)"
 LOCAL_DIR="$(cd "$SELF_DIR/../local" && pwd)"
 API_INIT_TAR="$LOCAL_DIR/flu-api-staging-init.tar.bz2.base64"
