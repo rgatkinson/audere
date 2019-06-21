@@ -34,10 +34,8 @@ export const FunnelEvents = {
   SURVIVED_SWAB: "funnel_survived_swab",
   PASSED_FIRST_TIMER: "funnel_passed_first_timer",
   COMPLETED_SURVEY: "funnel_completed_survey",
-  RESULT_NO_BLUE: "funnel_result_no_blue",
-  RESULT_BLUE: "funnel_result_blue",
-  RESULT_BLUE_NO_PINK: "funnel_result_blue_no_pink",
-  RESULT_BLUE_ANY_PINK: "funnel_result_blue_any_pink",
+  BLUE_ANSWER_CHANGED: "funnel_blue_answer_changed",
+  PINK_ANSWER_CHANGED: "funnel_pink_answer_changed",
   COMPLETED_TEST: "funnel_completed_test",
 };
 

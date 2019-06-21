@@ -11,6 +11,9 @@ import {
   PinkWhenBlueConfig,
 } from "audere-lib/coughQuestionConfig";
 
+let _previousBlueAnswer: string | undefined;
+let _previousPinkAnswer: string | undefined;
+
 export async function getFluResultScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
@@ -19,26 +22,22 @@ export async function getFluResultScreen() {
 
 export async function logFluResult() {
   const state = (await getStore()).getState();
+
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
-
-  switch (blueAnswer) {
-    case "yes":
-      const redAnswer = getSelectedButton(state, PinkWhenBlueConfig);
-      tracker.logEvent(FunnelEvents.RESULT_BLUE);
-      switch (redAnswer) {
-        case "yesAboveBlue":
-        case "yesBelowBlue":
-        case "yesAboveBelowBlue":
-          tracker.logEvent(FunnelEvents.RESULT_BLUE_ANY_PINK);
-          break;
-        case "noRed":
-          tracker.logEvent(FunnelEvents.RESULT_BLUE_NO_PINK);
-          break;
-      }
-      break;
-
-    case "no":
-      tracker.logEvent(FunnelEvents.RESULT_NO_BLUE);
-      break;
+  if (_previousBlueAnswer && _previousBlueAnswer !== blueAnswer) {
+    tracker.logEvent(FunnelEvents.BLUE_ANSWER_CHANGED, {
+      old_answer: _previousBlueAnswer,
+      new_answer: blueAnswer,
+    });
   }
+  _previousBlueAnswer = blueAnswer;
+
+  const pinkAnswer = getSelectedButton(state, PinkWhenBlueConfig);
+  if (_previousPinkAnswer && _previousPinkAnswer !== pinkAnswer) {
+    tracker.logEvent(FunnelEvents.PINK_ANSWER_CHANGED, {
+      old_answer: _previousPinkAnswer,
+      new_answer: pinkAnswer,
+    });
+  }
+  _previousPinkAnswer = pinkAnswer;
 }
