@@ -36,9 +36,11 @@ provider "template" {
 }
 
 data "terraform_remote_state" "global" {
-  backend = "local"
+  backend = "s3"
   config {
-    path = "../../global/terraform.tfstate"
+    bucket = "global-terraform.auderenow.io"
+    key = "policy/terraform.state"
+    region = "us-west-2"
   }
 }
 

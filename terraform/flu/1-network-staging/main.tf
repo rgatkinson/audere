@@ -25,9 +25,11 @@ module "vpc_cidr" {
 }
 
 data "terraform_remote_state" "global" {
-  backend = "local"
-  config = {
-    path = "../../global/terraform.tfstate"
+  backend = "s3"
+  config {
+    bucket = "global-terraform.auderenow.io"
+    key = "policy/terraform.state"
+    region = "us-west-2"
   }
 }
 
