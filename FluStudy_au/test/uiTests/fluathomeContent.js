@@ -431,7 +431,7 @@ export const content = [
           strings.surveyOption.african,
           strings.surveyOption.european,
           strings.surveyOption.whiteAustralian,
-          strings.surveyOption.southAndCentralAmerican,
+          strings.surveyOption.southOrCentralAmerican,
           strings.surveyOption.middleEastNorthAfrican,
           strings.surveyOption.indianSubcontinent,
           strings.surveyOption.other,

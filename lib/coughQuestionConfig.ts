@@ -1041,7 +1041,7 @@ export const RaceConfig: OptionQuestion = {
     "african",
     "european",
     "whiteAustralian",
-    "southAndCentralAmerican",
+    "southOrCentralAmerican",
     "middleEastNorthAfrican",
     "indianSubcontinent",
     "other"
