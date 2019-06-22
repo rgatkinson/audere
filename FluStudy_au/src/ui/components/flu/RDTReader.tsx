@@ -4,7 +4,15 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { AppState, Dimensions, Image, StyleSheet, View } from "react-native";
+import {
+  AppState,
+  Dimensions,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Alert,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
@@ -14,6 +22,7 @@ import {
   setTestStripImg,
   setRDTReaderResult,
   setRDTPhoto,
+  setShownRDTFailWarning,
   StoreState,
 } from "../../../store";
 import { newUID } from "../../../util/csruid";
@@ -27,7 +36,7 @@ import {
   RDTReaderSizeResult,
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
-import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
+import { GUTTER, REGULAR_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
 import { savePhoto } from "../../../store";
 import { tracker, AppEvents } from "../../../util/tracker";
 
@@ -115,6 +124,7 @@ class RDTReader extends React.Component<Props> {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
         tracker.logEvent(AppEvents.RDT_TIMEOUT);
+        this.props.dispatch(setShownRDTFailWarning(false));
         navigation.push(fallback);
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
@@ -263,6 +273,10 @@ class RDTReader extends React.Component<Props> {
     }
   };
 
+  _toggleFlash = () => {
+    this.setState({ flashEnabled: !this.state.flashEnabled });
+  };
+
   // Simulate negative RDT result
   _forceNegativeResult = () => {
     const { dispatch, navigation, next } = this.props;
@@ -308,83 +322,87 @@ class RDTReader extends React.Component<Props> {
           flashEnabled={this.state.flashEnabled}
         />
         <View style={styles.overlayContainer}>
-          <View style={styles.testStripContainer}>
-            <Image style={styles.testStrip} source={{ uri: "teststrip2" }} />
-          </View>
-        </View>
-        <View style={styles.overlayContainer}>
-          <View style={styles.feedbackContainer}>
-            <View style={styles.feedbackItem}>
-              <Text content="Centered" style={styles.overlayText} />
-              <Feather
-                name="check"
-                color={this.state.isCentered ? "green" : "gray"}
-                size={50}
-              />
+          <View style={{ flexDirection: "column", flex: 1 }}>
+            <View style={styles.backgroundOverlay} />
+            <View
+              style={{
+                height: "65%",
+                flexDirection: "row",
+              }}
+            >
+              <View style={styles.backgroundOverlay}>
+                <View style={styles.feedbackContainer}>
+                  <View style={styles.feedbackItem}>
+                    <Image
+                      style={styles.feedbackItemIcon}
+                      source={{
+                        uri: this.state.isCentered
+                          ? "positiongreen"
+                          : "positionyellow",
+                      }}
+                    />
+                    <Text content="POSITION" style={styles.overlayText} />
+                  </View>
+                  <View style={styles.feedbackItem}>
+                    <Image
+                      style={styles.feedbackItemIcon}
+                      source={{
+                        uri:
+                          this.state.sizeResult === RDTReaderSizeResult.INVALID
+                            ? "distancewhite"
+                            : this.state.sizeResult ===
+                              RDTReaderSizeResult.RIGHT_SIZE
+                              ? "distancegreen"
+                              : "distanceyellow",
+                      }}
+                    />
+                    <Text content="DISTANCE" style={styles.overlayText} />
+                  </View>
+                  <View style={styles.feedbackItem}>
+                    <Image
+                      style={styles.feedbackItemIcon}
+                      source={{
+                        uri: this.state.isRightOrientation
+                          ? "rotationgreen"
+                          : "rotationyellow",
+                      }}
+                    />
+                    <Text content="ROTATION" style={styles.overlayText} />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.testStripContainer}>
+                <Image
+                  style={styles.testStrip}
+                  source={{ uri: "teststrip2" }}
+                  resizeMode={"center"}
+                />
+              </View>
+              <View style={styles.backgroundOverlay}>
+                <View style={styles.feedbackContainer}>
+                  <TouchableOpacity
+                    style={styles.feedbackItem}
+                    onPress={this._toggleFlash}
+                  >
+                    <Image
+                      style={styles.feedbackItemIcon}
+                      source={{
+                        uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                      }}
+                    />
+                    <Text
+                      content={
+                        "FLASH: " + (this.state.flashEnabled ? "ON" : "OFF")
+                      }
+                      style={styles.overlayText}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.feedbackItem} />
+                  <View style={styles.feedbackItem} />
+                </View>
+              </View>
             </View>
-            <View style={styles.feedbackItem}>
-              <Text content="Angle" style={styles.overlayText} />
-              <Feather
-                name="check"
-                color={this.state.isRightOrientation ? "green" : "gray"}
-                size={50}
-              />
-              <Text
-                content={
-                  this.state.isRightOrientation
-                    ? ""
-                    : ("" + this.state.angle).substring(0, 5)
-                }
-                style={{ color: "red" }}
-              />
-            </View>
-            <View style={styles.feedbackItem}>
-              <Text content="Size" style={styles.overlayText} />
-              <Feather
-                name="check"
-                color={
-                  this.state.sizeResult === RDTReaderSizeResult.RIGHT_SIZE
-                    ? "green"
-                    : "gray"
-                }
-                size={50}
-              />
-              <Text
-                content={
-                  this.state.sizeResult === RDTReaderSizeResult.RIGHT_SIZE
-                    ? ""
-                    : this.state.sizeResult === RDTReaderSizeResult.LARGE
-                      ? "large"
-                      : this.state.sizeResult === RDTReaderSizeResult.SMALL
-                        ? "small"
-                        : "invalid"
-                }
-                style={{ color: "red" }}
-              />
-            </View>
-            <View style={styles.feedbackItem}>
-              <Text content="Lighting" style={styles.overlayText} />
-              <Feather
-                name="check"
-                color={
-                  this.state.exposureResult === RDTReaderExposureResult.NORMAL
-                    ? "green"
-                    : "gray"
-                }
-                size={50}
-              />
-              <Text
-                content={
-                  this.state.exposureResult === RDTReaderExposureResult.NORMAL
-                    ? ""
-                    : this.state.exposureResult ===
-                      RDTReaderExposureResult.OVER_EXPOSED
-                      ? "over"
-                      : "under"
-                }
-                style={{ color: "red" }}
-              />
-            </View>
+            <View style={styles.backgroundOverlay} />
           </View>
         </View>
         <MultiTapContainer
@@ -420,7 +438,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     flex: 1,
-    marginBottom: -1 * SYSTEM_PADDING_BOTTOM,
     marginHorizontal: -GUTTER,
   },
   overlayContainer: {
@@ -431,49 +448,54 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     bottom: 0,
-    marginBottom: SYSTEM_PADDING_BOTTOM,
+    flexDirection: "row",
   },
   overlayText: {
     color: "white",
-    fontSize: LARGE_TEXT,
+    fontSize: REGULAR_TEXT,
     marginVertical: GUTTER,
     marginBottom: 0,
     textShadowColor: "rgba(0, 0, 0, 0.99)",
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
   },
+  backgroundOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
   feedbackContainer: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
+    flexDirection: "column",
+    alignItems: "center",
     flex: 1,
     justifyContent: "space-between",
-    margin: GUTTER * 2,
   },
   feedbackItem: {
     alignItems: "center",
+    justifyContent: "center",
     flex: 1,
-    width: Dimensions.get("window").width / 4,
+  },
+  feedbackItemIcon: {
+    height: 32,
+    width: 32,
   },
   testStrip: {
     aspectRatio: 0.06,
-    height: Dimensions.get("window").height * 0.8,
+    flex: 1,
     opacity: 0.5,
   },
   testStripContainer: {
-    borderColor: "rgba(0, 0, 0, 0.7)",
-    borderWidth: Dimensions.get("window").width / 2 - GUTTER * 2,
-    padding: GUTTER * 2,
+    margin: "8%",
   },
   touchableLeft: {
     left: 0,
-    top: 0,
+    top: Dimensions.get("window").height / 2,
     height: Dimensions.get("window").height / 2,
     width: Dimensions.get("window").width / 3,
     position: "absolute",
   },
   touchableRight: {
     left: (Dimensions.get("window").width * 2) / 3,
-    top: 0,
+    top: Dimensions.get("window").height / 2,
     height: Dimensions.get("window").height / 2,
     width: Dimensions.get("window").width / 3,
     position: "absolute",

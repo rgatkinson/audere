@@ -4,23 +4,37 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
-import { Action, setTestStripImg, setPhoto } from "../../../store";
+import {
+  Action,
+  setTestStripImg,
+  setPhoto,
+  setShownRDTFailWarning,
+  StoreState,
+} from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
-import { GUTTER, LARGE_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
+import { GUTTER, REGULAR_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
 import { savePhoto } from "../../../store";
 
 interface Props {
   next: string;
   dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
+  shownRDTFailWarning: boolean;
 }
 
 class TestStripCamera extends React.Component<Props & WithNamespaces> {
@@ -28,10 +42,33 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
 
   state = {
     spinner: !DeviceInfo.isEmulator(),
+    flashEnabled: false,
   };
+
+  _didFocus: any;
+
+  componentDidMount() {
+    this._didFocus = this.props.navigation.addListener("didFocus", () => {
+      const { dispatch, shownRDTFailWarning, t } = this.props;
+      if (!shownRDTFailWarning) {
+        Alert.alert(t("alertTitle"), t("alertDesc"), [
+          { text: t("common:button:ok"), onPress: () => {} },
+        ]);
+        dispatch(setShownRDTFailWarning(true));
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this._didFocus.remove();
+  }
 
   _cameraReady = () => {
     this.setState({ spinner: false });
+  };
+
+  _toggleFlash = () => {
+    this.setState({ flashEnabled: !this.state.flashEnabled });
   };
 
   _takePicture = async () => {
@@ -78,61 +115,125 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           ref={this.camera}
           style={styles.camera}
           onCameraReady={this._cameraReady}
+          flashMode={
+            this.state.flashEnabled
+              ? Camera.Constants.FlashMode.torch
+              : Camera.Constants.FlashMode.off
+          }
         />
         <View style={styles.overlayContainer}>
-          <Text center={true} content={t("title")} style={styles.overlayText} />
-          <View style={styles.innerContainer}>
-            <Image
-              style={styles.testStrip}
-              source={{ uri: "teststripdetail" }}
-            />
-            <View style={{ flex: 1, marginLeft: GUTTER }}>
-              <Text
-                center={true}
-                content={t("stripHere")}
-                style={styles.overlayText}
-              />
-              <View style={styles.targetBox} />
-            </View>
-          </View>
-          <View style={{ alignItems: "center", alignSelf: "stretch" }}>
-            <Text
-              center={true}
-              content={t("description")}
-              style={styles.overlayText}
-            />
-            <TouchableOpacity onPress={this._takePicture}>
-              <View style={styles.outerCircle}>
-                <View style={styles.circle} />
+          <View style={{ flexDirection: "column", flex: 1 }}>
+            <View style={styles.backgroundOverlay} />
+            <View
+              style={{
+                height: "65%",
+                flexDirection: "row",
+              }}
+            >
+              <View style={styles.backgroundOverlay}>
+                <View style={styles.feedbackContainer} />
               </View>
-            </TouchableOpacity>
+              <View style={styles.testStripContainer}>
+                <Image
+                  style={styles.testStrip}
+                  source={{ uri: "teststrip2" }}
+                  resizeMode={"center"}
+                />
+              </View>
+              <View style={styles.backgroundOverlay}>
+                <View style={styles.feedbackContainer}>
+                  <TouchableOpacity
+                    style={styles.feedbackItem}
+                    onPress={this._toggleFlash}
+                  >
+                    <Image
+                      style={styles.feedbackItemIcon}
+                      source={{
+                        uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                      }}
+                    />
+                    <Text
+                      content={
+                        "FLASH: " + (this.state.flashEnabled ? "ON" : "OFF")
+                      }
+                      style={styles.overlayText}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.feedbackItem} />
+                  <View style={styles.feedbackItem} />
+                </View>
+              </View>
+            </View>
+            <View style={styles.backgroundOverlay} />
           </View>
         </View>
+        <TouchableOpacity onPress={this._takePicture}>
+          <View style={styles.outerCircle}>
+            <View style={styles.circle} />
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
 }
-export default connect()(
-  withNavigation(withNamespaces("TestStripCamera")(TestStripCamera))
-);
+export default connect((state: StoreState) => ({
+  shownRDTFailWarning: state.meta.shownRDTFailWarning,
+}))(withNavigation(withNamespaces("TestStripCamera")(TestStripCamera)));
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     flex: 1,
-    marginBottom: -1 * SYSTEM_PADDING_BOTTOM,
     marginHorizontal: -GUTTER,
   },
   camera: {
     alignSelf: "stretch",
     flex: 1,
   },
-  innerContainer: {
-    height: "100%",
+  overlayContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    left: 0,
+    right: 0,
+    position: "absolute",
+    top: 0,
+    bottom: 0,
     flexDirection: "row",
+  },
+  overlayText: {
+    color: "white",
+    fontSize: REGULAR_TEXT,
+    marginVertical: GUTTER,
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  backgroundOverlay: {
     flex: 1,
-    marginHorizontal: GUTTER * 2,
-    marginBottom: GUTTER,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  feedbackContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  feedbackItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  feedbackItemIcon: {
+    height: 32,
+    width: 32,
+  },
+  testStrip: {
+    aspectRatio: 0.06,
+    flex: 1,
+    opacity: 0.5,
+  },
+  testStripContainer: {
+    margin: "8%",
   },
   outerCircle: {
     alignItems: "center",
@@ -143,6 +244,9 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     height: 80,
     width: 80,
+    position: "absolute",
+    left: (Dimensions.get("window").width - 80) / 2,
+    bottom: GUTTER / 2,
   },
   circle: {
     backgroundColor: "white",
@@ -151,43 +255,5 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     height: 60,
     width: 60,
-  },
-  overlayText: {
-    color: "white",
-    fontSize: LARGE_TEXT,
-    marginVertical: GUTTER,
-    textShadowColor: "rgba(0, 0, 0, 0.99)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-  },
-  overlayContainer: {
-    alignItems: "center",
-    justifyContent: "space-between",
-    left: 0,
-    right: 0,
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    marginBottom: GUTTER + SYSTEM_PADDING_BOTTOM,
-  },
-  targetBox: {
-    alignSelf: "center",
-    borderColor: "white",
-    borderRadius: 5,
-    borderStyle: "dashed",
-    borderWidth: 4,
-    flex: 1,
-    shadowColor: "rgba(0, 0, 0, 0.99)",
-    shadowOffset: { width: -1, height: 1 },
-    shadowRadius: 10,
-    width: "65%",
-  },
-  testStrip: {
-    alignSelf: "center",
-    aspectRatio: 0.135,
-    height: "95%",
-    marginTop: GUTTER,
-    marginLeft: GUTTER,
-    width: undefined,
   },
 });

@@ -315,15 +315,16 @@
   },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of the box, then put the stopper back on the tube."
+    "desc": "Please remove the test strip from the tube.\nPlace it flat on the middle of the box, then put the stopper back on the tube."
   },
   "TestStripSurvey": {
     "title": "What do you see?",
     "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
   },
   "RDTInstructions": {
-    "title": "Take a picture of the strip",
-    "desc": "Next, we'd like you to take a picture of the test strip.\n**The app will access your device's camera and will automatically take the picture for you.**"
+    "title": "Scan the test strip",
+    "desc": "Next, we’d like you to scan your test strip. Similar to the barcode scan, the app will access your device’s camera and automatically scan it for you.",
+    "desc2": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nYou can manually turn the flash off/on if needed. We start with the flash on.\nIf the test strip doesn't scan, after 30 seconds you will be asked to manually take a photo using the app."
   },
   "RDTReader": {
     "title": "RDT READER",
@@ -340,11 +341,13 @@
     "title": "Tap the screen to focus the image.",
     "stripHere": "Your strip here",
     "description": "Tap the round button to take a photo",
+    "alertTitle": "We are unable to scan the test strip",
+    "alertDesc": "The app is having trouble scanning your test strip. We will switch to taking a photo of the strip manually.",
     "error": "There was a processing error, please try again"
   },
   "TestStripConfirmation": {
-    "title": "Photo captured!",
-    "desc": "Thank you! Your test strip photo was captured successfully. Next, we'll show you how to read your test strip to understand your results."
+    "title": "Picture captured!",
+    "desc": "Thank you! Your test strip photo was captured successfully."
   },
   "TestResult": {
     "title": "Your test result",
@@ -367,7 +370,9 @@
   },
   "InvalidResult": {
     "title": "Your test strip is defective",
-    "desc": "We're sorry, but something went wrong with your test or test strip, since there was no visible blue line. Thanks for participating, and make sure to seek help if you're still ill."
+    "desc": "We're sorry, but something went wrong. If there is no visible blue line on the test strip then the test strip is likely defective.",
+    "desc2": "**What should I do if my test strip is defective?**\n\nIf your doctor has prescribed medication you should take them as directed. The results of your GP taken swab will be available soon.\n\nMost people with the flu will get better over a few days but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. There is also some really useful information from healthdirect:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
+    "desc3": "**Medical disclaimer:**\n\nThis application and communication of the flu results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this application, the test kit or not. In no circumstances with Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom."
   },
   "CleanTest": {
     "title": "Clean up the test",

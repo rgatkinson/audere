@@ -659,9 +659,9 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
+      { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: RDTImage },
     ],
     footer: [{ tag: ContinueButton, props: { next: "TestStripSurvey" } }],
     key: "TestStripConfirmation",
@@ -706,8 +706,13 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "defectiveteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: Divider },
+      { tag: ScreenText, props: { label: "desc2" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "CleanTest" } }],
+    footer: [
+      { tag: ContinueButton, props: { next: "CleanTest" } },
+      { tag: ScreenText, props: { label: "desc3" } },
+    ],
     key: "InvalidResult",
   },
   {
@@ -771,9 +776,10 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "takepictureteststrip" } },
       { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc2", customBulletUri: "listarrow" },
       },
     ],
     footer: [

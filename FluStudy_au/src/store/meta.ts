@@ -9,6 +9,7 @@ export type MetaAction =
   | { type: "SET_ACTIVE_ROUTE_NAME"; activeRouteName: string }
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
+  | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
   | { type: "SET_DEMO"; isDemo: boolean };
 
 export type MetaState = {
@@ -17,6 +18,7 @@ export type MetaState = {
   isDemo: boolean;
   marketingProperties: any;
   shownOfflineWarning: boolean;
+  shownRDTFailWarning: boolean;
 };
 
 const initialState: MetaState = {
@@ -25,6 +27,7 @@ const initialState: MetaState = {
   isDemo: false,
   marketingProperties: undefined,
   shownOfflineWarning: false,
+  shownRDTFailWarning: false,
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -35,6 +38,8 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, isDemo: action.isDemo };
     case "SET_OFFLINE_WARNING":
       return { ...state, shownOfflineWarning: action.shownOfflineWarning };
+    case "SET_RDT_CAPTURE_FAIL_WARNING":
+      return { ...state, shownRDTFailWarning: action.shownRDTFailWarning };
     case "SET_CONNECTIVITY":
       return { ...state, isConnected: action.isConnected };
     default:
@@ -63,6 +68,15 @@ export function setShownOfflineWarning(
   return {
     type: "SET_OFFLINE_WARNING",
     shownOfflineWarning,
+  };
+}
+
+export function setShownRDTFailWarning(
+  shownRDTFailWarning: boolean
+): MetaAction {
+  return {
+    type: "SET_RDT_CAPTURE_FAIL_WARNING",
+    shownRDTFailWarning,
   };
 }
 
