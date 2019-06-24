@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { GUTTER, REGULAR_TEXT } from "../styles";
@@ -27,13 +27,14 @@ export class BulletPoint extends React.PureComponent<Props> {
         ) : (
           <Text content={"\u2022  "} />
         )}
-        <Text content={content} style={{ flex: 1 }} />
+        <Text content={content} />
       </View>
     );
   }
 }
 
 interface BulletProps {
+  containerStyle?: StyleProp<ViewStyle>;
   customBulletUri?: string;
   label?: string;
   namespace: string;
@@ -51,22 +52,24 @@ class BulletPointsComponent extends React.Component<
   }
 
   render() {
-    const { customBulletUri, label, namespace, t } = this.props;
+    const { containerStyle, customBulletUri, label, namespace, t } = this.props;
 
     return (
-      <Fragment>
-        {t(namespace + (!!label ? `:${label}` : ":bullets"))
-          .split("\n")
-          .map((bullet: string, index: number) => {
-            return (
-              <BulletPoint
-                key={`bullet-${index}`}
-                content={bullet}
-                customBulletUri={customBulletUri}
-              />
-            );
-          })}
-      </Fragment>
+      <View style={containerStyle}>
+        <View>
+          {t(namespace + (!!label ? `:${label}` : ":bullets"))
+            .split("\n")
+            .map((bullet: string, index: number) => {
+              return (
+                <BulletPoint
+                  key={`bullet-${index}`}
+                  content={bullet}
+                  customBulletUri={customBulletUri}
+                />
+              );
+            })}
+        </View>
+      </View>
     );
   }
 }
@@ -74,7 +77,6 @@ export default withNamespaces()(BulletPointsComponent);
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: "stretch",
     flexDirection: "row",
     marginBottom: GUTTER,
   },

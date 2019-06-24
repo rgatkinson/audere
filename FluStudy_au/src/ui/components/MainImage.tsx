@@ -4,13 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, StyleProp, ImageStyle } from "react-native";
 import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../../store";
 import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
 import MultiTapContainer from "./MultiTapContainer";
 
 interface Props {
+  imageStyle?: StyleProp<ImageStyle>;
   isDemo: boolean;
   menuItem?: boolean;
   uri: string;
@@ -23,10 +24,14 @@ class MainImage extends React.Component<Props> {
   };
 
   render() {
-    const { menuItem, uri } = this.props;
+    const { imageStyle, menuItem, uri } = this.props;
     const image = (
       <Image
-        style={[styles.image, menuItem && styles.menuImage]}
+        style={[
+          styles.image,
+          menuItem && styles.menuImage,
+          imageStyle && imageStyle,
+        ]}
         source={{ uri }}
       />
     );
@@ -56,6 +61,7 @@ const styles = StyleSheet.create({
     aspectRatio: ASPECT_RATIO,
     height: undefined,
     marginVertical: GUTTER * 2,
+    resizeMode: "contain",
     width: IMAGE_WIDTH,
   },
   menuImage: {

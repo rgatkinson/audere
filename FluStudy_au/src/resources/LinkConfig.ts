@@ -6,12 +6,18 @@
 import { Linking, Platform } from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { getStore } from "../store";
+import { Constants } from "expo";
 
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
 const myDrUrl =
   "https://www.mydr.com.au/respiratory-health/influenza-treatment";
+
+const testQuestionsURL = "fluathome@adelaide.edu.au";
+const appSupportURL = "flu-support-au@auderenow.org";
+const supportBody = `\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.]
+Installation ID: ${Constants.installationId}`;
 
 function createMapQueryUrl(query: string) {
   const scheme = Platform.select({ ios: "maps:0,0?q=", android: "geo:0,0?q=" });
@@ -31,6 +37,14 @@ export function CDC() {
 
 export function myDr() {
   Linking.openURL(myDrUrl);
+}
+
+export function testSupport() {
+  Linking.openURL(`mailto:${testQuestionsURL}&body=${supportBody}`);
+}
+
+export function appSupport() {
+  Linking.openURL(`mailto:${appSupportURL}&body=${supportBody}`);
 }
 
 export function callNumber(phoneNumber: string) {

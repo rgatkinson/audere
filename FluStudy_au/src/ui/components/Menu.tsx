@@ -10,13 +10,8 @@ import {
   Text as SystemText,
   TouchableOpacity,
 } from "react-native";
-import {
-  DrawerItems,
-  NavigationScreenProp,
-  SafeAreaView,
-} from "react-navigation";
+import { DrawerItems, SafeAreaView } from "react-navigation";
 import { Feather } from "@expo/vector-icons";
-import Divider from "./../components/Divider";
 import i18n from "i18next";
 import {
   GUTTER,
@@ -33,8 +28,7 @@ export const Menu = (props: any) => {
       props.navigation.navigate("Home");
     }
   };
-  const aboutItems = { ...props, items: props.items.slice(1, 5) };
-  const helpItems = { ...props, items: props.items.slice(5) };
+  const items = { ...props, items: props.items.slice(1) };
   return (
     <ScrollView>
       <SafeAreaView
@@ -45,22 +39,12 @@ export const Menu = (props: any) => {
           <Feather color={PRIMARY_COLOR} name="x" size={30} />
         </TouchableOpacity>
         <SystemText style={styles.header}>
-          {i18n.t("menu:aboutFluAtHome")}
+          {i18n.t("menu:fluAtHomeHelp")}
         </SystemText>
-        <Divider style={styles.divider} />
         <DrawerItems
           activeTintColor={SECONDARY_COLOR}
           inactiveTintColor={SECONDARY_COLOR}
-          {...aboutItems}
-        />
-        <SystemText style={styles.header}>
-          {i18n.t("menu:helpAndSupport")}
-        </SystemText>
-        <Divider style={styles.divider} />
-        <DrawerItems
-          activeTintColor={SECONDARY_COLOR}
-          inactiveTintColor={SECONDARY_COLOR}
-          {...helpItems}
+          {...items}
         />
       </SafeAreaView>
     </ScrollView>
