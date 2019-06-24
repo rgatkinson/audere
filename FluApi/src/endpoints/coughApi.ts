@@ -49,6 +49,7 @@ export class CoughEndpoint {
   public importCoughDocuments = async (req, res, next) => {
     req.setTimeout(20 * MINUTE_MS);
     const reqId = requestId(req);
+    const markAsRead = booleanQueryParameter(req, "markAsRead", true);
     logger.info(`${reqId}: enter importCoughDocuments`);
     const result = {
       successes: [],
@@ -56,8 +57,8 @@ export class CoughEndpoint {
       timestamp: new Date().toISOString(),
       requestId: reqId
     };
-    await this.importItems(reqId, getSurveyCollection(), this.writeSurvey, result);
-    await this.importItems(reqId, getPhotoCollection(), this.writePhoto, result);
+    await this.importItems(reqId, markAsRead, getSurveyCollection(), this.writeSurvey, result);
+    await this.importItems(reqId, markAsRead, getPhotoCollection(), this.writePhoto, result);
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
@@ -67,6 +68,7 @@ export class CoughEndpoint {
 
   private async importItems(
     reqId: string,
+    markAsRead: boolean,
     collection: string,
     write: (snapshot: DocumentSnapshot, receiver: FirebaseReceiver) => Promise<void>,
     result: ImportResult
@@ -85,11 +87,13 @@ export class CoughEndpoint {
 
       try {
         await write(snapshot, receiver);
-        await receiver.markAsRead(snapshot);
+        if (markAsRead) {
+          await receiver.markAsRead(snapshot);
+        }
         result.successes.push(spec);
       } catch (err) {
         const problem = await this.updateImportProblem(reqId, spec, err, result);
-        if (problem.attempts >= MAX_IMPORT_ATTEMPTS) {
+        if (markAsRead && problem.attempts >= MAX_IMPORT_ATTEMPTS) {
           await receiver.markAsRead(snapshot);
         }
       }
@@ -192,6 +196,17 @@ function asImportError(problem: ImportProblemAttributes): ImportError {
     error: problem.lastError,
     attempts: problem.attempts,
   };
+}
+
+function booleanQueryParameter(req, name: string, dflt: boolean): boolean {
+  switch (req.query[name]) {
+    case "true":
+      return true;
+    case "false":
+      return false;
+    default:
+      return dflt;
+  }
 }
 
 export interface ImportResult {
