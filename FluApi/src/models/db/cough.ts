@@ -11,11 +11,13 @@ import {
   SplitSql,
   stringColumn,
   booleanColumn,
+  integerColumn,
   jsonColumn,
   unique
 } from "../../util/sql";
 import {
   DeviceInfo,
+  DocumentType,
   PhotoDbInfo,
   SurveyNonPIIInfo
 } from "audere-lib/dist/coughProtocol";
@@ -25,6 +27,7 @@ const schema = "cough";
 export function defineCoughModels(sql: SplitSql): CoughModels {
   const models: CoughModels = {
     accessKey: defineAccessKey(sql),
+    importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     survey: defineSurvey(sql.nonPii)
   };
@@ -34,6 +37,7 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
 
 export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
+  importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
@@ -67,6 +71,28 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
   );
 }
 
+// ---------------------------------------------------------------
+
+export interface ImportProblemAttributes {
+  id?: string;
+  firebaseId: string;
+  firebaseCollection: string;
+  attempts: number;
+  lastError: string;
+}
+export function defineImportProblem(sql: SplitSql): Model<ImportProblemAttributes> {
+  return defineModel<ImportProblemAttributes>(
+    sql.nonPii,
+    "import_problems",
+    {
+      firebaseId: stringColumn("firebase_id"),
+      firebaseCollection: stringColumn("firebase_collection"),
+      attempts: integerColumn(),
+      lastError: stringColumn("last_error"),
+    },
+    { schema }
+  );
+}
 // ---------------------------------------------------------------
 
 export interface PhotoAttributes {

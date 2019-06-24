@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SplitSql } from "../util/sql";
-import { CoughModels, defineCoughModels } from "../models/db/cough";
+import { CoughModels, defineCoughModels, ImportProblemAttributes } from "../models/db/cough";
 import {
   connectorFromSqlSecrets,
   FirebaseReceiver
@@ -18,8 +18,13 @@ import {
 } from "audere-lib/dist/coughProtocol";
 import { DerivedTableService } from "../services/derivedTableService";
 
+type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
+
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
+
+// We import every hour, try importing for up to one day before giving up.
+const MAX_IMPORT_ATTEMPTS = 24;
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
@@ -51,8 +56,8 @@ export class CoughEndpoint {
       timestamp: new Date().toISOString(),
       requestId: reqId
     };
-    await this.importSurveys(reqId, result);
-    await this.importPhotos(reqId, result);
+    await this.importItems(reqId, getSurveyCollection(), this.writeSurvey, result);
+    await this.importItems(reqId, getPhotoCollection(), this.writePhoto, result);
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
@@ -60,59 +65,89 @@ export class CoughEndpoint {
     res.json(result);
   };
 
-  private async importSurveys(reqId: string, result: ImportResult) {
-    const collection = getSurveyCollection();
-    const receiver = new FirebaseReceiver(connectorFromSqlSecrets(this.sql), {
-      collection
-    });
-    const updates = await receiver.updates();
-
-    for (let id of updates) {
-      const spec = { id, collection };
-      await this.wrap(
-        reqId,
-        spec,
-        () => this.importSurvey(receiver, id),
-        result
-      );
-    }
-  }
-
-  private async importPhotos(reqId: string, result: ImportResult) {
-    const collection = getPhotoCollection();
+  private async importItems(
+    reqId: string,
+    collection: string,
+    write: (snapshot: DocumentSnapshot, receiver: FirebaseReceiver) => Promise<void>,
+    result: ImportResult
+  ) {
     const connector = connectorFromSqlSecrets(this.sql);
     const receiver = new FirebaseReceiver(connector, { collection });
     const updates = await receiver.updates();
 
     for (let id of updates) {
       const spec = { id, collection };
-      await this.wrap(
-        reqId,
-        spec,
-        () => this.importPhoto(receiver, id),
-        result
-      );
+
+      const snapshot = await this.readSnapshot(reqId, receiver, spec, result);
+      if (snapshot == null) {
+        return;
+      }
+
+      try {
+        await write(snapshot, receiver);
+        await receiver.markAsRead(snapshot);
+        result.successes.push(spec);
+      } catch (err) {
+        const problem = await this.updateImportProblem(reqId, spec, err, result);
+        if (problem.attempts >= MAX_IMPORT_ATTEMPTS) {
+          await receiver.markAsRead(snapshot);
+        }
+      }
     }
   }
 
-  private async importSurvey(
+  private async readSnapshot(
+    reqId: string,
     receiver: FirebaseReceiver,
-    id: string
-  ): Promise<void> {
-    const snapshot = await receiver.read(id);
+    spec: ImportSpec,
+    result: ImportResult
+  ): Promise<DocumentSnapshot | undefined> {
+    try {
+      return await receiver.read(spec.id);
+    } catch (err) {
+      await this.updateImportProblem(reqId, spec, err, result);
+    }
+  }
+
+  private async updateImportProblem(
+    reqId: string,
+    spec: ImportSpec,
+    err: Error,
+    result: ImportResult
+  ): Promise<ImportProblemAttributes> {
+    logger.error(
+      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${
+        spec.collection
+      }': ${err.message}`
+    );
+
+    const firebaseCollection = spec.collection;
+    const firebaseId = spec.id;
+    const existing = await this.models.importProblem.findOne({
+      where: { firebaseCollection, firebaseId }
+    });
+
+    const problem = {
+      id: (existing == null) ? undefined : existing.id,
+      firebaseCollection,
+      firebaseId,
+      attempts: (existing == null) ? 1 : (existing.attempts + 1),
+      lastError: err.message,
+    };
+    result.errors.push(asImportError(problem));
+    await this.models.importProblem.upsert(problem);
+    return problem;
+  }
+
+  private writeSurvey = async (snapshot: DocumentSnapshot) => {
     const doc = snapshot.data() as SurveyDocument;
     if (doc.schemaId !== 1 || doc.documentType !== DocumentType.Survey) {
       throw new Error("Unexpected survey document schema");
     }
     await this.models.survey.upsert(doc);
-    await receiver.markAsRead(snapshot);
-  }
+  };
 
-  private async importPhoto(
-    receiver: FirebaseReceiver,
-    id: string
-  ): Promise<void> {
-    const snapshot = await receiver.read(id);
+  private writePhoto = async (snapshot: DocumentSnapshot, receiver: FirebaseReceiver) => {
     const doc = snapshot.data() as PhotoDocument;
     if (doc.schemaId !== 1 || doc.documentType !== DocumentType.Photo) {
       throw new Error("Unexpected photo document schema");
@@ -130,8 +165,7 @@ export class CoughEndpoint {
         jpegBase64
       }
     });
-    await receiver.markAsRead(snapshot);
-  }
+  };
 
   public updateDerivedTables = async (req, res, next) => {
     const reqId = requestId(req);
@@ -149,26 +183,15 @@ export class CoughEndpoint {
     }
     logger.info(`${reqId}: leave updateDerivedTables`);
   }
+}
 
-  private async wrap(
-    reqId: string,
-    spec: ImportSpec,
-    call: () => Promise<void>,
-    result: ImportResult
-  ) {
-    try {
-      await call();
-      result.successes.push(spec);
-    } catch (err) {
-      const error = err.message;
-      result.errors.push({ ...spec, error });
-      logger.error(
-        `${reqId} CoughEndpoint import failed for '${spec.id}' in '${
-          spec.collection
-        }': ${error}`
-      );
-    }
-  }
+function asImportError(problem: ImportProblemAttributes): ImportError {
+  return {
+    collection: problem.firebaseCollection,
+    id: problem.firebaseId,
+    error: problem.lastError,
+    attempts: problem.attempts,
+  };
 }
 
 export interface ImportResult {
@@ -185,4 +208,5 @@ export interface ImportSpec {
 
 export interface ImportError extends ImportSpec {
   error: string;
+  attempts: number;
 }
