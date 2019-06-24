@@ -13,8 +13,7 @@
     "desc": "Your participation could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us."
   },
   "surveyTitle": {
-    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
-    "fluShotDate": "What was the approximate date of your flu vaccine?"
+    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?"
   },
   "surveyButton": {
     "incorrect": "During the test, I realised I did something incorrectly"

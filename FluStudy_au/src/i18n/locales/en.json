@@ -183,12 +183,12 @@
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "vaccinationDate": "Did you receive an influenza vaccination in the last year?",
     "fluShot": "Did you receive an influenza vaccination this year (2019)?",
-    "fluShotNationalImmunization": "Did you receive a free influenza vaccine under the National Immunisation Program in 2019?",
-    "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccine?",
+    "fluShotNationalImmunization": "Did you receive a free influenza vaccination under the National Immunisation Program in 2019?",
+    "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccination?",
     "previousSeason": "Did you receive an influenza vaccination last year (2018)?",
     "healthcareWorker": "Are you a healthcare (or aged care) worker (i.e. do you directly work with patients/aged care residents in your job)?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
-    "fluShotDate": "What was the approximate date of your influenza vaccine?"
+    "fluShotDate": "What was the approximate date of your influenza vaccination?"
   },
   "surveyDescription": {
     "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
