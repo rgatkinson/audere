@@ -26,7 +26,7 @@
   },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "../../../scripts/generate-build-info FluTrack; expo start",
+    "start": "../scripts/generate-build-info FluTrack; expo start",
     "start-localapi": "REACT_NATIVE_USE_LOCAL_SERVER=1 yarn run start",
     "stop": "expo stop",
     "eject": "expo eject",
@@ -67,7 +67,7 @@
     "@types/expo-localization": "^1.0.0",
     "@types/expo__vector-icons": "^6.2.3",
     "@types/i18next": "^11.9.3",
-    "audere-lib": "link:../../../lib",
+    "audere-lib": "link:../lib",
     "axios": "^0.18.0",
     "babel-plugin-inline-dotenv": "^1.2.0",
     "base64url": "^3.0.1",
