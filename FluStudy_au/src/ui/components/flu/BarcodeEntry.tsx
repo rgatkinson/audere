@@ -88,7 +88,6 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
         style={styles.container}
       >
         <View style={styles.inputContainer}>
-          <Text content={"KIT "} style={styles.kitText} />
           <NumberInput
             autoFocus={navigation.isFocused()}
             placeholder={t("placeholder")}
@@ -100,7 +99,6 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text content={"KIT "} style={styles.kitText} />
           <NumberInput
             placeholder={t("secondPlaceholder")}
             ref={this.confirmInput}

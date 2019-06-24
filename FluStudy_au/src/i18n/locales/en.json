@@ -232,7 +232,7 @@
     "desc": "First, we'd like you to scan the barcode found on the outside of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
   },
   "barcode": {
-    "yourCode": "**Your code**: KIT {{barcode}}",
+    "yourCode": "**Your code**: {{barcode}}",
     "sorry": "Sorry",
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "notVerified": "Your barcode was not verified",
