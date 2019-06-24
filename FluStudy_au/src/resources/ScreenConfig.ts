@@ -157,7 +157,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ContinueButton,
         props: {
-          next: "ParticipationInformation",
+          next: "ParticipantInformation",
         },
       },
     ],
