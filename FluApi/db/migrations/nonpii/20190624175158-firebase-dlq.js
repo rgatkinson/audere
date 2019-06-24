@@ -17,7 +17,7 @@ module.exports = {
         firebase_id: column(Sequelize.STRING),
         firebase_collection: column(Sequelize.STRING),
         attempts: column(Sequelize.INTEGER),
-        last_error: column(Sequelize.TEXT),
+        last_error: column(Sequelize.TEXT)
       },
       { schema }
     );

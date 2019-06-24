@@ -80,7 +80,9 @@ export interface ImportProblemAttributes {
   attempts: number;
   lastError: string;
 }
-export function defineImportProblem(sql: SplitSql): Model<ImportProblemAttributes> {
+export function defineImportProblem(
+  sql: SplitSql
+): Model<ImportProblemAttributes> {
   return defineModel<ImportProblemAttributes>(
     sql.nonPii,
     "import_problems",
@@ -88,11 +90,12 @@ export function defineImportProblem(sql: SplitSql): Model<ImportProblemAttribute
       firebaseId: stringColumn("firebase_id"),
       firebaseCollection: stringColumn("firebase_collection"),
       attempts: integerColumn(),
-      lastError: stringColumn("last_error"),
+      lastError: stringColumn("last_error")
     },
     { schema }
   );
 }
+
 // ---------------------------------------------------------------
 
 export interface PhotoAttributes {

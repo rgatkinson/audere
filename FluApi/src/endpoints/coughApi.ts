@@ -4,7 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { SplitSql } from "../util/sql";
-import { CoughModels, defineCoughModels, ImportProblemAttributes } from "../models/db/cough";
+import {
+  CoughModels,
+  defineCoughModels,
+  ImportProblemAttributes
+} from "../models/db/cough";
 import {
   connectorFromSqlSecrets,
   FirebaseReceiver
@@ -57,8 +61,20 @@ export class CoughEndpoint {
       timestamp: new Date().toISOString(),
       requestId: reqId
     };
-    await this.importItems(reqId, markAsRead, getSurveyCollection(), this.writeSurvey, result);
-    await this.importItems(reqId, markAsRead, getPhotoCollection(), this.writePhoto, result);
+    await this.importItems(
+      reqId,
+      markAsRead,
+      getSurveyCollection(),
+      this.writeSurvey,
+      result
+    );
+    await this.importItems(
+      reqId,
+      markAsRead,
+      getPhotoCollection(),
+      this.writePhoto,
+      result
+    );
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
@@ -70,7 +86,10 @@ export class CoughEndpoint {
     reqId: string,
     markAsRead: boolean,
     collection: string,
-    write: (snapshot: DocumentSnapshot, receiver: FirebaseReceiver) => Promise<void>,
+    write: (
+      snapshot: DocumentSnapshot,
+      receiver: FirebaseReceiver
+    ) => Promise<void>,
     result: ImportResult
   ) {
     const connector = connectorFromSqlSecrets(this.sql);
@@ -92,7 +111,12 @@ export class CoughEndpoint {
         }
         result.successes.push(spec);
       } catch (err) {
-        const problem = await this.updateImportProblem(reqId, spec, err, result);
+        const problem = await this.updateImportProblem(
+          reqId,
+          spec,
+          err,
+          result
+        );
         if (markAsRead && problem.attempts >= MAX_IMPORT_ATTEMPTS) {
           await receiver.markAsRead(snapshot);
         }
@@ -132,11 +156,11 @@ export class CoughEndpoint {
     });
 
     const problem = {
-      id: (existing == null) ? undefined : existing.id,
+      id: existing == null ? undefined : existing.id,
       firebaseCollection,
       firebaseId,
-      attempts: (existing == null) ? 1 : (existing.attempts + 1),
-      lastError: err.message,
+      attempts: existing == null ? 1 : existing.attempts + 1,
+      lastError: err.message
     };
     result.errors.push(asImportError(problem));
     await this.models.importProblem.upsert(problem);
@@ -151,7 +175,10 @@ export class CoughEndpoint {
     await this.models.survey.upsert(doc);
   };
 
-  private writePhoto = async (snapshot: DocumentSnapshot, receiver: FirebaseReceiver) => {
+  private writePhoto = async (
+    snapshot: DocumentSnapshot,
+    receiver: FirebaseReceiver
+  ) => {
     const doc = snapshot.data() as PhotoDocument;
     if (doc.schemaId !== 1 || doc.documentType !== DocumentType.Photo) {
       throw new Error("Unexpected photo document schema");
@@ -194,7 +221,7 @@ function asImportError(problem: ImportProblemAttributes): ImportError {
     collection: problem.firebaseCollection,
     id: problem.firebaseId,
     error: problem.lastError,
-    attempts: problem.attempts,
+    attempts: problem.attempts
   };
 }
 
