@@ -168,9 +168,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: GUTTER,
   },
-  kitText: {
-    paddingVertical: 3,
-  },
   textInput: {
     flex: 1,
   },
