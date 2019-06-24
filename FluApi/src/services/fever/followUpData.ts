@@ -64,8 +64,9 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
     });
 
     const uniqueSurveys = Array.from(unique.values());
-    const added = uniqueSurveys
-      .filter(s => !existing.some(e => e.email === s.email));
+    const added = uniqueSurveys.filter(
+      s => !existing.some(e => e.email === s.email)
+    );
 
     if (added.length > 0) {
       const pii = await this.sql.pii.query(

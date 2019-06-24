@@ -981,7 +981,9 @@ async function cmdSetSnifflesAdministrator(argv: AdministratorArgs) {
   if (nonPii.visit.administrator === pii.visit.administrator) {
     console.log(`Current administrator: '${nonPii.visit.administrator}'`);
   } else {
-    console.log(`Current non-pii administrator: '${nonPii.visit.administrator}'`);
+    console.log(
+      `Current non-pii administrator: '${nonPii.visit.administrator}'`
+    );
     console.log(`Current pii administrator: '${pii.visit.administrator}'`);
     await expectYes(`Update both administrators to '${argv.value}'? `);
   }

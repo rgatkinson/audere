@@ -519,13 +519,16 @@ describe("received kits data access", () => {
       const insertRecords = new Map([[+survey.id, insertRecord]]);
       await dao.importReceivedKits("test1.json", insertRecords);
 
-      await fever.receivedKit.update({
-        linked: true
-      }, {
-        where: {
-          boxBarcode: insertRecord.boxBarcode
+      await fever.receivedKit.update(
+        {
+          linked: true
+        },
+        {
+          where: {
+            boxBarcode: insertRecord.boxBarcode
+          }
         }
-      });
+      );
 
       const updateRecord = {
         dateReceived: "2019-01-02",
@@ -565,13 +568,16 @@ describe("received kits data access", () => {
       const insertRecords = new Map([[+survey.id, insertRecord]]);
       await dao.importReceivedKits("test1.json", insertRecords);
 
-      await fever.receivedKit.update({
-        linked: true
-      }, {
-        where: {
-          boxBarcode: insertRecord.boxBarcode
+      await fever.receivedKit.update(
+        {
+          linked: true
+        },
+        {
+          where: {
+            boxBarcode: insertRecord.boxBarcode
+          }
         }
-      });
+      );
 
       const updateRecord = {
         dateReceived: "2019-01-02",

@@ -205,9 +205,8 @@ export class ReceivedKitsData {
           // At the moment we only care about box barcodes
           receivedKits.forEach((v, k) => {
             const match = existing.find(e => e.surveyId === k);
-            const linked = v.remapped === true || match == null ?
-              false :
-              match.linked;
+            const linked =
+              v.remapped === true || match == null ? false : match.linked;
 
             records.push({
               surveyId: k,
@@ -216,7 +215,7 @@ export class ReceivedKitsData {
               linked: linked,
               boxBarcode: v.boxBarcode,
               dateReceived: v.dateReceived
-            })
+            });
           });
 
           for (let i = 0; i < records.length; i++) {

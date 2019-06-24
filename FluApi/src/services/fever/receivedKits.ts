@@ -110,12 +110,11 @@ export class ReceivedKits {
         errors.push(this.createBarcodeError(r, "NoMatch"));
       } else {
         const match = matchesByCode.get(r.boxBarcode);
-        if (
-          match.recordId == null || match.fileId == null
-        ) {
-          const record = match.recordId != null && match.recordId !== r.recordId ?
-            { ...r, remapped: true } :
-            r;
+        if (match.recordId == null || match.fileId == null) {
+          const record =
+            match.recordId != null && match.recordId !== r.recordId
+              ? { ...r, remapped: true }
+              : r;
           kitsBySurvey.set(match.id, record);
         } else {
           logger.debug(

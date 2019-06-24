@@ -360,9 +360,7 @@ describe("importing received kits", () => {
     const dao = mock(ReceivedKitsData);
 
     // Different record id
-    const matches = [
-      { id: 123, code: "12345678", kitId: 1, recordId: 555 }
-    ];
+    const matches = [{ id: 123, code: "12345678", kitId: 1, recordId: 555 }];
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
