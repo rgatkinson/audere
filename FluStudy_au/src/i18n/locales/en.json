@@ -328,9 +328,12 @@
   },
   "RDTReader": {
     "title": "RDT READER",
-    "stripHere": "Your strip here",
-    "description": "Tap the round button to take a photo",
-    "loading": "Loading..."
+    "position": "POSITION",
+    "distance": "DISTANCE",
+    "rotation": "ROTATION",
+    "flash": "FLASH: ",
+    "on": "ON",
+    "off": "OFF"
   },
   "CameraSettings": {
     "title": "Update your settings",
@@ -339,11 +342,13 @@
   },
   "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
-    "stripHere": "Your strip here",
     "description": "Tap the round button to take a photo",
     "alertTitle": "We are unable to scan the test strip",
     "alertDesc": "The app is having trouble scanning your test strip. We will switch to taking a photo of the strip manually.",
-    "error": "There was a processing error, please try again"
+    "error": "There was a processing error, please try again",
+    "flash": "FLASH: ",
+    "on": "ON",
+    "off": "OFF"
   },
   "TestStripConfirmation": {
     "title": "Picture captured!",

@@ -154,7 +154,8 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
                     />
                     <Text
                       content={
-                        "FLASH: " + (this.state.flashEnabled ? "ON" : "OFF")
+                        t("flash") +
+                        (this.state.flashEnabled ? t("on") : t("off"))
                       }
                       style={styles.overlayText}
                     />

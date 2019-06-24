@@ -11,12 +11,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Action,
   setTestStripImg,
@@ -62,7 +61,7 @@ interface FeedbackCheckState {
   lastRan?: number;
 }
 
-class RDTReader extends React.Component<Props> {
+class RDTReader extends React.Component<Props & WithNamespaces> {
   state = {
     spinner: true,
     angle: 0,
@@ -306,7 +305,7 @@ class RDTReader extends React.Component<Props> {
   };
 
   render() {
-    const { isDemo, isFocused } = this.props;
+    const { isDemo, isFocused, t } = this.props;
     if (!isFocused) {
       return null;
     }
@@ -341,7 +340,7 @@ class RDTReader extends React.Component<Props> {
                           : "positionyellow",
                       }}
                     />
-                    <Text content="POSITION" style={styles.overlayText} />
+                    <Text content={t("position")} style={styles.overlayText} />
                   </View>
                   <View style={styles.feedbackItem}>
                     <Image
@@ -356,7 +355,7 @@ class RDTReader extends React.Component<Props> {
                               : "distanceyellow",
                       }}
                     />
-                    <Text content="DISTANCE" style={styles.overlayText} />
+                    <Text content={t("distance")} style={styles.overlayText} />
                   </View>
                   <View style={styles.feedbackItem}>
                     <Image
@@ -367,7 +366,7 @@ class RDTReader extends React.Component<Props> {
                           : "rotationyellow",
                       }}
                     />
-                    <Text content="ROTATION" style={styles.overlayText} />
+                    <Text content={t("rotation")} style={styles.overlayText} />
                   </View>
                 </View>
               </View>
@@ -392,7 +391,8 @@ class RDTReader extends React.Component<Props> {
                     />
                     <Text
                       content={
-                        "FLASH: " + (this.state.flashEnabled ? "ON" : "OFF")
+                        t("flash") +
+                        (this.state.flashEnabled ? t("on") : t("off"))
                       }
                       style={styles.overlayText}
                     />
@@ -428,7 +428,7 @@ class RDTReader extends React.Component<Props> {
 }
 export default connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
-}))(withNavigationFocus(RDTReader));
+}))(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
 
 const styles = StyleSheet.create({
   camera: {
