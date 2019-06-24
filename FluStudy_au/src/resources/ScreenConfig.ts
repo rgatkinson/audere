@@ -210,7 +210,6 @@ export const Screens: ScreenConfig[] = [
           label: "consentFormText2",
           style: {
             marginHorizontal: 0,
-            fontSize: SMALL_TEXT,
           },
         },
       },

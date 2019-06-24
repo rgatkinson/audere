@@ -8,7 +8,7 @@ import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Divider from "./Divider";
 import Text from "./Text";
-import { GUTTER, SMALL_TEXT } from "../styles";
+import { GUTTER, REGULAR_TEXT } from "../styles";
 
 class ConsentText extends React.Component<WithNamespaces> {
   shouldComponentUpdate() {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     marginBottom: GUTTER,
   },
   text: {
-    fontSize: SMALL_TEXT,
+    fontSize: REGULAR_TEXT,
   },
   thinDivider: {
     alignSelf: "center",
