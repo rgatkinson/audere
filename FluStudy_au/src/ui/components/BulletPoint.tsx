@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import { Image, StyleSheet, View, StyleProp, ViewStyle } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { GUTTER, REGULAR_TEXT } from "../styles";
@@ -34,7 +34,6 @@ export class BulletPoint extends React.PureComponent<Props> {
 }
 
 interface BulletProps {
-  containerStyle?: StyleProp<ViewStyle>;
   customBulletUri?: string;
   label?: string;
   namespace: string;
@@ -52,10 +51,10 @@ class BulletPointsComponent extends React.Component<
   }
 
   render() {
-    const { containerStyle, customBulletUri, label, namespace, t } = this.props;
+    const { customBulletUri, label, namespace, t } = this.props;
 
     return (
-      <View style={containerStyle}>
+      <Fragment>
         <View>
           {t(namespace + (!!label ? `:${label}` : ":bullets"))
             .split("\n")
@@ -69,7 +68,7 @@ class BulletPointsComponent extends React.Component<
               );
             })}
         </View>
-      </View>
+      </Fragment>
     );
   }
 }
@@ -79,6 +78,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     marginBottom: GUTTER,
+    marginRight: GUTTER,
   },
   customBullet: {
     height: REGULAR_TEXT,
