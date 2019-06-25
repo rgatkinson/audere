@@ -15,12 +15,11 @@
     <div class="section">
       <h1>Audere Portal</h1>
     </div>
-    <div class="section">
-      Metrics for
-      <a href="./metrics">FluTrack kiosk app (codename Sniffles)</a>
-      and
-      <a href="./feverMetrics">flu@home (codename Fever)</a>.
-    </div>
+    {{#each links}}
+      <div class="section">
+        <li><a href="{{url}}">{{label}}</a></li>
+      </div>
+    {{/each}}
     <div class="section">
       Logged in as {{user.userid}}
     </div>

@@ -34,6 +34,24 @@ import {
 import logger from "../../util/logger";
 import { S3DirectoryServer } from "./s3server";
 
+const INDEX_PAGE_LINKS = [
+  {
+    label: "Metrics for FluTrack kiosk app (codename Sniffles)",
+    url: "./metrics",
+    permissionsRequired: []
+  },
+  {
+    label: "Metrics for flu@home (codename Fever)",
+    url: "./feverMetrics",
+    permissionsRequired: []
+  },
+  {
+    label: "Seattle Children's HIPAA and consent forms",
+    url: "./seattleChildrensForms",
+    permissionsRequired: [Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS]
+  }
+];
+
 const SequelizeSessionStore = require("connect-session-sequelize")(
   session.Store
 );
@@ -121,7 +139,15 @@ function addHandlers(
   app.post("/login", wrap(login));
 
   app.use(wrap(requireLoggedInUser));
-  app.get("/index", render("index.html", userContext));
+  app.get(
+    "/index",
+    wrap(async (req, res) =>
+      res.render("index.html", {
+        ...userContext(req),
+        links: await indexPageLinks(req, authManager)
+      })
+    )
+  );
 
   addMetricsHandlers(app);
 
@@ -286,6 +312,14 @@ function addHandlers(
     }
   }
 
+  async function indexPageLinks(req, authManager: AuthManager) {
+    return await asyncFilter(INDEX_PAGE_LINKS, link =>
+      asyncEvery(link.permissionsRequired, permission =>
+        authManager.authorize(req.user.userid, permission)
+      )
+    );
+  }
+
   function userContext(req) {
     return {
       ...loginContext(req),
@@ -331,3 +365,13 @@ function createSessionStore(sql: SplitSql) {
     table: SESSION_TABLE_NAME
   });
 }
+
+function asyncArrayFn(fn) {
+  return async (array, predicate) => {
+    const results = await Promise.all(array.map(predicate));
+    return fn.bind(array)((val, index) => results[index]);
+  };
+}
+
+const asyncEvery = asyncArrayFn(Array.prototype.every);
+const asyncFilter = asyncArrayFn(Array.prototype.filter);
