@@ -219,6 +219,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "Consent",
+    automationNext: "ScanInstructions",
     footer: [
       {
         tag: ContinueButton,
@@ -254,6 +255,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
+    automationNext: "ManualEntry",
     footer: [
       {
         tag: CameraPermissionContinueButton,
@@ -682,6 +684,7 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
+    automationNext: "TestResult",
     footer: [
       {
         tag: ContinueButton,
@@ -794,6 +797,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
     ],
     key: "TestFeedback",
+    automationNext: "Thanks",
   },
   {
     body: [
@@ -829,6 +833,7 @@ export const Screens: ScreenConfig[] = [
         props: { label: "instructions", customBulletUri: "listarrow" },
       },
     ],
+    automationNext: "TestStripConfirmation",
     footer: [
       {
         tag: CameraPermissionContinueButton,

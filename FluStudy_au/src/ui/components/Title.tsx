@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import {
@@ -13,6 +13,7 @@ import {
   GUTTER,
   PRIMARY_COLOR,
 } from "../styles";
+import { PubSubHub, PubSubEvents } from "../../util/pubsub";
 
 interface Props {
   label?: string;
@@ -34,6 +35,10 @@ class Title extends React.Component<Props & WithNamespaces> {
     return label;
   };
 
+  _onPress = () => {
+    PubSubHub.publish(PubSubEvents.TITLE_PRESSED, this.props.namespace);
+  };
+
   render() {
     return (
       <Text
@@ -41,6 +46,7 @@ class Title extends React.Component<Props & WithNamespaces> {
         content={this._getContent()}
         extraBold={true}
         style={styles.title}
+        onPress={this._onPress}
       />
     );
   }

@@ -4,12 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { ComponentType, RefObject } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import i18n from "i18next";
@@ -19,6 +14,7 @@ import { Action, StoreState, setWorkflow } from "../../store";
 import { tracker } from "../../util/tracker";
 import Chrome from "./Chrome";
 import { GUTTER } from "../styles";
+import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
 
 export interface ScreenConfig {
   body: Component[];
@@ -27,19 +23,31 @@ export interface ScreenConfig {
   funnelEvent?: string;
   key: string;
   workflowEvent?: string;
+  automationNext?: string;
+}
+
+interface ComponentProps {
+  next?: string;
+  [key: string]: any;
 }
 
 export interface Component {
   tag: ComponentType<any>;
-  props?: object;
+  props?: ComponentProps;
   validate?: boolean;
 }
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   workflow: WorkflowInfo;
+  isDemo: boolean;
   dispatch(action: Action): void;
 }
+
+// Whether we've reached the screen we wanted to auto-forward to.  Having this
+// makes it so that once you've reached the screen, you can nav backward without
+// the app auto-forwarding you again.
+let _reachedAutoForwardToScreen = false;
 
 const CustomScrollView = wrapScrollView(ScrollView);
 
@@ -53,6 +61,7 @@ export const generateScreen = (config: ScreenConfig) => {
 
     _toValidate: Map<string, RefObject<any>>;
     _noRendering: boolean;
+    _titlePressToken: PubSubToken;
 
     constructor(props: Props) {
       super(props);
@@ -97,13 +106,65 @@ export const generateScreen = (config: ScreenConfig) => {
       this.props.navigation.addListener("didFocus", this._handleFocus);
       this.props.navigation.addListener("didBlur", () => {
         this._noRendering = true;
+        this._unsubscribeTitlePress();
       });
+    }
+
+    _unsubscribeTitlePress() {
+      if (this._titlePressToken) {
+        PubSubHub.unsubscribe(this._titlePressToken);
+        this._titlePressToken = null;
+      }
     }
 
     _handleFocus = () => {
       if (this._noRendering) {
         this._noRendering = false;
         this.forceUpdate();
+
+        this._unsubscribeTitlePress();
+        if (this.props.isDemo && process.env.NODE_ENV === "development") {
+          if (process.env.AUTO_FORWARD_TO_SCREEN) {
+            if (process.env.AUTO_FORWARD_TO_SCREEN === config.key) {
+              _reachedAutoForwardToScreen = true;
+            } else if (!_reachedAutoForwardToScreen) {
+              // 200ms is arbitrary.  Note that you can't just call
+              // _advance directly, because you then start in a navigation.push
+              // loop where you're not fully out of one push before you get
+              // into another, at which point willFocus/didFocus listeners don't
+              // get called correctly.  And 200 gives you a fighting chance of
+              // seeing the screens fly by.
+              setTimeout(this._advanceToNextScreen, 200);
+            }
+          } else {
+            this._titlePressToken = PubSubHub.subscribe(
+              PubSubEvents.TITLE_PRESSED,
+              this._advanceToNextScreen
+            );
+          }
+        }
+      }
+    };
+
+    _findNextScreen(): string | undefined {
+      if (config.automationNext) {
+        return config.automationNext;
+      } else if (config.footer) {
+        const nextComponent = config.footer.find(
+          component => !!(component.props && component.props.next)
+        );
+
+        if (nextComponent) {
+          return nextComponent.props!.next;
+        }
+      }
+      return undefined;
+    }
+
+    _advanceToNextScreen = () => {
+      const nextScreen = this._findNextScreen();
+      if (nextScreen) {
+        this.props.navigation.push(nextScreen);
       }
     };
 
@@ -157,6 +218,7 @@ export const generateScreen = (config: ScreenConfig) => {
   return connect((state: StoreState) => {
     return {
       workflow: state.survey.workflow,
+      isDemo: state.meta.isDemo,
     };
   })(Screen);
 };

@@ -12,6 +12,7 @@ import {
   Text as SystemText,
   TextStyle,
   Image,
+  GestureResponderEvent,
 } from "react-native";
 import { Svg } from "expo";
 import { textActions } from "../../resources/TextConfig";
@@ -33,6 +34,7 @@ interface Props {
   italic?: boolean;
   style?: StyleProp<TextStyle>;
   linkStyle?: StyleProp<TextStyle>;
+  onPress?: (event: GestureResponderEvent) => void;
 }
 
 interface LinkData {
@@ -227,7 +229,7 @@ export default class Text extends React.PureComponent<Props> {
   }
 
   render() {
-    const { bold, center, content, italic, style } = this.props;
+    const { bold, center, content, italic, style, onPress } = this.props;
     return (
       <SystemText
         selectable={true}
@@ -239,6 +241,7 @@ export default class Text extends React.PureComponent<Props> {
           style,
         ]}
         accessibilityLabel={content}
+        onPress={onPress}
       >
         {content
           .split("**")

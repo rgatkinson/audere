@@ -66,11 +66,14 @@ class Questions extends React.PureComponent<Props, State> {
           break;
         case "options":
           const options: Option[] = answer;
-          const reduced = options.reduce(
-            (result: boolean, option: Option) =>
-              result || (option.selected && option.key === condition.answer),
-            false
-          );
+          const reduced = options
+            ? options.reduce(
+                (result: boolean, option: Option) =>
+                  result ||
+                  (option.selected && option.key === condition.answer),
+                false
+              )
+            : null;
           if (!reduced) return reduced;
           break;
       }

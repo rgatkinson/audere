@@ -29,6 +29,7 @@ import {
 import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
 import { initializeFirestore } from "./src/store/FirebaseStore";
+import { PubSubHub } from "./src/util/pubsub";
 
 export default class App extends React.Component {
   state = {
@@ -39,6 +40,7 @@ export default class App extends React.Component {
     this._loadAssets();
     setupErrorHandler();
     startTracking();
+    PubSubHub.initialize();
 
     // We do these serially, for now, because we actually log things when
     // loading remote config, and you could in theory use remote config to
