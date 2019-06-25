@@ -168,10 +168,11 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
             <View style={styles.backgroundOverlay} />
           </View>
         </View>
-        <TouchableOpacity onPress={this._takePicture}>
-          <View style={styles.outerCircle}>
-            <View style={styles.circle} />
-          </View>
+        <TouchableOpacity
+          style={styles.outerCircle}
+          onPress={this._takePicture}
+        >
+          <View style={styles.circle} />
         </TouchableOpacity>
       </View>
     );
@@ -239,7 +240,6 @@ const styles = StyleSheet.create({
   outerCircle: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
     borderColor: "white",
     borderWidth: 7,
     borderRadius: 40,
