@@ -22,6 +22,7 @@ interface Props {
   dispatchOnNext?: () => Action;
   surveyGetNextFn?(): Promise<string>;
   validate?(): boolean;
+  overrideValidate?: boolean;
 }
 
 class ContinueButton extends React.Component<Props & WithNamespaces> {
@@ -37,11 +38,12 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
       dispatchOnNext,
       navigation,
       next,
+      overrideValidate,
       surveyGetNextFn,
       t,
       validate,
     } = this.props;
-    if (!validate || validate()) {
+    if (overrideValidate || !validate || validate()) {
       if (!!surveyGetNextFn) {
         navigation.push(await surveyGetNextFn());
       } else {

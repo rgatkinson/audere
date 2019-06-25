@@ -235,6 +235,7 @@ export const Screens: ScreenConfig[] = [
           label: "noThanks",
           next: "ConsentDeclined",
           primary: false,
+          overrideValidate: true,
         },
       },
     ],
