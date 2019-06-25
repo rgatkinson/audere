@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="91px" viewBox="0 0 50 91" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>icon_HowItWorks_Step1</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="XL-Desktop-C-Blue-Copy" transform="translate(-256.000000, -686.000000)">
+            <g id="icon_HowItWorks_Step1" transform="translate(256.000000, 686.500000)">
+                <rect id="Rectangle" fill="#0A5CA8" x="0" y="0" width="50" height="90" rx="5"></rect>
+                <rect id="Rectangle" fill="#FFFFFF" x="4.5" y="4.5" width="41" height="65.5"></rect>
+                <g id="Group-24" transform="translate(17.500000, 17.250000)" stroke="#0A5CA8" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
+                    <path d="M7.5,0.375 L7.5,29.8989258" id="Line-4"></path>
+                    <polyline id="Path-3" points="0 22.5 7.5 30 15 22.5"></polyline>
+                    <path d="M0,39 L15,39" id="Path-4"></path>
+                </g>
+                <circle id="Oval" fill="#FFFFFF" cx="25" cy="79.3566895" r="4.85668945"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

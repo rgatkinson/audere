@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>flu@home Australia Research Study | Support</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="img/favicons/site.webmanifest">
+    <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#0A5CA8">
+    <link rel="shortcut icon" href="img/favicons/favicon.ico">
+    <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#0A5CA8">
+
+    <title>flu@home Australia Research Study</title>
+    <meta property="og:site_name" content="flu@home Australia Research Study"/>
+	<meta property="og:title" content="flu@home Australia Research Study"/>
+	<meta property="og:url" content="http://fluathome.org.au"/>
+	<meta property="og:type" content="website"/>
+    <!-- <meta property="og:image" content="http://static01.nyt.com/images/2015/02/19/arts/international/19iht-btnumbers19A/19iht-btnumbers19A-facebookJumbo-v2.jpg" /> -->
+	<meta itemprop="name" content="flu@home Australia Research Study"/>
+	<meta itemprop="url" content="http://fluathome.org.au"/>
+	<meta name="twitter:title" content="flu@home Australia Research Study"/>
+	<meta name="twitter:url" content="http://fluathome.org.au"/>
+	<meta name="twitter:card" content="summary"/>
+	<meta name="description" content="You can make a difference. With a simple test kit at home, you can help us gain valuable knowledge about the virus, how it spreads, and how to protect people in the future." />
+    <meta name="robots" content="noindex, nofollow"> 
+</head>
+
+<body class="secondary">
+    <header>
+
+        <div class="container">
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
+                <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
+                <ul class="menu">
+                    <li>
+                        <!--<a href="http://fluathome.org.au/#UW-Message">Why This Matters</a>-->
+                    </li>
+                    <li>
+                        <a href="http://fluathome.org.au/#Flu-101">Flu 101</a>
+                    </li>
+                    <li>
+                        <a href="/support">FAQ</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <article class="legal">
+        <div class="container">
+            <h1>Support</h1>
+            <p>For assistance via email, please contact <a href="mailto:flu-support-au@auderenow.org">flu-support-au@auderenow.org</a> (for technical support).</p>
+            <div class="faq">
+                <h2>Frequently Asked Questions</h2>
+                
+                <h3 id="1">1. What is the flu@home study?</h3>
+                <p>We're mapping the spread of the flu. Today, more than 30 million people get sick and suffer from flu. We know that the flu is spread from person to person, and we know that it causes outbreaks every year. What we don't know is how it spreads, and why certain flu strains are stronger and more dangerous than others. The flu@home is on a mission to change that.</p>
+                
+                <h3 id="2">2. How do I participate?</h3>
+                <p>After downloading the app, you’ll need to answer a few questions to help us understand your symptoms. The process takes around twenty minutes and will use both the app and the test kit for the results.</p>
+                <p>If you are feeling ill with flu-like symptoms, you can participate. These symptoms include:
+                    <ul>
+                    <li>Fever* or feeling feverish/chills</li>
+                    <li>Cough</li>
+                    <li>Sore throat</li>
+                    <li>Runny or stuffy nose</li>
+                    <li>Muscle or body aches</li>
+                    <li>Headaches</li>
+                    <li>Fatigue (tiredness)</li>
+                    </ul><br>
+                    *Note: not everyone with flu will have a fever.
+                </p>
+                
+                <h3 id="3">3. Who should participate in the study?</h3>
+                <p>Anyone 18+ who is sick with a cold or the flu that lives in Australia. If you are experiencing cold/flu-like symptoms you could help our study and our ability to understand and fight the flu.</p>
+                
+                <h3 id="4">4. Is there any reason that I shouldn't participate?</h3>
+                <p>Please do not enroll if you don’t have at least two symptoms of a cold or flu.</p>
+                
+                <h3 id="5">5. Can you tell me more about the nose swab? Is it painful?</h3>
+                <p>It takes 5-10 seconds and it might tickle a bit. You’ll gently swab the inside wall of your nostril with a soft cotton-like swab. You’ll do this first on one side, then the other side with the same swab. There are no needles or anything beyond the nose swab.</p>
+                
+                <h3 id="6">6. What data are you gathering from my nose swab?</h3>
+                <p>We'll use your nose swab to figure out what germs are making you sick.</p>
+
+                <h3 id="7">7. Will my results be anonymous?</h3>
+                <p>In the study, researchers will only be using de-identified data. Please review our <a href="/privacy">Privacy Policy</a> for more details.</p>
+
+                <h3 id="8">8. Will I be tracked after the study?</h3>
+                <p>No, you will not be tracked after the study. Please review our <a href="/privacy">Privacy Policy</a> for more details.</p>
+
+                <h3 id="9">9. Can I get a flu shot from the flu@home study?</h3>
+                <p>No, but thank you for asking! We are gathering data to track and study the flu. We are NOT administering the flu vaccine.</p>
+
+                <h3 id="10">10. Can I help to stop the spread of the flu?</h3>
+                <p>Yes you can, and here's how:
+                    <ul>
+                        <li>Wash your hands</li>
+                        <li>Sneeze into your arm</li>
+                        <li>Stay home when you are sick</li>
+                    </ul>
+                </p>
+
+                <h3 id="11">11. Is there a cost associated to downloading the flu@home app?</h3>
+                <p>The flu@home app is free to download. Once you have completed the test, you may delete the app.</p>
+
+
+            </div>
+        </div>
+    </article>
+    <footer>
+        <div class="container">
+            <div class="logos">
+            <img class="logo" src="img/logo_Audere.svg" alt="Audere">
+            <img class="logo" src="img/logo_UW.svg" alt="UW">
+            <img class="logo" src="img/logo_UnivAdelaide.svg" alt="University of Adelaide">
+            <img class="logo" src="img/logo_Aspren.svg" alt="Aspren">
+                <img class="logo" src="img/logo_BrotmanBatyInstitute.svg" alt="Brotman Baty Institute">
+            </div>
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt=""></a>
+                <ul class="menu">
+                    <li>
+                        <a href="privacy">Privacy</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+</body>
+
+</html>

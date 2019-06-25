@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>flu@home Australia Research Study | Consent Form</title>
+    <!-- Google Tag Manager -->
+    <script>
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start':
+
+                new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+
+    })(window, document, 'script', 'dataLayer', 'GTM-NFN5DF8');
+    </script>
+    <!-- End Google Tag Manager -->
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="img/favicons/site.webmanifest">
+    <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#0A5CA8">
+    <link rel="shortcut icon" href="img/favicons/favicon.ico">
+    <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#0A5CA8">
+
+    <title>flu@home Australia Research Study</title>
+    <meta property="og:site_name" content="flu@home Australia Research Study"/>
+	<meta property="og:title" content="flu@home Australia Research Study"/>
+	<meta property="og:url" content="http://fluathome.org.au"/>
+	<meta property="og:type" content="website"/>
+    <!-- <meta property="og:image" content="http://static01.nyt.com/images/2015/02/19/arts/international/19iht-btnumbers19A/19iht-btnumbers19A-facebookJumbo-v2.jpg" /> -->
+	<meta itemprop="name" content="flu@home Australia Research Study"/>
+	<meta itemprop="url" content="http://fluathome.org.au"/>
+	<meta name="twitter:title" content="flu@home Australia Research Study"/>
+	<meta name="twitter:url" content="http://fluathome.org.au"/>
+	<meta name="twitter:card" content="summary"/>
+	<meta name="description" content="You can make a difference. With a simple test kit at home, you can help us gain valuable knowledge about the virus, how it spreads, and how to protect people in the future." />
+    <meta name="robots" content="noindex, nofollow"> 
+</head>
+
+<body class="secondary">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NFN5DF8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <header>
+
+        <div class="container">
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
+                <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
+                <ul class="menu">
+                    <li>
+                        <!--<a href="http://fluathome.org.au/#UW-Message">Why This Matters</a>-->
+                    </li>
+                    <li>
+                        <a href="http://fluathome.org.au/#Flu-101">Flu 101</a>
+                    </li>
+                    <li>
+                        <a href="/support">FAQ</a>
+                    </li>
+                </ul><br>
+            </nav>
+        </div>
+    </header>
+    <article class="legal">
+        <div class="container">
+        <h1>Consent Form</h1>
+        <ol><li>I have read the previous Participant Information Sheet and agree to take part in the following research project:<br/><br/>Title: Surveillance of influenza using a self-test for influenza Ethics Approval Number: TBD<br/><br/></li><li>I have had the project, so far as it affects me, and the potential risks and burdens fully explained to my satisfaction. I have had the opportunity to ask any questions I may have about the project and my participation. My consent is given freely.<br/><br/></li><li>I have been given the opportunity to discuss my potential participation in this study with a member of my family or a friend.<br/><br/></li><li>Although I understand the purpose of the research project is to improve the quality of health/medical care, it has also been explained that my involvement may not be of any benefit to me.<br/><br/></li><li>I understand that I will be reading the results of a flu test in the app, and that these results are experimental and should not determine whether I should visit my GP for additional treatment. I will use my best judgment for treatment based on my symptoms.<br/><br/></li><li>I agree to participate in the activities as outlined in the Participant Information Sheet. I understand that the project will collect information from me as described in the Participant Information Sheet.<br/><br/></li><li>I have been informed that the information gained in the project may be published in a book/journal article/thesis/news article/conference presentations/website/report etc.<br/><br/></li><li>I have been informed that in the published materials I will not be identified and my personal results will not be divulged.<br/><br/></li><li>I agree to my information being used for future research purposes as follows:
+        <ul><li>Research undertaken by these same researchers (yes/no)</li>
+        <li>Related research undertaken by any researcher (yes/no)</li></ul>
+</li><li>I understand my information will only be disclosed according to the consent provided, except where disclosure is required by law.<br/><br/></li><li>I am aware that I may obtain a copy of this Consent Form, and the attached Participant Information Sheet from <a href="www.fluathome.org.au/infosheet">www.fluathome.org.au/infosheet</a>.</li></ol>
+
+
+
+        </div>
+    </article>
+    <footer>
+        <div class="container">
+            <div class="logos">
+            <img class="logo" src="img/logo_Audere.svg" alt="Audere">
+            <img class="logo" src="img/logo_UW.svg" alt="UW">
+            <img class="logo" src="img/logo_UnivAdelaide.svg" alt="University of Adelaide">
+            <img class="logo" src="img/logo_Aspren.svg" alt="Aspren">
+                <img class="logo" src="img/logo_BrotmanBatyInstitute.svg" alt="Brotman Baty Institute">
+            </div>
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt=""></a>
+                <ul class="menu">
+                    <li>
+                        <a href="privacy">Privacy</a>
+                    </li>
+                    <li>
+                        <a href="support">Support/FAQ</a>
+                    </li>
+                </ul><br>
+            </nav>
+        </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>flu@home Australia Research Study | Privacy Policy</title>
+    <!-- Google Tag Manager -->
+    <script>
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start':
+
+                new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+
+    })(window, document, 'script', 'dataLayer', 'GTM-NFN5DF8');
+    </script>
+    <!-- End Google Tag Manager -->
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="img/favicons/site.webmanifest">
+    <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#0A5CA8">
+    <link rel="shortcut icon" href="img/favicons/favicon.ico">
+    <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#0A5CA8">
+
+    <title>flu@home Australia Research Study</title>
+    <meta property="og:site_name" content="flu@home Australia Research Study"/>
+	<meta property="og:title" content="flu@home Australia Research Study"/>
+	<meta property="og:url" content="http://fluathome.org.au"/>
+	<meta property="og:type" content="website"/>
+    <!-- <meta property="og:image" content="http://static01.nyt.com/images/2015/02/19/arts/international/19iht-btnumbers19A/19iht-btnumbers19A-facebookJumbo-v2.jpg" /> -->
+	<meta itemprop="name" content="flu@home Australia Research Study"/>
+	<meta itemprop="url" content="http://fluathome.org.au"/>
+	<meta name="twitter:title" content="flu@home Australia Research Study"/>
+	<meta name="twitter:url" content="http://fluathome.org.au"/>
+	<meta name="twitter:card" content="summary"/>
+	<meta name="description" content="You can make a difference. With a simple test kit at home, you can help us gain valuable knowledge about the virus, how it spreads, and how to protect people in the future." />
+    <meta name="robots" content="noindex, nofollow"> 
+</head>
+
+<body class="secondary">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NFN5DF8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <header>
+
+        <div class="container">
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
+                <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
+                <ul class="menu">
+                    <li>
+                        <!--<a href="http://fluathome.org.au/#UW-Message">Why This Matters</a>-->
+                    </li>
+                    <li>
+                        <a href="http://fluathome.org.au/#Flu-101">Flu 101</a>
+                    </li>
+                    <li>
+                        <a href="/support">FAQ</a>
+                    </li>
+                </ul><br>
+            </nav>
+        </div>
+    </header>
+    <article class="legal">
+        <div class="container">
+<h2><span>Privacy Highlights</span></h2>
+
+<p><span>These &quot;Privacy
+Highlights&quot; provide an overview of some core components of our data
+handling practices. Please be sure to review the&nbsp;<span>Full Privacy Statement</span> set out below.</span></p>
+
+<p><b><span>Information
+We Collect</span></b></p>
+
+<p><span>We generally collect the
+following information:</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Information we receive when you use our
+Services.</span></b><span>&nbsp;We
+collect Web-Behavior Information via cookies and other similar tracking
+technologies when you use and access our Services (our website, mobile apps,
+products, software and other services). </span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Information you share
+directly with us.</span></b><span>&nbsp;</span><span>We
+collect and process your information when you register your flu testing kit,
+complete research surveys, and contact the Human Research Ethics Committee, the
+Principal Investigator, or other study staff. This information can generally be
+categorized as Registration Information and/or Self-Reported Information as
+defined in our full Privacy Statement.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Information from our flu
+study testing services.</span></b><span>&nbsp;With your consent to participate in the <i>Surveillance of
+influenza using a self-test for influenza</i> study (“Research Study,”) we
+request you use the flu@home App to answer questions about your illness and
+take a photo of your test strip provided in the home testing kit.  We will then
+provide an interpretation of your test strip to indicate whether the flu virus
+may be present.  <i>For treatment, you should seek any needed medical care from
+your primary medical services provider.</i></span></p>
+
+<p><b><span>How We Use Information</span></b></p>
+
+<p><span>We generally process
+Personal Information for the following reasons:</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>To conduct our research
+and to provide our Services.</span></b><span>&nbsp;We process Personal Information in order to conduct our
+research and to provide our Services, which includes providing test kits to
+subjects, creating subject accounts, and delivering Research Study results.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>To analyze and improve our
+Services.</span></b><span>&nbsp;We
+constantly work to improve and provide new reports, tools, and Services. We may
+also need to fix bugs or issues, analyze use of our website and app to improve
+the user experience or assess our public awareness campaigns.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>For additional research,
+with your consent.</span></b><span>&nbsp;If you choose to consent to participate in our Research Study,
+our researchers will include your unidentified sample information and
+Self-Reported Information in a large pool of subject data for analyses aimed at
+making scientific discoveries.</span></p>
+
+<p><b><span>Control: Your Choices</span></b></p>
+
+<p><span>Participating in our Research
+Study and using the Services is voluntary.  You can stop at any time.  If you
+participate in the study, your test sample photos will be stored for future
+research.  Please read the Consent Form in the flu@home app very carefully
+before you agree to it.  </span></p>
+
+<p><b><span>Access to Your Information</span></b></p>
+
+<p><span>Your Personal Information
+may be shared in the following ways:</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>With our service providers</span></b><span>, as necessary for them to
+provide their services to us.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>With research
+collaborators</span></b><span>,
+<b>government or university staff and the Human Research Ethics Committee</b>,
+as more fully described in the Participant Information Form  </span></p>
+
+<p><b><span>How We Secure Information</span></b></p>
+
+<p><span>We implement measures and
+systems to ensure confidentiality, integrity, and availability of research
+data.  Please refer to <i><span>What will happen to my
+information </span></i>in the Participant Information Sheet for further
+details.</span></p>
+
+<h2><span>FULL PRIVACY STATEMENT</span></h2>
+
+<p><span>This Privacy Statement applies to the
+www.fluathome.org.au website owned and operated by Audere, a Washington
+nonprofit corporation (“<b>Audere</b>”)  and any other websites, pages,
+features, or content Audere owns or operates, and to your use of the flu@home App
+owned and operated by Audere, and any related services (collectively, the “<b>Services</b>”). 
+In this Privacy Statement, terms such as “we,” “us,” and “our” refer to Audere,
+collectively.  Our Privacy Statement is designed to help you better understand
+how we collect, use, store, process, and transfer your information when using
+our Services.</span></p>
+
+<p><span>Please carefully review
+this&nbsp;Privacy Statement. By using our Services, you acknowledge all of the
+policies and procedures described in the foregoing documents. If you do not
+agree with or you are not comfortable with any aspect of this Privacy Statement
+you should immediately discontinue use of our Services.</span></p>
+
+<h2><span>1.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Key Definitions</span></h2>
+
+<p><b><span>Aggregate Information</span></b><span>: information that has been combined
+with that of other users and analyzed or evaluated as a whole, such that no
+specific individual may be reasonably identified.</span></p>
+
+<p><b><span>De-identified Information</span></b><span>: information that has been stripped of
+Registration Information (e.g., name and contact information) and <b>other</b>
+identifying data such that you cannot reasonably be identified as an
+individual, also known as pseudonymized information.</span></p>
+
+<p><b><span>Unidentified Information:</span></b><span> information that does not contain
+directly identifying information, such as a name and email address. </span></p>
+
+<p><b><span>Personal Information</span></b><span>: information that can be used to
+identify you, either alone or in combination with other information. We collect
+and store the following types of Personal Information:</span></p>
+
+<p><span>a.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Flu Information</span></b><span>: information regarding whether a flu
+virus may be present in your nasal swab sample, which is processed using the
+home test kit. </span></p>
+
+<p><span>b.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Self-Reported
+Information</span></b><span>:
+information you provide directly to us, including your illness conditions,
+other health-related information, and other information that you enter into
+surveys, forms, or features while using our website or mobile application.</span></p>
+
+<p><span>c.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Sensitive
+Information</span></b><span>:
+information about your health, and certain Self-Reported Information such as
+racial and ethnic origin and sex. </span></p>
+
+<p><span>d.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Web-Behavior
+Information</span></b><span>:
+information on how you use our Services collected through log files, cookies,
+web beacons, and similar technologies, (e.g., browser type, domains, IP
+addresses, page views).</span></p>
+
+<p><span>e.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>Individual-level&nbsp;<span>Personal Information</span>: information related to a
+specific individual that may be used to identify you in combination with other
+information. </span></p>
+
+<h2><span>2.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Information we collect</span></h2>
+
+<p><b><span>Information
+you provide directly to us</span></b></p>
+
+<p><span>i.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Self-Reported
+Information.&nbsp;</span></b><span>You
+will be asked to provide us with additional information about your health
+condition.  This information will be used by us to determine whether you have
+flu-like symptoms.</span></p>
+
+<p><span>ii.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Participant Care.</span></b><span>&nbsp;When you contact&nbsp;the <span>Human Research Ethics Committee </span>or correspond
+with us about our Service, we collect information to: track and respond to your
+inquiry; investigate any breach of our&nbsp;<span>Privacy
+Statement</span>, <span>Consent Form </span>or
+applicable laws or regulations; and analyze and improve our Services.</span></p>
+
+<p><b><span>Information
+related to our flu testing services</span></b></p>
+
+<p><span>i.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>Nasal swab
+sample.</span></b><span>&nbsp;To volunteer
+as a participant in our Research Study, you must download our flu@home App on
+your mobile device and register your kit. You will be guided through taking a
+nasal swab, performing a test on the swab, and allowing the application to take
+a photo of the test strip. </span></p>
+
+<p><b><span>Web-Behavior
+Information collected through tracking technology (e.g. from cookies and
+similar technologies)</span></b></p>
+
+<p><span>We and our third party service providers use cookies and
+similar technologies (such as web beacons, tags, scripts and device
+identifiers) to:</span></p>
+
+<p><span>a.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>help us recognize
+you when you use our Services;</span></p>
+
+<p><span>b.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>customize and
+improve your experience;</span></p>
+
+<p><span>c.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>provide security;</span></p>
+
+<p><span>d.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>analyze usage of our
+Services (such as to analyze your interactions with the results, reports, and
+other features of the Service);</span></p>
+
+<p><span>e.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>gather demographic
+information about our user base;</span></p>
+
+<p><span>f.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>offer our Services
+to you; and</span></p>
+
+<p><span>g.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>monitor the success
+of awareness programs.</span></p>
+
+<p><span>If you reject cookies, you may still use our site, but your
+ability to use some features or areas of our site may be limited.</span></p>
+
+<p><span>We may receive reports based on the use of these
+technologies from third party service providers as unidentified
+Individual-level Information or as Aggregate Information. </span></p>
+
+<p><b><span>Google Analytics.</span></b><span>&nbsp;Google
+Analytics is used to perform many of the tasks listed above. We use the User-ID
+feature of Google Analytics to combine behavioral information across devices
+and sessions (including authenticated and unauthenticated sessions). We have
+enabled the following Google Analytics Advertising features: Remarketing,
+Google Display Network Impression Reporting, Google Analytics Demographics and
+Interest Reporting, and DoubleClick Campaign Manager integration. We do not
+merge information collected through any Google advertising product with
+individual-level information collected elsewhere by our Service.&nbsp;<b>Learn
+more about how Google collects and uses data&nbsp;</b></span><a><b><span>here</span></b></a><span>. </span><span>To opt out of Google Analytics
+Advertising Features please use<span>&nbsp;</span></span><a><span>Google Ad Settings</span></a><span>. </span><span>To opt out
+of Google Analytics entirely please use<span>&nbsp;</span></span><a><span>this link</span></a><span>.</span></p>
+
+<p><b><span>Other Types of Information</span></b></p>
+
+<p><span>We continuously work to enhance our Services with new
+products, applications and features that may result in the collection of new
+and different types of information. We will update our Privacy Statement and/or
+obtain your prior consent to new processing, as needed.</span></p>
+
+<h2><span>3.<span>&nbsp;&nbsp;&nbsp; </span></span><span>How we use your information</span></h2>
+
+<p><span>We will use and share your Personal
+Information with third parties only in the ways that are described in this
+Privacy Statement and the flu@home App Consent Form.  Our legal basis for
+processing your Personal Information for the purposes described above is based
+on your consent..</span></p>
+
+<p><span>With your consent, we may use and share
+your Personal Information as follows:</span></p>
+
+<p><span>a.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>To conduct our
+research, to provide you with Services and to analyze and improve our Services</span></b></p>
+
+<p><span>&nbsp;</span></p>
+
+<p><span>We use the information described above to conduct our
+research and to operate, provide, analyze and improve our Services. These
+activities may include, among other things, using your information in a manner
+consistent with this Privacy Statement to:</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>i.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>communicate with
+you, and implement your requests;</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>ii.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>enable and enhance
+your use of our website and mobile application, including authenticating your
+visits and tracking your usage of our Services;</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>iii.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>contact you about
+your account, and any relevant information about our Services (e.g. policy
+changes, security updates or issues, etc.);</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>iv.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>enforce our rights
+under the Licensed Application End User License Agreement found in the App
+Store (the “<b>EULA</b>”) and other agreements;</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>v.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>monitor, detect,
+investigate and prevent prohibited or illegal behaviors on our Services, to
+combat security risks; and</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>vi.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>perform research
+&amp; development activities, which may include, for example, conducting data
+analysis and research in order to develop new or improve existing products and
+services, and performing quality control activities.</span></p>
+
+<p><span>b.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>To process and
+analyze your testing results for our research purposes</span></b></p>
+
+<p><span>As described above, to participate in our Research Study
+you must use the flu@home App, register your kit, take a nasal swab sample, and
+use the application to take a photo of the test strip which uses the sample.<span> </span>We will then provide an interpretation of your
+test strip to indicate whether the flu virus may be present. <i>You should seek
+any needed medical care from your primary medical services provider.</i></span></p>
+
+<p><span>c.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>To allow us to
+share your Personal Information for our own and other research purposes</span></b></p>
+
+<p><span>Once you have consented to participate in our Research Study,
+any information provided by you may be used in the study and unidentified
+information may be used in other research aimed at publication in peer-reviewed
+journals conducted by us or third parties as described in the Consent Form.</span></p>
+
+<p><span>Our research may be sponsored by, conducted on behalf of,
+or in collaboration with third parties, such as non-profit foundations,
+academic institutions or pharmaceutical companies. &nbsp;Our research may study
+a specific group or population, identify potential areas or targets for
+diagnostics or therapeutics development, conduct or support the development of
+drugs, diagnostics or devices to diagnose, predict or treat medical or other
+health conditions, work with public, private and/or non-profit entities on flu
+research initiatives, or otherwise create, commercialize, and apply this new
+knowledge to improve health care.  We use Aggregate and/or
+Individual-level&nbsp;<span>Personal Information</span>
+, as explained in greater detail below.</span></p>
+
+<p><span>Your Unidentified Information and Self-Reported Information
+may be used for our research only if you have consented to this use by agreeing
+to the Consent Form. If you have agreed to the Consent Form:</span></p>
+
+<p><span>a.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>Your&nbsp;Personal
+Information&nbsp;will be used for research purposes, but it will be unidentified
+as we are not collecting Registration Information for this study.</span></p>
+
+<p><span>b.<span>&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span>We may share summary
+statistics, which do not identify any particular individual or contain
+individual-level information, with our qualified research collaborators.</span></p>
+
+<p><span>5.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>To provide user
+support</span></b></p>
+
+<p><span>When you contact us, we may use or request Personal
+Information, including Sensitive Information, as necessary to answer your
+questions, resolve disputes, and/or investigate and troubleshoot problems or
+complaints.</span></p>
+
+<h2><span>4.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Information we share with third parties</span></h2>
+
+<p><span>a.<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b><span>General service
+providers.</span></b></p>
+
+<p><span>We share the information described above in Section 2 with
+our third party service providers, as necessary for them to provide their
+services to us and help us perform our research. Service providers are third
+parties (other companies or individuals) that help us to provide, analyze and
+improve our Services. While we directly conduct the majority of data processing
+activities required for our Research Study, we engage some third party service
+providers to assist in supporting our Research Study, including in the
+following areas:</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>i.</span><b><span>Human Research
+Ethics Committee support.</span></b><span>&nbsp;Our
+Human Research Ethics Committee uses a number of tools to help organize and
+manage the requests we receive. These tools help to ensure we provide timely,
+high quality support.</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>ii.</span><b><span>Cloud storage,
+IT, and Security.</span></b><span>&nbsp;Our
+cloud storage providers provide secure storage for information in our
+databases, ensure that our infrastructure can support continued use of our data
+by researchers, and protect data in the event of a natural disaster or other
+disruption to the Service. Our IT and security providers assist with intrusion
+detection and prevention measures to stop any potential attacks against our
+networks. We have these third party experts perform penetration tests and
+periodically audit our security controls.</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>iii.</span><b><span>Marketing and
+analytics.</span></b><span>&nbsp;When
+you use our Services, including our website or mobile app(s), our third party
+service providers may collect Web-Behavior Information about your visit, such
+as the links you clicked on, the duration of your visit, and the URLs you visited.
+This information can help us improve site navigability and assess our marketing
+campaigns. Per applicable data protection regulations, our EU, UK, and
+International websites present visitors with a cookie opt in to allow the
+processing described above via Functionality and Advertising Cookies.</span></p>
+
+<p><span>NOTE: Our service providers act on our behalf. We implement
+procedures and maintain contractual terms with each service provider to protect
+the confidentiality and security of your information. However, we cannot guarantee
+the confidentiality and security of your information due to the inherent risks
+associated with storing and transmitting data electronically.</span></p>
+
+<p><span>b.<span>&nbsp; </span></span><b><span>Aggregate information</span></b></p>
+
+<p><span>We may share Aggregate Information, which is information that
+is unidentified and combined with information of others so that you cannot
+reasonably be identified as an individual, with third parties. This Information
+is different from Individual-level Information and is not Personal Information
+because it does not identify any particular individual or disclose any
+particular individual’s data. For example, Aggregate Information may include a
+statement that &quot;30% of our research participants correctly self-identified
+their flu symptoms&quot; without providing any data or testing results specific
+to any individual user. In contrast, Individual-level&nbsp;<span>Self-Reported Information</span>&nbsp;consists of data
+about a single individual's health status or other traits/characteristics
+information.  </span></p>
+
+<p><span>c.<span>&nbsp;&nbsp; </span></span><b><span>As required by law</span></b></p>
+
+<p><span>Under certain circumstances your Personal Information may
+be subject to processing pursuant to applicable laws, regulations, judicial or
+other government subpoenas, warrants, or orders. For example, we may be
+required to disclose Personal Information in coordination with regulatory
+authorities in response to lawful requests by public authorities, including to
+meet national security or law enforcement requirements. We will preserve and
+disclose any and all information to law enforcement agencies or others if
+required to do so by law or in the good faith belief that such preservation or
+disclosure is reasonably necessary to: (a) comply with legal or regulatory
+process (such as a judicial proceeding, court order, or government inquiry) or
+obligations that we may owe pursuant to ethical and other professional rules,
+laws, and regulations; (b) enforce our&nbsp;rights under the EULA&nbsp;and
+other policies; (c) respond to claims that any content violates the rights of
+third parties; or (d) protect the rights, property, or personal safety of the University
+of Adelaide, UW Institute, Audere, their respective employees, users, clients,
+and the public. </span></p>
+
+<p><span>d.<span>&nbsp; </span></span><b><span>Business transactions</span></b></p>
+
+<p><span>In the event that Audere goes through a business transition
+such as a merger, acquisition by another company, or sale of all or a portion of
+its assets your Personal Information will likely be among the assets
+transferred. In such a case, your information would remain subject to the
+promises made in any pre-existing Privacy Statement<span>.</span></span></p>
+
+<h2><span>5.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Withdrawing your Consent</span></h2>
+
+<p><span>Participation
+in this project is completely voluntary. If you agree to participate by
+agreeing to the Consent Form in the flu@home App, anonymous data will be
+collected based on your interactions with the application. It will not be
+possible to withdraw your unidentified data once collected. </span></p>
+
+<p><b><span>Discontinue Participation.</span></b><span> You may also discontinue your
+participation in our research study by deleting the flu@home application from
+your phone.</span></p>
+
+<p><b><span>What happens
+if you do NOT consent to participate in our Research Study?</span></b><span>&nbsp;If you choose not to complete the <span>Consent Form </span>or any additional agreement with
+us, you will not be required to complete the home testing kit, and your
+Personal Information will not be used for our research.</span></p>
+
+<h2><span>6.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Security measures</span></h2>
+
+<p><span>We take seriously the trust you place in
+us. We implement physical, technical, and administrative measures to prevent
+unauthorized access to or disclosure of your information, to maintain data
+accuracy, to ensure the appropriate use of information, and otherwise safeguard
+your Personal Information.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>We produce secure applications by
+design.</span></b><span>&nbsp;We
+incorporate explicit security reviews in the software development lifecycle,
+quality assurance testing and operational deployment.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Unidentification/Pseudonymization.</span></b><span>&nbsp;Self-Reported Information is
+stripped from Sensitive Information and stored in a separate location. This
+data is then assigned a randomly generated ID so an individual cannot
+reasonably be identified.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Encryption.</span></b><span>&nbsp;We use industry standard security
+measures to encrypt Sensitive Information both at rest and in transit.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Separation of Environments.</span></b><span>&nbsp;We ensure processing, production,
+and research environments are separated and access is restricted. Data, including
+Registration Information and Self-Reported Information are segmented across
+logical database systems to further prevent re-identifiability.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Limiting access to essential personnel.</span></b><span>&nbsp;We limit access to Personal
+Information to authorized personnel, based on job function and role. Our access
+controls include multi-factor authentication.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Detecting threats and managing
+vulnerabilities.</span></b><span>&nbsp;We
+have a vulnerability disclosure program (https://auderenow.org/security), and
+also have vulnerability scanning in our codebase using automated tools that
+detect new vulnerabilities that we then patch.</span></p>
+
+<p><span>●<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><b><span>Managing third party service providers.</span></b><span>&nbsp; We require service providers to
+implement and maintain accepted industry standard administrative, physical and
+technical safeguards to protect Personal Information.</span></p>
+
+<p><b><span>Your Responsibility.</span></b><span>&nbsp;Please recognize that protecting
+your Personal Information is also your responsibility. You should not share
+your flu@home App with others to whom you do not wish to give access to your
+Personal Information.  We cannot secure Personal Information that you release
+on your own or that you request us to release.</span></p>
+
+<p><span>Your information collected through the
+Service may be stored and processed in the United States or any other country
+in which Audere or their respective subsidiaries, affiliates or service
+providers maintain facilities and, therefore, your information may be subject
+to the laws of those other jurisdictions which may be different from the laws
+of your country of residence.</span></p>
+
+<h2><span>7.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Children's privacy</span></h2>
+
+<p><span>We are committed to protecting the
+privacy of children as well as adults. Neither our Research Study nor any of
+our Services are designed for, intended to attract, or directed toward children
+under the age of 18. </span></p>
+
+<h2><span>8.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Linked websites</span></h2>
+
+<p><span>We provide links to third party websites
+operated by organizations not affiliated with us. We do not disclose your
+information to organizations operating such linked third party websites. We do
+not review or endorse, and are not responsible for, the privacy practices of
+these organizations. We encourage you to read the privacy statements of each
+and every website that you visit. This Privacy Statement applies solely to
+information collected by us and our service providers on our behalf.</span></p>
+
+<h2><span>9.<span>&nbsp;&nbsp;&nbsp; </span></span><span>Information for Customers in Designated
+Countries</span></h2>
+
+<p><span>Section 9 only applies to individuals
+located in the European Economic Area (“<b>EEA</b>”), United Kingdom, or
+Switzerland (the “<b>Designated Countries</b>”).  We aim to take reasonable
+steps to allow you to correct, amend, delete or limit the use of your personal data.</span></p>
+
+<p><span>If
+you wish to be informed about what personal data we hold about you and if you
+want it to be removed from our systems, please <span>contact
+us</span> at support@auderenow.org.</span></p>
+
+<p><span>In
+certain circumstances, you have the following data protection rights:</span></p>
+
+<p><b><span>The right to access, update
+or delete the information we have on you.</span></b><span> This can be done by contacting us at </span><a><span>support@auderenow.org</span></a><span>.</span></p>
+
+<p><b><span>The right of rectification.</span></b><span> You may have your
+information corrected if it is inaccurate or incomplete.</span></p>
+
+<p><b><span>The right to object.</span></b><span> You have the right to ask
+us to discontinue our processing of your personal data.</span></p>
+
+<p><b><span>The right of restriction.</span></b><span> You are entitled to request
+that we restrict the processing of your personal information.</span></p>
+
+<p><span>Please note that we may ask you to verify your identity before
+responding to such requests.</span></p>
+
+<p><span>You have the right to complain to a Data Protection Authority
+about our collection and use of your personal data. For more information,
+please contact your local data protection authority in the EEA.</span></p>
+
+<p><span>The rights described above may be limited by local laws.
+Further, your right of access and deletion is not absolute and may not be
+available if fulfillment of such right would, among other things:</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>o<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span>cause interference with execution and
+enforcement of the law and legal private rights (such as in the case of the
+investigation or detection of legal claims or the right to a fair trial);</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>o<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span>breach or prejudice the rights of
+confidentiality and security of others;</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>o<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span>prejudice security or grievance investigations,
+corporate re-organizations, future and ongoing negotiations with third parties,
+the compliance with regulatory requirements relating to economic and financial
+management; or</span></p>
+
+<p><span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>o<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span>otherwise violate the interests of
+others or where the burden or cost of providing access would be
+disproportionate.</span></p>
+
+<p><b><span>Complaints</span></b></p>
+
+<p><span>If you believe that we have infringed your rights, we
+encourage you to <span>contact us</span> so that we can
+try to address your concerns or dispute informally. </span></p>
+
+<p><b><span>10.
+</span></b><b><span>Changes to this
+Privacy Statement</span></b></p>
+
+<p><span>We may amend this
+Privacy Policy to reflect changes in the law, our organizations, our Services,
+our data collection use and practices, or advances in technology. Our use of
+the information we collect is subject to the Privacy Policy in effect at the
+time such information is used. Depending on the type of change, we may notify
+you of the change by posting on this page or by email. Please carefully review
+any changes made to this Privacy Policy</span><span>.</span></p>
+
+<p><b><span>11. Contact
+us</span></b></p>
+
+<p><span>If you have questions about this Privacy
+Statement, or wish to submit a complaint, please email our Privacy
+Administrator at&nbsp;</span><a><span>support@auderenow.org</span></a><span>, <b>or contact: Monique
+Chilver <br>
+</b></span><span>Phone: 08
+8313 3463<br>
+Email: Monique.Chilver@adelaide.edu.au</span></p>
+
+<p><span>&nbsp;</span></p>
+
+<p><span>&nbsp;</span></p>
+
+<p><span>Effective date: July 1, 2019</span></p>
+
+<p><span>&nbsp;</span></p>
+        </div>
+    </article>
+    <footer>
+        <div class="container">
+            <div class="logos">
+            <img class="logo" src="img/logo_Audere.svg" alt="Audere">
+            <img class="logo" src="img/logo_UW.svg" alt="UW">
+            <img class="logo" src="img/logo_UnivAdelaide.svg" alt="University of Adelaide">
+            <img class="logo" src="img/logo_Aspren.svg" alt="Aspren">
+                <img class="logo" src="img/logo_BrotmanBatyInstitute.svg" alt="Brotman Baty Institute">
+            </div>
+            <nav>
+                <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt=""></a>
+                <ul class="menu">
+                    <li>
+                        <a href="privacy">Privacy</a>
+                    </li>
+                    <li>
+                        <a href="support">Support/FAQ</a>
+                    </li>
+                </ul><br>
+            </nav>
+        </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+</body>
+
+</html>
