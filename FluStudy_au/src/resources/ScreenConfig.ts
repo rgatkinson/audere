@@ -88,7 +88,6 @@ import BulletPointsComponent from "../ui/components/BulletPoint";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
 import Divider from "../ui/components/Divider";
-import HighlightText from "../ui/components/HighlightText";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
@@ -108,7 +107,6 @@ import { hasPendingData, pendingNavigation } from "../util/pendingData";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
-import { BACKROUND_HIGHLIGHT_COLOR, SMALL_TEXT } from "../ui/styles";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -217,14 +215,6 @@ export const Screens: ScreenConfig[] = [
           style: {
             marginHorizontal: 0,
           },
-        },
-      },
-      {
-        tag: HighlightText,
-        props: {
-          center: true,
-          color: BACKROUND_HIGHLIGHT_COLOR,
-          label: "viewForm",
         },
       },
     ],
