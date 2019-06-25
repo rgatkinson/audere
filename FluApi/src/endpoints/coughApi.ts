@@ -18,6 +18,9 @@ import {
 } from "audere-lib/dist/coughProtocol";
 import { DerivedTableService } from "../services/derivedTableService";
 
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
 
@@ -39,6 +42,7 @@ export class CoughEndpoint {
   }
 
   public importCoughDocuments = async (req, res, next) => {
+    req.setTimeout(20 * MINUTE_MS);
     const reqId = requestId(req);
     logger.info(`${reqId}: enter importCoughDocuments`);
     const result = {
