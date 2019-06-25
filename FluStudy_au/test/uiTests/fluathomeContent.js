@@ -458,23 +458,6 @@ export const content = [
     dbScreenName: "TestStripReady",
   },
   {
-    type: "basic",
-    title: strings.RDTInstructions.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "RDTInstructions",
-  },
-  {
-    type: "rdt",
-    title: strings.TestStripCamera.title,
-    dbScreenName: "TestStripCamera",
-  },
-  {
-    type: "basic",
-    title: strings.TestStripConfirmation.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestStripConfirmation",
-  },
-  {
     type: "input",
     title: strings.TestStripSurvey.title,
     button: strings.common.button.continue.toUpperCase(),
@@ -501,15 +484,26 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.TestResult.title,
+    title: strings.RDTInstructions.title,
     button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestResult",
+    dbScreenName: "RDTInstructions",
+  },
+  {
+    type: "rdt",
+    title: strings.TestStripCamera.title,
+    dbScreenName: "TestStripCamera",
   },
   {
     type: "basic",
-    title: strings.Advice.title,
+    title: strings.TestStripConfirmation.title,
     button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "Advice",
+    dbScreenName: "TestStripConfirmation",
+  },
+  {
+    type: "basic",
+    title: strings.TestResult.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "TestResult",
   },
   {
     type: "basic",
