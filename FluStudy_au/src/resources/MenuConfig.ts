@@ -7,12 +7,11 @@ import { Component, ScreenConfig } from "../ui/components/Screen";
 import BuildInfo from "../ui/components/BuildInfo";
 import MainImage from "../ui/components/MainImage";
 import ScreenText from "../ui/components/ScreenText";
-import Subtitle from "../ui/components/Subtitle";
 import Title from "../ui/components/Title";
 import Divider from "../ui/components/Divider";
-import ContinueButton from "../ui/components/ContinueButton";
 import { PRIMARY_COLOR, LARGE_TEXT } from "../ui/styles";
 import { testSupport, appSupport } from "./LinkConfig";
+import Button from "../ui/components/Button";
 
 function menuScreen(
   key: string,
@@ -38,7 +37,7 @@ export const MenuScreens: ScreenConfig[] = [
   {
     body: [
       { tag: MainImage, props: { menuItem: true, uri: "colorlogo" } },
-      { tag: Subtitle, props: { label: "contactSupport" } },
+      { tag: Title, props: { label: "contactSupport" } },
       {
         tag: ScreenText,
         props: {
@@ -55,12 +54,12 @@ export const MenuScreens: ScreenConfig[] = [
         },
       },
       {
-        tag: ContinueButton,
+        tag: Button,
         props: {
           enabled: true,
           primary: false,
           label: "emailTestSupport",
-          onPress: () => testSupport(),
+          onPress: testSupport,
           style: {
             borderWidth: 2,
             borderColor: PRIMARY_COLOR,
@@ -87,12 +86,12 @@ export const MenuScreens: ScreenConfig[] = [
         },
       },
       {
-        tag: ContinueButton,
+        tag: Button,
         props: {
           enabled: true,
           primary: false,
           label: "emailAppSupport",
-          onPress: () => appSupport(),
+          onPress: appSupport,
           style: {
             borderWidth: 2,
             borderColor: PRIMARY_COLOR,

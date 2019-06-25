@@ -40,11 +40,11 @@ export function myDr() {
 }
 
 export function testSupport() {
-  Linking.openURL(`mailto:${testQuestionsURL}&body=${supportBody}`);
+  Linking.openURL(`mailto:${testQuestionsURL}?body=${supportBody}`);
 }
 
 export function appSupport() {
-  Linking.openURL(`mailto:${appSupportURL}&body=${supportBody}`);
+  Linking.openURL(`mailto:${appSupportURL}?body=${supportBody}`);
 }
 
 export function callNumber(phoneNumber: string) {
