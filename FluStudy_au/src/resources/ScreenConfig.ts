@@ -318,8 +318,8 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "contactsupport" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: Links, props: { links: ["inputManually"] } },
     ],
-    chromeProps: { hideBackButton: true },
     key: "BarcodeContactSupport",
   },
   {

@@ -260,7 +260,7 @@
   },
   "BarcodeContactSupport": {
     "title": "Please contact your clinic",
-    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement."
+    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement.\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
   },
   "Swab": {
     "title": "Prepare the tube",
