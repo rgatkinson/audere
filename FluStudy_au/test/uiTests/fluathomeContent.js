@@ -20,15 +20,15 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.ResearchStudy.title,
-    button: strings.common.button.next.toUpperCase(),
-    dbScreenName: "ResearchStudy",
-  },
-  {
-    type: "basic",
     title: strings.ReadyToBegin.title,
     button: strings.common.button.next.toUpperCase(),
     dbScreenName: "ReadyToBegin",
+  },
+  {
+    type: "basic",
+    title: strings.ResearchStudy.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "ResearchStudy",
   },
   {
     type: "basic",

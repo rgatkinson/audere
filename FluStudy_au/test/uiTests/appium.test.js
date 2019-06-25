@@ -336,15 +336,16 @@ async function rdt_screen(driver, screen_info) {
     );
     await allowButton.click();
   }
-  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
-    true
-  );
+  // expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+  //   true
+  // );
+  await driver.elementByAccessibilityId(strings.common.button.ok).click();
   if (PLATFORM == "iOS") {
     //prevents the tap from happening before the button appears
     await driver.sleep(500);
   }
   await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+    .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
     .perform();
 }
 
@@ -455,7 +456,7 @@ async function app_setup_for_automation(driver) {
   );
   await driver.elementByAccessibilityId(strings.Version.title).click();
   expect(
-    await driver.hasElementByAccessibilityId(strings.common.menu.help)
+    await driver.hasElementByAccessibilityId(strings.Version.description)
   ).toBe(true);
   await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
   expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
