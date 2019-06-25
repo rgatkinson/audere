@@ -39,6 +39,7 @@ export type SurveyAction =
   | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
   | { type: "SET_PHOTO"; photoUri: string }
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
+  | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
   | {
       type: "UPDATE_RESPONSES";
@@ -57,6 +58,7 @@ export type SurveyState = {
   photoUri?: string;
   pushState: PushNotificationState;
   rdtPhotoUri?: string;
+  rdtPhotoHCUri?: string;
   rdtInfo?: RDTInfo;
   responses: SurveyResponse[];
   tenMinuteStartTime?: number;
@@ -180,6 +182,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
       return {
         ...state,
         rdtPhotoUri: action.rdtPhotoUri,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_RDT_PHOTOHC":
+      return {
+        ...state,
+        rdtPhotoHCUri: action.rdtPhotoHCUri,
         timestamp: new Date().getTime(),
       };
 
@@ -333,6 +342,13 @@ export function setRDTPhoto(rdtPhotoUri: string): SurveyAction {
   return {
     type: "SET_RDT_PHOTO",
     rdtPhotoUri,
+  };
+}
+
+export function setRDTPhotoHC(rdtPhotoHCUri: string): SurveyAction {
+  return {
+    type: "SET_RDT_PHOTOHC",
+    rdtPhotoHCUri,
   };
 }
 

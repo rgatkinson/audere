@@ -34,7 +34,7 @@ class ScreenText extends React.Component<Props & WithNamespaces> {
       <Text
         bold={bold}
         center={center}
-        content={t(namespace + ":" + label)}
+        content={t(label.includes(":") ? label : namespace + ":" + label)}
         italic={italic}
         style={[
           {

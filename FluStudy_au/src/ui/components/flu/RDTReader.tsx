@@ -21,6 +21,7 @@ import {
   setTestStripImg,
   setRDTReaderResult,
   setRDTPhoto,
+  setRDTPhotoHC,
   setShownRDTFailWarning,
   StoreState,
 } from "../../../store";
@@ -123,8 +124,10 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
         tracker.logEvent(AppEvents.RDT_TIMEOUT);
-        this.props.dispatch(setShownRDTFailWarning(false));
+        dispatch(setShownRDTFailWarning(false));
         navigation.push(fallback);
+        dispatch(setRDTPhoto(""));
+        dispatch(setRDTPhotoHC(""));
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
     }, 30000);
@@ -181,6 +184,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         })
       );
       savePhoto(photoId, args.imgBase64);
+      dispatch(
+        setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
+      );
       dispatch(
         setRDTReaderResult({
           testStripFound: args.testStripFound,

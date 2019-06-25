@@ -12,7 +12,11 @@ import {
   setTotalTestStripTime,
 } from "../store";
 import { FunnelEvents } from "../util/tracker";
-import { getFluResultScreen, logFluResult } from "../util/fluResults";
+import {
+  getTestStripConfirmationNextScreen,
+  getTestStripSurveyNextScreen,
+  logFluResult,
+} from "../util/fluResults";
 import {
   ConsentConfig,
   WhatSymptomsConfig,
@@ -74,6 +78,7 @@ import {
   BlueLineConfig,
   PinkWhenBlueConfig,
   PinkLineConfig,
+  NumLinesSeenConfig,
 } from "audere-lib/coughQuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
@@ -88,9 +93,11 @@ import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
 import RDTImage from "../ui/components/flu/RDTImage";
+import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
 import TestResult from "../ui/components/flu/TestResult";
+import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
@@ -640,7 +647,7 @@ export const Screens: ScreenConfig[] = [
         tag: ContinueButton,
         props: {
           dispatchOnNext: setTotalTestStripTime,
-          next: "RDTInstructions",
+          next: "TestStripSurvey",
         },
       },
     ],
@@ -663,7 +670,12 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "TestStripSurvey" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: getTestStripConfirmationNextScreen },
+      },
+    ],
     key: "TestStripConfirmation",
   },
   {
@@ -683,23 +695,63 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: ContinueButton,
-        props: { surveyGetNextFn: getFluResultScreen },
+        props: { surveyGetNextFn: getTestStripSurveyNextScreen },
       },
     ],
     key: "TestStripSurvey",
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "lookatteststrip" } },
+      { tag: RDTImageHC },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: TestResult },
-      { tag: Links, props: { links: ["changeResultAnswer"] } },
-      { tag: Divider },
-      { tag: ScreenText, props: { label: "disclaimer" } },
+      {
+        tag: Questions,
+        props: {
+          questions: [NumLinesSeenConfig],
+        },
+        validate: true,
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Advice" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { next: "TestResultRDT" },
+      },
+    ],
+    key: "PostRDTTestStripSurvey",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "common:testResult:desc" } },
+      { tag: TestResult },
+    ],
+    footer: [
+      { tag: ContinueButton, props: { next: "CleanTest" } },
+      { tag: Divider },
+      {
+        tag: ScreenText,
+        props: { label: "common:testResult:disclaimer" },
+      },
+    ],
     key: "TestResult",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "common:testResult:desc" } },
+      { tag: TestResultRDT },
+    ],
+    footer: [
+      { tag: ContinueButton, props: { next: "CleanTest" } },
+      { tag: Divider },
+      {
+        tag: ScreenText,
+        props: { label: "common:testResult:disclaimer" },
+      },
+    ],
+    key: "TestResultRDT",
   },
   {
     body: [
@@ -707,11 +759,16 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       { tag: Divider },
-      { tag: ScreenText, props: { label: "desc2" } },
+      { tag: ScreenText, props: { label: "whatToDo" } },
+      { tag: ScreenText, props: { label: "common:testResult:whatToDoCommon" } },
     ],
     footer: [
       { tag: ContinueButton, props: { next: "CleanTest" } },
-      { tag: ScreenText, props: { label: "desc3" } },
+      { tag: Divider },
+      {
+        tag: ScreenText,
+        props: { label: "common:testResult:disclaimer" },
+      },
     ],
     key: "InvalidResult",
   },
@@ -779,7 +836,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc2", customBulletUri: "listarrow" },
+        props: { label: "instructions", customBulletUri: "listarrow" },
       },
     ],
     footer: [

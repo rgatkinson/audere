@@ -1122,6 +1122,34 @@ export const PinkLineConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid
 };
 
+export const NumLinesSeenConfig: SurveyQuestion = {
+  id: "NumLinesSeen",
+  title: "numLinesSeen",
+  description: "selectOne",
+  buttons: [
+    {
+      key: "oneLine",
+      primary: false,
+      enabled: true,
+      helpImageUri: "oneline"
+    },
+    {
+      key: "twoLines",
+      primary: false,
+      enabled: true,
+      helpImageUri: "twolines"
+    },
+    {
+      key: "threeLines",
+      primary: false,
+      enabled: true,
+      helpImageUri: "threelines"
+    }
+  ],
+  required: true,
+  type: SurveyQuestionType.RadioGrid
+};
+
 export const TestFeedbackConfig: SurveyQuestion = {
   id: "TestFeedback",
   title: "TestFeedback",
@@ -1194,5 +1222,6 @@ export const SURVEY_QUESTIONS = [
   BlueLineConfig,
   PinkWhenBlueConfig,
   PinkLineConfig,
+  NumLinesSeenConfig,
   TestFeedbackConfig
 ];

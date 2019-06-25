@@ -4,7 +4,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
 import { getSelectedButton } from "../../../util/survey";
-import { PinkWhenBlueConfig } from "audere-lib/coughQuestionConfig";
+import { NumLinesSeenConfig } from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Divider from "../Divider";
@@ -12,18 +12,16 @@ import Text from "../Text";
 import { GUTTER } from "../../styles";
 
 interface Props {
-  redAnswer?: string;
+  numLinesAnswer?: string;
 }
 
-class TestResult extends React.Component<Props & WithNamespaces> {
+class TestResultRDT extends React.Component<Props & WithNamespaces> {
   _getResult = () => {
-    const { redAnswer } = this.props;
-    switch (redAnswer) {
-      case "yesAboveBlue":
+    const { numLinesAnswer } = this.props;
+    switch (numLinesAnswer) {
+      case "twoLines":
         return "positive";
-      case "yesBelowBlue":
-        return "positive";
-      case "yesAboveBelowBlue":
+      case "threeLines":
         return "positive";
       default:
         return "negative";
@@ -31,13 +29,11 @@ class TestResult extends React.Component<Props & WithNamespaces> {
   };
 
   _getExplanation = () => {
-    const { redAnswer } = this.props;
-    switch (redAnswer) {
-      case "yesAboveBlue":
+    const { numLinesAnswer } = this.props;
+    switch (numLinesAnswer) {
+      case "twoLines":
         return "onePinkAndBlue";
-      case "yesBelowBlue":
-        return "onePinkAndBlue;";
-      case "yesAboveBelowBlue":
+      case "threeLines":
         return "onePinkAndBlue";
       default:
         return "noPink";
@@ -76,8 +72,8 @@ class TestResult extends React.Component<Props & WithNamespaces> {
 }
 
 export default connect((state: StoreState) => ({
-  redAnswer: getSelectedButton(state, PinkWhenBlueConfig),
-}))(withNamespaces("TestResult")(TestResult));
+  numLinesAnswer: getSelectedButton(state, NumLinesSeenConfig),
+}))(withNamespaces("TestResultRDT")(TestResultRDT));
 
 const styles = StyleSheet.create({
   border: {

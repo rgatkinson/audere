@@ -14,10 +14,19 @@ import {
 let _previousBlueAnswer: string | undefined;
 let _previousPinkAnswer: string | undefined;
 
-export async function getFluResultScreen() {
+export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
-  return blueAnswer === "yes" ? "TestResult" : "InvalidResult";
+  return blueAnswer === "yes" ? "RDTInstructions" : "InvalidResult";
+}
+
+export async function getTestStripConfirmationNextScreen() {
+  const state = (await getStore()).getState();
+  return !!state.survey.rdtInfo &&
+    !!state.survey.rdtInfo.rdtReaderResult &&
+    state.survey.rdtInfo.rdtReaderResult.testStripFound
+    ? "PostRDTTestStripSurvey"
+    : "TestResult";
 }
 
 export async function logFluResult() {
