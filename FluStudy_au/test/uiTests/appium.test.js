@@ -112,8 +112,18 @@ async function input_screen(driver, screen_info) {
           }
         }
       } else if (question.type == "radio" && question.name in inputs) {
-        await scroll_to_element(driver, inputs[question.name]);
-        await driver.elementByAccessibilityId(inputs[question.name]).click();
+        let questionLocation = await get_element_location(driver, question.name);
+        const buttons = await driver.elementsByAccessibilityId(inputs[question.name]);
+        for (const button of buttons) {
+          let buttonLocation = await button.getLocation();
+          if (buttonLocation.y > questionLocation.y) {
+            if (buttonLocation.y > screen_y){
+              half_scroll(driver);
+            }
+            await button.click();
+            break;
+          }
+        }
       } else if (question.type == "buttonGrid" && question.name in inputs) {
         const nextQuestion =
           i + 1 != screen_info.input.length ? screen_info.input[i + 1] : null;
@@ -335,15 +345,14 @@ async function rdt_screen(driver, screen_info) {
       "com.android.packageinstaller:id/permission_allow_button"
     );
     await allowButton.click();
+    okButton = await driver.element("id", "android:id/button1");
+    await okButton.click();
+  } else {
+    await driver.elementByAccessibilityId(strings.common.button.ok).click();
   }
-  // expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
-  //   true
-  // );
-  await driver.elementByAccessibilityId(strings.common.button.ok).click();
-  if (PLATFORM == "iOS") {
-    //prevents the tap from happening before the button appears
-    await driver.sleep(500);
-  }
+
+  //prevents the tap from happening before the button appears
+  await driver.sleep(500);
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
     .perform();
@@ -460,14 +469,18 @@ async function app_setup_for_automation(driver) {
   ).toBe(true);
   await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
   expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
-  await driver
-    .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
-    .click();
-  const versionInfo = Buffer.from(
-    await driver.getClipboard(),
-    "base64"
-  ).toString();
-  const installation = /Installation:\*\* (.*)/.exec(versionInfo);
+  let installation;
+  while (!installation) {
+    await driver
+      .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
+      .click();
+    const versionInfo = Buffer.from(
+      await driver.getClipboard(),
+      "base64"
+    ).toString();
+    installation = /Installation:\*\* (.*)/.exec(versionInfo);
+  }
+  
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
     .perform();
