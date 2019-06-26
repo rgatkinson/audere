@@ -250,9 +250,6 @@ export class EncounterDetailsService {
     const piiVisits = await this.snifflesModels.visitPii.findAll({
       where: {
         csruid: nonPiiVisits.map(visit => visit.csruid),
-        visit: {
-          complete: "true"
-        }
       }
     });
 
