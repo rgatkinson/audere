@@ -19,6 +19,8 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Action,
   setTestStripImg,
+  setRDTStartTime,
+  setRDTCaptureTime,
   setRDTReaderResult,
   setRDTPhoto,
   setRDTPhotoHC,
@@ -124,6 +126,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
         tracker.logEvent(AppEvents.RDT_TIMEOUT);
+        dispatch(setRDTCaptureTime());
         dispatch(setShownRDTFailWarning(false));
         navigation.push(fallback);
         dispatch(setRDTPhoto(""));
@@ -161,6 +164,8 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _cameraReady = () => {
     this.setState({ spinner: false });
+    const { dispatch } = this.props;
+    dispatch(setRDTStartTime());
   };
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
@@ -174,6 +179,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
 
     const { dispatch, navigation, next } = this.props;
+    dispatch(setRDTCaptureTime());
     try {
       const photoId = await newUID();
       dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));

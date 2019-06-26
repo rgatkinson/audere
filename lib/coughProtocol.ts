@@ -177,6 +177,8 @@ export enum EventInfoKind {
 export interface RDTInfo {
   rdtReaderResult?: RDTReaderResult;
   totalTestStripTime?: number;
+  captureTime?: number;
+  rdtTotalTime?: number;
 
   // Other RDT reader information can go here:
   //  e.g. time taken to capture, length of time test strip was in solution, etc.

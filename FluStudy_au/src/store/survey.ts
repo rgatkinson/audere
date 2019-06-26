@@ -33,6 +33,8 @@ export type SurveyAction =
   | { type: "SET_ONE_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_TOTAL_TEST_STRIP_TIME" }
+  | { type: "SET_RDT_START_TIME" }
+  | { type: "SET_RDT_CAPTURE_TIME" }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
@@ -79,6 +81,9 @@ export type SurveyState = {
     | WorkflowInfo
     | undefined;
 };
+
+let rdtStartTime: number | undefined;
+let rdtTotalTime: number = 0;
 
 const initialState: SurveyState = {
   events: [],
@@ -161,6 +166,33 @@ export default function reducer(state = initialState, action: SurveyAction) {
           rdtInfo: { ...state.rdtInfo, totalTestStripTime: deltaMS },
           timestamp: timeNow,
         };
+      }
+      return state;
+
+    case "SET_RDT_START_TIME":
+      // We reset capture time each time the RDT reader is visited.
+      rdtStartTime = new Date().getTime();
+      return state;
+
+    case "SET_RDT_CAPTURE_TIME":
+      if (rdtStartTime) {
+        const timeNow = new Date().getTime();
+        const deltaMS = timeNow - rdtStartTime;
+        rdtTotalTime += deltaMS
+        if (state.rdtInfo && state.rdtInfo.rdtReaderResult){
+          return {
+            ...state,
+            rdtInfo: { ...state.rdtInfo, captureTime: deltaMS, rdtTotalTime: rdtTotalTime },
+            timestamp: timeNow,
+          };
+        } else {
+          return {
+            ...state,
+            rdtInfo: { ...state.rdtInfo, rdtTotalTime: rdtTotalTime },
+            timestamp: timeNow,
+          };
+        }
+        
       }
       return state;
 
@@ -297,6 +329,18 @@ export function setTenMinuteStartTime(): SurveyAction {
 export function setTotalTestStripTime(): SurveyAction {
   return {
     type: "SET_TOTAL_TEST_STRIP_TIME",
+  };
+}
+
+export function setRDTStartTime(): SurveyAction {
+  return {
+    type: "SET_RDT_START_TIME",
+  };
+}
+
+export function setRDTCaptureTime(): SurveyAction {
+  return {
+    type: "SET_RDT_CAPTURE_TIME",
   };
 }
 
