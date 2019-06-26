@@ -61,9 +61,12 @@ export class CoughEndpoint {
       requestId: reqId
     };
 
-    const timeout = 20 * MINUTE_MS;
-    req.setTimeout(timeout, res.json({ ...result, timeout }));
-    // Send whitespace regularly during import so nginx and ELB don't time out.
+    // Set Content-Type now since headers have to go before body and we start
+    // streaming whitespace to keep alive.
+    res.type("json");
+
+    // Send whitespace regularly during import so ExpressJS, nginx, and ELB
+    // don't time out.
     const progress = () => res.write(" ");
 
     await this.importItems(
@@ -86,8 +89,10 @@ export class CoughEndpoint {
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
     await this.updateDerived(reqId);
+
     res.write("\n");
-    res.json(result);
+    res.write(JSON.stringify(result));
+    res.end();
   };
 
   private async importItems(
