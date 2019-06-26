@@ -20,20 +20,27 @@ interface Props {
 }
 
 class TextInputQuestion extends React.Component<Props> {
+  state = { text: this.props.answer };
+
+  _onChangeText = (text: string) => {
+    this.setState({ text });
+  };
+
   _onEndEditing = (e: any) => {
     this.props.dispatch(
-      updateAnswer({ textInput: e.nativeEvent.text }, this.props.question)
+      updateAnswer({ textInput: this.state.text }, this.props.question)
     );
   };
 
   render() {
-    const { answer, highlighted, question } = this.props;
+    const { highlighted } = this.props;
     return (
       <TextInput
         style={[styles.text, highlighted && HIGHLIGHT_STYLE]}
         placeholder={""}
         returnKeyType="done"
-        value={answer}
+        value={this.state.text}
+        onChangeText={this._onChangeText}
         onEndEditing={this._onEndEditing}
       />
     );
