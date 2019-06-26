@@ -51,7 +51,6 @@ export class CoughEndpoint {
   }
 
   public importCoughDocuments = async (req, res, next) => {
-    req.setTimeout(20 * MINUTE_MS);
     const reqId = requestId(req);
     const markAsRead = booleanQueryParameter(req, "markAsRead", true);
     logger.info(`${reqId}: enter importCoughDocuments`);
@@ -61,7 +60,14 @@ export class CoughEndpoint {
       timestamp: new Date().toISOString(),
       requestId: reqId
     };
+
+    const timeout = 20 * MINUTE_MS;
+    req.setTimeout(timeout, res.json({ ...result, timeout }));
+    // Send whitespace regularly during import so nginx and ELB don't time out.
+    const progress = () => res.write(" ");
+
     await this.importItems(
+      progress,
       reqId,
       markAsRead,
       getSurveyCollection(),
@@ -69,6 +75,7 @@ export class CoughEndpoint {
       result
     );
     await this.importItems(
+      progress,
       reqId,
       markAsRead,
       getPhotoCollection(),
@@ -79,10 +86,12 @@ export class CoughEndpoint {
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
     await this.updateDerived(reqId);
+    res.write("\n");
     res.json(result);
   };
 
   private async importItems(
+    progress: () => void,
     reqId: string,
     markAsRead: boolean,
     collection: string,
@@ -100,27 +109,26 @@ export class CoughEndpoint {
       const spec = { id, collection };
 
       const snapshot = await this.readSnapshot(reqId, receiver, spec, result);
-      if (snapshot == null) {
-        return;
-      }
-
-      try {
-        await write(snapshot, receiver);
-        if (markAsRead) {
-          await receiver.markAsRead(snapshot);
-        }
-        result.successes.push(spec);
-      } catch (err) {
-        const problem = await this.updateImportProblem(
-          reqId,
-          spec,
-          err,
-          result
-        );
-        if (markAsRead && problem.attempts >= MAX_IMPORT_ATTEMPTS) {
-          await receiver.markAsRead(snapshot);
+      if (snapshot != null) {
+        try {
+          await write(snapshot, receiver);
+          if (markAsRead) {
+            await receiver.markAsRead(snapshot);
+          }
+          result.successes.push(spec);
+        } catch (err) {
+          const problem = await this.updateImportProblem(
+            reqId,
+            spec,
+            err,
+            result
+          );
+          if (markAsRead && problem.attempts >= MAX_IMPORT_ATTEMPTS) {
+            await receiver.markAsRead(snapshot);
+          }
         }
       }
+      progress();
     }
   }
 
