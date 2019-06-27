@@ -112,12 +112,26 @@ async function input_screen(driver, screen_info) {
           }
         }
       } else if (question.type == "radio" && question.name in inputs) {
-        let questionLocation = await get_element_location(driver, question.name);
-        const buttons = await driver.elementsByAccessibilityId(inputs[question.name]);
+        let questionLocation = await get_element_location(
+          driver,
+          question.name
+        );
+        let buttons;
+        if (PLATFORM == "iOS") {
+          buttons = await driver.elementsByAccessibilityId(
+            inputs[question.name]
+          );
+        } else {
+          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
+          buttons = await driver.elementsByAccessibilityId(
+            inputs[question.name].replace(/ \?$/, "")
+          );
+        }
+
         for (const button of buttons) {
           let buttonLocation = await button.getLocation();
           if (buttonLocation.y > questionLocation.y) {
-            if (buttonLocation.y > screen_y){
+            if (buttonLocation.y > screen_y) {
               half_scroll(driver);
             }
             await button.click();
@@ -441,7 +455,8 @@ async function verify_db_contents(driver, models, installationId) {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
           expect(questionDb.answer).toHaveLength(1);
-          expect(inputs[question.name]).toEqual(answerDb);
+          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
+          expect(inputs[question.name].replace(/ \?$/, "")).toEqual(answerDb);
         }
       } else if (question.dbLocation === "samples") {
         expect(dbRow.survey.samples[0].code).toEqual(inputs[question.name]);
@@ -480,7 +495,7 @@ async function app_setup_for_automation(driver) {
     ).toString();
     installation = /Installation:\*\* (.*)/.exec(versionInfo);
   }
-  
+
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
     .perform();

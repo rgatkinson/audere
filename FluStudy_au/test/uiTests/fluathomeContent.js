@@ -475,9 +475,9 @@ export const content = [
         dbLocation: "responses",
         options: [
           strings.surveyButton.noPink,
-          strings.surveyButton.yesAboveBlue,
-          strings.surveyButton.yesBelowBlue,
-          strings.surveyButton.yesAboveBelowBlue,
+          strings.surveyButton.yesAboveBlue + " ?",
+          strings.surveyButton.yesBelowBlue + " ?",
+          strings.surveyButton.yesAboveBelowBlue + " ?",
         ],
       },
     ],
