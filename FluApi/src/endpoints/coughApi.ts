@@ -64,6 +64,9 @@ export class CoughEndpoint {
     // Set Content-Type now since headers have to go before body and we start
     // streaming whitespace to keep alive.
     res.type("json");
+    // Prevent nginx from buffering the stream so the keep-alive whitespace
+    // makes it to the ELB as well.
+    res.set("X-Accel-Buffering", "no");
 
     // Send whitespace regularly during import so ExpressJS, nginx, and ELB
     // don't time out.
