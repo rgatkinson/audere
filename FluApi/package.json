@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "setup": "yarn run build && sequelize db:migrate --config ./build/src/util/piiDbConfig.js && sequelize db:migrate --config ./build/src/util/nonPiiDbConfig.js && sequelize db:migrate --config ./build/src/util/piiDbConfig.js --migrations-path db/migrations/pii && sequelize db:migrate --config ./build/src/util/nonPiiDbConfig.js --migrations-path db/migrations/nonpii",
+    "setup-aws": "yarn run setup && sequelize db:migrate --config ./build/src/util/nonPiiDbConfig.js --migrations-path db/migrations/aws-nonpii",
     "migration:generate": "sequelize migration:generate",
     "migration:new": "sequelize migration:generate",
     "migration:undo": "sequelize db:migrate:undo --config ./build/src/util/piiDbConfig.js && sequelize db:migrate:undo --config ./build/src/util/nonPiiDbConfig.js",
