@@ -6,7 +6,6 @@
 import { Localization } from "expo-localization";
 import i18n from "i18next";
 import enStrings from "./locales/en.json";
-import esStrings from "./locales/es.json";
 
 const languageDetector = {
   type: "languageDetector",
@@ -19,7 +18,6 @@ i18n.use(languageDetector).init({
   fallbackLng: "en",
   resources: {
     en: enStrings,
-    es: esStrings,
   },
   ns: ["common"],
   defaultNS: "common",
