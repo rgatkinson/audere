@@ -13,6 +13,7 @@
     "@types/url-parse": "^1.4.1",
     "@types/uuid": "^3.4.4",
     "appium": "^1.14.0",
+    "@types/yargs": "^13.0.0",
     "babel-preset-expo": "^5.0.0",
     "jest-expo": "^32.0.0",
     "prettier": "^1.14.3",
@@ -23,7 +24,9 @@
     "subtractiontype.ts": "^1.0.0",
     "ts-jest": "^23.1.4",
     "ts-mockito": "^2.3.1",
-    "typescript": "^3.0.3"
+    "ts-node": "^8.3.0",
+    "typescript": "^3.0.3",
+    "yargs": "^13.2.4"
   },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -39,7 +42,8 @@
     "test-ui-ios": "TEST_UI_CONFIG=./ios.config.js jest -c test/jest.config.ui.js",
     "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
     "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}; prettier --write *.{j,t} src/**/**/**/*.ts{,x}",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "unused-keys": "./node_modules/.bin/ts-node ./scripts/unusedKeys.ts"
   },
   "prettier": {
     "trailingComma": "es5"
