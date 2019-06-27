@@ -157,7 +157,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: { hideBackButton: true },
     key: "ResearchStudy",
     footer: [
       {
