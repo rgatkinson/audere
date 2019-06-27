@@ -70,8 +70,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
       const currentTextNum = this._getCurrentTextNum();
       const currentText = t("didYouKnow:tip" + currentTextNum);
       const currentSource = t("didYouKnow:source" + currentTextNum);
-      this.setState({ currentText });
-      this.setState({ currentSource });
+      this.setState({ currentText, currentSource });
     }
   };
 
@@ -90,7 +89,6 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     return (
       <View>
         <Text
-          style={styles.text}
           content={this.state.currentText}
         />
         <Text
@@ -103,17 +101,8 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    color: TEXT_COLOR,
-    fontFamily: FONT_NORMAL,
-    fontSize: REGULAR_TEXT,
-    lineHeight: 22,
-  },
   source: {
-    color: TEXT_COLOR,
-    fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT*SOURCE_SIZE,
-    lineHeight: 22,
   },
 });
 
