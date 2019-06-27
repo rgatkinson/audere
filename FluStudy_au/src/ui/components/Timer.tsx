@@ -86,7 +86,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
     }
 
     const minutes = Math.floor(remainingMs / MINUTE_MS).toString();
-    const seconds = (Math.floor(remainingMs % MINUTE_MS) / SECOND_MS).toFixed();
+    const seconds = Math.floor((remainingMs % MINUTE_MS) / SECOND_MS).toFixed();
 
     // @ts-ignore
     return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
