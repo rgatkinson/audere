@@ -363,7 +363,15 @@
     "rotation": "ROTATION",
     "flash": "FLASH: ",
     "on": "ON",
-    "off": "OFF"
+    "off": "OFF",
+    "centerStrip": "Position device so test strip appears in middle of screen",
+    "holdSteady": "Hold steady",
+    "sizeResultLarge": "Move farther away",
+    "sizeResultSmall": "Move closer",
+    "badOrientationPos": "Turn your device to the right (clockwise)",
+    "badOrientationNeg": "Turn your device to the left (anti-clockwise)",
+    "underExposed": "Turn on the flash or move to better lighting",
+    "overExposed": "Ensure the test strip is on kit box or turn off the flash"
   },
   "CameraSettings": {
     "title": "Update your settings",

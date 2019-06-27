@@ -26,6 +26,12 @@
 		502CB2C322C13E6500A86E23 /* oneline@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2BA22C13E6400A86E23 /* oneline@2x.png */; };
 		502CB2C422C13E6500A86E23 /* twolines@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2BB22C13E6400A86E23 /* twolines@2x.png */; };
 		502CB2C522C13E6500A86E23 /* oneline@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2BC22C13E6400A86E23 /* oneline@3x.png */; };
+		502CB2F922C3F00700A86E23 /* rotationwhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2ED22C3F00600A86E23 /* rotationwhite.png */; };
+		502CB2FA22C3F00700A86E23 /* rotationwhite@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2F422C3F00600A86E23 /* rotationwhite@3x.png */; };
+		502CB2FB22C3F00700A86E23 /* positionwhite.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2F522C3F00600A86E23 /* positionwhite.png */; };
+		502CB2FC22C3F00700A86E23 /* positionwhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2F622C3F00700A86E23 /* positionwhite@2x.png */; };
+		502CB2FD22C3F00700A86E23 /* rotationwhite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2F722C3F00700A86E23 /* rotationwhite@2x.png */; };
+		502CB2FE22C3F00700A86E23 /* positionwhite@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502CB2F822C3F00700A86E23 /* positionwhite@3x.png */; };
 		507F748822BAFA5D0055CE82 /* positiongreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 507F747C22BAFA5C0055CE82 /* positiongreen@2x.png */; };
 		507F748922BAFA5D0055CE82 /* positionyellow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 507F748322BAFA5D0055CE82 /* positionyellow@2x.png */; };
 		507F748A22BAFA5D0055CE82 /* positiongreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 507F748422BAFA5D0055CE82 /* positiongreen.png */; };
@@ -290,6 +296,12 @@
 		502CB2BA22C13E6400A86E23 /* oneline@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "oneline@2x.png"; path = "../../../assets/images/oneline@2x.png"; sourceTree = "<group>"; };
 		502CB2BB22C13E6400A86E23 /* twolines@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "twolines@2x.png"; path = "../../../assets/images/twolines@2x.png"; sourceTree = "<group>"; };
 		502CB2BC22C13E6400A86E23 /* oneline@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "oneline@3x.png"; path = "../../../assets/images/oneline@3x.png"; sourceTree = "<group>"; };
+		502CB2ED22C3F00600A86E23 /* rotationwhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rotationwhite.png; path = ../../../assets/images/rotationwhite.png; sourceTree = "<group>"; };
+		502CB2F422C3F00600A86E23 /* rotationwhite@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "rotationwhite@3x.png"; path = "../../../assets/images/rotationwhite@3x.png"; sourceTree = "<group>"; };
+		502CB2F522C3F00600A86E23 /* positionwhite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = positionwhite.png; path = ../../../assets/images/positionwhite.png; sourceTree = "<group>"; };
+		502CB2F622C3F00700A86E23 /* positionwhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "positionwhite@2x.png"; path = "../../../assets/images/positionwhite@2x.png"; sourceTree = "<group>"; };
+		502CB2F722C3F00700A86E23 /* rotationwhite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "rotationwhite@2x.png"; path = "../../../assets/images/rotationwhite@2x.png"; sourceTree = "<group>"; };
+		502CB2F822C3F00700A86E23 /* positionwhite@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "positionwhite@3x.png"; path = "../../../assets/images/positionwhite@3x.png"; sourceTree = "<group>"; };
 		507F747C22BAFA5C0055CE82 /* positiongreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "positiongreen@2x.png"; path = "../../../assets/images/positiongreen@2x.png"; sourceTree = "<group>"; };
 		507F748322BAFA5D0055CE82 /* positionyellow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "positionyellow@2x.png"; path = "../../../assets/images/positionyellow@2x.png"; sourceTree = "<group>"; };
 		507F748422BAFA5D0055CE82 /* positiongreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = positiongreen.png; path = ../../../assets/images/positiongreen.png; sourceTree = "<group>"; };
@@ -638,12 +650,18 @@
 				507F748522BAFA5D0055CE82 /* positionyellow.png */,
 				507F748322BAFA5D0055CE82 /* positionyellow@2x.png */,
 				507F748622BAFA5D0055CE82 /* positionyellow@3x.png */,
+				502CB2F522C3F00600A86E23 /* positionwhite.png */,
+				502CB2F622C3F00700A86E23 /* positionwhite@2x.png */,
+				502CB2F822C3F00700A86E23 /* positionwhite@3x.png */,
 				507F74D022BC5DA40055CE82 /* rotationgreen.png */,
 				507F74D422BC5DA40055CE82 /* rotationgreen@2x.png */,
 				507F74D122BC5DA40055CE82 /* rotationgreen@3x.png */,
 				507F74D322BC5DA40055CE82 /* rotationyellow.png */,
 				507F74D222BC5DA40055CE82 /* rotationyellow@2x.png */,
 				507F74D522BC5DA50055CE82 /* rotationyellow@3x.png */,
+				502CB2ED22C3F00600A86E23 /* rotationwhite.png */,
+				502CB2F722C3F00700A86E23 /* rotationwhite@2x.png */,
+				502CB2F422C3F00600A86E23 /* rotationwhite@3x.png */,
 				507F748E22BAFC920055CE82 /* flashoff.png */,
 				507F749222BAFC930055CE82 /* flashoff@2x.png */,
 				507F749022BAFC930055CE82 /* flashoff@3x.png */,
@@ -970,6 +988,7 @@
 				59A01E1122AEC2600030AC38 /* gradient.png in Resources */,
 				F041BFBA22C69D6F00606E8F /* getrest.png in Resources */,
 				EAE02FA222971991000C88F6 /* greenyellowsquare.png in Resources */,
+				502CB2F922C3F00700A86E23 /* rotationwhite.png in Resources */,
 				507F748822BAFA5D0055CE82 /* positiongreen@2x.png in Resources */,
 				502CB2C222C13E6500A86E23 /* oneline.png in Resources */,
 				218947CB2284D31400788F40 /* teststrip2@2x.png in Resources */,
@@ -977,6 +996,7 @@
 				502CB2C022C13E6500A86E23 /* threelines@3x.png in Resources */,
 				EAEBD32E22691AB7009815C6 /* welcome@2x.png in Resources */,
 				EAE02FA9229719A0000C88F6 /* yellowsquare.png in Resources */,
+				502CB2FA22C3F00700A86E23 /* rotationwhite@3x.png in Resources */,
 				598F6C132280F61300B15B8B /* one.png in Resources */,
 				210E30E1228E1A1B0002B676 /* quickvue_ref_v1.jpg in Resources */,
 				EA1DC5BC22833B9F002DA2A9 /* updatesettings.png in Resources */,
@@ -1009,6 +1029,7 @@
 				59EA63EB22A03B1F009B45BD /* pinklineaboveblueline@3x.png in Resources */,
 				502CB2BE22C13E6500A86E23 /* threelines.png in Resources */,
 				502CB2BD22C13E6500A86E23 /* threelines@2x.png in Resources */,
+				502CB2FC22C3F00700A86E23 /* positionwhite@2x.png in Resources */,
 				EAEBD32C22691AB7009815C6 /* removeswabfromtube@2x.png in Resources */,
 				EAEBD2B622691AB7009815C6 /* finishwithtube@2x.png in Resources */,
 				507F748C22BAFA5D0055CE82 /* positionyellow@3x.png in Resources */,
@@ -1090,7 +1111,9 @@
 				59EA63E622A03B1F009B45BD /* pinklinebelowblueline@3x.png in Resources */,
 				5906FF4D2296035300A8C878 /* questionsthankyou.png in Resources */,
 				59EDB828229F0957001B7F12 /* whatsrequired@2x.png in Resources */,
+				502CB2FB22C3F00700A86E23 /* positionwhite.png in Resources */,
 				507F748B22BAFA5D0055CE82 /* positionyellow.png in Resources */,
+				502CB2FE22C3F00700A86E23 /* positionwhite@3x.png in Resources */,
 				59EDB820229F0925001B7F12 /* setupkitbox@2x.png in Resources */,
 				EAEBD2DC22691AB7009815C6 /* openteststrip.png in Resources */,
 				EAEBD2E022691AB7009815C6 /* removeswabfromtubethumb.png in Resources */,
@@ -1122,6 +1145,7 @@
 				59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */,
 				59EDB814229F08B9001B7F12 /* readytobegin@2x.png in Resources */,
 				5906FF482296030300A8C878 /* listarrow.png in Resources */,
+				502CB2FD22C3F00700A86E23 /* rotationwhite@2x.png in Resources */,
 				EAA1BB8222A5F975005C16A9 /* defectiveteststrip@3x.png in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
 				59EA63EA22A03B1F009B45BD /* pinklineaboveblueline.png in Resources */,

@@ -38,7 +38,7 @@ import {
   RDTReaderSizeResult,
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
-import { GUTTER, REGULAR_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
+import { GUTTER, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
 import { tracker, AppEvents } from "../../../util/tracker";
 
@@ -53,8 +53,11 @@ interface Props {
 
 interface FeedbackCheck {
   predicate: (result: RDTCapturedArgs) => boolean;
+  numCorrect?: number; // number of times correct over numSamples
+  numSamples?: number; // number of samples to measure correctness
   duration: number;
   action: () => void;
+  inaction?: () => void;
   cooldown: number;
 }
 
@@ -62,6 +65,27 @@ interface FeedbackCheckState {
   active: boolean;
   started?: number;
   lastRan?: number;
+  avgCorrectness?: number;
+}
+
+interface FeedbackInstructionRequest {
+  issue?: string;
+  msg: string;
+  primary?: boolean;
+  lastRequested: number;
+}
+
+const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
+const ALLOW_ICON_FEEDBACK = false; // Experimental for now; we'll revisit whether we should add icons back in
+const PREDICATE_DURATION_SHORT = 500;
+const PREDICATE_DURATION_NORMAL = 1000;
+const INSTRUCTION_DURATION_NORMAL = 2000;
+const INSTRUCTION_DURATION_OKTEXT = 1000;
+
+function debug(s: string) {
+  if (DEBUG_RDT_READER_UX) {
+    console.log(`RDT: ${s}`);
+  }
 }
 
 class RDTReader extends React.Component<Props & WithNamespaces> {
@@ -75,13 +99,17 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
     flashEnabled: true,
     fps: 0,
+    instructionMsg: "centerStrip",
+    instructionIsOK: false,
   };
 
   _didFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
   _callbackTimestamps: number[] = [];
-  _fpsCounterInterval?: NodeJS.Timeout;
+  _fpsCounterInterval?: NodeJS.Timeout | null | undefined;
+  _instructionTimer: NodeJS.Timeout | null | undefined;
+  _instructionLastUpdate: number = 0;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
@@ -91,9 +119,144 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       action: () => this.setState({ flashEnabled: false }),
       cooldown: Infinity,
     },
+    notCentered: {
+      predicate: (readerResult: RDTCapturedArgs) => !readerResult.isCentered,
+      numCorrect: 1,
+      numSamples: 2,
+      duration: PREDICATE_DURATION_SHORT,
+      action: () =>
+        this._addInstructionRequest(
+          "centered",
+          "notCentered",
+          "centerStrip",
+          true
+        ),
+      inaction: () => this._removeInstructionRequest("centered", "notCentered"),
+      cooldown: 0,
+    },
+    sizeResultInvalid: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.sizeResult === RDTReaderSizeResult.INVALID,
+      numCorrect: 1,
+      numSamples: 2,
+      duration: PREDICATE_DURATION_SHORT,
+      action: () =>
+        this._addInstructionRequest(
+          "size",
+          "sizeResultInvalid",
+          "centerStrip",
+          true
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("size", "sizeResultInvalid"),
+      cooldown: 0,
+    },
+    sizeResultLarge: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.sizeResult === RDTReaderSizeResult.LARGE,
+      numCorrect: 1,
+      numSamples: 2,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "size",
+          "sizeResultLarge",
+          "sizeResultLarge"
+        ),
+      inaction: () => this._removeInstructionRequest("size", "sizeResultLarge"),
+      cooldown: 0,
+    },
+    sizeResultSmall: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.sizeResult === RDTReaderSizeResult.SMALL,
+      numCorrect: 1,
+      numSamples: 2,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "size",
+          "sizeResultSmall",
+          "sizeResultSmall"
+        ),
+      inaction: () => this._removeInstructionRequest("size", "sizeResultSmall"),
+      cooldown: 0,
+    },
+    notFocused: {
+      predicate: (readerResult: RDTCapturedArgs) => !readerResult.isFocused,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest("focused", "notFocused", "holdSteady"),
+      inaction: () => this._removeInstructionRequest("focused", "notFocused"),
+      cooldown: 0,
+    },
+    badOrientationPos: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        !readerResult.isRightOrientation && readerResult.angle > 0,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "orientation",
+          "badOrientationPos",
+          "badOrientationPos"
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("orientation", "badOrientationPos"),
+      cooldown: 0,
+    },
+    badOrientationNeg: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        !readerResult.isRightOrientation && readerResult.angle < 0,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "orientation",
+          "badOrientationNeg",
+          "badOrientationNeg"
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("orientation", "badOrientationNeg"),
+      cooldown: 0,
+    },
+    underExposed: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest("exposure", "underExposed", "underExposed"),
+      inaction: () =>
+        this._removeInstructionRequest("exposure", "underExposed"),
+      cooldown: 0,
+    },
+    overExposed: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest("exposure", "overExposed", "overExposed"),
+      inaction: () => this._removeInstructionRequest("exposure", "overExposed"),
+      cooldown: 0,
+    },
+    noFiducialFound: {
+      predicate: (readerResult: RDTCapturedArgs) => !readerResult.fiducialFound,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "fiducial",
+          "noFiducialFound",
+          "holdSteady"
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("fiducial", "noFiducialFound"),
+      cooldown: 0,
+    },
   };
+
   _feedbackCheckState: {
     [key: string]: FeedbackCheckState;
+  } = {};
+
+  _feedbackInstructionRequests: {
+    [key: string]: FeedbackInstructionRequest;
   } = {};
 
   componentDidMount() {
@@ -104,18 +267,20 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
       }
     });
-    this._willBlur = navigation.addListener("willBlur", () =>
-      this._clearTimer()
-    );
+    this._willBlur = navigation.addListener("willBlur", () => {
+      this._clearTimer();
+      this._clearInstructionTimer();
+      if (this._fpsCounterInterval) {
+        clearInterval(this._fpsCounterInterval);
+        this._fpsCounterInterval = null;
+      }
+    });
     AppState.addEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
   componentWillUnmount() {
     this._didFocus.remove();
     this._willBlur.remove();
-    if (this._fpsCounterInterval) {
-      clearInterval(this._fpsCounterInterval);
-    }
     AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
@@ -167,6 +332,123 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
   };
+
+  _addInstructionRequest(
+    category: string,
+    issue: string,
+    msg: string,
+    primary?: boolean
+  ) {
+    if (
+      this._feedbackInstructionRequests[category] &&
+      this._feedbackInstructionRequests[category].issue === issue
+    ) {
+      return;
+    }
+    debug("Adding instruction request: " + category + ":" + issue + "." + msg);
+
+    // Add new instruction to the set of requests
+    this._feedbackInstructionRequests[category] = {
+      issue,
+      msg,
+      primary,
+      lastRequested: Date.now(),
+    };
+
+    this._updateInstructionIfNeeded();
+  }
+
+  _removeInstructionRequest(category: string, issue: string) {
+    if (
+      this._feedbackInstructionRequests[category] &&
+      this._feedbackInstructionRequests[category].issue === issue
+    ) {
+      debug("Removing instruction request: " + category + ":" + issue);
+
+      // Remove the instruction from the set of requests
+      let instruction = this._feedbackInstructionRequests[category];
+      delete this._feedbackInstructionRequests[category];
+
+      // If the current instruction is being removed, set it to "green" state
+      if (instruction.msg === this.state.instructionMsg) {
+        this.setState({ instructionIsOK: true });
+        this._instructionLastUpdate =
+          Date.now() -
+          INSTRUCTION_DURATION_NORMAL +
+          INSTRUCTION_DURATION_OKTEXT;
+      }
+
+      this._updateInstructionIfNeeded();
+    }
+  }
+
+  _updateInstructionIfNeeded() {
+    this._clearInstructionTimer();
+
+    const now = Date.now();
+
+    // Do we have an existing instruction shown? If not, update text immediately.
+    if (!this.state.instructionMsg) {
+      this._setInstructionText(now);
+      return;
+    }
+
+    // Has enough time elapased since last instruction text was shown to update immediately?
+    const elapsed = now - this._instructionLastUpdate;
+    if (elapsed < INSTRUCTION_DURATION_NORMAL) {
+      // No, so set timer for remainder of instruction text
+      this._instructionTimer = setTimeout(() => {
+        this._setInstructionText(Date.now());
+      }, INSTRUCTION_DURATION_NORMAL - elapsed);
+    } else {
+      // Yes, so update instruction text immediately
+      this._setInstructionText(now);
+    }
+  }
+
+  _clearInstructionTimer() {
+    if (this._instructionTimer != null) {
+      clearTimeout(this._instructionTimer);
+      this._instructionTimer = null;
+    }
+  }
+
+  _getNextInstructionMessage() {
+    let instruction: FeedbackInstructionRequest = {
+      msg: "holdSteady",
+      lastRequested: 0,
+    };
+
+    // Choose the instruction that:
+    // - is primary, OR
+    // - is the most recently requested, OR
+    // - isn't "no fidicual found" (since that's quite common and can create noise)
+    for (let key in this._feedbackInstructionRequests) {
+      const instructionRequest = this._feedbackInstructionRequests[key];
+      if (
+        !instruction.primary &&
+        instructionRequest.lastRequested &&
+        (instructionRequest.primary ||
+          !instruction.lastRequested ||
+          instructionRequest.lastRequested > instruction.lastRequested ||
+          (instruction.issue && instruction.issue === "noFiducialFound"))
+      ) {
+        instruction = instructionRequest;
+      }
+    }
+
+    return instruction;
+  }
+
+  _setInstructionText(instructionLastUpdate: number) {
+    const instructionToShow = this._getNextInstructionMessage();
+    debug("Setting instruction text: " + instructionToShow.msg);
+    this.setState({
+      instructionMsg: instructionToShow.msg,
+      instructionIsOK: false,
+    });
+    this._instructionLastUpdate = instructionLastUpdate;
+  }
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this._updateFeedback(args);
@@ -234,12 +516,32 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
     for (let key in this._feedbackChecks) {
       const check = this._feedbackChecks[key];
-      const state = this._feedbackCheckState[key] || { active: false };
-      if (!check.predicate(args)) {
+      const state = this._feedbackCheckState[key] || {
+        active: false,
+        avgCorrectness:
+          check.numCorrect && check.numSamples
+            ? check.numCorrect / check.numSamples
+            : undefined,
+      };
+
+      const success = check.predicate(args);
+      let succeeded = success;
+      if (check.numCorrect && check.numSamples && state.avgCorrectness) {
+        state.avgCorrectness =
+          (state.avgCorrectness * (check.numSamples - 1)) / check.numSamples +
+          (success ? 1 / check.numSamples : 0);
+        succeeded = state.avgCorrectness >= check.numCorrect / check.numSamples;
+      }
+
+      if (!succeeded) {
+        if (state.lastRan && check.inaction) {
+          check.inaction();
+        }
         this._feedbackCheckState[key] = {
           ...state,
           active: false,
           started: undefined,
+          lastRan: undefined,
         };
         continue;
       }
@@ -324,6 +626,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     if (!isFocused) {
       return null;
     }
+    const isPositionValid = ALLOW_ICON_FEEDBACK;
+    const isDistanceValid =
+      ALLOW_ICON_FEEDBACK &&
+      this.state.sizeResult !== RDTReaderSizeResult.INVALID;
+    const isRotationValid = ALLOW_ICON_FEEDBACK;
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner && isFocused} />
@@ -337,7 +644,24 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={{ flexDirection: "column", flex: 1 }}>
-            <View style={styles.backgroundOverlay} />
+            <View
+              style={[
+                styles.backgroundOverlay,
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
+              ]}
+            >
+              <Text
+                content={t(this.state.instructionMsg)}
+                style={[
+                  styles.instructionText,
+                  { color: this.state.instructionIsOK ? "lime" : "yellow" },
+                ]}
+              />
+            </View>
             <View
               style={{
                 height: "65%",
@@ -346,42 +670,75 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
             >
               <View style={styles.backgroundOverlay}>
                 <View style={styles.feedbackContainer}>
-                  <View style={styles.feedbackItem}>
+                  <View
+                    style={[
+                      styles.feedbackItem,
+                      isPositionValid
+                        ? styles.feedbackItemValid
+                        : styles.feedbackItemInvalid,
+                    ]}
+                  >
                     <Image
                       style={styles.feedbackItemIcon}
                       source={{
-                        uri: this.state.isCentered
-                          ? "positiongreen"
-                          : "positionyellow",
+                        uri: isPositionValid
+                          ? this.state.isCentered
+                            ? "positiongreen"
+                            : "positionyellow"
+                          : "positionwhite",
                       }}
                     />
-                    <Text content={t("position")} style={styles.overlayText} />
+                    <Text
+                      content={t("position")}
+                      style={styles.feedbackItemText}
+                    />
                   </View>
-                  <View style={styles.feedbackItem}>
+                  <View
+                    style={[
+                      styles.feedbackItem,
+                      isDistanceValid
+                        ? styles.feedbackItemValid
+                        : styles.feedbackItemInvalid,
+                    ]}
+                  >
                     <Image
                       style={styles.feedbackItemIcon}
                       source={{
-                        uri:
-                          this.state.sizeResult === RDTReaderSizeResult.INVALID
-                            ? "distancewhite"
-                            : this.state.sizeResult ===
-                              RDTReaderSizeResult.RIGHT_SIZE
-                              ? "distancegreen"
-                              : "distanceyellow",
+                        uri: isDistanceValid
+                          ? this.state.sizeResult ===
+                            RDTReaderSizeResult.RIGHT_SIZE
+                            ? "distancegreen"
+                            : "distanceyellow"
+                          : "distancewhite",
                       }}
                     />
-                    <Text content={t("distance")} style={styles.overlayText} />
+                    <Text
+                      content={t("distance")}
+                      style={styles.feedbackItemText}
+                    />
                   </View>
-                  <View style={styles.feedbackItem}>
+                  <View
+                    style={[
+                      styles.feedbackItem,
+                      isRotationValid
+                        ? styles.feedbackItemValid
+                        : styles.feedbackItemInvalid,
+                    ]}
+                  >
                     <Image
                       style={styles.feedbackItemIcon}
                       source={{
-                        uri: this.state.isRightOrientation
-                          ? "rotationgreen"
-                          : "rotationyellow",
+                        uri: isRotationValid
+                          ? this.state.isRightOrientation
+                            ? "rotationgreen"
+                            : "rotationyellow"
+                          : "rotationwhite",
                       }}
                     />
-                    <Text content={t("rotation")} style={styles.overlayText} />
+                    <Text
+                      content={t("rotation")}
+                      style={styles.feedbackItemText}
+                    />
                   </View>
                 </View>
               </View>
@@ -409,7 +766,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
                         t("flash") +
                         (this.state.flashEnabled ? t("on") : t("off"))
                       }
-                      style={styles.overlayText}
+                      style={styles.feedbackItemText}
                     />
                   </TouchableOpacity>
                   <View style={styles.feedbackItem} />
@@ -465,18 +822,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: "row",
   },
-  overlayText: {
-    color: "white",
-    fontSize: REGULAR_TEXT,
-    marginVertical: GUTTER,
-    marginBottom: 0,
-    textShadowColor: "rgba(0, 0, 0, 0.99)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-  },
   backgroundOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  instructionText: {
+    fontSize: LARGE_TEXT,
+    flex: 1,
+    marginHorizontal: GUTTER * 2,
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   feedbackContainer: {
     flexDirection: "column",
@@ -489,9 +846,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
   },
+  feedbackItemValid: {
+    opacity: 1.0,
+  },
+  feedbackItemInvalid: {
+    opacity: ALLOW_ICON_FEEDBACK ? 0.5 : 0,
+  },
   feedbackItemIcon: {
     height: 32,
     width: 32,
+  },
+  feedbackItemText: {
+    alignItems: "center",
+    color: "white",
+    fontSize: REGULAR_TEXT,
+    justifyContent: "center",
+    marginVertical: GUTTER,
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   testStrip: {
     aspectRatio: 0.06,
