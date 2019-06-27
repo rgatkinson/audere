@@ -474,7 +474,7 @@ jobs:
       - run:
           name: Setup Expo and expo publish
           command: |
-            yarn global add expo-cli
+            yarn global add expo-cli@2.19.4
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish --max-workers 2 --non-interactive
@@ -541,7 +541,7 @@ jobs:
       - run:
           name: Setup Expo and expo publish
           command: |
-            yarn global add expo-cli
+            yarn global add expo-cli@2.19.4
             export PATH="$PATH:$(yarn global bin)"
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish --max-workers 2 --non-interactive
