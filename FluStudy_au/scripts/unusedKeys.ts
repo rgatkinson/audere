@@ -4,10 +4,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 //
-// Command of 'unused-keys'
+// Command of 'unused-keys' to use
 // Input takes an 'enjson' and a 'searchDir', both with filepath values
+// Checks all .ts or .tsx files in the searchDir for all enjson keys, printing out
+// the enjson keys that aren't found
 // Does not account for generated keys from multiple variables for a single key
-// (ie DidYouKnow.tsx tip + #)
+// (ie in DidYouKnow.tsx tip + #)
 
 import fs from "fs";
 import yargs from "yargs";
