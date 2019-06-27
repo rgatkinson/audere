@@ -9,6 +9,10 @@ import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Divider from "../Divider";
 import Text from "../Text";
+import {
+  getExplanationRedAnswer,
+  getResultRedAnswer,
+} from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
 
 interface Props {
@@ -16,56 +20,28 @@ interface Props {
 }
 
 class TestResult extends React.Component<Props & WithNamespaces> {
-  _getResult = () => {
-    const { redAnswer } = this.props;
-    switch (redAnswer) {
-      case "yesAboveBlue":
-        return "positive";
-      case "yesBelowBlue":
-        return "positive";
-      case "yesAboveBelowBlue":
-        return "positive";
-      default:
-        return "negative";
-    }
-  };
-
-  _getExplanation = () => {
-    const { redAnswer } = this.props;
-    switch (redAnswer) {
-      case "yesAboveBlue":
-        return "onePinkAndBlue";
-      case "yesBelowBlue":
-        return "onePinkAndBlue;";
-      case "yesAboveBelowBlue":
-        return "onePinkAndBlue";
-      default:
-        return "noPink";
-    }
-  };
-
   render() {
-    const { t } = this.props;
+    const { redAnswer, t } = this.props;
     return (
       <Fragment>
         <BorderView style={styles.border}>
           <Text
             center={true}
-            content={t("common:testResult:" + this._getResult())}
+            content={t("common:testResult:" + getResultRedAnswer(redAnswer))}
           />
         </BorderView>
         <Text content={t("common:testResult:why")} style={styles.text} />
         <View style={{ marginHorizontal: GUTTER }}>
           <BulletPoint content={t("blueLine")} customBulletUri="listarrow" />
           <BulletPoint
-            content={t(this._getExplanation())}
+            content={t(getExplanationRedAnswer(redAnswer))}
             customBulletUri="listarrow"
           />
         </View>
         <Divider />
         <Text
           content={
-            t(`common:testResult:${this._getResult()}WhatToDo`) +
+            t(`common:testResult:${getResultRedAnswer(redAnswer)}WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}

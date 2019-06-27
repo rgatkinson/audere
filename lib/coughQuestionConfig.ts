@@ -1144,6 +1144,11 @@ export const NumLinesSeenConfig: SurveyQuestion = {
       primary: false,
       enabled: true,
       helpImageUri: "threelines"
+    },
+    {
+      key: "noneOfTheAbove",
+      primary: false,
+      enabled: true
     }
   ],
   required: true,

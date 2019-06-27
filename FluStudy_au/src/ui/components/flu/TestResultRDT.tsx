@@ -4,37 +4,49 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
 import { getSelectedButton } from "../../../util/survey";
-import { NumLinesSeenConfig } from "audere-lib/coughQuestionConfig";
+import {
+  NumLinesSeenConfig,
+  PinkWhenBlueConfig,
+} from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Divider from "../Divider";
 import Text from "../Text";
+import {
+  getResultRedAnswer,
+  getExplanationRedAnswer,
+} from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
 
 interface Props {
   numLinesAnswer?: string;
+  redAnswer?: string;
 }
 
 class TestResultRDT extends React.Component<Props & WithNamespaces> {
   _getResult = () => {
-    const { numLinesAnswer } = this.props;
+    const { numLinesAnswer, redAnswer } = this.props;
     switch (numLinesAnswer) {
       case "twoLines":
         return "positive";
       case "threeLines":
         return "positive";
+      case "noneOfTheAbove":
+        return getResultRedAnswer(redAnswer);
       default:
         return "negative";
     }
   };
 
   _getExplanation = () => {
-    const { numLinesAnswer } = this.props;
+    const { numLinesAnswer, redAnswer } = this.props;
     switch (numLinesAnswer) {
       case "twoLines":
         return "onePinkAndBlue";
       case "threeLines":
         return "onePinkAndBlue";
+      case "noneOfTheAbove":
+        return getExplanationRedAnswer(redAnswer);
       default:
         return "noPink";
     }
@@ -73,6 +85,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
 
 export default connect((state: StoreState) => ({
   numLinesAnswer: getSelectedButton(state, NumLinesSeenConfig),
+  redAnswer: getSelectedButton(state, PinkWhenBlueConfig),
 }))(withNamespaces("TestResultRDT")(TestResultRDT));
 
 const styles = StyleSheet.create({

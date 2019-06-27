@@ -65,3 +65,29 @@ export async function logNumLines() {
   }
   _previousNumLines = numLinesAnswer;
 }
+
+export function getExplanationRedAnswer(redAnswer: string | undefined) {
+  switch (redAnswer) {
+    case "yesAboveBlue":
+      return "onePinkAndBlue";
+    case "yesBelowBlue":
+      return "onePinkAndBlue;";
+    case "yesAboveBelowBlue":
+      return "onePinkAndBlue";
+    default:
+      return "noPink";
+  }
+}
+
+export function getResultRedAnswer(redAnswer: string | undefined) {
+  switch (redAnswer) {
+    case "yesAboveBlue":
+      return "positive";
+    case "yesBelowBlue":
+      return "positive";
+    case "yesAboveBelowBlue":
+      return "positive";
+    default:
+      return "negative";
+  }
+}
