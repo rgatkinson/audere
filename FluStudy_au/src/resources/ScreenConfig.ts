@@ -16,6 +16,7 @@ import {
   getTestStripConfirmationNextScreen,
   getTestStripSurveyNextScreen,
   logFluResult,
+  logNumLines,
 } from "../util/fluResults";
 import {
   ConsentConfig,
@@ -703,6 +704,7 @@ export const Screens: ScreenConfig[] = [
         tag: Questions,
         props: {
           questions: [NumLinesSeenConfig],
+          logOnSave: logNumLines,
         },
         validate: true,
       },

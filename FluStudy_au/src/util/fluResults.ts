@@ -9,10 +9,12 @@ import { getSelectedButton } from "./survey";
 import {
   BlueLineConfig,
   PinkWhenBlueConfig,
+  NumLinesSeenConfig,
 } from "audere-lib/coughQuestionConfig";
 
 let _previousBlueAnswer: string | undefined;
 let _previousPinkAnswer: string | undefined;
+let _previousNumLines: string | undefined;
 
 export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
@@ -49,4 +51,17 @@ export async function logFluResult() {
     });
   }
   _previousPinkAnswer = pinkAnswer;
+}
+
+export async function logNumLines() {
+  const state = (await getStore()).getState();
+
+  const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
+  if (_previousNumLines && _previousNumLines !== numLinesAnswer) {
+    tracker.logEvent(FunnelEvents.NUM_LINES_ANSWER_CHANGED, {
+      old_answer: _previousNumLines,
+      new_answer: numLinesAnswer,
+    });
+  }
+  _previousNumLines = numLinesAnswer;
 }

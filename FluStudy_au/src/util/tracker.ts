@@ -36,6 +36,7 @@ export const FunnelEvents = {
   COMPLETED_SURVEY: "funnel_completed_survey",
   BLUE_ANSWER_CHANGED: "funnel_blue_answer_changed",
   PINK_ANSWER_CHANGED: "funnel_pink_answer_changed",
+  NUM_LINES_ANSWER_CHANGED: "funnel_num_lines_answer_changed",
   COMPLETED_TEST: "funnel_completed_test",
 };
 
