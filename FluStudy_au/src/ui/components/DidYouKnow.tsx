@@ -8,11 +8,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import {
-  FONT_NORMAL,
-  REGULAR_TEXT,
-  TEXT_COLOR,
-} from "../styles";
+import { REGULAR_TEXT } from "../styles";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
@@ -22,10 +18,12 @@ import Text from "./Text";
 // This component will render up to this number of tips
 const TIP_COUNT = 13;
 // This acts as a multiplier for the source part of the text's size relative to the tip itself
-const SOURCE_SIZE = 0.7;
+const SOURCE_SIZE = 0.8;
+const SOURCE_LINE_HEIGHT = 16;
 
 interface State {
   currentText: string | null | undefined;
+  currentSource: string | null | undefined;
 }
 
 interface Props {
@@ -103,6 +101,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 const styles = StyleSheet.create({
   source: {
     fontSize: REGULAR_TEXT*SOURCE_SIZE,
+    lineHeight: SOURCE_LINE_HEIGHT,
   },
 });
 
