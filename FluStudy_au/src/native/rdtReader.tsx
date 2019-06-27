@@ -58,7 +58,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       resultWindowImgBase64: capturedArgs.resultWindowImg,
       testStripFound: capturedArgs.passed,
       isCentered: capturedArgs.center,
-      fiducialFound: capturedArgs.fiducial || Platform.OS === "android",
+      fiducialFound: capturedArgs.fiducial,
       sizeResult: capturedArgs.sizeResult,
       isFocused: capturedArgs.sharpness,
       angle: capturedArgs.angle,

@@ -32,7 +32,6 @@ public class ViewportUsingBitmap extends ViewGroup {
     private Paint paint;
     private Paint p = new Paint();
     private Bitmap bitmap;
-    private boolean drawn = false;
 
     @ColorRes
     int backgroundColorId = R.color.black_overlay;
@@ -47,9 +46,9 @@ public class ViewportUsingBitmap extends ViewGroup {
 
     public ViewportUsingBitmap(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ViewportUsingBitmap, 0, 0);
-        hScale = ta.getFloat(R.styleable.ViewportUsingBitmap_heightScale, hScale);
-        wScale = ta.getFloat(R.styleable.ViewportUsingBitmap_widthScale, wScale);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.Viewport, 0, 0);
+        hScale = ta.getFloat(R.styleable.Viewport_heightScale, hScale);
+        wScale = ta.getFloat(R.styleable.Viewport_widthScale, wScale);
     }
 
     @Override
@@ -93,13 +92,10 @@ public class ViewportUsingBitmap extends ViewGroup {
 
         paint = new Paint();
         paint.setColor(getResources().getColor(backgroundColorId));
-        if (!drawn) {
-            temp.drawRect(0, 0, getWidth(), getHeight(), paint);
-            temp.drawPath(path, stroke);
-            temp.drawRoundRect(rect, (float) viewportCornerRadius, (float) viewportCornerRadius, eraser);
-        }
-        drawn = true;
 
+        temp.drawRect(0, 0, getWidth(), getHeight(), paint);
+        temp.drawPath(path, stroke);
+        temp.drawRoundRect(rect, (float) viewportCornerRadius, (float) viewportCornerRadius, eraser);
 
         canvas.drawBitmap(bitmap, 0, 0, p);
     }

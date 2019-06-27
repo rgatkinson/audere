@@ -145,7 +145,6 @@ public final class ImageUtil {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
-
     public static byte[] matToRotatedByteArray(Mat captureMat) {
         Bitmap resultBitmap = Bitmap.createBitmap(captureMat.cols(), captureMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(captureMat, resultBitmap);
