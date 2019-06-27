@@ -4,6 +4,15 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import {
+  StyleSheet,
+  View,
+} from "react-native";
+import {
+  FONT_NORMAL,
+  REGULAR_TEXT,
+  TEXT_COLOR,
+} from "../styles";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
@@ -12,6 +21,8 @@ import Text from "./Text";
 
 // This component will render up to this number of tips
 const TIP_COUNT = 13;
+// This acts as a multiplier for the source part of the text's size relative to the tip itself
+const SOURCE_SIZE = 0.7;
 
 interface State {
   currentText: string | null | undefined;
@@ -27,6 +38,7 @@ interface Props {
 class DidYouKnow extends React.Component<Props & WithNamespaces> {
   state = {
     currentText: "",
+    currentSource: "",
   };
 
   _timer: NodeJS.Timeout | undefined;
@@ -34,8 +46,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 
   componentDidMount() {
     const { t } = this.props;
-    const currentText = t("didYouKnow:tip" + this._getCurrentTextNum());
-    this.setState({ currentText });
+    this._showNextTip();
     this._setTimer();
   }
 
@@ -58,7 +69,9 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
       const currentText = t("didYouKnow:tip" + currentTextNum);
+      const currentSource = t("didYouKnow:source" + currentTextNum);
       this.setState({ currentText });
+      this.setState({ currentSource });
     }
   };
 
@@ -74,9 +87,35 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    return <Text content={this.state.currentText} />;
+    return (
+      <View>
+        <Text
+          style={styles.text}
+          content={this.state.currentText}
+        />
+        <Text
+          style={styles.source}
+          content={this.state.currentSource}
+        />
+      </View>
+    );
   }
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: TEXT_COLOR,
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT,
+    lineHeight: 22,
+  },
+  source: {
+    color: TEXT_COLOR,
+    fontFamily: FONT_NORMAL,
+    fontSize: REGULAR_TEXT*SOURCE_SIZE,
+    lineHeight: 22,
+  },
+});
 
 export default connect((state: StoreState, props: Props & WithNamespaces) => ({
   startTimeMs: state.survey[props.startTimeConfig],
