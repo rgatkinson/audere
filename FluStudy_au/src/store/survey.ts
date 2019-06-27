@@ -34,7 +34,7 @@ export type SurveyAction =
   | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_TOTAL_TEST_STRIP_TIME" }
   | { type: "SET_RDT_START_TIME" }
-  | { type: "SET_RDT_CAPTURE_TIME" }
+  | { type: "SET_RDT_CAPTURE_TIME"; successfulCapture: boolean }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
   | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
@@ -178,11 +178,15 @@ export default function reducer(state = initialState, action: SurveyAction) {
       if (rdtStartTime) {
         const timeNow = new Date().getTime();
         const deltaMS = timeNow - rdtStartTime;
-        rdtTotalTime += deltaMS
-        if (state.rdtInfo && state.rdtInfo.rdtReaderResult){
+        rdtTotalTime += deltaMS;
+        if (action.successfulCapture) {
           return {
             ...state,
-            rdtInfo: { ...state.rdtInfo, captureTime: deltaMS, rdtTotalTime: rdtTotalTime },
+            rdtInfo: {
+              ...state.rdtInfo,
+              captureTime: deltaMS,
+              rdtTotalTime: rdtTotalTime,
+            },
             timestamp: timeNow,
           };
         } else {
@@ -192,7 +196,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
             timestamp: timeNow,
           };
         }
-        
       }
       return state;
 
@@ -338,9 +341,10 @@ export function setRDTStartTime(): SurveyAction {
   };
 }
 
-export function setRDTCaptureTime(): SurveyAction {
+export function setRDTCaptureTime(successfulCapture: boolean): SurveyAction {
   return {
     type: "SET_RDT_CAPTURE_TIME",
+    successfulCapture,
   };
 }
 

@@ -126,7 +126,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
         tracker.logEvent(AppEvents.RDT_TIMEOUT);
-        dispatch(setRDTCaptureTime());
+        dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
         navigation.push(fallback);
         dispatch(setRDTPhoto(""));
@@ -179,7 +179,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
 
     const { dispatch, navigation, next } = this.props;
-    dispatch(setRDTCaptureTime());
+    dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
       dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
