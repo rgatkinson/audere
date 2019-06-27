@@ -12,12 +12,21 @@ export class IdleManager {
     this.waiter = null;
   }
 
-  public async waitForIdle(): Promise<void> {
+  public async waitForIdle(ms?: number): Promise<void> {
     if (this.isBusy) {
       if (this.waiter == null) {
         this.waiter = newWaiter();
       }
-      await this.waiter.promise;
+
+      if (ms) {
+        let timeout: Promise<void> = new Promise((resolve, reject) => {
+          setTimeout(reject, ms);
+        });
+
+        return Promise.race([timeout, this.waiter.promise]);
+      } else {
+        await this.waiter.promise;
+      }
     }
   }
 

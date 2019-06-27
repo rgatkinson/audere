@@ -85,6 +85,10 @@ export async function hasPendingPhotos() {
   return await photoUploader.hasPendingPhotos();
 }
 
+export async function waitForIdlePhotoUploader(ms?: number) {
+  return await photoUploader.waitForIdle(ms);
+}
+
 export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
   createTransform(
     (inboundState, key) => {

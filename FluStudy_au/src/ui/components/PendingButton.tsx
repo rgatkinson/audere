@@ -7,11 +7,11 @@ import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import Button from "./Button";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, NetInfo, Alert } from "react-native";
 import { GUTTER } from "../styles";
 
 interface Props {
-  hasPendingFn(): boolean;
+  pendingResolvedFn(): Promise<boolean>;
   label?: string;
   navigation: NavigationScreenProp<any, any>;
   namespace: string;
@@ -29,15 +29,25 @@ class PendingButton extends React.Component<Props & WithNamespaces, State> {
   }
 
   _onNext = async () => {
-    const { hasPendingFn, navigation, next } = this.props;
+    const { pendingResolvedFn, navigation, next, t } = this.props;
 
-    if (await !hasPendingFn()) {
-      next && navigation.push(next);
-    } else {
-      this.setState({ showLoading: true });
-      setTimeout(() => {
-        this.setState({ showLoading: false });
-      }, 1000);
+    const isConnected = await NetInfo.isConnected.fetch();
+    if (!isConnected) {
+      Alert.alert(
+        t("common:notifications:connectionErrorTitle"),
+        t("common:notifications:connectionError")
+      );
+      return;
+    }
+
+    this.setState({ showLoading: true });
+
+    const done = await pendingResolvedFn();
+    if (navigation.isFocused()) {
+      this.setState({ showLoading: false });
+      if (done && next) {
+        navigation.push(next);
+      }
     }
   };
 

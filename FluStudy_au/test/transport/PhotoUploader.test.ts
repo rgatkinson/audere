@@ -4,9 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  NetInfoIsConnected, NetInfoIsConnectedListener,
+  NetInfoIsConnected,
+  NetInfoIsConnectedListener,
   pendingPathFromId,
-  PhotoUploader, RETRY_DELAY,
+  PhotoUploader,
+  RETRY_DELAY,
 } from "../../src/transport/PhotoUploader";
 import { FileSystem } from "expo";
 import base64url from "base64url";
@@ -23,15 +25,22 @@ class FakeNetwork implements NetInfoIsConnected {
   private isOnline: boolean = true;
   private readonly listeners: NetInfoIsConnectedListener[] = [];
 
-  addEventListener(eventName: string, listener: NetInfoIsConnectedListener): void {
+  addEventListener(
+    eventName: string,
+    listener: NetInfoIsConnectedListener
+  ): void {
     if (eventName != "connectionChange") {
       throw new Error(`Expected 'connectionChange', got '${eventName}'`);
     }
     this.listeners.push(listener);
   }
 
-  async fetch(): Promise<boolean> { return this.isOnline; }
-  online(): boolean { return this.isOnline; }
+  async fetch(): Promise<boolean> {
+    return this.isOnline;
+  }
+  online(): boolean {
+    return this.isOnline;
+  }
 
   setOnline(value: boolean): void {
     this.isOnline = value;
@@ -46,7 +55,7 @@ describe("PhotoUploader", () => {
     let corruptSaves: CapturedSave[];
     let network = new FakeNetwork();
 
-    let putFile = jest.fn(async ({filePath, storagePath}) => {
+    let putFile = jest.fn(async ({ filePath, storagePath }) => {
       const fileContents = await FileSystem.readAsStringAsync(filePath);
       const save: CapturedSave = { fileContents, filePath, storagePath };
       if (fileContents.indexOf("corrupt") >= 0) {
@@ -72,8 +81,8 @@ describe("PhotoUploader", () => {
       const jpegBase64 = base64url(photoId);
 
       uploader.savePhoto(photoId, jpegBase64);
-      await uploader.waitForIdleInTest();
-      expect(saves).toEqual([ capture(photoId, jpegBase64) ]);
+      await uploader.waitForIdle();
+      expect(saves).toEqual([capture(photoId, jpegBase64)]);
       expect(offlineSaves).toEqual([]);
     });
 
@@ -86,10 +95,10 @@ describe("PhotoUploader", () => {
       uploader.savePhoto(photo0Id, jpeg0Base64);
       uploader.savePhoto(photo1Id, jpeg1Base64);
 
-      await uploader.waitForIdleInTest();
+      await uploader.waitForIdle();
       expect(saves).toEqual([
         capture(photo0Id, jpeg0Base64),
-        capture(photo1Id, jpeg1Base64)
+        capture(photo1Id, jpeg1Base64),
       ]);
       expect(offlineSaves).toEqual([]);
     });
@@ -100,17 +109,17 @@ describe("PhotoUploader", () => {
 
       network.setOnline(false);
       uploader.savePhoto(photoId, jpegBase64);
-      await uploader.waitForIdleInTest();
+      await uploader.waitForIdle();
       expect(saves).toEqual([]);
 
       jest.runTimersToTime(RETRY_DELAY - 1);
-      await uploader.waitForIdleInTest();
+      await uploader.waitForIdle();
       expect(saves).toEqual([]);
 
       network.setOnline(true);
       jest.runTimersToTime(2);
-      await uploader.waitForIdleInTest();
-      expect(saves).toEqual([ capture(photoId, jpegBase64) ]);
+      await uploader.waitForIdle();
+      expect(saves).toEqual([capture(photoId, jpegBase64)]);
 
       expect(offlineSaves).toEqual([]);
     });
@@ -127,10 +136,10 @@ describe("PhotoUploader", () => {
       uploader.savePhoto(photo1Id, jpeg1Base64);
       uploader.savePhoto(photo2Id, jpeg2Base64);
 
-      await uploader.waitForIdleInTest();
+      await uploader.waitForIdle();
       expect(saves).toEqual([
         capture(photo0Id, jpeg0Base64),
-        capture(photo2Id, jpeg2Base64)
+        capture(photo2Id, jpeg2Base64),
       ]);
     });
 
@@ -138,7 +147,7 @@ describe("PhotoUploader", () => {
       return {
         fileContents,
         filePath: pendingPathFromId(photoId),
-        storagePath: uploader.storagePathFromId(photoId)
+        storagePath: uploader.storagePathFromId(photoId),
       };
     }
   });

@@ -104,7 +104,7 @@ import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
 import PendingButton from "../ui/components/PendingButton";
-import { hasPendingData, pendingNavigation } from "../util/pendingData";
+import { uploadPendingSuccess, pendingNavigation } from "../util/pendingData";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
@@ -810,7 +810,7 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: PendingButton,
-        props: { hasPendingFn: hasPendingData },
+        props: { pendingResolvedFn: uploadPendingSuccess, next: "Thanks" },
       },
     ],
     key: "PendingData",

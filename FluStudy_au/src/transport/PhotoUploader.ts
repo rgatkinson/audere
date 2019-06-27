@@ -93,8 +93,8 @@ export class PhotoUploader {
     process.nextTick(() => this.uploadNext());
   }
 
-  public async waitForIdleInTest(): Promise<void> {
-    await this.idle.waitForIdle();
+  public async waitForIdle(ms?: number): Promise<void> {
+    await this.idle.waitForIdle(ms);
   }
 
   public storagePathFromId(photoId: string): string {

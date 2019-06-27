@@ -1,4 +1,5 @@
-import { hasPendingPhotos } from "../store";
+import { hasPendingPhotos, waitForIdlePhotoUploader } from "../store";
+const PHOTO_UPLOAD_TIMEOUT = 5000;
 
 export async function pendingNavigation() {
   const hasPhotos = await hasPendingPhotos();
@@ -7,4 +8,13 @@ export async function pendingNavigation() {
 
 export async function hasPendingData() {
   return await hasPendingPhotos();
+}
+
+export async function uploadPendingSuccess() {
+  try {
+    await waitForIdlePhotoUploader(PHOTO_UPLOAD_TIMEOUT);
+    return true;
+  } catch (error) {
+    return false;
+  }
 }

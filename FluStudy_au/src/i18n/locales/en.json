@@ -28,9 +28,7 @@
       "oneMinuteStartTime": "Next you'll remove your swab from the tube.",
       "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
-      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\"",
-      "dataUploadTitle": "Connect to upload data",
-      "dataUploadDesc": "We could not connect to upload data needed to process your gift card. Once you are connected please come back to the app and tap \"Try Again.\""
+      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\""
     },
     "validationErrors": {
       "email": "* Please provide a valid email address"
