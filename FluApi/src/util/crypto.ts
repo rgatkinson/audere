@@ -28,3 +28,30 @@ export function sha256(...values: string[]): string {
   hash.update([...values].join(" "));
   return hash.digest("hex");
 }
+
+// Simplified version of crypto.createHash() that:
+// * supports builder pattern by update() returning this.
+// * tolerates nulls in update().
+// * only generates "hex" digests via toString().
+// * supports toString() any number of times.
+export class Hash {
+  private readonly hash;
+  private value: string | null;
+
+  constructor(kind?: string) {
+    this.hash = crypto.createHash(kind || "SHA256");
+    this.value = null;
+  }
+
+  update(x: string | null) {
+    this.hash.update(x || "");
+    return this;
+  }
+
+  toString(): string {
+    if (this.value == null) {
+      this.value = this.hash.digest("hex");
+    }
+    return this.value;
+  }
+}

@@ -5,76 +5,113 @@
 
 import { Sequelize } from "sequelize";
 import { SplitSql } from "../util/sql";
+import { Hash } from "../util/crypto";
 import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
   SURVEY_QUESTIONS
 } from "audere-lib/coughQuestionConfig";
+import { defineDataNode } from "../models/db/dataPipeline";
+import { tuple2 } from "../util/tuple";
 
-const DEBUG_DERIVED_TABLE_SERVICE = false;
+const DEBUG_DATA_PIPELINE_SERVICE = false;
 
-export class DerivedTableService {
+export class DataPipelineService {
   private readonly sql: SplitSql;
 
   constructor(sql: SplitSql) {
     this.sql = sql;
   }
 
-  public async update(): Promise<void> {
-    const types = getTypesMetadata();
-    const views = getViewsMetadata();
+  async update(): Promise<void> {
+    await this.updateDb(this.sql.pii, getPiiDataNodes());
+    await this.updateDb(this.sql.nonPii, getNonPiiDataNodes());
+  }
 
-    // Because things depend on each other, we have to remove things in
-    // the opposite order that we created them.
-    for (let metadata of [...views].reverse()) {
-      await drop(this.sql.pii, metadata, "view");
-      await drop(this.sql.nonPii, metadata, "view");
-    }
-    for (let metadata of [...types].reverse()) {
-      await drop(this.sql.pii, metadata, "type");
-      await drop(this.sql.nonPii, metadata, "type");
+  private async updateDb(
+    sql: Sequelize,
+    nodes: ManagedSqlNode[]
+  ): Promise<void> {
+    const nodeState = defineDataNode(sql);
+    const states = await nodeState.findAll({});
+    const statesByName = new Map(states.map(x => tuple2(x.name, x)));
+    const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));
+    const hashes = buildHashes(nodesByName);
+
+    for (let state of states) {
+      const name = state.name;
+      if (!nodesByName.has(name)) {
+        await runQuery(sql, state.cleanup);
+        await nodeState.destroy({ where: { name }})
+      }
     }
 
-    for (let command of types) {
-      await createType(this.sql.pii, command, command.pii);
-      await createType(this.sql.nonPii, command, command.nonPii);
-    }
-    for (let command of getViewsMetadata()) {
-      await createView(this.sql.pii, command, command.pii);
-      await createView(this.sql.nonPii, command, command.nonPii);
+    for (let node of nodes) {
+      const name = node.meta.name;
+      const state = statesByName.get(name);
+      const hash = hashes.get(name);
+      if (state != null && state.hash == hash) {
+        const update = node.getUpdate();
+        if (update != null) {
+          await runQuery(sql, update);
+        }
+      } else {
+        const drop = node.getDelete();
+        await runQuery(sql, drop);
+        await runQuery(sql, node.getCreate());
+        await nodeState.upsert({ name, hash, cleanup: drop });
+      }
     }
   }
 }
 
-async function drop(
-  sql: Sequelize,
-  meta: SqlObjectMetadata,
-  noun: string
-): Promise<void> {
-  const name = scopedName(meta);
-  await runQuery(sql, `drop ${noun} if exists ${name}`);
+// Metadata for how to create some SQL node, e.g. type or view.
+interface SqlNodeMetadata {
+  name: string;
+  deps: string[];
+  spec: string; // Specification for how to create.
 }
 
-async function createType(
-  sql: Sequelize,
-  meta: SqlObjectMetadata,
-  spec?: string
-): Promise<void> {
-  const name = scopedName(meta);
-  if (spec != null) {
-    await runQuery(sql, `create type ${name} as ${spec};`);
-  }
+interface ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+
+  getCreate(): string;
+  getUpdate(): string | null;
+  getDelete(): string;
 }
-async function createView(
-  sql: Sequelize,
-  meta: SqlObjectMetadata,
-  query?: string
-): Promise<void> {
-  const name = scopedName(meta);
-  if (query != null) {
-    await runQuery(sql, `create view ${name} as ${query};`);
+
+class ManagedSqlType implements ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+  constructor(meta: SqlNodeMetadata) {
+    this.meta = meta;
   }
+
+  getCreate = () => `create type ${this.meta.name} as ${this.meta.spec};`;
+  getUpdate = () => null;
+  getDelete = () => `drop type if exists ${this.meta.name} cascade;`;
+}
+
+class ManagedView implements ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+  constructor(meta: SqlNodeMetadata) {
+    this.meta = meta;
+  }
+
+  getCreate = () => `create view ${this.meta.name} as ${this.meta.spec};`;
+  getUpdate = () => null;
+  getDelete = () => dropTableLike(this.meta.name);
+}
+
+class ManagedMaterializedView implements ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+  constructor(meta: SqlNodeMetadata) {
+    this.meta = meta;
+  }
+
+  getCreate = () => `create materialized view ${this.meta.name} as ${this.meta.spec};`;
+  getUpdate = () => `refresh materialized view ${this.meta.name};`;
+  getDelete = () => dropTableLike(this.meta.name);
 }
 
 async function runQuery(sql: Sequelize, query: string): Promise<void> {
@@ -82,50 +119,38 @@ async function runQuery(sql: Sequelize, query: string): Promise<void> {
   await sql.query(query);
 }
 
-function scopedName(meta: SqlObjectMetadata): string {
-  return meta.schema == null ? meta.name : `${meta.schema}.${meta.name}`;
+function getPiiDataNodes(): ManagedSqlNode[] {
+  return[];
 }
 
-// Metadata for how to create some SQL object, e.g. type or view.
-interface SqlObjectMetadata {
-  schema?: string; // Typically `derivedSchema(original)`.
-  name: string;
-  pii?: string; // Command to create in pii database, if applicable.
-  nonPii?: string; // Command to create in non-pii database, if applicable.
-}
-
-function getTypesMetadata(): SqlObjectMetadata[] {
+function getNonPiiDataNodes(): ManagedSqlNode[] {
   return [
-    {
-      schema: derivedSchema("cough"),
-      name: "survey_response",
-      nonPii: `(
+    new ManagedSqlType({
+      name: "cough_derived.survey_response",
+      deps: [],
+      spec: `(
         id text,
         text text,
         answer jsonb,
         "answerOptions" jsonb
       )`
-    }
-  ];
-}
+    }),
 
-// Never remove a command, since we need to know about views that
-// used to exist so they can be deleted.  Instead, just leave both
-// pii/nonPii commands undefined and the view will be deleted.
-function getViewsMetadata(): SqlObjectMetadata[] {
-  return [
-    {
-      schema: derivedSchema("cough"),
-      name: "non_demo_surveys",
-      nonPii: `
+    new ManagedMaterializedView({
+      name: "cough_derived.non_demo_surveys",
+      deps: [],
+      spec: `
         select * from cough.current_surveys
         where survey->>'isDemo' = 'false'
       `
-    },
-    {
-      schema: derivedSchema("cough"),
-      name: "survey_named_array_items",
-      nonPii: `
+    }),
+
+    new ManagedMaterializedView({
+      name: "cough_derived.survey_named_array_items",
+      deps: [
+        "cough_derived.non_demo_surveys"
+      ],
+      spec: `
         select
           id,
           "createdAt",
@@ -135,13 +160,17 @@ function getViewsMetadata(): SqlObjectMetadata[] {
           survey,
           ${namedResponseColumns(SURVEY_QUESTIONS).join(",\n  ")},
           ${namedSampleColumns().join(",\n  ")}
-        from ${derivedSchema("cough")}.non_demo_surveys
+        from cough_derived.non_demo_surveys
       `
-    },
-    {
-      schema: derivedSchema("cough"),
-      name: "surveys",
-      nonPii: `
+    }),
+
+    new ManagedMaterializedView({
+      name: "cough_derived.surveys",
+      deps: [
+        "cough_derived.survey_response",
+        "cough_derived.survey_named_array_items"
+      ],
+      spec: `
         select
           id,
           "createdAt",
@@ -189,9 +218,9 @@ function getViewsMetadata(): SqlObjectMetadata[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'controlLineFound' as rdtreaderresult_controllinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
-        from ${derivedSchema("cough")}.survey_named_array_items
+        from cough_derived.survey_named_array_items
       `
-    }
+    })
   ];
 }
 
@@ -276,9 +305,7 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
   return flatMap(columns, questions);
 
   function columns(question: SurveyQuestion): string[] {
-    debug(
-      `=== Generating Columns for ===\n${JSON.stringify(question, null, 2)}`
-    );
+    debug(`=== Generating Columns for ===\n${JSON.stringify(question)}`);
     const qid = question.id.toLowerCase();
     switch (question.type) {
       // Text is just a label, and results in no data in db.
@@ -366,8 +393,45 @@ function selectIndexOfKeyValue(
   `;
 }
 
-function derivedSchema(original: string): string {
-  return `${original}_derived`;
+// We drop table, view, or materialized view to handle cases where
+// we change the type.
+function dropTableLike(fullName: string) {
+  const dotIndex = fullName.indexOf(".");
+  const name = fullName.substring(dotIndex + 1);
+  const schema = dotIndex < 0 ? "public" : fullName.substring(0, dotIndex);
+
+  return `
+    do $$ begin
+      ${drop(name, schema, "table", "table")};
+      ${drop(name, schema, "view", "view")};
+      ${drop(name, schema, "matview", "materialized view")};
+    end $$
+  `;
+
+  function drop(name: string, schema: string, pgShort: string, pgFull: string) {
+    return `
+      if exists (
+        select * from pg_${pgShort}s
+        where schemaname='${schema}' and ${pgShort}name='${name}'
+      ) then
+        drop ${pgFull} if exists ${schema}.${name} cascade;
+      end if
+    `;
+  }
+}
+
+// Assumes Map.values() returns nodes in insertion order
+function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
+  const hashes = new Map();
+  for (let node of nodesByName.values()) {
+    const hash = new Hash();
+    hash.update(node.getCreate());
+    hash.update(node.getUpdate());
+    hash.update(node.getDelete());
+    node.meta.deps.forEach(name => hash.update(hashes.get(name)));
+    hashes.set(node.meta.name, hash.toString());
+  }
+  return hashes;
 }
 
 function flatMap<I, O>(f: (input: I) => O[], inputs: I[]): O[] {
@@ -375,7 +439,7 @@ function flatMap<I, O>(f: (input: I) => O[], inputs: I[]): O[] {
 }
 
 function debug(s: string) {
-  if (DEBUG_DERIVED_TABLE_SERVICE) {
-    console.log(`DerivedTableService: ${s}`);
+  if (DEBUG_DATA_PIPELINE_SERVICE) {
+    console.log(`DataPipelineService: ${s}`);
   }
 }

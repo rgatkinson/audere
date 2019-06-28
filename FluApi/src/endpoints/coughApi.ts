@@ -20,7 +20,7 @@ import {
   SurveyDocument,
   PhotoDocument
 } from "audere-lib/dist/coughProtocol";
-import { DerivedTableService } from "../services/derivedTableService";
+import { DataPipelineService } from "../services/dataPipelineService";
 
 type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
 
@@ -221,7 +221,7 @@ export class CoughEndpoint {
   };
 
   private async updateDerived(reqId: string) {
-    const service = new DerivedTableService(this.sql);
+    const service = new DataPipelineService(this.sql);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
       await service.update();
