@@ -109,6 +109,7 @@ import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import { SMALL_TEXT } from "../ui/styles";
+import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -837,6 +838,34 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "finalthanks" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "treatmentTitle",
+          icons: ["drinkfluids", "getrest", "staywarm"],
+          linkLabel: "treatmentLinkLabel",
+          uri: "https://www.healthdirect.gov.au/colds-and-flu-treatments",
+        },
+      },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "preventingTitle",
+          icons: ["fluvaccine", "keepclean", "washhands"],
+          linkLabel: "preventingLinkLabel",
+          uri:
+            "https://www.healthdirect.gov.au/10-tips-to-fight-the-flu-infographic",
+        },
+      },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "symptomsTitle",
+          icons: ["headache", "runnynose", "fever"],
+          linkLabel: "symptomsLinkLabel",
+          uri: "https://www.healthdirect.gov.au/colds-and-flu-symptoms",
+        },
+      },
     ],
     key: "Thanks",
     workflowEvent: "surveyCompletedAt",

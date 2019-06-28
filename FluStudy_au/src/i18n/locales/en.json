@@ -419,7 +419,13 @@
   },
   "Thanks": {
     "title": "Thanks for participating",
-    "desc": "Your participation could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us."
+    "desc": "Your participation in this research study could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us.\n\nWant to learn more about influenza? Take a look at the following tips and information from [healthdirect](https://www.healthdirect.gov.au/).",
+    "treatmentTitle": "Influenza Treatment",
+    "treatmentLinkLabel": "healthdirect: How to treat cold and flu symptoms",
+    "preventingTitle": "Preventing Influenza",
+    "preventingLinkLabel": "healthdirect: 10 tips to fight the flu",
+    "symptomsTitle": "Cold or Flu Symptoms",
+    "symptomsLinkLabel": "healthdirect: Understand the symptoms of cold and flu"
   },
   "PendingData": {
     "title": "Connect to upload photo",

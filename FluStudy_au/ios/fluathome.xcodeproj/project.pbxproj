@@ -186,6 +186,33 @@
 		EAEBD33222691AB7009815C6 /* contactsupport@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EAEBD26E22691AB6009815C6 /* contactsupport@3x.png */; };
 		EAFF191B2254121D0027CBE8 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAFF19132254121D0027CBE8 /* UserNotifications.framework */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */; };
+		F041BFAF22C69D6F00606E8F /* runnynose@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF8E22C69D6C00606E8F /* runnynose@2x.png */; };
+		F041BFB022C69D6F00606E8F /* runnynose@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9522C69D6D00606E8F /* runnynose@3x.png */; };
+		F041BFB122C69D6F00606E8F /* getrest@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9622C69D6D00606E8F /* getrest@3x.png */; };
+		F041BFB222C69D6F00606E8F /* staywarm.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9722C69D6D00606E8F /* staywarm.png */; };
+		F041BFB322C69D6F00606E8F /* fluvaccine.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9822C69D6D00606E8F /* fluvaccine.png */; };
+		F041BFB422C69D6F00606E8F /* keepclean@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9922C69D6D00606E8F /* keepclean@2x.png */; };
+		F041BFB522C69D6F00606E8F /* drinkfluids.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9A22C69D6D00606E8F /* drinkfluids.png */; };
+		F041BFB622C69D6F00606E8F /* keepclean.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9B22C69D6D00606E8F /* keepclean.png */; };
+		F041BFB722C69D6F00606E8F /* fever@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9C22C69D6D00606E8F /* fever@2x.png */; };
+		F041BFB822C69D6F00606E8F /* fluvaccine@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9D22C69D6D00606E8F /* fluvaccine@2x.png */; };
+		F041BFB922C69D6F00606E8F /* drinkfluids@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9E22C69D6E00606E8F /* drinkfluids@2x.png */; };
+		F041BFBA22C69D6F00606E8F /* getrest.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BF9F22C69D6E00606E8F /* getrest.png */; };
+		F041BFBB22C69D6F00606E8F /* staywarm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA022C69D6E00606E8F /* staywarm@2x.png */; };
+		F041BFBC22C69D6F00606E8F /* runnynose.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA122C69D6E00606E8F /* runnynose.png */; };
+		F041BFBD22C69D6F00606E8F /* getrest@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA222C69D6E00606E8F /* getrest@2x.png */; };
+		F041BFBE22C69D6F00606E8F /* headache@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA322C69D6E00606E8F /* headache@2x.png */; };
+		F041BFBF22C69D6F00606E8F /* staywarm@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA422C69D6E00606E8F /* staywarm@3x.png */; };
+		F041BFC022C69D6F00606E8F /* headache.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA522C69D6E00606E8F /* headache.png */; };
+		F041BFC122C69D6F00606E8F /* drinkfluids@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA622C69D6E00606E8F /* drinkfluids@3x.png */; };
+		F041BFC222C69D6F00606E8F /* washhands@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA722C69D6E00606E8F /* washhands@3x.png */; };
+		F041BFC322C69D6F00606E8F /* washhands.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA822C69D6F00606E8F /* washhands.png */; };
+		F041BFC422C69D6F00606E8F /* fever@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFA922C69D6F00606E8F /* fever@3x.png */; };
+		F041BFC522C69D6F00606E8F /* headache@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFAA22C69D6F00606E8F /* headache@3x.png */; };
+		F041BFC622C69D6F00606E8F /* washhands@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFAB22C69D6F00606E8F /* washhands@2x.png */; };
+		F041BFC722C69D6F00606E8F /* keepclean@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFAC22C69D6F00606E8F /* keepclean@3x.png */; };
+		F041BFC822C69D6F00606E8F /* fever.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFAD22C69D6F00606E8F /* fever.png */; };
+		F041BFC922C69D6F00606E8F /* fluvaccine@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F041BFAE22C69D6F00606E8F /* fluvaccine@3x.png */; };
 		F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */; };
 		F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F08F61E8222DD184008CCF6A /* libRNDeviceInfo.a */; };
 /* End PBXBuildFile section */
@@ -431,6 +458,33 @@
 		EAEBD26A22691AB6009815C6 /* welcome@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "welcome@2x.png"; path = "../../../assets/images/welcome@2x.png"; sourceTree = "<group>"; };
 		EAEBD26E22691AB6009815C6 /* contactsupport@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "contactsupport@3x.png"; path = "../../../assets/images/contactsupport@3x.png"; sourceTree = "<group>"; };
 		EAFF19132254121D0027CBE8 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		F041BF8E22C69D6C00606E8F /* runnynose@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "runnynose@2x.png"; path = "../../../assets/images/runnynose@2x.png"; sourceTree = "<group>"; };
+		F041BF9522C69D6D00606E8F /* runnynose@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "runnynose@3x.png"; path = "../../../assets/images/runnynose@3x.png"; sourceTree = "<group>"; };
+		F041BF9622C69D6D00606E8F /* getrest@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "getrest@3x.png"; path = "../../../assets/images/getrest@3x.png"; sourceTree = "<group>"; };
+		F041BF9722C69D6D00606E8F /* staywarm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = staywarm.png; path = ../../../assets/images/staywarm.png; sourceTree = "<group>"; };
+		F041BF9822C69D6D00606E8F /* fluvaccine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fluvaccine.png; path = ../../../assets/images/fluvaccine.png; sourceTree = "<group>"; };
+		F041BF9922C69D6D00606E8F /* keepclean@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "keepclean@2x.png"; path = "../../../assets/images/keepclean@2x.png"; sourceTree = "<group>"; };
+		F041BF9A22C69D6D00606E8F /* drinkfluids.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = drinkfluids.png; path = ../../../assets/images/drinkfluids.png; sourceTree = "<group>"; };
+		F041BF9B22C69D6D00606E8F /* keepclean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keepclean.png; path = ../../../assets/images/keepclean.png; sourceTree = "<group>"; };
+		F041BF9C22C69D6D00606E8F /* fever@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fever@2x.png"; path = "../../../assets/images/fever@2x.png"; sourceTree = "<group>"; };
+		F041BF9D22C69D6D00606E8F /* fluvaccine@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fluvaccine@2x.png"; path = "../../../assets/images/fluvaccine@2x.png"; sourceTree = "<group>"; };
+		F041BF9E22C69D6E00606E8F /* drinkfluids@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "drinkfluids@2x.png"; path = "../../../assets/images/drinkfluids@2x.png"; sourceTree = "<group>"; };
+		F041BF9F22C69D6E00606E8F /* getrest.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = getrest.png; path = ../../../assets/images/getrest.png; sourceTree = "<group>"; };
+		F041BFA022C69D6E00606E8F /* staywarm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "staywarm@2x.png"; path = "../../../assets/images/staywarm@2x.png"; sourceTree = "<group>"; };
+		F041BFA122C69D6E00606E8F /* runnynose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = runnynose.png; path = ../../../assets/images/runnynose.png; sourceTree = "<group>"; };
+		F041BFA222C69D6E00606E8F /* getrest@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "getrest@2x.png"; path = "../../../assets/images/getrest@2x.png"; sourceTree = "<group>"; };
+		F041BFA322C69D6E00606E8F /* headache@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "headache@2x.png"; path = "../../../assets/images/headache@2x.png"; sourceTree = "<group>"; };
+		F041BFA422C69D6E00606E8F /* staywarm@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "staywarm@3x.png"; path = "../../../assets/images/staywarm@3x.png"; sourceTree = "<group>"; };
+		F041BFA522C69D6E00606E8F /* headache.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = headache.png; path = ../../../assets/images/headache.png; sourceTree = "<group>"; };
+		F041BFA622C69D6E00606E8F /* drinkfluids@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "drinkfluids@3x.png"; path = "../../../assets/images/drinkfluids@3x.png"; sourceTree = "<group>"; };
+		F041BFA722C69D6E00606E8F /* washhands@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "washhands@3x.png"; path = "../../../assets/images/washhands@3x.png"; sourceTree = "<group>"; };
+		F041BFA822C69D6F00606E8F /* washhands.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = washhands.png; path = ../../../assets/images/washhands.png; sourceTree = "<group>"; };
+		F041BFA922C69D6F00606E8F /* fever@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fever@3x.png"; path = "../../../assets/images/fever@3x.png"; sourceTree = "<group>"; };
+		F041BFAA22C69D6F00606E8F /* headache@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "headache@3x.png"; path = "../../../assets/images/headache@3x.png"; sourceTree = "<group>"; };
+		F041BFAB22C69D6F00606E8F /* washhands@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "washhands@2x.png"; path = "../../../assets/images/washhands@2x.png"; sourceTree = "<group>"; };
+		F041BFAC22C69D6F00606E8F /* keepclean@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "keepclean@3x.png"; path = "../../../assets/images/keepclean@3x.png"; sourceTree = "<group>"; };
+		F041BFAD22C69D6F00606E8F /* fever.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fever.png; path = ../../../assets/images/fever.png; sourceTree = "<group>"; };
+		F041BFAE22C69D6F00606E8F /* fluvaccine@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fluvaccine@3x.png"; path = "../../../assets/images/fluvaccine@3x.png"; sourceTree = "<group>"; };
 		F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../../node_modules/react-native-device-info/ios/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
@@ -523,6 +577,33 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				F041BF9A22C69D6D00606E8F /* drinkfluids.png */,
+				F041BF9E22C69D6E00606E8F /* drinkfluids@2x.png */,
+				F041BFA622C69D6E00606E8F /* drinkfluids@3x.png */,
+				F041BFAD22C69D6F00606E8F /* fever.png */,
+				F041BF9C22C69D6D00606E8F /* fever@2x.png */,
+				F041BFA922C69D6F00606E8F /* fever@3x.png */,
+				F041BF9822C69D6D00606E8F /* fluvaccine.png */,
+				F041BF9D22C69D6D00606E8F /* fluvaccine@2x.png */,
+				F041BFAE22C69D6F00606E8F /* fluvaccine@3x.png */,
+				F041BF9F22C69D6E00606E8F /* getrest.png */,
+				F041BFA222C69D6E00606E8F /* getrest@2x.png */,
+				F041BF9622C69D6D00606E8F /* getrest@3x.png */,
+				F041BFA522C69D6E00606E8F /* headache.png */,
+				F041BFA322C69D6E00606E8F /* headache@2x.png */,
+				F041BFAA22C69D6F00606E8F /* headache@3x.png */,
+				F041BF9B22C69D6D00606E8F /* keepclean.png */,
+				F041BF9922C69D6D00606E8F /* keepclean@2x.png */,
+				F041BFAC22C69D6F00606E8F /* keepclean@3x.png */,
+				F041BFA122C69D6E00606E8F /* runnynose.png */,
+				F041BF8E22C69D6C00606E8F /* runnynose@2x.png */,
+				F041BF9522C69D6D00606E8F /* runnynose@3x.png */,
+				F041BF9722C69D6D00606E8F /* staywarm.png */,
+				F041BFA022C69D6E00606E8F /* staywarm@2x.png */,
+				F041BFA422C69D6E00606E8F /* staywarm@3x.png */,
+				F041BFA822C69D6F00606E8F /* washhands.png */,
+				F041BFAB22C69D6F00606E8F /* washhands@2x.png */,
+				F041BFA722C69D6E00606E8F /* washhands@3x.png */,
 				21548C7522B40E7500878E09 /* quickvue_ref_v3.jpg */,
 				EAA1BB8022A5F975005C16A9 /* defectiveteststrip.png */,
 				EAA1BB7822A5F974005C16A9 /* defectiveteststrip@2x.png */,
@@ -887,6 +968,7 @@
 				598F6C142280F61300B15B8B /* two.png in Resources */,
 				EAE02FAA229719A0000C88F6 /* yellowhexagon.png in Resources */,
 				59A01E1122AEC2600030AC38 /* gradient.png in Resources */,
+				F041BFBA22C69D6F00606E8F /* getrest.png in Resources */,
 				EAE02FA222971991000C88F6 /* greenyellowsquare.png in Resources */,
 				507F748822BAFA5D0055CE82 /* positiongreen@2x.png in Resources */,
 				502CB2C222C13E6500A86E23 /* oneline.png in Resources */,
@@ -903,9 +985,12 @@
 				EAE02FAB229719A0000C88F6 /* yellowcircle.png in Resources */,
 				EAE02F9D22971991000C88F6 /* greencircle.png in Resources */,
 				598F6C122280F61300B15B8B /* three.png in Resources */,
+				F041BFC922C69D6F00606E8F /* fluvaccine@3x.png in Resources */,
+				F041BFB622C69D6F00606E8F /* keepclean.png in Resources */,
 				59EDB821229F0925001B7F12 /* setupkitbox.png in Resources */,
 				EAEBD2B722691AB7009815C6 /* splash.png in Resources */,
 				EAE02F9C22971991000C88F6 /* greenyellowcircle.png in Resources */,
+				F041BFC522C69D6F00606E8F /* headache@3x.png in Resources */,
 				59AC902122B8319700277C62 /* nointernetconnection@3x.png in Resources */,
 				507F748A22BAFA5D0055CE82 /* positiongreen.png in Resources */,
 				EAE02FA022971991000C88F6 /* greenyellowtriangle.png in Resources */,
@@ -930,9 +1015,11 @@
 				EAEBD30222691AB7009815C6 /* preparetube@3x.png in Resources */,
 				B5693E911FABD46800307FA4 /* launch_background_image.png in Resources */,
 				507F74C822BC5D8F0055CE82 /* distancegreen@2x.png in Resources */,
+				F041BFB922C69D6F00606E8F /* drinkfluids@2x.png in Resources */,
 				59EA63EC22A03B1F009B45BD /* pinklinebelowblueline.png in Resources */,
 				EAEBD2A422691AB7009815C6 /* finalthanks.png in Resources */,
 				EAA1BB8122A5F975005C16A9 /* defectiveteststrip@2x.png in Resources */,
+				F041BFBE22C69D6F00606E8F /* headache@2x.png in Resources */,
 				59EDB565229DBA39001B7F12 /* generalexposure.png in Resources */,
 				EAEBD32422691AB7009815C6 /* contactsupport@2x.png in Resources */,
 				EAEBD30622691AB7009815C6 /* oneminutetimer.png in Resources */,
@@ -943,6 +1030,7 @@
 				EAEBD29822691AB7009815C6 /* putteststripintube@3x.png in Resources */,
 				502CB2C322C13E6500A86E23 /* oneline@2x.png in Resources */,
 				59D3573D22B1748E0003C3DD /* thanksforyourinterest.png in Resources */,
+				F041BFC422C69D6F00606E8F /* fever@3x.png in Resources */,
 				59D64623229DA6F000EA64E6 /* barcodesuccess@2x.png in Resources */,
 				59EDB81C229F0901001B7F12 /* scanbarcode.png in Resources */,
 				EAEBD2FC22691AB7009815C6 /* collectmucus@2x.png in Resources */,
@@ -969,6 +1057,7 @@
 				EAEBD29722691AB7009815C6 /* teststripdetail.png in Resources */,
 				502CB2C422C13E6500A86E23 /* twolines@2x.png in Resources */,
 				59EDB81B229F0901001B7F12 /* scanbarcode@3x.png in Resources */,
+				F041BFBF22C69D6F00606E8F /* staywarm@3x.png in Resources */,
 				EAEBD2CC22691AB7009815C6 /* reverselogo.png in Resources */,
 				EAEBD27B22691AB7009815C6 /* lookatteststrip@3x.png in Resources */,
 				EAEBD27A22691AB7009815C6 /* finishwithtube@3x.png in Resources */,
@@ -978,19 +1067,24 @@
 				507F74C922BC5D8F0055CE82 /* distanceyellow@2x.png in Resources */,
 				59D64622229DA6F000EA64E6 /* barcodesuccess@3x.png in Resources */,
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
+				F041BFB722C69D6F00606E8F /* fever@2x.png in Resources */,
 				507F74CC22BC5D8F0055CE82 /* distancewhite@2x.png in Resources */,
 				EAEBD32022691AB7009815C6 /* teststripdetail@3x.png in Resources */,
 				EAEBD2AF22691AB7009815C6 /* putswabintube@2x.png in Resources */,
 				507F74DA22BC5DA50055CE82 /* rotationgreen@2x.png in Resources */,
+				F041BFBC22C69D6F00606E8F /* runnynose.png in Resources */,
 				EAEBD33222691AB7009815C6 /* contactsupport@3x.png in Resources */,
 				F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */,
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,
 				EAEBD31522691AB7009815C6 /* collectmucus.png in Resources */,
+				F041BFB322C69D6F00606E8F /* fluvaccine.png in Resources */,
 				EAEBD2CB22691AB7009815C6 /* opennasalswab@2x.png in Resources */,
 				59EDB81A229F0901001B7F12 /* scanbarcode@2x.png in Resources */,
 				EAEBD2D822691AB7009815C6 /* shortsplash.png in Resources */,
 				EAEBD29222691AB7009815C6 /* finishwithtube.png in Resources */,
+				F041BFC222C69D6F00606E8F /* washhands@3x.png in Resources */,
 				59EDB564229DBA39001B7F12 /* generalexposure@3x.png in Resources */,
+				F041BFB522C69D6F00606E8F /* drinkfluids.png in Resources */,
 				59EDB826229F0957001B7F12 /* whatsrequired@3x.png in Resources */,
 				EAEBD2B022691AB7009815C6 /* collectsamplethumb.png in Resources */,
 				59EA63E622A03B1F009B45BD /* pinklinebelowblueline@3x.png in Resources */,
@@ -1002,6 +1096,7 @@
 				EAEBD2E022691AB7009815C6 /* removeswabfromtubethumb.png in Resources */,
 				EAEBD2FF22691AB7009815C6 /* collectmucus@3x.png in Resources */,
 				59EA63E422A03B1F009B45BD /* pinklineabovebelow@2x.png in Resources */,
+				F041BFC122C69D6F00606E8F /* drinkfluids@3x.png in Resources */,
 				B5693E921FABD46800307FA4 /* launch_icon.png in Resources */,
 				EAEBD27222691AB7009815C6 /* nicejob@2x.png in Resources */,
 				EAEBD2BE22691AB7009815C6 /* putteststripintube@2x.png in Resources */,
@@ -1009,15 +1104,19 @@
 				EAEBD31122691AB7009815C6 /* takepictureteststrip.png in Resources */,
 				EAEBD2CE22691AB7009815C6 /* finalthanks@3x.png in Resources */,
 				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
+				F041BFAF22C69D6F00606E8F /* runnynose@2x.png in Resources */,
 				5906FF4C2296035300A8C878 /* questionsthankyou@3x.png in Resources */,
+				F041BFC322C69D6F00606E8F /* washhands.png in Resources */,
 				507F749722BAFC930055CE82 /* flashon.png in Resources */,
 				EAA1BB8322A5F975005C16A9 /* defectiveteststrip.png in Resources */,
 				502CB2BF22C13E6500A86E23 /* twolines.png in Resources */,
 				EAEBD31B22691AB7009815C6 /* preparetube@2x.png in Resources */,
 				507F74C722BC5D8F0055CE82 /* distancewhite@3x.png in Resources */,
+				F041BFBB22C69D6F00606E8F /* staywarm@2x.png in Resources */,
 				EAEBD2C622691AB7009815C6 /* removeswabfromtube@3x.png in Resources */,
 				EAEBD2B122691AB7009815C6 /* openteststrip@3x.png in Resources */,
 				EAEBD2C922691AB7009815C6 /* openteststrip@2x.png in Resources */,
+				F041BFB822C69D6F00606E8F /* fluvaccine@2x.png in Resources */,
 				59AC902022B8319700277C62 /* nointernetconnection.png in Resources */,
 				507F749922BAFC930055CE82 /* flashon@3x.png in Resources */,
 				59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */,
@@ -1038,19 +1137,28 @@
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 				EAEBD2E722691AB7009815C6 /* oneminutetimer@2x.png in Resources */,
 				EAEBD2F422691AB7009815C6 /* mediumsplash.png in Resources */,
+				F041BFB122C69D6F00606E8F /* getrest@3x.png in Resources */,
+				F041BFC722C69D6F00606E8F /* keepclean@3x.png in Resources */,
 				59EA63E522A03B1F009B45BD /* pinklineaboveblueline@2x.png in Resources */,
 				5906FF222295F47800A8C878 /* cleanuptest@2x.png in Resources */,
 				507F74D822BC5DA50055CE82 /* rotationyellow@2x.png in Resources */,
+				F041BFC622C69D6F00606E8F /* washhands@2x.png in Resources */,
+				F041BFC822C69D6F00606E8F /* fever.png in Resources */,
 				EAEBD29122691AB7009815C6 /* putteststripintube.png in Resources */,
 				507F749422BAFC930055CE82 /* flashoff.png in Resources */,
+				F041BFB422C69D6F00606E8F /* keepclean@2x.png in Resources */,
 				EAEBD31622691AB7009815C6 /* preparetubethumb.png in Resources */,
 				EAEBD32D22691AB7009815C6 /* takepictureteststrip@2x.png in Resources */,
 				EAA1BBB422A72AF1005C16A9 /* greensquare.png in Resources */,
 				EAEBD31E22691AB7009815C6 /* lookatteststrip.png in Resources */,
+				F041BFB022C69D6F00606E8F /* runnynose@3x.png in Resources */,
+				F041BFB222C69D6F00606E8F /* staywarm.png in Resources */,
+				F041BFC022C69D6F00606E8F /* headache.png in Resources */,
 				59D3573F22B1748E0003C3DD /* thanksforyourinterest@3x.png in Resources */,
 				EAEBD2B522691AB7009815C6 /* lookatteststrip@2x.png in Resources */,
 				507F74CE22BC5D8F0055CE82 /* distancewhite.png in Resources */,
 				59EDB815229F08B9001B7F12 /* readytobegin.png in Resources */,
+				F041BFBD22C69D6F00606E8F /* getrest@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
