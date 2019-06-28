@@ -398,7 +398,7 @@
     "title": "Your test result",
     "onePinkAndBlue": "Another line above or below the blue line",
     "noPink": "No other lines above or below the blue line",
-    "why": "Your test strip indicated the following:"
+    "why": "The app has interpreted your test strip and found the following:"
   },
   "Advice": {
     "title": "What do I do now?",
