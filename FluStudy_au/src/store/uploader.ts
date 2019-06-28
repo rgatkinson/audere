@@ -25,6 +25,9 @@ import {
   ChildrenWithChildrenConfig,
   HouseholdChildrenConfig,
   AssignedSexConfig,
+  FluShotNationalImmunization,
+  FluShotNationalImmunizationCondition,
+  PreviousSeason,
 } from "audere-lib/coughQuestionConfig";
 import { crashlytics } from "../crashReporter";
 import { tracker, TransportEvents } from "../util/tracker";
@@ -34,28 +37,86 @@ import { syncSurvey } from "./FirebaseStore";
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
   {
     conditionalId: CoughSneezeConfig.id,
-    dependsOnId: InContactConfig.id,
-    includeWhen: isSelected("yes"),
+    conditions: [
+      {
+        dependsOnId: InContactConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
   },
   {
     conditionalId: FluShotDateConfig.id,
-    dependsOnId: FluShotConfig.id,
-    includeWhen: isSelected("yes"),
+    conditions: [
+      {
+        dependsOnId: FluShotConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: FluShotNationalImmunization.id,
+    conditions: [
+      {
+        dependsOnId: FluShotConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: FluShotNationalImmunizationCondition.id,
+    conditions: [
+      { dependsOnId: FluShotConfig.id, includeWhen: isSelected("yes") },
+      {
+        dependsOnId: FluShotNationalImmunization.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: FluShotNationalImmunizationCondition.id,
+    conditions: [
+      {
+        dependsOnId: FluShotNationalImmunization.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: PreviousSeason.id,
+    conditions: [
+      {
+        dependsOnId: FluShotConfig.id,
+        includeWhen: isSelected("neverFlu"),
+        anythingBut: true,
+      },
+    ],
   },
   {
     conditionalId: ChildrenWithChildrenConfig.id,
-    dependsOnId: HouseholdChildrenConfig.id,
-    includeWhen: isSelected("yes"),
+    conditions: [
+      {
+        dependsOnId: HouseholdChildrenConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
   },
   {
     conditionalId: PinkWhenBlueConfig.id,
-    dependsOnId: BlueLineConfig.id,
-    includeWhen: isSelected("yes"),
+    conditions: [
+      {
+        dependsOnId: BlueLineConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
   },
   {
     conditionalId: PinkLineConfig.id,
-    dependsOnId: BlueLineConfig.id,
-    includeWhen: isSelected("no"),
+    conditions: [
+      {
+        dependsOnId: BlueLineConfig.id,
+        includeWhen: isSelected("no"),
+      },
+    ],
   },
 ];
 
@@ -318,8 +379,27 @@ function cleanupResponses(responses: SurveyResponse[]): SurveyResponse[] {
       return true;
     }
 
-    const dependency = byId.get(conditional.dependsOnId);
-    return dependency == null || conditional.includeWhen(dependency);
+    for (let i = 0; i < conditional.conditions.length; i++) {
+      const dependency = byId.get(conditional.conditions[i].dependsOnId);
+      const condition = conditional.conditions[i];
+
+      if (
+        dependency != null &&
+        !!condition.anythingBut &&
+        condition.includeWhen(dependency)
+      ) {
+        return false;
+      }
+
+      if (
+        dependency != null &&
+        !condition.anythingBut &&
+        !condition.includeWhen(dependency)
+      ) {
+        return false;
+      }
+    }
+    return true;
   });
 }
 
@@ -336,8 +416,13 @@ type ById<T> = [string, T];
 
 interface ConditionalQuestion {
   conditionalId: string;
+  conditions: Condition[];
+}
+
+interface Condition {
   dependsOnId: string;
   includeWhen: ResponsePredicate;
+  anythingBut?: boolean;
 }
 
 interface ResponsePredicate {
