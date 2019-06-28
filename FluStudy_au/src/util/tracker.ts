@@ -72,6 +72,7 @@ export const AppEvents = {
   CSRUID_ESTABLISHED: "csruid_established",
   BARCODE_TIMEOUT: "barcode_scanner_timeout",
   RDT_TIMEOUT: "RDT_reader_timeout",
+  FLASH_TOGGLE: "camera_flash_toggle",
   SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
 };
 

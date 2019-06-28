@@ -286,6 +286,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _toggleFlash = () => {
     this.setState({ flashEnabled: !this.state.flashEnabled });
+    tracker.logEvent(AppEvents.FLASH_TOGGLE, {
+      flash_on: this.state.flashEnabled,
+    });
   };
 
   // Simulate negative RDT result
