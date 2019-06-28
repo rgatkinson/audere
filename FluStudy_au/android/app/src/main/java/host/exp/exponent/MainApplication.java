@@ -61,7 +61,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new ReactPackage() {
               @Override
               public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-                return Arrays.asList();
+                return Arrays.<NativeModule>asList(new OpenAppSettingsModule(reactContext));
               }
 
               @Override

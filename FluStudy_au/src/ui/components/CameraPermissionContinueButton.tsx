@@ -4,9 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import { Camera, Permissions } from "expo";
+import { Permissions } from "expo";
+import { Action, StoreState, setCameraSettingsGrantedPage } from "../../store/";
 
 import Button from "./Button";
 
@@ -14,6 +16,8 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   grantedNext: string;
   deniedNext: string;
+  dispatch(action: Action): void;
+  cameraSettingsGrantedPage: string;
 }
 
 class CameraPermissionContinueButton extends React.Component<
@@ -24,12 +28,13 @@ class CameraPermissionContinueButton extends React.Component<
   }
 
   _onNext = async () => {
-    const { deniedNext, grantedNext, navigation } = this.props;
+    const { deniedNext, dispatch, grantedNext, navigation } = this.props;
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === "granted") {
-      this.props.navigation.push(grantedNext);
+      navigation.push(grantedNext);
     } else {
-      this.props.navigation.push(deniedNext);
+      dispatch(setCameraSettingsGrantedPage(grantedNext));
+      navigation.push(deniedNext);
     }
   };
 
@@ -46,4 +51,6 @@ class CameraPermissionContinueButton extends React.Component<
   }
 }
 
-export default withNavigation(withNamespaces()(CameraPermissionContinueButton));
+export default connect((state: StoreState) => ({
+  cameraSettingsGrantedPage: state.meta.cameraSettingsGrantedPage,
+}))(withNavigation(withNamespaces()(CameraPermissionContinueButton)));

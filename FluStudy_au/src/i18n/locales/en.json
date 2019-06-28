@@ -243,7 +243,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "First, we'd like you to scan the barcode found on the outside of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
+    "desc": "Locate the barcode on the kit in the top right corner and tap \"Continue\".\n\nOnce activated, the app will show you where to take the photo and will capture the barcode automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -374,9 +374,11 @@
     "overExposed": "Ensure the test strip is on kit box or turn off the flash"
   },
   "CameraSettings": {
-    "title": "Update your settings",
-    "desc": "To grant access for flu@home to take a picture of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
-    "descAndroid": "To grant access for flu@home to take a picture of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
+    "title": "Camera access required",
+    "desc": "We're sorry, but using your device's camera is required to continue with the test. If you'd like to continue, please update your device settings and we'll allow you to continue.\n\nElse, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
+    "howToIOS": "**Go to Settings / Privacy / Camera / flu@home.**\n**Flip the switch to \"Yes\".**\n**Please note: When you return, the camera will be active.**",
+    "howToAndroid": "**Go to Settings / Apps / flu@home / Permissions.**\n**Toggle the camera switch to on.**\n**Please note: When you return, the camera will be active.**",
+    "goToSettings": "GO TO SETTINGS"
   },
   "TestStripCamera": {
     "title": "Tap the screen to focus the image.",

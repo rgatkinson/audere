@@ -7,6 +7,10 @@ import { updateCollectionEnabled } from "../util/tracker";
 
 export type MetaAction =
   | { type: "SET_ACTIVE_ROUTE_NAME"; activeRouteName: string }
+  | {
+      type: "SET_CAMERA_SETTINGS_GRANTED_PAGE";
+      cameraSettingsGrantedPage: string;
+    }
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
@@ -14,6 +18,7 @@ export type MetaAction =
 
 export type MetaState = {
   activeRouteName: string;
+  cameraSettingsGrantedPage: string;
   isConnected: boolean;
   isDemo: boolean;
   marketingProperties: any;
@@ -23,6 +28,7 @@ export type MetaState = {
 
 const initialState: MetaState = {
   activeRouteName: "Welcome",
+  cameraSettingsGrantedPage: "",
   isConnected: true,
   isDemo: false,
   marketingProperties: undefined,
@@ -34,6 +40,11 @@ export default function reducer(state = initialState, action: MetaAction) {
   switch (action.type) {
     case "SET_ACTIVE_ROUTE_NAME":
       return { ...state, activeRouteName: action.activeRouteName };
+    case "SET_CAMERA_SETTINGS_GRANTED_PAGE":
+      return {
+        ...state,
+        cameraSettingsGrantedPage: action.cameraSettingsGrantedPage,
+      };
     case "SET_DEMO":
       return { ...state, isDemo: action.isDemo };
     case "SET_OFFLINE_WARNING":
@@ -51,6 +62,15 @@ export function setActiveRouteName(activeRouteName: string): MetaAction {
   return {
     type: "SET_ACTIVE_ROUTE_NAME",
     activeRouteName,
+  };
+}
+
+export function setCameraSettingsGrantedPage(
+  cameraSettingsGrantedPage: string
+): MetaAction {
+  return {
+    type: "SET_CAMERA_SETTINGS_GRANTED_PAGE",
+    cameraSettingsGrantedPage,
   };
 }
 

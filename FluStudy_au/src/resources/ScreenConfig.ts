@@ -86,6 +86,7 @@ import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import BulletPointsComponent from "../ui/components/BulletPoint";
+import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
 import Divider from "../ui/components/Divider";
@@ -110,6 +111,7 @@ import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import { SMALL_TEXT } from "../ui/styles";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
+import { openSettingsApp } from "../util/openSettingsApp";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -262,7 +264,7 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: CameraPermissionContinueButton,
-        props: { grantedNext: "Scan", deniedNext: "ManualEntry" },
+        props: { grantedNext: "Scan", deniedNext: "CameraSettings" },
       },
     ],
     funnelEvent: FunnelEvents.CONSENT_COMPLETED,
@@ -654,7 +656,25 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: ScreenText,
-        props: { label: Platform.OS === "android" ? "descAndroid" : "desc" },
+        props: { label: "desc" },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: Platform.OS === "android" ? "howToAndroid" : "howToIOS",
+          customBulletUri: "listarrow",
+        },
+      },
+    ],
+    footer: [
+      {
+        tag: Button,
+        props: {
+          enabled: true,
+          label: "goToSettings",
+          primary: true,
+          onPress: openSettingsApp,
+        },
       },
     ],
     key: "CameraSettings",

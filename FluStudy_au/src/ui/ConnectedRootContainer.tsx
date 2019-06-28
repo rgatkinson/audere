@@ -77,6 +77,7 @@ interface Props {
   workflow: WorkflowInfo;
   csruid?: string;
   dispatch(action: Action): void;
+  cameraSettingsGrantedPage: string;
 }
 
 class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
@@ -215,7 +216,9 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
           this.navigator &&
             this.navigator.current &&
             this.navigator.current.dispatch(
-              StackActions.replace({ routeName: "RDTReader" })
+              StackActions.replace({
+                routeName: this.props.cameraSettingsGrantedPage,
+              })
             );
         }
       }
@@ -334,6 +337,7 @@ export default connect((state: StoreState) => {
       lastUpdate: state.survey.timestamp,
       workflow: state.survey.workflow,
       csruid: state.survey.csruid,
+      cameraSettingsGrantedPage: state.meta.cameraSettingsGrantedPage,
     };
   } catch (e) {
     uploadingErrorHandler(e, true, "StoreState corrupted");
@@ -344,6 +348,7 @@ export default connect((state: StoreState) => {
       lastUpdate: undefined,
       workflow: {},
       csruid: undefined,
+      cameraSettingsGrantedPage: "",
     };
 
     if (state == null) {
@@ -358,6 +363,9 @@ export default connect((state: StoreState) => {
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
       csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
+      cameraSettingsGrantedPage: !!state.meta
+        ? state.meta.cameraSettingsGrantedPage
+        : defaults.cameraSettingsGrantedPage,
     };
   }
 })(withNamespaces()(ConnectedRootContainer));
