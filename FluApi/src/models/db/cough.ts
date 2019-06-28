@@ -17,7 +17,6 @@ import {
 } from "../../util/sql";
 import {
   DeviceInfo,
-  DocumentType,
   PhotoDbInfo,
   SurveyNonPIIInfo
 } from "audere-lib/dist/coughProtocol";
