@@ -9,7 +9,7 @@ const schema = "cough_derived";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    queryInterface.createSchema(schema);
+    await queryInterface.createSchema(schema);
   },
 
   down: async (queryInterface, Sequelize) => {
