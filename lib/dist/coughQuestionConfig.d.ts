@@ -99,5 +99,6 @@ export declare const RaceConfig: OptionQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
 export declare const PinkLineConfig: SurveyQuestion;
+export declare const NumLinesSeenConfig: SurveyQuestion;
 export declare const TestFeedbackConfig: SurveyQuestion;
 export declare const SURVEY_QUESTIONS: SurveyQuestion[];

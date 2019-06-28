@@ -72,7 +72,14 @@ export const AppEvents = {
   CSRUID_ESTABLISHED: "csruid_established",
   BARCODE_TIMEOUT: "barcode_scanner_timeout",
   RDT_TIMEOUT: "RDT_reader_timeout",
+  SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
 };
+
+// Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.
+export enum RDTInterpretationEventTypes {
+  UBICOMP = "Ubicomp",
+  IPRD = "IPRD",
+}
 
 export function startTracking() {
   // getUniqueID returns IDFV on iOS (unique ID per install, not per phone),

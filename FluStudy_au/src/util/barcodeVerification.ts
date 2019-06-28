@@ -5,9 +5,6 @@
 
 import { Alert } from "react-native";
 import i18n from "i18next";
-import axios from "axios";
-import { getApiBaseUrl } from "../transport";
-import { getRemoteConfig } from "./remoteConfig";
 
 const BARCODE_RE = /^[0-9]{8}$/;
 const BARCODE_CHARS = 8;

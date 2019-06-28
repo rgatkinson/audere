@@ -6,14 +6,10 @@
 import firebase from "react-native-firebase";
 import { crashlytics } from "../crashReporter";
 import { tracker, AppHealthEvents } from "../util/tracker";
-import { Constants } from "expo";
 
 interface RemoteConfig {
-  blockKitOrders: boolean;
-  rdtReader: boolean;
-  showVideos: boolean;
-  validateBarcodes: boolean;
-  [key: string]: boolean | string[];
+  showRDTInterpretation: string;
+  [key: string]: boolean | string[] | string;
 }
 
 // Every config you load should have a default set here.  Remember that the
@@ -24,22 +20,12 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
-  // Pessimistically assume we have no kits.  Currently only on iOS because
-  // we're busy getting remoteConfig working on Android (struggling with 403
-  // Forbidden issues).
-  blockKitOrders: !!Constants.platform.ios,
-  rdtReader: false,
-  showVideos: true,
-  validateBarcodes: false,
+  showRDTInterpretation: "",
 };
 
 // Values you put into here will always be applied on top of remote config
 // values (merged over) in non-production environments.
-const DEV_CONFIG_OVERRIDES = {
-  blockKitOrders: false,
-  rdtReader: true,
-  showVideos: true,
-};
+const DEV_CONFIG_OVERRIDES = {};
 
 let _currentConfig: RemoteConfig = Object.assign({}, DEFAULT_CONFIGS);
 
@@ -70,16 +56,6 @@ async function loadConfig(): Promise<RemoteConfig> {
 export function getRemoteConfig(key: string): any {
   // @ts-ignore
   return _currentConfig[key];
-}
-
-// Do this only if you really know what you're doing.  You're programmatically
-// bypassing our Awesome Web-Based Config Setter™.
-export function overrideRemoteConfig(key: string, value: boolean) {
-  let newConfig = { ..._currentConfig };
-
-  newConfig[key] = value;
-  _currentConfig = newConfig; // We do this because the object is immutable
-  tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, newConfig);
 }
 
 const SECONDS_IN_HOUR = 60 * 60;

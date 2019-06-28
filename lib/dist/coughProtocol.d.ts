@@ -95,6 +95,7 @@ export declare enum EventInfoKind {
 }
 export interface RDTInfo {
     rdtReaderResult?: RDTReaderResult;
+    interpreter?: string;
     totalTestStripTime?: number;
     captureTime?: number;
     rdtTotalTime?: number;

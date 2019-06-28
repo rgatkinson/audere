@@ -42,7 +42,8 @@
       "desc": "Your test strip indicates you may be:",
       "positive": "**POSITIVE** for **INFLUENZA**",
       "negative": "**NEGATIVE** for **INFLUENZA**",
-      "why": "**Why did I get this result?**\n\nYou indicated you saw the following on your test strip:",
+      "whyTitle": "**Why did I get this result?**",
+      "blueLine": "A blue line in the middle of your test strip",
       "positiveWhatToDo": "**What should I do if my test is positive?**\n\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
       "negativeWhatToDo": "**What should I do if my test is negative?**\n\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
       "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days but sometimes these viruses can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. Please visit heathdirect for more information on the flu:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
@@ -368,15 +369,15 @@
   },
   "TestResult": {
     "title": "Your test result",
-    "blueLine": "A blue line in the middle of your test strip",
+    "why": "You indicated you saw the following on your test strip:",
     "onePinkAndBlue": "A pink line above or below the blue line",
     "noPink": "No pink line"
   },
   "TestResultRDT": {
     "title": "Your test result",
-    "blueLine": "A blue line in the middle of your test strip",
     "onePinkAndBlue": "Another line above or below the blue line",
-    "noPink": "No other lines above or below the blue line"
+    "noPink": "No other lines above or below the blue line",
+    "why": "Your test strip indicated the following:"
   },
   "Advice": {
     "title": "What do I do now?",

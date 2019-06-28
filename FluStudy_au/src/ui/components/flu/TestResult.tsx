@@ -14,6 +14,7 @@ import {
   getResultRedAnswer,
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
+import { tracker, AppEvents } from "../../../util/tracker";
 
 interface Props {
   redAnswer?: string;
@@ -30,9 +31,13 @@ class TestResult extends React.Component<Props & WithNamespaces> {
             content={t("common:testResult:" + getResultRedAnswer(redAnswer))}
           />
         </BorderView>
-        <Text content={t("common:testResult:why")} style={styles.text} />
+        <Text content={t("common:testResult:whyTitle")} style={styles.text} />
+        <Text content={t("why")} style={styles.text} />
         <View style={{ marginHorizontal: GUTTER }}>
-          <BulletPoint content={t("blueLine")} customBulletUri="listarrow" />
+          <BulletPoint
+            content={t("common:testResult:blueLine")}
+            customBulletUri="listarrow"
+          />
           <BulletPoint
             content={t(getExplanationRedAnswer(redAnswer))}
             customBulletUri="listarrow"

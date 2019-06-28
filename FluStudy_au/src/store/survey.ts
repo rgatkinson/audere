@@ -43,6 +43,7 @@ export type SurveyAction =
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
+  | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string }
   | {
       type: "UPDATE_RESPONSES";
       answer: SurveyAnswer;
@@ -234,6 +235,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
         timestamp: new Date().getTime(),
       };
 
+    case "SET_RDT_INTERPRETATION_SHOWN":
+      return {
+        ...state,
+        rdtInfo: { ...state.rdtInfo, interpreter: action.interpreter },
+        timestamp: new Date().getTime(),
+      };
+
     case "SET_RESPONSES":
       return {
         ...state,
@@ -406,6 +414,13 @@ export function setRDTReaderResult(
   return {
     type: "SET_RDT_READER_RESULT",
     rdtReaderResult,
+  };
+}
+
+export function setRDTInterpretationShown(interpreter: string): SurveyAction {
+  return {
+    type: "SET_RDT_INTERPRETATION_SHOWN",
+    interpreter,
   };
 }
 
