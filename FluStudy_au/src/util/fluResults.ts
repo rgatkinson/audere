@@ -71,7 +71,7 @@ export function getExplanationRedAnswer(redAnswer: string | undefined) {
     case "yesAboveBlue":
       return "onePinkAndBlue";
     case "yesBelowBlue":
-      return "onePinkAndBlue;";
+      return "onePinkAndBlue";
     case "yesAboveBelowBlue":
       return "onePinkAndBlue";
     default:
