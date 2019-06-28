@@ -108,6 +108,7 @@ import { uploadPendingSuccess, pendingNavigation } from "../util/pendingData";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
+import { SMALL_TEXT } from "../ui/styles";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -727,7 +728,12 @@ export const Screens: ScreenConfig[] = [
       { tag: Divider },
       {
         tag: ScreenText,
-        props: { label: "common:testResult:disclaimer" },
+        props: {
+          label: "common:testResult:disclaimer",
+          style: {
+            fontSize: SMALL_TEXT,
+          },
+        },
       },
     ],
     key: "TestResult",
@@ -743,7 +749,12 @@ export const Screens: ScreenConfig[] = [
       { tag: Divider },
       {
         tag: ScreenText,
-        props: { label: "common:testResult:disclaimer" },
+        props: {
+          label: "common:testResult:disclaimer",
+          style: {
+            fontSize: SMALL_TEXT,
+          },
+        },
       },
     ],
     key: "TestResultRDT",
@@ -762,7 +773,12 @@ export const Screens: ScreenConfig[] = [
       { tag: Divider },
       {
         tag: ScreenText,
-        props: { label: "common:testResult:disclaimer" },
+        props: {
+          label: "common:testResult:disclaimer",
+          style: {
+            fontSize: SMALL_TEXT,
+          },
+        },
       },
     ],
     key: "InvalidResult",
