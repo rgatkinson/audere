@@ -7,6 +7,7 @@ import { Component, ScreenConfig } from "../ui/components/Screen";
 import BuildInfo from "../ui/components/BuildInfo";
 import MainImage from "../ui/components/MainImage";
 import ScreenText from "../ui/components/ScreenText";
+import CollapsibleText from "../ui/components/CollapsibleText";
 import Title from "../ui/components/Title";
 import Divider from "../ui/components/Divider";
 import { PRIMARY_COLOR, LARGE_TEXT } from "../ui/styles";
@@ -15,14 +16,16 @@ import Button from "../ui/components/Button";
 
 function menuScreen(
   key: string,
-  subtitle: string,
+  hasDesc: boolean = true,
   components: Component[] = []
 ): ScreenConfig {
-  const body: Component[] = [
+  const topSection: Component[] = [
     { tag: MainImage, props: { menuItem: true, uri: "colorlogo" } },
     { tag: Title },
-    { tag: ScreenText, props: { label: "description" } },
   ];
+  const body: Component[] = hasDesc
+    ? topSection.concat({ tag: ScreenText, props: { label: "description" } })
+    : topSection;
 
   return {
     body: body.concat(components),
@@ -31,9 +34,37 @@ function menuScreen(
   };
 }
 
+const FAQS = [
+  "whyStudy",
+  "whoEligible",
+  "howSoon",
+  "howFindOut",
+  "howLongTest",
+  "swabDirty",
+  "swabTubeLonger",
+  "stripLonger",
+  "whyPersonal",
+  "willConfidential",
+  "appDelete",
+];
+const FAQ_ANSWER_SUFFIX = "Answer";
+
+function getFAQComponents(key: string): Component[] {
+  return FAQS.map(q => {
+    return {
+      tag: CollapsibleText,
+      props: {
+        titleLabel: q,
+        bodyLabel: q + FAQ_ANSWER_SUFFIX,
+        namespace: key,
+      },
+    };
+  });
+}
+
 export const MenuScreens: ScreenConfig[] = [
-  menuScreen("Funding", "about"),
-  menuScreen("GeneralQuestions", "about"),
+  menuScreen("Funding"),
+  menuScreen("GeneralQuestions", false, getFAQComponents("GeneralQuestions")),
   {
     body: [
       { tag: MainImage, props: { menuItem: true, uri: "colorlogo" } },
@@ -105,6 +136,6 @@ export const MenuScreens: ScreenConfig[] = [
     chromeProps: { menuItem: true },
     key: "ContactSupport",
   },
-  menuScreen("Report", "about"),
-  menuScreen("Version", "help", [{ tag: BuildInfo }]),
+  menuScreen("Report"),
+  menuScreen("Version", true, [{ tag: BuildInfo }]),
 ];

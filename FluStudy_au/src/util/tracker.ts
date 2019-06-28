@@ -74,6 +74,7 @@ export const AppEvents = {
   RDT_TIMEOUT: "RDT_reader_timeout",
   FLASH_TOGGLE: "camera_flash_toggle",
   SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
+  FAQ_PRESSED: "faq_pressed",
 };
 
 // Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.
