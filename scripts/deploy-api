@@ -41,7 +41,7 @@ if [[ "$(git cat-file -t "$commit")" != "commit" ]]; then
   usage "Unrecognized commit '$commit'"
 fi
 
-API_DIR="$(cd "$SELF_DIR/../terraform/$environment/5-api" && pwd)"
+APP_DIR="$(cd "$SELF_DIR/../terraform/$environment/5-app" && pwd)"
 API_MODULE_DIR="$(cd "$SELF_DIR/../terraform/modules/flu-api" && pwd)"
 LOCAL_DIR="$(cd "$SELF_DIR/../local" && pwd)"
 API_INIT_TAR="$LOCAL_DIR/flu-api-staging-init.tar.bz2.base64"
@@ -62,10 +62,10 @@ fi
 
 set -x
 
-cd "$API_DIR"
+cd "$APP_DIR"
 terraform init
 terraform taint -module=flu_api aws_launch_configuration.flu_api_instance
-terraform apply -var "commit=$commit" -var "migrate=true"
+terraform apply -target=module.flu_api -var "commit=$commit" -var "migrate=true"
 set +x
 
 MIGRATE_NAME="flu-${environment}-api-migrate"

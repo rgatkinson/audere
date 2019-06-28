@@ -1,0 +1,39 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+. "$SELF_DIR/util.sh"
+
+function usage() {
+  echo2 "$*"
+  echo2 "Usage:"
+  echo2 "  ${BASH_SOURCE[0]} <environment>"
+  echo2 ""
+  echo2 "where"
+  echo2 "  <environment> is one of 'staging' or 'prod'"
+  exit 1
+}
+
+case "$#" in
+  1)
+    readonly environment="$1"
+    ;;
+  *) usage "Expected 1 argument, got $#.";;
+esac
+
+case "$environment" in
+  "staging" | "prod") ;;
+  *) usage "Unexpected environment '$environment'";;
+esac
+
+APP_DIR="$(cd "$SELF_DIR/../terraform/$environment/5-app" && pwd)"
+
+cd "$APP_DIR"
+terraform init
+terraform taint -module=shared.ecs_cluster.asg aws_autoscaling_group.this
+terraform apply -target=module.shared
