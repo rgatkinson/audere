@@ -327,13 +327,6 @@ nav {
       width: 45%;
       max-width: none; } }
 
-.steps {
-  width: 100%;
-  display: block;
- }
- .step-box {
-   width: 100%;
- }
   @media screen and (min-width: 53.25em) {
     .steps {
       display: flex;
@@ -345,76 +338,18 @@ nav {
     .step-box {
     width: 23%;
     } }
-  .steps .step {
-    padding: 1em 1em 2em 1em;
-    background: #ffffff; }
-    .steps .step.one {
-      border-top: 0.938em solid #0A5CA8; }
-    .steps .step.two {
-      border-top: 0.938em solid #2E97BB; }
-    .steps .step.three {
-      border-top: 0.938em solid #1BAB4C; }
-    .steps .step.four {
-      border-top: 0.938em solid #FF5700;
-      background: #FF5700; }
+    
     .steps .step img {
       margin: 0 auto;
       display: block; }
-  .steps .indicator {
-    border-radius: 50%;
-    border: 5px solid #D7DBE5;
-    justify-self: center;
-    margin-top: -0.5em;
-    position: relative;
-    height: 1.5em;
-    width: 1.5em;
-    text-align: center; 
-    margin-left: auto;
-    margin-right: auto; }
-    .steps .indicator:after {
-      color: #ffffff;
-      font-weight: 700;
-      text-align: center;
-      font-size: 1.1em;
-      line-height: 1.4em; }
-    @media screen and (min-width: 53.25em) {
-      .steps .indicator {
-        height: 0.813em;
-        width: 0.813em; } }
-    .steps .indicator.one {
-      background: #0A5CA8; }
-      @media screen and (max-width: 53.25em) {
-        .steps .indicator.one:after {
-          content: "1"; } }
-    .steps .indicator.two {
-      background: #2E97BB; }
-      @media screen and (max-width: 53.25em) {
-        .steps .indicator.two:after {
-          content: "2"; } }
-    .steps .indicator.three {
-      background: #1BAB4C; }
-      @media screen and (max-width: 53.25em) {
-        .steps .indicator.three:after {
-          content: "3"; } }
-    .steps .indicator.four {
-      background: #FF5700; }
-      @media screen and (max-width: 53.25em) {
-        .steps .indicator.four:after {
-          content: "4"; } }
+
   .steps h3 {
     text-align: center;
     align-self: center;
-    font-size: 1.500em;
+    font-size: 1.400em;
     font-weight: 700;
-    padding: 1.5em 1em; }
-    .steps h3.one {
-      color: #0A5CA8; }
-    .steps h3.two {
-      color: #2E97BB; }
-    .steps h3.three {
-      color: #1BAB4C; }
-    .steps h3.four {
-      color: #FF5700; }
+    padding: 7em 0em; }
+    
 
 .video {
   position: relative;
