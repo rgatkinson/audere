@@ -5,16 +5,19 @@
 
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
-import { connectorFromSqlSecrets, FirebaseReceiver } from "../external/firebase"; //figure out how to save prettier
+import {
+  connectorFromSqlSecrets,
+  FirebaseReceiver
+} from "../external/firebase";
 
 export class ServerHealth {
   private sql: SplitSql;
 
-  constructor (sql: SplitSql) {
-    this.sql = sql;//other things call other methods to make a model with sql
+  constructor(sql: SplitSql) {
+    this.sql = sql;
   }
 
-  public async test(req, res): Promise<string> { //change Promise type
+  public async test(req, res) {
     let secrets = new SecretConfig(this.sql);
     try {
       const allSecrets = await Promise.all([
@@ -38,16 +41,13 @@ export class ServerHealth {
         secrets.get("SHAREPOINT_INCENTIVES_FOLDER"),
         secrets.get("SHAREPOINT_KITS_FOLDER")
       ]);
-      if (allSecrets.length !== 19) { // not sure if actually does anything, but also not sure how to test if it works besides hoping for error
-        throw new Error();
-      }
-      
-      const connector = connectorFromSqlSecrets(this.sql);//not sure if right sql but oh well
+      const connector = connectorFromSqlSecrets(this.sql);
       const collection = getPhotoCollection();
       const receiver = new FirebaseReceiver(connector, { collection });
       await receiver.healthCheck();
-      return "Good";
+      res.json({ Status: "Good" });
     } catch {
+      res.json({ Status: "Something went wrong" });
       res.status(500).end();
     }
   }

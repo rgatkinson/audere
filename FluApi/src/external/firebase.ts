@@ -55,22 +55,11 @@ export class FirebaseReceiver {
     await docRef.set({
       status: "OK"
     });
-
-    const contents = await docRef.get();
-    const data = await contents.data();
-    if (data["health-check.json"] != "OK") { //hopefully the correct way to get value out of DocumentData
+    const docSnap = await docRef.get();
+    const data = await docSnap.data();
+    if (data["status"] != "OK") {
       throw new Error();
     }
-
-    
-
-    // Use this.firestore() to create a document called "health-check.json" in collection "photos" and "surveys"
-    //   Save stringified JSON: { "status": "OK" }
-    //   Verify you can get the document back as a DocumentSnapshot
-    //   Verify contents are same
-
-    // Verify you can download a document from this.storage() called "health-check", just for collection "photos"
-    // Verify it is JSON { "status": "OK" }
   }
 
   public async updates(): Promise<string[]> {
