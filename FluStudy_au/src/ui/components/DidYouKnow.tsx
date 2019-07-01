@@ -93,8 +93,8 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     if (this.props.navigation.isFocused()) {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
-      const currentText = t("didYouKnow:" + TIPS[currentTextNum]);
-      const currentSource = t("didYouKnow:" + SOURCES[currentTextNum]);
+      const currentText = t(TIPS[currentTextNum]);
+      const currentSource = t(SOURCES[currentTextNum]);
       this.setState({ currentText, currentSource });
     }
   };
@@ -129,4 +129,4 @@ const styles = StyleSheet.create({
 
 export default connect((state: StoreState, props: Props & WithNamespaces) => ({
   startTimeMs: state.survey[props.startTimeConfig],
-}))(withNavigation(withNamespaces()(DidYouKnow)));
+}))(withNavigation(withNamespaces("didYouKnow")(DidYouKnow)));
