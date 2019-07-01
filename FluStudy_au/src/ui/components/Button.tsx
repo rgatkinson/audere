@@ -77,7 +77,7 @@ class Button extends React.Component<Props & WithNamespaces> {
           ]}
           accessibilityLabel={this.props.label.toUpperCase()}
         >
-          {namespace ? t(namespace + ":" + label) : label.toUpperCase()}
+          {(namespace ? t(namespace + ":" + label) : label).toUpperCase()}
         </Text>
       </TouchableOpacity>
     );

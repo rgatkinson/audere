@@ -215,6 +215,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
         if (status === "granted") {
           this.navigator &&
             this.navigator.current &&
+            !!this.props.cameraSettingsGrantedPage &&
             this.navigator.current.dispatch(
               StackActions.replace({
                 routeName: this.props.cameraSettingsGrantedPage,

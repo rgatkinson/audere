@@ -243,7 +243,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the kit in the top right corner and tap \"Continue\".\n\nOnce activated, the app will show you where to take the photo and will capture the barcode automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
+    "desc": "Locate the barcode on the kit in the top right corner and tap \"Continue\".\n\nThe app will indicate where to place the barcode and will scan it automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -368,17 +368,17 @@
     "holdSteady": "Hold steady",
     "sizeResultLarge": "Move farther away",
     "sizeResultSmall": "Move closer",
-    "badOrientationPos": "Turn your device to the right (clockwise)",
-    "badOrientationNeg": "Turn your device to the left (anti-clockwise)",
+    "badOrientationPos": "Turn device to the right (clockwise)",
+    "badOrientationNeg": "Turn device to the left (anti-clockwise)",
     "underExposed": "Turn on the flash or move to better lighting",
-    "overExposed": "Ensure the test strip is on kit box or turn off the flash"
+    "overExposed": "Ensure test strip is on kit box or turn off the flash"
   },
   "CameraSettings": {
     "title": "Camera access required",
-    "desc": "We're sorry, but using your device's camera is required to continue with the test. If you'd like to continue, please update your device settings and we'll allow you to continue.\n\nElse, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
+    "desc": "We're sorry, but using your device's camera is required to continue with the test. If you'd like to continue, please update your device settings.\n\nOtherwise, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
     "howToIOS": "**Go to Settings / Privacy / Camera / flu@home.**\n**Flip the switch to \"Yes\".**\n**Please note: When you return, the camera will be active.**",
     "howToAndroid": "**Go to Settings / Apps / flu@home / Permissions.**\n**Toggle the camera switch to on.**\n**Please note: When you return, the camera will be active.**",
-    "goToSettings": "GO TO SETTINGS"
+    "goToSettings": "Go to Settings"
   },
   "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
@@ -396,7 +396,7 @@
   },
   "PostRDTTestStripSurvey": {
     "title": "How many lines?",
-    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines you see in the photo above. Click the \"?\" below to see examples."
+    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines you see in the photo above. Tap the \"?\" below to see examples."
   },
   "TestResult": {
     "title": "Your test result",

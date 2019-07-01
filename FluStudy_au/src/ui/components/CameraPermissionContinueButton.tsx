@@ -17,7 +17,6 @@ interface Props {
   grantedNext: string;
   deniedNext: string;
   dispatch(action: Action): void;
-  cameraSettingsGrantedPage: string;
 }
 
 class CameraPermissionContinueButton extends React.Component<
@@ -51,6 +50,6 @@ class CameraPermissionContinueButton extends React.Component<
   }
 }
 
-export default connect((state: StoreState) => ({
-  cameraSettingsGrantedPage: state.meta.cameraSettingsGrantedPage,
-}))(withNavigation(withNamespaces()(CameraPermissionContinueButton)));
+export default connect((state: StoreState) => ({}))(
+  withNavigation(withNamespaces()(CameraPermissionContinueButton))
+);
