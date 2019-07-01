@@ -24,12 +24,12 @@ export class DataPipelineService {
     this.sql = sql;
   }
 
-  async update(): Promise<void> {
-    await this.updateDb(this.sql.pii, getPiiDataNodes());
-    await this.updateDb(this.sql.nonPii, getNonPiiDataNodes());
+  async refresh(): Promise<void> {
+    await this.refreshPipelineNodes(this.sql.pii, getPiiDataNodes());
+    await this.refreshPipelineNodes(this.sql.nonPii, getNonPiiDataNodes());
   }
 
-  private async updateDb(
+  private async refreshPipelineNodes(
     sql: Sequelize,
     nodes: ManagedSqlNode[]
   ): Promise<void> {
@@ -43,7 +43,7 @@ export class DataPipelineService {
       const name = state.name;
       if (!nodesByName.has(name)) {
         await runQuery(sql, state.cleanup);
-        await nodeState.destroy({ where: { name }})
+        await nodeState.destroy({ where: { name } });
       }
     }
 
@@ -52,9 +52,9 @@ export class DataPipelineService {
       const state = statesByName.get(name);
       const hash = hashes.get(name);
       if (state != null && state.hash == hash) {
-        const update = node.getUpdate();
-        if (update != null) {
-          await runQuery(sql, update);
+        const refresh = node.getRefresh();
+        if (refresh != null) {
+          await runQuery(sql, refresh);
         }
       } else {
         const drop = node.getDelete();
@@ -77,7 +77,7 @@ interface ManagedSqlNode {
   readonly meta: SqlNodeMetadata;
 
   getCreate(): string;
-  getUpdate(): string | null;
+  getRefresh(): string | null;
   getDelete(): string;
 }
 
@@ -88,7 +88,7 @@ class ManagedSqlType implements ManagedSqlNode {
   }
 
   getCreate = () => `create type ${this.meta.name} as ${this.meta.spec};`;
-  getUpdate = () => null;
+  getRefresh = () => null;
   getDelete = () => `drop type if exists ${this.meta.name} cascade;`;
 }
 
@@ -99,7 +99,7 @@ class ManagedView implements ManagedSqlNode {
   }
 
   getCreate = () => `create view ${this.meta.name} as ${this.meta.spec};`;
-  getUpdate = () => null;
+  getRefresh = () => null;
   getDelete = () => dropTableLike(this.meta.name);
 }
 
@@ -109,8 +109,9 @@ class ManagedMaterializedView implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () => `create materialized view ${this.meta.name} as ${this.meta.spec};`;
-  getUpdate = () => `refresh materialized view ${this.meta.name};`;
+  getCreate = () =>
+    `create materialized view ${this.meta.name} as ${this.meta.spec};`;
+  getRefresh = () => `refresh materialized view ${this.meta.name};`;
   getDelete = () => dropTableLike(this.meta.name);
 }
 
@@ -120,7 +121,7 @@ async function runQuery(sql: Sequelize, query: string): Promise<void> {
 }
 
 function getPiiDataNodes(): ManagedSqlNode[] {
-  return[];
+  return [];
 }
 
 function getNonPiiDataNodes(): ManagedSqlNode[] {
@@ -147,9 +148,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
 
     new ManagedMaterializedView({
       name: "cough_derived.survey_named_array_items",
-      deps: [
-        "cough_derived.non_demo_surveys"
-      ],
+      deps: ["cough_derived.non_demo_surveys"],
       spec: `
         select
           id,
@@ -426,7 +425,7 @@ function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
   for (let node of nodesByName.values()) {
     const hash = new Hash();
     hash.update(node.getCreate());
-    hash.update(node.getUpdate());
+    hash.update(node.getRefresh());
     hash.update(node.getDelete());
     node.meta.deps.forEach(name => hash.update(hashes.get(name)));
     hashes.set(node.meta.name, hash.toString());

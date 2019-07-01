@@ -224,7 +224,7 @@ export class CoughEndpoint {
     const service = new DataPipelineService(this.sql);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
-      await service.update();
+      await service.refresh();
     } catch (err) {
       logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
     }

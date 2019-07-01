@@ -9,13 +9,13 @@ import {
   Model,
   SplitSql,
   stringColumn,
-  unique,
+  unique
 } from "../../util/sql";
 
 export function defineDataFlowModels(sql: SplitSql): DataFlowModels {
   const models: DataFlowModels = {
     piiNode: defineDataNode(sql.pii),
-    nonPiiNode: defineDataNode(sql.nonPii),
+    nonPiiNode: defineDataNode(sql.nonPii)
   };
 
   return models;
@@ -33,13 +33,9 @@ export interface DataNodeAttributes {
   cleanup: string;
 }
 export function defineDataNode(sql: Sequelize): Model<DataNodeAttributes> {
-  return defineModel<DataNodeAttributes>(
-    sql,
-    "data_pipeline_nodes",
-    {
-      name: unique(stringColumn()),
-      hash: stringColumn(),
-      cleanup: stringColumn(),
-    },
-  );
+  return defineModel<DataNodeAttributes>(sql, "data_pipeline_nodes", {
+    name: unique(stringColumn()),
+    hash: stringColumn(),
+    cleanup: stringColumn()
+  });
 }

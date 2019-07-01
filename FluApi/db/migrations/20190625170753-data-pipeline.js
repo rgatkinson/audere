@@ -9,15 +9,12 @@ const { baseColumns, column, unique } = require("../util");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable(
-      "data_pipeline_nodes",
-      {
-        ...baseColumns(Sequelize),
-        name: unique(column(Sequelize.STRING)),
-        hash: column(Sequelize.STRING),
-        cleanup: column(Sequelize.TEXT),
-      }
-    );
+    await queryInterface.createTable("data_pipeline_nodes", {
+      ...baseColumns(Sequelize),
+      name: unique(column(Sequelize.STRING)),
+      hash: column(Sequelize.STRING),
+      cleanup: column(Sequelize.TEXT)
+    });
   },
 
   down: async (queryInterface, Sequelize) => {
