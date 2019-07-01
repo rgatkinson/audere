@@ -27,6 +27,7 @@ import { HipaaUploader } from "./services/sniffles/hipaaUploader";
 import { CoughEndpoint } from "./endpoints/coughApi";
 import { SqlLock } from "./util/sqlLock";
 import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
+import { ServerHealth } from "./endpoints/healthCheck";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -60,6 +61,11 @@ export async function createPublicApp(config: AppConfig) {
   publicApp.use("/portal", stats("portal"), await portalApp(config));
 
   publicApp.get("/api", stats("api"), (req, res) => res.json({ Status: "OK" }));
+
+  const health = new ServerHealth(sql);
+  publicApp.get("/health-check", stats("health-check"), (req, res) =>
+    health.test(req, res)
+  ); //add all the things
 
   const sniffles = new SnifflesEndpoint(sql);
   publicApp.put(

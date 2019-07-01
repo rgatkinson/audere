@@ -98,6 +98,11 @@ export class CoughEndpoint {
     res.end();
   };
 
+  public async healthCheck() {
+    // Create FirebaseReceiver for surveys, photos
+    //   call its healthCheck()
+  }
+
   private async importItems(
     progress: () => void,
     reqId: string,
