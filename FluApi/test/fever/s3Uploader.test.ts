@@ -10,7 +10,10 @@ import { S3Uploader } from "../../src/external/s3Uploader";
 
 describe("S3 uploader", () => {
   type PutRequest = AWS.Request<AWS.S3.Types.PutObjectOutput, AWS.AWSError>;
-  const s3Config: S3Config = { bucket: "test_bucket" };
+  const s3Config: S3Config = {
+    fluReportsBucket: "test_bucket",
+    asprenReportsBucket: "not_test_bucket"
+  };
 
   it("should upload incentive reports", async () => {
     let requestParams: AWS.S3.Types.PutObjectRequest;
@@ -29,7 +32,7 @@ describe("S3 uploader", () => {
     const uploader = new S3Uploader(s3, s3Config);
     await uploader.sendIncentives(5, contents);
 
-    expect(requestParams.Bucket).toBe(s3Config.bucket);
+    expect(requestParams.Bucket).toBe(s3Config.fluReportsBucket);
     expect(requestParams.Key).toMatch(
       /gift-card-reports\/FluHome_GiftCardToSend_5/
     );
@@ -55,7 +58,7 @@ describe("S3 uploader", () => {
     const uploader = new S3Uploader(s3, s3Config);
     await uploader.sendKits(2, contents);
 
-    expect(requestParams.Bucket).toBe(s3Config.bucket);
+    expect(requestParams.Bucket).toBe(s3Config.fluReportsBucket);
     expect(requestParams.Key).toMatch(
       /fulfillment-order-reports\/Kit\-Fulfillment\-Report\-2/
     );

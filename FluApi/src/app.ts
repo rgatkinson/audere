@@ -26,6 +26,7 @@ import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";
 import { HipaaUploader } from "./services/sniffles/hipaaUploader";
 import { CoughEndpoint } from "./endpoints/coughApi";
 import { SqlLock } from "./util/sqlLock";
+import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -272,6 +273,13 @@ export function createInternalApp(config: AppConfig) {
         jsonNoOp
       )
     )
+  );
+
+  const coughAspren = new CoughAsprenEndpoint(sql);
+  internalApp.get(
+    "/api/import/asprenReport",
+    stats("importAsprenReport"),
+    wrap(coughAspren.importAsprenReports)
   );
 
   return useOuch(internalApp);

@@ -39,7 +39,7 @@ export class S3DirectoryServer {
   private async listFiles(req, res) {
     const { s3, s3Config } = await this.s3.get();
     const params: AWS.S3.ListObjectsV2Request = {
-      Bucket: s3Config.bucket,
+      Bucket: s3Config.fluReportsBucket,
       Prefix: this.path
     };
     if (req.query.startAfter) {
@@ -52,7 +52,7 @@ export class S3DirectoryServer {
       lastKey = obj.Key;
       return {
         url: s3.getSignedUrl("getObject", {
-          Bucket: s3Config.bucket,
+          Bucket: s3Config.fluReportsBucket,
           Key: obj.Key
         }),
         label: obj.Key.substring(this.path.length)
@@ -82,7 +82,7 @@ export class S3DirectoryServer {
     let response: AWS.S3.ListObjectsV2Output;
     do {
       const params: AWS.S3.ListObjectsV2Request = {
-        Bucket: s3Config.bucket,
+        Bucket: s3Config.fluReportsBucket,
         Prefix: this.path
       };
       if (response) {
@@ -94,7 +94,7 @@ export class S3DirectoryServer {
         keys.map(async key => {
           const file = await s3
             .getObject({
-              Bucket: s3Config.bucket,
+              Bucket: s3Config.fluReportsBucket,
               Key: key
             })
             .promise();

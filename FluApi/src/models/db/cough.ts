@@ -13,6 +13,7 @@ import {
   booleanColumn,
   integerColumn,
   jsonColumn,
+  nullable,
   unique
 } from "../../util/sql";
 import {
@@ -26,6 +27,8 @@ const schema = "cough";
 export function defineCoughModels(sql: SplitSql): CoughModels {
   const models: CoughModels = {
     accessKey: defineAccessKey(sql),
+    asprenData: defineAsprenData(sql),
+    asprenFile: defineAsprenFile(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     survey: defineSurvey(sql.nonPii)
@@ -36,6 +39,8 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
 
 export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
+  asprenData: Model<AsprenDataAttributes>;
+  asprenFile: Model<AsprenFileAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
@@ -141,3 +146,124 @@ export function defineSurvey<Info>(
 }
 export type SurveyInstance<Info> = Inst<SurveyAttributes<Info>>;
 export type SurveyModel<Info> = Model<SurveyAttributes<Info>>;
+
+// ---------------------------------------------------------------
+
+export interface AsprenFileAttributes {
+  key: string;
+  hash: string;
+}
+export function defineAsprenFile(sql: SplitSql): Model<AsprenFileAttributes> {
+  return defineModel<AsprenFileAttributes>(
+    sql.nonPii,
+    "aspren_files",
+    {
+      key: unique(stringColumn()),
+      hash: stringColumn()
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export enum IndigenousStatus {
+  Aboriginal = "AB",
+  TorresStraitIslander = "TS",
+  Both = "BT",
+  Unknown = "U",
+  No = "N"
+}
+
+export enum CurrentSeasonVaccinationStatus {
+  Received = "Y",
+  NotReceived = "N",
+  Unknown = "U"
+}
+
+export enum PreviousSeasonVaccinationStatus {
+  Received = "Y",
+  NotReceived = "N",
+  Unknown = "U",
+  Never = "NEVER"
+}
+
+export interface AsprenDataAttributes {
+  barcode: string;
+  encounterDate: string;
+  encounterState: string;
+  adenoResult: boolean;
+  pertussisResult: boolean;
+  fluAResult: boolean;
+  fluBResult: boolean;
+  h1n1Result: boolean;
+  h3n2Result: boolean;
+  metapneumovirusResult: boolean;
+  mycopneumoniaResult: boolean;
+  para1Result: boolean;
+  para2Result: boolean;
+  para3Result: boolean;
+  rhinovirusResult: boolean;
+  rsvResult: boolean;
+  victoriaResult: boolean;
+  yamagataResult: boolean;
+  aboriginalOrIslander: IndigenousStatus;
+  dateOnset: string;
+  currentVaccination: CurrentSeasonVaccinationStatus;
+  vaccinationDate: string;
+  previousVaccination: PreviousSeasonVaccinationStatus;
+  comorbities: boolean;
+  comorbitiesDescription: string;
+  healthcareWorkerStatus: boolean;
+  overseasIllness: boolean;
+  overseasLocation: string;
+}
+export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
+  return defineModel<AsprenDataAttributes>(
+    sql.nonPii,
+    "aspren_data",
+    {
+      barcode: unique(stringColumn()),
+      encounterDate: stringColumn("encounter_date"),
+      encounterState: stringColumn("encounter_state"),
+      adenoResult: booleanColumn("adeno_result"),
+      pertussisResult: booleanColumn("b_pertussis_result"),
+      fluAResult: booleanColumn("flu_a_result"),
+      fluBResult: booleanColumn("flu_b_result"),
+      h1n1Result: booleanColumn("h1n1_result"),
+      h3n2Result: booleanColumn("h3n2_result"),
+      metapneumovirusResult: booleanColumn("metapneumovirus_result"),
+      mycopneumoniaResult: booleanColumn("mycopneumonia_result"),
+      para1Result: booleanColumn("para_1_result"),
+      para2Result: booleanColumn("para_2_result"),
+      para3Result: booleanColumn("para_3_result"),
+      rhinovirusResult: booleanColumn("rhinovirus_result"),
+      rsvResult: booleanColumn("rsv_result"),
+      victoriaResult: booleanColumn("victoria_result"),
+      yamagataResult: booleanColumn("yamagata_result"),
+      aboriginalOrIslander: {
+        type: Sequelize.ENUM("AB", "TS", "BT", "Unknown"),
+        field: "atsi",
+        allowNull: true
+      },
+      dateOnset: stringColumn("date_onset"),
+      currentVaccination: {
+        type: Sequelize.ENUM("Yes", "No", "Unknown"),
+        field: "current_vaccination",
+        allowNull: true
+      },
+      vaccinationDate: nullable(stringColumn("vaccination_date")),
+      previousVaccination: {
+        type: Sequelize.ENUM("Yes", "No", "Unknown", "Never"),
+        field: "previous_vaccination",
+        allowNull: true
+      },
+      comorbities: nullable(booleanColumn()),
+      comorbitiesDescription: nullable(stringColumn("comorbities_description")),
+      healthcareWorkerStatus: nullable(booleanColumn("hcw_status")),
+      overseasIllness: nullable(booleanColumn("overseas_illness")),
+      overseasLocation: nullable(stringColumn("overseas_location"))
+    },
+    { schema }
+  );
+}

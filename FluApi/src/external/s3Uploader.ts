@@ -20,7 +20,7 @@ export class S3Uploader {
 
   private async writeObject(key: string, contents: string): Promise<void> {
     const params = {
-      Bucket: this.config.bucket,
+      Bucket: this.config.fluReportsBucket,
       Key: key,
       Body: contents
     };
