@@ -9,6 +9,7 @@ import {
   connectorFromSqlSecrets,
   FirebaseReceiver
 } from "../external/firebase";
+import { getPhotoCollection } from "./coughApi";
 
 export class ServerHealth {
   private sql: SplitSql;
@@ -17,44 +18,38 @@ export class ServerHealth {
     this.sql = sql;
   }
 
-  public async test(req, res) {
+  public async check(req, res) {
     let secrets = new SecretConfig(this.sql);
     try {
-      const allSecrets = await Promise.all([
-        secrets.get("HUTCH_BASE_URL"),
-        secrets.get("HUTCH_USER"),
-        secrets.get("HUTCH_PASSWORD"),
-        secrets.get("GCP_BIG_QUERY_FEVER"),
-        secrets.get("EXPORT_HASH_SECRET"),
-        secrets.get("SMARTYSTREETS_AUTH_ID"),
-        secrets.get("SMARTYSTREETS_AUTH_TOKEN"),
-        secrets.get("POSTGIS_DATABASE_URL"),
-        secrets.get("REDCAP_KIT_PROCESSING_TOKEN"),
-        secrets.get("REDCAP_FOLLOW_UPS_TOKEN"),
-        secrets.get("REDCAP_API_URL"),
-        secrets.get("REDCAP_HOME_DATA_REPORT_ID"),
-        secrets.get("REDCAP_SURVEY_DATA_REPORT_ID"),
-        secrets.get("S3_REPORT_BUCKET"),
-        secrets.get("SHAREPOINT_URL"),
-        secrets.get("SHAREPOINT_CLIENT_ID"),
-        secrets.get("SHAREPOINT_CLIENT_SECRET"),
-        secrets.get("SHAREPOINT_INCENTIVES_FOLDER"),
-        secrets.get("SHAREPOINT_KITS_FOLDER")
-      ]);
+      const SECRET_KEYS = [
+        "HUTCH_BASE_URL",
+        "HUTCH_USER",
+        "HUTCH_PASSWORD",
+        "GCP_BIG_QUERY_FEVER",
+        "EXPORT_HASH_SECRET",
+        "SMARTYSTREETS_AUTH_ID",
+        "SMARTYSTREETS_AUTH_TOKEN",
+        "POSTGIS_DATABASE_URL",
+        "REDCAP_KIT_PROCESSING_TOKEN",
+        "REDCAP_FOLLOW_UPS_TOKEN",
+        "REDCAP_API_URL",
+        "REDCAP_HOME_DATA_REPORT_ID",
+        "REDCAP_SURVEY_DATA_REPORT_ID",
+        "S3_REPORT_BUCKET",
+        "SHAREPOINT_URL",
+        "SHAREPOINT_CLIENT_ID",
+        "SHAREPOINT_CLIENT_SECRET",
+        "SHAREPOINT_INCENTIVES_FOLDER",
+        "SHAREPOINT_KITS_FOLDER"
+      ];
+      await Promise.all(SECRET_KEYS.map(key => secrets.get(key)));
       const connector = connectorFromSqlSecrets(this.sql);
       const collection = getPhotoCollection();
       const receiver = new FirebaseReceiver(connector, { collection });
       await receiver.healthCheck();
-      res.json({ Status: "Good" });
+      res.json({ Status: "OK" });
     } catch {
-      res.json({ Status: "Something went wrong" });
       res.status(500).end();
     }
   }
-}
-
-const DEFAULT_PHOTO_COLLECTION = "photos";
-
-function getPhotoCollection() {
-  return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
 }

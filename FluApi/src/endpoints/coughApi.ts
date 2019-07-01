@@ -37,7 +37,7 @@ function getSurveyCollection() {
   return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
 }
 
-function getPhotoCollection() {
+export function getPhotoCollection() {
   return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
 }
 
@@ -97,11 +97,6 @@ export class CoughEndpoint {
     res.write(JSON.stringify(result));
     res.end();
   };
-
-  public async healthCheck() {
-    // Create FirebaseReceiver for surveys, photos
-    //   call its healthCheck()
-  }
 
   private async importItems(
     progress: () => void,

@@ -63,9 +63,17 @@ export async function createPublicApp(config: AppConfig) {
   publicApp.get("/api", stats("api"), (req, res) => res.json({ Status: "OK" }));
 
   const health = new ServerHealth(sql);
+<<<<<<< HEAD
   publicApp.get("/health-check", stats("health-check"), (req, res) =>
     health.test(req, res)
   ); //add all the things
+||||||| merged common ancestors
+  publicApp.get("/health-check", stats("health-check"), (req, res) => health.test(req, res)); //add all the things
+=======
+  publicApp.get("/health-check", stats("health-check"), (req, res) =>
+    health.check(req, res)
+  );
+>>>>>>> @rightparen comments
 
   const sniffles = new SnifflesEndpoint(sql);
   publicApp.put(
