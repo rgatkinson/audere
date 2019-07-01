@@ -191,6 +191,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
             {
               text: t("relaunch:button:newUser"),
               onPress: () => {
+                tracker.logEvent(AppEvents.APP_IDLE_NEW_USER);
                 this.props.dispatch(
                   appendEvent(
                     EventInfoKind.TimeoutNav,
@@ -200,7 +201,12 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
                 this.clearState();
               },
             },
-            { text: t("relaunch:button:returningUser"), onPress: () => {} },
+            {
+              text: t("relaunch:button:returningUser"),
+              onPress: () => {
+                tracker.logEvent(AppEvents.APP_IDLE_SAME_USER);
+              },
+            },
           ]
         );
       } else if (this.props.activeRouteName === "CameraSettings") {

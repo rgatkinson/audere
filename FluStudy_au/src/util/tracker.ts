@@ -75,6 +75,8 @@ export const AppEvents = {
   FLASH_TOGGLE: "camera_flash_toggle",
   SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
   FAQ_PRESSED: "faq_pressed",
+  APP_IDLE_NEW_USER: "app_idle_new_user",
+  APP_IDLE_SAME_USER: "app_idle_same_user",
 };
 
 // Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.
