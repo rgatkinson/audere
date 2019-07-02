@@ -6,6 +6,7 @@
 import React from "react";
 import {
   Alert,
+  AppState,
   Dimensions,
   Image,
   StyleSheet,
@@ -57,11 +58,22 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         dispatch(setShownRDTFailWarning(true));
       }
     });
+    AppState.addEventListener("change", this._handleAppStateChange);
   }
 
   componentWillUnmount() {
     this._didFocus.remove();
+    AppState.removeEventListener("change", this._handleAppStateChange);
   }
+
+  _handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === "active" && this.state.flashEnabled) {
+      // Toggle flash state since the hardware state doesn't seem to get preserved
+      // on iOS if the app is backgrounded and then foregrounded.
+      this.setState({ flashEnabled: false });
+      this.setState({ flashEnabled: true });
+    }
+  };
 
   _cameraReady = () => {
     this.setState({ spinner: false });

@@ -276,6 +276,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         this._fpsCounterInterval = null;
       }
     });
+    AppState.addEventListener("change", this._handleAppStateChange);
     AppState.addEventListener("memoryWarning", this._handleMemoryWarning);
   }
 
@@ -283,6 +284,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._didFocus.remove();
     this._willBlur.remove();
     AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
+    AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
   _setTimer = () => {
@@ -308,6 +310,15 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       this._timer = null;
     }
   }
+
+  _handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === "active" && this.state.flashEnabled) {
+      // Toggle flash state since the hardware state doesn't seem to get preserved
+      // on iOS if the app is backgrounded and then foregrounded.
+      this.setState({ flashEnabled: false });
+      this.setState({ flashEnabled: true });
+    }
+  };
 
   _handleMemoryWarning = () => {
     const { dispatch, fallback, isFocused, navigation } = this.props;
