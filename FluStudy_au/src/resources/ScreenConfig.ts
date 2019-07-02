@@ -15,6 +15,7 @@ import { FunnelEvents } from "../util/tracker";
 import {
   getTestStripConfirmationNextScreen,
   getTestStripSurveyNextScreen,
+  getPostRDTTestStripSurveyNextScreen,
   logFluResult,
   logNumLines,
 } from "../util/fluResults";
@@ -733,7 +734,7 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: ContinueButton,
-        props: { next: "TestResultRDT" },
+        props: { surveyGetNextFn: getPostRDTTestStripSurveyNextScreen },
       },
     ],
     key: "PostRDTTestStripSurvey",

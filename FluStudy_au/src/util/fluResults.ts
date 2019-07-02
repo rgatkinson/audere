@@ -31,6 +31,12 @@ export async function getTestStripConfirmationNextScreen() {
     : "TestResult";
 }
 
+export async function getPostRDTTestStripSurveyNextScreen() {
+  const state = (await getStore()).getState();
+  const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
+  return numLinesAnswer === "noneOfTheAbove" ? "TestResult" : "TestResultRDT";
+}
+
 export async function logFluResult() {
   const state = (await getStore()).getState();
 
