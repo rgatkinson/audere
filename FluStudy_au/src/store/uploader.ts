@@ -123,7 +123,8 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
 const GENDER_MAP = new Map([
   ["female", PatientInfoGender.Female] as GenderMapEntry,
   ["male", PatientInfoGender.Male] as GenderMapEntry,
-  ["other", PatientInfoGender.Other] as GenderMapEntry,
+  ["indeterminate", PatientInfoGender.Other] as GenderMapEntry,
+  ["preferNotToSay", PatientInfoGender.Unknown] as GenderMapEntry,
 ]);
 type GenderMapEntry = [string, PatientInfoGender];
 

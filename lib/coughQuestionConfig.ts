@@ -928,7 +928,7 @@ export const AssignedSexConfig: SurveyQuestion = {
     { key: "male", primary: false, enabled: true },
     { key: "female", primary: false, enabled: true },
     { key: "indeterminate", primary: false, enabled: true },
-    { key: "unknown", primary: false, enabled: true }
+    { key: "preferNotToSay", primary: false, enabled: true }
   ],
   id: "AssignedSex",
   title: "assignedSex",
