@@ -11,7 +11,7 @@ locals {
 resource "aws_route53_record" "sftp_hostname" {
   zone_id = "${var.auderenow_route53_zone_id}"
   name = "${local.hostname}"
-  type = "A"
+  type = "CNAME"
   ttl = "300"
   records = ["${aws_transfer_server.sftp_server.endpoint}"]
 }
