@@ -74,6 +74,29 @@ describe("Happy Path", () => {
     }
     await verify_db_contents(driver, models, installationId);
   });
+
+  test("Non-demo mode test", async () => {
+    expect(
+      await driver.hasElementByAccessibilityId(strings.Welcome.title)
+    ).toBe(true);
+    await driver.setImplicitWaitTimeout(10000);
+    const installationId = await app_setup_for_automation_non_demo(driver);
+
+    for (const screen_info of content) {
+      if (screen_info.type == "basic") {
+        await basic_screen(driver, screen_info);
+      } else if (screen_info.type == "input") {
+        await input_screen(driver, screen_info);
+      } else if (screen_info.type == "camera") {
+        await camera_screen(driver, screen_info);
+      } else if (screen_info.type == "timer") {
+        await timer_screen(driver, screen_info);
+      } else if (screen_info.type == "rdt") {
+        await rdt_screen(driver, screen_info);
+      }
+    }
+    await verify_db_contents(driver, models, installationId);
+  });
 });
 
 //check for screen title and click button for next page
@@ -500,6 +523,37 @@ async function app_setup_for_automation(driver) {
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
     .perform();
   expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
+  return installation[1];
+}
+
+//Go to version menu, return installation id
+async function app_setup_for_automation_non_demo(driver) {
+  expect(await driver.hasElementByAccessibilityId("flu@home")).toBe(true);
+  await new wd.TouchAction(driver)
+    .tap({ x: screen_x * 0.95, y: screen_y * 0.06 })
+    .perform();
+  expect(await driver.hasElementByAccessibilityId(strings.Version.title)).toBe(
+    true
+  );
+  await driver.elementByAccessibilityId(strings.Version.title).click();
+  expect(
+    await driver.hasElementByAccessibilityId(strings.Version.description)
+  ).toBe(true);
+  let installation;
+  while (!installation) {
+    await driver
+      .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
+      .click();
+    const versionInfo = Buffer.from(
+      await driver.getClipboard(),
+      "base64"
+    ).toString();
+    installation = /Installation:\*\* (.*)/.exec(versionInfo);
+  }
+
+  await new wd.TouchAction(driver)
+    .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
+    .perform();
   return installation[1];
 }
 
