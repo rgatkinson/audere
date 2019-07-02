@@ -196,6 +196,10 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     pouch.samples.push(survey.testStripImg);
   }
 
+  if (!!survey.testStripHCImg) {
+    pouch.samples.push(survey.testStripHCImg);
+  }
+
   pouch.pushNotificationState = survey.pushState;
 
   // Set all surveyResponses into pouch.responses

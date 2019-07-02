@@ -29,7 +29,11 @@ export type SurveyAction =
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
   | { type: "SET_CONSENT"; consent: NonPIIConsentInfo }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
-  | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
+  | {
+      type: "SET_TEST_STRIP_IMG";
+      testStripImg: SampleInfo;
+      testStripHCImg?: SampleInfo;
+    }
   | { type: "SET_ONE_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_TOTAL_TEST_STRIP_TIME" }
@@ -66,6 +70,7 @@ export type SurveyState = {
   responses: SurveyResponse[];
   tenMinuteStartTime?: number;
   testStripImg?: SampleInfo;
+  testStripHCImg?: SampleInfo;
   timestamp?: number;
   workflow: WorkflowInfo;
   [key: string]:
@@ -129,6 +134,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
       return {
         ...state,
         testStripImg: action.testStripImg,
+        testStripHCImg: action.testStripHCImg,
         timestamp: new Date().getTime(),
       };
 
@@ -318,10 +324,14 @@ export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   };
 }
 
-export function setTestStripImg(testStripImg: SampleInfo): SurveyAction {
+export function setTestStripImg(
+  testStripImg: SampleInfo,
+  testStripHCImg?: SampleInfo
+): SurveyAction {
   return {
     type: "SET_TEST_STRIP_IMG",
     testStripImg,
+    testStripHCImg,
   };
 }
 

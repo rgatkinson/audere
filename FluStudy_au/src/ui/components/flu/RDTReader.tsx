@@ -464,14 +464,22 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
+      const hcPhotoId = await newUID();
       dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
       dispatch(
-        setTestStripImg({
-          sample_type: "RDTReaderPhotoGUID",
-          code: photoId,
-        })
+        setTestStripImg(
+          {
+            sample_type: "RDTReaderPhotoGUID",
+            code: photoId,
+          },
+          {
+            sample_type: "RDTReaderHCPhotoGUID",
+            code: hcPhotoId,
+          }
+        )
       );
       savePhoto(photoId, args.imgBase64);
+      savePhoto(hcPhotoId, args.resultWindowImgBase64);
       dispatch(
         setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
       );
