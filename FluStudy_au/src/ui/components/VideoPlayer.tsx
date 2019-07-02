@@ -17,7 +17,7 @@ import Video from "react-native-video";
 import Divider from "./Divider";
 import { BORDER_COLOR, GUTTER, VIDEO_ASPECT_RATIO } from "../styles";
 import { getRemoteConfig } from "../../util/remoteConfig";
-import { tracker, VideoEvents } from "../../util/tracker";
+import { logFirebaseEvent, VideoEvents } from "../../util/tracker";
 import { videoConfig, VideoConfig } from "../../resources/VideoConfig";
 
 interface Props extends React.Props<VideoPlayer> {
@@ -54,13 +54,13 @@ export default class VideoPlayer extends React.Component<Props> {
     if (!this.state.paused) {
       if (currentTime == 0) {
         if (!this.state.loggedFirstPlay) {
-          tracker.logEvent(VideoEvents.START_VIDEO, {
+          logFirebaseEvent(VideoEvents.START_VIDEO, {
             video: this.props.id,
           });
           this.setState({ loggedFirstPlay: true });
         }
       } else {
-        tracker.logEvent(VideoEvents.VIDEO_PROGRESS, {
+        logFirebaseEvent(VideoEvents.VIDEO_PROGRESS, {
           video: this.props.id,
           currentTime: Math.round(currentTime),
           totalTime: Math.round(seekableDuration),
@@ -70,7 +70,7 @@ export default class VideoPlayer extends React.Component<Props> {
   };
 
   _onEnd = () => {
-    tracker.logEvent(VideoEvents.COMPLETE_VIDEO, {
+    logFirebaseEvent(VideoEvents.COMPLETE_VIDEO, {
       video: this.props.id,
     });
     this._pauseVideo();

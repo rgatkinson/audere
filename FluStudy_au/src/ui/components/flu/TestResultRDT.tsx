@@ -19,7 +19,7 @@ import {
 import { GUTTER } from "../../styles";
 import { getRemoteConfig } from "../../../util/remoteConfig";
 import {
-  tracker,
+  logFirebaseEvent,
   AppEvents,
   RDTInterpretationEventTypes,
 } from "../../../util/tracker";
@@ -38,7 +38,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
       | RDTInterpretationEventTypes
       | "";
     if (!!interpreter && this.props.readerResult) {
-      tracker.logEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
+      logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
       this.props.dispatch(setRDTInterpretationShown(interpreter));
     }
   }

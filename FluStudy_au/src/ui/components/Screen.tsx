@@ -11,7 +11,7 @@ import i18n from "i18next";
 import { wrapScrollView } from "react-native-scroll-into-view";
 import { WorkflowInfo } from "audere-lib/feverProtocol";
 import { Action, StoreState, setWorkflow } from "../../store";
-import { tracker } from "../../util/tracker";
+import { logFirebaseEvent } from "../../util/tracker";
 import Chrome from "./Chrome";
 import { GUTTER } from "../styles";
 import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
@@ -76,7 +76,7 @@ export const generateScreen = (config: ScreenConfig) => {
 
     componentDidMount() {
       if (config.funnelEvent) {
-        tracker.logEvent(config.funnelEvent);
+        logFirebaseEvent(config.funnelEvent);
       }
       if (config.workflowEvent) {
         const workflow = { ...this.props.workflow };

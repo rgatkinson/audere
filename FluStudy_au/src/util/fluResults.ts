@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { tracker, FunnelEvents } from "./tracker";
+import { logFirebaseEvent, FunnelEvents } from "./tracker";
 import { getStore } from "../store";
 import { getSelectedButton } from "./survey";
 import {
@@ -42,7 +42,7 @@ export async function logFluResult() {
 
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
   if (_previousBlueAnswer && _previousBlueAnswer !== blueAnswer) {
-    tracker.logEvent(FunnelEvents.BLUE_ANSWER_CHANGED, {
+    logFirebaseEvent(FunnelEvents.BLUE_ANSWER_CHANGED, {
       old_answer: _previousBlueAnswer,
       new_answer: blueAnswer,
     });
@@ -51,7 +51,7 @@ export async function logFluResult() {
 
   const pinkAnswer = getSelectedButton(state, PinkWhenBlueConfig);
   if (_previousPinkAnswer && _previousPinkAnswer !== pinkAnswer) {
-    tracker.logEvent(FunnelEvents.PINK_ANSWER_CHANGED, {
+    logFirebaseEvent(FunnelEvents.PINK_ANSWER_CHANGED, {
       old_answer: _previousPinkAnswer,
       new_answer: pinkAnswer,
     });
@@ -64,7 +64,7 @@ export async function logNumLines() {
 
   const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
   if (_previousNumLines && _previousNumLines !== numLinesAnswer) {
-    tracker.logEvent(FunnelEvents.NUM_LINES_ANSWER_CHANGED, {
+    logFirebaseEvent(FunnelEvents.NUM_LINES_ANSWER_CHANGED, {
       old_answer: _previousNumLines,
       new_answer: numLinesAnswer,
     });

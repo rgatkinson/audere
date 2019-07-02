@@ -9,7 +9,7 @@ import { DEVICE_INFO } from "../transport/DeviceInfo";
 import {
   AppHealthEvents,
   logDebugEvent,
-  tracker,
+  logFirebaseEvent,
   TransportEvents,
 } from "../util/tracker";
 import { sha256 } from "js-sha256";
@@ -52,7 +52,7 @@ export async function syncSurvey(docId: string, survey: SurveyNonPIIInfo) {
     });
     const doc = getSurveyCollection().doc(docId);
     await doc.set(surveyDocument);
-    tracker.logEvent(TransportEvents.SURVEY_SYNCED, { docId, path: doc.path });
+    logFirebaseEvent(TransportEvents.SURVEY_SYNCED, { docId, path: doc.path });
   } catch (e) {
     logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, {
       docId,
@@ -75,7 +75,7 @@ export async function syncPhoto(docId: string) {
     });
     const doc = getPhotoCollection().doc(docId);
     await doc.set(photoDocument);
-    tracker.logEvent(TransportEvents.PHOTO_SYNCED, { docId, path: doc.path });
+    logFirebaseEvent(TransportEvents.PHOTO_SYNCED, { docId, path: doc.path });
   } catch (e) {
     logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, {
       docId,

@@ -16,7 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import ScreenText from "./ScreenText";
 import { GUTTER } from "../styles";
-import { tracker, AppEvents } from "../../util/tracker";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   titleLabel: string;
@@ -37,7 +37,7 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
     const nowExpanded = !this.state.expanded;
 
     this.setState({ expanded: nowExpanded });
-    tracker.logEvent(AppEvents.FAQ_PRESSED, {
+    logFirebaseEvent(AppEvents.FAQ_PRESSED, {
       nowExpanded,
       question: this.props.titleLabel,
     });

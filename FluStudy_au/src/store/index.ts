@@ -22,7 +22,7 @@ import immutableTransform from "redux-persist-transform-immutable";
 import { SecureStore } from "expo";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-import { tracker, AppHealthEvents, TransportEvents } from "../util/tracker";
+import { logFirebaseEvent, AppHealthEvents, TransportEvents } from "../util/tracker";
 import { PhotoUploader } from "../transport/PhotoUploader";
 
 export * from "./types";
@@ -77,7 +77,7 @@ const photoUploader = new PhotoUploader({
 });
 
 export function savePhoto(photoId: string, jpegBase64: string) {
-  tracker.logEvent(TransportEvents.PHOTO_UPDATED, { photoId });
+  logFirebaseEvent(TransportEvents.PHOTO_UPDATED, { photoId });
   return photoUploader.savePhoto(photoId, jpegBase64);
 }
 
@@ -163,7 +163,7 @@ async function getEncryptionPassword(): Promise<string> {
     password = base64url(crypto.getRandomValues(new Buffer(32)));
     await SecureStore.setItemAsync(STORAGE_PASSWORD_KEY, password);
   } catch (err) {
-    tracker.logEvent(AppHealthEvents.SAVE_STORAGE_PASSWORD_ERROR, err);
+    logFirebaseEvent(AppHealthEvents.SAVE_STORAGE_PASSWORD_ERROR, err);
     throw err;
   }
   return password;

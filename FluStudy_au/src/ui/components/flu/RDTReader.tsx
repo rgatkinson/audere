@@ -40,7 +40,7 @@ import {
 } from "audere-lib/coughProtocol";
 import { GUTTER, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
-import { tracker, AppEvents } from "../../../util/tracker";
+import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
 
 interface Props {
   isDemo: boolean;
@@ -290,7 +290,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._timer = setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
-        tracker.logEvent(AppEvents.RDT_TIMEOUT);
+        logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
         navigation.push(fallback);
@@ -596,7 +596,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _toggleFlash = () => {
     this.setState({ flashEnabled: !this.state.flashEnabled });
-    tracker.logEvent(AppEvents.FLASH_TOGGLE, {
+    logFirebaseEvent(AppEvents.FLASH_TOGGLE, {
       flash_on: this.state.flashEnabled,
     });
   };

@@ -26,8 +26,9 @@ import {
 import { Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
 import {
-  tracker,
+  logFirebaseEvent,
   onCSRUIDEstablished,
+  setCurrentScreen,
   NavEvents,
   DrawerEvents,
   AppEvents,
@@ -148,7 +149,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       nextAppState === "active"
     ) {
       this._getConnectivity();
-      tracker.logEvent(AppEvents.APP_FOREGROUNDED, {
+      logFirebaseEvent(AppEvents.APP_FOREGROUNDED, {
         screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
@@ -157,7 +158,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       nextAppState.match(/inactive|background/)
     ) {
       this.props.dispatch!(setShownOfflineWarning(false));
-      tracker.logEvent(AppEvents.APP_BACKGROUNDED, {
+      logFirebaseEvent(AppEvents.APP_BACKGROUNDED, {
         screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
@@ -192,7 +193,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
             {
               text: t("relaunch:button:newUser"),
               onPress: () => {
-                tracker.logEvent(AppEvents.APP_IDLE_NEW_USER);
+                logFirebaseEvent(AppEvents.APP_IDLE_NEW_USER);
                 this.props.dispatch(
                   appendEvent(
                     EventInfoKind.TimeoutNav,
@@ -205,7 +206,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
             {
               text: t("relaunch:button:returningUser"),
               onPress: () => {
-                tracker.logEvent(AppEvents.APP_IDLE_SAME_USER);
+                logFirebaseEvent(AppEvents.APP_IDLE_SAME_USER);
               },
             },
           ]
@@ -268,17 +269,17 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this.props.dispatch(setActiveRouteName(nextScreen));
       this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
       crashlytics.log("Navigating from " + currentScreen + " to " + nextScreen);
-      tracker.setCurrentScreen(nextScreen);
+      setCurrentScreen(nextScreen);
       const navEvent = this._getNavEvent(action);
       if (navEvent) {
-        tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
+        logFirebaseEvent(navEvent, { from: currentScreen, to: nextScreen });
       }
     }
 
     switch (action.type) {
       case DrawerActions.OPEN_DRAWER:
       case DrawerActions.CLOSE_DRAWER:
-        tracker.logEvent(
+        logFirebaseEvent(
           action.type == DrawerActions.OPEN_DRAWER
             ? DrawerEvents.OPEN
             : DrawerEvents.CLOSE,

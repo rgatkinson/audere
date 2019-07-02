@@ -8,7 +8,7 @@ import { NetInfo } from "react-native";
 import { InteractionManager } from "react-native";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
-import { AppHealthEvents, tracker, TransportEvents } from "../util/tracker";
+import { AppHealthEvents, logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { FileSystem } from "expo";
 import { IdleManager } from "./IdleManager";
 import { syncPhoto } from "../store/FirebaseStore";
@@ -225,7 +225,7 @@ export class PhotoUploader {
         FileSystem.deleteAsync(filePath)
       );
       await idleness();
-      tracker.logEvent(TransportEvents.PHOTO_UPLOADED, {
+      logFirebaseEvent(TransportEvents.PHOTO_UPLOADED, {
         photoId,
         storagePath,
       });
@@ -330,7 +330,7 @@ function logError(func: string, location: string, err: any): LoggedError {
   const name = err != null ? err.name : "";
   const summary = `${func}: ${location} threw '${name}': '${message}'`;
   debug(summary);
-  tracker.logEvent(AppHealthEvents.PHOTO_UPLOADER_ERROR, {
+  logFirebaseEvent(AppHealthEvents.PHOTO_UPLOADER_ERROR, {
     func,
     location,
     message,

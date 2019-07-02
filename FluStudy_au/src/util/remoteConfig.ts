@@ -5,7 +5,7 @@
 
 import firebase from "react-native-firebase";
 import { crashlytics } from "../crashReporter";
-import { tracker, AppHealthEvents } from "../util/tracker";
+import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
   showRDTInterpretation: string;
@@ -39,13 +39,13 @@ async function loadConfig(): Promise<RemoteConfig> {
   Object.keys(remoteConfigSnapshots).map(key => {
     localConfig[key] = remoteConfigSnapshots[key].val();
   });
-  tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, localConfig);
+  logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, localConfig);
   crashlytics.log(`Remote config loaded: ${JSON.stringify(localConfig)}`);
 
   if (process.env.NODE_ENV === "development") {
     localConfig = { ...localConfig, ...DEV_CONFIG_OVERRIDES };
 
-    tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, localConfig);
+    logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_OVERRIDDEN, localConfig);
     crashlytics.log(`Remote config overridden: ${JSON.stringify(localConfig)}`);
   }
   return localConfig;
@@ -54,6 +54,8 @@ async function loadConfig(): Promise<RemoteConfig> {
 // As long as you've awaited loadAllRemoteConfigs, you can call getRemoteConfig
 // to load any key from configuration.
 export function getRemoteConfig(key: string): any {
+  const value = _currentConfig[key];
+  logFirebaseEvent(AppEvents.READ_CONFIG_VALUE, { key, value });
   // @ts-ignore
   return _currentConfig[key];
 }
@@ -85,7 +87,7 @@ export async function loadAllRemoteConfigs() {
       error && error.message ? error.message : error
     }`;
 
-    tracker.logEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
+    logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
       errorMessage,
     });
     crashlytics.log(errorMessage);

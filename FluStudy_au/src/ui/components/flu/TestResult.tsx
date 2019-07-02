@@ -14,7 +14,7 @@ import {
   getResultRedAnswer,
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
-import { tracker, AppEvents } from "../../../util/tracker";
+import { AppEvents } from "../../../util/tracker";
 
 interface Props {
   redAnswer?: string;

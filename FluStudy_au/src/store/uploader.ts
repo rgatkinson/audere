@@ -30,7 +30,7 @@ import {
   PreviousSeason,
 } from "audere-lib/coughQuestionConfig";
 import { crashlytics } from "../crashReporter";
-import { tracker, TransportEvents } from "../util/tracker";
+import { logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";
 
 // See comment below on cleanupResponses.
@@ -156,7 +156,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
         if (state.survey.csruid) {
           const docId = state.survey.csruid;
           const survey = redux_to_pouch(state);
-          tracker.logEvent(TransportEvents.SURVEY_UPDATED, { docId });
+          logFirebaseEvent(TransportEvents.SURVEY_UPDATED, { docId });
           syncSurvey(docId, survey);
         }
         break;
