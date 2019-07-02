@@ -219,6 +219,47 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
         from cough_derived.survey_named_array_items
       `
+    }),
+
+    new ManagedView({
+      name: "cough_derived.aspren_data",
+      deps: [],
+      spec: `
+        select
+          id,
+          "createdAt",
+          "updatedAt",
+
+          barcode,
+          encounter_date,
+          encounter_state,
+          adeno_result,
+          b_pertussis_result,
+          flu_a_result,
+          flu_b_result,
+          h1n1_result,
+          h3n2_result,
+          metapneumovirus_result,
+          mycopneumonia_result,
+          para_1_result,
+          para_2_result,
+          para_3_result,
+          rhinovirus_result,
+          rsv_result,
+          victoria_result,
+          yamagata_result,
+          atsi,
+          date_onset,
+          current_vaccination,
+          vaccination_date,
+          previous_vaccination,
+          comorbities,
+          comorbities_description,
+          hcw_status,
+          overseas_illness,
+          overseas_location
+        from cough.aspren_data
+      `
     })
   ];
 }
