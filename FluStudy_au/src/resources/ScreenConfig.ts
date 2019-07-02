@@ -786,8 +786,10 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       { tag: Divider },
-      { tag: ScreenText, props: { label: "whatToDo" } },
-      { tag: ScreenText, props: { label: "common:testResult:whatToDoCommon" } },
+      {
+        tag: ScreenText,
+        props: { label: ["whatToDo", "common:testResult:whatToDoCommon"] },
+      },
     ],
     footer: [
       { tag: ContinueButton, props: { next: "CleanTest" } },

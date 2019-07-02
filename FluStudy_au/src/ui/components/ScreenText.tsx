@@ -13,9 +13,13 @@ interface Props {
   bold?: boolean;
   center?: boolean;
   italic?: boolean;
-  label: string;
+  label: string | string[];
   namespace: string;
   style?: StyleProp<TextStyle>;
+}
+
+function getScopedLabel(label: string, namespace: string): string {
+  return label.includes(":") ? label : namespace + ":" + label;
 }
 
 class ScreenText extends React.Component<Props & WithNamespaces> {
@@ -30,11 +34,15 @@ class ScreenText extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { bold, center, italic, namespace, label, style, t } = this.props;
+    const allTheLabels = label instanceof Array ? label : [label];
+    const allTheLabelText = allTheLabels.map(l =>
+      t(getScopedLabel(l, namespace))
+    );
     return (
       <Text
         bold={bold}
         center={center}
-        content={t(label.includes(":") ? label : namespace + ":" + label)}
+        content={allTheLabelText.join(" ")}
         italic={italic}
         style={[
           {
