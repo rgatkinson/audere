@@ -70,6 +70,6 @@ resource "aws_transfer_user" "sftp_user" {
 
 resource "aws_transfer_ssh_key" "sftp_user_key" {
   server_id = "${var.transfer_server_id}"
-  user_name = "${var.client_role}"
+  user_name = "${aws_transfer_user.sftp_user.user_name}"
   body = "${var.user_public_key}"
 }
