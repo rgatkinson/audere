@@ -62,7 +62,7 @@ resource "null_resource" "associate_custom_hostname" {
   provisioner "local-exec" {
     command = <<EOF
 aws transfer tag-resource \
-  --arn '${aws_transfer_server.sftp_server.arn}'
+  --arn '${aws_transfer_server.sftp_server.arn}' \
   --tags \
     'Key=aws:transfer:customHostname,Value=${aws_route53_record.sftp_hostname.name}' \
     'Key=aws:transfer:route53HostedZoneId,Value=/hostedzone/${aws_route53_record.sftp_hostname.zone_id}'
