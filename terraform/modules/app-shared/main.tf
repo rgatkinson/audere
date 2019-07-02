@@ -39,6 +39,7 @@ data "aws_iam_policy_document" "allow_us_west_2_elb" {
 
 module "ecs_cluster" {
   source = "../ecs-cluster"
+
   cluster_name = "${local.base_name}-ecs"
   devs = "${var.devs}"
   environment = "${var.environment}"
@@ -50,6 +51,24 @@ module "ecs_cluster" {
     "${var.db_client_sg_id}",
     "${var.dev_ssh_server_sg_id}",
   ]
+}
+
+module "sftp" {
+  source = "../sftp-server"
+
+  auderenow_route53_zone_id = "${data.aws_route53_zone.auderenow_io.id}"
+  auderenow_route53_zone_name = "${data.aws_route53_zone.auderenow_io.name}"
+  environment = "${var.environment}"
+}
+
+module "cough_sftp" {
+  source = "../sftp-user"
+  
+  client_role = "cough"
+  environment = "${var.environment}"
+  sftp_host = "${module.sftp.sftp_host}"
+  transfer_server_id = "${module.sftp.transfer_server_id}"
+  user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.${var.environment}.pub")}"
 }
 
 locals {
