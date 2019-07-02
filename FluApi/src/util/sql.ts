@@ -41,8 +41,8 @@ function sequelizeLogger(rawLog: string) {
 }
 
 export function createSplitSql(): SplitSql {
-  const nonPiiUrl = process.env.NONPII_DATABASE_URL;
-  const piiUrl = process.env.PII_DATABASE_URL;
+  const nonPiiUrl = nonPiiDatabaseUrl();
+  const piiUrl = piiDatabaseUrl();
   if (!nonPiiUrl || !piiUrl) {
     throw new Error("Copy .env.example to .env and customize stuff :)");
   }
@@ -64,6 +64,14 @@ export function createSplitSql(): SplitSql {
       Promise.all([pii.close(), nonPii.close()]);
     }
   };
+}
+
+export function nonPiiDatabaseUrl() {
+  return process.env.NONPII_DATABASE_URL;
+}
+
+export function piiDatabaseUrl() {
+  return process.env.PII_DATABASE_URL;
 }
 
 export function defineModel<Attr>(

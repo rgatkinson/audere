@@ -4,7 +4,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { tmpdir } from "os";
+import os, { tmpdir } from "os";
 import { join as pjoin } from "path";
 import { spawn } from "child_process";
 import fs from "fs";
@@ -16,12 +16,17 @@ import yargs from "yargs";
 import _ from "lodash";
 import base64url from "base64url";
 import bufferXor from "buffer-xor";
+import { Crypt as HybridCrypto } from "hybrid-crypto-js";
 
 import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
-import { createSplitSql } from "../src/util/sql";
-import { generateRandomKey } from "../src/util/crypto";
+import {
+  createSplitSql,
+  nonPiiDatabaseUrl,
+  piiDatabaseUrl
+} from "../src/util/sql";
+import { generateRandomKey, sha256 } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
   defineSnifflesModels,
@@ -55,6 +60,8 @@ import {
 import { Updater } from "./util/updater";
 import { AuthManager } from "../src/endpoints/webPortal/auth";
 import { defineDeviceSetting } from "../src/models/db/devices";
+import { extractVisitNonPii } from "../src/endpoints/snifflesApi";
+import { extractVisitPii } from "../src/endpoints/snifflesApi";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -69,6 +76,10 @@ const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
 const auth = new AuthManager(sql);
 const deviceSetting = defineDeviceSetting(sql);
+
+const hybridCrypto = new HybridCrypto();
+
+const UTF8 = "UTF-8";
 
 type SnifflesNonPiiUpdater = Updater<
   VisitAttributes<VisitNonPIIInfo>,
@@ -301,23 +312,27 @@ yargs.command({
       .string("value"),
   handler: command(cmdSetDeviceSetting)
 });
-yargs
-  .command({
-    command: "clear-device-setting <installationId> <key>",
-    builder: yargs => yargs.string("installationId").string("key"),
-    handler: command(cmdClearDeviceSetting)
-  })
-  .command({
-    command: "grant-permission <userid> <permission>",
-    builder: yargs => yargs.string("userid").string("permission"),
-    handler: command(cmdGrantPermission)
-  })
-  .command({
-    command: "revoke-permission <userid> <permission>",
-    builder: yargs => yargs.string("userid").string("permission"),
-    handler: command(cmdRevokePermission)
-  })
-  .demandCommand().argv;
+yargs.command({
+  command: "clear-device-setting <installationId> <key>",
+  builder: yargs => yargs.string("installationId").string("key"),
+  handler: command(cmdClearDeviceSetting)
+});
+yargs.command({
+  command: "grant-permission <userid> <permission>",
+  builder: yargs => yargs.string("userid").string("permission"),
+  handler: command(cmdGrantPermission)
+});
+yargs.command({
+  command: "revoke-permission <userid> <permission>",
+  builder: yargs => yargs.string("userid").string("permission"),
+  handler: command(cmdRevokePermission)
+});
+yargs.command({
+  command: "recover-visit <keyfile> <cryptfile>",
+  builder: yargs => yargs.string("keyfile").string("cryptfile"),
+  handler: command(cmdRecoverVisit)
+});
+yargs.demandCommand().argv;
 
 function command(cmd: any) {
   return async (argv: any) => {
@@ -1108,6 +1123,41 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   console.log();
 }
 
+interface RecoverVisitArgs {
+  keyfile: string;
+  cryptfile: string;
+}
+
+async function cmdRecoverVisit(argv: RecoverVisitArgs): Promise<void> {
+  const [privateKey, encrypted, device] = await Promise.all([
+    readFile(argv.keyfile, UTF8),
+    readFile(argv.cryptfile, UTF8),
+    dbcliSnifflesDevice("cmdRecoverVisit")
+  ]);
+  const decrypted = hybridCrypto.decrypt(privateKey, encrypted);
+
+  if (decrypted == null) {
+    throw fail(
+      `Could not decrypt '${argv.keyfile}' with key '${argv.keyfile}'`
+    );
+  }
+
+  const visit = JSON.parse(decrypted.message);
+  const csruid = sha256(decrypted.message);
+  const visitNonPII = extractVisitNonPii(visit);
+  const visitPII = extractVisitPii(visit);
+
+  await Promise.all([
+    snifflesModels.visitNonPii.upsert({ csruid, device, visit: visitNonPII }),
+    snifflesModels.visitPii.upsert({ csruid, device, visit: visitPII })
+  ]);
+
+  console.log(`Recovered record from ${argv.keyfile}`);
+  console.log(`  csruid: '${csruid}'`);
+  console.log(`  nonpii: '${nonPiiDatabaseUrl()}'`);
+  console.log(`     pii: '${piiDatabaseUrl()}'`);
+}
+
 interface ShowArgs {
   release: Release;
   kind: string;
@@ -1222,13 +1272,13 @@ async function editJson(originalValue: any): Promise<any> {
     console.log(`Temporary file: '${editPath}'`);
     const originalJson = JSON.stringify(originalValue, null, 2);
 
-    await writeFile(editPath, originalJson, "UTF-8");
+    await writeFile(editPath, originalJson, UTF8);
     cleanups.push(() => unlink(editPath));
 
     const editor = process.env.EDITOR || process.env.VISUAL || "vim";
     await run(editor, editPath);
 
-    const editedJson = await readFile(editPath, "UTF-8");
+    const editedJson = await readFile(editPath, UTF8);
     const editedValue = JSON.parse(editedJson);
 
     if (_.isEqual(originalValue, editedValue)) {
@@ -1270,14 +1320,10 @@ async function colordiff(before: any, after: any): Promise<void> {
     const beforePath = pjoin(tmp, "before.json");
     const afterPath = pjoin(tmp, "after.json");
 
-    await writeFile(
-      beforePath,
-      JSON.stringify(before, null, 2) + "\n",
-      "UTF-8"
-    );
+    await writeFile(beforePath, JSON.stringify(before, null, 2) + "\n", UTF8);
     cleanups.push(() => unlink(beforePath));
 
-    await writeFile(afterPath, JSON.stringify(after, null, 2) + "\n", "UTF-8");
+    await writeFile(afterPath, JSON.stringify(after, null, 2) + "\n", UTF8);
     cleanups.push(() => unlink(afterPath));
 
     const code = await runCode(
@@ -1391,6 +1437,17 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
   }
 
   return choice;
+}
+
+async function dbcliSnifflesDevice(operation: string): Promise<SnifflesDevice> {
+  return {
+    installation: sha256(os.hostname()),
+    clientVersion: `dbcli.${sha256(await readFile(__filename, UTF8))}`,
+    deviceName: `dbcli-${operation}`,
+    yearClass: new Date().getFullYear().toString(),
+    idiomText: "laptop",
+    platform: os.platform()
+  };
 }
 
 function pubId(csruid: string): string {

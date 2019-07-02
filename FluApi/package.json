@@ -99,6 +99,7 @@
     "@types/yargs": "^12.0.7",
     "chai": "^4.1.2",
     "concurrently": "^4.0.1",
+    "hybrid-crypto-js": "^0.1.7",
     "jest": "^24.8.0",
     "lodash": "^4.17.11",
     "nock": "^10.0.6",

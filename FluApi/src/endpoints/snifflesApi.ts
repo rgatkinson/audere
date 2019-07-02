@@ -10,12 +10,11 @@ import {
   LogDocument,
   VisitDocument,
   VisitCommonInfo,
+  VisitInfo,
   VisitNonPIIDbInfo,
   VisitPIIInfo,
   ConsentInfo,
   NonPIIConsentInfo,
-  ResponseInfo,
-  ResponseItemInfo,
   LogBatchDocument,
   ProtocolDocument
 } from "audere-lib/snifflesProtocol";
@@ -72,28 +71,8 @@ export class SnifflesEndpoint {
       case DocumentType.Visit: {
         const csruid = req.params.documentId;
         const visitDocument = document as VisitDocument;
-        const responses = visitDocument.visit.responses;
-        const visitCommon: VisitCommonInfo = {
-          isDemo: !!visitDocument.visit.isDemo,
-          complete: visitDocument.visit.complete,
-          location: visitDocument.visit.location,
-          administrator: visitDocument.visit.administrator,
-          events: visitDocument.visit.events
-        };
-        const visitNonPII: VisitNonPIIDbInfo = {
-          ...visitCommon,
-          consents: deIdentifyConsents(visitDocument.visit.consents),
-          giftcards: visitDocument.visit.giftcards,
-          samples: visitDocument.visit.samples,
-          responses: (responses || []).map(filterResponsePII(false))
-        };
-        const visitPII: VisitPIIInfo = {
-          ...visitCommon,
-          gps_location: visitDocument.visit.gps_location,
-          patient: visitDocument.visit.patient,
-          consents: visitDocument.visit.consents,
-          responses: (responses || []).map(filterResponsePII(true))
-        };
+        const visitNonPII = extractVisitNonPii(visitDocument.visit);
+        const visitPII = extractVisitPii(visitDocument.visit);
         await Promise.all([
           this.models.visitNonPii.upsert({
             csruid,
@@ -155,6 +134,36 @@ export class SnifflesEndpoint {
     }
     res.json({ Status: "SUCCESS" });
   }
+}
+
+export function extractVisitNonPii(visit: VisitInfo): VisitNonPIIDbInfo {
+  return {
+    ...extractVisitCommon(visit),
+    consents: deIdentifyConsents(visit.consents),
+    giftcards: visit.giftcards,
+    samples: visit.samples,
+    responses: (visit.responses || []).map(filterResponsePII(false))
+  };
+}
+
+export function extractVisitPii(visit: VisitInfo): VisitPIIInfo {
+  return {
+    ...extractVisitCommon(visit),
+    gps_location: visit.gps_location,
+    patient: visit.patient,
+    consents: visit.consents,
+    responses: (visit.responses || []).map(filterResponsePII(true))
+  };
+}
+
+function extractVisitCommon(visit: VisitInfo): VisitCommonInfo {
+  return {
+    isDemo: !!visit.isDemo,
+    complete: visit.complete,
+    location: visit.location,
+    administrator: visit.administrator,
+    events: visit.events
+  };
 }
 
 function deIdentifyConsents(consents?: ConsentInfo[]): NonPIIConsentInfo[] {
