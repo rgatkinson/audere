@@ -20,7 +20,7 @@ import {
   logNumLines,
 } from "../util/fluResults";
 import {
-  ConsentConfig,
+  ConsentAnyResearchersConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,
@@ -209,7 +209,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ConsentText },
       {
         tag: Questions,
-        props: { questions: ConsentConfig },
+        props: { questions: [ConsentAnyResearchersConfig] },
         validate: true,
       },
       {
