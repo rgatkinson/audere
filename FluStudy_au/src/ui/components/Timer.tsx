@@ -25,7 +25,7 @@ const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
 const FAST_FORWARD_MS = 5 * SECOND_MS;
 
 interface State {
-  remainingMs: number | null | undefined;
+  remainingLabel: string;
 }
 
 interface Props {
@@ -39,11 +39,13 @@ interface Props {
 
 class Timer extends React.Component<Props & WithNamespaces> {
   state = {
-    remainingMs: undefined,
+    remainingLabel: this._getRemainingLabel(),
   };
 
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
+  _willBlur: any;
+  _startTimeMs: number = 0;
 
   shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
     return (
@@ -55,8 +57,13 @@ class Timer extends React.Component<Props & WithNamespaces> {
   }
 
   componentDidMount() {
-    this._willFocus = this.props.navigation.addListener("willFocus", () =>
-      this._startClock()
+    this._startTimeMs = this.props.startTimeMs;
+    this._willFocus = this.props.navigation.addListener("willFocus", () => {
+      this._startClock();
+    });
+    this._willBlur = this.props.navigation.addListener(
+      "willBlur",
+      this._clearClock
     );
 
     this._startClock();
@@ -67,20 +74,37 @@ class Timer extends React.Component<Props & WithNamespaces> {
       this._willFocus.remove();
       this._willFocus = null;
     }
+    if (this._willBlur != null) {
+      this._willBlur.remove();
+      this._willBlur = null;
+    }
+    this._clearClock();
   }
 
+  _clearClock = () => {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = undefined;
+    }
+  };
+
   _onFastForward = () => {
-    this.setState({ remainingMs: FAST_FORWARD_MS });
+    // Just pretend we started 5 secs before the original target end time.
+    this._startTimeMs =
+      this.props.startTimeMs + this.props.totalTimeMs - FAST_FORWARD_MS;
+    this.setState({
+      remainingLabel: this._getRemainingLabel(),
+    });
   };
 
   _getRemainingMs(): number | null {
-    const { startTimeMs, totalTimeMs } = this.props;
-    const deltaMillis = startTimeMs + totalTimeMs - new Date().getTime();
+    const { totalTimeMs } = this.props;
+    const deltaMillis = this._startTimeMs + totalTimeMs - new Date().getTime();
     return deltaMillis > SECOND_MS ? deltaMillis : null;
   }
 
-  _getRemainingLabel = (): string => {
-    const { remainingMs } = this.state;
+  _getRemainingLabel(): string {
+    const remainingMs = this._getRemainingMs();
     if (remainingMs == null) {
       return "00:00";
     }
@@ -90,40 +114,30 @@ class Timer extends React.Component<Props & WithNamespaces> {
 
     // @ts-ignore
     return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
-  };
+  }
 
   _startClock = () => {
+    this._clearClock();
     if (this.props.navigation.isFocused()) {
-      const remainingMs = this._getRemainingMs();
-      this.setState({ remainingMs });
-      if (remainingMs != null) {
-        this._setTimer();
+      this.setState({ remainingLabel: this._getRemainingLabel() });
+      if (this._getRemainingMs()) {
+        this._timer = setInterval(this._onTimer, SECOND_MS);
       }
     }
   };
 
-  _setTimer = () => {
-    if (this._timer == null) {
-      this._timer = setTimeout(() => {
-        this._timer = undefined;
-        if (this.props.navigation.isFocused()) {
-          if (this.state.remainingMs != null) {
-            const remainingMs = this.state.remainingMs! - SECOND_MS;
-            if (remainingMs < SECOND_MS) {
-              this.setState({ remainingMs: null });
-            } else {
-              this.setState({ remainingMs });
-              this._setTimer();
-            }
-          }
-        }
-      }, SECOND_MS);
+  _onTimer = () => {
+    if (this.props.navigation.isFocused()) {
+      this.setState({ remainingLabel: this._getRemainingLabel() });
+      if (!this._getRemainingMs()) {
+        this._clearClock();
+      }
     }
   };
 
   render() {
-    const { isDemo, next, t } = this.props;
-    return this.state.remainingMs === null ? (
+    const { isDemo, next } = this.props;
+    return this._getRemainingMs() === null ? (
       <ContinueButton next={next} />
     ) : (
       <MultiTapContainer
