@@ -8,7 +8,6 @@ import { DocumentReference } from "react-native-firebase/firestore";
 import { DEVICE_INFO } from "../transport/DeviceInfo";
 import {
   AppHealthEvents,
-  logDebugEvent,
   logFirebaseEvent,
   TransportEvents,
 } from "../util/tracker";
@@ -54,7 +53,7 @@ export async function syncSurvey(docId: string, survey: SurveyNonPIIInfo) {
     await doc.set(surveyDocument);
     logFirebaseEvent(TransportEvents.SURVEY_SYNCED, { docId, path: doc.path });
   } catch (e) {
-    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, {
+    logFirebaseEvent(AppHealthEvents.FIRESTORE_SAVE_SURVEY_ERROR, {
       docId,
       error: e.message,
     });
@@ -77,7 +76,7 @@ export async function syncPhoto(docId: string) {
     await doc.set(photoDocument);
     logFirebaseEvent(TransportEvents.PHOTO_SYNCED, { docId, path: doc.path });
   } catch (e) {
-    logDebugEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, {
+    logFirebaseEvent(AppHealthEvents.FIRESTORE_SAVE_PHOTO_ERROR, {
       docId,
       error: e.message,
     });

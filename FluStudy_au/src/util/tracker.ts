@@ -8,6 +8,10 @@ import DeviceInfo from "react-native-device-info";
 import { recordErrorToFirebase } from "../crashReporter";
 import { Constants } from "expo";
 
+const FIREBASE_LOG_TO_CONSOLE =
+  process.env.NODE_ENV === "development" &&
+  !!process.env.FIREBASE_LOG_TO_CONSOLE;
+
 let eventGlobals = {
   installation_id: Constants.installationId,
   docid: "uninitialized",
@@ -127,25 +131,19 @@ export function onCSRUIDEstablished(csruid: string) {
   logFirebaseEvent(AppEvents.CSRUID_ESTABLISHED);
 }
 
-export function setCurrentScreen(screen: string) {
+export function logCurrentScreen(screen: string) {
   tracker.setCurrentScreen(screen);
 }
 
-export function logDebugEvent(event: string, params?: Object) {
-  if (process.env.NODE_ENV === "development") {
-    console.log(`LogEvent: ${event}`, params);
-  }
-  logFirebaseEvent(event, params);
-}
-
 export function logFirebaseEvent(event: string, params?: object) {
-  tracker.logEvent(
-    event,
-    {
-      ...eventGlobals,
-      ...params,
-    }
-  );
+  if (FIREBASE_LOG_TO_CONSOLE) {
+    console.log(`LogEvent: '${event}' ${JSON.stringify(params)}`);
+  }
+
+  tracker.logEvent(event, {
+    ...eventGlobals,
+    ...params,
+  });
 }
 
 export function reportError(error: Error) {

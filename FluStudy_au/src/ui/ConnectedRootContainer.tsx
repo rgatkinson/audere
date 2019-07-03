@@ -28,7 +28,7 @@ import { crashlytics } from "../crashReporter";
 import {
   logFirebaseEvent,
   onCSRUIDEstablished,
-  setCurrentScreen,
+  logCurrentScreen,
   NavEvents,
   DrawerEvents,
   AppEvents,
@@ -269,7 +269,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this.props.dispatch(setActiveRouteName(nextScreen));
       this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
       crashlytics.log("Navigating from " + currentScreen + " to " + nextScreen);
-      setCurrentScreen(nextScreen);
+      logCurrentScreen(nextScreen);
       const navEvent = this._getNavEvent(action);
       if (navEvent) {
         logFirebaseEvent(navEvent, { from: currentScreen, to: nextScreen });

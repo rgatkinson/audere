@@ -56,8 +56,7 @@ async function loadConfig(): Promise<RemoteConfig> {
 export function getRemoteConfig(key: string): any {
   const value = _currentConfig[key];
   logFirebaseEvent(AppEvents.READ_CONFIG_VALUE, { key, value });
-  // @ts-ignore
-  return _currentConfig[key];
+  return value;
 }
 
 const SECONDS_IN_HOUR = 60 * 60;

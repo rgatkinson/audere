@@ -22,7 +22,11 @@ import immutableTransform from "redux-persist-transform-immutable";
 import { SecureStore } from "expo";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-import { logFirebaseEvent, AppHealthEvents, TransportEvents } from "../util/tracker";
+import {
+  logFirebaseEvent,
+  AppHealthEvents,
+  TransportEvents,
+} from "../util/tracker";
 import { PhotoUploader } from "../transport/PhotoUploader";
 
 export * from "./types";
