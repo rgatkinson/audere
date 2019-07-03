@@ -4,11 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { AsprenClient } from "../external/asprenClient";
-import { SplitSql } from "../util/sql";
 import { AsprenImport } from "../services/cough/asprenImport";
 import { LazyAsync } from "../util/lazyAsync";
-import { getS3Config } from "../util/s3Config";
 import { SecretConfig } from "../util/secretsConfig";
+import { SplitSql } from "../util/sql";
+import { getS3Config } from "../util/s3Config";
 import AWS from "aws-sdk";
 
 /**
@@ -27,8 +27,9 @@ export class CoughAsprenEndpoint {
     });
   }
 
-  public async importAsprenReports(): Promise<void> {
+  public importAsprenReports = async (req, res, next) => {
     const svc = await this.service.get();
     await svc.importAsprenReports();
+    res.json({});
   }
 }
