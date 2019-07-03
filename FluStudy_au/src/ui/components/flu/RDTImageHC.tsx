@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flex: 1,
-    marginBottom: GUTTER,
     justifyContent: "center",
+    marginTop: GUTTER * 1.5,
   },
   border: {
     paddingVertical: GUTTER * 2,

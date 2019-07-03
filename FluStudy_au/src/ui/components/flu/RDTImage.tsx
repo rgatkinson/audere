@@ -30,8 +30,8 @@ const height = Dimensions.get("window").height / 2;
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    flex: 1,
-    marginBottom: GUTTER,
+    marginTop: GUTTER * 1.5,
+    marginBottom: GUTTER / 2,
     justifyContent: "center",
   },
   photo: {
