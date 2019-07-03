@@ -41,6 +41,7 @@ import {
 import { GUTTER, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
 import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
+import { getRemoteConfig } from "../../../util/remoteConfig";
 
 interface Props {
   isDemo: boolean;
@@ -298,7 +299,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(setRDTPhotoHC(""));
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
-    }, 30000);
+    }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
   };
 
   _clearTimer() {

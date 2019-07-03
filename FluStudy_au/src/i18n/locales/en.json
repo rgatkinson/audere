@@ -361,7 +361,12 @@
   "RDTInstructions": {
     "title": "Scan the test strip",
     "desc": "Next, the app will use your device’s camera to scan your test strip.",
-    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nYou can turn the flash off/on if needed. We start with the flash on.\nIf the test strip doesn't scan, after 30 seconds you will be asked to take a photo using the app."
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nYou can turn the flash off/on if needed. We start with the flash on.\nIf the test strip doesn't scan, after [[rdtTimeoutSeconds]] seconds you will be asked to take a photo using the app."
+  },
+  "NonRDTInstructions": {
+    "title": "Take a photo of test strip",
+    "desc": "Next, we'd like you to take a photo of your test strip using your device camera. Similar to the barcode scan, the app will access your device camera for you.",
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan."
   },
   "RDTReader": {
     "title": "RDT READER",

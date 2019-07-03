@@ -9,7 +9,8 @@ import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
   showRDTInterpretation: string;
-  [key: string]: boolean | string[] | string;
+  rdtTimeoutSeconds: number;
+  [key: string]: boolean | number | string[] | string;
 }
 
 // Every config you load should have a default set here.  Remember that the
@@ -21,6 +22,7 @@ interface RemoteConfig {
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
   showRDTInterpretation: "",
+  rdtTimeoutSeconds: 30,
 };
 
 // Values you put into here will always be applied on top of remote config

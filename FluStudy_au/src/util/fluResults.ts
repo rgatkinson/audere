@@ -11,6 +11,7 @@ import {
   PinkWhenBlueConfig,
   NumLinesSeenConfig,
 } from "audere-lib/coughQuestionConfig";
+import { getRemoteConfig } from "../util/remoteConfig";
 
 let _previousBlueAnswer: string | undefined;
 let _previousPinkAnswer: string | undefined;
@@ -19,7 +20,11 @@ let _previousNumLines: string | undefined;
 export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
-  return blueAnswer === "yes" ? "RDTInstructions" : "InvalidResult";
+  return blueAnswer === "yes"
+    ? getRemoteConfig("rdtTimeoutSeconds") > 0
+      ? "RDTInstructions"
+      : "NonRDTInstructions"
+    : "InvalidResult";
 }
 
 export async function getTestStripConfirmationNextScreen() {

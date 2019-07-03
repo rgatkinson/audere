@@ -932,7 +932,10 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "instructions", customBulletUri: "listarrow" },
+        props: {
+          label: "instructions",
+          customBulletUri: "listarrow",
+        },
       },
     ],
     automationNext: "TestStripConfirmation",
@@ -946,6 +949,28 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "RDTInstructions",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "takepictureteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "instructions", customBulletUri: "listarrow" },
+      },
+    ],
+    automationNext: "TestStripConfirmation",
+    footer: [
+      {
+        tag: CameraPermissionContinueButton,
+        props: {
+          grantedNext: "TestStripCamera",
+          deniedNext: "CameraSettings",
+        },
+      },
+    ],
+    key: "NonRDTInstructions",
   },
   {
     body: [
