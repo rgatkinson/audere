@@ -51,7 +51,7 @@ export class DataPipelineService {
       const name = node.meta.name;
       const state = statesByName.get(name);
       const hash = hashes.get(name);
-      if (state != null && state.hash == hash) {
+      if (state != null && state.hash === hash) {
         const refresh = node.getRefresh();
         if (refresh != null) {
           await runQuery(sql, refresh);
