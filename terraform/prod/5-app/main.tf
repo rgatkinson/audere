@@ -41,6 +41,7 @@ module "flu_api" {
   auderenow_route53_zone_id = "${module.shared.auderenow_route53_zone_id}"
   auderenow_route53_zone_name = "${module.shared.auderenow_route53_zone_name}"
   commit = "${var.commit}"
+  cough_aspren_bucket = "${module.shared.cough_aspren_bucket}"
   creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
   dev_ssh_server_sg_id = "${data.terraform_remote_state.network.dev_ssh_server_sg_id}"

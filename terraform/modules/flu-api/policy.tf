@@ -72,7 +72,10 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
       "s3:GetObject"
     ]
 
-    resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}/*"]
+    resources = [
+      "${aws_s3_bucket.flu_api_reports_bucket.arn}/*",
+      "${var.cough_aspren_bucket}/*"
+    ]
   }
 
   statement {
@@ -80,7 +83,10 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
       "s3:ListBucket"
     ]
 
-    resources = ["${aws_s3_bucket.flu_api_reports_bucket.arn}"]
+    resources = [
+      "${aws_s3_bucket.flu_api_reports_bucket.arn}",
+      "${var.cough_aspren_bucket}"
+    ]
   }
 }
 

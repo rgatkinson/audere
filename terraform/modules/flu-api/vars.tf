@@ -29,6 +29,10 @@ variable "commit" {
   default = "master"
 }
 
+variable "cough_aspren_bucket" {
+  description = "ARN for S3 bucket containing ASPREN reports"
+}
+
 variable "creds_snapshot_id" {
   description = "snapshot id of volume containing api credentials"
 }

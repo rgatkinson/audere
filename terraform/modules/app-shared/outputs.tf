@@ -15,6 +15,10 @@ output "auderenow_route53_zone_name" {
   value = "${data.aws_route53_zone.auderenow_io.name}"
 }
 
+output "cough_aspren_bucket" {
+  value = "${module.cough_sftp.sftp_bucket_arn}"
+}
+
 output "ecs_cluster_id" {
   value = "${module.ecs_cluster.id}"
 }
