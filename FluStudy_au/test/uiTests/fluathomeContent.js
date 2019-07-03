@@ -528,6 +528,7 @@ export const content = [
     type: "basic",
     title: strings.FollowUpSurvey.title,
     button: strings.common.button.continue.toUpperCase(),
+    iosPopupOnContinue: "Allow",
     dbScreenName: "FollowUpSurvey",
   },
   {

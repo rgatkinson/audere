@@ -108,6 +108,11 @@ async function basic_screen(driver, screen_info) {
     await scroll_to_element(driver, screen_info.button);
     await driver.elementByAccessibilityId(screen_info.button).click();
   }
+  if ("iosPopupOnContinue" in screen_info && PLATFORM == "iOS") {
+    await driver
+      .elementByAccessibilityId(screen_info.iosPopupOnContinue)
+      .click();
+  }
 }
 
 //Check for title, enter default choices for questions, click button for next screen
@@ -358,20 +363,20 @@ async function camera_screen(driver, screen_info) {
   if (PLATFORM == "Android") {
     allowButton = await driver.element(
       "id",
-      "com.android.packageinstaller:id/permission_deny_button"
+      "com.android.packageinstaller:id/permission_allow_button"
     );
     await allowButton.click();
   } else {
     await driver
       .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
       .click();
-    expect(await driver.hasElementByAccessibilityId(screen_info.button)).toBe(
-      true
-    );
-    await new wd.TouchAction(driver)
-      .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
-      .perform();
   }
+  expect(await driver.hasElementByAccessibilityId(screen_info.button)).toBe(
+    true
+  );
+  await new wd.TouchAction(driver)
+    .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
+    .perform();
 }
 
 //Answer camera permissions and click button to take a picture
