@@ -416,7 +416,7 @@ export const content = [
           strings.surveyButton.male,
           strings.surveyButton.female,
           strings.surveyButton.indeterminate,
-          strings.surveyButton.unknown,
+          strings.surveyButton.preferNotToSay,
         ],
       },
       {
