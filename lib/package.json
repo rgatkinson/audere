@@ -9,6 +9,7 @@
     "lint-fix": "prettier --write '*.ts'"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.4.5",
     "prettier": "^1.16.1",
     "typescript": "^3.0.3"
   }
