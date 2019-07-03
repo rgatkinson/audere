@@ -249,7 +249,7 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       { tag: MainImage, props: { uri: "thanksforyourinterest" } },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: ScreenText, props: { label: "desc" } },
     ],
     footer: [{ tag: BackButton, props: { label: "backToConsent" } }],
     funnelEvent: FunnelEvents.CONSENT_DECLINED,
@@ -565,7 +565,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
+      { tag: ScreenText, props: { label: "desc" } },
       { tag: Divider },
       {
         tag: Questions,
@@ -589,7 +589,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { center: true, label: "desc" } },
       { tag: Divider },
-      { tag: ScreenText, props: { center: true, label: "next" } },
+      { tag: ScreenText, props: { label: "next" } },
       {
         tag: Questions,
         props: {
