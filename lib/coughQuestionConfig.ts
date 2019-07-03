@@ -48,6 +48,14 @@ export interface DropDownQuestion extends SurveyQuestion {
   placeholder: string;
 }
 
+// ================================================================
+//
+// NOTE: Please make sure, as you add questions, that all questions
+// are included in the SURVEY_QUESTIONS array at the bottom of this
+// file.
+//
+// ================================================================
+
 export const ConsentConfig: SurveyQuestion[] = [
   {
     buttons: [
@@ -1159,6 +1167,7 @@ export const TestFeedbackConfig: SurveyQuestion = {
 };
 
 export const SURVEY_QUESTIONS = [
+  ...ConsentConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,
