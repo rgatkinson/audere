@@ -13,6 +13,8 @@ const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
 const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
 const myDrUrl =
   "https://www.mydr.com.au/respiratory-health/influenza-treatment";
+export const followUpSurveyUrl =
+  "https://uwhealth.az1.qualtrics.com/jfe/form/SV_3UEQ8IVCZwLPTP7";
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
 const appSupportURL = "flu-support-au@auderenow.org";

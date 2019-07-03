@@ -108,15 +108,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     notification.timeZone = [NSTimeZone systemTimeZone];
     notification.alertBody = response.notification.request.content.body;
     notification.soundName = nil;
-    notification.applicationIconBadgeNumber = nil;
     notification.userInfo = response.notification.request.content.userInfo;
-    
-    if([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive ||
-       [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        notification.category = @"Background";
-    } else {
-        notification.category = @"Foreground";
-    }
     
     [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }

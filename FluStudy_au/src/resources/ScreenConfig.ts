@@ -98,6 +98,7 @@ import RDTImage from "../ui/components/flu/RDTImage";
 import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
+import SurveyLinkBlock from "../ui/components/flu/SurveyLinkBlock";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
@@ -106,7 +107,10 @@ import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
 import PendingButton from "../ui/components/PendingButton";
+import PushNotificationContinueButtonAndroid from "../ui/components/PushNotificationContinueButtonAndroid";
+import PushNotificationContinueButtonIOS from "../ui/components/PushNotificationContinueButtonIOS";
 import { uploadPendingSuccess, pendingNavigation } from "../util/pendingData";
+import { followUpSurvey } from "../util/notifications";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
@@ -839,7 +843,34 @@ export const Screens: ScreenConfig[] = [
       { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
     ],
     key: "TestFeedback",
-    automationNext: "Thanks",
+    automationNext: "FollowUpSurvey",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "followupsurvey" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label:
+            Platform.OS === "android"
+              ? "androidInstructions"
+              : "iosInstructions",
+          customBulletUri: "listarrow",
+        },
+      },
+    ],
+    footer: [
+      {
+        tag:
+          Platform.OS === "android"
+            ? PushNotificationContinueButtonAndroid
+            : PushNotificationContinueButtonIOS,
+        props: { next: "Thanks", notification: followUpSurvey },
+      },
+    ],
+    key: "FollowUpSurvey",
   },
   {
     body: [
@@ -861,6 +892,7 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "finalthanks" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: SurveyLinkBlock },
       {
         tag: LinkInfoBlock,
         props: {

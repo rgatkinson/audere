@@ -78,7 +78,7 @@ export const generateScreen = (config: ScreenConfig) => {
       if (config.funnelEvent) {
         logFirebaseEvent(config.funnelEvent);
       }
-      if (config.workflowEvent) {
+      if (config.workflowEvent && !this.props.workflow[config.workflowEvent]) {
         const workflow = { ...this.props.workflow };
         workflow[config.workflowEvent] = new Date().toISOString();
         this.props.dispatch(setWorkflow(workflow));

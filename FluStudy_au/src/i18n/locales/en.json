@@ -72,6 +72,14 @@
     "pushNotificationTitle": "May we send you notifications?",
     "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
   },
+  "PushNotifications": {
+    "followUpSurveyBody": "Your feedback is very important to the flu@home study. Please take a moment to complete our follow-up survey, click here"
+  },
+  "SurveyLinkBlock": {
+    "title": "**Take the follow-up survey!**",
+    "body": "If you haven't done so already, please tap here to be directed to our follow-up survey.",
+    "link": "**Go to survey >**"
+  },
   "optionList": {
     "pleaseSpecify": "Please specify:"
   },
@@ -425,6 +433,12 @@
   "TestFeedback": {
     "title": "How did you do?",
     "desc": ""
+  },
+  "FollowUpSurvey": {
+    "title": "Follow-up Survey",
+    "desc": "We'd like you to complete a follow-up survey that we will send you in the next couple days. Here's what to expect:",
+    "iosInstructions": "We'll ask for permission to enable notifications on your device (after you tap 'Continue' below).\nIt's important that you don't delete this app until you've received the notification.\nThe notification will link to a web survey.",
+    "androidInstructions": "We'll send a push notification in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
   },
   "Thanks": {
     "title": "Thanks for participating",

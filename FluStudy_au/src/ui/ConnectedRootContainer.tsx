@@ -25,6 +25,7 @@ import {
 } from "../store/";
 import { Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
+import { notificationLaunchHandler } from "../util/notifications";
 import {
   logFirebaseEvent,
   onCSRUIDEstablished,
@@ -50,6 +51,8 @@ import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import MultiTapContainer from "./components/MultiTapContainer";
+
+notificationLaunchHandler();
 
 const AppContainer = createAppContainer(AppNavigator);
 

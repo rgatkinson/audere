@@ -526,6 +526,12 @@ export const content = [
   },
   {
     type: "basic",
+    title: strings.FollowUpSurvey.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "FollowUpSurvey",
+  },
+  {
+    type: "basic",
     title: strings.Thanks.title,
     dbScreenName: "Thanks",
   },
