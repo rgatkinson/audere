@@ -250,7 +250,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the kit in the top right corner and tap \"Continue\".\n\nThe app will indicate where to place the barcode and will scan it automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
+    "desc": "Locate the barcode on the kit in the bottom right corner and tap \"Continue.\"\n\nThe app will indicate where to place the barcode and will scan it automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
