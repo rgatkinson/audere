@@ -57,7 +57,7 @@ describe("Happy Path", () => {
       await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await driver.setImplicitWaitTimeout(10000);
-    const installationId = await app_setup_for_automation(driver);
+    const installationId = await app_setup_for_automation(driver, true);
 
     for (const screen_info of content) {
       if (screen_info.type == "basic") {
@@ -67,7 +67,7 @@ describe("Happy Path", () => {
       } else if (screen_info.type == "camera") {
         await camera_screen(driver, screen_info);
       } else if (screen_info.type == "timer") {
-        await timer_screen(driver, screen_info);
+        await timer_screen(driver, screen_info, true);
       } else if (screen_info.type == "rdt") {
         await rdt_screen(driver, screen_info);
       }
@@ -80,7 +80,7 @@ describe("Happy Path", () => {
       await driver.hasElementByAccessibilityId(strings.Welcome.title)
     ).toBe(true);
     await driver.setImplicitWaitTimeout(10000);
-    const installationId = await app_setup_for_automation_non_demo(driver);
+    const installationId = await app_setup_for_automation(driver, false);
 
     for (const screen_info of content) {
       if (screen_info.type == "basic") {
@@ -90,7 +90,7 @@ describe("Happy Path", () => {
       } else if (screen_info.type == "camera") {
         await camera_screen(driver, screen_info);
       } else if (screen_info.type == "timer") {
-        await timer_screen(driver, screen_info);
+        await timer_screen(driver, screen_info, false);
       } else if (screen_info.type == "rdt") {
         await rdt_screen(driver, screen_info);
       }
@@ -396,14 +396,20 @@ async function rdt_screen(driver, screen_info) {
 }
 
 //Answer push notifications question if necessary and bypass timer
-async function timer_screen(driver, screen_info) {
+async function timer_screen(driver, screen_info, isDemo) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
-  //tap until timer is bypassed
-  await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
-  while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+  if (isDemo) {
+    //tap until timer is bypassed
     await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
+    while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+      await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
+    }
+  } else {
+    while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+      driver.sleep(1000);
+    }
   }
   await driver.elementByAccessibilityId(screen_info.button).click();
 }
@@ -493,7 +499,7 @@ function isAndroidBarcodeScan(item) {
 }
 
 //Go to version menu, change to demo mode, return installation id
-async function app_setup_for_automation(driver) {
+async function app_setup_for_automation(driver, isDemo) {
   expect(await driver.hasElementByAccessibilityId("flu@home")).toBe(true);
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.95, y: screen_y * 0.06 })
@@ -505,8 +511,10 @@ async function app_setup_for_automation(driver) {
   expect(
     await driver.hasElementByAccessibilityId(strings.Version.description)
   ).toBe(true);
-  await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
-  expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
+  if (isDemo) {
+    await triple_tap(driver, screen_x * 0.5, screen_y * 0.13);
+    expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
+  }
   let installation;
   while (!installation) {
     await driver
@@ -522,38 +530,9 @@ async function app_setup_for_automation(driver) {
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
     .perform();
-  expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
-  return installation[1];
-}
-
-//Go to version menu, return installation id
-async function app_setup_for_automation_non_demo(driver) {
-  expect(await driver.hasElementByAccessibilityId("flu@home")).toBe(true);
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.95, y: screen_y * 0.06 })
-    .perform();
-  expect(await driver.hasElementByAccessibilityId(strings.Version.title)).toBe(
-    true
-  );
-  await driver.elementByAccessibilityId(strings.Version.title).click();
-  expect(
-    await driver.hasElementByAccessibilityId(strings.Version.description)
-  ).toBe(true);
-  let installation;
-  while (!installation) {
-    await driver
-      .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
-      .click();
-    const versionInfo = Buffer.from(
-      await driver.getClipboard(),
-      "base64"
-    ).toString();
-    installation = /Installation:\*\* (.*)/.exec(versionInfo);
+  if (isDemo) {
+    expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
   }
-
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
-    .perform();
   return installation[1];
 }
 
