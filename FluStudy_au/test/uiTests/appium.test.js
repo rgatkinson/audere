@@ -53,51 +53,44 @@ describe("Happy Path", () => {
   });
 
   test("A user should be able to navigate through the entire app", async () => {
-    expect(
-      await driver.hasElementByAccessibilityId(strings.Welcome.title)
-    ).toBe(true);
-    await driver.setImplicitWaitTimeout(10000);
-    const installationId = await app_setup_for_automation(driver, true);
-
-    for (const screen_info of content) {
-      if (screen_info.type == "basic") {
-        await basic_screen(driver, screen_info);
-      } else if (screen_info.type == "input") {
-        await input_screen(driver, screen_info);
-      } else if (screen_info.type == "camera") {
-        await camera_screen(driver, screen_info);
-      } else if (screen_info.type == "timer") {
-        await timer_screen(driver, screen_info, true);
-      } else if (screen_info.type == "rdt") {
-        await rdt_screen(driver, screen_info);
-      }
-    }
-    await verify_db_contents(driver, models, installationId);
+    await runThroughApp(true);
   });
 
   test("Non-demo mode test", async () => {
-    expect(
-      await driver.hasElementByAccessibilityId(strings.Welcome.title)
-    ).toBe(true);
-    await driver.setImplicitWaitTimeout(10000);
-    const installationId = await app_setup_for_automation(driver, false);
+    await runThroughApp(false);
+  });
 
-    for (const screen_info of content) {
-      if (screen_info.type == "basic") {
-        await basic_screen(driver, screen_info);
-      } else if (screen_info.type == "input") {
-        await input_screen(driver, screen_info);
-      } else if (screen_info.type == "camera") {
-        await camera_screen(driver, screen_info);
-      } else if (screen_info.type == "timer") {
-        await timer_screen(driver, screen_info, false);
-      } else if (screen_info.type == "rdt") {
-        await rdt_screen(driver, screen_info);
-      }
+  test("Run through app 20 times", async () => {
+    for (let ii = 0; ii < 20; ii++) {
+      await runThroughApp(true);
+      await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.5);
     }
-    await verify_db_contents(driver, models, installationId);
   });
 });
+
+//goes through entire app
+async function runThroughApp(isDemo) {
+  expect(await driver.hasElementByAccessibilityId(strings.Welcome.title)).toBe(
+    true
+  );
+  await driver.setImplicitWaitTimeout(10000);
+  const installationId = await app_setup_for_automation(driver, isDemo);
+
+  for (const screen_info of content) {
+    if (screen_info.type == "basic") {
+      await basic_screen(driver, screen_info);
+    } else if (screen_info.type == "input") {
+      await input_screen(driver, screen_info);
+    } else if (screen_info.type == "camera") {
+      await camera_screen(driver, screen_info);
+    } else if (screen_info.type == "timer") {
+      await timer_screen(driver, screen_info, isDemo);
+    } else if (screen_info.type == "rdt") {
+      await rdt_screen(driver, screen_info);
+    }
+  }
+  await verify_db_contents(driver, models, installationId);
+}
 
 //check for screen title and click button for next page
 async function basic_screen(driver, screen_info) {
@@ -557,6 +550,29 @@ async function triple_tap(driver, x_coord, y_coord) {
   } else {
     await new wd.TouchAction(driver)
       .wait(500)
+      .tap({ x: x_coord, y: y_coord })
+      .tap({ x: x_coord, y: y_coord })
+      .tap({ x: x_coord, y: y_coord })
+      .perform();
+  }
+}
+
+//Quadruple tap for resetting app
+async function quadruple_tap(driver, x_coord, y_coord) {
+  if (PLATFORM == "iOS") {
+    await new wd.TouchAction(driver)
+      .tap({ x: x_coord, y: y_coord })
+      .wait(15)
+      .tap({ x: x_coord, y: y_coord })
+      .wait(15)
+      .tap({ x: x_coord, y: y_coord })
+      .wait(15)
+      .tap({ x: x_coord, y: y_coord })
+      .perform();
+  } else {
+    await new wd.TouchAction(driver)
+      .wait(500)
+      .tap({ x: x_coord, y: y_coord })
       .tap({ x: x_coord, y: y_coord })
       .tap({ x: x_coord, y: y_coord })
       .tap({ x: x_coord, y: y_coord })
