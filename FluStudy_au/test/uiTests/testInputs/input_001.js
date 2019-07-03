@@ -7,7 +7,6 @@ import strings from "../../../src/i18n/locales/en.json";
 const today = new Date();
 
 export const inputs = {
-  [strings.surveyTitle.researchByTheseResearchers]: strings.surveyButton.yes,
   [strings.surveyTitle.researchByAnyResearchers]: strings.surveyButton.yes,
   [strings.barcode.placeholder]: "00100100",
   [strings.barcode.secondPlaceholder]: "00100100",
@@ -40,9 +39,7 @@ export const inputs = {
   }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.yes,
   [strings.surveyTitle.previousSeason]: strings.surveyButton.yes,
-  [strings.surveyTitle.medicalCondition]: [
-    strings.surveyOption.asthma,
-  ],
+  [strings.surveyTitle.medicalCondition]: [strings.surveyOption.asthma],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.yes,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,

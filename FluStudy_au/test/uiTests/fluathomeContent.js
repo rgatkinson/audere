@@ -43,12 +43,6 @@ export const content = [
     dbScreenName: "Consent",
     input: [
       {
-        name: strings.surveyTitle.researchByTheseResearchers,
-        type: "buttonGrid",
-        dbLocation: "responses",
-        options: [strings.surveyButton.no, strings.surveyButton.yes],
-      },
-      {
         name: strings.surveyTitle.researchByAnyResearchers,
         type: "buttonGrid",
         dbLocation: "responses",

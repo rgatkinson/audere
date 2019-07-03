@@ -6,7 +6,6 @@
 import strings from "../../../src/i18n/locales/en.json";
 
 export const inputs = {
-  [strings.surveyTitle.researchByTheseResearchers]: strings.surveyButton.no,
   [strings.surveyTitle.researchByAnyResearchers]: strings.surveyButton.no,
   [strings.barcode.placeholder]: "00200200",
   [strings.barcode.secondPlaceholder]: "00200200",
@@ -33,9 +32,7 @@ export const inputs = {
   [strings.surveyTitle.bedrooms]: strings.surveyButton["2"],
   [strings.surveyTitle.fluShot]: strings.surveyButton.no,
   [strings.surveyTitle.previousSeason]: strings.surveyButton.no,
-  [strings.surveyTitle.medicalCondition]: [
-    strings.surveyOption.copd,
-  ],
+  [strings.surveyTitle.medicalCondition]: [strings.surveyOption.copd],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.no,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
