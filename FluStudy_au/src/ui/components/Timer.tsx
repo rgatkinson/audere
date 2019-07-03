@@ -91,7 +91,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
   _onFastForward = () => {
     // Just pretend we started 5 secs before the original target end time.
     this._startTimeMs =
-      this.props.startTimeMs + this.props.totalTimeMs - FAST_FORWARD_MS;
+      new Date().getTime() - this.props.totalTimeMs + FAST_FORWARD_MS;
     this.setState({
       remainingLabel: this._getRemainingLabel(),
     });
