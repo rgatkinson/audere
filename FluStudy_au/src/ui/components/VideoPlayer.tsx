@@ -90,16 +90,18 @@ export default class VideoPlayer extends React.Component<Props> {
       return <View />;
     }
 
+    const { paused, showThumbnail } = this.state;
+
     return (
       <View>
         <NavigationEvents onWillBlur={this._pauseVideo} />
         <Divider />
-        {this.state.showThumbnail && (
-          <TouchableWithoutFeedback
-            onPress={this._playVideo}
-            style={styles.thumbnail}
-          >
-            <View style={styles.thumbnail}>
+        <TouchableWithoutFeedback
+          onPress={paused ? this._playVideo : this._pauseVideo}
+          style={styles.thumbnail}
+        >
+          <View style={styles.thumbnail}>
+            {(paused || showThumbnail) && (
               <View style={styles.iconContainer}>
                 <Ionicons
                   color="white"
@@ -108,15 +110,17 @@ export default class VideoPlayer extends React.Component<Props> {
                   style={styles.icon}
                 />
               </View>
+            )}
+            {showThumbnail && (
               <Image
                 source={{ uri: this._config.thumbnail }}
                 style={styles.thumbnail}
               />
-            </View>
-          </TouchableWithoutFeedback>
-        )}
+            )}
+          </View>
+        </TouchableWithoutFeedback>
         <Video
-          controls={true}
+          controls={false}
           paused={this.state.paused}
           ignoreSilentSwitch="obey"
           playInBackground={false}
