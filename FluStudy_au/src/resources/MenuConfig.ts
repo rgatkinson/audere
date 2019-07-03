@@ -38,6 +38,7 @@ const FAQS = [
   "whyStudy",
   "whoEligible",
   "howSoon",
+  "howComplete",
   "howFindOut",
   "howLongTest",
   "swabDirty",
