@@ -544,7 +544,8 @@ jobs:
             yarn global add expo-cli@2.19.4
             export PATH="$PATH:$(yarn global bin)"
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish --max-workers 2 --non-interactive
+            # FEV-658 Publish each Android build to unique release channel
+            expo publish --max-workers 2 --non-interactive --release-channel "${PRODUCT}_${CIRCLE_BUILD_NUM}"
       - run:
           name: Prepare signing artifacts
           command: |
