@@ -17,7 +17,6 @@ import {
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
-import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
 import { SecureStore } from "expo";
 import { uploaderMiddleware } from "./uploader";
@@ -47,8 +46,6 @@ export type Action = MetaAction | SurveyAction | ClearStateAction;
 import { StoreState } from "./StoreState";
 import { photoCollectionName } from "./FirebaseStore";
 export { StoreState } from "./StoreState";
-
-const STORAGE_PASSWORD_KEY = "FluAtHome.PouchDbEncryptionPassword";
 
 const reducer = combineReducers({
   meta,
@@ -93,20 +90,6 @@ export async function waitForIdlePhotoUploader(ms?: number) {
   return await photoUploader.waitForIdle(ms);
 }
 
-export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
-  createTransform(
-    (inboundState, key) => {
-      return inboundState;
-    },
-    (outboundState, key) => {
-      const decrypted = encryptor.out(outboundState, key);
-      if (decrypted) {
-        return JSON.stringify(decrypted);
-      }
-      return outboundState;
-    }
-  );
-
 function loggingMiddleware<Ext, S, D extends Dispatch>(
   label: string,
   middleware: Middleware<Ext, S, D>
@@ -135,10 +118,8 @@ function loggingMiddleware<Ext, S, D extends Dispatch>(
 }
 
 async function getStoreImpl() {
-  const password = await getEncryptionPassword();
-  const encryptor = createEncryptor({ secretKey: password });
   const persistConfig = {
-    transforms: [immutableTransform(), encryptionRemovalTransform(encryptor)],
+    transforms: [immutableTransform()],
     key: "store",
     storage,
   };
@@ -153,22 +134,4 @@ async function getStoreImpl() {
 
 export async function getPersistor() {
   return persistStore(await getStore());
-}
-
-async function getEncryptionPassword(): Promise<string> {
-  let password;
-  try {
-    password = await SecureStore.getItemAsync(STORAGE_PASSWORD_KEY);
-    if (password) {
-      return password;
-    }
-  } catch (e) {}
-  try {
-    password = base64url(crypto.getRandomValues(new Buffer(32)));
-    await SecureStore.setItemAsync(STORAGE_PASSWORD_KEY, password);
-  } catch (err) {
-    logFirebaseEvent(AppHealthEvents.SAVE_STORAGE_PASSWORD_ERROR, err);
-    throw err;
-  }
-  return password;
 }
