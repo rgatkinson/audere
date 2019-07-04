@@ -53,17 +53,17 @@ describe("Happy Path", () => {
   });
 
   test("A user should be able to navigate through the entire app", async () => {
-    await runThroughApp(true);
+    await runThroughApp(models, true);
   });
 
   test("Non-demo mode test", async () => {
-    await runThroughApp(false);
+    await runThroughApp(models, false);
   });
 
   test("Run through app 20 times", async () => {
     for (let ii = 0; ii < 20; ii++) {
       console.log("20x start");
-      await runThroughApp(true);
+      await runThroughApp(models, true);
       console.log("Finished test number " + ii);
       await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.5);
     }
@@ -71,7 +71,8 @@ describe("Happy Path", () => {
 });
 
 //goes through entire app
-async function runThroughApp(isDemo) {
+async function runThroughApp(models, isDemo) {
+  console.log(models);
   expect(await driver.hasElementByAccessibilityId(strings.Welcome.title)).toBe(
     true
   );
