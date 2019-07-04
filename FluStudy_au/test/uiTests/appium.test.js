@@ -62,7 +62,9 @@ describe("Happy Path", () => {
 
   test("Run through app 20 times", async () => {
     for (let ii = 0; ii < 20; ii++) {
+      console.log("20x start");
       await runThroughApp(true);
+      console.log("Finished test number " + ii);
       await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.5);
     }
   });
