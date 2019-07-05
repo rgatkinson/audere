@@ -53,6 +53,7 @@ describe("Happy Path", () => {
   });
 
   test("A user should be able to navigate through the entire app", async () => {
+    console.log("start");
     await runThroughApp(models, true);
   });
 
@@ -92,6 +93,7 @@ async function runThroughApp(models, isDemo) {
       await rdt_screen(driver, screen_info);
     }
   }
+  console.log(models);
   await verify_db_contents(driver, models, installationId);
 }
 
@@ -433,7 +435,7 @@ async function verify_db_contents(driver, models, installationId) {
       },
     },
   });
-
+  console.log(dbRow);
   //verify navigation events
   const expected = content
     // Android skips barcode camera
