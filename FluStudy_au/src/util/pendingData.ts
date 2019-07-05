@@ -1,5 +1,5 @@
 import { hasPendingPhotos, waitForIdlePhotoUploader } from "../store";
-const PHOTO_UPLOAD_TIMEOUT = 5000;
+const PHOTO_UPLOAD_TIMEOUT = 90000;
 
 export async function pendingNavigation() {
   const hasPhotos = await hasPendingPhotos();

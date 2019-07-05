@@ -456,8 +456,8 @@
     "symptomsLinkLabel": "healthdirect: Understand the symptoms of cold and flu"
   },
   "PendingData": {
-    "title": "Connect to upload photo",
-    "desc": "We could not connect to upload your photo. Once you are connected please come back to the app and tap \"Try Again.\""
+    "title": "Connect to upload data",
+    "desc": "We could not connect to upload your data. Once you are connected please come back to the app and tap \"Try Again.\"\n\nIt may take a minute to sync your data."
   },
   "links": {
     "ausGov": "Australian Government Department of Health: All about influenza",
