@@ -43,7 +43,7 @@ yarn build
 case "$mode" in
   migrate)
     echo "Running sequelize because '$mode'==migrate"
-    yarn setup
+    yarn setup && yarn setup-aws
     ;;
   service)
     echo "Running pm2 because '$mode'==service"
