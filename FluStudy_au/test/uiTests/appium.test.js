@@ -53,7 +53,6 @@ describe("Happy Path", () => {
   });
 
   test("A user should be able to navigate through the entire app", async () => {
-    console.log("start");
     await runThroughApp(models, true);
   });
 
@@ -63,17 +62,14 @@ describe("Happy Path", () => {
 
   test("Run through app 20 times", async () => {
     for (let ii = 0; ii < 20; ii++) {
-      console.log("20x start");
       await runThroughApp(models, true);
-      console.log("Finished test number " + ii);
-      await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.5);
+      await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
     }
   });
 });
 
 //goes through entire app
 async function runThroughApp(models, isDemo) {
-  console.log(models);
   expect(await driver.hasElementByAccessibilityId(strings.Welcome.title)).toBe(
     true
   );
@@ -93,7 +89,6 @@ async function runThroughApp(models, isDemo) {
       await rdt_screen(driver, screen_info);
     }
   }
-  console.log(models);
   await verify_db_contents(driver, models, installationId);
 }
 
@@ -435,7 +430,6 @@ async function verify_db_contents(driver, models, installationId) {
       },
     },
   });
-  console.log(dbRow);
   //verify navigation events
   const expected = content
     // Android skips barcode camera
