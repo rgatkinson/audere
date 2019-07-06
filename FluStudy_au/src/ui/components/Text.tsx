@@ -25,6 +25,7 @@ import {
   REGULAR_TEXT,
   TEXT_COLOR,
 } from "../styles";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   bold?: boolean;
@@ -74,6 +75,7 @@ function findMarkdownLinks(text: string): LinkData[] {
 
 const textActionLink = (link: LinkData, style?: StyleProp<TextStyle>) => {
   const onPress = () => {
+    logFirebaseEvent(AppEvents.LINK_PRESSED, { link: link.title });
     if (textActions.hasOwnProperty(link.url)) {
       (textActions as any)[link.url](link.title);
     } else {

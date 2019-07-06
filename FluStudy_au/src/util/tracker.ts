@@ -90,6 +90,7 @@ export const AppEvents = {
   APP_IDLE_NEW_USER: "app_idle_new_user",
   APP_IDLE_SAME_USER: "app_idle_same_user",
   READ_CONFIG_VALUE: "read_config_value",
+  LINK_PRESSED: "link_pressed",
 };
 
 // Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.

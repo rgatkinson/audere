@@ -22,6 +22,7 @@ import {
   BUTTON_BORDER_RADIUS,
 } from "../styles";
 import ScreenText from "./ScreenText";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 const ICON_WIDTH = 76;
 
@@ -35,6 +36,7 @@ interface Props {
 
 class LinkInfoBlock extends React.PureComponent<Props & WithNamespaces> {
   _onPress = () => {
+    logFirebaseEvent(AppEvents.LINK_PRESSED, { link: this.props.uri });
     Linking.openURL(this.props.uri);
   };
 

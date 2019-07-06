@@ -7,6 +7,7 @@ import { Linking, Platform } from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { getStore } from "../store";
 import { Constants } from "expo";
+import { logFirebaseEvent, AppEvents } from "../util/tracker";
 
 const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
@@ -42,10 +43,12 @@ export function myDr() {
 }
 
 export function testSupport() {
+  logFirebaseEvent(AppEvents.LINK_PRESSED, { link: testQuestionsURL });
   Linking.openURL(`mailto:${testQuestionsURL}?body=${supportBody}`);
 }
 
 export function appSupport() {
+  logFirebaseEvent(AppEvents.LINK_PRESSED, { link: appSupportURL });
   Linking.openURL(`mailto:${appSupportURL}?body=${supportBody}`);
 }
 
