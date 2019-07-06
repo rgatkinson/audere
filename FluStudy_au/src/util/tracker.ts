@@ -37,7 +37,6 @@ export const DrawerEvents = {
 
 export const FunnelEvents = {
   // Screening events
-  CONSENT_INELIGIBLE: "funnel_consent_ineligible",
   CONSENT_COMPLETED: "funnel_consent_completed",
   CONSENT_DECLINED: "funnel_consent_declined",
   // Survey events
@@ -46,10 +45,11 @@ export const FunnelEvents = {
   SURVIVED_SWAB: "funnel_survived_swab",
   PASSED_FIRST_TIMER: "funnel_passed_first_timer",
   COMPLETED_SURVEY: "funnel_completed_survey",
+  PASSED_SECOND_TIMER: "funnel_passed_second_timer",
   BLUE_ANSWER_CHANGED: "funnel_blue_answer_changed",
   PINK_ANSWER_CHANGED: "funnel_pink_answer_changed",
   NUM_LINES_ANSWER_CHANGED: "funnel_num_lines_answer_changed",
-  COMPLETED_TEST: "funnel_completed_test",
+  RECEIVED_TEST_RESULT: "funnel_received_test_result",
 };
 
 // You should include { video: <uri> } with these events,

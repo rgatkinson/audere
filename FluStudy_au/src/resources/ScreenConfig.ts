@@ -653,6 +653,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
+    funnelEvent: FunnelEvents.PASSED_SECOND_TIMER,
     key: "TestStripReady",
   },
   {
@@ -762,6 +763,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
+    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResult",
   },
   {
@@ -783,6 +785,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
+    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",
   },
   {
