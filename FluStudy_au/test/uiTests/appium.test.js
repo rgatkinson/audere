@@ -63,7 +63,8 @@ describe("Happy Path", () => {
   test("Run through app 20 times", async () => {
     for (let ii = 0; ii < 20; ii++) {
       await runThroughApp(models, true);
-      //await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
+      await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.07);
+      console.log("done with run " + (ii + 1));
     }
   });
 });
@@ -90,7 +91,6 @@ async function runThroughApp(models, isDemo) {
     }
   }
   await verify_db_contents(driver, models, installationId);
-  await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
 }
 
 //check for screen title and click button for next page
@@ -102,7 +102,11 @@ async function basic_screen(driver, screen_info) {
     await scroll_to_element(driver, screen_info.button);
     await driver.elementByAccessibilityId(screen_info.button).click();
   }
-  if ("iosPopupOnContinue" in screen_info && PLATFORM == "iOS") {
+  if (
+    "iosPopupOnContinue" in screen_info &&
+    PLATFORM == "iOS" &&
+    (await driver.hasElementByAccessibilityId(screen_info.iosPopupOnContinue))
+  ) {
     await driver
       .elementByAccessibilityId(screen_info.iosPopupOnContinue)
       .click();
@@ -361,13 +365,19 @@ async function camera_screen(driver, screen_info) {
     );
     await allowButton.click();
   } else {
-    await driver
-      .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
-      .click();
+    if (
+      await driver.hasElementByAccessibilityId(
+        strings.common.button.ok.toUpperCase()
+      )
+    ) {
+      await driver
+        .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
+        .click();
+      expect(await driver.hasElementByAccessibilityId(screen_info.button)).toBe(
+        true
+      );
+    }
   }
-  expect(await driver.hasElementByAccessibilityId(screen_info.button)).toBe(
-    true
-  );
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
     .perform();
@@ -422,7 +432,7 @@ async function verify_db_contents(driver, models, installationId) {
     throw new Error(`Expected 200, got ${response.status}`);
   }
 
-  const dbRow = await models.survey.findOne({
+  const dbRowsAndNum = await models.survey.findAndCountAll({
     where: {
       device: {
         installation: {
@@ -431,6 +441,10 @@ async function verify_db_contents(driver, models, installationId) {
       },
     },
   });
+
+  //gets most recent row with same installationId
+  const dbRow = dbRowsAndNum["rows"][dbRowsAndNum["count"] - 1];
+
   //verify navigation events
   const expected = content
     // Android skips barcode camera
