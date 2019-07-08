@@ -3,7 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-variable "cough_aspren_bucket" {
+variable "cough_aspren_bucket_arn" {
+  description = "ARN of bucket where ASPREN reports are stored"
+  type = "string"
+}
+
+variable "cough_aspren_bucket_id" {
   description = "Name of bucket where ASPREN reports are stored"
   type = "string"
 }

@@ -3,6 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+output "cough_aspren_bucket_arn" {
+  value = "${module.shared.cough_aspren_bucket_arn}"
+}
+
 output "cough_aspren_bucket_id" {
   value = "${module.shared.cough_aspren_bucket_id}"
 }

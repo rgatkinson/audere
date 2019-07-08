@@ -172,6 +172,13 @@ resource "aws_lambda_function" "cough_aspren_import" {
   }
 }
 
+resource "aws_lambda_permission" "cough_aspren_import_s3_invocation" {
+  action = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.cough_aspren_import.arn}"
+  principal = "s3.amazonaws.com"
+  source_arn = "${var.cough_aspren_bucket_arn}"
+}
+
 resource "aws_cloudwatch_metric_alarm" "cough_aspren_execution_errors" {
   alarm_name = "${local.base_name}-cough-aspren-import-execution-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -199,7 +206,7 @@ resource "aws_cloudwatch_metric_alarm" "cough_aspren_execution_errors" {
 }
 
 resource "aws_s3_bucket_notification" "cough_aspren_reports_notification" {
-  bucket = "${var.cough_aspren_bucket}"
+  bucket = "${var.cough_aspren_bucket_id}"
 
   lambda_function {
     lambda_function_arn = "${aws_lambda_function.cough_aspren_import.arn}"

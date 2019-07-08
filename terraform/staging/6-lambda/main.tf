@@ -23,7 +23,8 @@ provider "template" {
 module "flu_lambda" {
   source = "../../modules/flu-lambda"
 
-  cough_aspren_bucket = "${data.terraform_remote_state.flu_api.cough_aspren_bucket_id}"
+  cough_aspren_bucket_arn = "${data.terraform_remote_state.flu_api.cough_aspren_bucket_arn}"
+  cough_aspren_bucket_id = "${data.terraform_remote_state.flu_api.cough_aspren_bucket_id}"
   environment = "staging"
   fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_internal_fqdn}"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
