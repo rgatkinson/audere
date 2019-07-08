@@ -45,7 +45,7 @@ describe("Happy Path", () => {
 
   beforeEach(async () => {
     await driver.init(deviceInfo.config);
-    await driver.setImplicitWaitTimeout(30000);
+    await driver.setImplicitWaitTimeout(60000);
   });
 
   afterEach(async () => {
@@ -475,7 +475,10 @@ async function verify_db_contents(driver, models, installationId) {
           expect(questionDb.answer).toHaveLength(1);
           expect(answerApp).toEqual(answerDb);
         }
-      } else if (question.dbLocation === "responses") {
+      } else if (
+        question.dbLocation === "responses" &&
+        inputs[question.name] != strings.surveyButton.preferNotToSay
+      ) {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
           item.text.startsWith(question.name)
         );
