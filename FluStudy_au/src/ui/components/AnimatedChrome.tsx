@@ -228,7 +228,7 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
           style={[
             styles.children,
             {
-              height: screenHeight / 2,
+              height: screenHeight / 2 - NAV_BAR_HEIGHT,
               opacity: this.state.textFadeAnim,
             },
           ]}
