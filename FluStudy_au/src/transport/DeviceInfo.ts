@@ -15,7 +15,7 @@ export const DEVICE_INFO = {
   yearClass: Constants.deviceYearClass,
   // ios.userInterfaceIdiom will return "handset" or "tablet"
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
-  platform: JSON.stringify(getPlatformInfo()),
+  platform: getPlatformInfo(),
 };
 
 export type DeviceInfo = typeof DEVICE_INFO;
