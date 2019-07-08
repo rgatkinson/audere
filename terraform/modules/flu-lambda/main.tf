@@ -162,7 +162,7 @@ resource "aws_lambda_function" "cough_aspren_import" {
   environment {
     variables = {
       TARGET_URL = "http://${var.fluapi_fqdn}:444/api/import/asprenReport"
-      TIMEOUT = "${var.timeout * 1000}"
+      TIMEOUT = 300000
     }
   }
 
