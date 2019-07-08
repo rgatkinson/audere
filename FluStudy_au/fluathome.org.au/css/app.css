@@ -349,11 +349,12 @@ nav {
   .steps h3 {
     text-align: center;
     align-self: center;
-    font-size: 1.400em;
-    font-weight: 700;
-    /*padding: 4em 0em;*/
+    font-size: 1.200em;
     padding-top: 40%;
     padding-bottom: 20%;
+    padding-left: 5%;
+    padding-right: 5%;
+    line-height: 1.5;
    }
 
 .video {
