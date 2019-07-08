@@ -4,15 +4,15 @@
 // can be found in the LICENSE file distributed with this file.
 
 locals {
-  archive_path = "${path.module}/../../../FluLambda/build/FluLambda.zip"
+  handler_archive_path = "${path.module}/../../../FluLambda/build/FluLambda.zip"
 }
 
 resource "aws_lambda_function" "cron" {
   function_name = "${var.name}"
-  filename = "${local.archive_path}"
+  filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
   runtime = "nodejs8.10"
-  source_code_hash = "${base64sha256(file("${local.archive_path}"))}"
+  source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${var.role_arn}"
   timeout = "${var.timeout}"
 

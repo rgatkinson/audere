@@ -3,13 +3,18 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+variable "cough_aspren_bucket" {
+  description = "ARN of bucket where ASPREN reports are stored"
+  type = "string"
+}
+
 variable "environment" {
   description = "One of 'staging' or 'prod'"
   type = "string"
 }
 
-variable "lambda_subnet_id" {
-  description = "Subnet in which the Lambda should be deployed"
+variable "fluapi_fqdn" {
+  description = "Fully qualified domain name for FluApi"
   type = "string"
 }
 
@@ -23,12 +28,12 @@ variable "internet_egress_sg" {
   type = "string"
 }
 
-variable "fluapi_fqdn" {
-  description = "Fully qualified domain name for FluApi"
+variable "infra_alerts_sns_topic_arn" {
+  description = "ARN of SNS topic for publishing alarms"
   type = "string"
 }
 
-variable "infra_alerts_sns_topic_arn" {
-  description = "ARN of SNS topic for publishing alarms"
+variable "lambda_subnet_id" {
+  description = "Subnet in which the Lambda should be deployed"
   type = "string"
 }
