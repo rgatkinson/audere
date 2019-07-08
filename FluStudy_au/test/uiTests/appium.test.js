@@ -64,7 +64,6 @@ describe("Happy Path", () => {
     for (let ii = 0; ii < 20; ii++) {
       await runThroughApp(models, true);
       await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.07);
-      console.log("done with run " + (ii + 1));
     }
   });
 });
@@ -208,7 +207,6 @@ async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
   if (!nextQuestionLocation) {
     nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
   }
-
   while (numClicked < totalButtons) {
     while (somethingLeftToClick && numClicked < totalButtons) {
       somethingLeftToClick = false;
@@ -358,12 +356,20 @@ async function ios_select(driver, question) {
 
 //Answer camera permissions question and click link for manual barcode entry
 async function camera_screen(driver, screen_info) {
-  if (PLATFORM == "Android") {
+  if (
+    PLATFORM == "Android" &&
+    (await driver.hasElement(
+      "id",
+      "com.android.packageinstaller:id/permission_allow_button"
+    ))
+  ) {
     allowButton = await driver.element(
       "id",
       "com.android.packageinstaller:id/permission_allow_button"
     );
     await allowButton.click();
+    //wait to make sure button can load
+    await driver.sleep(3000);
   } else {
     if (
       await driver.hasElementByAccessibilityId(
@@ -386,11 +392,6 @@ async function camera_screen(driver, screen_info) {
 //Answer camera permissions and click button to take a picture
 async function rdt_screen(driver, screen_info) {
   if (PLATFORM == "Android") {
-    allowButton = await driver.element(
-      "id",
-      "com.android.packageinstaller:id/permission_allow_button"
-    );
-    await allowButton.click();
     okButton = await driver.element("id", "android:id/button1");
     await okButton.click();
   } else {
@@ -448,7 +449,7 @@ async function verify_db_contents(driver, models, installationId) {
   //verify navigation events
   const expected = content
     // Android skips barcode camera
-    .filter(item => !isAndroidBarcodeScan(item))
+    //.filter(item => !isAndroidBarcodeScan(item))
     .map(item => item.dbScreenName);
   const actual = dbRow.survey.events
     .slice(1) // db has version screen before app starts
