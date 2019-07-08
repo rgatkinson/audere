@@ -30,6 +30,9 @@ const height = Dimensions.get("window").height / 2;
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    alignSelf: "center",
+    height,
+    width,
     marginTop: GUTTER * 1.5,
     marginBottom: GUTTER / 2,
     justifyContent: "center",

@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     marginTop: GUTTER * 1.5,
   },
   border: {
-    paddingVertical: GUTTER * 2,
+    paddingVertical: GUTTER * 3,
   },
   rdt: {
     height: width,
