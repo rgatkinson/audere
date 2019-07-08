@@ -33,6 +33,9 @@ export * from "./types";
 import { default as meta, MetaAction } from "./meta";
 export * from "./meta";
 
+import { default as questions, QuestionsAction } from "./questions";
+export * from "./questions";
+
 import { default as survey, SurveyAction } from "./survey";
 export * from "./survey";
 
@@ -41,7 +44,11 @@ export function clearState(): ClearStateAction {
   return { type: "CLEAR_STATE" };
 }
 
-export type Action = MetaAction | SurveyAction | ClearStateAction;
+export type Action =
+  | MetaAction
+  | QuestionsAction
+  | SurveyAction
+  | ClearStateAction;
 
 import { StoreState } from "./StoreState";
 import { photoCollectionName } from "./FirebaseStore";
@@ -50,6 +57,7 @@ export { StoreState } from "./StoreState";
 const reducer = combineReducers({
   meta,
   navigation: (state: any = {}) => null,
+  questions,
   survey,
 });
 

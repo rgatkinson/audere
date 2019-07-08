@@ -24,9 +24,7 @@ export function getAnswerForID(
   questionId: string,
   questionType: string
 ): any {
-  const response = state.survey.responses.find(
-    response => response.questionId === questionId
-  );
+  const response = state.questions[questionId];
   return !response || !response!.answer || !response!.answer![questionType]
     ? undefined
     : response!.answer![questionType];

@@ -5,7 +5,7 @@
 
 import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
 import { Option, SurveyResponse } from "./types";
-import { SurveyState, StoreState } from "./index";
+import { SurveyState, QuestionsState, StoreState } from "./index";
 import {
   NonPIIConsentInfo,
   QuestionAnswerOption,
@@ -168,6 +168,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
 // Exported so we can write unit tests for this
 export function redux_to_pouch(state: StoreState): SurveyInfo {
   const survey = state.survey;
+  const questions = state.questions;
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     marketingProperties: state.meta.marketingProperties,
@@ -179,11 +180,9 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     rdtInfo: state.survey.rdtInfo,
   };
 
-  when(getGender(survey), x => (pouch.gender = x));
+  when(getGender(questions), x => (pouch.gender = x));
 
   maybePushConsent(survey, pouch.consents);
-
-  const responses = cleanupResponses(survey.responses);
 
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
@@ -204,7 +203,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   pouch.pushNotificationState = survey.pushState;
 
   // Set all surveyResponses into pouch.responses
-  pushResponses("SurveyQuestions", responses, pouch.responses);
+  pushResponses("SurveyQuestions", questions, pouch.responses);
   return pouch;
 }
 
@@ -216,132 +215,135 @@ function maybePushConsent(survey: SurveyState, consents: NonPIIConsentInfo[]) {
 }
 
 function pushResponses(
-  responseId: string,
-  responses: SurveyResponse[],
+  pouchId: string,
+  questions: QuestionsState,
   pouchResponses: ResponseInfo[]
 ): void {
-  let items: ResponseItemInfo[] = [];
-  responses.forEach(response => {
-    let item: ResponseItemInfo = {
-      id: response.questionId,
-      text: response.questionText,
-      answer: [],
-    };
+  const responses = cleanupResponses(questions);
+  const items = responses
+    .map(response => createResponseItem(response))
+    .filter(response => !!response.answer.length);
+  pouchResponses.push({ id: pouchId, item: items });
+}
 
-    if (!!response.answer) {
-      let answerOptions: QuestionAnswerOption[] = [];
-      if (!!response.optionLabels) {
-        response.optionLabels.forEach(({ key, label }) => {
+function createResponseItem(response: SurveyResponse): ResponseItemInfo {
+  const item: ResponseItemInfo = {
+    id: response.questionId,
+    text: response.questionText,
+    answer: [],
+  };
+
+  if (!!response.answer) {
+    let answerOptions: QuestionAnswerOption[] = [];
+    if (!!response.optionLabels) {
+      response.optionLabels.forEach(({ key, label }) => {
+        answerOptions.push({
+          id: key,
+          text: label,
+        });
+      });
+    }
+
+    if (!!response.buttonLabels) {
+      // Consider all buttons besides "done", "next", and "preferNotToSay" to be
+      // multiple choice options
+      response.buttonLabels.forEach(({ key, label }) => {
+        if (key !== "preferNotToSay" && key !== "done" && key !== "next") {
           answerOptions.push({
             id: key,
             text: label,
           });
-        });
-      }
+        }
+      });
+    }
 
-      if (!!response.buttonLabels) {
-        // Consider all buttons besides "done", "next", and "preferNotToSay" to be
-        // multiple choice options
-        response.buttonLabels.forEach(({ key, label }) => {
-          if (key !== "preferNotToSay" && key !== "done" && key !== "next") {
-            answerOptions.push({
-              id: key,
-              text: label,
-            });
-          }
-        });
-      }
+    if (answerOptions.length > 0) {
+      item.answerOptions = answerOptions;
+    }
 
-      if (answerOptions.length > 0) {
-        item.answerOptions = answerOptions;
-      }
-
-      if (response.answer.selectedButtonKey === "preferNotToSay") {
-        item.answer.push({ valueDeclined: true });
-      } else {
-        if (item.answerOptions) {
-          if (
-            !!response.answer.options &&
-            (response.answer.selectedButtonKey === "done" ||
-              response.answer.selectedButtonKey === "next" ||
-              !response.answer.selectedButtonKey)
-          ) {
-            // Actual multiple choice; find indices of all true values
-            let i = 0;
-            const otherOption = response.answer.otherOption;
-            response.answer.options.forEach((option: Option) => {
-              if (option.selected) {
-                item.answer.push({ valueIndex: i });
-              }
-              // ASSUME the "Other" choice is always keyed "other"
-              if (!!otherOption && option.key.toLowerCase() === "other") {
-                item.answer.push({
-                  valueOther: {
-                    selectedIndex: i,
-                    valueString: otherOption,
-                  },
-                });
-              }
-              i = i + 1;
-            });
-          } else {
-            // Check if user pressed other button ("yes" "no" "do not know")
-            const choiceArray = item.answerOptions;
-            for (let i = 0; i < choiceArray.length; i++) {
-              if (choiceArray[i].id === response.answer.selectedButtonKey) {
-                item.answer.push({ valueIndex: i });
-              }
+    if (response.answer.selectedButtonKey === "preferNotToSay") {
+      item.answer.push({ valueDeclined: true });
+    } else {
+      if (item.answerOptions) {
+        if (
+          !!response.answer.options &&
+          (response.answer.selectedButtonKey === "done" ||
+            response.answer.selectedButtonKey === "next" ||
+            !response.answer.selectedButtonKey)
+        ) {
+          // Actual multiple choice; find indices of all true values
+          let i = 0;
+          const otherOption = response.answer.otherOption;
+          response.answer.options.forEach((option: Option) => {
+            if (option.selected) {
+              item.answer.push({ valueIndex: i });
+            }
+            // ASSUME the "Other" choice is always keyed "other"
+            if (!!otherOption && option.key.toLowerCase() === "other") {
+              item.answer.push({
+                valueOther: {
+                  selectedIndex: i,
+                  valueString: otherOption,
+                },
+              });
+            }
+            i = i + 1;
+          });
+        } else {
+          // Check if user pressed other button ("yes" "no" "do not know")
+          const choiceArray = item.answerOptions;
+          for (let i = 0; i < choiceArray.length; i++) {
+            if (choiceArray[i].id === response.answer.selectedButtonKey) {
+              item.answer.push({ valueIndex: i });
             }
           }
         }
+      }
 
-        if (response.answer.dateInput) {
-          item.answer.push({
-            valueDateTime: response.answer.dateInput.toISOString(),
-          });
-        }
+      if (response.answer.dateInput) {
+        item.answer.push({
+          valueDateTime: response.answer.dateInput.toISOString(),
+        });
+      }
 
-        if (response.answer.numberInput || response.answer.numberInput === 0) {
-          if (Number.isInteger(response.answer.numberInput)) {
-            item.answer.push({ valueInteger: response.answer.numberInput });
-          } else {
-            item.answer.push({ valueString: "" + response.answer.numberInput });
-          }
-        }
-
-        if (response.answer.textInput) {
-          item.answer.push({ valueString: response.answer.textInput });
-        }
-
-        if (response.answer.booleanInput != null) {
-          item.answer.push({ valueBoolean: response.answer.booleanInput });
+      if (response.answer.numberInput || response.answer.numberInput === 0) {
+        if (Number.isInteger(response.answer.numberInput)) {
+          item.answer.push({ valueInteger: response.answer.numberInput });
+        } else {
+          item.answer.push({ valueString: "" + response.answer.numberInput });
         }
       }
 
-      items.push(item);
+      if (response.answer.textInput) {
+        item.answer.push({ valueString: response.answer.textInput });
+      }
+
+      if (response.answer.booleanInput != null) {
+        item.answer.push({ valueBoolean: response.answer.booleanInput });
+      }
     }
-  });
-  pouchResponses.push({ id: responseId, item: items });
+  }
+  return item;
 }
 
-function getGender(survey: SurveyState): Maybe<PatientInfoGender> {
-  const key = buttonKey(survey, AssignedSexConfig.id);
+function getGender(questions: QuestionsState): Maybe<PatientInfoGender> {
+  const key = buttonKey(questions, AssignedSexConfig.id);
   return (key && GENDER_MAP.get(key)) || undefined;
 }
 
 function buttonKey(
-  survey: SurveyState,
+  questions: QuestionsState,
   questionId: string
 ): string | undefined {
-  const answer = answerForId(survey, questionId);
+  const answer = answerForId(questions, questionId);
   if (answer) {
     return answer.selectedButtonKey;
   }
   return undefined;
 }
 
-function answerForId(survey: SurveyState, questionId: string) {
-  const response = survey.responses.find(r => r.questionId === questionId);
+function answerForId(questions: QuestionsState, questionId: string) {
+  const response = questions[questionId];
   if (response) {
     return response.answer;
   } else {
@@ -374,39 +376,47 @@ function when<T>(maybe: Maybe<T>, then: (item: T) => void) {
 //
 // So instead, we filter out the alternate universe responses here
 // before uploading.
-function cleanupResponses(responses: SurveyResponse[]): SurveyResponse[] {
-  const byId = new Map(responses.map(responseById));
+function cleanupResponses(questions: QuestionsState): SurveyResponse[] {
+  const responses: SurveyResponse[] = Object.keys(questions).map(
+    key => questions[key]!
+  );
+  return responses.filter((response: SurveyResponse) =>
+    shouldIncludeResponse(response.questionId, questions)
+  );
+}
 
-  return responses.filter(r => {
-    const conditional = CONDITIONAL_QUESTIONS.find(
-      c => c.conditionalId === r.questionId
-    );
-    if (conditional == null) {
-      return true;
-    }
-
-    for (let i = 0; i < conditional.conditions.length; i++) {
-      const dependency = byId.get(conditional.conditions[i].dependsOnId);
-      const condition = conditional.conditions[i];
-
-      if (
-        dependency != null &&
-        !!condition.anythingBut &&
-        condition.includeWhen(dependency)
-      ) {
-        return false;
-      }
-
-      if (
-        dependency != null &&
-        !condition.anythingBut &&
-        !condition.includeWhen(dependency)
-      ) {
-        return false;
-      }
-    }
+function shouldIncludeResponse(
+  responseId: string,
+  questions: QuestionsState
+): boolean {
+  const conditional = CONDITIONAL_QUESTIONS.find(
+    c => c.conditionalId === responseId
+  );
+  if (conditional == null) {
     return true;
-  });
+  }
+
+  for (let i = 0; i < conditional.conditions.length; i++) {
+    const dependency = questions[conditional.conditions[i].dependsOnId];
+    const condition = conditional.conditions[i];
+
+    if (
+      dependency != null &&
+      !!condition.anythingBut &&
+      condition.includeWhen(dependency)
+    ) {
+      return false;
+    }
+
+    if (
+      dependency != null &&
+      !condition.anythingBut &&
+      !condition.includeWhen(dependency)
+    ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function isSelected(...keys: string[]): ResponsePredicate {
