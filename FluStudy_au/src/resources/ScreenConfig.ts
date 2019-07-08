@@ -948,6 +948,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     automationNext: "TestStripConfirmation",
+    allowedRemoteConfigValues: ["rdtTimeoutSeconds"],
     footer: [
       {
         tag: CameraPermissionContinueButton,

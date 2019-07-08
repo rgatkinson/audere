@@ -16,6 +16,7 @@ import Chrome from "./Chrome";
 import AnimatedChrome from "./AnimatedChrome";
 import { GUTTER } from "../styles";
 import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
+import { getRemoteConfig } from "../../util/remoteConfig";
 
 export interface ScreenConfig {
   body: Component[];
@@ -25,6 +26,7 @@ export interface ScreenConfig {
   key: string;
   workflowEvent?: string;
   automationNext?: string;
+  allowedRemoteConfigValues?: string[];
 }
 
 interface ComponentProps {
@@ -72,6 +74,7 @@ export const generateScreen = (config: ScreenConfig) => {
     _toValidate: Map<string, RefObject<any>>;
     _noRendering: boolean;
     _titlePressToken: PubSubToken;
+    _remoteConfigValues?: { [key: string]: string };
 
     constructor(props: Props) {
       super(props);
@@ -81,6 +84,13 @@ export const generateScreen = (config: ScreenConfig) => {
           this._toValidate.set("body" + index, React.createRef<any>());
         }
       });
+      config.allowedRemoteConfigValues &&
+        config.allowedRemoteConfigValues.map(key => {
+          if (this._remoteConfigValues === undefined) {
+            this._remoteConfigValues = {};
+          }
+          this._remoteConfigValues[key] = getRemoteConfig(key);
+        });
       this._noRendering = true;
     }
 
@@ -192,6 +202,7 @@ export const generateScreen = (config: ScreenConfig) => {
             key={indexId + index}
             namespace={screenKey}
             validate={this._validateComponents}
+            remoteConfigValues={this._remoteConfigValues}
           />
         );
       });

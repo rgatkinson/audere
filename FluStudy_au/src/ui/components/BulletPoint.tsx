@@ -8,7 +8,6 @@ import { Image, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { GUTTER, REGULAR_TEXT } from "../styles";
-import { getRemoteConfig } from "../../util/remoteConfig";
 
 interface Props {
   content: string;
@@ -38,6 +37,7 @@ interface BulletProps {
   customBulletUri?: string;
   label?: string;
   namespace: string;
+  remoteConfigValues?: {[key: string]: string};
 }
 
 class BulletPointsComponent extends React.Component<
@@ -52,15 +52,21 @@ class BulletPointsComponent extends React.Component<
   }
 
   render() {
-    const { customBulletUri, label, namespace, t } = this.props;
+    const {
+      customBulletUri,
+      label,
+      namespace,
+      remoteConfigValues,
+      t,
+    } = this.props;
 
     return (
       <Fragment>
         <View>
-          {t(namespace + (!!label ? `:${label}` : ":bullets"))
-            .replace(/\[\[[a-z]+\]\]/gi, (w: string) => {
-              return getRemoteConfig(w.substr(2, w.length - 4));
-            })
+          {t(
+            namespace + (!!label ? `:${label}` : ":bullets"),
+            remoteConfigValues
+          )
             .split("\n")
             .map((bullet: string, index: number) => {
               return (
