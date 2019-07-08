@@ -15,6 +15,7 @@ export type MetaAction =
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
+  | { type: "SCHEDULED_SURVEY_NOTIF" }
   | { type: "SET_DEMO"; isDemo: boolean };
 
 export type MetaState = {
@@ -26,6 +27,7 @@ export type MetaState = {
   marketingProperties: any;
   shownOfflineWarning: boolean;
   shownRDTFailWarning: boolean;
+  scheduledSurveyNotif: boolean;
 };
 
 const initialState: MetaState = {
@@ -37,6 +39,7 @@ const initialState: MetaState = {
   marketingProperties: undefined,
   shownOfflineWarning: false,
   shownRDTFailWarning: false,
+  scheduledSurveyNotif: false,
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -58,6 +61,8 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, shownRDTFailWarning: action.shownRDTFailWarning };
     case "SET_CONNECTIVITY":
       return { ...state, isConnected: action.isConnected };
+    case "SCHEDULED_SURVEY_NOTIF":
+      return { ...state, scheduledSurveyNotif: true };
     default:
       return state;
   }
@@ -116,4 +121,8 @@ export function setHasBeenOpened(): MetaAction {
   return {
     type: "HAS_BEEN_OPENED",
   };
+}
+
+export function setScheduledSurveyNotif(): MetaAction {
+  return { type: "SCHEDULED_SURVEY_NOTIF" };
 }

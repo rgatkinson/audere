@@ -8,7 +8,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import PushNotification from "react-native-push-notification";
-import { StoreState } from "../../store";
+import { setScheduledSurveyNotif, Action, StoreState } from "../../store";
 import {
   Notification,
   getFireDate,
@@ -21,6 +21,8 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   notification: Notification;
   next: string;
+  scheduledSurveyNotif: boolean;
+  dispatch(action: Action): void;
 }
 
 class PushNotificationContinueButtonAndroid extends React.Component<
@@ -35,16 +37,27 @@ class PushNotificationContinueButtonAndroid extends React.Component<
   };
 
   _scheduleNotification = () => {
-    const { barcode, navigation, notification, next, t } = this.props;
-    PushNotification.cancelLocalNotifications({
-      id: notification.id.toString(),
-    });
-    PushNotification.localNotificationSchedule({
-      date: getFireDate(notification.dateInterval),
-      id: notification.id.toString(),
-      message: t(notification.body),
-      userInfo: { ...notification.data, referralId: barcode },
-    });
+    const {
+      barcode,
+      navigation,
+      notification,
+      next,
+      scheduledSurveyNotif,
+      t,
+      dispatch,
+    } = this.props;
+    if (!scheduledSurveyNotif) {
+      PushNotification.cancelLocalNotifications({
+        id: notification.id.toString(),
+      });
+      PushNotification.localNotificationSchedule({
+        date: getFireDate(notification.dateInterval),
+        id: notification.id.toString(),
+        message: t(notification.body),
+        userInfo: { ...notification.data, referralId: barcode },
+      });
+      dispatch(setScheduledSurveyNotif());
+    }
     navigation.push(next);
   };
 
@@ -63,6 +76,7 @@ class PushNotificationContinueButtonAndroid extends React.Component<
 
 export default connect((state: StoreState) => ({
   barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : undefined,
+  scheduledSurveyNotif: state.meta.scheduledSurveyNotif,
 }))(
   withNavigation(
     withNamespaces("PushNotifications")(PushNotificationContinueButtonAndroid)

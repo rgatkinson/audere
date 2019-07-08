@@ -12,7 +12,12 @@ import {
   PushNotificationState,
   PushRegistrationError,
 } from "audere-lib/coughProtocol";
-import { setPushNotificationState, Action, StoreState } from "../../store";
+import {
+  setScheduledSurveyNotif,
+  setPushNotificationState,
+  Action,
+  StoreState,
+} from "../../store";
 import {
   Notification,
   getFireDate,
@@ -26,6 +31,7 @@ interface Props {
   notification: Notification;
   next: string;
   pushState: PushNotificationState;
+  scheduledSurveyNotif: boolean;
   dispatch(action: Action): void;
 }
 
@@ -116,15 +122,29 @@ class PushNotificationContinueButtonIOS extends React.Component<
   };
 
   _scheduleNotification = () => {
-    const { barcode, notification, t } = this.props;
-    PushNotificationIOS.cancelLocalNotifications({ id: notification.data.id });
-    PushNotificationIOS.scheduleLocalNotification({
-      fireDate: getFireDate(notification.dateInterval),
-      alertAction: "view",
-      alertBody: t(notification.body),
-      userInfo: { ...notification.data, referralId: barcode },
-    });
-    const { navigation, next } = this.props;
+    const {
+      barcode,
+      navigation,
+      next,
+      notification,
+      scheduledSurveyNotif,
+      t,
+      dispatch,
+    } = this.props;
+
+    if (!scheduledSurveyNotif) {
+      PushNotificationIOS.cancelLocalNotifications({
+        id: notification.data.id,
+      });
+      PushNotificationIOS.scheduleLocalNotification({
+        fireDate: getFireDate(notification.dateInterval),
+        alertAction: "view",
+        alertBody: t(notification.body),
+        userInfo: { ...notification.data, referralId: barcode },
+      });
+      dispatch(setScheduledSurveyNotif());
+    }
+
     navigation.push(next);
   };
 
@@ -149,6 +169,7 @@ class PushNotificationContinueButtonIOS extends React.Component<
 export default connect((state: StoreState) => ({
   barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : undefined,
   pushState: state.survey.pushState,
+  scheduledSurveyNotif: state.meta.scheduledSurveyNotif,
 }))(
   withNavigation(
     withNamespaces("PushNotifications")(PushNotificationContinueButtonIOS)

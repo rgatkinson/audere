@@ -20,12 +20,13 @@ import ScreenText from "../ScreenText";
 const MILLIS_IN_TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 
 interface Props {
+  barcode: string;
   workflow: WorkflowInfo;
 }
 
 class SurveyLinkBlock extends React.PureComponent<Props> {
   _onPress = () => {
-    Linking.openURL(followUpSurveyUrl);
+    Linking.openURL(`${followUpSurveyUrl}?r=${this.props.barcode}`);
   };
 
   render() {
@@ -76,5 +77,6 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState) => ({
+  barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : "",
   workflow: state.survey.workflow,
 }))(SurveyLinkBlock);

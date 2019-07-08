@@ -445,7 +445,7 @@
     "title": "Follow-up Survey",
     "desc": "We'd like you to complete a follow-up survey that we will send you in the next couple days. Here's what to expect:",
     "iosInstructions": "We'll ask for permission to enable notifications on your device (after you tap 'Continue' below).\nIt's important that you don't delete this app until you've received the notification.\nThe notification will link to a web survey.",
-    "androidInstructions": "We'll send a push notification in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
+    "androidInstructions": "We'll send a notification to your device in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
   },
   "Thanks": {
     "title": "Thanks for participating",
