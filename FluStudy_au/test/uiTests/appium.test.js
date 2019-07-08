@@ -63,7 +63,7 @@ describe("Happy Path", () => {
   test("Run through app 20 times", async () => {
     for (let ii = 0; ii < 20; ii++) {
       await runThroughApp(models, true);
-      await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
+      //await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
     }
   });
 });
@@ -90,6 +90,7 @@ async function runThroughApp(models, isDemo) {
     }
   }
   await verify_db_contents(driver, models, installationId);
+  await quadruple_tap(driver, screen_x * 0.5, screen_y * 0.02);
 }
 
 //check for screen title and click button for next page
