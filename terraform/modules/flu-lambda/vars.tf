@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 variable "cough_aspren_bucket" {
-  description = "ARN of bucket where ASPREN reports are stored"
+  description = "Name of bucket where ASPREN reports are stored"
   type = "string"
 }
 

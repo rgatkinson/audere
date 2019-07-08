@@ -3,14 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-output "cough_aspren_bucket" {
-  value = "${module.shared.cough_aspren_bucket}"
-}
-
-output "fluapi_internal_fqdn" {
-  value = "${module.flu_api.fluapi_internal_fqdn}"
+output "cough_aspren_bucket_id" {
+  value = "${module.shared.cough_aspren_bucket_id}"
 }
 
 output "fluapi_fqdn" {
   value = "${module.flu_api.fluapi_route53_fqdn}"
+}
+
+output "fluapi_internal_fqdn" {
+  value = "${module.flu_api.fluapi_internal_fqdn}"
 }
