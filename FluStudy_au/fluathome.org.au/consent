@@ -68,17 +68,6 @@
             <nav>
                 <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
                 <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
-                <ul class="menu">
-                    <li>
-                        <!--<a href="http://fluathome.org.au/#UW-Message">Why This Matters</a>-->
-                    </li>
-                    <li>
-                        <a href="http://fluathome.org.au/#Flu-101">Flu 101</a>
-                    </li>
-                    <li>
-                        <a href="/support">FAQ</a>
-                    </li>
-                </ul><br>
             </nav>
         </div>
     </header>
@@ -106,13 +95,22 @@
             <nav>
                 <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt=""></a>
                 <ul class="menu">
-                    <li>
-                        <a href="privacy">Privacy</a>
-                    </li>
-                    <li>
-                        <a href="support">Support/FAQ</a>
-                    </li>
-                </ul><br>
+                        <li>
+			    <a href="/infosheet">Participant Information Sheet</a>
+			<li>
+			<li>
+		 	    <a href="/consent">Consent Forms</a>
+			</li>
+                        <li>
+                        <a href="/support#faq">FAQ</a>
+                    	</li>
+			<li>
+			    <a href="/support">Contact</a>
+			</li>
+                        <li>
+                            <a href="/privacy">Privacy</a>
+                        </li>
+                </ul>
             </nav>
         </div>
     </footer>

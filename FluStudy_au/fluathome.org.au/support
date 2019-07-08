@@ -42,66 +42,70 @@
                 <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
                 <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
                 <ul class="menu">
-                    <li>
-                        <!--<a href="http://fluathome.org.au/#UW-Message">Why This Matters</a>-->
-                    </li>
-                    <li>
-                        <a href="http://fluathome.org.au/#Flu-101">Flu 101</a>
-                    </li>
-                    <li>
-                        <a href="/support">FAQ</a>
-                    </li>
+                    
                 </ul>
             </nav>
         </div>
     </header>
     <article class="legal">
         <div class="container">
-            <h1>Support</h1>
-            <p>For assistance via email, please contact <a href="mailto:flu-support-au@auderenow.org">flu-support-au@auderenow.org</a> (for technical support).</p>
+	    <div class="contact">
+                <h1>Contact Us</h1>
+	        <h3>Test & study support</h3>
+	        <p>Use this link for problems with the test procedure, kit contents, or questions about the study.</p>
+	        <p><a href="mailto:fluathome@adelaide.edu.au">Email Test Support</a></p>
+
+	        <h3>flu@home support</h3>
+	        <p>Use this link for technical problems with the flu@home app.</p>
+	        <p><a href="mailto:flu-support-au@auderenow.org">Email App Support</a></p>
+		<hr>
+	    </div>
             <div class="faq">
-                <h2>Frequently Asked Questions</h2>
+		<a id="faq"></a>
+                <h1>Frequently Asked Questions</h1>
                 
                 <h3 id="1">1. What is the flu@home study?</h3>
-                <p>We're mapping the spread of the flu. Today, more than 30 million people get sick and suffer from flu. We know that the flu is spread from person to person, and we know that it causes outbreaks every year. What we don't know is how it spreads, and why certain flu strains are stronger and more dangerous than others. The flu@home is on a mission to change that.</p>
+                <p>The aim of the study is to determine whether individuals can use an at-home flu test with guidance from an app to understand if they may have the flu. It is estimated that influenza causes 3,500 deaths, 18,000 hospitalisations and 300,000 GP consultations in Australia each year. We know that the flu is spread from person to person, and we know that it causes outbreaks every year. What we don't know is whether people can test themselves at home for the flu with high accuracy. The flu@home study is on a mission to change that.</p>
                 
-                <h3 id="2">2. How do I participate?</h3>
-                <p>After downloading the app, you’ll need to answer a few questions to help us understand your symptoms. The process takes around twenty minutes and will use both the app and the test kit for the results.</p>
-                <p>If you are feeling ill with flu-like symptoms, you can participate. These symptoms include:
-                    <ul>
-                    <li>Fever* or feeling feverish/chills</li>
-                    <li>Cough</li>
-                    <li>Sore throat</li>
-                    <li>Runny or stuffy nose</li>
-                    <li>Muscle or body aches</li>
-                    <li>Headaches</li>
-                    <li>Fatigue (tiredness)</li>
-                    </ul><br>
-                    *Note: not everyone with flu will have a fever.
-                </p>
+		<h3 id ="2">2. Who is involved?</h3>
+		<p>The flu@home study is funded by Audere, and conducted in association with the University of Adelaide in Australia, and the University of Washington in the United States. For more information about this study, visit www.fluathome.org.au.
+		</p>
+
+                <h3 id="3">3. How do I participate?</h3>
+                <p>If your GP is part of the ASPREN study and suspects you may have the flu, you may be eligible to participate. Your GP will take a quick nasal swab in the clinic and provide you with a flu test kit to take home and complete as soon as possible. To run the test you will need to download the flu@home app on your own Android smartphone, Android tablet, iPhone, or iPad to run the test and take a survey. You will learn through the app if you may have the flu.</p>
+	
                 
-                <h3 id="3">3. Who should participate in the study?</h3>
-                <p>Anyone 18+ who is sick with a cold or the flu that lives in Australia. If you are experiencing cold/flu-like symptoms you could help our study and our ability to understand and fight the flu.</p>
+		<h3 id="4">4. Is there a cost associated to downloading the flu@home app?</h3>
+                <p>The flu@home app is free to download and the test kit will be provided for free by your GP.</p>
+
+                <h3 id="5">5. Who can participate in the study?</h3>
+                <p>Individuals who live in Australia, are 18 years of age or older, and visit a GP participating in the ASPREN study. Your GP will determine whether you are experiencing cold or flu-like symptoms that make you are eligible for this study.</p>
                 
-                <h3 id="4">4. Is there any reason that I shouldn't participate?</h3>
-                <p>Please do not enroll if you don’t have at least two symptoms of a cold or flu.</p>
+                <h3 id="6">6. Is there any reason that I shouldn't participate?</h3>
+                <p>Please do not enroll if you have less than two symptoms of a cold or flu, or have had symptoms for more than 7 days. If your symptoms started more than 7 days ago, the test results will be less accurate.</p>
                 
-                <h3 id="5">5. Can you tell me more about the nose swab? Is it painful?</h3>
+                <h3 id="7">7. Can you tell me more about the nose swab? Is it painful?</h3>
                 <p>It takes 5-10 seconds and it might tickle a bit. You’ll gently swab the inside wall of your nostril with a soft cotton-like swab. You’ll do this first on one side, then the other side with the same swab. There are no needles or anything beyond the nose swab.</p>
                 
-                <h3 id="6">6. What data are you gathering from my nose swab?</h3>
-                <p>We'll use your nose swab to figure out what germs are making you sick.</p>
+                <h3 id="8">8. What data are you gathering from my nose swab?</h3>
+                <p>The test in your kit uses your nose swab to figure out if the flu virus may be making you sick.</p>
 
-                <h3 id="7">7. Will my results be anonymous?</h3>
-                <p>In the study, researchers will only be using de-identified data. Please review our <a href="/privacy">Privacy Policy</a> for more details.</p>
+		<h3 id="9">9. Will I get personalized results after participating in the study></h3>
+		<p> You will receive personalised results in the flu@home app after completing the test. Additionally, you will receive the results of the swab done by your GP.</p>
 
-                <h3 id="8">8. Will I be tracked after the study?</h3>
+		<h3 id="10">10. How can I find out if the test says I have the flu?</h3>
+		<p> The flu@home app will guide you through reading your flu test results and will indicate whether you may or may not have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed. </p>
+
+                <h3 id="11">11. Will my results be anonymous?</h3>
+                <p>Yes. We are not collecting your name, email address, or mailing address. All data collected is unidentified. Please review our <a href="/privacy">Privacy Policy</a> for more details.</p>
+
+                <h3 id="12">12. Will I be tracked after the study?</h3>
                 <p>No, you will not be tracked after the study. Please review our <a href="/privacy">Privacy Policy</a> for more details.</p>
 
-                <h3 id="9">9. Can I get a flu shot from the flu@home study?</h3>
-                <p>No, but thank you for asking! We are gathering data to track and study the flu. We are NOT administering the flu vaccine.</p>
+                <h3 id="13">13. Can I get a flu vaccination from the flu@home study?</h3>
+                <p>No, but thank you for asking! We are gathering data to track and study the flu. We are NOT administering the flu vaccine. Please speak to your GP about getting a flu vaccination.</p>
 
-                <h3 id="10">10. Can I help to stop the spread of the flu?</h3>
+                <h3 id="14">14. Can I help to stop the spread of the flu?</h3>
                 <p>Yes you can, and here's how:
                     <ul>
                         <li>Wash your hands</li>
@@ -109,10 +113,23 @@
                         <li>Stay home when you are sick</li>
                     </ul>
                 </p>
+		<p>For more suggestions, please visit <a href="https://www.healthdirect.gov.au/colds-and-flu-prevention"> https://www.healthdirect.gov.au/colds-and-flu-prevention </a></p>
+		
+		<h3 id="15">15. My kit is missing something, can I get another kit?</h3>
+		<p>We are sorry if you received a kit that is missing something. If this is the case, then unfortunately we can't offer you a replacement, so it's best that you don't carry on with the test or this research study. We have done our best to make sure all the test kits are complete, so hopefully this won't occur.</p>         
 
-                <h3 id="11">11. Is there a cost associated to downloading the flu@home app?</h3>
-                <p>The flu@home app is free to download. Once you have completed the test, you may delete the app.</p>
+		<h3 id="16">16. What if we have a complaint or any concerns?</h3>
+		<p> The study has been approved by the Human Research Ethics Committee at the University of Adelaide (approval number H-2018-xxx). This research project will be conducted according to the NHMRC National Statement on Ethical Conduct in Human Research 2007 (Updated 2018).</p>
+		<p> If you have questions or problems associated with the practical aspects of your participation in the project, or wish to raise a concern or complaint about the project, then you should consult the Principal Investigator, Dr. Nigel Stocks at <a href="mailto:Nigel.stocks@adelaide.edu.au">Nigel.stocks@adelaide.edu.au</a>.</p>
+		<p> If you wish to speak with an independent person regarding concerns or a complaint, the University’s policy on research involving human participants, or your rights as a participant, please contact the Human Research Ethics Committee’s Secretariat on: </p>
+		<p> Phone: +61 8 8313 6028 </p>
+		<p> Email: <a href="mailto:hrec@adelaide.edu.au">hrec@adelaide.edu.au</a> </p>
+		<p> Post: Level 4, Rundle Mall Plaza, 50 Rundle Mall, Adelaide SA 5000 </p>
+		<p> Any complaint or concern will be treated in confidence and fully investigated. You will be informed of the outcome. </p>
 
+		<h3 id="17">17. How is this different from the ASPREN study?</h3>
+		<p> ASPREN is the Australian Sentinel Practices Research Network. ASPREN is a network of sentinel general practitioners and nurse practitioners who report de-identified information on Influenza like illness and other conditions seen in general practice. Initially developed by the RACGP in 1991, ASPREN is currently funded by the Commonwealth's Department of Health and directed through the Discipline of General Practice at The University of Adelaide. ASPREN data is used for infectious disease surveillance by State and Commonwealth Departments of Health and general practice research, including providing annual vaccine effectiveness estimates to the Global Influenza Vaccine Effectiveness Movement and data to the World Health Organization Collaborating Centre for Reference and Research on Influenza. It is a key part of pandemic preparedness for Australia. </p>
+		<p> Providers in the ASPREN study are offering patients the opportunity to participate in the flu@home study by providing them with a test kit to take home.Participation in the flu@home study and will not affect data collection from standard ASPREN protocols. </p>
 
             </div>
         </div>
@@ -129,9 +146,22 @@
             <nav>
                 <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt=""></a>
                 <ul class="menu">
-                    <li>
-                        <a href="privacy">Privacy</a>
-                    </li>
+		    	<li>
+			    <a href="/infosheet">Participant Information Sheet</a>
+			<li>
+			<li>
+		 	    <a href="/consent">Consent Forms</a>
+			</li>
+                        <li>
+                        <a href="/support#faq">FAQ</a>
+                    	</li>
+			<li>
+			    <a href="/support">Contact</a>
+			</li>
+                        <li>
+                            <a href="/privacy">Privacy</a>
+                        </li>
+
                 </ul>
             </nav>
         </div>

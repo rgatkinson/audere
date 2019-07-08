@@ -228,7 +228,7 @@ nav {
 
 .header p {
   color: #ffffff;
-  font-size: 1.125em;
+  font-size: 1.3em;
   line-height: 1.5;
   max-width: 457px; }
   .header p a {
@@ -337,19 +337,24 @@ nav {
     }
     .step-box {
     width: 23%;
+    
     } }
     
     .steps .step img {
       margin: 0 auto;
-      display: block; }
+      display: block;
+      width:100%;
+     }
 
   .steps h3 {
     text-align: center;
     align-self: center;
     font-size: 1.400em;
     font-weight: 700;
-    padding: 7em 0em; }
-    
+    /*padding: 4em 0em;*/
+    padding-top: 40%;
+    padding-bottom: 20%;
+   }
 
 .video {
   position: relative;
@@ -556,7 +561,14 @@ article.legal {
   margin-top: 20px !important;
   font-size: 1.3em !important;
 }
-
+.contact {
+    padding-bottom: 5%;
+} 
+hr{
+    height: 3px;
+    background-color: #979797;
+    margin-top: 5%;
+}
 /*# sourceMappingURL=app.css.map */
 
 
