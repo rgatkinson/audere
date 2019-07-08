@@ -202,7 +202,7 @@
     "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "pinkLine": "Is there a pink line on your test strip?",
-    "numLinesSeen": "How many lines do you see on your test strip?",
+    "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "vaccinationDate": "Did you receive an influenza vaccination in the last year?",
     "fluShot": "Did you receive an influenza vaccination this year (2019)?",
@@ -410,7 +410,7 @@
   },
   "PostRDTTestStripSurvey": {
     "title": "How many lines?",
-    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines you see in the photo above. Tap the \"?\" below to see examples."
+    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines (darker horizontal bars) you see in the photo above. Tap the \"?\" below to see examples. If the photo above does not look like any of the examples, select \"None of the above.\""
   },
   "TestResult": {
     "title": "Your test result",
