@@ -65,6 +65,15 @@
 		5906FF482296030300A8C878 /* listarrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 5906FF472296030300A8C878 /* listarrow.png */; };
 		5906FF4C2296035300A8C878 /* questionsthankyou@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5906FF492296035300A8C878 /* questionsthankyou@3x.png */; };
 		5906FF4D2296035300A8C878 /* questionsthankyou.png in Resources */ = {isa = PBXBuildFile; fileRef = 5906FF4A2296035300A8C878 /* questionsthankyou.png */; };
+		5935133F22CA888600164F48 /* bg_1400x3150.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133922CA888500164F48 /* bg_1400x3150.png */; };
+		5935134022CA888600164F48 /* bg_1024x2304.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133A22CA888500164F48 /* bg_1024x2304.png */; };
+		5935134122CA888600164F48 /* bg_840x1890.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133B22CA888500164F48 /* bg_840x1890.png */; };
+		5935134222CA888600164F48 /* bg_330x743.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133C22CA888500164F48 /* bg_330x743.png */; };
+		5935134322CA888600164F48 /* bg_424x954.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133D22CA888500164F48 /* bg_424x954.png */; };
+		5935134422CA888600164F48 /* bg_385x866.png in Resources */ = {isa = PBXBuildFile; fileRef = 5935133E22CA888500164F48 /* bg_385x866.png */; };
+		598638CD22C6BAAD00138905 /* fluathome_whitelogo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 598638C422C6BAAD00138905 /* fluathome_whitelogo@3x.png */; };
+		598638CE22C6BAAD00138905 /* fluathome_whitelogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 598638CB22C6BAAD00138905 /* fluathome_whitelogo@2x.png */; };
+		598638CF22C6BAAD00138905 /* fluathome_whitelogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 598638CC22C6BAAD00138905 /* fluathome_whitelogo.png */; };
 		598F6C122280F61300B15B8B /* three.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C0F2280F61200B15B8B /* three.png */; };
 		598F6C132280F61300B15B8B /* one.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C102280F61300B15B8B /* one.png */; };
 		598F6C142280F61300B15B8B /* two.png in Resources */ = {isa = PBXBuildFile; fileRef = 598F6C112280F61300B15B8B /* two.png */; };
@@ -338,6 +347,15 @@
 		5906FF472296030300A8C878 /* listarrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = listarrow.png; path = ../../../assets/images/listarrow.png; sourceTree = "<group>"; };
 		5906FF492296035300A8C878 /* questionsthankyou@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "questionsthankyou@3x.png"; path = "../../../assets/images/questionsthankyou@3x.png"; sourceTree = "<group>"; };
 		5906FF4A2296035300A8C878 /* questionsthankyou.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = questionsthankyou.png; path = ../../../assets/images/questionsthankyou.png; sourceTree = "<group>"; };
+		5935133922CA888500164F48 /* bg_1400x3150.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_1400x3150.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_1400x3150.png"; sourceTree = "<group>"; };
+		5935133A22CA888500164F48 /* bg_1024x2304.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_1024x2304.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_1024x2304.png"; sourceTree = "<group>"; };
+		5935133B22CA888500164F48 /* bg_840x1890.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_840x1890.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_840x1890.png"; sourceTree = "<group>"; };
+		5935133C22CA888500164F48 /* bg_330x743.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_330x743.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_330x743.png"; sourceTree = "<group>"; };
+		5935133D22CA888500164F48 /* bg_424x954.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_424x954.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_424x954.png"; sourceTree = "<group>"; };
+		5935133E22CA888500164F48 /* bg_385x866.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bg_385x866.png; path = "../../../../../Downloads/drive-download-20190701T182037Z-001/bg_385x866.png"; sourceTree = "<group>"; };
+		598638C422C6BAAD00138905 /* fluathome_whitelogo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fluathome_whitelogo@3x.png"; path = "../../../assets/images/fluathome_whitelogo@3x.png"; sourceTree = "<group>"; };
+		598638CB22C6BAAD00138905 /* fluathome_whitelogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "fluathome_whitelogo@2x.png"; path = "../../../assets/images/fluathome_whitelogo@2x.png"; sourceTree = "<group>"; };
+		598638CC22C6BAAD00138905 /* fluathome_whitelogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fluathome_whitelogo.png; path = ../../../assets/images/fluathome_whitelogo.png; sourceTree = "<group>"; };
 		598F6C0F2280F61200B15B8B /* three.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = three.png; path = ../../../assets/images/three.png; sourceTree = "<group>"; };
 		598F6C102280F61300B15B8B /* one.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = one.png; path = ../../../assets/images/one.png; sourceTree = "<group>"; };
 		598F6C112280F61300B15B8B /* two.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = two.png; path = ../../../assets/images/two.png; sourceTree = "<group>"; };
@@ -598,12 +616,21 @@
 				EA89E38F22CBCBEE009FD8CF /* followupsurvey.png */,
 				EA89E38822CBCBEE009FD8CF /* followupsurvey@2x.png */,
 				EA89E39022CBCBEE009FD8CF /* followupsurvey@3x.png */,
+				596E063722CBFC5100C85806 /* bg_330x743.png */,
+				596E063022CBFC5100C85806 /* bg_385x866.png */,
+				596E063822CBFC5200C85806 /* bg_424x954.png */,
+				596E063922CBFC5200C85806 /* bg_840x1890.png */,
+				596E063B22CBFC5200C85806 /* bg_1024x2304.png */,
+				596E063A22CBFC5200C85806 /* bg_1400x3150.png */,
 				F041BF9A22C69D6D00606E8F /* drinkfluids.png */,
 				F041BF9E22C69D6E00606E8F /* drinkfluids@2x.png */,
 				F041BFA622C69D6E00606E8F /* drinkfluids@3x.png */,
 				F041BFAD22C69D6F00606E8F /* fever.png */,
 				F041BF9C22C69D6D00606E8F /* fever@2x.png */,
 				F041BFA922C69D6F00606E8F /* fever@3x.png */,
+				596E064322CBFE1800C85806 /* fluathome_whitelogo.png */,
+				596E064222CBFE1800C85806 /* fluathome_whitelogo@2x.png */,
+				596E064422CBFE1900C85806 /* fluathome_whitelogo@3x.png */,
 				F041BF9822C69D6D00606E8F /* fluvaccine.png */,
 				F041BF9D22C69D6D00606E8F /* fluvaccine@2x.png */,
 				F041BFAE22C69D6F00606E8F /* fluvaccine@3x.png */,
@@ -633,6 +660,12 @@
 				EAE02FA62297199F000C88F6 /* yellowhexagon.png */,
 				EAE02FA52297199F000C88F6 /* yellowsquare.png */,
 				EAE02FA42297199F000C88F6 /* yellowtriangle.png */,
+				5935133C22CA888500164F48 /* bg_330x743.png */,
+				5935133E22CA888500164F48 /* bg_385x866.png */,
+				5935133D22CA888500164F48 /* bg_424x954.png */,
+				5935133B22CA888500164F48 /* bg_840x1890.png */,
+				5935133A22CA888500164F48 /* bg_1024x2304.png */,
+				5935133922CA888500164F48 /* bg_1400x3150.png */,
 				EAE02F9522971990000C88F6 /* greencircle.png */,
 				EAE02F9922971991000C88F6 /* greenhexagon.png */,
 				EAE02F9B22971991000C88F6 /* greensquare.png */,
@@ -713,6 +746,9 @@
 				EAEBD1CE22691A9C009815C6 /* finishwithtube.png */,
 				EAEBD1F222691AA1009815C6 /* finishwithtube@2x.png */,
 				EAEBD1B622691A99009815C6 /* finishwithtube@3x.png */,
+				598638CC22C6BAAD00138905 /* fluathome_whitelogo.png */,
+				598638CB22C6BAAD00138905 /* fluathome_whitelogo@2x.png */,
+				598638C422C6BAAD00138905 /* fluathome_whitelogo@3x.png */,
 				59EDB562229DBA39001B7F12 /* generalexposure.png */,
 				59EDB560229DBA39001B7F12 /* generalexposure@2x.png */,
 				59EDB561229DBA39001B7F12 /* generalexposure@3x.png */,
@@ -994,6 +1030,7 @@
 				EAEBD27322691AB7009815C6 /* welcome@3x.png in Resources */,
 				598F6C142280F61300B15B8B /* two.png in Resources */,
 				EAE02FAA229719A0000C88F6 /* yellowhexagon.png in Resources */,
+				596E064522CBFE1900C85806 /* fluathome_whitelogo@2x.png in Resources */,
 				59A01E1122AEC2600030AC38 /* gradient.png in Resources */,
 				F041BFBA22C69D6F00606E8F /* getrest.png in Resources */,
 				EAE02FA222971991000C88F6 /* greenyellowsquare.png in Resources */,
@@ -1006,6 +1043,7 @@
 				EAEBD32E22691AB7009815C6 /* welcome@2x.png in Resources */,
 				EAE02FA9229719A0000C88F6 /* yellowsquare.png in Resources */,
 				502CB2FA22C3F00700A86E23 /* rotationwhite@3x.png in Resources */,
+				596E064722CBFE1900C85806 /* fluathome_whitelogo@3x.png in Resources */,
 				598F6C132280F61300B15B8B /* one.png in Resources */,
 				210E30E1228E1A1B0002B676 /* quickvue_ref_v1.jpg in Resources */,
 				EA1DC5BC22833B9F002DA2A9 /* updatesettings.png in Resources */,
@@ -1024,6 +1062,7 @@
 				507F748A22BAFA5D0055CE82 /* positiongreen.png in Resources */,
 				EAE02FA022971991000C88F6 /* greenyellowtriangle.png in Resources */,
 				218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */,
+				598638CD22C6BAAD00138905 /* fluathome_whitelogo@3x.png in Resources */,
 				507F74D622BC5DA50055CE82 /* rotationgreen.png in Resources */,
 				EAEBD2DE22691AB7009815C6 /* app-icon.png in Resources */,
 				218947CC2284D31400788F40 /* teststrip2@3x.png in Resources */,
@@ -1031,6 +1070,7 @@
 				507F74D722BC5DA50055CE82 /* rotationgreen@3x.png in Resources */,
 				EAE02F9F22971991000C88F6 /* greentriangle.png in Resources */,
 				59EDB822229F0925001B7F12 /* setupkitbox@3x.png in Resources */,
+				596E063D22CBFC5200C85806 /* bg_330x743.png in Resources */,
 				EAEBD2F722691AB7009815C6 /* finalthanks@2x.png in Resources */,
 				59EDB810229F0891001B7F12 /* questionsthankyou@2x.png in Resources */,
 				EAEBD30C22691AB7009815C6 /* takepictureteststrip@3x.png in Resources */,
@@ -1048,20 +1088,24 @@
 				F041BFB922C69D6F00606E8F /* drinkfluids@2x.png in Resources */,
 				59EA63EC22A03B1F009B45BD /* pinklinebelowblueline.png in Resources */,
 				EAEBD2A422691AB7009815C6 /* finalthanks.png in Resources */,
+				596E063F22CBFC5200C85806 /* bg_840x1890.png in Resources */,
 				EAA1BB8122A5F975005C16A9 /* defectiveteststrip@2x.png in Resources */,
 				F041BFBE22C69D6F00606E8F /* headache@2x.png in Resources */,
 				59EDB565229DBA39001B7F12 /* generalexposure.png in Resources */,
 				EAEBD32422691AB7009815C6 /* contactsupport@2x.png in Resources */,
+				596E064022CBFC5200C85806 /* bg_1400x3150.png in Resources */,
 				EAEBD30622691AB7009815C6 /* oneminutetimer.png in Resources */,
 				59EDB563229DBA39001B7F12 /* generalexposure@2x.png in Resources */,
 				EAEBD2E422691AB7009815C6 /* opennasalswab.png in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
 				507F749622BAFC930055CE82 /* flashoff@3x.png in Resources */,
 				EAEBD29822691AB7009815C6 /* putteststripintube@3x.png in Resources */,
+				596E063C22CBFC5200C85806 /* bg_385x866.png in Resources */,
 				502CB2C322C13E6500A86E23 /* oneline@2x.png in Resources */,
 				59D3573D22B1748E0003C3DD /* thanksforyourinterest.png in Resources */,
 				F041BFC422C69D6F00606E8F /* fever@3x.png in Resources */,
 				59D64623229DA6F000EA64E6 /* barcodesuccess@2x.png in Resources */,
+				5935134222CA888600164F48 /* bg_330x743.png in Resources */,
 				59EDB81C229F0901001B7F12 /* scanbarcode.png in Resources */,
 				EAEBD2FC22691AB7009815C6 /* collectmucus@2x.png in Resources */,
 				EAEBD30322691AB7009815C6 /* removeteststrip.png in Resources */,
@@ -1081,6 +1125,7 @@
 				EAEBD2C222691AB7009815C6 /* removeteststrip@3x.png in Resources */,
 				502CB2C522C13E6500A86E23 /* oneline@3x.png in Resources */,
 				507F74CB22BC5D8F0055CE82 /* distanceyellow.png in Resources */,
+				598638CF22C6BAAD00138905 /* fluathome_whitelogo.png in Resources */,
 				EAEBD31822691AB7009815C6 /* teststripdetail@2x.png in Resources */,
 				EAEBD2F322691AB7009815C6 /* preparetube.png in Resources */,
 				507F748D22BAFA5D0055CE82 /* positiongreen@3x.png in Resources */,
@@ -1090,7 +1135,9 @@
 				59EDB81B229F0901001B7F12 /* scanbarcode@3x.png in Resources */,
 				F041BFBF22C69D6F00606E8F /* staywarm@3x.png in Resources */,
 				EAEBD2CC22691AB7009815C6 /* reverselogo.png in Resources */,
+				5935133F22CA888600164F48 /* bg_1400x3150.png in Resources */,
 				EAEBD27B22691AB7009815C6 /* lookatteststrip@3x.png in Resources */,
+				596E064122CBFC5200C85806 /* bg_1024x2304.png in Resources */,
 				EAEBD27A22691AB7009815C6 /* finishwithtube@3x.png in Resources */,
 				507F74D922BC5DA50055CE82 /* rotationyellow.png in Resources */,
 				59EDB816229F08B9001B7F12 /* readytobegin@3x.png in Resources */,
@@ -1106,6 +1153,7 @@
 				F041BFBC22C69D6F00606E8F /* runnynose.png in Resources */,
 				EAEBD33222691AB7009815C6 /* contactsupport@3x.png in Resources */,
 				F072CB982284C2C90090E4D0 /* GoogleService-Info.plist in Resources */,
+				5935134322CA888600164F48 /* bg_424x954.png in Resources */,
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,
 				EAEBD31522691AB7009815C6 /* collectmucus.png in Resources */,
 				F041BFB322C69D6F00606E8F /* fluvaccine.png in Resources */,
@@ -1120,6 +1168,7 @@
 				EAEBD2B022691AB7009815C6 /* collectsamplethumb.png in Resources */,
 				59EA63E622A03B1F009B45BD /* pinklinebelowblueline@3x.png in Resources */,
 				5906FF4D2296035300A8C878 /* questionsthankyou.png in Resources */,
+				596E064622CBFE1900C85806 /* fluathome_whitelogo.png in Resources */,
 				59EDB828229F0957001B7F12 /* whatsrequired@2x.png in Resources */,
 				502CB2FB22C3F00700A86E23 /* positionwhite.png in Resources */,
 				507F748B22BAFA5D0055CE82 /* positionyellow.png in Resources */,
@@ -1148,17 +1197,20 @@
 				507F74C722BC5D8F0055CE82 /* distancewhite@3x.png in Resources */,
 				F041BFBB22C69D6F00606E8F /* staywarm@2x.png in Resources */,
 				EAEBD2C622691AB7009815C6 /* removeswabfromtube@3x.png in Resources */,
+				5935134022CA888600164F48 /* bg_1024x2304.png in Resources */,
 				EAEBD2B122691AB7009815C6 /* openteststrip@3x.png in Resources */,
 				EAEBD2C922691AB7009815C6 /* openteststrip@2x.png in Resources */,
 				F041BFB822C69D6F00606E8F /* fluvaccine@2x.png in Resources */,
 				59AC902022B8319700277C62 /* nointernetconnection.png in Resources */,
 				507F749922BAFC930055CE82 /* flashon@3x.png in Resources */,
 				59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */,
+				5935134122CA888600164F48 /* bg_840x1890.png in Resources */,
 				59EDB814229F08B9001B7F12 /* readytobegin@2x.png in Resources */,
 				5906FF482296030300A8C878 /* listarrow.png in Resources */,
 				502CB2FD22C3F00700A86E23 /* rotationwhite@2x.png in Resources */,
 				EAA1BB8222A5F975005C16A9 /* defectiveteststrip@3x.png in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
+				5935134422CA888600164F48 /* bg_385x866.png in Resources */,
 				59EA63EA22A03B1F009B45BD /* pinklineaboveblueline.png in Resources */,
 				5906FF212295F47800A8C878 /* cleanuptest.png in Resources */,
 				507F74DB22BC5DA50055CE82 /* rotationyellow@3x.png in Resources */,
@@ -1168,6 +1220,7 @@
 				21548C7C22B40E7500878E09 /* quickvue_ref_v3.jpg in Resources */,
 				507F74CA22BC5D8F0055CE82 /* distancegreen@3x.png in Resources */,
 				502CB2C122C13E6500A86E23 /* twolines@3x.png in Resources */,
+				596E063E22CBFC5200C85806 /* bg_424x954.png in Resources */,
 				507F74CF22BC5D8F0055CE82 /* distancegreen.png in Resources */,
 				EA89E39222CBCBEE009FD8CF /* followupsurvey.png in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
@@ -1185,6 +1238,7 @@
 				F041BFB422C69D6F00606E8F /* keepclean@2x.png in Resources */,
 				EAEBD31622691AB7009815C6 /* preparetubethumb.png in Resources */,
 				EAEBD32D22691AB7009815C6 /* takepictureteststrip@2x.png in Resources */,
+				598638CE22C6BAAD00138905 /* fluathome_whitelogo@2x.png in Resources */,
 				EAA1BBB422A72AF1005C16A9 /* greensquare.png in Resources */,
 				EAEBD31E22691AB7009815C6 /* lookatteststrip.png in Resources */,
 				F041BFB022C69D6F00606E8F /* runnynose@3x.png in Resources */,

@@ -11,6 +11,7 @@ export type MetaAction =
       type: "SET_CAMERA_SETTINGS_GRANTED_PAGE";
       cameraSettingsGrantedPage: string;
     }
+  | { type: "HAS_BEEN_OPENED" }
   | { type: "SET_CONNECTIVITY"; isConnected: boolean }
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
@@ -19,6 +20,7 @@ export type MetaAction =
 export type MetaState = {
   activeRouteName: string;
   cameraSettingsGrantedPage: string;
+  hasBeenOpened: boolean;
   isConnected: boolean;
   isDemo: boolean;
   marketingProperties: any;
@@ -29,6 +31,7 @@ export type MetaState = {
 const initialState: MetaState = {
   activeRouteName: "Welcome",
   cameraSettingsGrantedPage: "",
+  hasBeenOpened: false,
   isConnected: true,
   isDemo: false,
   marketingProperties: undefined,
@@ -45,6 +48,8 @@ export default function reducer(state = initialState, action: MetaAction) {
         ...state,
         cameraSettingsGrantedPage: action.cameraSettingsGrantedPage,
       };
+    case "HAS_BEEN_OPENED":
+      return { ...state, hasBeenOpened: true };
     case "SET_DEMO":
       return { ...state, isDemo: action.isDemo };
     case "SET_OFFLINE_WARNING":
@@ -104,5 +109,11 @@ export function setConnectivity(isConnected: boolean): MetaAction {
   return {
     type: "SET_CONNECTIVITY",
     isConnected,
+  };
+}
+
+export function setHasBeenOpened(): MetaAction {
+  return {
+    type: "HAS_BEEN_OPENED",
   };
 }

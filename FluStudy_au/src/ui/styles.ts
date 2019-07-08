@@ -55,6 +55,7 @@ export const EXTRA_SMALL_TEXT = 14;
 export const BUTTON_WIDTH = 240;
 export const INPUT_HEIGHT = 40;
 export const RADIO_BUTTON_HEIGHT = 50;
+export const FOOTER_HEIGHT = 50;
 export const RADIO_INPUT_HEIGHT = 32;
 export const SYSTEM_TEXT = 17;
 export const SYSTEM_FONT = "System";

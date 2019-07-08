@@ -13,12 +13,13 @@ import { WorkflowInfo } from "audere-lib/feverProtocol";
 import { Action, StoreState, setWorkflow } from "../../store";
 import { logFirebaseEvent } from "../../util/tracker";
 import Chrome from "./Chrome";
+import AnimatedChrome from "./AnimatedChrome";
 import { GUTTER } from "../styles";
 import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
 
 export interface ScreenConfig {
   body: Component[];
-  chromeProps?: object;
+  chromeProps?: ChromeProps;
   footer?: Component[];
   funnelEvent?: string;
   key: string;
@@ -37,11 +38,20 @@ export interface Component {
   validate?: boolean;
 }
 
+export interface ChromeProps {
+  dispatchOnFirstLoad?: () => Action;
+  fadeIn?: boolean;
+  hideBackButton?: boolean;
+  menuItem?: boolean;
+  splashImage?: string;
+}
+
 interface Props {
+  dispatch(action: Action): void;
+  hasBeenOpened: boolean;
+  isDemo: boolean;
   navigation: NavigationScreenProp<any, any>;
   workflow: WorkflowInfo;
-  isDemo: boolean;
-  dispatch(action: Action): void;
 }
 
 // Whether we've reached the screen we wanted to auto-forward to.  Having this
@@ -195,8 +205,17 @@ export const generateScreen = (config: ScreenConfig) => {
     };
 
     render() {
+      const ChromeType =
+        !!config && !!config.chromeProps && !!config.chromeProps.fadeIn
+          ? AnimatedChrome
+          : Chrome;
+
       return this._noRendering ? null : (
-        <Chrome {...config.chromeProps} navigation={this.props.navigation}>
+        <ChromeType
+          {...config.chromeProps}
+          hasBeenOpened={this.props.hasBeenOpened}
+          navigation={this.props.navigation}
+        >
           <View style={styles.scrollContainer}>
             <CustomScrollView
               contentContainerStyle={styles.contentContainer}
@@ -211,7 +230,7 @@ export const generateScreen = (config: ScreenConfig) => {
               </View>
             </CustomScrollView>
           </View>
-        </Chrome>
+        </ChromeType>
       );
     }
   }
@@ -219,6 +238,7 @@ export const generateScreen = (config: ScreenConfig) => {
     return {
       workflow: state.survey.workflow,
       isDemo: state.meta.isDemo,
+      hasBeenOpened: state.meta.hasBeenOpened,
     };
   })(Screen);
 };

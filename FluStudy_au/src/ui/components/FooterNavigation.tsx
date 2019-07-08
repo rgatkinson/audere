@@ -9,6 +9,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import Button from "./Button";
 import StepDots from "./StepDots";
+import { Action } from "../../store";
 
 interface StepConfig {
   step: number;

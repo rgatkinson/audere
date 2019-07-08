@@ -26,6 +26,7 @@ import {
 
 interface Props {
   children?: any;
+  hasBeenOpened?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;

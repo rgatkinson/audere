@@ -3,13 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Platform } from "react-native";
+import { Dimensions, Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import {
   setConsent,
   setTenMinuteStartTime,
   setOneMinuteStartTime,
   setTotalTestStripTime,
+  setHasBeenOpened,
 } from "../store";
 import { FunnelEvents } from "../util/tracker";
 import {
@@ -126,14 +127,19 @@ const CAN_USE_RDT = !DeviceInfo.isEmulator();
 export const Screens: ScreenConfig[] = [
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: { hideBackButton: true, splashImage: "welcome" },
+    chromeProps: {
+      dispatchOnFirstLoad: setHasBeenOpened,
+      hideBackButton: true,
+      splashImage: "welcome",
+      fadeIn: true,
+    },
     key: "Welcome",
     footer: [
       {
         tag: FooterNavigation,
         props: {
-          next: "WhatsRequired",
           hideBackButton: true,
+          next: "WhatsRequired",
           stepDots: { step: 1, total: 3 },
         },
       },
