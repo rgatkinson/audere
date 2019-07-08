@@ -11,6 +11,7 @@ import {
   PreviousSeasonVaccinationStatus
 } from "../models/db/cough";
 import { S3Config } from "../util/s3Config";
+import logger from "../util/logger";
 
 export interface AsprenReportFile {
   key: string;
@@ -39,11 +40,16 @@ export class AsprenClient {
     };
 
     const objects = await this.s3.listObjectsV2(listParams).promise();
+    logger.info(`${objects.KeyCount} keys listed in ASPREN bucket.`);
+
     const metadata = objects.Contents.reduce((prev, curr) => {
       const prevMs = prev.LastModified.getUTCMilliseconds();
       const currMs = curr.LastModified.getUTCMilliseconds();
       return prevMs > currMs ? prev : curr;
     });
+    logger.info(
+      `${metadata.Key} is the most recent file in the ASPREN bucket.`
+    );
 
     const getParams = {
       Bucket: this.config.asprenReportsBucket,

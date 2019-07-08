@@ -46,24 +46,45 @@ export class AsprenImport {
       return;
     }
 
+    logger.info(
+      `Importing new report, ${report.key} with hash ${report.hash}.`
+    );
+
     // Within a single transaction:
     // 1. Insert a record for the file we're importing.
     // 2. Upsert records from the report.
     // 3. Remove records from the database that are not in the latest report.
     await this.sql.nonPii.transaction(async t => {
-      this.models.asprenFile.create(
+      await this.models.asprenFile.create(
         { key: report.key, hash: report.hash },
         { transaction: t }
       );
+      logger.debug(`Tracked file from ${report.key}.`);
+
+      let created = 0;
+      let updated = 0;
 
       for (let i = 0; i < report.records.length; i++) {
-        await this.models.asprenData.upsert(
+        const result = await this.models.asprenData.upsert(
           { ...report.records[i] },
           { transaction: t }
         );
-      }
 
-      await this.models.asprenData.destroy({
+        if (result) {
+          created++;
+        } else {
+          updated++;
+        }
+
+        logger.debug(
+          `Upserted record with barcode ${report.records[i].barcode}.`
+        );
+      }
+      logger.info(
+        `Done upserting ASPREN data - created ${created} records, updated ${updated} records.`
+      );
+
+      const destroyed = await this.models.asprenData.destroy({
         where: {
           barcode: {
             [sequelize.Op.notIn]: report.records.map(r => r.barcode)
@@ -71,6 +92,7 @@ export class AsprenImport {
         },
         transaction: t
       });
+      logger.info(`Destroyed ${destroyed} prior rows from ASPREN reports.`);
     });
   }
 }

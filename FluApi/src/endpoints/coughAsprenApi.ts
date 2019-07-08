@@ -31,5 +31,5 @@ export class CoughAsprenEndpoint {
     const svc = await this.service.get();
     await svc.importAsprenReports();
     res.json({});
-  }
+  };
 }
