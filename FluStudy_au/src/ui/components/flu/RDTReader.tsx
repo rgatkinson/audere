@@ -766,7 +766,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
                 <Image
                   style={styles.testStrip}
                   source={{ uri: "teststrip2" }}
-                  resizeMode={"center"}
+                  resizeMode={"contain"}
                 />
               </View>
               <View style={styles.backgroundOverlay}>
@@ -893,7 +893,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   testStripContainer: {
-    margin: "8%",
+    marginHorizontal: "8%",
+    marginVertical: "-4%",
   },
   touchableLeft: {
     left: 0,
