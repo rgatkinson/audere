@@ -64,35 +64,45 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
 
   componentDidMount() {
     const { navigation } = this.props;
-    this._didFocus = navigation.addListener("didFocus", () => {
-      this._setTimeoutTimer();
-      this._setHelpTimer();
-    });
-    this._willBlur = navigation.addListener("willBlur", () => {
-      this._clearTimeoutTimer();
-      this._clearHelpTimer();
-    });
+    this._didFocus = navigation.addListener("didFocus", this._handleDidFocus);
+    this._willBlur = navigation.addListener("willBlur", this._handleWillBlur);
+
+    // We need to manually call this here in case the component is being instantiated
+    // on first run of the app, or on StackActions.replace. In other words, if the
+    // screen that it's a part of isn't being pushed on to the nav stack.
+    this._handleDidFocus();
   }
 
   componentWillUnmount() {
+    this._handleWillBlur();
     this._didFocus.remove();
     this._willBlur.remove();
   }
 
-  _setHelpTimer = () => {
+  _handleDidFocus = () => {
+    this._setTimeoutTimer();
+    this._setHelpTimer();
+  };
+
+  _handleWillBlur = () => {
+    this._clearTimeoutTimer();
+    this._clearHelpTimer();
+  };
+
+  _setHelpTimer() {
     this.setState({ showHelpText: false });
     this._clearHelpTimer();
     this._helpTimer = setTimeout(() => {
       this.setState({ showHelpText: true });
     }, 8000);
-  };
+  }
 
-  _clearHelpTimer = () => {
+  _clearHelpTimer() {
     if (this._helpTimer != null) {
       clearTimeout(this._helpTimer);
       this._helpTimer = null;
     }
-  };
+  }
 
   _setTimeoutTimer = () => {
     const { navigation, timeoutScreen } = this.props;

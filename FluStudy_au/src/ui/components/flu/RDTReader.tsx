@@ -261,33 +261,43 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   } = {};
 
   componentDidMount() {
-    const { isDemo, navigation } = this.props;
-    this._didFocus = navigation.addListener("didFocus", () => {
-      this._setTimer();
-      if (isDemo) {
-        this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
-      }
-    });
-    this._willBlur = navigation.addListener("willBlur", () => {
-      this._clearTimer();
-      this._clearInstructionTimer();
-      if (this._fpsCounterInterval) {
-        clearInterval(this._fpsCounterInterval);
-        this._fpsCounterInterval = null;
-      }
-    });
+    const { navigation } = this.props;
+    this._didFocus = navigation.addListener("didFocus", this._handleDidFocus);
+    this._willBlur = navigation.addListener("willBlur", this._handleWillBlur);
     AppState.addEventListener("change", this._handleAppStateChange);
     AppState.addEventListener("memoryWarning", this._handleMemoryWarning);
+
+    // We need to manually call this here in case the component is being instantiated
+    // on first run of the app, or on StackActions.replace. In other words, if the
+    // screen that it's a part of isn't being pushed on to the nav stack.
+    this._handleDidFocus();
   }
 
   componentWillUnmount() {
+    this._handleWillBlur();
     this._didFocus.remove();
     this._willBlur.remove();
     AppState.removeEventListener("memoryWarning", this._handleMemoryWarning);
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
-  _setTimer = () => {
+  _handleDidFocus = () => {
+    this._setTimer();
+    if (this.props.isDemo) {
+      this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
+    }
+  };
+
+  _handleWillBlur = () => {
+    this._clearTimer();
+    this._clearInstructionTimer();
+    if (this._fpsCounterInterval) {
+      clearInterval(this._fpsCounterInterval);
+      this._fpsCounterInterval = null;
+    }
+  };
+
+  _setTimer() {
     // Timeout after 30 seconds
     this._clearTimer();
     this._timer = setTimeout(() => {
@@ -302,7 +312,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
     }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
-  };
+  }
 
   _clearTimer() {
     if (this._timer != null) {
