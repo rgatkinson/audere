@@ -12,43 +12,10 @@ FluStudy_au is a React Native application to collect information about the sprea
 
 ## Developer setup
 
-### How to get running from source on iOS
+If you are part of the Audere organization, see https://github.com/AudereNow/learn/wiki/Running-From-Source-on-iOS for instructions on running from source.
 
-- Install cocoapods
-  - `sudo gem install cocoapods`
-- Run `yarn install` from `FluStudy_au`
-- Run `pod install` from `FluStudy_au/ios/`
-  - If you run into errors about `undefined method 'native_target'`, you'll need to install version 1.5.3
-    - `sudo gem uninstall cocoapods` (when asked to remove executables, say yes)
-    - `sudo gem install cocoapods -v 1.5.3`
-- Install fastlane
-  - `sudo gem install fastlane -NV`
-- Run `fastlane certificates` from `FluStudy_au/ios/`
-  - You will be prompted for a passphrase to decrypt the signing certs from the repo. Get this from LastPass > Secure Notes > Shared-Engineering > fastlane match passphrase.
-  - If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
-  - If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
-  - If it hangs when cloning the repo, try `cd ~/.ssh; ssh-add` first. If it still hangs, try `fastlane certificates --verbose` and note the git command that's hanging. Ctrl+C back to the command prompt and manually enter that noted git command - you'll likely get a prompt of some kind to answer, e.g. Do you want to connect to GitHub.com, and answer yes. Then, re-run `fastlane certificates`.
-- Fetch the Firebase config files from LastPass Shared-Engineering folder as follows:
-  - Save content of “flu@home AU Staging google-services.json” note as `FluStudy_au/android/app/google-services.json`
-  - Save content of “flu@home AU Staging GoogleService-Info.plist” note as `FluStudy_au/ios/fluathome/GoogleService-Info.plist`
-- Run `yarn start` from `FluStudy_au/`
-- Open `FluStudy_au/ios/fluathome.xcworkspace` in Xcode
-- Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
-
-
-### To run from source on a physical iPhone that has not already been registered:
-
-(Note, this only works if you are part of the Audere organization.  Otherwise, you will need to set up your own Apple Developer account and reconfigure the app accordingly).
-
-- Connect the device to your Mac using the USB hub
-- Run this command on command line to find your device's udid:
-  - `system_profiler SPUSBDataType | grep -A 11 -w "iPad\|iPhone"`
-- Send your device udid to Terri (or other AppStoreConnect Admin) for her to register with our AppStoreConnect team. She will run
-  - `fastlane run register_device`
-  - `fastlane match development --force_for_new_devices`
-  
-  after which you can re-run `fastlane match development --readonly` to install the updated profile on your Mac
-- Restart XCode and now you should be able to select fluathome Debug > your device as the run target
+Otherwise, you will need to set up your own Apple Developer and Firebase accounts and configure the app accordingly.
+We use cocoapods for dependencies and fastlane for iOS cert management.
 
 
 ## React Native Template

@@ -12,37 +12,10 @@ FluStudy_us is a React Native application to collect information about the sprea
 
 ## Developer setup
 
-### How to get running from source on iOS
+If you are part of the Audere organization, see https://github.com/AudereNow/learn/wiki/Running-From-Source-on-iOS for instructions on running from source.
 
-- Install cocoapods
-  - `sudo gem install cocoapods`
-- Run `pod install` from `FluStudy_us/ios/`
-  - If you run into errors about `undefined method 'native_target'`, you'll need to install version 1.5.3
-    - `sudo gem uninstall cocoapods` (when asked to remove executables, say yes)
-    - `sudo gem install cocoapods -v 1.5.3`
-- Run `yarn install` from `FluStudy_us`
-- Install fastlane
-  - `sudo gem install fastlane -NV`
-- Run `fastlane certificates` from `FluStudy_us/ios/`
-  - You will be prompted for a passphrase to decrypt the signing certs from the repo. See Terri for this.
-  - If you get errors like `Could not configure imported keychain item` try `sudo fastlane certificates` or open Keychain Access on your Mac and make sure your login keychain icon shows unlocked
-  - If that still doesn't work, sometimes re-running `fastlane certificates` will solve your problem
-- Run `yarn start` from `FluStudy_us/`
-- Open `FluStudy_us/ios/flutrack.xcworkspace` in Xcode
-- Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
-
-
-### To run from source on a physical device that has not already been registered:
-
-(Note, this only works if you are part of the Audere organization.  Otherwise, you will need to set up your own Apple Developer account and reconfigure the app accordingly).
-
-- Connect the device to your Mac using the USB hub
-- Run this command on command line to find your device's udid:
-  - `system_profiler SPUSBDataType | grep -A 11 -w "iPad\|iPhone"`
-- In the FluStudy_us/ios directory run
-  - `fastlane run register_device username:YourAppleIDEmail` and enter your device's name and udid when prompted
-- `fastlane match development --force_for_new_devices` (If this fails asking for ios-dev password, ask Michael or Terri to run this step for you)
-- Restart XCode and now you should be able to select fluathome Debug > your device as the run target
+Otherwise, you will need to set up your own Apple Developer and Firebase accounts and configure the app accordingly.
+We use cocoapods for dependencies and fastlane for iOS cert management.
 
 
 ## React Native Template
