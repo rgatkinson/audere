@@ -24,15 +24,15 @@ const float SHARPNESS_THRESHOLD = 0.7;
 const float OVER_EXP_THRESHOLD = 255;
 const float UNDER_EXP_THRESHOLD = 120;
 const float OVER_EXP_WHITE_COUNT = 100;
-const double SIZE_THRESHOLD = 0.1;
-const double POSITION_THRESHOLD = 0.2;
+const double SIZE_THRESHOLD = 0.15;
+const double POSITION_THRESHOLD = 0.15;
 const double ANGLE_THRESHOLD = 10.0;
 const int GOOD_MATCH_COUNT = 7;
 double refImgSharpness = FLT_MIN;
 const int MOVE_CLOSER_COUNT = 5;
 const double CROP_RATIO = 1.0;
 const double VIEW_FINDER_SCALE_W = 0.15;
-const double VIEW_FINDER_SCALE_H = 0.60;
+const double VIEW_FINDER_SCALE_H = 0.80;
 const float INTENSITY_THRESHOLD = 190;
 const float CONTROL_INTENSITY_PEAK_THRESHOLD = 150;
 const float TEST_INTENSITY_PEAK_THRESHOLD = 50;
@@ -47,16 +47,21 @@ const vector<Scalar> CONTROL_LINE_COLOR_UPPER = {Scalar(60/2.0, 85/100.0*255.0, 
 
 //const Scalar CONTROL_LINE_COLOR_LOWER = Scalar(130/2.0, 20/100.0*255.0, 20/100.0*255.0);
 //const Scalar CONTROL_LINE_COLOR_UPPER = Scalar(270/2.0, 85/100.0*255.0, 100/100.0*255.0);
-const int FIDUCIAL_POSITION_MIN = 250;
-const int FIDUCIAL_POSITION_MAX = 500;
+const int FIDUCIAL_POSITION_MIN = 160;
+const int FIDUCIAL_POSITION_MAX = 935;
 const int FIDUCIAL_MIN_HEIGHT = 45;
 const int FIDUCIAL_MIN_WIDTH = 20;
-const int FIDUCIAL_MAX_WIDTH = 60;
-const int FIDUCIAL_TO_CONTROL_LINE_OFFSET = 215;
+const int FIDUCIAL_MAX_WIDTH = 150;
+const int FIDUCIAL_TO_CONTROL_LINE_OFFSET = 50;
 const int RESULT_WINDOW_RECT_HEIGHT = 90;
 const int RESULT_WINDOW_RECT_WIDTH_PADDING = 10;
-const int FIDUCIAL_DISTANCE = 120;
+const int FIDUCIAL_DISTANCE = 610;
 const int FIDUCIAL_COUNT = 2;
+
+const int RESULT_WINDOW_X = 550;
+const int RESULT_WINDOW_Y = 10;
+const int RESULT_WINDOW_WIDTH = 200;
+const int RESULT_WINDOW_HEIGHT = 30;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -91,7 +96,7 @@ Mat siftRefDescriptor;
         siftDetector = SIFT::create();
         siftMatcher = BFMatcher::create(cv::NORM_L2);
         
-        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v3.jpg"];
+        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v4.jpg"];
         UIImageToMat(image, refImg);
         NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
         
@@ -732,6 +737,7 @@ Mat siftRefDescriptor;
     }
 
     resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
+    //resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(10, 10)];
     //resultMat = [self correctGamma:resultMat withGamma:0.75];
 
     [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
@@ -771,7 +777,8 @@ Mat siftRefDescriptor;
         return Mat();
     }
     
-    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
+    //resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
+    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(10, 10)];
     //resultMat = [self correctGamma:resultMat withGamma:0.75];
     
     [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
@@ -788,6 +795,107 @@ Mat siftRefDescriptor;
     NSLog(@"Control: %d, TestA: %d, TestB: %d", *control, *testA, *testB);
     
     return inputMat;
+}
+
+-(cv::Rect) returnResultWindowRect:(Mat) inputMat andResult:(bool *) fiducial{
+    *fiducial = true;
+    return cv::Rect(RESULT_WINDOW_X, RESULT_WINDOW_Y, RESULT_WINDOW_WIDTH, RESULT_WINDOW_HEIGHT);
+}
+
+-(cv::Rect) checkFiducialKMenas:(Mat) inputMat andResult:(bool *) fiducial {
+    int k = 5;
+    TermCriteria criteria = TermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 100, 1.0);
+    Mat data = Mat();
+    inputMat.convertTo(data, CV_32F);
+    cvtColor(data, data, COLOR_RGBA2RGB);
+    data = data.reshape(1, (int)data.total());
+    Mat labels = Mat();
+    Mat centers = Mat();
+    
+    kmeans(data, k, labels, criteria, 10, KMEANS_PP_CENTERS, centers);
+    
+    centers = centers.reshape(3, centers.rows);
+    data = data.reshape(3, data.rows);
+    
+    Vec3f *p = data.ptr<Vec3f>();
+    for (int i = 0; i < data.rows; i++) {
+        int centerId = labels.at<int>(i,0);
+        p[i] = centers.at<Vec3f>(centerId);
+    }
+    
+    data = data.reshape(3, inputMat.rows);
+    data.convertTo(data, CV_8UC3);
+    
+    Vec3f minCenter = Vec3f();
+    float minCenterVal = FLT_MAX;
+    for (int i = 0; i < centers.rows; i++) {
+        float val = centers.at<Vec3f>(i)[0] + centers.at<Vec3f>(i)[1] + centers.at<Vec3f>(i)[2];
+        if (val < minCenterVal) {
+            minCenter = centers.at<Vec3f>(i);
+            minCenterVal = val;
+        }
+    }
+    
+    double thres = 0.299 * minCenter[0] + 0.587 * minCenter[1] + 0.114 * minCenter[2] + 20.0;
+    
+    cvtColor(data, data, COLOR_RGB2GRAY);
+    Mat threshold = Mat();
+    cv::threshold(data, threshold, thres, 255, THRESH_BINARY_INV);
+    
+    Mat element_erode = getStructuringElement(MORPH_ELLIPSE, cv::Size(5, 5));
+    Mat element_dilate = getStructuringElement(MORPH_ELLIPSE, cv::Size(15, 15));
+    
+    erode(threshold, threshold, element_erode);
+    dilate(threshold, threshold, element_dilate);
+    GaussianBlur(threshold, threshold, cv::Size(5, 5), 2, 2);
+    
+    vector<vector<cv::Point> > contours;
+    vector<Vec4i> hierarchy;
+    findContours(threshold, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+    vector<cv::Rect> fiducialRects;
+    cv::Rect fiducialRect;
+    *fiducial = false;
+    for (int i = 0; i < contours.size(); i++)
+    {
+        cv::Rect rect = boundingRect(contours[i]);
+        NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        double rectPos = rect.x + rect.width;
+        if (FIDUCIAL_POSITION_MIN < rectPos && rectPos < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
+            fiducialRects.push_back(rect);
+            NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        }
+    }
+    
+    if (fiducialRects.size() == FIDUCIAL_COUNT) { //should
+        double center0 = fiducialRects[0].x + fiducialRects[0].width;
+        double center1 = fiducialRects[0].x + fiducialRects[0].width;
+        
+        if (fiducialRects.size() > 1) {
+            center1 = fiducialRects[1].x + fiducialRects[1].width;
+        }
+        
+        int midpoint = (int)((center0+center1)/2);
+        double diff = abs(center0-center1);
+        
+        double scale = FIDUCIAL_DISTANCE == 0? 1 : diff/FIDUCIAL_DISTANCE;
+        double offset = scale*FIDUCIAL_TO_CONTROL_LINE_OFFSET;
+        
+        cv::Point tl = cv::Point(midpoint+offset-RESULT_WINDOW_RECT_HEIGHT*scale/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
+        cv::Point br = cv::Point(midpoint+offset+RESULT_WINDOW_RECT_HEIGHT*scale/2.0, inputMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
+        
+        fiducialRect = cv::Rect(tl, br);
+        
+        *fiducial = true;
+    }
+    
+    data.release();
+    centers.release();
+    labels.release();
+    threshold.release();
+    element_erode.release();
+    element_dilate.release();
+    
+    return fiducialRect;
 }
 
 -(cv::Rect) checkFiducialAndReturnResultWindowRect:(Mat) inputMat andResult:(bool *) fiducial {
@@ -832,12 +940,16 @@ Mat siftRefDescriptor;
     
     if (fiducialRects.size() == FIDUCIAL_COUNT) { //should
         double center0 = fiducialRects[0].x + fiducialRects[0].width/2.0;
-        double center1 = fiducialRects[1].x + fiducialRects[1].width/2.0;
+        double center1 = fiducialRects[0].x + fiducialRects[0].width/2.0;
+        
+        if (fiducialRects.size() > 1) {
+            center1 = fiducialRects[1].x + fiducialRects[1].width/2.0;
+        }
         
         int midpoint = (int)((center0+center1)/2);
         double diff = abs(center0-center1);
         
-        double scale = diff/FIDUCIAL_DISTANCE;
+        double scale = FIDUCIAL_DISTANCE == 0? 1 : diff/FIDUCIAL_DISTANCE;
         double offset = scale*FIDUCIAL_TO_CONTROL_LINE_OFFSET;
         
         cv::Point tl = cv::Point(midpoint+offset-RESULT_WINDOW_RECT_HEIGHT*scale/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
@@ -954,7 +1066,7 @@ Mat siftRefDescriptor;
 
 -(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary with:(bool*) fiducial{
     Mat ref_boundary = Mat(4, 1, CV_32FC2);
-    
+
     ref_boundary.at<Vec2f>(0, 0)[0] = 0;
     ref_boundary.at<Vec2f>(0, 0)[1] = 0;
 
@@ -966,34 +1078,36 @@ Mat siftRefDescriptor;
 
     ref_boundary.at<Vec2f>(3, 0)[0] = 0;
     ref_boundary.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
-    
+
     NSLog(@"ref_boundary:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
           ref_boundary.at<Vec2f>(0, 0)[0], ref_boundary.at<Vec2f>(0, 0)[1],
           ref_boundary.at<Vec2f>(1, 0)[0], ref_boundary.at<Vec2f>(1, 0)[1],
           ref_boundary.at<Vec2f>(2, 0)[0], ref_boundary.at<Vec2f>(2, 0)[1],
           ref_boundary.at<Vec2f>(3, 0)[0], ref_boundary.at<Vec2f>(3, 0)[1]);
-    
+
     Mat boundaryMat = Mat(boundary);
-    
+
     NSLog(@"boundaryMat:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
           boundaryMat.at<Vec2f>(0, 0)[0], boundaryMat.at<Vec2f>(0, 0)[1],
           boundaryMat.at<Vec2f>(1, 0)[0], boundaryMat.at<Vec2f>(1, 0)[1],
           boundaryMat.at<Vec2f>(2, 0)[0], boundaryMat.at<Vec2f>(2, 0)[1],
           boundaryMat.at<Vec2f>(3, 0)[0], boundaryMat.at<Vec2f>(3, 0)[1]);
-    
+
     Mat M = getPerspectiveTransform(boundaryMat, ref_boundary);
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
     cv::warpPerspective(inputMat, correctedMat, M, cv::Size(refImg.cols, refImg.rows));
-    
-    cv::Rect resultWindowRect = [self checkFiducialAndReturnResultWindowRect:correctedMat andResult:fiducial];
-    
+
+    //cv::Rect resultWindowRect = [self checkFiducialAndReturnResultWindowRect:correctedMat andResult:fiducial];
+    cv::Rect resultWindowRect = [self checkFiducialKMenas:correctedMat andResult:fiducial];
+    //cv::Rect resultWindowRect = [self returnResultWindowRect: correctedMat andResult:fiducial];
+
     if (!(*fiducial)) {
         return Mat();
     }
     
     correctedMat = Mat(correctedMat, resultWindowRect);
     resize(correctedMat, correctedMat, cv::Size(RESULT_WINDOW_RECT_HEIGHT, refImg.rows-2*RESULT_WINDOW_RECT_WIDTH_PADDING));
-    
+
     return correctedMat;
 }
 

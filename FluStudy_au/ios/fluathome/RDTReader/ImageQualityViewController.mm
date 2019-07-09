@@ -13,7 +13,7 @@
 using namespace std;
 using namespace cv;
 
-AVCaptureSessionPreset GLOBAL_CAMERA_PRESET = AVCaptureSessionPresetHigh;
+AVCaptureSessionPreset GLOBAL_CAMERA_PRESET = AVCaptureSessionPreset1280x720;
 BOOL HIGH_RESOLUTION_ENABLED = NO;
 BOOL DEPTH_DATA_DELIVERY = NO;
 AVCaptureExposureMode EXPOSURE_MODE = AVCaptureExposureModeContinuousAutoExposure;
@@ -21,6 +21,7 @@ AVCaptureFocusMode FOCUS_MODE = AVCaptureFocusModeContinuousAutoFocus;
 CGFloat X = 0.5;
 CGFloat Y = 0.5;
 double startTime = 0.0;
+
 
 @implementation ImageQualityViewController
 
