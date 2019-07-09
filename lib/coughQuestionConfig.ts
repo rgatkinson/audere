@@ -56,14 +56,14 @@ export interface DropDownQuestion extends SurveyQuestion {
 //
 // ================================================================
 
-export const ConsentAnyResearchersConfig: SurveyQuestion = {
+export const ConsentSameResearchersConfig: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true }
   ],
-  id: "ResearchByAnyResearchers",
+  id: "ResearchBySameResearchers",
   required: true,
-  title: "researchByAnyResearchers",
+  title: "researchBySameResearchers",
   type: SurveyQuestionType.ButtonGrid
 };
 
@@ -1165,7 +1165,7 @@ export const TestFeedbackConfig: SurveyQuestion = {
 };
 
 export const SURVEY_QUESTIONS = [
-  ConsentAnyResearchersConfig,
+  ConsentSameResearchersConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,
