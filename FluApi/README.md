@@ -1,7 +1,6 @@
 # FluApi
 
-Express web service for persisting flu study documents into underlying storage. Uses separate Postgres databases for PII and non-PII i
-nformation.
+Express web service for persisting flu study documents into underlying storage. Uses separate Postgres databases for PII and non-PII information.
 
 ## Developer setup
 

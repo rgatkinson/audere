@@ -1,4 +1,18 @@
-How to get running from source on iOS
+# FluStudy_au
+
+**CircleCI build status**
+
+[![CircleCI](https://circleci.com/gh/AudereNow/learn.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/learn)
+
+
+## Overview
+
+FluStudy_au is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic & location data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/learn/tree/master/FluApi).
+
+
+## Developer setup
+
+### How to get running from source on iOS
 
 - Install cocoapods
   - `sudo gem install cocoapods`
@@ -22,7 +36,9 @@ How to get running from source on iOS
 - Select the fluathome Debug scheme, hit the play button to build and run the app, this will take a minute the first time
 
 
-To run from source on a physical iPhone that has not already been registered:
+### To run from source on a physical iPhone that has not already been registered:
+
+(Note, this only works if you are part of the Audere organization.  Otherwise, you will need to set up your own Apple Developer account and reconfigure the app accordingly).
 
 - Connect the device to your Mac using the USB hub
 - Run this command on command line to find your device's udid:
@@ -33,6 +49,9 @@ To run from source on a physical iPhone that has not already been registered:
   
   after which you can re-run `fastlane match development --readonly` to install the updated profile on your Mac
 - Restart XCode and now you should be able to select fluathome Debug > your device as the run target
+
+
+## React Native Template
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
