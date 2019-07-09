@@ -98,4 +98,5 @@ export default createDrawerNavigator(routeConfig, {
   drawerPosition: "right",
   // @ts-ignore
   useNativeAnimations: Platform.OS === "ios", // Can't use on Android
+  drawerLockMode: "locked-open",
 });
