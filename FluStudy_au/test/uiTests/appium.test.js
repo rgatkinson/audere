@@ -441,6 +441,7 @@ async function verify_db_contents(driver, models, installationId) {
         },
       },
     },
+    order: [["id", "ASC"]],
   });
 
   //gets most recent row with same installationId
