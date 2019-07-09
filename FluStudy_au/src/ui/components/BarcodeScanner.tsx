@@ -27,7 +27,7 @@ import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
 } from "../../util/barcodeVerification";
-import { GUTTER, PRIMARY_COLOR } from "../styles";
+import { GUTTER, PRIMARY_COLOR, SCREEN_MARGIN } from "../styles";
 import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 import { maxAttempts } from "../../resources/BarCodeConfig";
 
@@ -212,7 +212,7 @@ export default withNavigationFocus(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: -GUTTER,
+    marginHorizontal: -SCREEN_MARGIN,
   },
   helpBox: {
     height: 100,

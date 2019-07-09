@@ -5,13 +5,7 @@
 
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import {
-  BORDER_RADIUS,
-  BORDER_WIDTH,
-  GUTTER,
-  SECONDARY_COLOR,
-  THIN_BORDER_WIDTH,
-} from "../styles";
+import { GUTTER, SECONDARY_COLOR, THIN_BORDER_WIDTH } from "../styles";
 
 interface Props {
   children?: any;

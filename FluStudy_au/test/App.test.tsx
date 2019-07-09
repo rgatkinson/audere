@@ -10,6 +10,10 @@ import { AppLoading, Font } from "expo";
 
 import renderer from "react-test-renderer";
 
+jest.mock("react-native-device-info", () => {
+  return { isTablet: jest.fn(), isEmulator: jest.fn() };
+});
+
 jest.mock("redux-persist/integration/react", () => ({
   PersistGate: (props: any) => props.children,
 }));

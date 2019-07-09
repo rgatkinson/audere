@@ -22,8 +22,8 @@ import {
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
+  INPUT_TEXT,
   PRIMARY_COLOR,
-  REGULAR_TEXT,
 } from "../styles";
 
 interface Props {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: FONT_SEMI_BOLD,
-    fontSize: REGULAR_TEXT,
+    fontSize: INPUT_TEXT,
     textAlign: "center",
   },
   primaryButton: {

@@ -28,7 +28,7 @@ import {
 } from "../../../store";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
-import { GUTTER, REGULAR_TEXT, SYSTEM_PADDING_BOTTOM } from "../../styles";
+import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
 import { savePhoto } from "../../../store";
 
 interface Props {
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     flex: 1,
-    marginHorizontal: -GUTTER,
+    marginHorizontal: -SCREEN_MARGIN,
   },
   camera: {
     alignSelf: "stretch",

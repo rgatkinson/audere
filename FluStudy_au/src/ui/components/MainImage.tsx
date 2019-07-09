@@ -7,7 +7,7 @@ import React from "react";
 import { Image, StyleSheet, StyleProp, ImageStyle } from "react-native";
 import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../../store";
-import { ASPECT_RATIO, GUTTER, IMAGE_WIDTH } from "../styles";
+import { ASPECT_RATIO, IMAGE_WIDTH, IMAGE_MARGIN } from "../styles";
 import MultiTapContainer from "./MultiTapContainer";
 
 interface Props {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     aspectRatio: ASPECT_RATIO,
     height: undefined,
-    marginVertical: GUTTER * 2,
+    marginVertical: IMAGE_MARGIN,
     resizeMode: "contain",
     width: IMAGE_WIDTH,
   },

@@ -13,6 +13,7 @@ import {
   BUTTON_WIDTH,
   GUTTER,
   SECONDARY_COLOR,
+  INPUT_HEIGHT,
 } from "../styles";
 import BorderView from "./BorderView";
 import ContinueButton from "./ContinueButton";
@@ -147,8 +148,11 @@ class Timer extends React.Component<Props & WithNamespaces> {
       >
         <BorderView
           style={{
+            alignItems: "center",
             alignSelf: "center",
             borderRadius: BORDER_RADIUS,
+            height: INPUT_HEIGHT,
+            justifyContent: "center",
             marginBottom: GUTTER * 2,
             width: BUTTON_WIDTH,
           }}

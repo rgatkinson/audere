@@ -48,7 +48,6 @@ class ScreenText extends React.Component<Props & WithNamespaces> {
           {
             alignSelf: "stretch",
             marginBottom: GUTTER,
-            marginHorizontal: GUTTER,
           },
           style,
         ]}

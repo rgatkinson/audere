@@ -7,6 +7,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { isTablet, FOOTER_HEIGHT } from "../styles";
 import Button from "./Button";
 import StepDots from "./StepDots";
 import { Action } from "../../store";
@@ -68,11 +69,11 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
 const styles = StyleSheet.create({
   button: {
     borderWidth: 0,
-    width: 60,
+    width: 80,
   },
   container: {
     flexDirection: "row",
-    height: 50,
+    height: FOOTER_HEIGHT,
     width: "100%",
     flex: 1,
     justifyContent: "space-between",

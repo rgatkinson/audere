@@ -38,7 +38,7 @@ import {
   RDTReaderSizeResult,
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
-import { GUTTER, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
+import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
 import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
@@ -840,7 +840,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "black",
     flex: 1,
-    marginHorizontal: -GUTTER,
+    marginHorizontal: -SCREEN_MARGIN,
   },
   overlayContainer: {
     alignItems: "center",

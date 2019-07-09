@@ -12,6 +12,7 @@ import {
   FONT_NORMAL,
   GUTTER,
   PRIMARY_COLOR,
+  LINE_HEIGHT_DIFFERENCE,
 } from "../styles";
 import { PubSubHub, PubSubEvents } from "../../util/pubsub";
 
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
-    lineHeight: 30,
+    lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
     marginTop: GUTTER / 2,
     marginBottom: GUTTER,
   },

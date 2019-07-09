@@ -14,7 +14,8 @@ import { Action, StoreState, setWorkflow } from "../../store";
 import { logFirebaseEvent } from "../../util/tracker";
 import Chrome from "./Chrome";
 import AnimatedChrome from "./AnimatedChrome";
-import { GUTTER } from "../styles";
+import { SCREEN_MARGIN } from "../styles";
+
 import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
 import { getRemoteConfig } from "../../util/remoteConfig";
 
@@ -262,10 +263,10 @@ const styles = StyleSheet.create({
   footerContainer: {
     alignItems: "center",
     alignSelf: "stretch",
-    marginHorizontal: GUTTER,
+    marginHorizontal: SCREEN_MARGIN,
   },
   innerContainer: {
-    marginHorizontal: GUTTER,
+    marginHorizontal: SCREEN_MARGIN,
     flex: 1,
   },
   scrollContainer: {

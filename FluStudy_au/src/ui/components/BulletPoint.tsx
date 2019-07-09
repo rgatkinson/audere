@@ -7,7 +7,7 @@ import React, { Fragment } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
-import { GUTTER, REGULAR_TEXT } from "../styles";
+import { REGULAR_TEXT, GUTTER, CUSTOM_BULLET_OFFSET } from "../styles";
 
 interface Props {
   content: string;
@@ -37,7 +37,7 @@ interface BulletProps {
   customBulletUri?: string;
   label?: string;
   namespace: string;
-  remoteConfigValues?: {[key: string]: string};
+  remoteConfigValues?: { [key: string]: string };
 }
 
 class BulletPointsComponent extends React.Component<
@@ -94,6 +94,6 @@ const styles = StyleSheet.create({
     height: REGULAR_TEXT,
     width: REGULAR_TEXT,
     marginRight: GUTTER / 2,
-    marginTop: GUTTER / 5,
+    marginTop: CUSTOM_BULLET_OFFSET,
   },
 });
