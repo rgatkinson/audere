@@ -7,7 +7,7 @@ import strings from "../../../src/i18n/locales/en.json";
 const today = new Date();
 
 export const inputs = {
-  [strings.surveyTitle.researchByAnyResearchers]: strings.surveyButton.yes,
+  [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.yes,
   [strings.barcode.placeholder]: "00100100",
   [strings.barcode.secondPlaceholder]: "00100100",
   [strings.surveyTitle.whatSymptoms]: [
