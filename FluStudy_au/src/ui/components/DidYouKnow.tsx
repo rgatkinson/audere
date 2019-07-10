@@ -13,7 +13,7 @@ import { StoreState } from "../../store";
 import Text from "./Text";
 
 // This component will render up to this number of tips
-const TIP_COUNT = 13;
+const TIP_COUNT = 8;
 // This acts as a multiplier for the source part of the text's size relative to the tip itself
 const SOURCE_SIZE = 0.8;
 const SOURCE_LINE_HEIGHT = 16;
