@@ -358,7 +358,7 @@
   },
   "TestStripSurvey": {
     "title": "What do you see?",
-    "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
+    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
   },
   "RDTInstructions": {
     "title": "Scan the test strip",
