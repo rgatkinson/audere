@@ -138,5 +138,14 @@ export const MenuScreens: ScreenConfig[] = [
     key: "ContactSupport",
   },
   menuScreen("Report"),
-  menuScreen("Version", true, [{ tag: BuildInfo }]),
+  menuScreen("Version", false, [
+    {
+      tag: ScreenText,
+      props: {
+        label: "description",
+        center: true,
+      },
+    },
+    { tag: BuildInfo },
+  ]),
 ];
