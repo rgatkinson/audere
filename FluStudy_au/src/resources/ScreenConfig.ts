@@ -890,7 +890,10 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: PendingButton,
-        props: { pendingResolvedFn: uploadPendingSuccess, next: "Thanks" },
+        props: {
+          pendingResolvedFn: uploadPendingSuccess,
+          next: "FollowUpSurvey",
+        },
       },
     ],
     key: "PendingData",
