@@ -15,7 +15,11 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { Camera } from "expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
@@ -26,6 +30,7 @@ import {
   setShownRDTFailWarning,
   StoreState,
 } from "../../../store";
+import { logFirebaseEvent, AppHealthEvents } from "../../../util/tracker";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
@@ -40,6 +45,8 @@ interface Props {
 
 class TestStripCamera extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
+
+  MAX_CAMERA_RETRIES = 3;
 
   state = {
     spinner: !DeviceInfo.isEmulator(),
@@ -77,6 +84,29 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
 
   _cameraReady = () => {
     this.setState({ spinner: false });
+  };
+
+  _cameraError = () => {
+    const { navigation, t } = this.props;
+    const retries = navigation.getParam("cameraRetries", 0);
+    if (retries < this.MAX_CAMERA_RETRIES) {
+      navigation.dispatch(
+        StackActions.replace({
+          routeName: "TestStripCamera",
+          params: { cameraRetries: retries + 1 },
+        })
+      );
+    } else {
+      Alert.alert(t("cameraErrorTitle"), t("cameraErrorDesc"), [
+        {
+          text: t("common:button:ok"),
+          onPress: () => {
+            logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
+            navigation.push("TestResult");
+          },
+        },
+      ]);
+    }
   };
 
   _toggleFlash = () => {
@@ -119,7 +149,12 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
+    if (!this.props.navigation.isFocused()) {
+      return null;
+    }
+
     const { t } = this.props;
+
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner} />
@@ -127,6 +162,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           ref={this.camera}
           style={styles.camera}
           onCameraReady={this._cameraReady}
+          onMountError={this._cameraError}
           flashMode={
             this.state.flashEnabled
               ? Camera.Constants.FlashMode.torch

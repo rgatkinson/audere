@@ -69,6 +69,7 @@ export const TransportEvents = {
 };
 
 export const AppHealthEvents = {
+  CAMERA_ERROR: "camera_loading_error",
   PHOTO_UPLOADER_ERROR: "photo_uploader_error",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",
