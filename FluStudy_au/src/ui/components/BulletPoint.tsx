@@ -27,7 +27,7 @@ export class BulletPoint extends React.PureComponent<Props> {
         ) : (
           <Text content={"\u2022  "} />
         )}
-        <Text content={content} />
+        <Text style={styles.bulletText} content={content} />
       </View>
     );
   }
@@ -85,10 +85,12 @@ class BulletPointsComponent extends React.Component<
 export default withNamespaces()(BulletPointsComponent);
 
 const styles = StyleSheet.create({
+  bulletText: {
+    flex: 1,
+    marginBottom: GUTTER,
+  },
   container: {
     flexDirection: "row",
-    marginBottom: GUTTER,
-    marginRight: GUTTER,
   },
   customBullet: {
     height: REGULAR_TEXT,
