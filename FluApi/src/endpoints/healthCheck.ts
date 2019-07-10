@@ -10,6 +10,7 @@ import {
   FirebaseReceiver
 } from "../external/firebase";
 import { getPhotoCollection } from "./coughApi";
+import logger from "../util/logger";
 
 export class ServerHealth {
   private sql: SplitSql;
@@ -48,7 +49,8 @@ export class ServerHealth {
       const receiver = new FirebaseReceiver(connector, { collection });
       await receiver.healthCheck();
       res.json({ Status: "OK" });
-    } catch {
+    } catch (err) {
+      logger.error(err);
       res.status(500).end();
     }
   }
