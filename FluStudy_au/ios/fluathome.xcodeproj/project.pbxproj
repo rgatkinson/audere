@@ -13,6 +13,7 @@
 		218947CC2284D31400788F40 /* teststrip2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 218947C72284D31300788F40 /* teststrip2@3x.png */; };
 		218947CD2284D31400788F40 /* quickvue_ref.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 218947C82284D31300788F40 /* quickvue_ref.jpg */; };
 		21AB7C0A22D507BA0094C30F /* quickvue_ref_v4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 21AB7C0322D507BA0094C30F /* quickvue_ref_v4.jpg */; };
+		21AB7C2A22D67CF90094C30F /* quickvue_ref_v5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 21AB7C2322D67CF90094C30F /* quickvue_ref_v5.jpg */; };
 		21F42D65228A3FFB0082B8DA /* AVCamPreviewView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D5B228A3FFB0082B8DA /* AVCamPreviewView.mm */; };
 		21F42D66228A3FFB0082B8DA /* ImageProcessor.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D5E228A3FFB0082B8DA /* ImageProcessor.mm */; };
 		21F42D69228A3FFB0082B8DA /* ImageQualityViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */; };
@@ -291,6 +292,7 @@
 		218947C82284D31300788F40 /* quickvue_ref.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref.jpg; path = ../../../assets/images/quickvue_ref.jpg; sourceTree = "<group>"; };
 		218947CA2284D31300788F40 /* teststrip2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = teststrip2.png; path = ../../../assets/images/teststrip2.png; sourceTree = "<group>"; };
 		21AB7C0322D507BA0094C30F /* quickvue_ref_v4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v4.jpg; path = ../../../assets/images/quickvue_ref_v4.jpg; sourceTree = "<group>"; };
+		21AB7C2322D67CF90094C30F /* quickvue_ref_v5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = quickvue_ref_v5.jpg; path = ../../../assets/images/quickvue_ref_v5.jpg; sourceTree = "<group>"; };
 		21F42D5B228A3FFB0082B8DA /* AVCamPreviewView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVCamPreviewView.mm; sourceTree = "<group>"; };
 		21F42D5D228A3FFB0082B8DA /* ImageQualityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageQualityViewController.h; sourceTree = "<group>"; };
 		21F42D5E228A3FFB0082B8DA /* ImageProcessor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageProcessor.mm; sourceTree = "<group>"; };
@@ -617,6 +619,7 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				21AB7C2322D67CF90094C30F /* quickvue_ref_v5.jpg */,
 				21AB7C0322D507BA0094C30F /* quickvue_ref_v4.jpg */,
 				EA89E38F22CBCBEE009FD8CF /* followupsurvey.png */,
 				EA89E38822CBCBEE009FD8CF /* followupsurvey@2x.png */,
@@ -1033,6 +1036,7 @@
 				502CB2F922C3F00700A86E23 /* rotationwhite.png in Resources */,
 				507F748822BAFA5D0055CE82 /* positiongreen@2x.png in Resources */,
 				502CB2C222C13E6500A86E23 /* oneline.png in Resources */,
+				21AB7C2A22D67CF90094C30F /* quickvue_ref_v5.jpg in Resources */,
 				218947CB2284D31400788F40 /* teststrip2@2x.png in Resources */,
 				507F748922BAFA5D0055CE82 /* positionyellow@2x.png in Resources */,
 				502CB2C022C13E6500A86E23 /* threelines@3x.png in Resources */,

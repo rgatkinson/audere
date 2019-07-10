@@ -20,7 +20,7 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 using namespace std;
 
-const float SHARPNESS_THRESHOLD = 0.7;
+const float SHARPNESS_THRESHOLD = 0.8;
 const float OVER_EXP_THRESHOLD = 255;
 const float UNDER_EXP_THRESHOLD = 120;
 const float OVER_EXP_WHITE_COUNT = 100;
@@ -96,7 +96,7 @@ Mat siftRefDescriptor;
         siftDetector = SIFT::create();
         siftMatcher = BFMatcher::create(cv::NORM_L2);
         
-        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v4.jpg"];
+        UIImage * image = [UIImage imageNamed:@"quickvue_ref_v5.jpg"];
         UIImageToMat(image, refImg);
         NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
         
