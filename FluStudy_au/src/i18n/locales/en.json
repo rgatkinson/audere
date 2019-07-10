@@ -96,7 +96,7 @@
   },
   "Funding": {
     "title": "Study Funding & Partners",
-    "description": "This app is developed, operated, and owned by Audere, a not-for-profit organisation in the United States.\n\nThis study is funded by Audere, and conducted in association with the University of Adelaide in Australia, and the University of Washington in the United States. For more information about this study, visit [www.fluathome.org.au](http://fluathome.org.au).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
+    "description": "This app is developed, operated, and owned by Audere, a non-profit organisation in the United States.\n\nThis study is funded by Audere, and conducted in association with the University of Adelaide in Australia, and the University of Washington in the United States. For more information about this study, visit [www.fluathome.org.au](http://fluathome.org.au).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
   },
   "Report": {
     "title": "Report a Complaint",
@@ -240,7 +240,7 @@
   },
   "WhatsRequired": {
     "title": "What's required?",
-    "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera - to scan the kit's barcode and take a photo of your test strip."
+    "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera to scan the kit's barcode and take a photo of your test strip."
   },
   "ResearchStudy": {
     "title": "Research Study",
@@ -340,8 +340,8 @@
   "GeneralExposure": {
     "title": "General Exposure",
     "desc": "Questions marked with an * are required.",
-    "expoDesc": "In the next section, the questions are going to be about being **in contact** with people who seemed to have a cold or the flu. **In contact** means being within two meters of them for at least two minutes or physical contact for any amount of time.",
-    "expoRef": "For reference, two meters is about the distance between you and someone sitting two rows ahead of you on the bus."
+    "expoDesc": "In the next section, the questions are going to be about being **in contact** with people who seemed to have a cold or the flu. **In contact** means being within two metres of them for at least two minutes or physical contact for any amount of time.",
+    "expoRef": "For reference, two metres is about the distance between you and someone sitting two rows ahead of you on the bus."
   },
   "WhenSymptoms": {
     "title": "Symptom Survey",
