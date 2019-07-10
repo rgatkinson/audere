@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { StoreState } from "../../../store";
+import { Action, StoreState, setResultShown } from "../../../store";
 import { getSelectedButton } from "../../../util/survey";
 import { PinkWhenBlueConfig } from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
@@ -14,22 +14,31 @@ import {
   getResultRedAnswer,
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
-import { AppEvents } from "../../../util/tracker";
 
 interface Props {
   redAnswer?: string;
+  dispatch(action: Action): void;
 }
 
 class TestResult extends React.Component<Props & WithNamespaces> {
+  result = "";
+  explanation = "";
+
+  componentDidMount() {
+    const { dispatch, redAnswer, t } = this.props;
+    if (!!redAnswer) {
+      this.result = getResultRedAnswer(redAnswer);
+      this.explanation = getExplanationRedAnswer(redAnswer);
+      dispatch(setResultShown(this.result, t(this.explanation)));
+    }
+  }
+
   render() {
-    const { redAnswer, t } = this.props;
+    const { t } = this.props;
     return (
       <Fragment>
         <BorderView style={styles.border}>
-          <Text
-            center={true}
-            content={t("common:testResult:" + getResultRedAnswer(redAnswer))}
-          />
+          <Text center={true} content={t(`common:testResult:${this.result}`)} />
         </BorderView>
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={t("why")} style={styles.text} />
@@ -39,14 +48,14 @@ class TestResult extends React.Component<Props & WithNamespaces> {
             customBulletUri="listarrow"
           />
           <BulletPoint
-            content={t(getExplanationRedAnswer(redAnswer))}
+            content={t(this.explanation)}
             customBulletUri="listarrow"
           />
         </View>
         <Divider />
         <Text
           content={
-            t(`common:testResult:${getResultRedAnswer(redAnswer)}WhatToDo`) +
+            t(`common:testResult:${this.result}WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}

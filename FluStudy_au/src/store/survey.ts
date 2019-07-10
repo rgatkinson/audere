@@ -39,7 +39,12 @@ export type SurveyAction =
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
-  | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string };
+  | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string }
+  | {
+      type: "SET_RESULT_SHOWN";
+      resultShown: string;
+      resultShownExplanation: string;
+    };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
@@ -247,6 +252,15 @@ export default function reducer(state = initialState, action: SurveyAction) {
         };
       }
       return state;
+    case "SET_RESULT_SHOWN":
+      return {
+        ...state,
+        rdtInfo: {
+          ...state.rdtInfo,
+          resultShown: action.resultShown,
+          resultShownExplanation: action.resultShownExplanation,
+        },
+      };
 
     default:
       return state;
@@ -394,6 +408,17 @@ export function setRDTInterpretationShown(interpreter: string): SurveyAction {
   return {
     type: "SET_RDT_INTERPRETATION_SHOWN",
     interpreter,
+  };
+}
+
+export function setResultShown(
+  resultShown: string,
+  resultShownExplanation: string
+): SurveyAction {
+  return {
+    type: "SET_RESULT_SHOWN",
+    resultShown,
+    resultShownExplanation,
   };
 }
 

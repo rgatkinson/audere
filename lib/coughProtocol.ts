@@ -180,6 +180,8 @@ export interface RDTInfo {
   totalTestStripTime?: number;
   captureTime?: number;
   rdtTotalTime?: number;
+  resultShown?: string;
+  resultShownExplanation?: string;
 
   // Other RDT reader information can go here:
   //  e.g. time taken to capture, length of time test strip was in solution, etc.

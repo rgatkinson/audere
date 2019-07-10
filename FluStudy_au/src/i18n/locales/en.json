@@ -400,7 +400,7 @@
     "alertTitle": "We are unable to scan the test strip",
     "alertDesc": "The app is having trouble scanning your test strip. We will switch to taking a photo.",
     "cameraErrorTitle": "Something's gone wrong.",
-    "cameraErrorDesc:": "We are unable to load the camera and will proceed without taking a photo.",
+    "cameraErrorDesc": "We are unable to load the camera and will proceed without taking a photo.",
     "error": "There was a processing error, please try again",
     "flash": "FLASH: ",
     "on": "ON",

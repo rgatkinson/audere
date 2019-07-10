@@ -40,7 +40,6 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
       next,
       overrideValidate,
       surveyGetNextFn,
-      t,
       validate,
     } = this.props;
     if (overrideValidate || !validate || validate()) {

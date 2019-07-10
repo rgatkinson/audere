@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Dimensions, Platform } from "react-native";
+import { Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import {
   setConsent,
@@ -745,7 +745,9 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: ContinueButton,
-        props: { surveyGetNextFn: getPostRDTTestStripSurveyNextScreen },
+        props: {
+          surveyGetNextFn: getPostRDTTestStripSurveyNextScreen,
+        },
       },
     ],
     key: "PostRDTTestStripSurvey",
@@ -757,7 +759,12 @@ export const Screens: ScreenConfig[] = [
       { tag: TestResult },
     ],
     footer: [
-      { tag: ContinueButton, props: { next: "CleanTest" } },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "CleanTest",
+        },
+      },
       { tag: Divider },
       {
         tag: ScreenText,

@@ -2,7 +2,12 @@ import React, { Fragment } from "react";
 import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { StoreState, setRDTInterpretationShown, Action } from "../../../store";
+import {
+  Action,
+  setRDTInterpretationShown,
+  setResultShown,
+  StoreState,
+} from "../../../store";
 import { getSelectedButton } from "../../../util/survey";
 import {
   NumLinesSeenConfig,
@@ -29,10 +34,15 @@ interface Props {
   numLinesAnswer?: string;
   redAnswer?: string;
   readerResult?: RDTReaderResult;
+  explanation: string;
+  result: string;
   dispatch(action: Action): void;
 }
 
 class TestResultRDT extends React.Component<Props & WithNamespaces> {
+  result = "";
+  explanation = "";
+
   componentDidMount() {
     const interpreter = getRemoteConfig("showRDTInterpretation") as
       | RDTInterpretationEventTypes
@@ -40,6 +50,13 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     if (!!interpreter && this.props.readerResult) {
       logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
       this.props.dispatch(setRDTInterpretationShown(interpreter));
+    }
+
+    const { dispatch, redAnswer, t } = this.props;
+    if (!!redAnswer) {
+      this.result = this._getResult();
+      this.explanation = this._getExplanation();
+      dispatch(setResultShown(this.result, t(this.explanation)));
     }
   }
 
@@ -79,10 +96,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     return (
       <Fragment>
         <BorderView style={styles.border}>
-          <Text
-            center={true}
-            content={t("common:testResult:" + this._getResult())}
-          />
+          <Text center={true} content={t(`common:testResult:${this.result}`)} />
         </BorderView>
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={testResultString} style={styles.text} />
@@ -92,14 +106,14 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
             customBulletUri="listarrow"
           />
           <BulletPoint
-            content={t(this._getExplanation())}
+            content={t(this.explanation)}
             customBulletUri="listarrow"
           />
         </View>
         <Divider />
         <Text
           content={
-            t(`common:testResult:${this._getResult()}WhatToDo`) +
+            t(`common:testResult:${this.result}WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}
