@@ -354,7 +354,7 @@
   },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube.\nPlace it flat on the middle of the box, then put the stopper back on the tube."
+    "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
   },
   "TestStripSurvey": {
     "title": "What do you see?",
