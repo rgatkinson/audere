@@ -160,10 +160,10 @@
   },
   "Consent": {
     "title": "Consent form",
-    "desc": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\nPlease note: * = **required question**",
+    "desc": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\n* = Required question",
     "accept": "I consent",
     "noThanks": "No, Thanks",
-    "consentFormHeader1": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\nPlease note: * = **required question**",
+    "consentFormHeader1": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\n* = Required question",
     "consentFormText": "1. I have read the previous Participant Information Sheet and agree to take part in the following research project:\n\n**Title:** Surveillance of influenza using a self-test for influenza\n\n**Ethics Approval Number:** H-2019-116\n\n2. I have had the project, so far as it affects me, and the potential risks and burdens fully explained to my satisfaction. I have had the opportunity to ask any questions I may have about the project and my participation. My consent is given freely.\n\n3. I have been given the opportunity to discuss my potential participation in this study with a member of my family or a friend.\n\n4. Although I understand the purpose of the research project is to improve the quality of health/medical care, it has also been explained that my involvement may not be of any benefit to me.\n\n5. I understand that I will be reading the results of a flu test in the app, and that these results are experimental and should not determine whether I should visit my GP for additional treatment. I will use my best judgment for treatment based on my symptoms.\n\n6. I agree to participate in the activities as outlined in the Participant Information Sheet. I understand that the project will collect information from me as described in the Participant Information Sheet.\n\n7. I have been informed that the information gained in the project may be published in a book/journal article/thesis/news article/conference presentations/website/report etc.\n\n8. I have been informed that in the published materials I will not be identified and my personal results will not be divulged.\n\n9. I agree to my information being used for future research purposes as follows:",
     "consentFormText2": "10. I understand my information will only be disclosed according to the consent provided, except where disclosure is required by law.\n\n11. I am aware that I may obtain a copy of this Consent Form, and the attached Participant Information Sheet from [www.fluathome.org.au](http://fluathome.org.au).",
     "viewConsent": "View Consent"
@@ -326,11 +326,11 @@
   },
   "WhatSymptoms": {
     "title": "Symptom Survey",
-    "desc": "Questions marked with an * are required."
+    "desc": "* = Required question"
   },
   "GeneralHealth": {
     "title": "General Health",
-    "desc": "Questions marked with an * are required.",
+    "desc": "* = Required question",
     "next": "Next, we'd like to ask you some questions about your overall health."
   },
   "InfluenzaVaccination": {
@@ -339,13 +339,13 @@
   },
   "GeneralExposure": {
     "title": "General Exposure",
-    "desc": "Questions marked with an * are required.",
+    "desc": "* = Required question",
     "expoDesc": "In the next section, the questions are going to be about being **in contact** with people who seemed to have a cold or the flu. **In contact** means being within two metres of them for at least two minutes or physical contact for any amount of time.",
     "expoRef": "For reference, two metres is about the distance between you and someone sitting two rows ahead of you on the bus."
   },
   "WhenSymptoms": {
     "title": "Symptom Survey",
-    "desc": "Questions marked with an * are required."
+    "desc": "* = Required question"
   },
   "ThankYouSurvey": {
     "title": "Thank you!",
