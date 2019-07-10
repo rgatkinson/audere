@@ -34,8 +34,6 @@ interface Props {
   numLinesAnswer?: string;
   redAnswer?: string;
   readerResult?: RDTReaderResult;
-  explanation: string;
-  result: string;
   dispatch(action: Action): void;
 }
 
