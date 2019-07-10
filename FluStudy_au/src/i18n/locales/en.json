@@ -305,7 +305,7 @@
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube.\nMake sure the swab tip is touching the bottom of the tube and stir it around 4 times in the tube.\nTap \"Start Timer\" below.\nThe swab needs to stay in the tube for one minute.",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around 4 times in the tube. The swab needs to stay in the tube for one minute.\nTap the button below to start the one-minute timer.",
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
