@@ -206,6 +206,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'responses'->0->'item' as responses,
           ${answerColumns(SURVEY_QUESTIONS).join(",\n")},
           survey->'rdtInfo' as rdtinfo,
+          survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
+          survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripFound' as rdtreaderresult_teststripfound,
           survey->'rdtInfo'->'rdtReaderResult'->>'skippedDueToMemWarning' as rdtreaderresult_skippedduetomemwarning,
           survey->'rdtInfo'->'rdtReaderResult'->>'isCentered' as rdtreaderresult_iscentered,
