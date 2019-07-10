@@ -450,8 +450,8 @@
     "androidInstructions": "We'll send a notification to your device in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
   },
   "Thanks": {
-    "title": "Thanks for participating",
-    "desc": "Your participation in this research study could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us.\n\nWant to learn more about influenza? Take a look at the following tips and information from [healthdirect](https://www.healthdirect.gov.au/).",
+    "title": "All done!",
+    "desc": "Thank you. Your participation in this research study could help us stop the spread of the flu, lead to personalised treatments, smarter prevention, and a safer and healthier world for all of us.\n\nWant to learn more about influenza? Take a look at the following tips and information from [healthdirect](https://www.healthdirect.gov.au/), an Australian health site.",
     "treatmentTitle": "Influenza Treatment",
     "treatmentLinkLabel": "healthdirect: How to treat cold and flu symptoms",
     "preventingTitle": "Preventing Influenza",
