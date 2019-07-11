@@ -20,14 +20,16 @@ SOFTWARE.
 
 ================================================================================
 
-The license and copyright for any file in this project is govorned by
-the LICENSE file that has the longest absolute path prefix in common
-with that file.
-
 Copyright for portions of this project are held by The University of
 Washington Ubicomp Lab as part of the rdt-capture and rdt-reader-ios
-projects under the BSD license.
+projects under the BSD license.  Specifically:
 
-For details, see LICENSE files in:
-FluStudy_au/ios/fluathome/RDTReader/LICENSE
-FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/LICENSE
+1) Code under FluStudy_au/ios/fluathome/RDTReader is governed by
+FluStudy_au/ios/fluathome/RDTReader/LICENSE.  Please see that file for
+details.
+
+2) Code under
+FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader
+is governed by
+FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/LICENSE.
+Please see that file for details.
