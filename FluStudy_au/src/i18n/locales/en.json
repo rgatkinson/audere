@@ -398,7 +398,7 @@
     "title": "Tap the screen to focus the image.",
     "description": "Tap the round button to take a photo",
     "alertTitle": "We are unable to scan the test strip",
-    "alertDesc": "The app is having trouble scanning your test strip. We will switch to taking a photo.",
+    "alertDesc": "The app is having trouble scanning your test strip. Please take a photo of the strip.",
     "cameraErrorTitle": "Something's gone wrong.",
     "cameraErrorDesc": "We are unable to load the camera and will proceed without taking a photo.",
     "error": "There was a processing error, please try again",
