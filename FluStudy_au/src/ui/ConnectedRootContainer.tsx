@@ -22,6 +22,7 @@ import {
   setCSRUIDIfUnset,
   setShownOfflineWarning,
   setConnectivity,
+  resetTimestamp,
 } from "../store/";
 import { Permissions } from "expo";
 import { crashlytics } from "../crashReporter";
@@ -167,17 +168,6 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this.setState({ appState: nextAppState });
     }
 
-    const MILLIS_IN_SECOND = 1000.0;
-    const SECONDS_IN_MINUTE = 60;
-    const MINUTES_IN_HOUR = 60;
-    const HOURS_IN_DAY = 24;
-
-    const intervalMilis = currentDate.getTime() - this.props.lastUpdate;
-    const elapsedMinutes =
-      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE);
-    const elapsedHours =
-      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
-
     if (nextAppState === "quadTap") {
       this.props.dispatch(
         appendEvent(
@@ -187,7 +177,17 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       );
       this.clearState();
     } else if (nextAppState === "launch" || nextAppState === "active") {
-      if (elapsedHours > HOURS_IN_DAY) {
+      const MILLIS_IN_SECOND = 1000.0;
+      const SECONDS_IN_MINUTE = 60;
+      const MINUTES_IN_HOUR = 60;
+      const HOURS_IN_DAY = 24;
+
+      const intervalMilis = currentDate.getTime() - this.props.lastUpdate;
+      const elapsedHours =
+        intervalMilis /
+        (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
+
+      if (elapsedHours > 3 * HOURS_IN_DAY) {
         const { t } = this.props;
         Alert.alert(
           t("relaunch:returningOrNewTitle"),
@@ -210,6 +210,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
               text: t("relaunch:button:returningUser"),
               onPress: () => {
                 logFirebaseEvent(AppEvents.APP_IDLE_SAME_USER);
+                this.props.dispatch(resetTimestamp());
               },
             },
           ]

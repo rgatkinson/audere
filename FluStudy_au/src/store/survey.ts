@@ -44,7 +44,8 @@ export type SurveyAction =
       type: "SET_RESULT_SHOWN";
       resultShown: string;
       resultShownExplanation: string;
-    };
+    }
+  | { type: "RESET_TIMESTAMP" };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
@@ -262,6 +263,12 @@ export default function reducer(state = initialState, action: SurveyAction) {
         },
       };
 
+    case "RESET_TIMESTAMP":
+      return {
+        ...state,
+        timestamp: new Date().getTime(),
+      };
+
     default:
       return state;
   }
@@ -419,6 +426,12 @@ export function setResultShown(
     type: "SET_RESULT_SHOWN",
     resultShown,
     resultShownExplanation,
+  };
+}
+
+export function resetTimestamp(): SurveyAction {
+  return {
+    type: "RESET_TIMESTAMP",
   };
 }
 
