@@ -185,7 +185,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
                 <Image
                   style={styles.testStrip}
                   source={{ uri: "teststrip2" }}
-                  resizeMode={"center"}
+                  resizeMode={"contain"}
                 />
               </View>
               <View style={styles.backgroundOverlay}>
