@@ -67,7 +67,6 @@
         <div class="container">
             <nav>
                 <a href="/" class="logo"><img src="img/FluAtHome_Logo.svg" alt="Flu@Home Logo"></a>
-                <a href="#" class="hamburger"><img src="img/hamburger.png" alt="Mobile Menu"></a>
             </nav>
         </div>
     </header>
@@ -624,7 +623,6 @@ Email: Monique.Chilver@adelaide.edu.au</span></p>
         </div>
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
 </body>
 
 </html>
