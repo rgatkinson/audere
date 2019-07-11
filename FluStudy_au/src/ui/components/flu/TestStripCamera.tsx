@@ -87,25 +87,27 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
   };
 
   _cameraError = () => {
-    const { navigation, t } = this.props;
-    const retries = navigation.getParam("cameraRetries", 0);
-    if (retries < this.MAX_CAMERA_RETRIES) {
-      navigation.dispatch(
-        StackActions.replace({
-          routeName: "TestStripCamera",
-          params: { cameraRetries: retries + 1 },
-        })
-      );
-    } else {
-      Alert.alert(t("cameraErrorTitle"), t("cameraErrorDesc"), [
-        {
-          text: t("common:button:ok"),
-          onPress: () => {
-            logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
-            navigation.dispatch(StackActions.replace({ routeName: "TestResult" }));
+    if (!DeviceInfo.isEmulator()) {
+      const { navigation, t } = this.props;
+      const retries = navigation.getParam("cameraRetries", 0);
+      if (retries < this.MAX_CAMERA_RETRIES) {
+        navigation.dispatch(
+          StackActions.replace({
+            routeName: "TestStripCamera",
+            params: { cameraRetries: retries + 1 },
+          })
+        );
+      } else {
+        Alert.alert(t("cameraErrorTitle"), t("cameraErrorDesc"), [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {
+              logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
+              navigation.dispatch(StackActions.replace({ routeName: "TestResult" }));
+            },
           },
-        },
-      ]);
+        ]);
+      }
     }
   };
 
