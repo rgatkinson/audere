@@ -35,6 +35,7 @@ import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
 import { savePhoto } from "../../../store";
+import { getRemoteConfig } from "../../../util/remoteConfig";
 
 interface Props {
   next: string;
@@ -49,22 +50,18 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
   MAX_CAMERA_RETRIES = 3;
 
   state = {
-    spinner: !DeviceInfo.isEmulator(),
+    spinner: !DeviceInfo.isEmulator() && !this._shouldShowAlert(),
     flashEnabled: false,
+    showCamera: !this._shouldShowAlert(),
   };
 
   _didFocus: any;
 
   componentDidMount() {
-    this._didFocus = this.props.navigation.addListener("didFocus", () => {
-      const { dispatch, shownRDTFailWarning, t } = this.props;
-      if (!shownRDTFailWarning) {
-        Alert.alert(t("alertTitle"), t("alertDesc"), [
-          { text: t("common:button:ok"), onPress: () => {} },
-        ]);
-        dispatch(setShownRDTFailWarning(true));
-      }
-    });
+    this._didFocus = this.props.navigation.addListener(
+      "didFocus",
+      this._handleDidFocus
+    );
     AppState.addEventListener("change", this._handleAppStateChange);
   }
 
@@ -72,6 +69,29 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     this._didFocus.remove();
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
+
+  _shouldShowAlert() {
+    return (
+      !this.props.shownRDTFailWarning &&
+      getRemoteConfig("rdtTimeoutSeconds") > 0
+    );
+  }
+
+  _handleDidFocus = () => {
+    if (this._shouldShowAlert()) {
+      const { dispatch, t } = this.props;
+      dispatch(setShownRDTFailWarning(true));
+      Alert.alert(t("alertTitle"), t("alertDesc"), [
+        {
+          text: t("common:button:ok"),
+          onPress: () => {
+            this.setState({ spinner: !DeviceInfo.isEmulator() });
+            this.setState({ showCamera: true });
+          },
+        },
+      ]);
+    }
+  };
 
   _handleAppStateChange = async (nextAppState: string) => {
     if (nextAppState === "active" && this.state.flashEnabled) {
@@ -160,17 +180,19 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner} />
-        <Camera
-          ref={this.camera}
-          style={styles.camera}
-          onCameraReady={this._cameraReady}
-          onMountError={this._cameraError}
-          flashMode={
-            this.state.flashEnabled
-              ? Camera.Constants.FlashMode.torch
-              : Camera.Constants.FlashMode.off
-          }
-        />
+        {this.state.showCamera ? (
+          <Camera
+            ref={this.camera}
+            style={styles.camera}
+            onCameraReady={this._cameraReady}
+            onMountError={this._cameraError}
+            flashMode={
+              this.state.flashEnabled
+                ? Camera.Constants.FlashMode.torch
+                : Camera.Constants.FlashMode.off
+            }
+          />
+        ) : null}
         <View style={styles.overlayContainer}>
           <View style={{ flexDirection: "column", flex: 1 }}>
             <View style={styles.backgroundOverlay} />
@@ -221,6 +243,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         <TouchableOpacity
           style={styles.outerCircle}
           onPress={this._takePicture}
+          disabled={!this.state.showCamera}
         >
           <View style={styles.circle} />
         </TouchableOpacity>
