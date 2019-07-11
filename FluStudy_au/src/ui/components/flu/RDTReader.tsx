@@ -898,7 +898,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 10,
   },
   testStrip: {
-    aspectRatio: 0.06,
+    aspectRatio: 0.048,
     flex: 1,
     opacity: 0.5,
   },

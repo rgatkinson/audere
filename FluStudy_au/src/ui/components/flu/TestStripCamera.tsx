@@ -278,12 +278,13 @@ const styles = StyleSheet.create({
     width: 32,
   },
   testStrip: {
-    aspectRatio: 0.06,
+    aspectRatio: 0.048,
     flex: 1,
     opacity: 0.5,
   },
   testStripContainer: {
-    margin: "8%",
+    marginHorizontal: "8%",
+    marginVertical: "-4%",
   },
   outerCircle: {
     alignItems: "center",
