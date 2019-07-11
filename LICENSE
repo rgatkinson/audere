@@ -1,9 +1,4 @@
-Copyright for portions of this project are held by The University of
-Washington Ubicomp Lab as part of the rdt-capture and rdt-reader-ios
-projects under the BSD license. See: FluStudy_au/ios/fluathome/RDTReader/LICENSE and
-FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/LICENSE
-
-Copyright (c) 2018 Audere
+Copyright (c) 2018, 2019 Audere
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,3 +18,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+================================================================================
+
+The license and copyright for any file in this project is govorned by
+the LICENSE file that has the longest absolute path prefix in common
+with that file.
+
+Copyright for portions of this project are held by The University of
+Washington Ubicomp Lab as part of the rdt-capture and rdt-reader-ios
+projects under the BSD license.
+
+For details, see LICENSE files in:
+FluStudy_au/ios/fluathome/RDTReader/LICENSE
+FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/LICENSE
