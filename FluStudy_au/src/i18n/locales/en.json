@@ -592,21 +592,21 @@
     "unknown": "Unknown"
   },
   "didYouKnow": {
-    "tip0": "While you can catch the flu at any time, it's more likely to happen in the colder months of the year (April to October). The flu season typically peaks in August, but laboratory-confirmed cases of influenza have been higher than usual so far this year (2019).\n",
-    "tip1": "Since both colds and flu are viral infections, antibiotics won’t help. Antibiotics only work against bacterial, not viral infections.\n",
-    "tip2": "The flu and colds are caused by viruses and not by cold climates or being exposed to cold air.\n",
-    "tip3": "The viruses that cause a cold affect the lining of the nose and throat causing symptoms such as sore throat, runny nose and sneezing, symptoms which are less common with the flu.\n",
-    "tip4": "Some symptoms are more common with the flu than a cold, such as a fever, headache, body aches, extreme exhaustion, and chest discomfort.\n",
-    "tip5": "Colds are very common. They are caused by about 200 different viruses, most commonly rhinoviruses and coronaviruses. There is no vaccine for a cold and it is possible to have several colds, one after the other, because a different virus causes each one.\n",
-    "tip6": "People with chronic conditions such as asthma, chronic lung disease, heart disease, blood disorders, liver and kidney disorders, endocrine disorders and obesity are more likely to develop complications from the flu. If you have any of these complications and believe you have the flu, contact your GP.\n",
-    "tip7": "While humidity is not the only factor in flu outbreaks, dry, low-humidity air promotes the spread of the flu. Yale University researchers suggest increasing the water vapour in the air at home, school or work with a device called a humidifier.\n",
-    "source0": "Source: https://www.healthdirect.gov.au/flu-trends-in-australia",
-    "source1": "Source: https://www.healthdirect.gov.au/colds-and-flu",
-    "source2": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
-    "source3": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
-    "source4": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
-    "source5": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
-    "source6": "Source: https://www.healthdirect.gov.au/colds-and-flu-statistics",
-    "source7": "Source: https://www.healthdirect.gov.au/blog/help-stop-the-spread-of-flu-as-the-death-toll-rises"
+    "++tip0": "While you can catch the flu at any time, it's more likely to happen in the colder months of the year (April to October). The flu season typically peaks in August, but laboratory-confirmed cases of influenza have been higher than usual so far this year (2019).\n",
+    "++tip1": "Since both colds and flu are viral infections, antibiotics won’t help. Antibiotics only work against bacterial, not viral infections.\n",
+    "++tip2": "The flu and colds are caused by viruses and not by cold climates or being exposed to cold air.\n",
+    "++tip3": "The viruses that cause a cold affect the lining of the nose and throat causing symptoms such as sore throat, runny nose and sneezing, symptoms which are less common with the flu.\n",
+    "++tip4": "Some symptoms are more common with the flu than a cold, such as a fever, headache, body aches, extreme exhaustion, and chest discomfort.\n",
+    "++tip5": "Colds are very common. They are caused by about 200 different viruses, most commonly rhinoviruses and coronaviruses. There is no vaccine for a cold and it is possible to have several colds, one after the other, because a different virus causes each one.\n",
+    "++tip6": "People with chronic conditions such as asthma, chronic lung disease, heart disease, blood disorders, liver and kidney disorders, endocrine disorders and obesity are more likely to develop complications from the flu. If you have any of these complications and believe you have the flu, contact your GP.\n",
+    "++tip7": "While humidity is not the only factor in flu outbreaks, dry, low-humidity air promotes the spread of the flu. Yale University researchers suggest increasing the water vapour in the air at home, school or work with a device called a humidifier.\n",
+    "++source0": "Source: https://www.healthdirect.gov.au/flu-trends-in-australia",
+    "++source1": "Source: https://www.healthdirect.gov.au/colds-and-flu",
+    "++source2": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
+    "++source3": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
+    "++source4": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
+    "++source5": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
+    "++source6": "Source: https://www.healthdirect.gov.au/colds-and-flu-statistics",
+    "++source7": "Source: https://www.healthdirect.gov.au/blog/help-stop-the-spread-of-flu-as-the-death-toll-rises"
   }
 }

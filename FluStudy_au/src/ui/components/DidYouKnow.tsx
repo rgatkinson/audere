@@ -12,37 +12,6 @@ import { connect } from "react-redux";
 import { StoreState } from "../../store";
 import Text from "./Text";
 
-const TIPS = [
-  "tip0",
-  "tip1",
-  "tip2",
-  "tip3",
-  "tip4",
-  "tip5",
-  "tip6",
-  "tip7",
-  "tip8",
-  "tip9",
-  "tip10",
-  "tip11",
-  "tip12",
-];
-const SOURCES = [
-  "source0",
-  "source1",
-  "source2",
-  "source3",
-  "source4",
-  "source5",
-  "source6",
-  "source7",
-  "source8",
-  "source9",
-  "source10",
-  "source11",
-  "source12",
-];
-
 // This component will render up to this number of tips
 const TIP_COUNT = 8;
 // This acts as a multiplier for the source part of the text's size relative to the tip itself
@@ -93,8 +62,8 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     if (this.props.navigation.isFocused()) {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
-      const currentText = t(TIPS[currentTextNum]);
-      const currentSource = t(SOURCES[currentTextNum]);
+      const currentText = t("++tip" + currentTextNum);
+      const currentSource = t("++source" + currentTextNum);
       this.setState({ currentText, currentSource });
     }
   };

@@ -24,30 +24,30 @@ interface CheckDirArgs {
 function main(argv: CheckDirArgs) {
   let allFiles = getFiles(argv.searchDir, []);
   let allPotentialKeys = new Set();
-  allFiles.forEach((indivFile) => {
+  allFiles.forEach(indivFile => {
     try {
-      let singleFile = fs.readFileSync(indivFile, 'utf8');
-      let textByQuote = singleFile.split("\"");
+      let singleFile = fs.readFileSync(indivFile, "utf8");
+      let textByQuote = singleFile.split('"');
       for (let ii = 1; ii < textByQuote.length; ii += 2) {
         let indivKeys = textByQuote[ii].split(":");
         for (let jj = 0; jj < indivKeys.length; jj++) {
           allPotentialKeys.add(indivKeys[jj]);
         }
       }
-    } catch(e) {
-      console.log('Error:', e.stack);
+    } catch (e) {
+      console.log("Error:", e.stack);
     }
   });
   try {
     let jsonFile = fs.readFileSync(argv.enjson);
     let keys = getKeys(JSON.parse(jsonFile.toString()));
     keys.forEach(key => {
-      if(!allPotentialKeys.has(key)) {
+      if (!allPotentialKeys.has(key) && !key.includes("++")) {
         console.log(key);
       }
     });
-  } catch(e) {
-    console.log('Error:', e.stack);
+  } catch (e) {
+    console.log("Error:", e.stack);
   }
 }
 
@@ -59,7 +59,7 @@ function getKeys(jsonObject: any): Set<string> {
   }
   let keys = Object.keys(jsonObject);
   let allKeys = new Set("");
-  keys.forEach((key : string) => {
+  keys.forEach((key: string) => {
     allKeys.add(key);
     let jsonKey = getKeys(jsonObject[key]);
     jsonKey.forEach(allKeys.add, allKeys);
@@ -67,15 +67,15 @@ function getKeys(jsonObject: any): Set<string> {
   return allKeys;
 }
 
-function getFiles (dir : string, files_ : Array<string>){
+function getFiles(dir: string, files_: Array<string>) {
   let files = fs.readdirSync(dir);
-  for (let i in files){
-      let name = dir + '/' + files[i];
-      if (fs.statSync(name).isDirectory()){
-          getFiles(name, files_);
-      } else if (name.match(/\.ts|\.tsx/)){
-          files_.push(name);
-      }
+  for (let i in files) {
+    let name = dir + "/" + files[i];
+    if (fs.statSync(name).isDirectory()) {
+      getFiles(name, files_);
+    } else if (name.match(/\.ts|\.tsx/)) {
+      files_.push(name);
+    }
   }
   return files_;
 }
