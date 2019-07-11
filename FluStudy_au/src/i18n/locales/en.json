@@ -73,7 +73,7 @@
     "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
   },
   "PushNotifications": {
-    "followUpSurveyBody": "Your feedback is very important to the flu@home study. Please take a moment to complete our follow-up survey, click here"
+    "followUpSurveyBody": "Your feedback is very important to the flu@home study. Please tap here to take our follow-up survey."
   },
   "SurveyLinkBlock": {
     "title": "**Take the follow-up survey!**",
