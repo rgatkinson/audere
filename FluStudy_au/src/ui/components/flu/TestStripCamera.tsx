@@ -85,8 +85,10 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         {
           text: t("common:button:ok"),
           onPress: () => {
-            this.setState({ spinner: !DeviceInfo.isEmulator() });
-            this.setState({ showCamera: true });
+            this.setState({
+              spinner: !DeviceInfo.isEmulator(),
+              showCamera: true,
+            });
           },
         },
       ]);
@@ -180,7 +182,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner} />
-        {this.state.showCamera ? (
+        {this.state.showCamera && (
           <Camera
             ref={this.camera}
             style={styles.camera}
@@ -192,7 +194,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
                 : Camera.Constants.FlashMode.off
             }
           />
-        ) : null}
+        )}
         <View style={styles.overlayContainer}>
           <View style={{ flexDirection: "column", flex: 1 }}>
             <View style={styles.backgroundOverlay} />
