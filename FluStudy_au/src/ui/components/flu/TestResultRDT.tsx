@@ -38,9 +38,6 @@ interface Props {
 }
 
 class TestResultRDT extends React.Component<Props & WithNamespaces> {
-  result = "";
-  explanation = "";
-
   componentDidMount() {
     const interpreter = getRemoteConfig("showRDTInterpretation") as
       | RDTInterpretationEventTypes
@@ -52,9 +49,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
 
     const { dispatch, redAnswer, t } = this.props;
     if (!!redAnswer) {
-      this.result = this._getResult();
-      this.explanation = this._getExplanation();
-      dispatch(setResultShown(this.result, t(this.explanation)));
+      dispatch(setResultShown(this._getResult(), t(this._getExplanation())));
     }
   }
 
@@ -91,10 +86,12 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     const testResultString = !!getRemoteConfig("showRDTInterpretation")
       ? t("why")
       : t("TestResult:why");
+    const result = this._getResult();
+    const explanation = this._getExplanation();
     return (
       <Fragment>
         <BorderView style={styles.border}>
-          <Text center={true} content={t(`common:testResult:${this.result}`)} />
+          <Text center={true} content={t(`common:testResult:${result}`)} />
         </BorderView>
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={testResultString} style={styles.text} />
@@ -103,15 +100,12 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
             content={t("common:testResult:blueLine")}
             customBulletUri="listarrow"
           />
-          <BulletPoint
-            content={t(this.explanation)}
-            customBulletUri="listarrow"
-          />
+          <BulletPoint content={t(explanation)} customBulletUri="listarrow" />
         </View>
         <Divider />
         <Text
           content={
-            t(`common:testResult:${this.result}WhatToDo`) +
+            t(`common:testResult:${result}WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}

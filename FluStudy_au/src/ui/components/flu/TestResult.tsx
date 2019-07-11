@@ -21,24 +21,25 @@ interface Props {
 }
 
 class TestResult extends React.Component<Props & WithNamespaces> {
-  result = "";
-  explanation = "";
-
   componentDidMount() {
     const { dispatch, redAnswer, t } = this.props;
     if (!!redAnswer) {
-      this.result = getResultRedAnswer(redAnswer);
-      this.explanation = getExplanationRedAnswer(redAnswer);
-      dispatch(setResultShown(this.result, t(this.explanation)));
+      dispatch(
+        setResultShown(
+          getResultRedAnswer(redAnswer),
+          t(getExplanationRedAnswer(redAnswer))
+        )
+      );
     }
   }
 
   render() {
-    const { t } = this.props;
+    const { redAnswer, t } = this.props;
+    const result = getResultRedAnswer(redAnswer);
     return (
       <Fragment>
         <BorderView style={styles.border}>
-          <Text center={true} content={t(`common:testResult:${this.result}`)} />
+          <Text center={true} content={t(`common:testResult:${result}`)} />
         </BorderView>
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={t("why")} style={styles.text} />
@@ -48,14 +49,14 @@ class TestResult extends React.Component<Props & WithNamespaces> {
             customBulletUri="listarrow"
           />
           <BulletPoint
-            content={t(this.explanation)}
+            content={t(getExplanationRedAnswer(redAnswer))}
             customBulletUri="listarrow"
           />
         </View>
         <Divider />
         <Text
           content={
-            t(`common:testResult:${this.result}WhatToDo`) +
+            t(`common:testResult:${result}WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}
