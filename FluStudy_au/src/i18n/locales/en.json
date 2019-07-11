@@ -368,7 +368,7 @@
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
     "desc": "Next, we'd like you to take a photo of your test strip using your device camera. Similar to the barcode scan, the app will access your device camera for you.",
-    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan."
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip.\nCenter the test strip within the viewfinder, then tap the round button to take a photo."
   },
   "RDTReader": {
     "title": "RDT READER",
