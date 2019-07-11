@@ -123,6 +123,7 @@ enum Release {
   Fever = "fever"
 }
 
+yargs.strict(true);
 yargs.option("verbose", {
   alias: "v",
   boolean: true,
