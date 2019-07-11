@@ -21,14 +21,12 @@ import {
   BORDER_WIDTH,
   GUTTER,
   HIGHLIGHT_STYLE,
-  ERROR_COLOR,
-  FONT_NORMAL,
   RADIO_BUTTON_HEIGHT,
-  REGULAR_TEXT,
+  SMALL_TEXT,
   SECONDARY_COLOR,
   BORDER_COLOR,
   RADIO_INPUT_HEIGHT,
-  TEXT_COLOR,
+  FEATHER_SIZE,
 } from "../styles";
 import Text from "./Text";
 
@@ -198,11 +196,11 @@ const styles = StyleSheet.create({
     width: undefined,
   },
   radioButton: {
-    borderColor: TEXT_COLOR,
+    borderColor: BORDER_COLOR,
     borderWidth: BORDER_WIDTH,
     borderRadius: RADIO_INPUT_HEIGHT / 2,
-    height: RADIO_INPUT_HEIGHT,
-    width: RADIO_INPUT_HEIGHT,
+    height: FEATHER_SIZE + GUTTER / 4,
+    width: FEATHER_SIZE + GUTTER / 4,
   },
   radioButtonCenter: {
     backgroundColor: SECONDARY_COLOR,
@@ -229,8 +227,8 @@ const styles = StyleSheet.create({
   },
   radioText: {
     flex: 3,
-    fontSize: REGULAR_TEXT,
-    margin: GUTTER / 2,
+    fontSize: SMALL_TEXT,
+    marginLeft: GUTTER,
   },
   selectedRadioColor: {
     color: SECONDARY_COLOR,

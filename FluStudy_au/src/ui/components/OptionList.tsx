@@ -22,6 +22,7 @@ import Text from "./Text";
 import {
   BORDER_COLOR,
   BORDER_WIDTH,
+  FEATHER_SIZE,
   FONT_SEMI_BOLD,
   GUTTER,
   HIGHLIGHT_STYLE,
@@ -135,8 +136,6 @@ interface ItemProps {
   onPressItem(id: string): void;
 }
 
-const featherSize = 20;
-
 class Item extends React.Component<ItemProps & WithNamespaces> {
   shouldComponentUpdate(props: ItemProps & WithNamespaces) {
     return (
@@ -167,7 +166,7 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
           ]}
         >
           {selected && (
-            <Feather name="check" color={"white"} size={featherSize} />
+            <Feather name="check" color={"white"} size={FEATHER_SIZE} />
           )}
         </View>
         <Text
@@ -184,8 +183,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: BORDER_COLOR,
     borderWidth: BORDER_WIDTH,
-    height: featherSize + GUTTER / 4,
-    width: featherSize + GUTTER / 4,
+    height: FEATHER_SIZE + GUTTER / 4,
+    width: FEATHER_SIZE + GUTTER / 4,
   },
   checkboxSelected: {
     backgroundColor: SECONDARY_COLOR,
