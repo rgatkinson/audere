@@ -23,9 +23,11 @@ import {
   STATUS_BAR_HEIGHT,
 } from "../styles";
 import { Action } from "../../store";
+import { connect } from "react-redux";
 
 interface Props {
   children?: any;
+  dispatch(action: Action): void;
   dispatchOnFirstLoad?: () => Action;
   hasBeenOpened?: boolean;
   hideBackButton?: boolean;
@@ -36,7 +38,7 @@ interface Props {
 
 const screenHeight = Dimensions.get("window").height;
 
-export default class AnimatedChrome extends React.PureComponent<Props> {
+class AnimatedChrome extends React.PureComponent<Props> {
   state = {
     imageFadeAnim: new Animated.Value(0),
     textFadeAnim: new Animated.Value(0),
@@ -58,7 +60,6 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
     } = this.state;
 
     if (!hasBeenOpened) {
-      !!dispatchOnFirstLoad && dispatchOnFirstLoad();
       Animated.sequence([
         Animated.parallel([
           Animated.timing(logoFadeAnim, {
@@ -94,7 +95,10 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
             useNativeDriver: true,
           }),
         ]),
-      ]).start();
+      ]).start(
+        () =>
+          !!dispatchOnFirstLoad && this.props.dispatch(dispatchOnFirstLoad())
+      );
     }
   }
 
@@ -143,7 +147,7 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
                     inputRange: [0, 1],
                     outputRange: [
                       0,
-                      -splashImageDimensions.height - screenHeight / 2.5,
+                      -splashImageDimensions.height - screenHeight / 3,
                     ],
                   }),
                 },
@@ -228,7 +232,7 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
           style={[
             styles.children,
             {
-              height: screenHeight / 2 - NAV_BAR_HEIGHT,
+              height: screenHeight / 2 - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
               opacity: this.state.textFadeAnim,
             },
           ]}
@@ -239,6 +243,8 @@ export default class AnimatedChrome extends React.PureComponent<Props> {
     );
   }
 }
+
+export default connect()(AnimatedChrome);
 
 const styles = StyleSheet.create({
   container: {

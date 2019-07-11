@@ -216,9 +216,19 @@ export const generateScreen = (config: ScreenConfig) => {
       );
     };
 
+    shouldComponentUpdate(nextProps: any) {
+      if (nextProps.hasBeenOpened != this.props.hasBeenOpened) {
+        return false;
+      }
+      return true;
+    }
+
     render() {
       const ChromeType =
-        !!config && !!config.chromeProps && !!config.chromeProps.fadeIn
+        !!config &&
+        !!config.chromeProps &&
+        !!config.chromeProps.fadeIn &&
+        !this.props.hasBeenOpened
           ? AnimatedChrome
           : Chrome;
 
