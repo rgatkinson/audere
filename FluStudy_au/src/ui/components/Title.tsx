@@ -30,8 +30,12 @@ class Title extends React.Component<Props & WithNamespaces> {
 
   _getContent = () => {
     const { label, namespace, t } = this.props;
-    if (namespace != null) {
-      return t(namespace + ":title");
+    if (!!namespace) {
+      if (!!label) {
+        return t(`${namespace}:${label}`);
+      } else {
+        return t(namespace + ":title");
+      }
     }
     return label;
   };

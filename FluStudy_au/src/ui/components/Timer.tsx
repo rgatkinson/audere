@@ -7,7 +7,7 @@ import React from "react";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { StoreState } from "../../store";
+import { Action, StoreState } from "../../store";
 import {
   BORDER_RADIUS,
   BUTTON_WIDTH,
@@ -36,6 +36,8 @@ interface Props {
   startTimeConfig: string;
   startTimeMs: number;
   totalTimeMs: number;
+  dispatch(action: Action): void;
+  dispatchOnDone?: () => Action;
 }
 
 class Timer extends React.Component<Props & WithNamespaces> {
@@ -123,6 +125,8 @@ class Timer extends React.Component<Props & WithNamespaces> {
       this.setState({ remainingLabel: this._getRemainingLabel() });
       if (this._getRemainingMs()) {
         this._timer = setInterval(this._onTimer, SECOND_MS);
+      } else {
+        this._timerDone();
       }
     }
   };
@@ -131,10 +135,16 @@ class Timer extends React.Component<Props & WithNamespaces> {
     if (this.props.navigation.isFocused()) {
       this.setState({ remainingLabel: this._getRemainingLabel() });
       if (!this._getRemainingMs()) {
-        this._clearClock();
+        this._timerDone();
       }
     }
   };
+
+  _timerDone() {
+    const { dispatch, dispatchOnDone } = this.props;
+    this._clearClock();
+    dispatchOnDone && dispatch(dispatchOnDone());
+  }
 
   render() {
     const { isDemo, next } = this.props;

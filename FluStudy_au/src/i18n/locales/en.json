@@ -353,7 +353,9 @@
   "ThankYouSurvey": {
     "title": "Thank you!",
     "desc": "Your answers, along with the test, help us to understand many factors related to your illness.",
-    "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps."
+    "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps.",
+    "titleTimerUp": "Timer finished",
+    "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip."
   },
   "TestStripReady": {
     "title": "Remove test strip",

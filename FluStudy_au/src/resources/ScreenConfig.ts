@@ -8,6 +8,7 @@ import DeviceInfo from "react-native-device-info";
 import {
   setConsent,
   setTenMinuteStartTime,
+  setTenMinuteTimerDone,
   setOneMinuteStartTime,
   setTotalTestStripTime,
   setHasBeenOpened,
@@ -99,6 +100,7 @@ import RDTImage from "../ui/components/flu/RDTImage";
 import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
+import SelectableComponent from "../ui/components/SelectableComponent";
 import SurveyLinkBlock from "../ui/components/flu/SurveyLinkBlock";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
@@ -627,9 +629,36 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: MainImage, props: { uri: "questionsthankyou" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: ScreenText, props: { label: "waiting" } },
+      {
+        tag: SelectableComponent,
+        props: {
+          components: [
+            { tag: Title },
+            { tag: Title, props: { label: "titleTimerUp" } },
+          ],
+          componentSelectorProp: "tenMinuteTimerDone",
+        },
+      },
+      {
+        tag: SelectableComponent,
+        props: {
+          components: [
+            { tag: ScreenText, props: { label: "desc" } },
+            { tag: ScreenText, props: { label: "descTimerUp" } },
+          ],
+          componentSelectorProp: "tenMinuteTimerDone",
+        },
+      },
+      {
+        tag: SelectableComponent,
+        props: {
+          components: [
+            { tag: ScreenText, props: { label: "waiting" } },
+            undefined,
+          ],
+          componentSelectorProp: "tenMinuteTimerDone",
+        },
+      },
     ],
     footer: [
       {
@@ -638,6 +667,7 @@ export const Screens: ScreenConfig[] = [
           next: "TestStripReady",
           startTimeConfig: "tenMinuteStartTime",
           totalTimeMs: TEST_STRIP_MS,
+          dispatchOnDone: setTenMinuteTimerDone,
         },
       },
     ],

@@ -29,6 +29,7 @@ export type SurveyAction =
     }
   | { type: "SET_ONE_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
+  | { type: "SET_TEN_MINUTE_TIMER_DONE" }
   | { type: "SET_TOTAL_TEST_STRIP_TIME" }
   | { type: "SET_RDT_START_TIME" }
   | { type: "SET_RDT_CAPTURE_TIME"; successfulCapture: boolean }
@@ -61,6 +62,7 @@ export type SurveyState = {
   rdtPhotoHCUri?: string;
   rdtInfo?: RDTInfo;
   tenMinuteStartTime?: number;
+  tenMinuteTimerDone?: boolean;
   testStripImg?: SampleInfo;
   testStripHCImg?: SampleInfo;
   timestamp?: number;
@@ -143,6 +145,16 @@ export default function reducer(state = initialState, action: SurveyAction) {
         return {
           ...state,
           tenMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_TEN_MINUTE_TIMER_DONE":
+      if (!state.tenMinuteTimerDone) {
+        return {
+          ...state,
+          tenMinuteTimerDone: true,
           timestamp: new Date().getTime(),
         };
       }
@@ -335,6 +347,12 @@ export function setOneMinuteStartTime(): SurveyAction {
 export function setTenMinuteStartTime(): SurveyAction {
   return {
     type: "SET_TEN_MINUTE_START_TIME",
+  };
+}
+
+export function setTenMinuteTimerDone(): SurveyAction {
+  return {
+    type: "SET_TEN_MINUTE_TIMER_DONE",
   };
 }
 
