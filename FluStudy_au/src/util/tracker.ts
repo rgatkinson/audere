@@ -96,6 +96,7 @@ export const AppEvents = {
 
 // Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.
 export enum RDTInterpretationEventTypes {
+  NONE = "none",
   UBICOMP = "Ubicomp",
   IPRD = "IPRD",
 }

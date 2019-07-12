@@ -3,7 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { logFirebaseEvent, FunnelEvents } from "./tracker";
+import {
+  logFirebaseEvent,
+  FunnelEvents,
+  RDTInterpretationEventTypes,
+} from "./tracker";
 import { getStore } from "../store";
 import { getSelectedButton } from "./survey";
 import {
@@ -37,9 +41,17 @@ export async function getTestStripConfirmationNextScreen() {
 }
 
 export async function getPostRDTTestStripSurveyNextScreen() {
-  const state = (await getStore()).getState();
-  const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
-  return numLinesAnswer === "noneOfTheAbove" ? "TestResult" : "TestResultRDT";
+  const interpreter = getRemoteConfig("showRDTInterpretation") as
+    | RDTInterpretationEventTypes
+    | "";
+
+  if (interpreter == RDTInterpretationEventTypes.NONE) {
+    return "TestResult";
+  } else {
+    const state = (await getStore()).getState();
+    const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
+    return numLinesAnswer === "noneOfTheAbove" ? "TestResult" : "TestResultRDT";
+  }
 }
 
 export async function logFluResult() {
