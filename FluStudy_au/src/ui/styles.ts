@@ -21,16 +21,15 @@ const { height: W_HEIGHT, width: W_WIDTH } = Dimensions.get("window");
 let isIPhoneX = false;
 let isIPhoneSE = false;
 
-if (deviceType === "phone") {
-  isIPhoneX =
-    (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) ||
-    (W_WIDTH === XSMAX_WIDTH && W_HEIGHT === XSMAX_HEIGHT);
+isIPhoneX =
+  (W_WIDTH === X_WIDTH && W_HEIGHT === X_HEIGHT) ||
+  (W_WIDTH === XSMAX_WIDTH && W_HEIGHT === XSMAX_HEIGHT);
 
-  isIPhoneSE = W_WIDTH === SE_WIDTH && W_HEIGHT === SE_HEIGHT;
-}
+isIPhoneSE =
+  (W_WIDTH === SE_WIDTH && W_HEIGHT === SE_HEIGHT) ||
+  Math.abs(W_HEIGHT - SE_HEIGHT) + Math.abs(W_WIDTH - SE_WIDTH) < 100;
 
 export const isTablet = DeviceInfo.isTablet();
-
 export const PRIMARY_COLOR = "#0F5DA7";
 export const SECONDARY_COLOR = "#7065AB";
 export const TEXT_COLOR = "#525760";
