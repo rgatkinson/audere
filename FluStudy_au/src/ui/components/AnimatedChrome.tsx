@@ -147,7 +147,9 @@ class AnimatedChrome extends React.PureComponent<Props> {
                     inputRange: [0, 1],
                     outputRange: [
                       0,
-                      -splashImageDimensions.height - screenHeight / 3,
+                      -splashImageDimensions.height -
+                        screenHeight / 3 -
+                        NAV_BAR_HEIGHT,
                     ],
                   }),
                 },
