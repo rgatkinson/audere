@@ -84,9 +84,9 @@ function printKeys(jsonObject: any, unusedKeys: Array<string>) {
   const keyPaths = getKeyPaths(jsonObject);
   unusedKeys.forEach((unusedKey: string) => {
     keyPaths.forEach((keyPath: string) => {
-      const keyParts = keyPath.split(".");
+      const keyParts = keyPath.split(";");
       if (keyParts.indexOf(unusedKey) > -1) {
-        console.log(keyPath);
+        console.log(keyPath.split(";").join("."));
       }
     });
   });
@@ -102,7 +102,7 @@ function getKeyPaths(jsonObject: any): Array<string> {
     if (typeof jsonObject[key] === "object") {
       const jsonKey = getKeyPaths(jsonObject[key]);
       jsonKey.forEach((innerKey: string) => {
-        allKeys.push(key + "." + innerKey);
+        allKeys.push(key + ";" + innerKey);
       });
     } else {
       allKeys.push(key);
