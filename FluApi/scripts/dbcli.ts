@@ -17,6 +17,7 @@ import _ from "lodash";
 import base64url from "base64url";
 import bufferXor from "buffer-xor";
 import { Crypt as HybridCrypto } from "hybrid-crypto-js";
+import firebase from "firebase-admin";
 
 import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
@@ -35,6 +36,7 @@ import {
   VisitModel
 } from "../src/models/db/sniffles";
 import {
+  ClientVersionInfo as SnifflesClientVersionInfo,
   DeviceInfo as SnifflesDevice,
   LogRecordInfo,
   VisitNonPIIDbInfo,
@@ -70,6 +72,10 @@ const unlink = promisify(fs.unlink);
 const rmdir = promisify(fs.rmdir);
 
 const log = new ScriptLogger(console.log);
+
+type App = firebase.app.App;
+type Firestore = firebase.firestore.Firestore;
+type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 
 const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
@@ -328,10 +334,10 @@ yargs.command({
   handler: command(cmdRevokePermission)
 });
 yargs.command({
-  command: "recover-visit <keyfile> <cryptfile>",
-  builder: yargs => yargs.string("keyfile").string("cryptfile"),
+  command: "recover-visit <barcode>",
+  builder: yargs => yargs.string("barcode"),
   handler: command(cmdRecoverVisit)
-});
+})
 yargs.demandCommand().argv;
 
 function command(cmd: any) {
@@ -1124,38 +1130,86 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
 }
 
 interface RecoverVisitArgs {
-  keyfile: string;
-  cryptfile: string;
+  barcode: string;
 }
 
 async function cmdRecoverVisit(argv: RecoverVisitArgs): Promise<void> {
-  const [privateKey, encrypted, device] = await Promise.all([
-    readFile(argv.keyfile, UTF8),
-    readFile(argv.cryptfile, UTF8),
-    dbcliSnifflesDevice("cmdRecoverVisit")
-  ]);
-  const decrypted = hybridCrypto.decrypt(privateKey, encrypted);
+  const id = `barcode=${argv.barcode}`;
+  const data = await downloadRecoveredVisit(argv.barcode);
+  await saveRecoveredVisit(id, data);
+}
 
-  if (decrypted == null) {
-    throw fail(
-      `Could not decrypt '${argv.keyfile}' with key '${argv.keyfile}'`
-    );
+async function downloadRecoveredVisit(barcode: string): Promise<VisitRecoveryData> {
+  console.log(`Downloading recovery data for barcode=${barcode}.`);
+  const app = await makeRecoveryFirebase();
+  const db = app.firestore();
+  const collection = db.collection("barcodes");
+  const ref = collection.doc(barcode);
+  const snapshot = await asyncFailIfError(
+    () => ref.get(),
+    `Could not get snapshot for ${barcode}`
+  );
+  if (snapshot == null) {
+    throw fail(`Snapshot for ${barcode} is null`);
   }
+  return snapshot.data() as VisitRecoveryData;
+}
 
-  const visit = JSON.parse(decrypted.message);
-  const csruid = sha256(decrypted.message);
+async function saveRecoveredVisit(id: string, data: VisitRecoveryData): Promise<void> {
+  const decrypted = await decryptRecoveredVisit(
+    `barcode=${data.barcode}`,
+    data.encrypted_visit_info
+  );
+  const visit = JSON.parse(decrypted);
+  const csruid = data.uid;
+  const device = await dbcliSnifflesDevice(data, id);
   const visitNonPII = extractVisitNonPii(visit);
   const visitPII = extractVisitPii(visit);
 
   await Promise.all([
-    snifflesModels.visitNonPii.upsert({ csruid, device, visit: visitNonPII }),
-    snifflesModels.visitPii.upsert({ csruid, device, visit: visitPII })
+    snifflesModels.visitNonPii.create({ csruid, device, visit: visitNonPII }),
+    snifflesModels.visitPii.create({ csruid, device, visit: visitPII })
   ]);
 
-  console.log(`Recovered record from ${argv.keyfile}`);
+  console.log(`Saved recovered record ${id}`);
   console.log(`  csruid: '${csruid}'`);
   console.log(`  nonpii: '${nonPiiDatabaseUrl()}'`);
   console.log(`     pii: '${piiDatabaseUrl()}'`);
+  console.log(JSON.stringify(device, null, 2));
+}
+
+async function decryptRecoveredVisit(id: string, encrypted: string): Promise<string> {
+  const keyfile = getenv("SNIFFLES_RECOVERY_KEYFILE");
+  const privateKey = await readFile(keyfile, UTF8);
+
+  console.log(`Decrypting '${encrypted.substring(0, 80)}...'`);
+  const decrypted = hybridCrypto.decrypt(privateKey, encrypted);
+  if (decrypted == null || decrypted.message == null) {
+    throw fail(`Decryption failed for '${id}'`);
+  }
+
+  return decrypted.message;
+}
+
+async function dbcliSnifflesDevice(data: VisitRecoveryData, id: string): Promise<SnifflesDevice> {
+  return {
+    installation: data.installation_id,
+    clientVersion: data.client_version,
+    deviceName: data.device_name,
+    yearClass: new Date().getFullYear().toString(),
+    idiomText: `dbcli-recover-visit-${id}`,
+    platform: os.platform()
+  };
+}
+
+interface VisitRecoveryData {
+  barcode: string;
+  client_version: SnifflesClientVersionInfo;
+  device_local_time: string;
+  device_name: string;
+  encrypted_visit_info: string;
+  installation_id: string;
+  uid: string;
 }
 
 interface ShowArgs {
@@ -1439,15 +1493,20 @@ function forApp<T>(release: Release, choices: { [key in Release]: T }) {
   return choice;
 }
 
-async function dbcliSnifflesDevice(operation: string): Promise<SnifflesDevice> {
-  return {
-    installation: sha256(os.hostname()),
-    clientVersion: `dbcli.${sha256(await readFile(__filename, UTF8))}`,
-    deviceName: `dbcli-${operation}`,
-    yearClass: new Date().getFullYear().toString(),
-    idiomText: "laptop",
-    platform: os.platform()
-  };
+async function makeRecoveryFirebase(): Promise<App> {
+  const credentialFile = getenv("FIREBASE_RECOVERY_CREDENTIALS");
+  const credentials = await readFile(credentialFile, { encoding: "utf8" });
+  return firebase.initializeApp({
+    credential: firebase.credential.cert(JSON.parse(credentials))
+  });
+}
+
+function getenv(key: string): string {
+  const value = process.env[key];
+  if (value == null) {
+    throw fail(`Expected environment variable '${key}' to be set.`);
+  }
+  return value;
 }
 
 function pubId(csruid: string): string {
@@ -1467,6 +1526,17 @@ function expectOne<T>(items: T[]): T {
     return items[0];
   } else {
     throw fail(`Expected exactly one item, but got ${items.length}`);
+  }
+}
+
+async function asyncFailIfError<T>(
+  call: () => Promise<T>,
+  message: string
+): Promise<T> {
+  try {
+    return await call();
+  } catch (err) {
+    throw fail(`${message}\n${err}`);
   }
 }
 
