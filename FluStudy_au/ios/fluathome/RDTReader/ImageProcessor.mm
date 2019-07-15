@@ -1142,10 +1142,12 @@ Mat siftRefDescriptor;
     int count = 0;
     vector<DMatch> goodMatches;
     for (int i = 0; i < matches.size(); i++) {
-        if (matches[i][0].distance <= 0.80 * matches[i][1].distance) {
-            goodMatches.push_back(matches[i][0]);
-            sum += matches[i][0].distance;
-            count++;
+        if (matches[i].size() >= 2) {
+            if (matches[i][0].distance <= 0.80 * matches[i][1].distance) {
+                goodMatches.push_back(matches[i][0]);
+                sum += matches[i][0].distance;
+                count++;
+            }
         }
     }
     
