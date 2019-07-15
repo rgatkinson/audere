@@ -21,7 +21,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
 import i18n from "./src/i18n";
-import { ErrorProps } from "./src/crashReporter";
+
 import {
   setupErrorHandler,
   uploadingErrorHandler,
@@ -30,6 +30,8 @@ import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
 import { initializeFirestore } from "./src/store/FirebaseStore";
 import { PubSubHub } from "./src/util/pubsub";
+import { useScreens } from "react-native-screens";
+useScreens();
 
 export default class App extends React.Component {
   state = {
