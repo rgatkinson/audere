@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Linking, StyleSheet, TouchableOpacity } from "react-native";
+import { AppState, Linking, StyleSheet, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import { WorkflowInfo } from "audere-lib/coughProtocol";
 import {
@@ -24,9 +24,36 @@ interface Props {
   workflow: WorkflowInfo;
 }
 
-class SurveyLinkBlock extends React.PureComponent<Props> {
+interface State {
+  shouldRender: boolean;
+}
+
+class SurveyLinkBlock extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { shouldRender: false };
+  }
+
   _onPress = () => {
     Linking.openURL(`${followUpSurveyUrl}?r=${this.props.barcode}`);
+  };
+
+  componentDidMount() {
+    AppState.addEventListener("change", this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === "active" && !!this.props.workflow.surveyCompletedAt) {
+      const surveyCompletedAt = new Date(this.props.workflow.surveyCompletedAt);
+      const now = new Date();
+      if (now.getTime() - surveyCompletedAt.getTime() > MILLIS_IN_TWO_DAYS) {
+        this.setState({ shouldRender: true });
+      }
+    }
   };
 
   render() {
@@ -34,9 +61,7 @@ class SurveyLinkBlock extends React.PureComponent<Props> {
       return null;
     }
 
-    const surveyCompletedAt = new Date(this.props.workflow.surveyCompletedAt);
-    const now = new Date();
-    if (now.getTime() - surveyCompletedAt.getTime() < MILLIS_IN_TWO_DAYS) {
+    if (!this.state.shouldRender) {
       return null;
     }
 
