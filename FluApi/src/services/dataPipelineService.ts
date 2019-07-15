@@ -208,6 +208,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo' as rdtinfo,
           survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
           survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
+          survey->'rdtInfo'->>'resultShown' as rdtinfo_resultshown,
+          survey->'rdtInfo'->>'resultShownExplanation' as rdtinfo_resultshownexplanation,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripFound' as rdtreaderresult_teststripfound,
           survey->'rdtInfo'->'rdtReaderResult'->>'skippedDueToMemWarning' as rdtreaderresult_skippedduetomemwarning,
           survey->'rdtInfo'->'rdtReaderResult'->>'isCentered' as rdtreaderresult_iscentered,
