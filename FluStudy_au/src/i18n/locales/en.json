@@ -115,7 +115,7 @@
     "howFindOut": "**How can I find out if the test says I have the flu?**",
     "howFindOutAnswer": "The flu@home app will guide you through reading your test strip results and will indicate whether you likely have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed.",
     "howLongTest": "**How long will the test take me?**",
-    "howLongTestAnswer": "It should take around 15 minutes from start to finish.",
+    "howLongTestAnswer": "It should take about 20 minutes from start to finish.",
     "swabDirty": "**My completed test swab accidentally dropped or came into contact with something else. Should I still complete the test?**",
     "swabDirtyAnswer": "Yes. Even if you dropped the swab or it touched another surface, please continue with the test steps.",
     "swabTubeLonger": "**Is it ok if I left the nasal swab in the tube longer than the designated time?**",
@@ -248,7 +248,7 @@
   },
   "ReadyToBegin": {
     "title": "Ready to begin?",
-    "desc": "Please get comfortable and find a location away from pets and children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 15 minutes."
+    "desc": "Please get comfortable and find a location away from pets and children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 20 minutes."
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
