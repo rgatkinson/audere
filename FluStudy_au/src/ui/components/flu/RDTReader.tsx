@@ -33,6 +33,7 @@ import Text from "../Text";
 import {
   RDTReader as RDTReaderComponent,
   RDTCapturedArgs,
+  RDTInterpretingArgs,
 } from "../../../native/rdtReader";
 import {
   RDTReaderSizeResult,
@@ -472,7 +473,12 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._instructionLastUpdate = instructionLastUpdate;
   }
 
+  _onRDTInterpreting = (args: RDTInterpretingArgs) => {
+    this.setState({ spinner: true });
+  };
+
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
+    this.setState({ spinner: false });
     this._updateFeedback(args);
     if (this.props.isDemo) {
       this._callbackTimestamps.push(Date.now());
@@ -668,6 +674,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
           onRDTCameraReady={this._cameraReady}
+          onRDTInterpreting={this._onRDTInterpreting}
           enabled={isFocused}
           showDefaultViewfinder={false}
           flashEnabled={this.state.flashEnabled}

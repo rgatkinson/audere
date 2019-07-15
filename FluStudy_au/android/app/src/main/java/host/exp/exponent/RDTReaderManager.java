@@ -36,8 +36,12 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
                                 MapBuilder.of("bubbled", "onRDTCameraReady")))
                 .put("RDTCaptured",
                         MapBuilder.of(
-                               "phasedRegistrationNames",
-                               MapBuilder.of("bubbled", "onRDTCaptured")))
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onRDTCaptured")))
+                .put("RDTInterpreting",
+                        MapBuilder.of(
+                                "phasedRegistrationNames",
+                                MapBuilder.of("bubbled", "onRDTInterpreting")))
                .build();
     }
 

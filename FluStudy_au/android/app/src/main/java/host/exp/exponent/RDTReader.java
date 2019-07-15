@@ -105,6 +105,13 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
     }
 
     @Override
+    public void onRDTInterpreting(long timeTaken) {
+        WritableMap args = Arguments.createMap();
+        args.putInt("timeTaken", (int)timeTaken);
+        callReactCallback("RDTInterpreting", args);
+    }
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (mImageQualityView != null) {
