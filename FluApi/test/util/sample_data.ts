@@ -18,7 +18,12 @@ import { PIIInfo } from "audere-lib/feverProtocol";
 
 export const DEVICE = {
   installation: "uuid",
-  clientVersion: "1.2.3-testing",
+  clientVersion: {
+    buildDate: "buildDate",
+    hash: "hash",
+    name: "name",
+    version: "version"
+  },
   deviceName: "My Phone",
   yearClass: "2020",
   idiomText: "handset",

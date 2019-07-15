@@ -20,6 +20,7 @@
 import * as common from "./common";
 
 import {
+  ClientVersionInfo,
   ProtocolDocumentBase,
   DeviceInfo,
   GpsLocationInfo,
@@ -35,6 +36,7 @@ import {
 } from "./common";
 
 export {
+  ClientVersionInfo,
   ProtocolDocumentBase,
   DeviceInfo,
   GpsLocationInfo,

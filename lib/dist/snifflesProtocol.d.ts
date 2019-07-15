@@ -1,6 +1,6 @@
 import * as common from "./common";
-import { ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+import { ClientVersionInfo, ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
+export { ClientVersionInfo, ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
 export interface ResponseInfo {
     id: string;
     item: ResponseItemInfo[];

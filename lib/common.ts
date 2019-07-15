@@ -31,11 +31,18 @@ export interface ProtocolDocumentBase {
 
 export interface DeviceInfo {
   installation: string; // uuid
-  clientVersion: string;
+  clientVersion: ClientVersionInfo;
   deviceName?: string;
   yearClass: string;
   idiomText: string;
   platform: string;
+}
+
+export interface ClientVersionInfo {
+  buildDate: string;
+  hash: string;
+  name: string;
+  version: string;
 }
 
 export interface GpsLocationInfo {
