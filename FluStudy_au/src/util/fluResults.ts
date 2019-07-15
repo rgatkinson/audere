@@ -41,11 +41,7 @@ export async function getTestStripConfirmationNextScreen() {
 }
 
 export async function getPostRDTTestStripSurveyNextScreen() {
-  const interpreter = getRemoteConfig("showRDTInterpretation") as
-    | RDTInterpretationEventTypes
-    | "";
-
-  if (interpreter == RDTInterpretationEventTypes.NONE) {
+  if (isShowRDTInterpretationOfType(RDTInterpretationEventTypes.None)) {
     return "TestResult";
   } else {
     const state = (await getStore()).getState();
@@ -113,4 +109,16 @@ export function getResultRedAnswer(redAnswer: string | undefined) {
     default:
       return "negative";
   }
+}
+
+export function isShowRDTInterpretationOfType(
+  eventType: RDTInterpretationEventTypes
+): boolean {
+  const interpreter = getRemoteConfig("showRDTInterpretation") as
+    | RDTInterpretationEventTypes
+    | "";
+  if (eventType === RDTInterpretationEventTypes.None && !interpreter) {
+    return true;
+  }
+  return interpreter.toLowerCase() === eventType.toLowerCase();
 }

@@ -20,6 +20,7 @@ import Text from "../Text";
 import {
   getResultRedAnswer,
   getExplanationRedAnswer,
+  isShowRDTInterpretationOfType,
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
 import { getRemoteConfig } from "../../../util/remoteConfig";
@@ -42,10 +43,8 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     const interpreter = getRemoteConfig("showRDTInterpretation") as
       | RDTInterpretationEventTypes
       | "";
-    if (!!interpreter && this.props.readerResult) {
-      logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
-      this.props.dispatch(setRDTInterpretationShown(interpreter));
-    }
+    logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
+    this.props.dispatch(setRDTInterpretationShown(interpreter));
 
     const { dispatch, redAnswer, t } = this.props;
     if (!!redAnswer) {
@@ -83,7 +82,9 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { t } = this.props;
-    const testResultString = !!getRemoteConfig("showRDTInterpretation")
+    const testResultString = !isShowRDTInterpretationOfType(
+      RDTInterpretationEventTypes.UserHighContrast
+    )
       ? t("why")
       : t("TestResult:why");
     const result = this._getResult();
@@ -119,8 +120,12 @@ function _getRDTInterpretationLines(
   readerResult?: RDTReaderResult
 ): string | undefined {
   let numLines;
-
-  if (!!getRemoteConfig("showRDTInterpretation") && readerResult) {
+  if (
+    !isShowRDTInterpretationOfType(
+      RDTInterpretationEventTypes.UserHighContrast
+    ) &&
+    readerResult
+  ) {
     if (readerResult.controlLineFound) {
       if (readerResult.testALineFound && readerResult.testBLineFound) {
         numLines = "threeLines";
