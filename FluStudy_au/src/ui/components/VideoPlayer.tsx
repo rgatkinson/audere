@@ -14,19 +14,23 @@ import {
 import { NavigationEvents } from "react-navigation";
 import { Ionicons } from "@expo/vector-icons";
 import Video from "react-native-video";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Divider from "./Divider";
+import Text from "./Text";
 import { BORDER_COLOR, GUTTER, VIDEO_ASPECT_RATIO } from "../styles";
-import { getRemoteConfig } from "../../util/remoteConfig";
 import { logFirebaseEvent, VideoEvents } from "../../util/tracker";
 import { videoConfig, VideoConfig } from "../../resources/VideoConfig";
+import { connect } from "react-redux";
+import { StoreState } from "../../store";
 
 interface Props extends React.Props<VideoPlayer> {
   id: string;
+  isConnected: boolean;
 }
 
 const THREE_SECONDS_MS = 3000;
 
-export default class VideoPlayer extends React.Component<Props> {
+class VideoPlayer extends React.Component<Props & WithNamespaces> {
   state = {
     loggedFirstPlay: false,
     paused: true,
@@ -35,7 +39,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
   _config: VideoConfig | undefined;
 
-  constructor(props: Props) {
+  constructor(props: Props & WithNamespaces) {
     super(props);
     this._config = videoConfig.get(props.id);
   }
@@ -91,6 +95,7 @@ export default class VideoPlayer extends React.Component<Props> {
     }
 
     const { paused, showThumbnail } = this.state;
+    const { t, isConnected } = this.props;
 
     return (
       <View>
@@ -101,15 +106,21 @@ export default class VideoPlayer extends React.Component<Props> {
           style={styles.thumbnail}
         >
           <View style={styles.thumbnail}>
-            {(paused || showThumbnail) && (
-              <View style={styles.iconContainer}>
-                <Ionicons
-                  color="white"
-                  name="ios-play"
-                  size={45}
-                  style={styles.icon}
-                />
+            {!isConnected ? (
+              <View style={[styles.thumbnail, styles.thumbnailOverlay]}>
+                <Text bold={true} content={t("offline")} />
               </View>
+            ) : (
+              (paused || showThumbnail) && (
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    color="white"
+                    name="ios-play"
+                    size={45}
+                    style={styles.icon}
+                  />
+                </View>
+              )
             )}
             {showThumbnail && (
               <Image
@@ -139,6 +150,10 @@ export default class VideoPlayer extends React.Component<Props> {
   }
 }
 
+export default connect((state: StoreState) => ({
+  isConnected: state.meta.isConnected,
+}))(withNamespaces("VideoPlayer")(VideoPlayer));
+
 const styles = StyleSheet.create({
   icon: {
     marginTop: 3,
@@ -163,6 +178,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     zIndex: 2,
+  },
+  thumbnailOverlay: {
+    backgroundColor: "rgba(255,255,255, 0.7)",
+    paddingRight: "15%",
+    paddingLeft: "15%",
+    zIndex: 3,
   },
   video: {
     aspectRatio: VIDEO_ASPECT_RATIO,

@@ -283,6 +283,9 @@
     "title": "Your code was accepted",
     "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
+  "VideoPlayer": {
+    "offline": "Video is not available while device is offline."
+  },
   "Unpacking": {
     "title": "Set up your kit box",
     "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
