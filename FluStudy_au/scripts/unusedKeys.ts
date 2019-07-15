@@ -4,12 +4,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 //
-// Command of 'unused-keys' to use
-// Input takes an 'enjson' and a 'searchDir', both with filepath values
-// Checks all .ts or .tsx files in the searchDir for all enjson keys, printing out
-// the enjson keys that aren't found
+// Use "yarn unused-keys" for directions
 // Does not account for generated keys from multiple variables for a single key
-// (ie in DidYouKnow.tsx tip + #)
+// Can pass over an unused key if its parent is used with different children and an identically
+// named key is used in another file
+// Prints out unused keys an extra time if both a key and its child(ren) not found
 
 import fs from "fs";
 import yargs from "yargs";
@@ -22,10 +21,10 @@ interface CheckDirArgs {
 }
 
 function main(argv: CheckDirArgs) {
-  let allFiles = getFiles(argv.searchDir, []);
-  let allPotentialKeys = new Set();
-  allFiles.forEach(indivFile => {
-    try {
+  try {
+    let allFiles = getFiles(argv.searchDir, []);
+    let allPotentialKeys = new Set();
+    allFiles.forEach(indivFile => {
       let singleFile = fs.readFileSync(indivFile, "utf8");
       let textByQuote = singleFile.split('"');
       for (let ii = 1; ii < textByQuote.length; ii += 2) {
@@ -34,20 +33,21 @@ function main(argv: CheckDirArgs) {
           allPotentialKeys.add(indivKeys[jj]);
         }
       }
-    } catch (e) {
-      console.log("Error:", e.stack);
-    }
-  });
-  try {
+    });
     let jsonFile = fs.readFileSync(argv.enjson);
     let keys = getKeys(JSON.parse(jsonFile.toString()));
+    let unusedKeys = new Array<string>();
     keys.forEach(key => {
       if (!allPotentialKeys.has(key) && !key.includes("++")) {
-        console.log(key);
+        unusedKeys.push(key);
       }
     });
+    printKeys(JSON.parse(jsonFile.toString()), unusedKeys);
   } catch (e) {
     console.log("Error:", e.stack);
+    console.log(
+      '\nSomething went wrong, make sure the command is formatted as follows: “yarn unused-keys --enjson=[PATH TO EN.JSON] --searchDir=[PATH TO SEARCH DIRECTORY]"\n'
+    );
   }
 }
 
@@ -80,4 +80,41 @@ function getFiles(dir: string, files_: Array<string>) {
   return files_;
 }
 
-main(argv);
+function printKeys(jsonObject: any, unusedKeys: Array<string>) {
+  const keyPaths = getKeyPaths(jsonObject);
+  unusedKeys.forEach((unusedKey: string) => {
+    keyPaths.forEach((keyPath: string) => {
+      const keyParts = keyPath.split(".");
+      if (keyParts.indexOf(unusedKey) > -1) {
+        console.log(keyPath);
+      }
+    });
+  });
+}
+
+function getKeyPaths(jsonObject: any): Array<string> {
+  if (typeof jsonObject !== "object") {
+    return new Array(jsonObject);
+  }
+  const keys = Object.keys(jsonObject);
+  let allKeys = new Array<string>();
+  keys.forEach((key: string) => {
+    if (typeof jsonObject[key] === "object") {
+      const jsonKey = getKeyPaths(jsonObject[key]);
+      jsonKey.forEach((innerKey: string) => {
+        allKeys.push(key + "." + innerKey);
+      });
+    } else {
+      allKeys.push(key);
+    }
+  });
+  return allKeys;
+}
+
+if ("enjson" in argv && "searchDir" in argv) {
+  main(argv);
+} else {
+  console.log(
+    "For this command, use “yarn unused-keys --enjson=[PATH TO EN.JSON] --searchDir=[PATH TO SEARCH DIRECTORY]\" \nThis checks .ts or .tsx files in the searchDir for the given enjson's keys, printing out the enjson keys that aren't found."
+  );
+}
