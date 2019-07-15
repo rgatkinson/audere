@@ -49,6 +49,10 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
       this._willFocus.remove();
       this._willFocus = null;
     }
+    if (this._timer != undefined) {
+      clearTimeout(this._timer);
+      this._timer = undefined;
+    }
   }
 
   _getCurrentTextNum(): number {
