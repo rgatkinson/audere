@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import os from "os";
 import { promises as fsPromise } from "fs";
 import firebase from "firebase-admin";
 import { LazyAsync } from "../util/lazyAsync";
@@ -34,7 +35,9 @@ export const FIELD_PATH = {
   contentHash: "_transport.contentHash",
   lastWriter: "_transport.lastWriter",
   receivedAt: "_transport.receivedAt",
-  sentAt: "_transport.sentAt"
+  sentAt: "_transport.sentAt",
+  receivedByUser: "_transport.receivedByUser",
+  receivedByHost: "_transport.receivedByHost",
 };
 
 export class FirebaseReceiver {
@@ -136,6 +139,8 @@ export class FirebaseReceiver {
           const update = {};
           update[FIELD_PATH.lastWriter] = RECEIVER_NAME;
           update[FIELD_PATH.receivedAt] = new Date().toISOString();
+          update[FIELD_PATH.receivedByUser] = os.userInfo().username;
+          update[FIELD_PATH.receivedByHost] = os.hostname();
 
           transaction.update(docRef, update);
         })
