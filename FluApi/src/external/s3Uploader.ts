@@ -18,9 +18,13 @@ export class S3Uploader {
     this.config = config;
   }
 
-  private async writeObject(key: string, contents: string): Promise<void> {
+  private async writeObject(
+    key: string,
+    contents: string | Buffer,
+    bucket: string = this.config.fluReportsBucket
+  ): Promise<void> {
     const params = {
-      Bucket: this.config.fluReportsBucket,
+      Bucket: bucket,
       Key: key,
       Body: contents
     };
@@ -76,5 +80,15 @@ export class S3Uploader {
   ): Promise<void> {
     const key = `${this.env}/shared/hipaa-forms/${group}/${fileName}`;
     await this.writeObject(key, contents);
+  }
+
+  public async writeRDTPhoto(
+    secret: string,
+    group: string,
+    fileName: string,
+    contents: Buffer
+  ): Promise<void> {
+    const key = `public/rdt-reader-photos/${secret}/${group}/${fileName}`;
+    await this.writeObject(key, contents, this.config.fileshareBucket);
   }
 }

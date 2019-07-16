@@ -150,6 +150,19 @@ module "cough_firebase_import" {
   url = "http://${var.fluapi_fqdn}:444/api/import/coughDocuments"
 }
 
+module "cough_photo_upload" {
+  source = "../lambda-cron"
+
+  frequency = "rate(1 hour)"
+  name = "${local.base_name}-cough-photo-upload"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 300
+  url = "http://${var.fluapi_fqdn}:444/api/cough/uploadPhotos"
+}
+
 resource "aws_lambda_function" "cough_aspren_import" {
   function_name = "${local.base_name}-cough-aspren-import"
   filename = "${local.handler_archive_path}"

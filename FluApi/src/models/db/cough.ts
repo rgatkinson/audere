@@ -31,8 +31,14 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     asprenFile: defineAsprenFile(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
+    photoUploadLog: definePhotoUploadLog(sql),
     survey: defineSurvey(sql.nonPii)
   };
+
+  models.survey.hasOne(models.photoUploadLog, {
+    foreignKey: "cough_survey_id",
+    onDelete: "CASCADE"
+  });
 
   return models;
 }
@@ -43,6 +49,7 @@ export interface CoughModels {
   asprenFile: Model<AsprenFileAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
+  photoUploadLog: Model<PhotoUploadLogAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
 
@@ -116,6 +123,25 @@ export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
       docId: unique(stringColumn("docid")),
       device: jsonColumn(),
       photo: jsonColumn()
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface PhotoUploadLogAttributes {
+  id?: string;
+  coughSurveyId: string;
+}
+export function definePhotoUploadLog(
+  sql: SplitSql
+): Model<PhotoUploadLogAttributes> {
+  return defineModel<PhotoUploadLogAttributes>(
+    sql.nonPii,
+    "photo_upload_log",
+    {
+      coughSurveyId: unique(stringColumn("cough_survey_id"))
     },
     { schema }
   );

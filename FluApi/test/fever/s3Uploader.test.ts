@@ -12,7 +12,8 @@ describe("S3 uploader", () => {
   type PutRequest = AWS.Request<AWS.S3.Types.PutObjectOutput, AWS.AWSError>;
   const s3Config: S3Config = {
     fluReportsBucket: "test_bucket",
-    asprenReportsBucket: "not_test_bucket"
+    asprenReportsBucket: "not_test_bucket",
+    fileshareBucket: "fileshare_bucket"
   };
 
   it("should upload incentive reports", async () => {

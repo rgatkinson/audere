@@ -61,7 +61,8 @@ describe("import ASPREN reports", () => {
   it("should write ASPREN data on import", async () => {
     const s3Config = {
       fluReportsBucket: "string",
-      asprenReportsBucket: "string"
+      asprenReportsBucket: "string",
+      fileshareBucket: "string"
     };
     const list = [
       {
@@ -92,7 +93,8 @@ describe("import ASPREN reports", () => {
   it("should skip files that have already been processed", async () => {
     const s3Config = {
       fluReportsBucket: "string",
-      asprenReportsBucket: "string"
+      asprenReportsBucket: "string",
+      fileshareBucket: "string"
     };
     const list = [
       {
@@ -120,7 +122,8 @@ describe("import ASPREN reports", () => {
   it("should overwrite existing data", async () => {
     const s3Config = {
       fluReportsBucket: "string",
-      asprenReportsBucket: "string"
+      asprenReportsBucket: "string",
+      fileshareBucket: "string"
     };
     const list = [
       {

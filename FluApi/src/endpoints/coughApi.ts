@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import * as AWS from "aws-sdk";
 import { SplitSql } from "../util/sql";
 import {
   CoughModels,
@@ -18,9 +19,14 @@ import { requestId } from "../util/expressApp";
 import {
   DocumentType,
   SurveyDocument,
+  SurveyNonPIIInfo,
   PhotoDocument
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
+import { SecretConfig } from "../util/secretsConfig";
+import { getS3Config } from "../util/s3Config";
+import { S3Uploader } from "../external/s3Uploader";
+import { LazyAsync } from "../util/lazyAsync";
 
 type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
 
@@ -44,10 +50,19 @@ export function getPhotoCollection() {
 export class CoughEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
+  private readonly secrets: SecretConfig;
+  private s3Uploader: LazyAsync<S3Uploader>;
 
   constructor(sql: SplitSql) {
     this.sql = sql;
     this.models = defineCoughModels(sql);
+
+    this.secrets = new SecretConfig(sql);
+    this.s3Uploader = new LazyAsync(async () => {
+      const s3Config = await getS3Config(this.secrets);
+      const s3 = new AWS.S3({ region: "us-west-2" });
+      return new S3Uploader(s3, s3Config);
+    });
   }
 
   public importCoughDocuments = async (req, res, next) => {
@@ -97,6 +112,90 @@ export class CoughEndpoint {
     res.write(JSON.stringify(result));
     res.end();
   };
+
+  public uploadCoughPhotos = async (req, res, next) => {
+    const rdtPhotosSecret = await this.secrets.getOrCreate(
+      "RDT_PHOTOS_S3_SECRET"
+    );
+    const surveys = await this.models.survey.findAll({
+      where: {
+        "$photo_upload_log.cough_survey_id$": null
+      },
+      include: [
+        {
+          model: this.models.photoUploadLog,
+          required: false
+        }
+      ]
+    });
+    const results = await Promise.all(
+      surveys.map(async survey => {
+        try {
+          await Promise.all([
+            this.uploadPhoto(
+              survey.survey,
+              "RDTReaderPhotoGUID",
+              "RDTScan",
+              rdtPhotosSecret
+            ),
+            this.uploadPhoto(
+              survey.survey,
+              "RDTReaderHCPhotoGUID",
+              "EnhancedScan",
+              rdtPhotosSecret
+            ),
+            this.uploadPhoto(
+              survey.survey,
+              "PhotoGUID",
+              "ManualPhoto",
+              rdtPhotosSecret
+            )
+          ]);
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+        return { coughSurveyId: survey.id };
+      })
+    );
+    await this.models.photoUploadLog.bulkCreate(
+      results.filter(result => result !== null)
+    );
+    res.json({
+      success: results.filter(result => result !== null).length,
+      error: results.filter(result => result === null).length
+    });
+  };
+
+  private async uploadPhoto(
+    survey: SurveyNonPIIInfo,
+    sampleType: string,
+    fileSuffix: string,
+    rdtPhotosSecret: string
+  ): Promise<void> {
+    const barcodeSample = survey.samples.find(
+      sample =>
+        sample.sample_type === "org.iso.Code128" ||
+        sample.sample_type === "manualEntry"
+    );
+    const photoSample = survey.samples.find(
+      sample => sample.sample_type === sampleType
+    );
+    if (!barcodeSample || !photoSample) {
+      return;
+    }
+    const photoRecord = await this.models.photo.findOne({
+      where: {
+        docId: photoSample.code
+      }
+    });
+    await (await this.s3Uploader.get()).writeRDTPhoto(
+      rdtPhotosSecret,
+      "cough",
+      `${barcodeSample.code}_${fileSuffix}.png`,
+      Buffer.from(photoRecord.photo.jpegBase64, "base64")
+    );
+  }
 
   private async importItems(
     progress: () => void,

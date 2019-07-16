@@ -8,6 +8,7 @@ import { SecretConfig } from "./secretsConfig";
 export interface S3Config {
   fluReportsBucket: string;
   asprenReportsBucket: string;
+  fileshareBucket: string;
 }
 
 let lazy: Promise<S3Config> | null = null;
@@ -21,9 +22,14 @@ export function getS3Config(secrets: SecretConfig): Promise<S3Config> {
 }
 
 async function createConfig(secrets: SecretConfig): Promise<S3Config> {
-  const [fluReportsBucket, asprenReportsBucket] = await Promise.all([
+  const [
+    fluReportsBucket,
+    asprenReportsBucket,
+    fileshareBucket
+  ] = await Promise.all([
     secrets.get("S3_REPORT_BUCKET"),
-    secrets.get("S3_ASPREN_BUCKET")
+    secrets.get("S3_ASPREN_BUCKET"),
+    secrets.get("S3_FILESHARE_BUCKET")
   ]);
-  return { fluReportsBucket, asprenReportsBucket };
+  return { fluReportsBucket, asprenReportsBucket, fileshareBucket };
 }

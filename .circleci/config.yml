@@ -182,6 +182,9 @@ jobs:
               echo SMARTYSTREETS_BASE_URL=https://smartystreets.com/
               echo SMARTYSTREETS_AUTH_ID=12345
               echo SMARTYSTREETS_AUTH_TOKEN=67890
+              echo S3_REPORT_BUCKET=test.bucket
+              echo S3_ASPREN_BUCKET=test.bucket
+              echo S3_FILESHARE_BUCKET=test.fileshare.bucket
             ) > .env
             yarn setup
             yarn "migration:postgis"

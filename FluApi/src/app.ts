@@ -280,6 +280,11 @@ export function createInternalApp(config: AppConfig) {
       )
     )
   );
+  internalApp.get(
+    "/api/cough/uploadPhotos",
+    stats("coughUploadPhotos"),
+    wrap(cough.uploadCoughPhotos)
+  );
 
   const coughAspren = new CoughAsprenEndpoint(sql);
   internalApp.get(
