@@ -111,11 +111,11 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     if (this.props.csruid) {
       onCSRUIDEstablished(this.props.csruid);
     }
-    this._getConnectivity();
     NetInfo.isConnected.addEventListener(
       "connectionChange",
       this._handleConnectivityChange
     );
+    this._getConnectivity();
   }
 
   componentWillUnmount() {
