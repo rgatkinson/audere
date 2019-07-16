@@ -16,7 +16,7 @@ export const videoConfig: Map<string, VideoConfig> = new Map<
     "collectSample",
     {
       uri:
-        "https://player.vimeo.com/external/330876221.m3u8?s=d124ba39c342c6c50b93b5bb941aaf1dba15667d",
+        "https://player.vimeo.com/external/348454490.m3u8?s=f3b4015a63ea388aba01ac2217f89925319ededa",
       thumbnail: "collectsamplethumb",
     },
   ],
@@ -24,7 +24,7 @@ export const videoConfig: Map<string, VideoConfig> = new Map<
     "removeSwabFromTube",
     {
       uri:
-        "https://player.vimeo.com/external/330876539.m3u8?s=97203b8ba6a04618cf1f22aada6e5b30dabae44c",
+        "https://player.vimeo.com/external/348454806.m3u8?s=616a456cecdd81bc7262f1c8d40be33ce587e7ce",
       thumbnail: "removeswabfromtubethumb",
     },
   ],
