@@ -334,6 +334,10 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _handleMemoryWarning = () => {
     const { dispatch, fallback, isFocused, navigation } = this.props;
     if (isFocused) {
+      // Make sure timer cleanup happens since since this event can fire
+      // pre-transition completion and therefore won't trigger willBlur.
+      this._handleWillBlur();
+      dispatch(setShownRDTFailWarning(false));
       navigation.push(fallback);
       dispatch(
         setRDTReaderResult({

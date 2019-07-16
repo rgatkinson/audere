@@ -63,6 +63,8 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
       this._handleDidFocus
     );
     AppState.addEventListener("change", this._handleAppStateChange);
+
+    this._handleDidFocus();
   }
 
   componentWillUnmount() {
@@ -125,7 +127,9 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
             text: t("common:button:ok"),
             onPress: () => {
               logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
-              navigation.dispatch(StackActions.replace({ routeName: "TestResult" }));
+              navigation.dispatch(
+                StackActions.replace({ routeName: "TestResult" })
+              );
             },
           },
         ]);
