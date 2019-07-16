@@ -1152,6 +1152,9 @@ async function downloadRecoveredVisit(barcode: string): Promise<VisitRecoveryDat
   if (snapshot == null) {
     throw fail(`Snapshot for ${barcode} is null`);
   }
+  if (!snapshot.exists) {
+    throw fail(`Snapshot for ${barcode} does not exist`);
+  }
   return snapshot.data() as VisitRecoveryData;
 }
 
