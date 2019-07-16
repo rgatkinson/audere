@@ -633,30 +633,19 @@ export const Screens: ScreenConfig[] = [
         tag: SelectableComponent,
         props: {
           components: [
-            { tag: Title },
-            { tag: Title, props: { label: "titleTimerUp" } },
+            [
+              { tag: Title },
+              { tag: ScreenText, props: { label: "desc" } },
+              { tag: ScreenText, props: { label: "waiting" } },
+            ],
+            [
+              { tag: Title, props: { label: "titleTimerUp" } },
+              { tag: ScreenText, props: { label: "descTimerUp" } },
+              undefined,
+            ],
           ],
           componentSelectorProp: "tenMinuteTimerDone",
-        },
-      },
-      {
-        tag: SelectableComponent,
-        props: {
-          components: [
-            { tag: ScreenText, props: { label: "desc" } },
-            { tag: ScreenText, props: { label: "descTimerUp" } },
-          ],
-          componentSelectorProp: "tenMinuteTimerDone",
-        },
-      },
-      {
-        tag: SelectableComponent,
-        props: {
-          components: [
-            { tag: ScreenText, props: { label: "waiting" } },
-            undefined,
-          ],
-          componentSelectorProp: "tenMinuteTimerDone",
+          keyBase: "TimerChangeover",
         },
       },
     ],

@@ -4,26 +4,25 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StoreState } from "../../store";
 import { Component } from "./Screen";
 
 interface Props {
-  components: Component[];
+  components: Component[] | Component[][];
   componentSelectorProp: string;
   componentSelector?: number;
-  key: string;
+  keyBase: string;
   namespace: string;
   validate?: boolean;
   remoteConfigValues?: { [key: string]: string };
 }
 
-class SelectableComponent extends React.Component<Props & WithNamespaces> {
+class SelectableComponent extends React.Component<Props> {
   render() {
     const {
       components,
-      key,
+      keyBase,
       namespace,
       validate,
       remoteConfigValues,
@@ -36,24 +35,34 @@ class SelectableComponent extends React.Component<Props & WithNamespaces> {
       return null;
     }
 
-    const component = components[+componentSelector];
-    if (!component) {
+    const segment = components[+componentSelector];
+    if (!segment) {
       return null;
     }
 
-    const Tag = component.tag;
-    return (
-      <Tag
-        {...component.props}
-        key={key}
-        namespace={namespace}
-        validate={validate}
-        remoteConfigValues={remoteConfigValues}
-      />
-    );
+    let componentsToRender: Component[] = [];
+    if (Array.isArray(segment)) {
+      componentsToRender = segment;
+    } else {
+      componentsToRender.push(segment);
+    }
+
+    return componentsToRender.map((component, index) => {
+      return (
+        component && (
+          <component.tag
+            {...component.props}
+            key={keyBase + index}
+            namespace={namespace}
+            validate={validate}
+            remoteConfigValues={remoteConfigValues}
+          />
+        )
+      );
+    });
   }
 }
 
-export default connect((state: StoreState, props: Props & WithNamespaces) => ({
+export default connect((state: StoreState, props: Props) => ({
   componentSelector: state.survey[props.componentSelectorProp],
-}))(withNamespaces()(SelectableComponent));
+}))(SelectableComponent);
