@@ -120,5 +120,8 @@ export function isShowRDTInterpretationOfType(
   if (eventType === RDTInterpretationEventTypes.None && !interpreter) {
     return true;
   }
-  return interpreter.toLowerCase() === eventType.toLowerCase();
+  return (
+    !!interpreter &&
+    interpreter.toString().toLowerCase() === eventType.toLowerCase()
+  );
 }
