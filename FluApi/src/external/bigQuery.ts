@@ -58,7 +58,7 @@ export class BigQueryTableImporter {
       .table(table)
       .getMetadata();
 
-    return <TableMetadata>metadata[0];
+    return <TableMetadata>metadata;
   }
 
   /**
