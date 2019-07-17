@@ -14,6 +14,7 @@ import {
 } from "audere-lib/coughQuestionConfig";
 import { defineDataNode } from "../models/db/dataPipeline";
 import { tuple2 } from "../util/tuple";
+import logger from "../util/logger";
 
 const DEBUG_DATA_PIPELINE_SERVICE = false;
 
@@ -27,9 +28,10 @@ export class DataPipelineService {
   async refresh(): Promise<void> {
     await this.refreshPipelineNodes(this.sql.pii, getPiiDataNodes());
 
-    const nonPiiNodes = [];
-    nonPiiNodes.concat(getNonPiiDataNodes());
-    nonPiiNodes.concat(getFirebaseDataNodes());
+    let nonPiiNodes = [];
+    nonPiiNodes = nonPiiNodes.concat(getNonPiiDataNodes());
+    nonPiiNodes = nonPiiNodes.concat(getFirebaseDataNodes());
+
     await this.refreshPipelineNodes(this.sql.nonPii, nonPiiNodes);
   }
 
