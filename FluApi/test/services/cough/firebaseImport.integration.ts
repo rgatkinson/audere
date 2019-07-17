@@ -97,7 +97,7 @@ describe("Firebase import", () => {
       });
 
       const pipeline = mock(DataPipelineService);
-      when(pipeline.refreshFirebase()).thenResolve();
+      when(pipeline.refresh()).thenResolve();
 
       const svc = new FirebaseImport(
         sql,
@@ -117,7 +117,7 @@ describe("Firebase import", () => {
       expect(tables[0].name).toBe("events_20190716");
       expect(tables[0].modified).toBe("1");
 
-      verify(pipeline.refreshFirebase()).called();
+      verify(pipeline.refresh()).called();
     });
 
     it("should overwrite existing event data for a given date", async () => {
@@ -133,7 +133,7 @@ describe("Firebase import", () => {
       });
 
       const pipeline = mock(DataPipelineService);
-      when(pipeline.refreshFirebase()).thenResolve();
+      when(pipeline.refresh()).thenResolve();
 
       const svc = new FirebaseImport(
         sql,
@@ -165,7 +165,7 @@ describe("Firebase import", () => {
       });
 
       const pipeline = mock(DataPipelineService);
-      when(pipeline.refreshFirebase()).thenResolve();
+      when(pipeline.refresh()).thenResolve();
 
       const svc = new FirebaseImport(
         sql,

@@ -26,11 +26,11 @@ export class DataPipelineService {
 
   async refresh(): Promise<void> {
     await this.refreshPipelineNodes(this.sql.pii, getPiiDataNodes());
-    await this.refreshPipelineNodes(this.sql.nonPii, getNonPiiDataNodes());
-  }
 
-  async refreshFirebase(): Promise<void> {
-    await this.refreshPipelineNodes(this.sql.nonPii, getFirebaseDataNodes());
+    const nonPiiNodes = [];
+    nonPiiNodes.concat(getNonPiiDataNodes());
+    nonPiiNodes.concat(getFirebaseDataNodes());
+    await this.refreshPipelineNodes(this.sql.nonPii, nonPiiNodes);
   }
 
   private async refreshPipelineNodes(

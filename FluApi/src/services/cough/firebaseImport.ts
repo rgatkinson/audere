@@ -147,7 +147,8 @@ export class FirebaseImport {
     }
 
     // Update derived views
-    logger.info("Refreshing Firebase derived views");
-    await this.pipeline.refreshFirebase();
+    logger.info("Refreshing derived views");
+    await this.pipeline.refresh();
+    logger.info("Refresh complete");
   }
 }
