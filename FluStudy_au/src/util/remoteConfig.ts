@@ -10,6 +10,7 @@ import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 interface RemoteConfig {
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
+  skipSurveyNotification: boolean;
   [key: string]: boolean | number | string[] | string;
 }
 
@@ -23,6 +24,7 @@ interface RemoteConfig {
 const DEFAULT_CONFIGS: RemoteConfig = {
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
+  skipSurveyNotification: false,
 };
 
 // Values you put into here will always be applied on top of remote config

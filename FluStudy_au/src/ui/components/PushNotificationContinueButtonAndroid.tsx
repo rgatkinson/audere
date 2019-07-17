@@ -15,6 +15,7 @@ import {
   notificationHandler,
 } from "../../util/notifications";
 import Button from "./Button";
+import { getRemoteConfig } from "../../util/remoteConfig";
 
 interface Props {
   barcode?: string;
@@ -46,7 +47,7 @@ class PushNotificationContinueButtonAndroid extends React.Component<
       t,
       dispatch,
     } = this.props;
-    if (!scheduledSurveyNotif) {
+    if (!scheduledSurveyNotif && !getRemoteConfig("skipSurveyNotification")) {
       PushNotification.cancelLocalNotifications({
         id: notification.id.toString(),
       });
