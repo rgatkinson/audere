@@ -77,7 +77,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow flu@home to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>flu@home needs to use your camera to scan your barcode and your test strip.</string>
+	<string>flu@home needs to use your camera to scan your test strip.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow flu@home to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

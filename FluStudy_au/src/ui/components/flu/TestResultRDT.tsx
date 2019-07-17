@@ -160,6 +160,5 @@ const styles = StyleSheet.create({
   text: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
-    marginHorizontal: GUTTER,
   },
 });

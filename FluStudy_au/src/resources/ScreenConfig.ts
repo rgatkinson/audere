@@ -234,14 +234,14 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "Consent",
-    automationNext: "ScanInstructions",
+    automationNext: "ManualEntry",
     footer: [
       {
         tag: ContinueButton,
         props: {
           dispatchOnNext: () => setConsent(),
           label: "accept",
-          next: "ScanInstructions",
+          next: "ManualEntry",
         },
       },
       {
@@ -303,6 +303,8 @@ export const Screens: ScreenConfig[] = [
         validate: true,
         props: { errorScreen: "BarcodeContactSupport" },
       },
+      { tag: MainImage, props: { uri: "scanbarcode" } },
+      { tag: ScreenText, props: { label: "tips" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
     key: "ManualEntry",

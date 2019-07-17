@@ -82,12 +82,8 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { navigation, t } = this.props;
     return (
-      <KeyboardAvoidingView
-        behavior={KEYBOARD_BEHAVIOR}
-        enabled
-        style={styles.container}
-      >
-        <View style={styles.inputContainer}>
+      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
+        <View style={[styles.inputContainer, { marginBottom: GUTTER }]}>
           <NumberInput
             autoFocus={navigation.isFocused()}
             placeholder={t("placeholder")}
@@ -107,9 +103,6 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
             value={this.state.barcode2}
             onChangeText={this._onBarcodeTwoChange}
           />
-        </View>
-        <View style={styles.tipContainer}>
-          <Text content={t("tips")} style={styles.tip} />
         </View>
       </KeyboardAvoidingView>
     );
@@ -160,21 +153,12 @@ export default connect((state: StoreState) => ({
 }))(withNamespaces("barcode")(withNavigation(customRef(BarcodeEntry))));
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: GUTTER,
-  },
   inputContainer: {
     alignSelf: "stretch",
     flexDirection: "row",
-    marginBottom: GUTTER,
+    marginHorizontal: GUTTER,
   },
   textInput: {
     flex: 1,
-  },
-  tip: {
-    flex: 1,
-  },
-  tipContainer: {
-    flexDirection: "row",
   },
 });

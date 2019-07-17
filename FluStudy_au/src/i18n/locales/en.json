@@ -240,7 +240,7 @@
   },
   "WhatsRequired": {
     "title": "What's required?",
-    "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera to scan the kit's barcode and take a photo of your test strip."
+    "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera to scan your test strip."
   },
   "ResearchStudy": {
     "title": "Research Study",
@@ -264,8 +264,7 @@
     "barcodeRequired": "Please enter your kit's barcode to continue.",
     "dontMatch": "Those barcodes don't match. Please try again.",
     "placeholder": "Enter barcode",
-    "secondPlaceholder": "Confirm barcode",
-    "tips": "**Tips:**\n\nFind the white barcode on the box. The code is directly below the barcode."
+    "secondPlaceholder": "Confirm barcode"
   },
   "BarcodeScanner": {
     "instructions": "Position the barcode in the middle of the outline above.\nTry adjusting your distance or angle if the scan is taking a while.",
@@ -276,8 +275,9 @@
     "desc": "Thank you. Your barcode was successfully scanned. Next up, you'll perform the test and answer some questions about your symptoms."
   },
   "ManualEntry": {
-    "title": "Enter barcode manually",
-    "desc": "Enter the code found on the corner of your flu kit."
+    "title": "Enter your barcode",
+    "desc": "Enter the code found on the corner of your flu kit.",
+    "tips": "**Tip:** Find the white barcode on the box. The code is directly below the barcode."
   },
   "ManualConfirmation": {
     "title": "Your code was accepted",
@@ -370,7 +370,7 @@
   },
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
-    "desc": "Next, we'd like you to take a photo of your test strip using your device camera. Similar to the barcode scan, the app will access your device camera for you.",
+    "desc": "Next, we'd like you to take a photo of your test strip using your device camera. The app will access your device camera for you.",
     "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip.\nCenter the test strip within the viewfinder, then tap the round button to take a photo."
   },
   "RDTReader": {
@@ -473,7 +473,7 @@
     "haveKitAlready": "I already have my kit",
     "learnMore": "Learn more about this flu study",
     "findMedHelp": "Search Maps for urgent care clinics nearby",
-    "inputManually": "Enter barcode manually",
+    "inputManually": "Enter barcode",
     "myDr": "myDr.com.au: Flu treatment",
     "skipTestStripPhoto": "Unable to take a picture? Skip this step"
   },

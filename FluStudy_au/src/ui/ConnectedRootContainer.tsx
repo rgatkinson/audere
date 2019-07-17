@@ -216,7 +216,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
           ]
         );
       } else if (this.props.activeRouteName === "CameraSettings") {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        const { status } = await Permissions.getAsync(Permissions.CAMERA);
         if (status === "granted") {
           this.navigator &&
             this.navigator.current &&
