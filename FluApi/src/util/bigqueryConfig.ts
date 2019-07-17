@@ -6,7 +6,11 @@
 import { SecretConfig } from "./secretsConfig";
 
 export interface BigqueryConfig {
-  authToken: string;
+  coughProject: string;
+  coughDataset: string;
+  coughEmail: string;
+  coughKey: string;
+  feverAuthToken: string;
 }
 
 let lazy: Promise<BigqueryConfig> | null = null;
@@ -22,6 +26,18 @@ export function getBigqueryConfig(
 }
 
 async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
-  const [authToken] = await Promise.all([secrets.get("GCP_BIG_QUERY_FEVER")]);
-  return { authToken };
+  const [
+    coughProject,
+    coughDataset,
+    coughEmail,
+    coughKey,
+    feverAuthToken
+  ] = await Promise.all([
+    secrets.get("GCP_PROJECT_COUGH"),
+    secrets.get("GCP_FIREBASE_ANALYTICS_DATASET_COUGH"),
+    secrets.get("GCP_BQ_CREDENTIALS_EMAIL_COUGH"),
+    secrets.get("GCP_BQ_CREDENTIALS_KEY_COUGH"),
+    secrets.get("GCP_BIG_QUERY_FEVER")
+  ]);
+  return { coughProject, coughDataset, coughEmail, coughKey, feverAuthToken };
 }

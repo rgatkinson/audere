@@ -13,6 +13,7 @@ locals {
   cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 ? * MON-FRI *)"
   cron_weekdays_before_1PM_PST = "cron(30 19 ? * MON-FRI *)"
   cron_weekdays_at_4AM_PST = "cron(0 10 ? * MON-FRI *)"
+  cron_everyday_at_5AM_PST = "cron(0 12 ? * * *)"
   cron_monday_thursday_before_9AM_PST = "cron(30 15 ? * MON,THU *)"
 }
 
@@ -161,6 +162,19 @@ module "cough_photo_upload" {
   subnet_id = "${var.lambda_subnet_id}"
   timeout = 300
   url = "http://${var.fluapi_fqdn}:444/api/cough/uploadPhotos"
+}
+
+module "cough_analytics_import" {
+  source = "../lambda-cron"
+
+  frequency = "${cron_everyday_at_5AM_PST}"
+  name = "${local.base_name}-cough-analytics-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 600
+  url = "http://${var.fluapi_fqdn}:444/api/import/coughAnalytics"
 }
 
 resource "aws_lambda_function" "cough_aspren_import" {

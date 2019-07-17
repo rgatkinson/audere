@@ -7,6 +7,7 @@ import Sequelize, {
   DefineModelAttributes,
   DefineOptions,
   Sequelize as Sql,
+  BIGINT as SQL_BIGINT,
   BOOLEAN as SQL_BOOLEAN,
   DATE as SQL_DATE,
   FLOAT as SQL_FLOAT,
@@ -113,6 +114,9 @@ export function jsonbColumn<T>(field?: string) {
 }
 export function integerColumn(field?: string) {
   return column(SQL_INTEGER, field);
+}
+export function bigIntColumn(field?: string) {
+  return column(SQL_BIGINT, field);
 }
 export function dateColumn(field?: string) {
   return column(SQL_DATE, field);

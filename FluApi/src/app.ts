@@ -28,6 +28,7 @@ import { CoughEndpoint } from "./endpoints/coughApi";
 import { SqlLock } from "./util/sqlLock";
 import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
 import { ServerHealth } from "./endpoints/healthCheck";
+import { CoughFirebaseEndpoint } from "./endpoints/coughFirebaseApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -291,6 +292,13 @@ export function createInternalApp(config: AppConfig) {
     "/api/import/asprenReport",
     stats("importAsprenReport"),
     wrap(coughAspren.importAsprenReports)
+  );
+
+  const coughFirebase = new CoughFirebaseEndpoint(sql);
+  internalApp.get(
+    "/api/import/coughAnalytics",
+    stats("importCoughAnalytics"),
+    wrap(coughFirebase.importAnalytics)
   );
 
   return useOuch(internalApp);

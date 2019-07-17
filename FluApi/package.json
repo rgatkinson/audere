@@ -14,6 +14,7 @@
     "start": "NODE_ENV=development concurrently -p [{name}] -n Node,Jest -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' npm:test-watch",
     "startq": "NODE_ENV=development concurrently -p [{name}] -n Node,Type -c blue.bold,cyan.bold 'nodemon --watch src --exec ts-node src/server.ts' 'tsc --noEmit --watch --preserveWatchOutput'",
     "start-prod": "yarn run build && NODE_ENV=production node .",
+    "start-debug": "NODE_ENV=development node --inspect-brk -r ts-node/register ./src/server.ts",
     "test1": "           jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1",
     "test": "            jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1 --testPathPattern=\\.test\\.ts$",
     "test-watch": "      jest --verbose --no-watchman --detectOpenHandles --forceExit --maxWorkers=1 --testPathPattern=\\.test\\.ts$ --watchAll",
@@ -26,6 +27,7 @@
   },
   "main": "build/src/server.js",
   "dependencies": {
+    "@google-cloud/bigquery": "^4.1.3",
     "@pnp/common": "^1.2.9",
     "@pnp/logging": "^1.2.9",
     "@pnp/nodejs": "^1.2.9",

@@ -53,8 +53,8 @@ export class SecretConfig {
     } else {
       throw Error(
         `${key} is unset. Copy .env.example to .env or update the ` +
-          `value in the database. An unset value could application instability ` +
-          `or errors.`
+          `value in the database. An unset value could cause application ` +
+          `instability or errors.`
       );
     }
   }

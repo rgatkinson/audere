@@ -14,7 +14,9 @@ import {
   integerColumn,
   jsonColumn,
   nullable,
-  unique
+  unique,
+  jsonbColumn,
+  bigIntColumn
 } from "../../util/sql";
 import {
   DeviceInfo,
@@ -29,6 +31,8 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     accessKey: defineAccessKey(sql),
     asprenData: defineAsprenData(sql),
     asprenFile: defineAsprenFile(sql),
+    firebaseAnalytics: defineFirebaseAnalytics(sql),
+    firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoUploadLog: definePhotoUploadLog(sql),
@@ -47,6 +51,8 @@ export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
   asprenData: Model<AsprenDataAttributes>;
   asprenFile: Model<AsprenFileAttributes>;
+  firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
+  firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
@@ -289,6 +295,44 @@ export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
       healthcareWorkerStatus: nullable(booleanColumn("hcw_status")),
       overseasIllness: nullable(booleanColumn("overseas_illness")),
       overseasLocation: nullable(stringColumn("overseas_location"))
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface FirebaseAnalyticsAttributes {
+  event_date: string;
+  event: any;
+}
+export function defineFirebaseAnalytics(
+  sql: SplitSql
+): Model<FirebaseAnalyticsAttributes> {
+  return defineModel<FirebaseAnalyticsAttributes>(
+    sql.nonPii,
+    "firebase_analytics",
+    {
+      event_date: stringColumn(),
+      event: jsonbColumn()
+    },
+    { schema }
+  );
+}
+
+export interface FirebaseAnalyticsTableAttributes {
+  name: string;
+  modified: number;
+}
+export function defineFirebaseAnalayticsTable(
+  sql: SplitSql
+): Model<FirebaseAnalyticsTableAttributes> {
+  return defineModel<FirebaseAnalyticsTableAttributes>(
+    sql.nonPii,
+    "firebase_analytics_table",
+    {
+      name: unique(stringColumn()),
+      modified: bigIntColumn()
     },
     { schema }
   );

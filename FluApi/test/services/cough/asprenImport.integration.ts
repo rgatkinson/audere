@@ -47,6 +47,11 @@ describe("import ASPREN reports", () => {
     return s3;
   }
 
+  afterAll(async done => {
+    await cleanDb();
+    done();
+  });
+
   beforeAll(async done => {
     sql = createSplitSql();
     cough = defineCoughModels(sql);
