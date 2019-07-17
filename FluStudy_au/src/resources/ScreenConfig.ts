@@ -307,6 +307,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "tips" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
+    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
     key: "ManualEntry",
   },
   {
