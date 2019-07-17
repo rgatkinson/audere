@@ -167,7 +167,7 @@ module "cough_photo_upload" {
 module "cough_analytics_import" {
   source = "../lambda-cron"
 
-  frequency = "${cron_everyday_at_5AM_PST}"
+  frequency = "${local.cron_everyday_at_5AM_PST}"
   name = "${local.base_name}-cough-analytics-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
