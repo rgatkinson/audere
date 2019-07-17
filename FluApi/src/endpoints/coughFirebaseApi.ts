@@ -31,7 +31,7 @@ export class CoughFirebaseEndpoint {
     const svc = await this.firebaseImport.get();
     logger.info("Finding tables to update");
     const tableList = await svc.findTablesToUpdate();
-    
+
     if (tableList.size > 0) {
       logger.info("Updating analytics tables");
       await svc.importAnalytics(tableList);

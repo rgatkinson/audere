@@ -18,11 +18,15 @@ export class SqlLock {
     const key = getKey(scope);
     return async (...args) => {
       await this.sql.transaction(async transaction => {
-        const query = `select pg_try_advisory_xact_lock(${key.n0}, ${key.n1}) as acquired;`;
+        const query = `select pg_try_advisory_xact_lock(${key.n0}, ${
+          key.n1
+        }) as acquired;`;
         const options = { transaction, type: sequelize.QueryTypes.SELECT };
         const result: TryLockResult[] = await this.sql.query(query, options);
         if (result[0].acquired) {
-          logger.info(`Acquired SQL lock '${scope}' (${key.hex64}), running callback`);
+          logger.info(
+            `Acquired SQL lock '${scope}' (${key.hex64}), running callback`
+          );
           await won(...args);
           logger.info(`Releasing SQL lock '${scope}' (${key.hex64})`);
           // Lock should be released when transaction completes.
@@ -41,7 +45,7 @@ interface TryLockResult {
   acquired: boolean;
 }
 
-const scopeMap = new Map<string,string>();
+const scopeMap = new Map<string, string>();
 
 function getKey(scope: string): Key {
   const hex64 = sha256(scope).substring(0, 16);
@@ -49,7 +53,9 @@ function getKey(scope: string): Key {
   if (previousScope != null) {
     if (previousScope !== scope) {
       // Not a correctness issue, would hypothetically cause unnecessary contention.
-      logger.error(`SqlLock: hash collision '${scope}' and '${previousScope}' both hash to '${hex64}'`);
+      logger.error(
+        `SqlLock: hash collision '${scope}' and '${previousScope}' both hash to '${hex64}'`
+      );
     }
   } else {
     scopeMap.set(hex64, scope);
@@ -58,13 +64,13 @@ function getKey(scope: string): Key {
   return {
     hex64,
     n0: hex32ToSignedInt(hex64.substring(0, 8)),
-    n1: hex32ToSignedInt(hex64.substring(8, 16)),
+    n1: hex32ToSignedInt(hex64.substring(8, 16))
   };
 }
 
 function hex32ToSignedInt(hex32: string) {
   const unsigned = parseInt(hex32, 16);
-  return ((unsigned & 0x80000000) != 0) ? unsigned - 0x100000000 : unsigned;
+  return (unsigned & 0x80000000) != 0 ? unsigned - 0x100000000 : unsigned;
 }
 
 interface Key {

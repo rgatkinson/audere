@@ -249,7 +249,7 @@ export class EncounterDetailsService {
     // Query the second database for the PII data associated to the visit.
     const piiVisits = await this.snifflesModels.visitPii.findAll({
       where: {
-        csruid: nonPiiVisits.map(visit => visit.csruid),
+        csruid: nonPiiVisits.map(visit => visit.csruid)
       }
     });
 

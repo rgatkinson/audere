@@ -37,7 +37,7 @@ export const FIELD_PATH = {
   receivedAt: "_transport.receivedAt",
   sentAt: "_transport.sentAt",
   receivedByUser: "_transport.receivedByUser",
-  receivedByHost: "_transport.receivedByHost",
+  receivedByHost: "_transport.receivedByHost"
 };
 
 export class FirebaseReceiver {

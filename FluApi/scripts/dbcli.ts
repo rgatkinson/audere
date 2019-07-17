@@ -337,7 +337,7 @@ yargs.command({
   command: "recover-visit <barcode>",
   builder: yargs => yargs.string("barcode"),
   handler: command(cmdRecoverVisit)
-})
+});
 yargs.demandCommand().argv;
 
 function command(cmd: any) {
@@ -1139,7 +1139,9 @@ async function cmdRecoverVisit(argv: RecoverVisitArgs): Promise<void> {
   await saveRecoveredVisit(id, data);
 }
 
-async function downloadRecoveredVisit(barcode: string): Promise<VisitRecoveryData> {
+async function downloadRecoveredVisit(
+  barcode: string
+): Promise<VisitRecoveryData> {
   console.log(`Downloading recovery data for barcode=${barcode}.`);
   const app = await makeRecoveryFirebase();
   const db = app.firestore();
@@ -1158,7 +1160,10 @@ async function downloadRecoveredVisit(barcode: string): Promise<VisitRecoveryDat
   return snapshot.data() as VisitRecoveryData;
 }
 
-async function saveRecoveredVisit(id: string, data: VisitRecoveryData): Promise<void> {
+async function saveRecoveredVisit(
+  id: string,
+  data: VisitRecoveryData
+): Promise<void> {
   const decrypted = await decryptRecoveredVisit(
     `barcode=${data.barcode}`,
     data.encrypted_visit_info
@@ -1181,7 +1186,10 @@ async function saveRecoveredVisit(id: string, data: VisitRecoveryData): Promise<
   console.log(JSON.stringify(device, null, 2));
 }
 
-async function decryptRecoveredVisit(id: string, encrypted: string): Promise<string> {
+async function decryptRecoveredVisit(
+  id: string,
+  encrypted: string
+): Promise<string> {
   const keyfile = getenv("SNIFFLES_RECOVERY_KEYFILE");
   const privateKey = await readFile(keyfile, UTF8);
 
@@ -1194,7 +1202,10 @@ async function decryptRecoveredVisit(id: string, encrypted: string): Promise<str
   return decrypted.message;
 }
 
-async function dbcliSnifflesDevice(data: VisitRecoveryData, id: string): Promise<SnifflesDevice> {
+async function dbcliSnifflesDevice(
+  data: VisitRecoveryData,
+  id: string
+): Promise<SnifflesDevice> {
   return {
     installation: data.installation_id,
     clientVersion: data.client_version,

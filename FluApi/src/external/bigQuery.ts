@@ -1,4 +1,3 @@
-
 // Copyright (c) 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
@@ -42,7 +41,9 @@ export class BigQueryTableImporter {
       .getTables();
 
     const tables = response[0];
-    logger.info(`Listed ${tables.length} tables within ${this.config.coughDataset}`);
+    logger.info(
+      `Listed ${tables.length} tables within ${this.config.coughDataset}`
+    );
     return tables.map(t => (<TableMetadata>t.metadata).tableReference.tableId);
   }
 
@@ -90,7 +91,11 @@ export class BigQueryTableImporter {
 
     const token = (<bigquery.ITableDataList>result[2]).pageToken;
 
-    logger.info(`Received ${result[0].length} rows from table ${table} with page token ${token}`);
+    logger.info(
+      `Received ${
+        result[0].length
+      } rows from table ${table} with page token ${token}`
+    );
 
     return {
       results: result[0],

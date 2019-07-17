@@ -61,7 +61,9 @@ export class FirebaseImport {
     }
 
     const candidateKeys = Array.from(candidateVersions.keys());
-    logger.info(`Checking last modified time for tables ${candidateKeys.join(", ")}`);
+    logger.info(
+      `Checking last modified time for tables ${candidateKeys.join(", ")}`
+    );
 
     const existingVersions = await this.models.firebaseAnalyticsTable.findAll({
       where: {
@@ -77,7 +79,9 @@ export class FirebaseImport {
       }
     });
 
-    logger.info(`Tables ${Array.from(toUpdate.keys()).join(", ")} contain updates`);
+    logger.info(
+      `Tables ${Array.from(toUpdate.keys()).join(", ")} contain updates`
+    );
 
     return toUpdate;
   }
@@ -111,7 +115,9 @@ export class FirebaseImport {
 
         // Page through the entire result set and write rows to the db
         do {
-          logger.info(`Fetching table rows for table ${name} with token ${token}`);
+          logger.info(
+            `Fetching table rows for table ${name} with token ${token}`
+          );
           const analytics = await this.bigQuery.getTableRows(name, token);
 
           token = analytics.token;
@@ -120,7 +126,7 @@ export class FirebaseImport {
             event: r
           }));
 
-          logger.info(`Creating ${rows.length} analytic events`)
+          logger.info(`Creating ${rows.length} analytic events`);
           await this.models.firebaseAnalytics.bulkCreate(rows, {
             transaction: t
           });
