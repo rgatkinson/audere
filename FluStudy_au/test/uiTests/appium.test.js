@@ -81,8 +81,6 @@ async function runThroughApp(models, isDemo) {
       await basic_screen(driver, screen_info);
     } else if (screen_info.type == "input") {
       await input_screen(driver, screen_info);
-    } else if (screen_info.type == "camera") {
-      await camera_screen(driver, screen_info);
     } else if (screen_info.type == "timer") {
       await timer_screen(driver, screen_info, isDemo);
     } else if (screen_info.type == "rdt") {
@@ -354,8 +352,8 @@ async function ios_select(driver, question) {
   await driver.setImplicitWaitTimeout(10000);
 }
 
-//Answer camera permissions question and click link for manual barcode entry
-async function camera_screen(driver, screen_info) {
+//Answer camera permissions and click button to take a picture
+async function rdt_screen(driver, screen_info) {
   if (
     PLATFORM == "Android" &&
     (await driver.hasElement(
@@ -370,6 +368,8 @@ async function camera_screen(driver, screen_info) {
     await allowButton.click();
     //wait to make sure button can load
     await driver.sleep(3000);
+    okButton = await driver.element("id", "android:id/button1");
+    await okButton.click();
   } else {
     if (
       await driver.hasElementByAccessibilityId(
@@ -379,22 +379,7 @@ async function camera_screen(driver, screen_info) {
       await driver
         .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
         .click();
-      expect(await driver.hasElementByAccessibilityId(screen_info.button)).toBe(
-        true
-      );
     }
-  }
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
-    .perform();
-}
-
-//Answer camera permissions and click button to take a picture
-async function rdt_screen(driver, screen_info) {
-  if (PLATFORM == "Android") {
-    okButton = await driver.element("id", "android:id/button1");
-    await okButton.click();
-  } else {
     await driver.elementByAccessibilityId(strings.common.button.ok).click();
   }
 
@@ -448,10 +433,7 @@ async function verify_db_contents(driver, models, installationId) {
   const dbRow = dbRowsAndNum["rows"][dbRowsAndNum["count"] - 1];
 
   //verify navigation events
-  const expected = content
-    // Android skips barcode camera
-    //.filter(item => !isAndroidBarcodeScan(item))
-    .map(item => item.dbScreenName);
+  const expected = content.map(item => item.dbScreenName);
   const actual = dbRow.survey.events
     .slice(1) // db has version screen before app starts
     .map(item => item.refId);
@@ -509,10 +491,6 @@ async function verify_db_contents(driver, models, installationId) {
       }
     });
   });
-}
-
-function isAndroidBarcodeScan(item) {
-  return PLATFORM === "Android" && item.dbScreenName === "Scan";
 }
 
 //Go to version menu, change to demo mode, return installation id

@@ -51,18 +51,6 @@ export const content = [
     ],
   },
   {
-    type: "basic",
-    title: strings.ScanInstructions.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ScanInstructions",
-  },
-  {
-    type: "camera",
-    popup: strings.BarcodeScanner.cameraWarning,
-    button: strings.BarcodeScanner.enterManually,
-    dbScreenName: "Scan",
-  },
-  {
     type: "input",
     title: strings.ManualEntry.title,
     button: strings.common.button.continue.toUpperCase(),
