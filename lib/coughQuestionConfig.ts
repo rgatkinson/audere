@@ -1069,7 +1069,7 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
     }
   ],
   title: "pinkLine",
-  description: "selectOne",
+  description: "seeExample",
   buttons: [
     {
       key: "noPink",
@@ -1109,7 +1109,7 @@ export const PinkLineConfig: SurveyQuestion = {
     }
   ],
   title: "pinkLine",
-  description: "selectOne",
+  description: "seeExample",
   buttons: [
     { key: "noPink", primary: false, enabled: true },
     { key: "yesOnePink", primary: false, enabled: true },
@@ -1121,7 +1121,7 @@ export const PinkLineConfig: SurveyQuestion = {
 export const NumLinesSeenConfig: SurveyQuestion = {
   id: "NumLinesSeen",
   title: "numLinesSeen",
-  description: "selectOne",
+  description: "seeExample",
   buttons: [
     {
       key: "oneLine",

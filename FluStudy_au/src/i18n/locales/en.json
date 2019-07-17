@@ -232,7 +232,7 @@
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
     "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
-    "selectOne": "Select one of the following"
+    "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
     "title": "Welcome",
@@ -300,7 +300,7 @@
   },
   "OpenSwab": {
     "title": "Open nasal swab",
-    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\nBe careful to only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from its paper wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\nBe careful to only touch the handle, not the tip."
   },
   "Mucus": {
     "title": "Collect sample from nose",
@@ -381,7 +381,7 @@
     "flash": "FLASH: ",
     "on": "ON",
     "off": "OFF",
-    "centerStrip": "Position device so test strip appears in middle of screen",
+    "centerStrip": "Position device so your test strip aligns with sample image",
     "holdSteady": "Hold steady",
     "sizeResultLarge": "Move farther away",
     "sizeResultSmall": "Move closer",

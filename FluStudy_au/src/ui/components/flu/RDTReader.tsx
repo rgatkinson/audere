@@ -870,7 +870,7 @@ const styles = StyleSheet.create({
   instructionText: {
     fontSize: LARGE_TEXT,
     flex: 1,
-    marginHorizontal: GUTTER * 2,
+    marginHorizontal: GUTTER,
     textAlign: "center",
     textShadowColor: "rgba(0, 0, 0, 0.99)",
     textShadowOffset: { width: -1, height: 1 },
