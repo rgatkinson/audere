@@ -23,3 +23,6 @@ output "ecs_service_linked_role_arn" {
   value = "${aws_iam_service_linked_role.ecs_service_linked_role.arn}"
 }
 
+output "audere_share_arn" {
+  value = "${aws_s3_bucket.audere_share.arn}"
+}
