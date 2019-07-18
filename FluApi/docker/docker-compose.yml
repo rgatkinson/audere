@@ -1,0 +1,29 @@
+version: '3'
+services:
+  web:
+    container_name: flu-api-web
+    build:
+      context: ../..
+      dockerfile: ./FluApi/docker/api/Dockerfile
+    image: flu-api
+    networks:
+      - vpc
+    ports:
+      - "3000:3000"
+      - "3200:3200"
+    env_file: ../.env
+    environment:
+      - NODE_ENV=development
+      - PII_DATABASE_URL=postgres://postgres@flu-api-db:5432/pii
+      - NONPII_DATABASE_URL=postgres://postgres@flu-api-db:5432/nonpii
+      - POSTGIS_DATABASE_URL=postgres://postgres@flu-api-db:5432/postgis
+  postgis:
+    container_name: flu-api-db
+    build:
+      context: ./db
+      dockerfile: ./Dockerfile
+    image: flu-db
+    networks:
+      - vpc
+networks:
+  vpc:
