@@ -22,6 +22,7 @@ const deviceInfo = require(process.env.TEST_UI_CONFIG);
 const PLATFORM = deviceInfo.PLATFORM;
 const screen_x = deviceInfo.SCREEN_X;
 const screen_y = deviceInfo.SCREEN_Y;
+const fs = require("fs");
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;
 const PORT = 4723;
@@ -76,7 +77,16 @@ async function runThroughApp(models, isDemo) {
   await driver.setImplicitWaitTimeout(10000);
   const installationId = await app_setup_for_automation(driver, isDemo);
 
+  let files_to_write = {};
+  let screen_num = 1;
+
   for (const screen_info of content) {
+    if (!isDemo) {
+      await driver.sleep(1000); //let screen finish loading
+      let screenshot = await driver.takeScreenshot();
+      files_to_write[`${screen_num}_${screen_info.title}`] = screenshot;
+      screen_num++;
+    }
     if (screen_info.type == "basic") {
       await basic_screen(driver, screen_info);
     } else if (screen_info.type == "input") {
@@ -86,6 +96,9 @@ async function runThroughApp(models, isDemo) {
     } else if (screen_info.type == "rdt") {
       await rdt_screen(driver, screen_info);
     }
+  }
+  if (!isDemo) {
+    printScreenshots(files_to_write);
   }
   await verify_db_contents(driver, models, installationId);
 }
@@ -652,5 +665,36 @@ async function half_scroll(driver) {
       .moveTo({ x: Math.trunc(screen_x * 0.99), y: Math.trunc(screen_y * 0.3) })
       .release();
     await scroll.perform();
+  }
+}
+
+async function printScreenshots(files_to_write) {
+  const build = fs
+    .readFileSync("./android/app/version.properties", "utf8")
+    .split("=")[1];
+  if (!fs.existsSync("./appScreenshots")) {
+    fs.mkdirSync("./appScreenshots");
+  }
+  if (!fs.existsSync(`./appScreenshots/Build${build}`)) {
+    fs.mkdirSync(`./appScreenshots/Build${build}`);
+  }
+  if (
+    !fs.existsSync(
+      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}`
+    )
+  ) {
+    fs.mkdirSync(
+      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}`
+    );
+  }
+  for (const f in files_to_write) {
+    fs.writeFile(
+      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}/${f}.png`,
+      files_to_write[f],
+      { encoding: "base64" },
+      function(err) {
+        if (err) throw err;
+      }
+    );
   }
 }

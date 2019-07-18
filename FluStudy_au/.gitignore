@@ -43,3 +43,6 @@ ios/fluathome.ipa
 ios/fluathome.app.dSYM.zip
 android/fastlane/README.md
 android/fastlane/report.xml
+
+# automation-generated screenshots
+appScreenshots/
