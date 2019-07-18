@@ -284,7 +284,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _handleDidFocus = () => {
     this._setTimer();
-    if (this.props.isDemo) {
+    if (this.props.isDemo && !this._fpsCounterInterval) {
       this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
     }
   };

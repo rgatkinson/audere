@@ -38,10 +38,15 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 
   _timer: NodeJS.Timeout | undefined;
   _willFocus: any;
+  _didFocus: any;
+  _willBlur: any;
 
   componentDidMount() {
+    const { navigation } = this.props;
     this._showNextTip();
     this._setTimer();
+    this._didFocus = navigation.addListener("didFocus", this._setTimer);
+    this._willBlur = navigation.addListener("willBlur", this._clearTimer);
   }
 
   componentWillUnmount() {
@@ -49,10 +54,9 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
       this._willFocus.remove();
       this._willFocus = null;
     }
-    if (this._timer != undefined) {
-      clearTimeout(this._timer);
-      this._timer = undefined;
-    }
+    this._didFocus.remove();
+    this._willBlur.remove();
+    this._clearTimer();
   }
 
   _getCurrentTextNum(): number {
@@ -90,6 +94,13 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
         <Text style={styles.source} content={this.state.currentSource} />
       </View>
     );
+  }
+
+  _clearTimer() {
+    if (this._timer != undefined) {
+      clearTimeout(this._timer);
+      this._timer = undefined;
+    }
   }
 }
 
