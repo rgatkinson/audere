@@ -96,12 +96,12 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     );
   }
 
-  _clearTimer() {
+  _clearTimer = () => {
     if (this._timer != undefined) {
       clearTimeout(this._timer);
       this._timer = undefined;
     }
-  }
+  };
 }
 
 const styles = StyleSheet.create({
