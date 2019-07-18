@@ -8,13 +8,10 @@ set -euxo pipefail
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-if [[ ! -r "./static/buildInfo.json" ]]; then
-  echo 1>&2 "Cannot find buildInfo.json."
-  echo 1>&2 "Run 'yarn build:gen' in FluApi before 'docker-compose build' here."
-  exit 1
+if [[ ! -d "./node_modules" ]]; then
+  echo 1>&2 "WARNING: this goes faster if you run init0-build.sh in base image."
+  "$SELF_DIR/init0-build.sh"
 fi
 
-yarn install --frozen-lockfile
-
 # Must avoid generate-build-info here because we no longer have git
-yarn run build:contents
+time yarn run build:contents

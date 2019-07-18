@@ -20,11 +20,16 @@ RUN apt-get install --yes \
 RUN npm install --global yarn
 
 RUN adduser -gecos "Audere Api" --disabled-password api
-
-COPY --chown=api:api . /audere
+RUN mkdir -p /audere/FluApi && chown -R api:api /audere
 USER api
 WORKDIR /audere/FluApi
 
-RUN /audere/FluApi/docker/api/init-once.sh
+COPY --chown=api:api ./FluApi/yarn.lock ./FluApi/package.json /audere/FluApi/
+COPY --chown=api:api ./FluApi/docker/api/ /audere/FluApi/docker/api/
+COPY --chown=api:api ./FluApi/static/buildInfo.json /audere/FluApi/static/buildInfo.json
+RUN /audere/FluApi/docker/api/init0-install.sh
+
+COPY --chown=api:api . /audere
+RUN /audere/FluApi/docker/api/init1-build.sh
 
 ENTRYPOINT /audere/FluApi/docker/api/entrypoint.sh

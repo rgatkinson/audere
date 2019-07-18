@@ -8,14 +8,10 @@ set -euxo pipefail
 umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
-time (
-  function check() { echo 'select 1;' | psql "$@"; }
-  until check "$NONPII_DATABASE_URL" && check "$PII_DATABASE_URL"; do
-    sleep 1
-  done
-)
+if [[ ! -r "./static/buildInfo.json" ]]; then
+  echo 1>&2 "Cannot find buildInfo.json."
+  echo 1>&2 "Run 'yarn build:gen' in FluApi before 'docker-compose build' here."
+  exit 1
+fi
 
-time yarn setup-assume-built
-time yarn setup-aws
-
-node "./build/src/server.js"
+time yarn install --frozen-lockfile
