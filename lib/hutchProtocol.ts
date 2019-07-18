@@ -73,7 +73,7 @@ export interface Encounter {
   // when the encounter is completed via a user's personal device.
   site?: Site;
 
-  // De-identified location information.  
+  // De-identified location information.
   locations: Location[];
 
   sampleCodes: SampleCode[];
