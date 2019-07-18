@@ -34,6 +34,7 @@ double startTime = 0.0;
     if (!self.previewView) {
         self.previewView = [[AVCamPreviewView alloc] init];
         [self.view addSubview: self.previewView];
+        [self.previewView setFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds))];
         [self.previewView setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
     }
     self.previewView.session = self.session;
