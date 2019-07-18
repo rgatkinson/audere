@@ -47,6 +47,7 @@ export interface ChromeProps {
   hideBackButton?: boolean;
   menuItem?: boolean;
   splashImage?: string;
+  disableBounce?: boolean;
 }
 
 interface Props {
@@ -232,6 +233,9 @@ export const generateScreen = (config: ScreenConfig) => {
           ? AnimatedChrome
           : Chrome;
 
+      const disableBounce =
+        !!config && !!config.chromeProps && !!config.chromeProps.disableBounce;
+
       return this._noRendering ? null : (
         <ChromeType
           {...config.chromeProps}
@@ -242,6 +246,7 @@ export const generateScreen = (config: ScreenConfig) => {
             <CustomScrollView
               contentContainerStyle={styles.contentContainer}
               keyboardShouldPersistTaps="handled"
+              bounces={!disableBounce}
             >
               <View style={styles.innerContainer}>
                 {this._generateComponents(config.body, "body", config.key)}

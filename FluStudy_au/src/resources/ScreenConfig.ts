@@ -1021,6 +1021,9 @@ export const Screens: ScreenConfig[] = [
         props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
       },
     ],
+    chromeProps: {
+      disableBounce: true,
+    },
     key: "RDTReader",
   },
   {
@@ -1030,6 +1033,9 @@ export const Screens: ScreenConfig[] = [
         props: { next: "TestStripConfirmation" },
       },
     ],
+    chromeProps: {
+      disableBounce: true,
+    },
     key: "TestStripCamera",
   },
 ];

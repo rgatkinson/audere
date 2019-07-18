@@ -34,9 +34,7 @@ double startTime = 0.0;
     if (!self.previewView) {
         self.previewView = [[AVCamPreviewView alloc] init];
         [self.view addSubview: self.previewView];
-        [self.previewView setBounds: self.view.bounds];
-        [self.previewView setFrame: self.view.frame];
-        [self.previewView setCenter: self.view.center];
+        [self.previewView setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
     }
     self.previewView.session = self.session;
     
@@ -93,15 +91,17 @@ double startTime = 0.0;
 }
 
 - (void) showViewFinder {
-    self.viewFinder = [[ImageProcessor sharedProcessor] generateViewFinder:self.view forPreview: self.previewView];
+    if (self.viewFinder) {
+        self.viewFinder.hidden = false;
+    } else {
+        self.viewFinder = [[ImageProcessor sharedProcessor] generateViewFinder:self.view forPreview: self.previewView];
+    }
 }
 
 - (void) hideViewFinder {
-    if (self.viewFinder == NULL) {
-        return;
+    if (self.viewFinder) {
+        self.viewFinder.hidden = true;
     }
-    [self.viewFinder removeFromSuperlayer];
-    self.viewFinder = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated

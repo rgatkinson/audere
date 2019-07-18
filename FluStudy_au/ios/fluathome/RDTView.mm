@@ -11,12 +11,20 @@
 @implementation RDTView
 {
     ImageQualityViewController *viewController;
+    BOOL showDefaultViewFinder;
 }
-
+- (RDTView*) init
+{
+    self = [super init];
+    if (self) {
+        showDefaultViewFinder = false;
+    }
+    return self;
+}
 - (void) createImageQualityViewController
 {
     viewController = [[ImageQualityViewController alloc] init];
-    viewController.disableViewFinder = true;
+    viewController.disableViewFinder = !showDefaultViewFinder;
     __weak RDTView *weakSelf = self;
     viewController.onRDTCameraReady = ^() {
         RDTView *strongSelf = weakSelf;
@@ -87,6 +95,7 @@
 
 - (void) setShowDefaultViewfinder:(BOOL) showDefaultViewFinder
 {
+    self->showDefaultViewFinder = showDefaultViewFinder;
     if (showDefaultViewFinder) {
         [self.imageQualityViewController showViewFinder];
     } else {
