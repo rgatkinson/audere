@@ -6930,10 +6930,10 @@ sequelize-log-syntax-colors@^2.0.0:
   resolved "https://registry.yarnpkg.com/sequelize-log-syntax-colors/-/sequelize-log-syntax-colors-2.0.0.tgz#cd81bde18c67bf6663c8bf89b178648f6344aaae"
   integrity sha512-WwrB7T4hhB8404fP21kchirbt92R1Wyl0AeQdoGvTXAYKp6YTM8ul9IEK1hBj+yzP7gDnMA6GYO9et+QW1CWEg==
 
-sequelize@^4.39.0:
-  version "4.43.0"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-4.43.0.tgz#41c36c7684b0ea23ca7be1c3af3d65f2309a4ca6"
-  integrity sha512-GkwGFVREKBf/ql6W6RXwXy1fzb/HOk0lmOBbcQrJMvJtB65Jfg7CUh+sENh0deuWk5s79JedgZJ/yEjvtzHXaQ==
+sequelize@^4.44.2:
+  version "4.44.2"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-4.44.2.tgz#2dcd1b1e436d2cbb97c909e35e7ecf7cbc9ec6f1"
+  integrity sha512-XYHpjlq9zNNvQNR1g2aSrMs6OWv9ira6iXAeyyaCvlO/W1zhDc6BT/KaphJ49Z+0ss7zHTK6Nso1v13bNf2pOA==
   dependencies:
     bluebird "^3.5.0"
     cls-bluebird "^2.1.0"

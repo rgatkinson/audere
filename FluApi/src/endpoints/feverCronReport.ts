@@ -17,7 +17,7 @@ import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
 import { getREDCapConfig } from "../util/redCapConfig";
 import { SecretConfig } from "../util/secretsConfig";
-import { getS3Config } from "../util/s3Config";
+import { getS3Config, S3Config } from "../util/s3Config";
 import { SplitSql } from "../util/sql";
 import { defineFeverModels } from "../models/db/fever";
 import { defineGaplessSeq } from "../models/db/gaplessSeq";
@@ -25,18 +25,19 @@ import { S3Uploader } from "../external/s3Uploader";
 import * as AWS from "aws-sdk";
 
 export class FeverCronReportEndpoint {
-  private readonly sql: SplitSql;
   private incentives: LazyAsync<Incentives>;
   private kits: LazyAsync<KitOrders>;
   private followUps: LazyAsync<FollowUpSurveys>;
   private receivedKits: LazyAsync<ReceivedKits>;
 
   constructor(sql: SplitSql) {
-    this.sql = sql;
-    this.incentives = new LazyAsync(() => createIncentives(sql));
-    this.kits = new LazyAsync(() => createKits(sql));
-    this.followUps = new LazyAsync(() => createFollowUps(sql));
-    this.receivedKits = new LazyAsync(() => createReceivedKits(sql));
+    const secrets = new SecretConfig(sql);
+    const s3 = new LazyAsync(() => getS3Config(secrets));
+    this.incentives = new LazyAsync(() => createIncentives(sql, s3));
+    this.kits = new LazyAsync(() => createKits(sql, secrets, s3));
+    this.followUps = new LazyAsync(() => createFollowUps(sql, secrets, s3));
+    this.receivedKits =
+      new LazyAsync(() => createReceivedKits(sql, secrets, s3));
   }
 
   async exportBarcodes(req, res, next) {
@@ -100,7 +101,10 @@ export class FeverCronReportEndpoint {
   }
 }
 
-async function createIncentives(sql: SplitSql): Promise<Incentives> {
+async function createIncentives(
+  sql: SplitSql,
+  s3Config: LazyAsync<S3Config>
+): Promise<Incentives> {
   const fever = defineFeverModels(sql);
   const seq = defineGaplessSeq(sql);
   const dao = new IncentiveRecipientsDataAccess(
@@ -110,14 +114,16 @@ async function createIncentives(sql: SplitSql): Promise<Incentives> {
     fever.incentiveItem,
     fever.incentiveDiscard
   );
-  const secrets = new SecretConfig(sql);
-  const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
-  const uploader = new S3Uploader(s3, s3Config);
+  const uploader = new S3Uploader(s3, await s3Config.get());
   return new Incentives(dao, uploader);
 }
 
-async function createKits(sql: SplitSql): Promise<KitOrders> {
+async function createKits(
+  sql: SplitSql,
+  secrets: SecretConfig,
+  s3Config: LazyAsync<S3Config>
+): Promise<KitOrders> {
   const fever = defineFeverModels(sql);
   const seq = defineGaplessSeq(sql);
   const dao = new KitRecipientsDataAccess(
@@ -127,15 +133,17 @@ async function createKits(sql: SplitSql): Promise<KitOrders> {
     fever.kitItem,
     fever.kitDiscard
   );
-  const secrets = new SecretConfig(sql);
   const geocoder = await createGeocoder(secrets, sql);
-  const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
-  const uploader = new S3Uploader(s3, s3Config);
+  const uploader = new S3Uploader(s3, await s3Config.get());
   return new KitOrders(dao, geocoder, uploader);
 }
 
-async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
+async function createFollowUps(
+  sql: SplitSql,
+  secrets: SecretConfig,
+  s3Config: LazyAsync<S3Config>
+): Promise<FollowUpSurveys> {
   const fever = defineFeverModels(sql);
   const seq = defineGaplessSeq(sql);
   const dao = new FollowUpDataAccess(
@@ -145,24 +153,24 @@ async function createFollowUps(sql: SplitSql): Promise<FollowUpSurveys> {
     fever.followUpItem,
     fever.followUpDiscard
   );
-  const secrets = new SecretConfig(sql);
-  const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
-  const uploader = new S3Uploader(s3, s3Config);
+  const uploader = new S3Uploader(s3, await s3Config.get());
   const redCapConfig = await getREDCapConfig(secrets);
   const axios = createAxios(redCapConfig.apiUrl);
   const retriever = new REDCapClient(axios, redCapConfig);
   return new FollowUpSurveys(dao, uploader, retriever);
 }
 
-async function createReceivedKits(sql: SplitSql): Promise<ReceivedKits> {
+async function createReceivedKits(
+  sql: SplitSql,
+  secrets: SecretConfig,
+  s3Config: LazyAsync<S3Config>
+): Promise<ReceivedKits> {
   const dao = new ReceivedKitsData(sql);
-  const secrets = new SecretConfig(sql);
   const redCapConfig = await getREDCapConfig(secrets);
   const axios = createAxios(redCapConfig.apiUrl);
   const retriever = new REDCapClient(axios, redCapConfig);
-  const s3Config = await getS3Config(secrets);
   const s3 = new AWS.S3({ region: "us-west-2" });
-  const uploader = new S3Uploader(s3, s3Config);
+  const uploader = new S3Uploader(s3, await s3Config.get());
   return new ReceivedKits(dao, retriever, uploader);
 }
