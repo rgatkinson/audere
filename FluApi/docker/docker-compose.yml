@@ -9,8 +9,8 @@ services:
     networks:
       - vpc
     ports:
-      - "3000:3000"
-      - "3200:3200"
+      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3200:3200"
     env_file: ../.env
     environment:
       - NODE_ENV=development
@@ -19,11 +19,13 @@ services:
       - POSTGIS_DATABASE_URL=postgres://postgres@flu-api-db:5432/postgis
   postgis:
     container_name: flu-api-db
-    build:
-      context: ./db
-      dockerfile: ./Dockerfile
-    image: flu-db
+    image: mdillon/postgis:latest
     networks:
       - vpc
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/flu-api-init.sql
+
 networks:
   vpc:
