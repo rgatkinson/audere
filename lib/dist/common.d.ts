@@ -7,10 +7,11 @@ export interface ProtocolDocumentBase {
 export interface DeviceInfo {
     installation: string;
     clientVersion: ClientVersionInfo;
+    clientBuild?: number;
     deviceName?: string;
     yearClass: string;
     idiomText: string;
-    platform: string;
+    platform: object;
 }
 export interface ClientVersionInfo {
     buildDate: string;

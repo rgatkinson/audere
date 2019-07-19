@@ -5,6 +5,7 @@
 
 import crypto from "crypto";
 import {
+  DeviceInfo,
   DocumentType,
   VisitDocument,
   VisitInfo,
@@ -16,7 +17,7 @@ import {
 import { SurveyAttributes } from "../../src/models/db/fever";
 import { PIIInfo } from "audere-lib/feverProtocol";
 
-export const DEVICE = {
+export const DEVICE: DeviceInfo = {
   installation: "uuid",
   clientVersion: {
     buildDate: "buildDate",
@@ -27,7 +28,9 @@ export const DEVICE = {
   deviceName: "My Phone",
   yearClass: "2020",
   idiomText: "handset",
-  platform: "iOS"
+  platform: {
+    ios: {}
+  }
 };
 
 export const PATIENT_INFO = {

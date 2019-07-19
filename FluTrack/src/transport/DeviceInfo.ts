@@ -4,19 +4,18 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Constants } from "expo";
+import { DeviceInfo } from "audere-lib/common";
 
 const ios = Constants.platform.ios;
 
-export const DEVICE_INFO = {
+export const DEVICE_INFO: DeviceInfo = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
   deviceName: Constants.deviceName,
   yearClass: Constants.deviceYearClass,
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
-  platform: JSON.stringify(Constants.platform),
+  platform: Constants.platform,
 };
-
-export type DeviceInfo = typeof DEVICE_INFO;
 
 function loadBuildInfo() {
   try {

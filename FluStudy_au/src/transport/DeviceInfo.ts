@@ -5,10 +5,11 @@
 
 import { Constants } from "expo";
 import { Platform } from "react-native";
+import { DeviceInfo } from "audere-lib/common";
 
 export const ios = Constants.platform.ios;
 
-export const DEVICE_INFO = {
+export const DEVICE_INFO: DeviceInfo = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
   clientBuild: getBuildNumber(),
@@ -17,8 +18,6 @@ export const DEVICE_INFO = {
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
   platform: getPlatformInfo(),
 };
-
-export type DeviceInfo = typeof DEVICE_INFO;
 
 function loadBuildInfo() {
   try {

@@ -1212,7 +1212,9 @@ async function dbcliSnifflesDevice(
     deviceName: data.device_name,
     yearClass: new Date().getFullYear().toString(),
     idiomText: `dbcli-recover-visit-${id}`,
-    platform: os.platform()
+    platform: {
+      nodejs: os.platform()
+    }
   };
 }
 

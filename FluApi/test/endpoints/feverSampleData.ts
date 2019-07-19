@@ -26,7 +26,9 @@ export const DEVICE = {
   },
   yearClass: "2020",
   idiomText: "handset",
-  platform: "iOS"
+  platform: {
+    ios: {}
+  }
 };
 
 export const FAKE_EMAIL = "fakename@email.org";
