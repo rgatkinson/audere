@@ -1024,6 +1024,7 @@ export const Screens: ScreenConfig[] = [
     chromeProps: {
       disableBounce: true,
     },
+    backgroundColor: "black",
     key: "RDTReader",
   },
   {
@@ -1036,6 +1037,7 @@ export const Screens: ScreenConfig[] = [
     chromeProps: {
       disableBounce: true,
     },
+    backgroundColor: "black",
     key: "TestStripCamera",
   },
 ];

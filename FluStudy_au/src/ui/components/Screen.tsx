@@ -28,6 +28,7 @@ export interface ScreenConfig {
   workflowEvent?: string;
   automationNext?: string;
   allowedRemoteConfigValues?: string[];
+  backgroundColor?: string;
 }
 
 interface ComponentProps {
@@ -242,7 +243,14 @@ export const generateScreen = (config: ScreenConfig) => {
           hasBeenOpened={this.props.hasBeenOpened}
           navigation={this.props.navigation}
         >
-          <View style={styles.scrollContainer}>
+          <View
+            style={[
+              styles.scrollContainer,
+              !!config.backgroundColor && {
+                backgroundColor: config.backgroundColor,
+              },
+            ]}
+          >
             <CustomScrollView
               contentContainerStyle={styles.contentContainer}
               keyboardShouldPersistTaps="handled"
