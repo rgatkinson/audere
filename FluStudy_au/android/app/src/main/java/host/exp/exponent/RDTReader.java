@@ -73,8 +73,10 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
     }
 
     @Override
-    public void onRDTCameraReady() {
-        callReactCallback("RDTCameraReady", Arguments.createMap());
+    public void onRDTCameraReady(boolean supportsTorchMode) {
+        WritableMap event = Arguments.createMap();
+        event.putBoolean("supportsTorchMode", supportsTorchMode);
+        callReactCallback("RDTCameraReady", event);
     }
 
     @Override

@@ -26,12 +26,16 @@
     viewController = [[ImageQualityViewController alloc] init];
     viewController.disableViewFinder = !showDefaultViewFinder;
     __weak RDTView *weakSelf = self;
-    viewController.onRDTCameraReady = ^() {
+    viewController.onRDTCameraReady = ^(bool supportsTorchMode) {
         RDTView *strongSelf = weakSelf;
         if (!strongSelf || !strongSelf.onRDTCameraReady) {
             return;
         }
-        strongSelf.onRDTCameraReady(@{});
+        strongSelf.onRDTCameraReady(
+            @{
+                @"supportsTorchMode": @(supportsTorchMode),
+            }
+        );
     };
     viewController.onRDTDetected = ^(bool passed, UIImage *testStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime){
         RDTView *strongSelf = weakSelf;

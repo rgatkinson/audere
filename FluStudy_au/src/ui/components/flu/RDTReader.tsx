@@ -33,6 +33,7 @@ import Text from "../Text";
 import {
   RDTReader as RDTReaderComponent,
   RDTCapturedArgs,
+  RDTCameraReadyArgs,
   RDTInterpretingArgs,
 } from "../../../native/rdtReader";
 import {
@@ -104,6 +105,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     instructionMsg: "centerStrip",
     instructionIsOK: false,
     appState: "",
+    supportsTorchMode: false,
   };
 
   _didFocus: any;
@@ -308,7 +310,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
-        navigation.push(fallback);
+        navigation.push(fallback, {
+          supportsTorchMode: this.state.supportsTorchMode,
+        });
         dispatch(setRDTPhoto(""));
         dispatch(setRDTPhotoHC(""));
         dispatch(setRDTReaderResult({ testStripFound: false }));
@@ -340,7 +344,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       // pre-transition completion and therefore won't trigger willBlur.
       this._handleWillBlur();
       dispatch(setShownRDTFailWarning(false));
-      navigation.push(fallback);
+      navigation.push(fallback, {
+        supportsTorchMode: this.state.supportsTorchMode,
+      });
       dispatch(
         setRDTReaderResult({
           testStripFound: false,
@@ -356,8 +362,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
   }
 
-  _cameraReady = () => {
-    this.setState({ spinner: false });
+  _cameraReady = (args: RDTCameraReadyArgs) => {
+    this.setState({
+      spinner: false,
+      supportsTorchMode: args.supportsTorchMode,
+    });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
   };
@@ -795,24 +804,26 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               </View>
               <View style={styles.backgroundOverlay}>
                 <View style={styles.feedbackContainer}>
-                  <TouchableOpacity
-                    style={styles.feedbackItem}
-                    onPress={this._toggleFlash}
-                  >
-                    <Image
-                      style={styles.feedbackItemIcon}
-                      source={{
-                        uri: this.state.flashEnabled ? "flashon" : "flashoff",
-                      }}
-                    />
-                    <Text
-                      content={
-                        t("flash") +
-                        (this.state.flashEnabled ? t("on") : t("off"))
-                      }
-                      style={styles.feedbackItemText}
-                    />
-                  </TouchableOpacity>
+                  {this.state.supportsTorchMode && (
+                    <TouchableOpacity
+                      style={styles.feedbackItem}
+                      onPress={this._toggleFlash}
+                    >
+                      <Image
+                        style={styles.feedbackItemIcon}
+                        source={{
+                          uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                        }}
+                      />
+                      <Text
+                        content={
+                          t("flash") +
+                          (this.state.flashEnabled ? t("on") : t("off"))
+                        }
+                        style={styles.feedbackItemText}
+                      />
+                    </TouchableOpacity>
+                  )}
                   <View style={styles.feedbackItem} />
                   <View style={styles.feedbackItem} />
                 </View>
@@ -833,11 +844,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           taps={3}
           onMultiTap={this._forcePositiveResult}
         />
-        {isDemo ? (
+        {isDemo && (
           <View style={styles.fpsCounter}>
             <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
           </View>
-        ) : null}
+        )}
       </View>
     );
   }

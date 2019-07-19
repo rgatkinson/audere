@@ -41,13 +41,17 @@ export type RDTCapturedArgs = {
   testBLineFound: boolean;
 };
 
+export type RDTCameraReadyArgs = {
+  supportsTorchMode: boolean;
+};
+
 export type RDTInterpretingArgs = {
   timeTaken: number;
 };
 
 type RDTReaderProps = {
   onRDTCaptured: (args: RDTCapturedArgs) => void;
-  onRDTCameraReady: (args: {}) => void;
+  onRDTCameraReady: (args: RDTCameraReadyArgs) => void;
   onRDTInterpreting?: (args: RDTInterpretingArgs) => void;
   enabled: boolean;
   flashEnabled: boolean;
@@ -76,6 +80,12 @@ export class RDTReader extends React.Component<RDTReaderProps> {
     });
   };
 
+  _onRDTCameraReady = (event: any) => {
+    if (this.props.onRDTCameraReady) {
+      this.props.onRDTCameraReady(event.nativeEvent);
+    }
+  };
+
   _onRDTInterpreting = (event: any) => {
     if (this.props.onRDTInterpreting) {
       this.props.onRDTInterpreting(event.nativeEvent);
@@ -87,6 +97,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       <NativeRDTReader
         {...this.props}
         onRDTCaptured={this._onRDTCaptured}
+        onRDTCameraReady={this._onRDTCameraReady}
         onRDTInterpreting={this._onRDTInterpreting}
       />
     );

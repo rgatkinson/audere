@@ -53,6 +53,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     spinner: !DeviceInfo.isEmulator() && !this._shouldShowAlert(),
     flashEnabled: false,
     showCamera: !this._shouldShowAlert(),
+    supportsTorchMode: this.props.navigation.getParam("supportsTorchMode"),
   };
 
   _didFocus: any;
@@ -220,24 +221,26 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
               </View>
               <View style={styles.backgroundOverlay}>
                 <View style={styles.feedbackContainer}>
-                  <TouchableOpacity
-                    style={styles.feedbackItem}
-                    onPress={this._toggleFlash}
-                  >
-                    <Image
-                      style={styles.feedbackItemIcon}
-                      source={{
-                        uri: this.state.flashEnabled ? "flashon" : "flashoff",
-                      }}
-                    />
-                    <Text
-                      content={
-                        t("flash") +
-                        (this.state.flashEnabled ? t("on") : t("off"))
-                      }
-                      style={styles.overlayText}
-                    />
-                  </TouchableOpacity>
+                  {this.state.supportsTorchMode && (
+                    <TouchableOpacity
+                      style={styles.feedbackItem}
+                      onPress={this._toggleFlash}
+                    >
+                      <Image
+                        style={styles.feedbackItemIcon}
+                        source={{
+                          uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                        }}
+                      />
+                      <Text
+                        content={
+                          t("flash") +
+                          (this.state.flashEnabled ? t("on") : t("off"))
+                        }
+                        style={styles.overlayText}
+                      />
+                    </TouchableOpacity>
+                  )}
                   <View style={styles.feedbackItem} />
                   <View style={styles.feedbackItem} />
                 </View>

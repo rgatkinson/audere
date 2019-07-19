@@ -120,7 +120,9 @@ double startTime = 0.0;
                 self.sessionRunning = self.session.isRunning;
                 self.isProcessing = false;
                 if (self.onRDTCameraReady) {
-                    self.onRDTCameraReady();
+                    bool supportsTorchMode = [self.videoDeviceInput.device isTorchAvailable] &&
+                        [self.videoDeviceInput.device isTorchModeSupported:AVCaptureTorchModeOn];
+                    self.onRDTCameraReady(supportsTorchMode);
                 }
                 break;
             }

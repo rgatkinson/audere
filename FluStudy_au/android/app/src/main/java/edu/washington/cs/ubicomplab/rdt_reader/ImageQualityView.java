@@ -103,7 +103,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
         STOP, CONTINUE
     }
     public interface ImageQualityViewListener {
-        void onRDTCameraReady();
+        void onRDTCameraReady(boolean supportsTorchMode);
         RDTDectedResult onRDTDetected(
                 ImageProcessor.CaptureResult captureResult,
                 ImageProcessor.InterpretationResult interpretationResult,
@@ -185,6 +185,10 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
      */
     private CameraCaptureSession mCaptureSession;
 
+    /**
+     * Whether the camera supports torch mode.
+     */
+    private boolean mSupportsTorchMode;
 
 
     /**
@@ -597,6 +601,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
 
+                mSupportsTorchMode = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 mCameraId = cameraId;
                 return;
             }
@@ -706,7 +711,7 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
             }
             mCaptureSession = cameraCaptureSession;
             if (mImageQualityViewListener != null) {
-                mImageQualityViewListener.onRDTCameraReady();
+                mImageQualityViewListener.onRDTCameraReady(mSupportsTorchMode);
             }
 
             updateRepeatingRequest();
@@ -727,7 +732,6 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
             CameraManager manager = (CameraManager) mActivity.getSystemService(Context.CAMERA_SERVICE);
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraId);
 
-
             final android.graphics.Rect sensor = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
             Log.d(TAG, "Sensor size: " + sensor.width() + ", " + sensor.height());
             MeteringRectangle mr = new MeteringRectangle(sensor.width() / 2 - 50, sensor.height() / 2 - 50, 100 + (mCounter % 2), 100 + (mCounter % 2),
@@ -746,7 +750,9 @@ public class ImageQualityView extends LinearLayout implements View.OnClickListen
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AWB_REGIONS,
                     new MeteringRectangle[]{mr});
 
-            mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashEnabled ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+            if (mSupportsTorchMode) {
+                mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashEnabled ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+            }
             mPreviewRequest = mPreviewRequestBuilder.build();
 
             try {
