@@ -16,6 +16,7 @@ import {
 import { StoreState } from "../../../store";
 import { followUpSurveyUrl } from "../../../resources/LinkConfig";
 import ScreenText from "../ScreenText";
+import { getRemoteConfig } from "../../../util/remoteConfig";
 
 const MILLIS_IN_TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 
@@ -62,6 +63,10 @@ class SurveyLinkBlock extends React.PureComponent<Props, State> {
     }
 
     if (!this.state.shouldRender) {
+      return null;
+    }
+
+    if (getRemoteConfig("skipSurveyNotification")) {
       return null;
     }
 
