@@ -85,59 +85,6 @@ module "sniffles_visit_jobs_cron" {
   url = "http://${var.fluapi_fqdn}:444/api/runSnifflesJobs"
 }
 
-
-module "fever_kits_report_cron" {
-  source = "../lambda-cron"
-
-  frequency = "${local.cron_weekdays_before_1PM_PST}"
-  name = "${local.base_name}-fever-kits-report"
-  notification_topic = "${var.infra_alerts_sns_topic_arn}"
-  role_arn = "${aws_iam_role.flu_lambda.arn}"
-  security_group_ids = ["${var.internal_elb_access_sg}"]
-  subnet_id = "${var.lambda_subnet_id}"
-  timeout = 300
-  url = "http://${var.fluapi_fqdn}:444/api/export/sendKitOrders"
-}
-
-module "fever_gift_cards_cron" {
-  source = "../lambda-cron"
-
-  frequency = "${local.cron_monday_thursday_before_9AM_PST}"
-  name = "${local.base_name}-fever-gift-cards-report"
-  notification_topic = "${var.infra_alerts_sns_topic_arn}"
-  role_arn = "${aws_iam_role.flu_lambda.arn}"
-  security_group_ids = ["${var.internal_elb_access_sg}"]
-  subnet_id = "${var.lambda_subnet_id}"
-  timeout = 300
-  url = "http://${var.fluapi_fqdn}:444/api/export/sendIncentives"
-}
-
-module "fever_received_kits_cron" {
-  source = "../lambda-cron"
-
-  frequency = "${local.cron_weekdays_at_4AM_PST}"
-  name = "${local.base_name}-received-kits"
-  notification_topic = "${var.infra_alerts_sns_topic_arn}"
-  role_arn = "${aws_iam_role.flu_lambda.arn}"
-  security_group_ids = ["${var.internal_elb_access_sg}"]
-  subnet_id = "${var.lambda_subnet_id}"
-  timeout = 300
-  url = "http://${var.fluapi_fqdn}:444/api/import/receivedKits"
-}
-
-module "fever_follow_up_surveys_cron" {
-  source = "../lambda-cron"
-
-  frequency = "${local.cron_weekdays_at_4AM_PST}"
-  name = "${local.base_name}-follow-up-surveys"
-  notification_topic = "${var.infra_alerts_sns_topic_arn}"
-  role_arn = "${aws_iam_role.flu_lambda.arn}"
-  security_group_ids = ["${var.internal_elb_access_sg}"]
-  subnet_id = "${var.lambda_subnet_id}"
-  timeout = 300
-  url = "http://${var.fluapi_fqdn}:444/api/import/followUpSurveys"
-}
-
 module "cough_firebase_import" {
   source = "../lambda-cron"
 
