@@ -11,9 +11,37 @@ import {
 } from "../external/firebase";
 import { getPhotoCollection } from "./coughApi";
 import logger from "../util/logger";
+import { SecretsManager } from "../../node_modules/aws-sdk";
 
 export class ServerHealth {
   private sql: SplitSql;
+
+  SECRET_KEYS = [
+    "HUTCH_BASE_URL",
+    "HUTCH_USER",
+    "HUTCH_PASSWORD",
+    "GCP_FIREBASE_ANALYTICS_DATASET_COUGH",
+    "GCP_BQ_CREDENTIALS_EMAIL_COUGH",
+    "GCP_BQ_CREDENTIALS_KEY_COUGH",
+    "EXPORT_HASH_SECRET",
+    "SMARTYSTREETS_AUTH_ID",
+    "SMARTYSTREETS_AUTH_TOKEN",
+    "POSTGIS_DATABASE_URL",
+    "REDCAP_KIT_PROCESSING_TOKEN",
+    "REDCAP_FOLLOW_UPS_TOKEN",
+    "REDCAP_API_URL",
+    "REDCAP_HOME_DATA_REPORT_ID",
+    "REDCAP_SURVEY_DATA_REPORT_ID",
+    "S3_REPORT_BUCKET",
+    "S3_ASPREN_BUCKET",
+    "S3_FILESHARE_BUCKET",
+    "SHAREPOINT_URL",
+    "SHAREPOINT_CLIENT_ID",
+    "SHAREPOINT_CLIENT_SECRET",
+    "SHAREPOINT_INCENTIVES_FOLDER",
+    "SHAREPOINT_KITS_FOLDER",
+    "FIREBASE_TRANSPORT_CREDENTIALS"
+  ];
 
   constructor(sql: SplitSql) {
     this.sql = sql;
@@ -22,38 +50,24 @@ export class ServerHealth {
   public async check(req, res) {
     let secrets = new SecretConfig(this.sql);
     try {
-      const SECRET_KEYS = [
-        "HUTCH_BASE_URL",
-        "HUTCH_USER",
-        "HUTCH_PASSWORD",
-        "GCP_BIG_QUERY_FEVER",
-        "GCP_FIREBASE_ANALYTICS_DATASET_COUGH",
-        "GCP_BQ_CREDENTIALS_EMAIL_COUGH",
-        "GCP_BQ_CREDENTIALS_KEY_COUGH",
-        "EXPORT_HASH_SECRET",
-        "SMARTYSTREETS_AUTH_ID",
-        "SMARTYSTREETS_AUTH_TOKEN",
-        "POSTGIS_DATABASE_URL",
-        "REDCAP_KIT_PROCESSING_TOKEN",
-        "REDCAP_FOLLOW_UPS_TOKEN",
-        "REDCAP_API_URL",
-        "REDCAP_HOME_DATA_REPORT_ID",
-        "REDCAP_SURVEY_DATA_REPORT_ID",
-        "S3_REPORT_BUCKET",
-        "SHAREPOINT_URL",
-        "SHAREPOINT_CLIENT_ID",
-        "SHAREPOINT_CLIENT_SECRET",
-        "SHAREPOINT_INCENTIVES_FOLDER",
-        "SHAREPOINT_KITS_FOLDER"
-      ];
-      await Promise.all(SECRET_KEYS.map(key => secrets.get(key)));
+      let missing = [];
+      for (let ii = 0; ii < this.SECRET_KEYS.length; ii++) {
+        try {
+          await secrets.get(this.SECRET_KEYS[ii]);
+        } catch {
+          missing.push(this.SECRET_KEYS[ii]);
+        }
+      }
+      if (missing.length > 0) {
+        throw new Error("Missing secrets: " + missing.toString());
+      }
       const connector = connectorFromSqlSecrets(this.sql);
       const collection = getPhotoCollection();
       const receiver = new FirebaseReceiver(connector, { collection });
       await receiver.healthCheck();
       res.json({ Status: "OK" });
     } catch (err) {
-      logger.error(err);
+      logger.error("" + err);
       res.status(500).end();
     }
   }
