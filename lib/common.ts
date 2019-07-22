@@ -18,27 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-export interface ProtocolDocumentBase {
-  documentType: string;
-  schemaId: number;
-
-  // cryptographically secure unique id for this document.
-  csruid: string;
-
-  // information about client device
-  device: DeviceInfo;
-}
-
-export interface DeviceInfo {
-  installation: string; // uuid
-  clientVersion: ClientVersionInfo;
-  clientBuild?: number;
-  deviceName?: string;
-  yearClass: string;
-  idiomText: string;
-  platform: object;
-}
-
 export interface ClientVersionInfo {
   buildDate: string;
   hash: string;

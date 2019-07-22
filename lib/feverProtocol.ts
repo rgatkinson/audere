@@ -20,8 +20,7 @@
 import * as common from "./common";
 
 import {
-  ProtocolDocumentBase,
-  DeviceInfo,
+  ClientVersionInfo,
   GpsLocationInfo,
   SampleInfo,
   PatientInfoGender,
@@ -35,8 +34,7 @@ import {
 } from "./common";
 
 export {
-  ProtocolDocumentBase,
-  DeviceInfo,
+  ClientVersionInfo,
   GpsLocationInfo,
   SampleInfo,
   PatientInfoGender,
@@ -48,6 +46,26 @@ export {
   QuestionAnswerOption,
   OtherValueInfo
 };
+
+export interface ProtocolDocumentBase {
+  documentType: string;
+  schemaId: number;
+
+  // cryptographically secure unique id for this document.
+  csruid: string;
+
+  // information about client device
+  device: DeviceInfo;
+}
+
+export interface DeviceInfo {
+  installation: string;
+  clientVersion: ClientVersionInfo;
+  clientBuild: number;
+  yearClass: string;
+  idiomText: string;
+  platform: string;
+}
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
 // https://www.hl7.org/fhir/questionnaireresponse.html

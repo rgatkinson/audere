@@ -28,9 +28,9 @@ export const DEVICE: DeviceInfo = {
   deviceName: "My Phone",
   yearClass: "2020",
   idiomText: "handset",
-  platform: {
+  platform: JSON.stringify({
     ios: {}
-  }
+  })
 };
 
 export const PATIENT_INFO = {
@@ -138,22 +138,4 @@ export function makeCSRUID(seed: string): string {
   const hash = crypto.createHash("sha256");
   hash.update(seed);
   return hash.digest("hex").toString();
-}
-
-export function feverSurveyPii(csruid: string): SurveyAttributes<PIIInfo> {
-  return {
-    device: DEVICE,
-    csruid: csruid,
-    survey: {
-      patient: {
-        telecom: [],
-        address: []
-      },
-      consents: [],
-      responses: [],
-      isDemo: false,
-      events: [],
-      workflow: {}
-    }
-  };
 }

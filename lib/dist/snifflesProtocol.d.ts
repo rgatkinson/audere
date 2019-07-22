@@ -1,6 +1,20 @@
 import * as common from "./common";
-import { ClientVersionInfo, ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { ClientVersionInfo, ProtocolDocumentBase, DeviceInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+import { ClientVersionInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
+export { ClientVersionInfo, GpsLocationInfo, SampleInfo, PatientInfoGender, TelecomInfo, TelecomInfoSystem, AddressInfoUse, ConsentInfoSignerType, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+export interface ProtocolDocumentBase {
+    documentType: string;
+    schemaId: number;
+    csruid: string;
+    device: DeviceInfo;
+}
+export interface DeviceInfo {
+    installation: string;
+    clientVersion: ClientVersionInfo;
+    deviceName: string;
+    yearClass: string;
+    idiomText: string;
+    platform: string;
+}
 export interface ResponseInfo {
     id: string;
     item: ResponseItemInfo[];

@@ -1,11 +1,19 @@
 import * as common from "./common";
-import { DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { DeviceInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+import { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
+export { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
 export interface ProtocolDocumentBase {
     documentType: string;
     schemaId: number;
     docId: string;
     device: DeviceInfo;
+}
+export interface DeviceInfo {
+    installation: string;
+    clientVersion: ClientVersionInfo;
+    clientBuild: number;
+    yearClass: string;
+    idiomText: string;
+    platform: object;
 }
 export interface ResponseInfo {
     id: string;

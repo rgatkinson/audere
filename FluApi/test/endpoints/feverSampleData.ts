@@ -18,6 +18,7 @@ import {
 
 export const DEVICE = {
   installation: "uuid",
+  clientBuild: 1,
   clientVersion: {
     buildDate: "buildDate",
     hash: "hash",
@@ -26,9 +27,9 @@ export const DEVICE = {
   },
   yearClass: "2020",
   idiomText: "handset",
-  platform: {
+  platform: JSON.stringify({
     ios: {}
-  }
+  })
 };
 
 export const FAKE_EMAIL = "fakename@email.org";

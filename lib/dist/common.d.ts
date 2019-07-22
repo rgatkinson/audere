@@ -1,18 +1,3 @@
-export interface ProtocolDocumentBase {
-    documentType: string;
-    schemaId: number;
-    csruid: string;
-    device: DeviceInfo;
-}
-export interface DeviceInfo {
-    installation: string;
-    clientVersion: ClientVersionInfo;
-    clientBuild?: number;
-    deviceName?: string;
-    yearClass: string;
-    idiomText: string;
-    platform: object;
-}
 export interface ClientVersionInfo {
     buildDate: string;
     hash: string;

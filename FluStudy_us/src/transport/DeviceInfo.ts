@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Constants } from "expo";
-import { DeviceInfo } from "audere-lib/common";
+import { DeviceInfo } from "audere-lib/feverProtocol";
 
 export const ios = Constants.platform.ios;
 
@@ -15,7 +15,7 @@ export const DEVICE_INFO: DeviceInfo = {
   yearClass: Constants.deviceYearClass,
   // ios.userInterfaceIdiom will return "handset" or "tablet"
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
-  platform: Constants.platform,
+  platform: JSON.stringify(Constants.platform),
 };
 
 function loadBuildInfo() {

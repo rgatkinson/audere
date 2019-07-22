@@ -10,7 +10,7 @@ import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { defineFeverModels, FeverModels } from "../../src/models/db/fever";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { LazyAsync } from "../../src/util/lazyAsync";
-import { feverSurveyPii, makeCSRUID } from "../util/sample_data";
+import { makeCSRUID, surveyPIIInDb } from "./feverSampleData";
 
 const address: AddressInfo = {
   use: AddressInfoUse.Home,
@@ -62,7 +62,7 @@ describe("feverValidateAddress", () => {
 
   it("finds duplicate addresses", async () => {
     const csruid = makeCSRUID("blah blah");
-    const pii = feverSurveyPii(csruid);
+    const pii = surveyPIIInDb(csruid);
     pii.survey.patient.address = [address];
     await fever.surveyPii.destroy({
       where: { csruid }

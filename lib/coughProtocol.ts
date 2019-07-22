@@ -20,7 +20,7 @@
 import * as common from "./common";
 
 import {
-  DeviceInfo,
+  ClientVersionInfo,
   SampleInfo,
   PatientInfoGender,
   QuestionInfo,
@@ -29,7 +29,7 @@ import {
 } from "./common";
 
 export {
-  DeviceInfo,
+  ClientVersionInfo,
   SampleInfo,
   PatientInfoGender,
   QuestionInfo,
@@ -46,6 +46,15 @@ export interface ProtocolDocumentBase {
 
   // information about client device
   device: DeviceInfo;
+}
+
+export interface DeviceInfo {
+  installation: string;
+  clientVersion: ClientVersionInfo;
+  clientBuild: number;
+  yearClass: string;
+  idiomText: string;
+  platform: object;
 }
 
 // This is loosely based on the FHIR 'QuestionnaireResponse' resource
