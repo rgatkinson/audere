@@ -161,7 +161,10 @@ double startTime = 0.0;
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
-    [self.session stopRunning];
+    if (self.sessionRunning) {
+        [self.session stopRunning];
+        self.sessionRunning = self.session.isRunning;
+    }
     self.isProcessing = true;
     startTime = 0;
 }
