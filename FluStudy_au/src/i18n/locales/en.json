@@ -472,12 +472,10 @@
     "ausGov": "Australian Government Department of Health: All about influenza",
     "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
     "changeResultAnswer": "**Change your answers >**",
-    "haveKitAlready": "I already have my kit",
-    "learnMore": "Learn more about this flu study",
-    "findMedHelp": "Search Maps for urgent care clinics nearby",
     "inputManually": "Enter barcode",
     "myDr": "myDr.com.au: Flu treatment",
-    "skipTestStripPhoto": "Unable to take a picture? Skip this step"
+    "skipTestStripPhoto": "Unable to take a picture? Skip this step",
+    "supportBody": "\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.] Installation ID: "
   },
   "surveyOption": {
     "doNotEmailMe": "Please do not email me",
