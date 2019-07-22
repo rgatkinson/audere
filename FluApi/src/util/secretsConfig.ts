@@ -33,7 +33,15 @@ export class SecretConfig {
     if (envVar == null) {
       return null;
     } else {
-      return await fsPromise.readFile(envVar, { encoding: "utf8" });
+      try {
+        return await fsPromise.readFile(envVar, { encoding: "utf8" });
+      } catch {
+        throw new Error(
+          'Could not find file "' +
+            key +
+            '", check to make sure that it exists.'
+        );
+      }
     }
   }
 

@@ -59,7 +59,7 @@ export class ServerHealth {
         }
       }
       if (missing.length > 0) {
-        throw new Error("Missing secrets: " + missing.toString());
+        throw new Error("Missing secrets: " + missing.join(", "));
       }
       const connector = connectorFromSqlSecrets(this.sql);
       const collection = getPhotoCollection();

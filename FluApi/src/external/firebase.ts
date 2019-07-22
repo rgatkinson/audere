@@ -50,15 +50,7 @@ export class FirebaseReceiver {
   }
 
   public async healthCheck() {
-    let db: any;
-    try {
-      db = await this.firestore();
-    } catch {
-      throw new Error(
-        "Could not connect to Firebase, make sure FIREBASE_TRANSPORT_CREDENTIALS is valid"
-      );
-    }
-
+    const db = await this.firestore();
     const collection = db.collection(this.config.collection);
 
     const docRef = collection.doc("health-check.json");
