@@ -69,7 +69,7 @@ export const MenuScreens: ScreenConfig[] = [
   {
     body: [
       { tag: MainImage, props: { menuItem: true, uri: "colorlogo" } },
-      { tag: Title, props: { label: "contactSupport" } },
+      { tag: Title },
       {
         tag: ScreenText,
         props: {
