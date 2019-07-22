@@ -69,6 +69,7 @@
         return;
     };
     [self addSubview:viewController.view];
+    [viewController.view setFrame: CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds))];
     self.imageQualityViewController = viewController;
 }
 
