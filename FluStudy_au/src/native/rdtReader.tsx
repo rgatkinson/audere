@@ -52,6 +52,7 @@ type RDTReaderProps = {
   enabled: boolean;
   flashEnabled: boolean;
   showDefaultViewfinder?: boolean;
+  appState: string;
   style: any;
 };
 

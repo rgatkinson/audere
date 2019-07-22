@@ -20,6 +20,8 @@ import edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView;
 import edu.washington.cs.ubicomplab.rdt_reader.ImageUtil;
 
 public class RDTReader extends LinearLayout implements ImageQualityView.ImageQualityViewListener {
+    private static final String TAG = "RDTReader";
+
     private Activity mActivity;
     private boolean showViewfinder = false;
     private boolean flashEnabled = true;
@@ -124,6 +126,18 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
         super.onDetachedFromWindow();
         if (mImageQualityView != null) {
             mImageQualityView.onPause();
+        }
+    }
+
+    public void onPause() {
+        if (mImageQualityView != null) {
+            mImageQualityView.onPause();
+        }
+    }
+
+    public void onResume() {
+        if (mImageQualityView != null) {
+            mImageQualityView.onResume();
         }
     }
 

@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RDTReaderManager extends SimpleViewManager<RDTReader> {
     public static final String REACT_CLASS = "RDTReader";
+    private static final String TAG = "RDTReaderManager";
 
     @Override
     public String getName() {
@@ -47,7 +48,7 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
 
     @ReactProp(name = "enabled")
     public void setEnabled(RDTReader view, boolean enabled) {
-        Log.i("RDTReader", "RDTReaderManager enabled: " + Boolean.toString(enabled));
+        Log.i(TAG, "RDTReaderManager enabled: " + Boolean.toString(enabled));
         if (enabled) {
             view.enable();
         } else {
@@ -63,5 +64,14 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
     @ReactProp(name = "flashEnabled")
     public void setFlashEnabled(RDTReader view, boolean flashEnabled) {
         view.setFlashEnabled(flashEnabled);
+    }
+
+    @ReactProp(name = "appState")
+    public void setAppState(RDTReader view, String appState) {
+        if (appState.equals("active")) {
+            view.onResume();
+        } else if (appState.equals("background")) {
+            view.onPause();
+        }
     }
 }

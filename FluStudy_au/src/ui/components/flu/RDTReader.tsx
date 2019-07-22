@@ -103,6 +103,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     fps: 0,
     instructionMsg: "centerStrip",
     instructionIsOK: false,
+    appState: "",
   };
 
   _didFocus: any;
@@ -323,6 +324,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   }
 
   _handleAppStateChange = async (nextAppState: string) => {
+    this.setState({ appState: nextAppState });
     if (nextAppState === "active" && this.state.flashEnabled) {
       // Toggle flash state since the hardware state doesn't seem to get preserved
       // on iOS if the app is backgrounded and then foregrounded.
@@ -682,6 +684,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           enabled={isFocused}
           showDefaultViewfinder={false}
           flashEnabled={this.state.flashEnabled}
+          appState={this.state.appState}
         />
         <View style={styles.overlayContainer}>
           <View style={{ flexDirection: "column", flex: 1 }}>
