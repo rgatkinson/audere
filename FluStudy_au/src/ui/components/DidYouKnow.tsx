@@ -5,7 +5,7 @@
 
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { REGULAR_TEXT } from "../styles";
+import { GUTTER, REGULAR_TEXT } from "../styles";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
@@ -89,7 +89,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
         <Text content={this.state.currentText} />
         <Text style={styles.source} content={this.state.currentSource} />
       </View>
@@ -105,6 +105,9 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: GUTTER,
+  },
   source: {
     fontSize: REGULAR_TEXT * SOURCE_SIZE,
     lineHeight: SOURCE_LINE_HEIGHT,
