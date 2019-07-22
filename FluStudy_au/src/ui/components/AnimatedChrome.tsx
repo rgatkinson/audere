@@ -194,11 +194,7 @@ class AnimatedChrome extends React.PureComponent<Props> {
             ],
           }}
         >
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor="transparent"
-            translucent={true}
-          />
+          <StatusBar barStyle="light-content" translucent={true} />
           <NavigationBar
             hideBackButton={hideBackButton}
             menuItem={menuItem}

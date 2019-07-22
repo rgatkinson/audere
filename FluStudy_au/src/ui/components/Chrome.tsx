@@ -65,11 +65,7 @@ export default class Chrome extends React.PureComponent<Props> {
               height: splashImage ? 300 : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
             }}
           />
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor="transparent"
-            translucent={true}
-          />
+          <StatusBar barStyle="light-content" translucent={true} />
           <NavigationBar
             hideBackButton={hideBackButton}
             menuItem={menuItem}

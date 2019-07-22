@@ -99,8 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   demoView: {
-    backgroundColor: "green",
-    opacity: 0.5,
+    backgroundColor: "rgba(1, 128, 1, 0.5)",
     paddingTop: STATUS_BAR_HEIGHT,
     position: "absolute",
     top: 0,
@@ -111,7 +110,6 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    backgroundColor: "transparent",
     flexDirection: "row",
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
     justifyContent: "space-between",

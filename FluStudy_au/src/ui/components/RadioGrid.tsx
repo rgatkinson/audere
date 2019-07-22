@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
     width: undefined,
   },
   radioButton: {
+    alignItems: "center",
     borderColor: BORDER_COLOR,
     borderWidth: BORDER_WIDTH,
     borderRadius: RADIO_INPUT_HEIGHT / 2,

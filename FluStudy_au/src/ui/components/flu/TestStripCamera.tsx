@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
   },
   circle: {
     backgroundColor: "white",
-    borderColor: "transparent",
     borderRadius: 30,
     borderWidth: 3,
     height: 60,
