@@ -38,7 +38,7 @@ export class SecretConfig {
       } catch {
         throw new Error(
           'Could not find file "' +
-            key +
+            envVar +
             '", check to make sure that it exists.'
         );
       }
