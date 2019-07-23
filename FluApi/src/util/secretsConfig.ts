@@ -37,9 +37,11 @@ export class SecretConfig {
         return await fsPromise.readFile(envVar, { encoding: "utf8" });
       } catch {
         throw new Error(
-          'Could not find file "' +
+          'Could not find environment variable "' +
+            key +
+            '" or its value "' +
             envVar +
-            '", check to make sure that it exists.'
+            '", check to make sure that they exist.'
         );
       }
     }
