@@ -10,7 +10,7 @@ const schema = "cough";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query("drop view cough_derived.analytics");
+    await queryInterface.sequelize.query("drop materialized view cough_derived.analytics");
 
     await queryInterface.changeColumn(
       {
