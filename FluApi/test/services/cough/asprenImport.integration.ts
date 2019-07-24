@@ -3,6 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import * as XLSX from "xlsx";
+import parse from "csv-parse/lib/sync";
 import { instance, mock, when } from "ts-mockito";
 import asprenReports from "../../resources/asprenExamples.json";
 import { AsprenClient } from "../../../src/external/asprenClient";
@@ -36,8 +38,14 @@ describe("import ASPREN reports", () => {
     };
 
     const getRequest = mock(AWS.Request);
+    const wb = XLSX.utils.book_new();
+    const csv = parse(asprenReports.default);
+    const ws = XLSX.utils.aoa_to_sheet(csv);
+    XLSX.utils.book_append_sheet(wb, ws, "Data");
+    const outputBuffer = XLSX.write(wb, { type: "buffer" });
+
     when(getRequest.promise()).thenResolve({
-      Body: asprenReports.default,
+      Body: outputBuffer,
       $response: null
     });
     s3.getObject = params => {

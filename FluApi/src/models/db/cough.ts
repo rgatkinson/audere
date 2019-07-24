@@ -203,20 +203,21 @@ export enum IndigenousStatus {
   Aboriginal = "AB",
   TorresStraitIslander = "TS",
   Both = "BT",
-  Unknown = "U",
+  Unknown = "UNKNOWN",
+  Yes = "Y",
   No = "N"
 }
 
 export enum CurrentSeasonVaccinationStatus {
   Received = "Y",
   NotReceived = "N",
-  Unknown = "U"
+  Unknown = "UNKNOWN"
 }
 
 export enum PreviousSeasonVaccinationStatus {
   Received = "Y",
   NotReceived = "N",
-  Unknown = "U",
+  Unknown = "UNKNOWN",
   Never = "NEVER"
 }
 
@@ -258,35 +259,35 @@ export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
       barcode: unique(stringColumn()),
       encounterDate: stringColumn("encounter_date"),
       encounterState: stringColumn("encounter_state"),
-      adenoResult: booleanColumn("adeno_result"),
-      pertussisResult: booleanColumn("b_pertussis_result"),
-      fluAResult: booleanColumn("flu_a_result"),
-      fluBResult: booleanColumn("flu_b_result"),
-      h1n1Result: booleanColumn("h1n1_result"),
-      h3n2Result: booleanColumn("h3n2_result"),
-      metapneumovirusResult: booleanColumn("metapneumovirus_result"),
-      mycopneumoniaResult: booleanColumn("mycopneumonia_result"),
-      para1Result: booleanColumn("para_1_result"),
-      para2Result: booleanColumn("para_2_result"),
-      para3Result: booleanColumn("para_3_result"),
-      rhinovirusResult: booleanColumn("rhinovirus_result"),
-      rsvResult: booleanColumn("rsv_result"),
-      victoriaResult: booleanColumn("victoria_result"),
-      yamagataResult: booleanColumn("yamagata_result"),
+      adenoResult: nullable(booleanColumn("adeno_result")),
+      pertussisResult: nullable(booleanColumn("b_pertussis_result")),
+      fluAResult: nullable(booleanColumn("flu_a_result")),
+      fluBResult: nullable(booleanColumn("flu_b_result")),
+      h1n1Result: nullable(booleanColumn("h1n1_result")),
+      h3n2Result: nullable(booleanColumn("h3n2_result")),
+      metapneumovirusResult: nullable(booleanColumn("metapneumovirus_result")),
+      mycopneumoniaResult: nullable(booleanColumn("mycopneumonia_result")),
+      para1Result: nullable(booleanColumn("para_1_result")),
+      para2Result: nullable(booleanColumn("para_2_result")),
+      para3Result: nullable(booleanColumn("para_3_result")),
+      rhinovirusResult: nullable(booleanColumn("rhinovirus_result")),
+      rsvResult: nullable(booleanColumn("rsv_result")),
+      victoriaResult: nullable(booleanColumn("victoria_result")),
+      yamagataResult: nullable(booleanColumn("yamagata_result")),
       aboriginalOrIslander: {
-        type: Sequelize.ENUM("AB", "TS", "BT", "Unknown"),
+        type: Sequelize.STRING,
         field: "atsi",
         allowNull: true
       },
       dateOnset: stringColumn("date_onset"),
       currentVaccination: {
-        type: Sequelize.ENUM("Yes", "No", "Unknown"),
+        type: Sequelize.STRING,
         field: "current_vaccination",
         allowNull: true
       },
       vaccinationDate: nullable(stringColumn("vaccination_date")),
       previousVaccination: {
-        type: Sequelize.ENUM("Yes", "No", "Unknown", "Never"),
+        type: Sequelize.STRING,
         field: "previous_vaccination",
         allowNull: true
       },

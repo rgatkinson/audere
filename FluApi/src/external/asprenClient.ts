@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import * as XLSX from "xlsx";
 import parse from "csv-parse/lib/sync";
 import {
   AsprenDataAttributes,
@@ -43,10 +44,20 @@ export class AsprenClient {
     logger.info(`${objects.KeyCount} keys listed in ASPREN bucket.`);
 
     const metadata = objects.Contents.reduce((prev, curr) => {
-      const prevMs = prev.LastModified.getUTCMilliseconds();
-      const currMs = curr.LastModified.getUTCMilliseconds();
-      return prevMs > currMs ? prev : curr;
+      if (curr.Key.endsWith("\.xlsx")) {
+        const prevMs = prev.LastModified.getUTCMilliseconds();
+        const currMs = curr.LastModified.getUTCMilliseconds();
+        return prevMs > currMs ? prev : curr;
+      } else {
+        return prev;
+      }
     });
+
+    if (metadata == null) {
+      logger.info(`No XLSX files found.`);
+      return;
+    }
+
     logger.info(
       `${metadata.Key} is the most recent file in the ASPREN bucket.`
     );
@@ -58,13 +69,26 @@ export class AsprenClient {
     };
 
     const object = await this.s3.getObject(getParams).promise();
-    const report = parse(object.Body.toString(), { columns: true });
+    const wb = XLSX.read(object.Body, { type: "buffer" });
+
+    if (!wb.SheetNames.includes("Data")) {
+      throw Error(`${metadata.Key} does not contain a Data sheet.`);
+    }
+
+    const sheet = wb.Sheets["Data"];
+    const csv = XLSX.utils.sheet_to_csv(sheet);
+    const report = parse(csv, { columns: true });
 
     if (!Array.isArray(report)) {
-      throw new Error(`Contents of ${metadata.Key} could not be parsed.`);
+      throw Error(`Contents of ${metadata.Key} could not be parsed.`);
     }
 
     const rows = <any[]>report;
+
+    if (!this.validRow(rows[0])) {
+      throw Error(`Rows from ${metadata.Key} do not contain expected fields.`);
+    }
+
     const records = rows.map(row => this.mapRecord(row));
 
     return {
@@ -72,6 +96,36 @@ export class AsprenClient {
       hash: metadata.ETag,
       records: records
     };
+  }
+
+  private validRow(row: any): boolean {
+     return "ATSI" in row &&
+      "CURRENT_SEASON_VACC" in row &&
+      "VACC_PREV_SEASON" in row &&
+      "OVERSEAS" in row &&
+      "DATE_OF_VACC" in row &&
+      "COMORBIDITIES_DESCRIPTION" in row &&
+      "SA Pathology barcode" in row &&
+      "Referred" in row &&
+      "Dr State" in row &&
+      "ADENO_RESULT" in row &&
+      "B_PERTUSSIS_RESULT" in row &&
+      "FLU_A_RESULT" in row &&
+      "FLU_B_RESULT" in row &&
+      "H1N1(2009)" in row &&
+      "H3N2" in row &&
+      "METAPNEUMOVIRUS_RES" in row &&
+      "MYCO_PNEUMONIAE_RES" in row &&
+      "PARA_1_RESULT" in row &&
+      "PARA_2_RESULT" in row &&
+      "PARA_3_RESULT" in row &&
+      "RHINOVIRUS_RESULT" in row &&
+      "RSV_RESULT" in row &&
+      "VICTORIA" in row &&
+      "YAMAGATA" in row &&
+      "DATE_ONSET" in row &&
+      "COMORBIDITIES" in row &&
+      "HCW_STATUS" in row;
   }
 
   /**
@@ -93,18 +147,11 @@ export class AsprenClient {
     let overseasLocation;
     let overseasIllness;
 
-    // Yes answers are in the format of Y, ${country}.  Country is a place
-    // abroad where the illness may have been contracted.
-    if (/^Y\,\s\w+$/.test(overseas)) {
-      overseasIllness = true;
-      overseasLocation = overseas
-        .toString()
-        .split(",")[1]
-        .trim();
-    } else if (overseas === "N") {
+    if (overseas === "N") {
       overseasIllness = false;
     } else if (overseas !== "B") {
-      throw new Error(`Overseas answer, ${overseas}, could not be parsed.`);
+      overseasIllness = true;
+      overseasLocation = overseas;
     }
 
     const vaccinationDate = row["DATE_OF_VACC"];
@@ -126,7 +173,7 @@ export class AsprenClient {
       para2Result: this.parseZeroOne(row["PARA_2_RESULT"]),
       para3Result: this.parseZeroOne(row["PARA_3_RESULT"]),
       rhinovirusResult: this.parseZeroOne(row["RHINOVIRUS_RESULT"]),
-      rsvResult: this.parseZeroOne(row["RHINOVIRUS_RESULT"]),
+      rsvResult: this.parseZeroOne(row["RSV_RESULT"]),
       victoriaResult: this.parseZeroOne(row["VICTORIA"]),
       yamagataResult: this.parseZeroOne(row["YAMAGATA"]),
       aboriginalOrIslander: atsi === "B" ? undefined : atsi,
@@ -151,8 +198,14 @@ export class AsprenClient {
         return true;
       case "1":
         return false;
+      case "Equivocal":
+        return undefined;
+      case "":
+        return undefined;
+      case null:
+        return undefined;
       default:
-        throw new Error(`Unable to parse boolean 0/1 value from ${input}.`);
+        throw Error(`Unable to parse boolean 0/1 value from ${input}.`);
     }
   }
 
@@ -165,13 +218,13 @@ export class AsprenClient {
       case "B":
         return undefined;
       default:
-        throw new Error(`Unable to parse boolean yes/no value from ${input}.`);
+        throw Error(`Unable to parse boolean yes/no value from ${input}.`);
     }
   }
 
   private validateAtsi(input: string): void {
     if (input !== "B" && !Object.values(IndigenousStatus).includes(input)) {
-      throw new Error(`Invalid ATSI value, ${input}.`);
+      throw Error(`Invalid ATSI value, ${input}.`);
     }
   }
 
@@ -180,7 +233,7 @@ export class AsprenClient {
       input !== "B" &&
       !Object.values(CurrentSeasonVaccinationStatus).includes(input)
     ) {
-      throw new Error(`Invalid current vaccination status, ${input}.`);
+      throw Error(`Invalid current vaccination status, ${input}.`);
     }
   }
 
@@ -189,7 +242,7 @@ export class AsprenClient {
       input !== "B" &&
       !Object.values(PreviousSeasonVaccinationStatus).includes(input)
     ) {
-      throw new Error(`Invalid previous vaccination status, ${input}.`);
+      throw Error(`Invalid previous vaccination status, ${input}.`);
     }
   }
 }

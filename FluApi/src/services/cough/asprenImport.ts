@@ -29,6 +29,11 @@ export class AsprenImport {
   public async importAsprenReports(): Promise<void> {
     const report = await this.aspren.getLatestAsprenReport();
 
+    if (report == null) {
+      logger.info(`No ASPREN reports available for processing.`);
+      return;
+    }
+
     const processed = await this.models.asprenFile.findAll({
       where: {
         key: report.key,
