@@ -128,7 +128,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ebphotostore"
+        applicationId "org.auderenow.ebphotostore"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
