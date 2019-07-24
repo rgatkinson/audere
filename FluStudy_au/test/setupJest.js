@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 // See https://github.com/expo/expo/issues/1705
-import {FileSystem} from "expo";
+import * as FileSystem from 'expo-file-system';
 
 require("stacktrace-parser");
 
@@ -46,7 +46,9 @@ jest.mock("react-native-device-info", () => {
 // It's not terribly robust about things like checking errors or
 // creating parent directories, but it works well enough reading/writing
 // files and directories.
-mockFileSystem();
+jest.mock("expo-file-system", () => {
+  return mockFileSystem();
+})
 
 function mockFileSystem() {
   const files = new Map();
@@ -110,21 +112,24 @@ function mockFileSystem() {
   function notYetMocked() {
     throw new Error(`${__filename}: mockFileSystem does not yet implement this call`);
   }
-  FileSystem.moveAsync = notYetMocked;
-  FileSystem.copyAsync = notYetMocked;
-  FileSystem.downloadAsync = notYetMocked;
-  FileSystem.createDownloadResumable = notYetMocked;
 
-  FileSystem.documentDirectory = "TestDocuments/";
-  FileSystem.cacheDirectory = "TestCache/";
-  FileSystem.deleteAsync = jest.fn(deleteAsync);
-  FileSystem.getInfoAsync = jest.fn(getInfoAsync);
-  FileSystem.makeDirectoryAsync = jest.fn(makeDirectoryAsync);
-  FileSystem.readAsStringAsync = jest.fn(readAsStringAsync);
-  FileSystem.readDirectoryAsync = jest.fn(readDirectoryAsync);
-  FileSystem.writeAsStringAsync = jest.fn(writeAsStringAsync);
-  FileSystem.EncodingTypes = {
-    UTF8: "utf8",
-    Base64: "base64"
+  return {
+    moveAsync: notYetMocked,
+    copyAsync: notYetMocked,
+    downloadAsync: notYetMocked,
+    createDownloadResumable: notYetMocked,
+
+    documentDirectory: "TestDocuments/",
+    cacheDirectory: "TestCache/",
+    deleteAsync: jest.fn(deleteAsync),
+    getInfoAsync: jest.fn(getInfoAsync),
+    makeDirectoryAsync: jest.fn(makeDirectoryAsync),
+    readAsStringAsync: jest.fn(readAsStringAsync),
+    readDirectoryAsync: jest.fn(readDirectoryAsync),
+    writeAsStringAsync: jest.fn(writeAsStringAsync),
+    EncodingType: {
+      UTF8: "utf8",
+      Base64: "base64"
+    }
   };
 }

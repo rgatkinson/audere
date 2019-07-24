@@ -14,7 +14,7 @@ import {
 import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { BarCodeScanner } from "expo";
+import { Camera } from "expo-camera";
 import { SampleInfo } from "audere-lib/feverProtocol";
 import {
   Action,
@@ -92,7 +92,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
   _setHelpTimer() {
     this.setState({ showHelpText: false });
     this._clearHelpTimer();
-    this._helpTimer = setTimeout(() => {
+    this._helpTimer = global.setTimeout(() => {
       this.setState({ showHelpText: true });
     }, 8000);
   }
@@ -109,7 +109,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     this.setState({ activeScan: false });
     // Timeout after 30 seconds
     this._clearTimeoutTimer();
-    this._timeoutTimer = setTimeout(() => {
+    this._timeoutTimer = global.setTimeout(() => {
       if (navigation.isFocused()) {
         logFirebaseEvent(AppEvents.BARCODE_TIMEOUT);
         navigation.push(timeoutScreen);
@@ -175,8 +175,8 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     }
     return (
       <View style={styles.container}>
-        <BarCodeScanner
-          style={{ flex: 1, alignSelf: "stretch" }}
+        <Camera
+          style={StyleSheet.absoluteFill}
           onBarCodeScanned={this._onBarCodeScanned}
         />
         <View style={styles.overlayContainer}>

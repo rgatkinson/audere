@@ -5,7 +5,7 @@
 
 import { Linking } from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 import { logFirebaseEvent, AppEvents } from "../util/tracker";
 import i18n from "i18next";
 

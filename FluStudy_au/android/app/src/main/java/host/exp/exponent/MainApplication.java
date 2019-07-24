@@ -7,7 +7,6 @@ import com.facebook.react.ReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import expolib_v1.okhttp3.OkHttpClient;
 import com.brentvatne.react.ReactVideoPackage;
 
 // Needed for `react-native link`
@@ -15,7 +14,6 @@ import com.brentvatne.react.ReactVideoPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 
@@ -31,14 +29,7 @@ import org.linusu.RNGetRandomValuesPackage;
 
 // Needed starting Expo v32
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
-import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.camera.CameraPackage;
-import expo.modules.constants.ConstantsPackage;
-import expo.modules.filesystem.FileSystemPackage;
-import expo.modules.font.FontLoaderPackage;
-import expo.modules.localization.LocalizationPackage;
-import expo.modules.permissions.PermissionsPackage;
-import expo.modules.taskManager.TaskManagerPackage;
+import host.exp.exponent.generated.BasePackageList;
 
 public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface {
 
@@ -72,7 +63,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
 
             // Needed for `react-native link`
             // new MainReactPackage(),
-            new NetInfoPackage(),
             new ReactNativePushNotificationPackage(),
             new FBSDKPackage(mCallbackManager),
             new RNDeviceInfo(),
@@ -88,31 +78,11 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   }
 
   public List getExpoPackages() {
-    return Arrays.asList(
-            new CameraPackage(),
-            new ConstantsPackage(),
-            new FileSystemPackage(),
-            new PermissionsPackage(),
-            new ConstantsPackage(),
-            new FontLoaderPackage(),
-            new LocalizationPackage(),
-            new BarCodeScannerPackage(),
-            new TaskManagerPackage()
-    );
+    return new BasePackageList().getPackageList();
   }
 
   @Override
   public String gcmSenderId() {
     return getString(R.string.gcm_defaultSenderId);
-  }
-
-  @Override
-  public boolean shouldUseInternetKernel() {
-    return BuildVariantConstants.USE_INTERNET_KERNEL;
-  }
-
-  public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
-    // Customize/override OkHttp client here
-    return builder;
   }
 }

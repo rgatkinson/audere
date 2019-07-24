@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   AppState,
+  AsyncStorage,
   Dimensions,
   StyleSheet,
   View,
@@ -24,7 +25,7 @@ import {
   setConnectivity,
   resetTimestamp,
 } from "../store/";
-import { Permissions } from "expo";
+import * as Permissions from "expo-permissions";
 import { crashlytics } from "../crashReporter";
 import { notificationLaunchHandler } from "../util/notifications";
 import {
@@ -84,6 +85,19 @@ interface Props {
   dispatch(action: Action): void;
   cameraSettingsGrantedPage: string;
 }
+
+const persistenceKey = "NavigationStateAus";
+const persistNavigationState = async (navState: NavigationState) => {
+  try {
+    await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState));
+  } catch (err) {
+    // handle the error according to your needs
+  }
+};
+const loadNavigationState = async () => {
+  const jsonString = await AsyncStorage.getItem(persistenceKey);
+  return !!jsonString ? JSON.parse(jsonString) : "";
+};
 
 class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
   shouldComponentUpdate(props: Props) {
@@ -309,7 +323,8 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     return (
       <View style={{ flex: 1 }}>
         <AppContainer
-          persistenceKey={"NavigationStateAus"}
+          loadNavigationState={loadNavigationState}
+          persistNavigationState={persistNavigationState}
           ref={this.navigator}
           onNavigationStateChange={this._handleNavChange}
           renderLoadingExperimental={this._loadingIndicator}

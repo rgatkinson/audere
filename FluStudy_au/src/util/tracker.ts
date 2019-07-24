@@ -6,7 +6,7 @@
 import firebase from "react-native-firebase";
 import DeviceInfo from "react-native-device-info";
 import { recordErrorToFirebase } from "../crashReporter";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 
 const FIREBASE_LOG_TO_CONSOLE =
   process.env.NODE_ENV === "development" &&

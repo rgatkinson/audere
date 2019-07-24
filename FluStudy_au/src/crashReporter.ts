@@ -9,7 +9,7 @@
 
 import firebase from "react-native-firebase";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 import { memoize } from "./util/memoize";
 
 export type ErrorProps = {

@@ -144,7 +144,8 @@ platform :ios do
     build_num = increment_build_number
     # Increment Android build number too so it's always in sync
     android_build_file = "FluStudy_au/android/app/version.properties"
-    Helper.backticks("sed -i '' \"s/\\(VERSION_CODE=\\).*\\$/\\1#{build_num}/\" ../../../#{android_build_file}")
+    Helper.backticks("rm ../../../#{android_build_file}")
+    Helper.backticks("echo VERSION_CODE=#{build_num} > ../../../#{android_build_file}")
     if versionBump 
       version = increment_version_number
       Helper.backticks("yarn version --patch --no-git-tag-version")

@@ -22,7 +22,6 @@ platform :android do
     track = "internal"
     gradle(
       task: "clean assemble",
-      flavor: "prodKernel",
       build_type: "Release",
       print_command: false,
       properties: {

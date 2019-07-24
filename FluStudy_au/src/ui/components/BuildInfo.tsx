@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Button from "./Button";
 import Text from "./Text";

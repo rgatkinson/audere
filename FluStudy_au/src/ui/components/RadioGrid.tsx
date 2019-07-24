@@ -147,21 +147,20 @@ class Item extends React.Component<ItemProps & WithNamespaces, State> {
             )}
           </View>
         </TouchableOpacity>
-        {helpSelected &&
-          !!helpImageUri && (
-            <TouchableOpacity
-              style={{ height: 200 }}
-              key={`${key}-image-button`}
-              onPress={this._toggleHelp}
-            >
-              <Image
-                key={`${key}-image`}
-                resizeMode={"contain"}
-                style={styles.helpImage}
-                source={{ uri: helpImageUri }}
-              />
-            </TouchableOpacity>
-          )}
+        {helpSelected && !!helpImageUri && (
+          <TouchableOpacity
+            style={{ height: 200 }}
+            key={`${key}-image-button`}
+            onPress={this._toggleHelp}
+          >
+            <Image
+              key={`${key}-image`}
+              resizeMode={"contain"}
+              style={styles.helpImage}
+              source={{ uri: helpImageUri }}
+            />
+          </TouchableOpacity>
+        )}
       </Fragment>
     );
   }

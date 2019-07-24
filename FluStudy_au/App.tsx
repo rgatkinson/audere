@@ -15,7 +15,8 @@ YellowBox.ignoreWarnings([
   "Class EXDisabledRedBox",
 ]);
 import { I18nextProvider, withNamespaces } from "react-i18next";
-import { AppLoading, Font } from "expo";
+import { AppLoading } from "expo";
+import * as Font from "expo-font";
 import { getStore, getPersistor } from "./src/store/";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";

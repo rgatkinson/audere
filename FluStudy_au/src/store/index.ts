@@ -18,7 +18,7 @@ import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
 import immutableTransform from "redux-persist-transform-immutable";
-import { SecureStore } from "expo";
+import * as SecureStore from "expo-secure-store";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
 import {

@@ -8,6 +8,7 @@ import { PushNotificationIOS, PushNotificationPermissions } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { format } from "date-fns";
 import {
   PushNotificationState,
   PushRegistrationError,
@@ -138,7 +139,11 @@ class PushNotificationContinueButtonIOS extends React.Component<
         id: notification.data.id,
       });
       PushNotificationIOS.scheduleLocalNotification({
-        fireDate: getFireDate(notification.dateInterval),
+        // @ts-ignore
+        fireDate: format(
+          getFireDate(notification.dateInterval),
+          "YYYY-MM-DDTHH:mm:ss.sssZ"
+        ),
         alertAction: "view",
         alertBody: t(notification.body),
         userInfo: { ...notification.data, referralId: barcode },

@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Localization } from "expo-localization";
+import * as Localization from "expo-localization";
 import i18n from "i18next";
 import enStrings from "./locales/en.json";
 

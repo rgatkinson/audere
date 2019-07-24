@@ -5,7 +5,7 @@
     "description": "App for flu@home project",
     "icon": "./assets/images/app-icon.png",
     "slug": "FluAtHomeAU",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "33.0.0",
     "updates": {
       "enabled": false
     },

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import uuidv4 from "uuid/v4";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 
 export async function newUID(): Promise<string> {
   // The UUID is first because in de-identified contexts we use the first 21

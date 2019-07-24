@@ -6,7 +6,8 @@
 import "react-native";
 import React from "react";
 import App from "../App";
-import { AppLoading, Font } from "expo";
+import { AppLoading } from "expo";
+import * as Font from "expo-font";
 
 import renderer from "react-test-renderer";
 

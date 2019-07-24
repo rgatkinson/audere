@@ -5,7 +5,9 @@
 
 module.exports = {
   preset: "jest-expo",
-  setupTestFrameworkScriptFile: "./setupJest",
+  setupFilesAfterEnv: [
+    "./setupJest"
+  ],
   setupFiles: ["./jestSetup.js"],
   moduleFileExtensions: ["ts", "tsx", "js"],
   transform: {
@@ -18,6 +20,6 @@ module.exports = {
   ],
   testPathIgnorePatterns: ["\\.snap$", "<rootDir>/node_modules/", "appium.*"],
   transformIgnorePatterns: [
-    "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?react-navigation|@react-native-community/netinfo))",
+    "node_modules/(?!((jest-|pouchdb-)?react-native|(@)?expo|(@)?unimodules|(@)?react-navigation|@react-native-community/netinfo))",
   ],
 };

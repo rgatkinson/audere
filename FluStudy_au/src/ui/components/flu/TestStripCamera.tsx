@@ -20,7 +20,7 @@ import {
   NavigationScreenProp,
   StackActions,
 } from "react-navigation";
-import { Camera } from "expo";
+import { Camera } from "expo-camera";
 import Spinner from "react-native-loading-spinner-overlay";
 import DeviceInfo from "react-native-device-info";
 import {

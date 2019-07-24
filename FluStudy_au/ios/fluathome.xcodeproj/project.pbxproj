@@ -1287,7 +1287,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-fluathome/Pods-fluathome-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-fluathome/Pods-fluathome-resources.sh",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
@@ -1295,7 +1295,7 @@
 				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-C++/gRPCCertificates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/gRPC-C++/gRPCCertificates-Cpp.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -1306,11 +1306,11 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/gRPCCertificates-Cpp.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-fluathome/Pods-fluathome-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-fluathome/Pods-fluathome-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B5722AD01DFB7E3F0084848F /* Prepare Expo */ = {
@@ -1423,7 +1423,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 72;
+				CURRENT_PROJECT_VERSION = 78;
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1563,7 +1563,7 @@
 				CODE_SIGN_ENTITLEMENTS = fluathome/fluathome.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Audere iOSDev (Y4A3C5VFAP)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 72;
+				CURRENT_PROJECT_VERSION = 78;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = G8UCCFY788;
 				HEADER_SEARCH_PATHS = (

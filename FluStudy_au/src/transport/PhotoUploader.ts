@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import firebase from "react-native-firebase";
-import { NetInfo } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
 import { InteractionManager } from "react-native";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
@@ -13,7 +13,7 @@ import {
   logFirebaseEvent,
   TransportEvents,
 } from "../util/tracker";
-import { FileSystem } from "expo";
+import * as FileSystem from "expo-file-system";
 import { IdleManager } from "./IdleManager";
 import { syncPhoto } from "../store/FirebaseStore";
 
@@ -24,9 +24,7 @@ export const RETRY_DELAY = 1 * MINUTE;
 const DEBUG_PHOTO_UPLOADER = process.env.DEBUG_PHOTO_UPLOADER === "true";
 
 // Visible for testing
-export const PENDING_DIR = `${
-  FileSystem.documentDirectory
-}PhotoUploader/pending`;
+export const PENDING_DIR = `${FileSystem.documentDirectory}PhotoUploader/pending`;
 export const PENDING_DIR_PREFIX = PENDING_DIR + "/";
 
 type FileInfo = {
@@ -169,7 +167,7 @@ export class PhotoUploader {
     const path = pendingPathFromId(save.photoId);
     await logIfError("handleSave", "writeAsStringAsync", () =>
       FileSystem.writeAsStringAsync(path, save.jpegBase64, {
-        encoding: FileSystem.EncodingTypes.Base64,
+        encoding: FileSystem.EncodingType.Base64,
       })
     );
     await idleness();

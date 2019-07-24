@@ -6,8 +6,13 @@
 set -euo pipefail
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+function fixExpoGlCppAndroid() {
+  echo "Update expo gl cpp build file to not require ndk"
+  cp $REPO_ROOT_DIR/FluStudy_au/scripts/expoGlCppBuild.gradle $REPO_ROOT_DIR/FluStudy_au/node_modules/expo-gl-cpp/android/build.gradle
+}
 source "$REPO_ROOT_DIR/scripts/build-hacks"
 do_FluStudy_hacks FluStudy_au
+fixExpoGlCppAndroid
 
 ANDROID_DIR="$REPO_ROOT_DIR/FluStudy_au/android"
 if [[ ! -d "$ANDROID_DIR/openCVLibrary341-contrib" ]]; then

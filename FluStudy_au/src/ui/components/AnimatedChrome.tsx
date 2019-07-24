@@ -159,9 +159,7 @@ class AnimatedChrome extends React.PureComponent<Props> {
         >
           <ImageBackground
             source={{
-              uri: `bg_${splashImageDimensions.width}x${
-                splashImageDimensions.height
-              }`,
+              uri: `bg_${splashImageDimensions.width}x${splashImageDimensions.height}`,
             }}
             style={[
               {
@@ -194,7 +192,11 @@ class AnimatedChrome extends React.PureComponent<Props> {
             ],
           }}
         >
-          <StatusBar barStyle="light-content" translucent={true} />
+          <StatusBar
+            backgroundColor="transparent"
+            barStyle="light-content"
+            translucent={true}
+          />
           <NavigationBar
             hideBackButton={hideBackButton}
             menuItem={menuItem}

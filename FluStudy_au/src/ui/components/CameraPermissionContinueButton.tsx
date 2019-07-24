@@ -7,7 +7,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import { Permissions } from "expo";
+import * as Permissions from "expo-permissions";
 import { Action, StoreState, setCameraSettingsGrantedPage } from "../../store/";
 
 import Button from "./Button";

@@ -10,7 +10,7 @@ import {
   PhotoUploader,
   RETRY_DELAY,
 } from "../../src/transport/PhotoUploader";
-import { FileSystem } from "expo";
+import * as FileSystem from 'expo-file-system';
 import base64url from "base64url";
 
 interface CapturedSave {
@@ -74,6 +74,7 @@ describe("PhotoUploader", () => {
     beforeEach(() => {
       saves = [];
       offlineSaves = [];
+      corruptSaves = [];
     });
 
     it("uploads a photo", async () => {

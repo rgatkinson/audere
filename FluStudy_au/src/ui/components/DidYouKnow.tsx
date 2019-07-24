@@ -79,7 +79,7 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
   _setTimer = () => {
     if (!this._timer && this.props.navigation.isFocused()) {
       const { msPerItem } = this.props;
-      this._timer = setTimeout(() => {
+      this._timer = global.setTimeout(() => {
         this._timer = undefined;
         this._showNextTip();
         this._setTimer();

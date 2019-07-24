@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import URL from "url-parse";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 
 const IS_NODE_ENV_DEVELOPMENT = process.env.NODE_ENV === "development";
 

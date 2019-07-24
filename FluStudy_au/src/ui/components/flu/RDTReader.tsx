@@ -288,7 +288,10 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _handleDidFocus = () => {
     this._setTimer();
     if (this.props.isDemo && !this._fpsCounterInterval) {
-      this._fpsCounterInterval = setInterval(this._updateFPSCounter, 1000);
+      this._fpsCounterInterval = global.setInterval(
+        this._updateFPSCounter,
+        1000
+      );
     }
   };
 
@@ -304,7 +307,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _setTimer() {
     // Timeout after 30 seconds
     this._clearTimer();
-    this._timer = setTimeout(() => {
+    this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
       if (isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
@@ -435,7 +438,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     const elapsed = now - this._instructionLastUpdate;
     if (elapsed < INSTRUCTION_DURATION_NORMAL) {
       // No, so set timer for remainder of instruction text
-      this._instructionTimer = setTimeout(() => {
+      this._instructionTimer = global.setTimeout(() => {
         this._setInstructionText(Date.now());
       }, INSTRUCTION_DURATION_NORMAL - elapsed);
     } else {

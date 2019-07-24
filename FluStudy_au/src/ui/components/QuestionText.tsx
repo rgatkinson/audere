@@ -29,19 +29,14 @@ class QuestionText extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <View style={styles.textContainer}>
-          {!question.subquestion &&
-            !!question.required && (
-              <Text
-                content="* "
-                style={[styles.text, { color: ERROR_COLOR }]}
-              />
-            )}
+          {!question.subquestion && !!question.required && (
+            <Text content="* " style={[styles.text, { color: ERROR_COLOR }]} />
+          )}
           <Text content={content} style={styles.text} />
         </View>
-        {!question.subquestion &&
-          !!question.description && (
-            <Text content={description} style={styles.subtext} />
-          )}
+        {!question.subquestion && !!question.description && (
+          <Text content={description} style={styles.subtext} />
+        )}
       </View>
     );
   }

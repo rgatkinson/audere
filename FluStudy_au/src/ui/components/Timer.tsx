@@ -124,7 +124,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
     if (this.props.navigation.isFocused()) {
       this.setState({ remainingLabel: this._getRemainingLabel() });
       if (this._getRemainingMs()) {
-        this._timer = setInterval(this._onTimer, SECOND_MS);
+        this._timer = global.setInterval(this._onTimer, SECOND_MS);
       } else {
         this._timerDone();
       }

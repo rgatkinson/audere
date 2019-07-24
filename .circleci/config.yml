@@ -416,7 +416,7 @@ jobs:
       FL_OUTPUT_DIR: output # Fastlane env variable for where it should put output files
       <<: *const
     macos:
-      xcode: 10.1.0
+      xcode: 10.2.1
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout:
@@ -456,12 +456,6 @@ jobs:
           name: flu@home Tests
           command: |
             yarn test
-      - run:
-          name: Configure Bundler
-          command: |
-            cd ios
-            export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")
-            sudo gem install bundler
       - restore_cache:
           key: 1-gems-{{ checksum "ios/Gemfile.lock" }}
       - run:
@@ -475,12 +469,20 @@ jobs:
             - vendor/bundle
       - run: *setenv
       - run:
+          name: "Install React Native dependencies"
+          command: |
+            brew update
+            brew install watchman
+      - run:
           name: Setup Expo and expo publish
           command: |
-            yarn global add expo-cli@2.19.4
+            watchman watch-del-all
+            rm -rf $TMPDIR/metro-*
+            rm -rf $TMPDIR/haste-map-*
+            yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish --max-workers 2 --non-interactive
+            expo publish
       - run:
           name: Fastlane
           command: |
@@ -496,7 +498,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
       <<: *const
     docker:
-      - image: circleci/android:api-27-node
+      - image: circleci/android:api-28-node
     steps:
       - checkout:
           path: /tmp/repo
@@ -544,7 +546,7 @@ jobs:
       - run:
           name: Setup Expo and expo publish
           command: |
-            yarn global add expo-cli@2.19.4
+            yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)"
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             # FEV-658 Publish each Android build to unique release channel
@@ -561,6 +563,15 @@ jobs:
           command: |
             cd android
             bundle exec fastlane internal
+      - store_artifacts:
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
+      - store_artifacts:
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+      - store_artifacts:
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86_64-release.apk
+      - store_artifacts:
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86-release.apk
+
 
   build_deploy_fever:
     working_directory: ~/repo/FluStudy_us
