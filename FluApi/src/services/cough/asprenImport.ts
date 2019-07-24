@@ -60,7 +60,7 @@ export class AsprenImport {
     // 2. Upsert records from the report.
     // 3. Remove records from the database that are not in the latest report.
     await this.sql.nonPii.transaction(async t => {
-      await this.models.asprenFile.create(
+      await this.models.asprenFile.upsert(
         { key: report.key, hash: report.hash },
         { transaction: t }
       );
