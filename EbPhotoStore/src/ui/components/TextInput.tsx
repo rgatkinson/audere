@@ -28,6 +28,8 @@ interface Props {
   keyboardType?: KeyboardTypeOptions;
   placeholder: string;
   placeholderTextColor?: string;
+  multiline?: boolean;
+  numberOfLines?: number;
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string | null;
@@ -58,11 +60,14 @@ export default class TextInput extends React.Component<Props> {
         }
         onEndEditing={this.props.onEndEditing}
         onFocus={this.props.onFocus}
+        multiline={this.props.multiline}
+        numberOfLines={this.props.numberOfLines}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         style={[styles.textInput, this.props.style && this.props.style]}
+        textAlignVertical="top"
         value={this.props.value !== null ? this.props.value : undefined}
         onChangeText={this.props.onChangeText}
         onKeyPress={this.props.onKeyPress}
@@ -81,10 +86,10 @@ const styles = StyleSheet.create({
   textInput: {
     alignSelf: "stretch",
     color: TEXT_COLOR,
-    borderBottomColor: BORDER_COLOR,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: BORDER_COLOR,
+    borderWidth: StyleSheet.hairlineWidth,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
-    padding: GUTTER / 4
+    padding: GUTTER / 2
   }
 });

@@ -1,9 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import {
-  setActiveScreenName,
-  viewPatient,
+  viewDetails,
   logout,
   Action,
   Patient,
@@ -11,7 +10,9 @@ import {
   StoreState
 } from "../store";
 import Button from "./components/Button";
-import { GUTTER, INPUT_HEIGHT } from "./styles";
+import Text from "./components/Text";
+import Title from "./components/Title";
+import { BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
 
 interface Props {
   patients: Patient[];
@@ -20,34 +21,39 @@ interface Props {
 
 class Patients extends React.Component<Props> {
   _addPatient = () => {
-    this.props.dispatch(setActiveScreenName(Screen.PatientDetails));
+    this.props.dispatch(viewDetails(this.props.patients.length));
   };
 
   _viewPatient = (id: number) => {
-    this.props.dispatch(viewPatient(id));
+    this.props.dispatch(viewDetails(id));
   };
 
   _logout = () => {
     this.props.dispatch(logout());
   };
 
+  _keyExtractor = (patient: Patient) => {
+    return patient.id.toString();
+  };
+
   render() {
     return (
       <View style={styles.container}>
+        <Title label="Patient List" />
         <Button
           enabled={true}
-          label="Add Patient"
+          label="+ Add New Patient"
           primary={true}
           style={styles.button}
           onPress={this._addPatient}
         />
-        {this.props.patients.map(patient => (
-          <PatientRow
-            key={patient.id}
-            patient={patient}
-            onPress={this._viewPatient}
-          />
-        ))}
+        <FlatList
+          data={this.props.patients}
+          keyExtractor={this._keyExtractor}
+          renderItem={({ item }) => (
+            <PatientRow patient={item} onPress={this._viewPatient} />
+          )}
+        />
         <Button
           enabled={true}
           label="Log Out"
@@ -73,7 +79,16 @@ class PatientRow extends React.Component<PatientRowProps> {
   render() {
     return (
       <TouchableOpacity style={styles.patient} onPress={this._onPress}>
-        <Text>{this.props.patient.name}</Text>
+        <Text
+          content={
+            this.props.patient.lastName +
+            ", " +
+            this.props.patient.firstName +
+            " (ID: " +
+            this.props.patient.id +
+            ")"
+          }
+        />
       </TouchableOpacity>
     );
   }
@@ -81,16 +96,20 @@ class PatientRow extends React.Component<PatientRowProps> {
 
 const styles = StyleSheet.create({
   button: {
+    alignSelf: "center",
     margin: GUTTER
   },
   container: {
-    alignItems: "center",
+    alignSelf: "stretch",
     flex: 1,
     justifyContent: "center",
     margin: GUTTER
   },
   patient: {
-    height: INPUT_HEIGHT
+    borderBottomColor: BORDER_COLOR,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    height: INPUT_HEIGHT,
+    paddingTop: GUTTER
   }
 });
 

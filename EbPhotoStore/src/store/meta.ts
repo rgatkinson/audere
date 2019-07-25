@@ -6,18 +6,27 @@
 export enum Screen {
   Login = "LOGIN",
   Patients = "PATIENTS",
-  PatientDetails = "PATIENT_DETAILS"
+  PatientDetails = "PATIENT_DETAILS",
+  Camera = "CAMERA"
 }
 
+export type ChwData = {
+  lastName: string;
+  firstName: string;
+  phone: string;
+  notes?: string;
+};
+
 export type MetaAction =
-  | { type: "LOGIN"; login: string }
+  | { type: "LOGIN"; chwData: ChwData }
   | { type: "LOGOUT" }
-  | { type: "VIEW_PATIENT"; id: number }
-  | { type: "SET_ACTIVE_SCREEN_NAME"; screen: Screen };
+  | { type: "VIEW_PATIENTS" }
+  | { type: "VIEW_DETAILS"; id: number }
+  | { type: "OPEN_CAMERA" };
 
 export type MetaState = {
   currentPatient?: number;
-  login?: string;
+  chwData?: ChwData;
   screen: Screen;
 };
 
@@ -28,30 +37,45 @@ const initialState: MetaState = {
 export default function reducer(state = initialState, action: MetaAction) {
   switch (action.type) {
     case "LOGIN":
-      return { ...state, screen: Screen.Patients, login: action.login };
+      return {
+        ...state,
+        currentPatient: undefined,
+        chwData: action.chwData,
+        screen: Screen.Patients
+      };
     case "LOGOUT":
-      return { ...state, screen: Screen.Login, login: undefined };
-    case "VIEW_PATIENT":
+      return {
+        ...state,
+        currentPatient: undefined,
+        chwData: undefined,
+        screen: Screen.Login
+      };
+    case "VIEW_PATIENTS":
+      return {
+        ...state,
+        currentPatient: undefined,
+        screen: Screen.Patients
+      };
+    case "VIEW_DETAILS":
       return {
         ...state,
         currentPatient: action.id,
         screen: Screen.PatientDetails
       };
-    case "SET_ACTIVE_SCREEN_NAME":
+    case "OPEN_CAMERA":
       return {
         ...state,
-        currentPatient: undefined,
-        screen: action.screen
+        screen: Screen.Camera
       };
     default:
       return state;
   }
 }
 
-export function login(login: string): MetaAction {
+export function login(chwData: ChwData): MetaAction {
   return {
     type: "LOGIN",
-    login
+    chwData
   };
 }
 
@@ -61,16 +85,21 @@ export function logout(): MetaAction {
   };
 }
 
-export function viewPatient(id: number): MetaAction {
+export function viewPatients(): MetaAction {
   return {
-    type: "VIEW_PATIENT",
+    type: "VIEW_PATIENTS"
+  };
+}
+
+export function viewDetails(id: number): MetaAction {
+  return {
+    type: "VIEW_DETAILS",
     id
   };
 }
 
-export function setActiveScreenName(screen: Screen): MetaAction {
+export function openCamera(): MetaAction {
   return {
-    type: "SET_ACTIVE_SCREEN_NAME",
-    screen
+    type: "OPEN_CAMERA"
   };
 }

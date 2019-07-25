@@ -12,6 +12,7 @@
     "immutable": "^4.0.0-rc.12",
     "react": "16.8.6",
     "react-native": "0.60.4",
+    "react-native-camera": "^3.0.0",
     "react-redux": "^7.1.0",
     "redux": "^4.0.4",
     "redux-persist": "^5.10.0",

@@ -5,13 +5,33 @@
 
 export type Patient = {
   id: number;
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  details?: string;
   notes?: string;
+  photoId?: string;
 };
 
 export type PatientAction =
-  | { type: "ADD_PATIENT"; name: string; notes?: string }
-  | { type: "UPDATE_PATIENT"; id: number; name: string; notes?: string };
+  | {
+      type: "ADD_PATIENT";
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      details?: string;
+      notes?: string;
+    }
+  | {
+      type: "UPDATE_PATIENT";
+      id: number;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      details?: string;
+      notes?: string;
+    }
+  | { type: "SAVE_PHOTO"; id: number; photoId: string };
 
 export type PatientState = Patient[];
 
@@ -24,7 +44,10 @@ export default function reducer(state = initialState, action: PatientAction) {
         ...state,
         {
           id: state.length,
-          name: action.name,
+          firstName: action.firstName,
+          lastName: action.lastName,
+          phone: action.phone,
+          details: action.details,
           notes: action.notes
         }
       ];
@@ -34,33 +57,70 @@ export default function reducer(state = initialState, action: PatientAction) {
           return patient;
         }
         return {
-          ...patient,
-          name: action.name,
+          id: patient.id,
+          firstName: action.firstName,
+          lastName: action.lastName,
+          phone: action.phone,
+          details: action.details,
           notes: action.notes
         };
       });
+    case "SAVE_PHOTO":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          photoId: action.photoId
+        };
+      });
+
     default:
       return state;
   }
 }
 
-export function addPatient(name: string, notes?: string): PatientAction {
+export function addPatient(
+  firstName?: string,
+  lastName?: string,
+  phone?: string,
+  details?: string,
+  notes?: string
+): PatientAction {
   return {
     type: "ADD_PATIENT",
-    name,
+    firstName,
+    lastName,
+    phone,
+    details,
     notes
   };
 }
 
 export function updatePatient(
   id: number,
-  name: string,
+  firstName?: string,
+  lastName?: string,
+  phone?: string,
+  details?: string,
   notes?: string
 ): PatientAction {
   return {
     type: "UPDATE_PATIENT",
     id,
-    name,
+    firstName,
+    lastName,
+    phone,
+    details,
     notes
+  };
+}
+
+export function savePhoto(id: number, photoId: string): PatientAction {
+  return {
+    type: "SAVE_PHOTO",
+    id,
+    photoId
   };
 }
