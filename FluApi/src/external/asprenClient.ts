@@ -194,12 +194,12 @@ export class AsprenClient {
 
   private parseZeroOne(input: string): boolean {
     switch (input) {
-      case "0":
-        return true;
-      case "1":
-        return false;
       case "Equivocal":
-        return undefined;
+        return false;
+      case "0":
+        return false;
+      case "1":
+        return true;
       case "":
         return undefined;
       case null:
