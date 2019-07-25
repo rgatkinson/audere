@@ -32,7 +32,7 @@
       "negative": "**NEGATIVE** for **INFLUENZA**",
       "positiveA": "**POSITIVE** for **Flu-A**",
       "positiveB": "**POSITIVE** for **Flu-B**",
-      "positiveAB": "**POSITIVE** for **Flu-A and Flu-B**",
+      "positiveAB": "**POSITIVE** for **Flu-A** and **Flu-B**",
       "whyTitle": "**Why did I get this result?**",
       "blueLine": "A blue line in the middle of your test strip",
       "positive++WhatToDo": "**What should I do if my test is positive?**\n\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
