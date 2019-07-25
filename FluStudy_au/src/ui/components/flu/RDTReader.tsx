@@ -320,7 +320,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(setRDTPhotoHC(""));
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
-    }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
+    }, 300 * 1000);
   }
 
   _clearTimer() {

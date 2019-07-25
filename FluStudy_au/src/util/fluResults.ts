@@ -33,11 +33,15 @@ export async function getTestStripSurveyNextScreen() {
 
 export async function getTestStripConfirmationNextScreen() {
   const state = (await getStore()).getState();
-  return !!state.survey.rdtInfo &&
+  const stripFound =
+    !!state.survey.rdtInfo &&
     !!state.survey.rdtInfo.rdtReaderResult &&
-    state.survey.rdtInfo.rdtReaderResult.testStripFound
-    ? "PostRDTTestStripSurvey"
-    : "TestResult";
+    state.survey.rdtInfo.rdtReaderResult.testStripFound;
+  if (stripFound) {
+    return await getPostRDTTestStripSurveyNextScreen();
+  }
+
+  return "TestResult";
 }
 
 export async function getPostRDTTestStripSurveyNextScreen() {
@@ -114,9 +118,7 @@ export function getResultRedAnswer(redAnswer: string | undefined) {
 export function isShowRDTInterpretationOfType(
   eventType: RDTInterpretationEventTypes
 ): boolean {
-  const interpreter = getRemoteConfig("showRDTInterpretation") as
-    | RDTInterpretationEventTypes
-    | "";
+  const interpreter = RDTInterpretationEventTypes.UBICOMP;
   if (eventType === RDTInterpretationEventTypes.None && !interpreter) {
     return true;
   }

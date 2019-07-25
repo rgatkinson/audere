@@ -40,9 +40,7 @@ interface Props {
 
 class TestResultRDT extends React.Component<Props & WithNamespaces> {
   componentDidMount() {
-    const interpreter = getRemoteConfig("showRDTInterpretation") as
-      | RDTInterpretationEventTypes
-      | "";
+    const interpreter = RDTInterpretationEventTypes.UBICOMP;
     logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
     this.props.dispatch(setRDTInterpretationShown(interpreter));
 
@@ -55,10 +53,14 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
   _getResult = () => {
     const { numLinesAnswer, redAnswer } = this.props;
     switch (numLinesAnswer) {
+      case "aLine":
+        return "positiveA";
+      case "bLine":
+        return "positiveB";
       case "twoLines":
         return "positive";
       case "threeLines":
-        return "positive";
+        return "positiveAB";
       case "noneOfTheAbove":
         return getResultRedAnswer(redAnswer);
       default:
@@ -69,9 +71,11 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
   _getExplanation = () => {
     const { numLinesAnswer, redAnswer } = this.props;
     switch (numLinesAnswer) {
-      case "twoLines":
-        return "onePinkAndBlue";
+      case "aLine":
+      case "bLine":
       case "threeLines":
+        return numLinesAnswer;
+      case "twoLines":
         return "onePinkAndBlue";
       case "noneOfTheAbove":
         return getExplanationRedAnswer(redAnswer);
@@ -89,6 +93,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
       : t("TestResult:why");
     const result = this._getResult();
     const explanation = this._getExplanation();
+    const whatToDoResult = result.startsWith("positive") ? "positive" : result;
     return (
       <Fragment>
         <BorderView style={styles.border}>
@@ -106,7 +111,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
         <Divider />
         <Text
           content={
-            t(`common:testResult:${result}++WhatToDo`) +
+            t(`common:testResult:${whatToDoResult}++WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}
@@ -129,8 +134,10 @@ function _getRDTInterpretationLines(
     if (readerResult.controlLineFound) {
       if (readerResult.testALineFound && readerResult.testBLineFound) {
         numLines = "threeLines";
-      } else if (readerResult.testALineFound || readerResult.testBLineFound) {
-        numLines = "twoLines";
+      } else if (readerResult.testALineFound) {
+        numLines = "aLine";
+      } else if (readerResult.testBLineFound) {
+        numLines = "bLine";
       } else {
         numLines = "noPink";
       }

@@ -676,8 +676,8 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ContinueButton,
         props: {
+          surveyGetNextFn: getTestStripSurveyNextScreen,
           dispatchOnNext: setTotalTestStripTime,
-          next: "TestStripSurvey",
         },
       },
     ],

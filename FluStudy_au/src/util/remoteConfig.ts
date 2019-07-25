@@ -22,7 +22,7 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
-  showRDTInterpretation: "",
+  showRDTInterpretation: "Ubicomp",
   rdtTimeoutSeconds: 30,
   skipSurveyNotification: false,
 };
