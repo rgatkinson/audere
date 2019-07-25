@@ -9,29 +9,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
-import android.provider.MediaStore;
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-
-
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 
 public class MainActivity extends AppCompatActivity {
+    private NetworkChangeReceiver mNetworkReceiver;
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        MainActivity.mContext = getApplicationContext();
+
+        mNetworkReceiver = new NetworkChangeReceiver();
+        MainActivity.mContext.registerReceiver(
+            mNetworkReceiver,
+            new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        );
     }
 
     @Override
