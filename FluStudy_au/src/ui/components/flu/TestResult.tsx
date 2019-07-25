@@ -56,7 +56,7 @@ class TestResult extends React.Component<Props & WithNamespaces> {
         <Divider />
         <Text
           content={
-            t(`common:testResult:${result}WhatToDo`) +
+            t(`common:testResult:${result}++WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
           style={styles.text}

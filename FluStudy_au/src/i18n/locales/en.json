@@ -10,18 +10,9 @@
       "done": "Done",
       "back": "Back",
       "next": "Next",
-      "getStarted": "Get Started",
       "ok": "Ok",
       "yes": "Yes",
       "no": "No"
-    },
-    "tab": {
-      "Home": "Home",
-      "Admin": "Admin"
-    },
-    "placeholder": {
-      "enterEmail": "Your email address",
-      "emailEx": "e.g. joe@gmail.com"
     },
     "notifications": {
       "title": "Timer is complete!",
@@ -29,9 +20,6 @@
       "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
       "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\""
-    },
-    "validationErrors": {
-      "email": "* Please provide a valid email address"
     },
     "device": {
       "handset": "phone",
@@ -44,14 +32,11 @@
       "negative": "**NEGATIVE** for **INFLUENZA**",
       "whyTitle": "**Why did I get this result?**",
       "blueLine": "A blue line in the middle of your test strip",
-      "positiveWhatToDo": "**What should I do if my test is positive?**\n\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
-      "negativeWhatToDo": "**What should I do if my test is negative?**\n\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
+      "positive++WhatToDo": "**What should I do if my test is positive?**\n\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
+      "negative++WhatToDo": "**What should I do if my test is negative?**\n\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
       "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. Please visit healthdirect for more information on the flu:\n\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
       "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom."
     }
-  },
-  "step": {
-    "step": "**Step {{step}}** of {{total}}"
   },
   "monthPicker": {
     "selectDate": "Select date",
@@ -80,9 +65,6 @@
     "body": "If you haven't done so already, please tap here to be directed to our follow-up survey.",
     "link": "**Go to survey >**"
   },
-  "optionList": {
-    "pleaseSpecify": "Please specify:"
-  },
   "relaunch": {
     "returningOrNewTitle": "Are you returning to the app or are you a new user?",
     "returningOrNewBody": "Selecting \"New User\" will reset the flu@home app to start over.",
@@ -105,29 +87,29 @@
   "GeneralQuestions": {
     "title": "FAQ",
     "whyStudy": "**Why are you conducting this study?**",
-    "whyStudyAnswer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.",
+    "whyStudy++Answer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.",
     "whoEligible": "**Who is eligible to participate in the study?**",
-    "whoEligibleAnswer": "Individuals who live in Australia, are 18 years of age or older, and visit a GP participating in the ASPREN study who determines you are experiencing cold or flu-like symptoms.",
+    "whoEligible++Answer": "Individuals who live in Australia, are 18 years of age or older, and visit a GP participating in the ASPREN study who determines you are experiencing cold or flu-like symptoms.",
     "howSoon": "**How soon after receiving the test kit should I perform the test?**",
-    "howSoonAnswer": "You should download the flu@home app on your own device and complete the test preferably the same day after receiving the test kit from your GP's office to ensure the most accurate results.",
+    "howSoon++Answer": "You should download the flu@home app on your own device and complete the test preferably the same day after receiving the test kit from your GP's office to ensure the most accurate results.",
     "howComplete": "**How do I complete the test?**",
-    "howCompleteAnswer": "The flu@home app will guide you through all the steps involved in taking the test.",
+    "howComplete++Answer": "The flu@home app will guide you through all the steps involved in taking the test.",
     "howFindOut": "**How can I find out if the test says I have the flu?**",
-    "howFindOutAnswer": "The flu@home app will guide you through reading your test strip results and will indicate whether you likely have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed.",
+    "howFindOut++Answer": "The flu@home app will guide you through reading your test strip results and will indicate whether you likely have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed.",
     "howLongTest": "**How long will the test take me?**",
-    "howLongTestAnswer": "It should take about 20 minutes from start to finish.",
+    "howLongTest++Answer": "It should take about 20 minutes from start to finish.",
     "swabDirty": "**My completed test swab accidentally dropped or came into contact with something else. Should I still complete the test?**",
-    "swabDirtyAnswer": "Yes. Even if you dropped the swab or it touched another surface, please continue with the test steps.",
+    "swabDirty++Answer": "Yes. Even if you dropped the swab or it touched another surface, please continue with the test steps.",
     "swabTubeLonger": "**Is it ok if I left the nasal swab in the tube longer than the designated time?**",
-    "swabTubeLongerAnswer": "Yes. If you left the swab in for a little longer than the timer, please continue with the test steps.",
+    "swabTubeLonger++Answer": "Yes. If you left the swab in for a little longer than the timer, please continue with the test steps.",
     "stripLonger": "**Is it ok if I left the test strip in the tube longer than the designated time?**",
-    "stripLongerAnswer": "Yes. If you left the test strip in for a little longer than the timer, please continue with the test steps.",
+    "stripLonger++Answer": "Yes. If you left the test strip in for a little longer than the timer, please continue with the test steps.",
     "whyPersonal": "**Why does the app ask me personal questions?**",
-    "whyPersonalAnswer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. (Many of the questions are optional, and can be skipped if you are not comfortable answering.)",
+    "whyPersonal++Answer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. (Many of the questions are optional, and can be skipped if you are not comfortable answering.)",
     "willConfidential": "**Will my information be kept confidential?**",
-    "willConfidentialAnswer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information. Additionally, this study does not collect information such as your name, email, or mailing address.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Participant Information Sheet and Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Human Research Ethics Committee, who approved this study, and other accrediting agencies may inspect and copy your non-identifiable records. They would only do this to ensure you were treated fairly and safely during the study.",
+    "willConfidential++Answer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information. Additionally, this study does not collect information such as your name, email, or mailing address.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Participant Information Sheet and Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Human Research Ethics Committee, who approved this study, and other accrediting agencies may inspect and copy your non-identifiable records. They would only do this to ensure you were treated fairly and safely during the study.",
     "appDelete": "**After I finish the tests, can I delete the app?**",
-    "appDeleteAnswer": "We will send you a single notification on your device a few days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
+    "appDelete++Answer": "We will send you a single notification on your device a few days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -160,13 +142,11 @@
   },
   "Consent": {
     "title": "Consent form",
-    "desc": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\n* = Required question",
     "accept": "I consent",
     "noThanks": "No, Thanks",
     "consentFormHeader1": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\n* = Required question",
     "consentFormText": "1. I have read the previous Participant Information Sheet and agree to take part in the following research project:\n\n**Title:** Surveillance of influenza using a self-test for influenza\n\n**Ethics Approval Number:** H-2019-116\n\n2. I have had the project, so far as it affects me, and the potential risks and burdens fully explained to my satisfaction. I have had the opportunity to ask any questions I may have about the project and my participation. My consent is given freely.\n\n3. I have been given the opportunity to discuss my potential participation in this study with a member of my family or a friend.\n\n4. Although I understand the purpose of the research project is to improve the quality of health/medical care, it has also been explained that my involvement may not be of any benefit to me.\n\n5. I understand that I will be reading the results of a flu test in the app, and that these results are experimental and should not determine whether I should visit my GP for additional treatment. I will use my best judgment for treatment based on my symptoms.\n\n6. I agree to participate in the activities as outlined in the Participant Information Sheet. I understand that the project will collect information from me as described in the Participant Information Sheet.\n\n7. I have been informed that the information gained in the project may be published in a book/journal article/thesis/news article/conference presentations/website/report etc.\n\n8. I have been informed that in the published materials I will not be identified and my personal results will not be divulged.",
-    "consentFormText2": "10. I understand my information will only be disclosed according to the consent provided, except where disclosure is required by law.\n\n11. I am aware that I may obtain a copy of this Consent Form, and the attached Participant Information Sheet from [www.fluathome.org.au](http://fluathome.org.au).",
-    "viewConsent": "View Consent"
+    "consentFormText2": "10. I understand my information will only be disclosed according to the consent provided, except where disclosure is required by law.\n\n11. I am aware that I may obtain a copy of this Consent Form, and the attached Participant Information Sheet from [www.fluathome.org.au](http://fluathome.org.au)."
   },
   "ConsentDeclined": {
     "title": "Thank you for your interest",
@@ -174,12 +154,7 @@
     "backToConsent": "Back to Consent"
   },
   "surveyTitle": {
-    "address": "Your address:",
-    "whereKit": "Where did you get your kit?",
     "age": "How old are you?",
-    "consentEmail": "Email me a copy of this consent form",
-    "symptomTitle": "Describe your symptoms",
-    "consent": "Consent",
     "researchBySameResearchers": "9. I agree to my information being used for future research undertaken by these same researchers:",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
@@ -198,13 +173,10 @@
     "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, azithromycin, co-trimoxazole (Bactrim), co-amoxiclav (Augmentin)) or antivirals (e.g. Tamiflu, Xofluza, Relenza) prescribed by a doctor (GP or hospital) for this illness?",
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
-    "hispanic": "Are you Hispanic or Latino?",
-    "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "pinkLine": "Is there a pink line on your test strip?",
     "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
-    "vaccinationDate": "Did you receive an influenza vaccination in the last year?",
     "fluShot": "Did you receive an influenza vaccination this year (2019)?",
     "fluShotNationalImmunization": "Did you receive a free influenza vaccination under the National Immunisation Program in 2019?",
     "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccination?",
@@ -214,8 +186,6 @@
     "fluShotDate": "What was the approximate date of your influenza vaccination?"
   },
   "surveyDescription": {
-    "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
-    "mailingAddressDesc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
@@ -230,7 +200,6 @@
     "shortnessOfBreath": "Shortness of breath",
     "vomiting": "Vomiting",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
-    "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
     "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
     "seeExample": "Tap the \"?\" below to see examples"
   },
@@ -478,11 +447,6 @@
     "supportBody": "\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.] Installation ID: "
   },
   "surveyOption": {
-    "doNotEmailMe": "Please do not email me",
-    "sendCopyOfMyConsent": "Send me a copy of my consent",
-    "askAboutMyIllness": "To ask me questions about my illness/cold",
-    "learnAboutStudy": "To learn more about this study and related topics",
-    "allOfTheAbove": "All of the above",
     "feelingFeverish": "Fever",
     "chillsOrSweats": "Chills or sweats",
     "cough": "Cough",
@@ -492,10 +456,6 @@
     "headache": "Headache",
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
-    "noInsurance": "I do not have medical insurance",
-    "privateInsuranceEmployer": "Insurance from my employer",
-    "privateInsuranceSelf": "Insurance I purchased myself",
-    "governmentInsurance": "Medicaid or Medicare",
     "noneOfTheAbove": "None of the above",
     "asthma": "Asthma",
     "copd": "COPD/emphysema",
@@ -503,15 +463,9 @@
     "heartDisease": "Heart disease",
     "noneOfThese": "None of these",
     "dontKnow": "Don't know",
-    "americanIndianOrAlaskaNative": "American Indian or Alaska Native",
-    "nativeHawaiian": "Native Hawaiian or Other Pacific Islander",
-    "blackOrAfricanAmerican": "Black or African American",
     "white": "White",
     "other": "Other",
     "preferNotToSay": "Prefer not to say",
-    "contactMeNextSeason": "Contact me next flu season",
-    "sendMeStudy": "Send me the study outcome report",
-    "contactMeForFollowUpStudy": "Contact me in a couple months to participate in a follow-up study (Note: You will be compensated for your time)",
     "vomiting": "Vomiting",
     "aboriginal": "Aboriginal",
     "torresStraitIslander": "Torres Strait Islander",
@@ -528,7 +482,6 @@
     "done": "Done",
     "next": "Next",
     "preferNotToSay": "Prefer not to say",
-    "na": "Not Applicable",
     "yes": "Yes",
     "no": "No",
     "male": "Male",
@@ -555,8 +508,6 @@
     "90+": "90 and older",
     "submit": "Submit",
     "none": "None",
-    "orderedApp": "Ordered through the app",
-    "fromClinic": "Received from a clinic",
     "1day": "1 day",
     "2days": "2 days",
     "3days": "3 days",

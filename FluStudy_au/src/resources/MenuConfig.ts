@@ -48,7 +48,7 @@ const FAQS = [
   "willConfidential",
   "appDelete",
 ];
-const FAQ_ANSWER_SUFFIX = "Answer";
+const FAQ_ANSWER_SUFFIX = "++Answer";
 
 function getFAQComponents(key: string): Component[] {
   return FAQS.map(q => {
