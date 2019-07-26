@@ -572,7 +572,6 @@ jobs:
       - store_artifacts:
           path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86-release.apk
 
-
   build_deploy_fever:
     working_directory: ~/repo/FluStudy_us
     <<: *build_deploy_fluathome
@@ -588,6 +587,57 @@ jobs:
   build_deploy_cough_android:
     working_directory: /tmp/repo/FluStudy_au
     <<: *build_deploy_fluathome_android
+
+  build_deploy_rash: &build_deploy_rash
+    environment:
+      <<: *const
+    working_directory: /tmp/repo/EbPhotoStore
+    docker:
+      - image: circleci/android:api-28-node
+    steps:
+      - checkout:
+          path: /tmp/repo
+      - restore_cache:
+          key: rash-node-cache-{{ checksum "package.json" }}
+      - run:
+          name: flu@home Yarn Install
+          command: |
+            yarn install
+      - save_cache:
+          key: rash-node-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      #      - run: *set_firebase_config
+      - run:
+          name: Download Android dependencies
+          command: |
+            cd android
+            ./gradlew androidDependencies
+      - restore_cache:
+          key: 1-gems-android-{{ checksum "android/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            cd android
+            bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-android-{{ checksum "android/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Prepare signing artifacts
+          command: |
+            cd android
+            echo "$FEVER_SIGNING_STORE_ENCRYPTED" | base64 --decode | tee keystore.jks app/keystore.jks >/dev/null
+            echo "export FEVER_SIGNING_STORE_FILE=keystore.jks" >> $BASH_ENV
+            echo "$GOOGLE_PLAY_KEY_JSON" > google_play_key.json
+      - run:
+          name: Fastlane
+          command: |
+            cd android
+            bundle exec fastlane internal
+      - store_artifacts:
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/bundle/release
 
 workflows:
   version: 2
