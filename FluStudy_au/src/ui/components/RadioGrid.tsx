@@ -29,6 +29,7 @@ import {
   FEATHER_SIZE,
 } from "../styles";
 import Text from "./Text";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   highlighted?: boolean;
@@ -57,6 +58,11 @@ class RadioGrid extends React.PureComponent<Props, State> {
   _toggleHelp = (key: string) => {
     const isSelected = key === this.state.helpSelected ? null : key;
     this.setState({ helpSelected: isSelected });
+    logFirebaseEvent(AppEvents.HELP_TOGGLED, {
+      selected: !!isSelected,
+      key,
+      question: this.props.question.id,
+    });
   };
 
   render() {
