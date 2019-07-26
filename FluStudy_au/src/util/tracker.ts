@@ -88,6 +88,7 @@ export const AppEvents = {
   FLASH_TOGGLE: "camera_flash_toggle",
   SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
   FAQ_PRESSED: "faq_pressed",
+  WHAT_TO_DO_WITH_TEST_RESULT_PRESSED: "what_to_do_with_test_result_pressed",
   APP_IDLE_NEW_USER: "app_idle_new_user",
   APP_IDLE_SAME_USER: "app_idle_same_user",
   READ_CONFIG_VALUE: "read_config_value",

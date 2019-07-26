@@ -4,24 +4,22 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  Platform,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
-import ScreenText from "./ScreenText";
 import { GUTTER } from "../styles";
 import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
+// You can either provide namespace + titleLabel + bodyLabel if you want this
+// component to load your strings, or just pass content if you already have
+// the string loaded.  If you pass content, all text before the first \n will
+// be considered title, and everything else will be the body.
 interface Props {
-  titleLabel: string;
-  bodyLabel: string;
-  namespace: string;
+  titleLabel?: string;
+  bodyLabel?: string;
+  content?: string;
+  namespace?: string;
+  appEvent: string; // What event is generated when title is clicked
 }
 
 interface State {
@@ -35,25 +33,43 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
 
   _onPress = () => {
     const nowExpanded = !this.state.expanded;
+    const { title } = this._getTitleAndBody();
 
     this.setState({ expanded: nowExpanded });
-    logFirebaseEvent(AppEvents.FAQ_PRESSED, {
+    logFirebaseEvent(this.props.appEvent, {
       nowExpanded,
-      question: this.props.titleLabel,
+      title,
     });
   };
 
+  _getTitleAndBody(): { title: string; body: string } {
+    if (!!this.props.content) {
+      const content = this.props.content!;
+      const titleEnd = content.indexOf("\n");
+
+      return {
+        title: content.substring(0, titleEnd),
+        body: content.substring(titleEnd + 1),
+      };
+    } else {
+      const { titleLabel, bodyLabel, namespace, t } = this.props;
+      return {
+        title: t(
+          titleLabel!.includes(":") ? titleLabel : namespace + ":" + titleLabel
+        ),
+        body: t(
+          bodyLabel!.includes(":") ? bodyLabel : namespace + ":" + bodyLabel
+        ),
+      };
+    }
+  }
+
   render() {
-    const { namespace, titleLabel, bodyLabel, t } = this.props;
+    const { title, body } = this._getTitleAndBody();
     const { expanded } = this.state;
     const marker = expanded ? "[-]" : "[+]";
     const expansion = expanded ? (
-      <Text
-        content={t(
-          bodyLabel.includes(":") ? bodyLabel : namespace + ":" + bodyLabel
-        )}
-        style={styles.bodyText}
-      />
+      <Text content={body} style={styles.bodyText} />
     ) : (
       undefined
     );
@@ -63,13 +79,7 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
         <View style={styles.content}>
           <Text content={marker} style={styles.marker} />
           <View>
-            <Text
-              content={t(
-                titleLabel.includes(":")
-                  ? titleLabel
-                  : namespace + ":" + titleLabel
-              )}
-            />
+            <Text content={title} />
             {expansion}
           </View>
         </View>

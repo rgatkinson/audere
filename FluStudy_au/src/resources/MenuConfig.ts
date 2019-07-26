@@ -13,6 +13,7 @@ import Divider from "../ui/components/Divider";
 import { PRIMARY_COLOR, LARGE_TEXT } from "../ui/styles";
 import { testSupport, appSupport } from "./LinkConfig";
 import Button from "../ui/components/Button";
+import { AppEvents } from "../util/tracker";
 
 function menuScreen(
   key: string,
@@ -58,6 +59,7 @@ function getFAQComponents(key: string): Component[] {
         titleLabel: q,
         bodyLabel: q + FAQ_ANSWER_SUFFIX,
         namespace: key,
+        appEvent: AppEvents.FAQ_PRESSED,
       },
     };
   });

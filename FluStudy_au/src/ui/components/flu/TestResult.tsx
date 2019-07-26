@@ -14,6 +14,8 @@ import {
   getResultRedAnswer,
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
+import CollapsibleText from "../CollapsibleText";
+import { AppEvents } from "../../../util/tracker";
 
 interface Props {
   redAnswer?: string;
@@ -54,12 +56,12 @@ class TestResult extends React.Component<Props & WithNamespaces> {
           />
         </View>
         <Divider />
-        <Text
+        <CollapsibleText
           content={
             t(`common:testResult:${result}++WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
-          style={styles.text}
+          appEvent={AppEvents.WHAT_TO_DO_WITH_TEST_RESULT_PRESSED}
         />
       </Fragment>
     );

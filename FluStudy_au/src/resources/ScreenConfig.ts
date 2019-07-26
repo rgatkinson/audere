@@ -781,13 +781,13 @@ export const Screens: ScreenConfig[] = [
       { tag: TestResult },
     ],
     footer: [
+      { tag: Divider },
       {
-        tag: ContinueButton,
+        tag: ScreenText,
         props: {
-          next: "CleanTest",
+          label: "common:testResult:urgeToContinue",
         },
       },
-      { tag: Divider },
       {
         tag: ScreenText,
         props: {
@@ -795,6 +795,12 @@ export const Screens: ScreenConfig[] = [
           style: {
             fontSize: SMALL_TEXT,
           },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "CleanTest",
         },
       },
     ],
@@ -808,8 +814,13 @@ export const Screens: ScreenConfig[] = [
       { tag: TestResultRDT },
     ],
     footer: [
-      { tag: ContinueButton, props: { next: "CleanTest" } },
       { tag: Divider },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:urgeToContinue",
+        },
+      },
       {
         tag: ScreenText,
         props: {
@@ -819,6 +830,7 @@ export const Screens: ScreenConfig[] = [
           },
         },
       },
+      { tag: ContinueButton, props: { next: "CleanTest" } },
     ],
     funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",

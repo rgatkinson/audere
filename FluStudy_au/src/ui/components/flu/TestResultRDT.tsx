@@ -30,6 +30,7 @@ import {
   RDTInterpretationEventTypes,
 } from "../../../util/tracker";
 import { RDTReaderResult } from "audere-lib/coughProtocol";
+import CollapsibleText from "../CollapsibleText";
 
 interface Props {
   numLinesAnswer?: string;
@@ -104,12 +105,12 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
           <BulletPoint content={t(explanation)} customBulletUri="listarrow" />
         </View>
         <Divider />
-        <Text
+        <CollapsibleText
           content={
             t(`common:testResult:${result}++WhatToDo`) +
             ` ${t("common:testResult:whatToDoCommon")}`
           }
-          style={styles.text}
+          appEvent={AppEvents.WHAT_TO_DO_WITH_TEST_RESULT_PRESSED}
         />
       </Fragment>
     );
