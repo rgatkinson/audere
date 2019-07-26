@@ -138,11 +138,7 @@ class Login extends React.Component<Props, State> {
           />
         </ScrollView>
         <Button
-          enabled={
-            !!lastName &&
-            !!firstName &&
-            !!phone
-          }
+          enabled={!!lastName && !!firstName && !!phone}
           label="Login"
           primary={true}
           style={styles.button}

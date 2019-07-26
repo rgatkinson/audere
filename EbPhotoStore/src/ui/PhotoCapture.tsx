@@ -50,7 +50,11 @@ class PhotoCapture extends React.Component<Props> {
           fixOrientation: true
         });
         this.setState({ spinner: false });
-        this.props.dispatch(savePhoto(this.props.id, photoData.base64));
+        this.props.dispatch(
+          savePhoto(this.props.id, {
+            photoId: photoData.base64
+          })
+        );
         this.props.dispatch(viewDetails(this.props.id));
 
         // TODO: Michael to save photo.
