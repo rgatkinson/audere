@@ -43,12 +43,11 @@ export interface DeviceInfo {
 }
 
 export enum DocumentType {
-  Patient = "PATIENT",
-  Photo = "PHOTO",
+  Encounter = "ENCOUNTER",
   Triage = "TRIAGE",
 }
 
-export type ProtocolDocument = EncounterDocument | PhotoDocument | EncounterTriageDocument;
+export type ProtocolDocument = EncounterDocument | EncounterTriageDocument;
 
 export type TransportMetadata = {
   sentAt: string;
@@ -61,8 +60,11 @@ export type FirestoreProtocolDocument = ProtocolDocument & {
   _transport: TransportMetadata;
 };
 
+// ================================================================================
+// Encounter
+
 export interface EncounterDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.Patient;
+  documentType: DocumentType.Encounter;
   schemaId: 1;
   encounter: EncounterInfo;
 }
@@ -74,6 +76,7 @@ export interface EncounterInfo {
   patient: PatientInfo;
   photoDocId: string;
   details?: string;
+  rdtPhotos: PhotoInfo[];
 }
 
 export interface HealthWorkerInfo {
@@ -88,15 +91,6 @@ export interface PatientInfo {
   lastName: string;
   phone: string;
   notes: string;
-}
-
-// ================================================================================
-// Photo
-
-export interface PhotoDocument extends ProtocolDocumentBase {
-  documentType: DocumentType.Photo;
-  schemaId: 1;
-  photo: PhotoInfo;
 }
 
 export interface PhotoInfo {
