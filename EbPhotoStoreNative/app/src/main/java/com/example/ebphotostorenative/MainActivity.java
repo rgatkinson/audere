@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +15,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.INetworkStatusListener {
     private NetworkChangeReceiver mNetworkReceiver;
     private static Context mContext;
 
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         MainActivity.mContext = getApplicationContext();
 
-        mNetworkReceiver = new NetworkChangeReceiver();
+        mNetworkReceiver = new NetworkChangeReceiver(this);
         MainActivity.mContext.registerReceiver(
             mNetworkReceiver,
             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -51,18 +52,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem network = menu.findItem(R.id.action_network);
+
+        network.setVisible(!NetworkChangeReceiver.isConnected());
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_network:
+                Log.d("Menu Selection", "Cloud offline icon clicked");
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onNetworkStatusChanged(boolean isConnected) {
+        invalidateOptionsMenu();
     }
 
     public void onClick(View v) {

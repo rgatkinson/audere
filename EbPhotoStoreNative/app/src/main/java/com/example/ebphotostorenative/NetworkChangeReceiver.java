@@ -8,13 +8,30 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
+  public interface INetworkStatusListener {
+    void onNetworkStatusChanged(boolean isConnected);
+  }
+
+  private static boolean mConnected = false;
+  private INetworkStatusListener mListener;
+
+  public NetworkChangeReceiver(INetworkStatusListener listener) {
+    mListener = listener;
+  }
 
   @Override
   public void onReceive(final Context context, final Intent intent) {
-    Log.d("Connected State Changed", "Network connected: " + isConnected(context));
+    mConnected = determineIsConnected(context);
+
+    Log.d("Connected State Changed", "Network connected: " + mConnected);
+    mListener.onNetworkStatusChanged(mConnected);
   }
 
-  public static boolean isConnected(Context context) {
+  public static boolean isConnected() {
+    return mConnected;
+  }
+
+  private static boolean determineIsConnected(Context context) {
     try {
       ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo netInfo = cm.getActiveNetworkInfo();
