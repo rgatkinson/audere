@@ -9,6 +9,7 @@ import {
   View
 } from "react-native";
 import { connect } from "react-redux";
+import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
   openCamera,
@@ -16,6 +17,7 @@ import {
   logout,
   viewPatients,
   Action,
+  PatientEncounter,
   Screen,
   StoreState
 } from "../store";
@@ -29,24 +31,21 @@ import { GUTTER, LARGE_TEXT, LINE_HEIGHT_DIFFERENCE } from "./styles";
 interface Props {
   id: number;
   isNew: boolean;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  details?: string;
+  patientInfo: PatientInfo;
   notes?: string;
-  photoId?: string;
+  photoInfo?: PhotoInfo;
   dispatch(action: Action): void;
 }
 
-class Details extends React.Component<Props> {
-  state = {
-    firstName: this.props.firstName,
-    lastName: this.props.lastName,
-    phone: this.props.phone,
-    details: this.props.details,
-    notes: this.props.notes
-  };
+interface State {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  details?: string;
+  notes?: string;
+}
 
+class Details extends React.Component<Props, State> {
   _lastNameInput: any;
   _phoneInput: any;
   _detailsInput: any;
@@ -54,6 +53,14 @@ class Details extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
+    this.state = {
+      firstName: props.patientInfo.firstName,
+      lastName: props.patientInfo.lastName,
+      phone: props.patientInfo.phone,
+      details: props.patientInfo.details,
+      notes: props.notes
+    };
+
     this._lastNameInput = React.createRef<TextInput>();
     this._phoneInput = React.createRef<NumberInput>();
     this._detailsInput = React.createRef<TextInput>();
@@ -102,15 +109,18 @@ class Details extends React.Component<Props> {
   };
 
   _save = () => {
+    const { firstName, lastName, phone, details, notes } = this.state;
     if (this.props.isNew) {
-      if (this.state.firstName || this.state.lastName) {
+      if (!!firstName || !!lastName || !!phone || !!details || !!notes) {
         this.props.dispatch(
           addPatient(
-            this.state.firstName,
-            this.state.lastName,
-            this.state.phone,
-            this.state.details,
-            this.state.notes
+            {
+              firstName,
+              lastName,
+              phone,
+              details
+            },
+            notes
           )
         );
       }
@@ -118,11 +128,13 @@ class Details extends React.Component<Props> {
       this.props.dispatch(
         updatePatient(
           this.props.id,
-          this.state.firstName,
-          this.state.lastName,
-          this.state.phone,
-          this.state.details,
-          this.state.notes
+          {
+            firstName,
+            lastName,
+            phone,
+            details
+          },
+          notes
         )
       );
     }
@@ -134,6 +146,7 @@ class Details extends React.Component<Props> {
   };
 
   render() {
+    const { firstName, lastName, phone, details, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>
@@ -148,7 +161,7 @@ class Details extends React.Component<Props> {
             placeholder="Patient first name"
             returnKeyType="next"
             style={styles.input}
-            value={this.state.firstName}
+            value={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusLastName}
           />
@@ -158,7 +171,7 @@ class Details extends React.Component<Props> {
             ref={this._lastNameInput}
             returnKeyType="next"
             style={styles.input}
-            value={this.state.lastName}
+            value={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusPhone}
           />
@@ -168,7 +181,7 @@ class Details extends React.Component<Props> {
             ref={this._phoneInput}
             returnKeyType="next"
             style={styles.input}
-            value={this.state.phone}
+            value={phone}
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusDetails}
           />
@@ -180,7 +193,7 @@ class Details extends React.Component<Props> {
             ref={this._detailsInput}
             returnKeyType="done"
             style={styles.input}
-            value={this.state.details}
+            value={details}
             onChangeText={this._updateDetails}
             onSubmitEditing={this._focusNotes}
           />
@@ -192,13 +205,15 @@ class Details extends React.Component<Props> {
             ref={this._notesInput}
             returnKeyType="done"
             style={styles.input}
-            value={this.state.notes}
+            value={notes}
             onChangeText={this._updateNotes}
           />
-          {this.props.photoId && (
+          {this.props.photoInfo && (
             <Image
               style={styles.photo}
-              source={{ uri: `data:image/gif;base64,${this.props.photoId}` }}
+              source={{
+                uri: `data:image/gif;base64,${this.props.photoInfo.photoId}`
+              }}
             />
           )}
           <Button
@@ -250,28 +265,20 @@ const styles = StyleSheet.create({
 
 export default connect((state: StoreState, props: Props) => ({
   isNew: props.id === state.patients.length,
-  firstName:
+  patientInfo:
     props.id < state.patients.length
-      ? state.patients[props.id].firstName
-      : undefined,
-  lastName:
-    props.id < state.patients.length
-      ? state.patients[props.id].lastName
-      : undefined,
-  phone:
-    props.id < state.patients.length
-      ? state.patients[props.id].phone
-      : undefined,
-  details:
-    props.id < state.patients.length
-      ? state.patients[props.id].details
-      : undefined,
+      ? state.patients[props.id].patientInfo
+      : {
+          firstName: "",
+          lastName: "",
+          phone: ""
+        },
   notes:
     props.id < state.patients.length
       ? state.patients[props.id].notes
       : undefined,
-  photoId:
+  photoInfo:
     props.id < state.patients.length
-      ? state.patients[props.id].photoId
+      ? state.patients[props.id].photoInfo
       : undefined
 }))(Details);

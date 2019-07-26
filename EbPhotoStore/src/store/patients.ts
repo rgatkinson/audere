@@ -3,37 +3,30 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-export type Patient = {
+import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
+
+export type PatientEncounter = {
   id: number;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  details?: string;
+  patientInfo: PatientInfo;
   notes?: string;
-  photoId?: string;
+  photoInfo?: PhotoInfo;
 };
 
 export type PatientAction =
   | {
       type: "ADD_PATIENT";
-      firstName?: string;
-      lastName?: string;
-      phone?: string;
-      details?: string;
+      patientInfo: PatientInfo;
       notes?: string;
     }
   | {
       type: "UPDATE_PATIENT";
       id: number;
-      firstName?: string;
-      lastName?: string;
-      phone?: string;
-      details?: string;
+      patientInfo: PatientInfo;
       notes?: string;
     }
-  | { type: "SAVE_PHOTO"; id: number; photoId: string };
+  | { type: "SAVE_PHOTO"; id: number; photoInfo: PhotoInfo };
 
-export type PatientState = Patient[];
+export type PatientState = PatientEncounter[];
 
 const initialState: PatientState = [];
 
@@ -44,10 +37,7 @@ export default function reducer(state = initialState, action: PatientAction) {
         ...state,
         {
           id: state.length,
-          firstName: action.firstName,
-          lastName: action.lastName,
-          phone: action.phone,
-          details: action.details,
+          patientInfo: action.patientInfo,
           notes: action.notes
         }
       ];
@@ -58,10 +48,7 @@ export default function reducer(state = initialState, action: PatientAction) {
         }
         return {
           id: patient.id,
-          firstName: action.firstName,
-          lastName: action.lastName,
-          phone: action.phone,
-          details: action.details,
+          patientInfo: action.patientInfo,
           notes: action.notes
         };
       });
@@ -72,7 +59,7 @@ export default function reducer(state = initialState, action: PatientAction) {
         }
         return {
           ...patient,
-          photoId: action.photoId
+          photoInfo: action.photoInfo
         };
       });
 
@@ -82,45 +69,33 @@ export default function reducer(state = initialState, action: PatientAction) {
 }
 
 export function addPatient(
-  firstName?: string,
-  lastName?: string,
-  phone?: string,
-  details?: string,
+  patientInfo: PatientInfo,
   notes?: string
 ): PatientAction {
   return {
     type: "ADD_PATIENT",
-    firstName,
-    lastName,
-    phone,
-    details,
+    patientInfo,
     notes
   };
 }
 
 export function updatePatient(
   id: number,
-  firstName?: string,
-  lastName?: string,
-  phone?: string,
-  details?: string,
+  patientInfo: PatientInfo,
   notes?: string
 ): PatientAction {
   return {
     type: "UPDATE_PATIENT",
     id,
-    firstName,
-    lastName,
-    phone,
-    details,
+    patientInfo,
     notes
   };
 }
 
-export function savePhoto(id: number, photoId: string): PatientAction {
+export function savePhoto(id: number, photoInfo: PhotoInfo): PatientAction {
   return {
     type: "SAVE_PHOTO",
     id,
-    photoId
+    photoInfo
   };
 }

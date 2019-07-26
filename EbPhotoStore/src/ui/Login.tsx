@@ -1,7 +1,8 @@
 import React from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { login, Action, ChwData, StoreState } from "../store";
+import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
+import { login, Action, StoreState } from "../store";
 import Button from "./components/Button";
 import NumberInput from "./components/NumberInput";
 import TextInput from "./components/TextInput";
@@ -10,24 +11,35 @@ import Title from "./components/Title";
 import { GUTTER } from "./styles";
 
 interface Props {
-  chwData?: ChwData;
+  healthWorkerInfo?: HealthWorkerInfo;
   dispatch(action: Action): void;
 }
 
-class Login extends React.Component<Props> {
-  state = {
-    firstName: this.props.chwData && this.props.chwData.firstName,
-    lastName: this.props.chwData && this.props.chwData.lastName,
-    phone: this.props.chwData && this.props.chwData.phone,
-    notes: this.props.chwData && this.props.chwData.notes
-  };
+interface State {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  notes: string;
+}
 
+class Login extends React.Component<Props, State> {
   _firstNameInput: any;
   _phoneInput: any;
   _notesInput: any;
 
   constructor(props: Props) {
     super(props);
+
+    if (props.healthWorkerInfo != null) {
+      const { firstName, lastName, phone, notes } = props.healthWorkerInfo;
+      this.state = {
+        firstName,
+        lastName,
+        phone,
+        notes
+      };
+    }
+
     this._firstNameInput = React.createRef<TextInput>();
     this._phoneInput = React.createRef<NumberInput>();
     this._notesInput = React.createRef<TextInput>();
@@ -67,7 +79,7 @@ class Login extends React.Component<Props> {
         lastName: this.state.lastName!,
         firstName: this.state.firstName!,
         phone: this.state.phone!,
-        notes: this.state.notes
+        notes: this.state.notes ? this.state.notes : ""
       })
     );
   };
@@ -139,7 +151,7 @@ class Login extends React.Component<Props> {
 }
 
 export default connect((state: StoreState) => ({
-  chwData: state.meta.chwData
+  healthWorkerInfo: state.meta.healthWorkerInfo
 }))(Login);
 
 const styles = StyleSheet.create({

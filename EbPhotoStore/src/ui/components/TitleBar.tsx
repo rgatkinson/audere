@@ -9,12 +9,7 @@ import { connect } from "react-redux";
 import { toggleDemoMode, Action, StoreState } from "../../store";
 import MultiTapContainer from "./MultiTapContainer";
 import Text from "./Text";
-import {
-  GUTTER,
-  NAV_BAR_HEIGHT,
-  SYSTEM_FONT,
-  SYSTEM_TEXT
-} from "../styles";
+import { GUTTER, NAV_BAR_HEIGHT, SYSTEM_FONT, SYSTEM_TEXT } from "../styles";
 
 interface Props {
   demoMode: boolean;

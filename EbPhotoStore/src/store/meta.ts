@@ -3,6 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
+
 export enum Screen {
   Login = "LOGIN",
   Patients = "PATIENTS",
@@ -10,16 +12,9 @@ export enum Screen {
   Camera = "CAMERA"
 }
 
-export type ChwData = {
-  lastName: string;
-  firstName: string;
-  phone: string;
-  notes?: string;
-};
-
 export type MetaAction =
   | { type: "TOGGLE_DEMO_MODE" }
-  | { type: "LOGIN"; chwData: ChwData }
+  | { type: "LOGIN"; healthWorkerInfo: HealthWorkerInfo }
   | { type: "LOGOUT" }
   | { type: "VIEW_PATIENTS" }
   | { type: "VIEW_DETAILS"; id: number }
@@ -27,7 +22,7 @@ export type MetaAction =
 
 export type MetaState = {
   currentPatient?: number;
-  chwData?: ChwData;
+  healthWorkerInfo?: HealthWorkerInfo;
   demoMode: boolean;
   screen: Screen;
 };
@@ -45,14 +40,14 @@ export default function reducer(state = initialState, action: MetaAction) {
       return {
         ...state,
         currentPatient: undefined,
-        chwData: action.chwData,
+        healthWorkerInfo: action.healthWorkerInfo,
         screen: Screen.Patients
       };
     case "LOGOUT":
       return {
         ...state,
         currentPatient: undefined,
-        chwData: undefined,
+        healthWorkerInfo: undefined,
         screen: Screen.Login
       };
     case "VIEW_PATIENTS":
@@ -83,10 +78,10 @@ export function toggleDemoMode(): MetaAction {
   };
 }
 
-export function login(chwData: ChwData): MetaAction {
+export function login(healthWorkerInfo: HealthWorkerInfo): MetaAction {
   return {
     type: "LOGIN",
-    chwData
+    healthWorkerInfo
   };
 }
 

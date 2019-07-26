@@ -5,7 +5,7 @@ import {
   viewDetails,
   logout,
   Action,
-  Patient,
+  PatientEncounter,
   Screen,
   StoreState
 } from "../store";
@@ -15,7 +15,7 @@ import Title from "./components/Title";
 import { BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
 
 interface Props {
-  patients: Patient[];
+  patients: PatientEncounter[];
   dispatch(action: Action): void;
 }
 
@@ -32,7 +32,7 @@ class Patients extends React.Component<Props> {
     this.props.dispatch(logout());
   };
 
-  _keyExtractor = (patient: Patient) => {
+  _keyExtractor = (patient: PatientEncounter) => {
     return patient.id.toString();
   };
 
@@ -67,7 +67,7 @@ class Patients extends React.Component<Props> {
 }
 
 interface PatientRowProps {
-  patient: Patient;
+  patient: PatientEncounter;
   onPress: (id: number) => void;
 }
 
@@ -81,9 +81,9 @@ class PatientRow extends React.Component<PatientRowProps> {
       <TouchableOpacity style={styles.patient} onPress={this._onPress}>
         <Text
           content={
-            this.props.patient.lastName +
+            this.props.patient.patientInfo.lastName +
             ", " +
-            this.props.patient.firstName +
+            this.props.patient.patientInfo.firstName +
             " (ID: " +
             this.props.patient.id +
             ")"
