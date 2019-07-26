@@ -49,7 +49,8 @@ export default function reducer(state = initialState, action: PatientAction) {
         return {
           id: patient.id,
           patientInfo: action.patientInfo,
-          notes: action.notes
+          notes: action.notes,
+          ...patient
         };
       });
     case "SAVE_PHOTO":
