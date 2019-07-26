@@ -9,7 +9,9 @@ export enum Screen {
   Login = "LOGIN",
   Patients = "PATIENTS",
   PatientDetails = "PATIENT_DETAILS",
-  Camera = "CAMERA"
+  Camera = "CAMERA",
+  CameraPermission = "CAMERA_PERMISSION",
+  LocationPermission = "LOCATION_PERMISSION"
 }
 
 export type MetaAction =
@@ -17,6 +19,8 @@ export type MetaAction =
   | { type: "LOGIN"; healthWorkerInfo: HealthWorkerInfo }
   | { type: "LOGOUT" }
   | { type: "VIEW_PATIENTS" }
+  | { type: "VIEW_CAMERA_PERMISSION" }
+  | { type: "VIEW_LOCATION_PERMISSION" }
   | { type: "VIEW_DETAILS"; id: number }
   | { type: "OPEN_CAMERA" };
 
@@ -61,6 +65,16 @@ export default function reducer(state = initialState, action: MetaAction) {
         ...state,
         currentPatient: action.id,
         screen: Screen.PatientDetails
+      };
+    case "VIEW_CAMERA_PERMISSION":
+      return {
+        ...state,
+        screen: Screen.CameraPermission
+      };
+    case "VIEW_LOCATION_PERMISSION":
+      return {
+        ...state,
+        screen: Screen.LocationPermission
       };
     case "OPEN_CAMERA":
       return {
@@ -107,5 +121,16 @@ export function viewDetails(id: number): MetaAction {
 export function openCamera(): MetaAction {
   return {
     type: "OPEN_CAMERA"
+  };
+}
+
+export function viewCameraPermission(): MetaAction {
+  return {
+    type: "VIEW_CAMERA_PERMISSION"
+  };
+}
+export function viewLocationPermission(): MetaAction {
+  return {
+    type: "VIEW_LOCATION_PERMISSION"
   };
 }

@@ -12,6 +12,8 @@ import {
 import Login from "./Login";
 import Patients from "./Patients";
 import Details from "./Details";
+import CameraPermissionRequired from "./CameraPermissionRequired";
+import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
 
@@ -48,6 +50,12 @@ class AppController extends React.Component<Props> {
       case Screen.Camera:
         this.props.dispatch(viewDetails(this.props.currentPatient!));
         return true;
+      case Screen.LocationPermission:
+        this.props.dispatch(viewPatients());
+        return true;
+      case Screen.CameraPermission:
+        this.props.dispatch(viewDetails(this.props.currentPatient!));
+        return true;
     }
     return false;
   };
@@ -62,6 +70,10 @@ class AppController extends React.Component<Props> {
         return <Details id={this.props.currentPatient} />;
       case Screen.Camera:
         return <PhotoCapture id={this.props.currentPatient} />;
+      case Screen.LocationPermission:
+        return <LocationPermissionRequired />;
+      case Screen.CameraPermission:
+        return <CameraPermissionRequired />;
     }
   };
 

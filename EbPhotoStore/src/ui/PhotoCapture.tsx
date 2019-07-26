@@ -13,8 +13,18 @@ import {
   View
 } from "react-native";
 import { connect } from "react-redux";
+import { PermissionsAndroid } from "react-native";
 import { RNCamera } from "react-native-camera";
-import { savePhoto, viewDetails, Action, Screen, StoreState } from "../store";
+import Geolocation from "react-native-geolocation-service";
+import {
+  savePhoto,
+  viewDetails,
+  viewCameraPermission,
+  viewLocationPermission,
+  Action,
+  Screen,
+  StoreState
+} from "../store";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "./styles";
 
 interface Props {
@@ -25,7 +35,45 @@ interface Props {
 class PhotoCapture extends React.Component<Props> {
   camera = React.createRef<any>();
 
+  async componentDidMount() {
+    await this._checkPermissions();
+    Geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          lat: position.coords.latitude,
+          long: position.coords.longitude
+        });
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  }
+
+  async _checkPermissions() {
+    try {
+      const cameraGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      if (!cameraGranted) {
+        this.props.dispatch(viewCameraPermission());
+        return;
+      }
+      const locationGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      if (!locationGranted) {
+        this.props.dispatch(viewLocationPermission());
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   state = {
+    lat: 0,
+    long: 0,
     spinner: true
   };
 
@@ -52,7 +100,12 @@ class PhotoCapture extends React.Component<Props> {
         this.setState({ spinner: false });
         this.props.dispatch(
           savePhoto(this.props.id, {
-            photoId: photoData.base64
+            photoId: photoData.base64,
+            timestamp: new Date().getTime().toString(),
+            gps: {
+              latitude: this.state.lat.toString(),
+              longitude: this.state.long.toString()
+            }
           })
         );
         this.props.dispatch(viewDetails(this.props.id));

@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   KeyboardAvoidingView,
+  PermissionsAndroid,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -15,6 +16,7 @@ import {
   openCamera,
   updatePatient,
   logout,
+  viewLocationPermission,
   viewPatients,
   Action,
   PatientEncounter,
@@ -65,6 +67,23 @@ class Details extends React.Component<Props, State> {
     this._phoneInput = React.createRef<NumberInput>();
     this._detailsInput = React.createRef<TextInput>();
     this._notesInput = React.createRef<TextInput>();
+  }
+
+  async componentDidMount() {
+    await this.checkLocationPermission();
+  }
+
+  async checkLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      if (!granted) {
+        this.props.dispatch(viewLocationPermission());
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   _updateFirstName = (firstName: string) => {

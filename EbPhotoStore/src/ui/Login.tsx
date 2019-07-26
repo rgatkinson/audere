@@ -39,7 +39,9 @@ class Login extends React.Component<Props, State> {
         notes
       };
     } else {
-      this.state = {};
+      this.state = {
+        notes: ""
+      };
     }
 
     this._firstNameInput = React.createRef<TextInput>();
