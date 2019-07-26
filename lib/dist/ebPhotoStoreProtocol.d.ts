@@ -38,9 +38,8 @@ export interface EncounterInfo {
     healthWorker: HealthWorkerInfo;
     localIndex: string;
     patient: PatientInfo;
-    photoDocId: string;
-    details?: string;
     rdtPhotos: PhotoInfo[];
+    notes: string;
 }
 export interface HealthWorkerInfo {
     firstName: string;
@@ -52,7 +51,7 @@ export interface PatientInfo {
     firstName: string;
     lastName: string;
     phone: string;
-    notes: string;
+    details?: string;
 }
 export interface PhotoInfo {
     timestamp: string;
