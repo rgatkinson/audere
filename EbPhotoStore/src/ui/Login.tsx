@@ -38,6 +38,8 @@ class Login extends React.Component<Props, State> {
         phone,
         notes
       };
+    } else {
+      this.state = {};
     }
 
     this._firstNameInput = React.createRef<TextInput>();
@@ -85,6 +87,7 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
+    const { lastName, firstName, phone, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>
@@ -94,7 +97,7 @@ class Login extends React.Component<Props, State> {
             placeholder="Last Name"
             returnKeyType="next"
             style={styles.input}
-            value={this.state.lastName}
+            value={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusFirstName}
           />
@@ -104,7 +107,7 @@ class Login extends React.Component<Props, State> {
             ref={this._firstNameInput}
             returnKeyType="next"
             style={styles.input}
-            value={this.state.firstName}
+            value={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusPhone}
           />
@@ -114,7 +117,7 @@ class Login extends React.Component<Props, State> {
             ref={this._phoneInput}
             returnKeyType="next"
             style={styles.input}
-            value={this.state.phone}
+            value={phone}
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusNotes}
           />
@@ -130,15 +133,15 @@ class Login extends React.Component<Props, State> {
             ref={this._notesInput}
             returnKeyType="done"
             style={styles.input}
-            value={this.state.notes}
+            value={notes}
             onChangeText={this._updateNotes}
           />
         </ScrollView>
         <Button
           enabled={
-            !!this.state.lastName &&
-            !!this.state.firstName &&
-            !!this.state.phone
+            !!lastName &&
+            !!firstName &&
+            !!phone
           }
           label="Login"
           primary={true}
