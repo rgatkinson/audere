@@ -73,6 +73,7 @@ export interface EncounterInfo {
   localIndex: string;
   patient: PatientInfo;
   photoDocId: string;
+  details?: string;
 }
 
 export interface HealthWorkerInfo {
@@ -86,7 +87,6 @@ export interface PatientInfo {
   firstName: string;
   lastName: string;
   phone: string;
-  details?: string;
   notes: string;
 }
 

@@ -40,6 +40,7 @@ export interface EncounterInfo {
     localIndex: string;
     patient: PatientInfo;
     photoDocId: string;
+    details?: string;
 }
 export interface HealthWorkerInfo {
     firstName: string;
@@ -51,7 +52,6 @@ export interface PatientInfo {
     firstName: string;
     lastName: string;
     phone: string;
-    details?: string;
     notes: string;
 }
 export interface PhotoDocument extends ProtocolDocumentBase {
