@@ -6,6 +6,9 @@
 /**/*.iml
 /**/node_modules/
 /**/buildInfo.json
+/**/.project
+/**/.settings
+/**/.classpath
 /**/*.tfstate
 /**/*.tfstate.backup
 /**/*.tfstate.*.backup
