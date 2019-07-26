@@ -120,6 +120,8 @@ class Details extends React.Component<Props> {
           this.props.id,
           this.state.firstName,
           this.state.lastName,
+          this.state.phone,
+          this.state.details,
           this.state.notes
         )
       );
