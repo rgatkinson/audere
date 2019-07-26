@@ -1,10 +1,10 @@
-import { ClientVersionInfo, SampleInfo } from "./common";
-export { ClientVersionInfo, SampleInfo };
+import { ClientVersionInfo } from "./common";
+export { ClientVersionInfo };
 export interface ProtocolDocumentBase {
     documentType: string;
     schemaId: number;
     docId: string;
-    device: DeviceInfo;
+    device?: DeviceInfo;
 }
 export interface DeviceInfo {
     installation: string;
@@ -16,9 +16,10 @@ export interface DeviceInfo {
 }
 export declare enum DocumentType {
     Patient = "PATIENT",
-    Photo = "PHOTO"
+    Photo = "PHOTO",
+    Triage = "TRIAGE"
 }
-export declare type ProtocolDocument = PatientDocument | PhotoDocument;
+export declare type ProtocolDocument = EncounterDocument | PhotoDocument | EncounterTriageDocument;
 export declare type TransportMetadata = {
     sentAt: string;
     receivedAt?: string;
@@ -28,19 +29,30 @@ export declare type TransportMetadata = {
 export declare type FirestoreProtocolDocument = ProtocolDocument & {
     _transport: TransportMetadata;
 };
-export interface PatientDocument extends ProtocolDocumentBase {
+export interface EncounterDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Patient;
     schemaId: 1;
+    encounter: EncounterInfo;
+}
+export interface EncounterInfo {
+    isDemo: boolean;
+    healthWorker: HealthWorkerInfo;
+    localIndex: string;
     patient: PatientInfo;
+    photoDocId: string;
+}
+export interface HealthWorkerInfo {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    notes: string;
 }
 export interface PatientInfo {
-    isDemo: boolean;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
     details?: string;
     notes: string;
-    samples: SampleInfo[];
 }
 export interface PhotoDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Photo;
@@ -49,8 +61,22 @@ export interface PhotoDocument extends ProtocolDocumentBase {
 }
 export interface PhotoInfo {
     timestamp: string;
+    gps: GPSInfo;
     photoId: string;
+}
+export interface GPSInfo {
+    latitude: string;
+    longitude: string;
 }
 export interface PhotoDbInfo extends PhotoInfo {
     jpegBase64: string;
+}
+export interface EncounterTriageDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.Triage;
+    schemaId: 1;
+    triage: EncounterTriageInfo;
+}
+export interface EncounterTriageInfo {
+    notes: string;
+    testIndicatesEVD: boolean;
 }

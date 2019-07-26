@@ -17,11 +17,9 @@
 //
 // ========================================================================
 
-import * as common from "./common";
+import { ClientVersionInfo } from "./common";
 
-import { ClientVersionInfo, SampleInfo } from "./common";
-
-export { ClientVersionInfo, SampleInfo };
+export { ClientVersionInfo };
 
 export interface ProtocolDocumentBase {
   documentType: string;
@@ -30,8 +28,9 @@ export interface ProtocolDocumentBase {
   // unique id for this document.
   docId: string;
 
-  // information about client device
-  device: DeviceInfo;
+  // information about client device, if created on client.
+  // not present for web-created documents.
+  device?: DeviceInfo;
 }
 
 export interface DeviceInfo {
@@ -45,10 +44,11 @@ export interface DeviceInfo {
 
 export enum DocumentType {
   Patient = "PATIENT",
-  Photo = "PHOTO"
+  Photo = "PHOTO",
+  Triage = "TRIAGE",
 }
 
-export type ProtocolDocument = PatientDocument | PhotoDocument;
+export type ProtocolDocument = EncounterDocument | PhotoDocument | EncounterTriageDocument;
 
 export type TransportMetadata = {
   sentAt: string;
@@ -61,20 +61,33 @@ export type FirestoreProtocolDocument = ProtocolDocument & {
   _transport: TransportMetadata;
 };
 
-export interface PatientDocument extends ProtocolDocumentBase {
+export interface EncounterDocument extends ProtocolDocumentBase {
   documentType: DocumentType.Patient;
   schemaId: 1;
+  encounter: EncounterInfo;
+}
+
+export interface EncounterInfo {
+  isDemo: boolean;
+  healthWorker: HealthWorkerInfo;
+  localIndex: string;
   patient: PatientInfo;
+  photoDocId: string;
+}
+
+export interface HealthWorkerInfo {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  notes: string;
 }
 
 export interface PatientInfo {
-  isDemo: boolean;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   details?: string;
   notes: string;
-  samples: SampleInfo[];
 }
 
 // ================================================================================
@@ -88,9 +101,33 @@ export interface PhotoDocument extends ProtocolDocumentBase {
 
 export interface PhotoInfo {
   timestamp: string;
+  gps: GPSInfo;
   photoId: string;
+}
+
+export interface GPSInfo {
+  latitude: string;
+  longitude: string;
 }
 
 export interface PhotoDbInfo extends PhotoInfo {
   jpegBase64: string;
+}
+
+// ================================================================================
+// Triage
+
+// The docId for this document matches docId for corresponding EncounterDocument.
+// These are separate documents because EncounterDocument is written by the client
+// and TriageDocument is written by the website.
+
+export interface EncounterTriageDocument extends ProtocolDocumentBase {
+  documentType: DocumentType.Triage;
+  schemaId: 1;
+  triage: EncounterTriageInfo;
+}
+
+export interface EncounterTriageInfo {
+  notes: string;
+  testIndicatesEVD: boolean;
 }
