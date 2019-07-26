@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import { connect } from "react-redux";
 import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
@@ -305,6 +306,8 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _setTimer() {
+    const secsTimeout =
+      Platform.OS === "ios" ? 300 : getRemoteConfig("rdtTimeoutSeconds");
     // Timeout after 30 seconds
     this._clearTimer();
     this._timer = global.setTimeout(() => {
@@ -320,7 +323,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(setRDTPhotoHC(""));
         dispatch(setRDTReaderResult({ testStripFound: false }));
       }
-    }, 300 * 1000);
+    }, secsTimeout * 1000);
   }
 
   _clearTimer() {
