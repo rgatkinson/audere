@@ -18,6 +18,7 @@ export type ChwData = {
 };
 
 export type MetaAction =
+  | { type: "TOGGLE_DEMO_MODE" }
   | { type: "LOGIN"; chwData: ChwData }
   | { type: "LOGOUT" }
   | { type: "VIEW_PATIENTS" }
@@ -27,15 +28,19 @@ export type MetaAction =
 export type MetaState = {
   currentPatient?: number;
   chwData?: ChwData;
+  demoMode: boolean;
   screen: Screen;
 };
 
 const initialState: MetaState = {
+  demoMode: false,
   screen: Screen.Login
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
   switch (action.type) {
+    case "TOGGLE_DEMO_MODE":
+      return { ...state, demoMode: !state.demoMode };
     case "LOGIN":
       return {
         ...state,
@@ -70,6 +75,12 @@ export default function reducer(state = initialState, action: MetaAction) {
     default:
       return state;
   }
+}
+
+export function toggleDemoMode(): MetaAction {
+  return {
+    type: "TOGGLE_DEMO_MODE"
+  };
 }
 
 export function login(chwData: ChwData): MetaAction {

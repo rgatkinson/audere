@@ -134,7 +134,6 @@ class Details extends React.Component<Props> {
   };
 
   render() {
-    console.log(this.props.photoId);
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>

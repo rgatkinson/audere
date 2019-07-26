@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { BackHandler, Text, View } from "react-native";
 import { connect } from "react-redux";
 import {
@@ -13,6 +13,7 @@ import Login from "./Login";
 import Patients from "./Patients";
 import Details from "./Details";
 import PhotoCapture from "./PhotoCapture";
+import TitleBar from "./components/TitleBar";
 
 interface Props {
   currentPatient?: number;
@@ -51,7 +52,7 @@ class AppController extends React.Component<Props> {
     return false;
   };
 
-  render() {
+  _getScreen = () => {
     switch (this.props.screen) {
       case Screen.Login:
         return <Login />;
@@ -62,6 +63,15 @@ class AppController extends React.Component<Props> {
       case Screen.Camera:
         return <PhotoCapture id={this.props.currentPatient} />;
     }
+  };
+
+  render() {
+    return (
+      <Fragment>
+        <TitleBar />
+        {this._getScreen()}
+      </Fragment>
+    );
   }
 }
 export default connect((state: StoreState) => ({
