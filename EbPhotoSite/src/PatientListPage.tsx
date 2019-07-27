@@ -8,7 +8,7 @@ import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import ReactTable, { Column } from 'react-table';
 import "react-table/react-table.css";
 
-import { PatientRecord, PatientRecordTriage } from "./protocol";
+import { EncounterDocument, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import { LoggedInAs } from "./LoggedInAs";
 
@@ -16,13 +16,13 @@ export interface PatientsListPageProps extends RouteComponentProps<{}> {
 }
 
 export interface PatientsListPageState {
-  records: PatientRecord[] | null;
+  eDocs: EncounterDocument[] | null;
 }
 
 class PatientListPageAssumeRouter extends React.Component<PatientsListPageProps, PatientsListPageState> {
   constructor(props: PatientsListPageProps) {
     super(props);
-    this.state = { records: null };
+    this.state = { eDocs: null };
   }
 
   componentDidMount() {
@@ -30,24 +30,27 @@ class PatientListPageAssumeRouter extends React.Component<PatientsListPageProps,
   }
 
   private async load(): Promise<void> {
-    const records = await getApi().loadPatientRecord();
-    this.setState({ records });
+    const encounters = await getApi().loadEncounters();
+    this.setState({
+      eDocs: encounters.docs.map((x: any) => x.data() as EncounterDocument)
+    });
   }
 
-  private select = (e: MouseEvent, record: PatientRecord) => {
+  private select = (e: MouseEvent, eDoc: EncounterDocument) => {
     e.preventDefault();
-    this.props.history.push(`/patient-detail/${record.uid}`);
+    // TODO: guard against injection via docId here.
+    this.props.history.push(`/patient-detail/${eDoc.docId}`);
   }
 
   public render(): React.ReactNode {
-    const { records } = this.state;
+    const { eDocs: records } = this.state;
     return (
       <div>
         <LoggedInAs />
         {records == null ? (
           "Loading..."
         ) : (
-          <PatientTable records={records} onSelect={this.select} />
+          <PatientTable eDocs={records} onSelect={this.select} />
         )}
       </div>
     );
@@ -57,18 +60,18 @@ class PatientListPageAssumeRouter extends React.Component<PatientsListPageProps,
 export const PatientListPage = withRouter(PatientListPageAssumeRouter);
 
 interface PatientTableRow {
-  record: PatientRecord;
-  triage: PatientRecordTriage | null;
+  eDoc: EncounterDocument;
+  tDoc: EncounterTriageDocument | null;
 }
 
 interface PatientTableProps {
-  records: PatientRecord[];
-  onSelect: (e: MouseEvent, record: PatientRecord) => void
+  eDocs: EncounterDocument[];
+  onSelect: (e: MouseEvent, record: EncounterDocument) => void
 }
 
 interface PatientTableState {
   rows: PatientTableRow[];
-  selected: PatientRecord | null;
+  selected: EncounterDocument | null;
 }
 
 class PatientTable extends React.Component<PatientTableProps, PatientTableState> {
@@ -76,7 +79,7 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
     super(props);
     this.state = {
       selected: null,
-      rows: this.props.records.map(record => ({ record, triage: null })),
+      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: null })),
     };
   }
 
@@ -86,32 +89,34 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
 
   private async load(): Promise<void> {
     const api = getApi();
-    // TODO: parallel
     // TODO: only visible
-    const triages = new Map<string, PatientRecordTriage>();
-    for (let row of this.state.rows) {
-      try {
-        const triage = await api.loadTriage(row.record.uid);
-        triages.set(triage.uid, triage);
 
-        // this.state.rows can change during the await, and each iteration.
-
-        this.setState({
-          rows: this.props.records.map(record => ({
-            record,
-            triage: triages.get(record.uid) || null
-          }))
-        })
-      } catch (err) {
-        // TODO, skipping for now
-      }
-    }
+    const rows = await Promise.all(
+      this.props.eDocs.map(async eDoc => {
+        try {
+          const triage = await api.loadTriage(eDoc.docId);
+          return {
+            eDoc,
+            tDoc: triage.data() as EncounterTriageDocument || {
+              triage: {
+                notes: "",
+                testIndicatesEVD: false,
+              }
+            },
+          };
+        } catch (err) {
+          console.log(`PatientListPage error loading triage '${eDoc.docId}'`);
+          return { eDoc, tDoc: null };
+        }
+      })
+    );
+    this.setState({ rows });
   }
 
   private getTrProps = (state: any, row: any, column: any, instance: any) => {
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
-        this.props.onSelect(e, row.original.record);
+        this.props.onSelect(e, row.original.eDoc);
       }
     };
   }
@@ -120,38 +125,46 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
     return [
       {
         Header: "Timestamp",
-        accessor: "record.photo.timestamp",
+        accessor: "eDoc.encounter.rdtPhotos[0].timestamp",
         minWidth: 150,
       },
       {
-        Header: "CHW",
-        accessor: "record.chw.lastName",
+        Header: "Worker Name",
+        accessor: row => {
+          const w = row.eDoc.encounter.healthWorker;
+          return `${w.firstName} ${w.lastName}`;
+        },
+        id: "healthWorker.name",
         minWidth: 120,
       },
       {
-        Header: "CHW Phone",
-        accessor: "record.chw.phone",
+        Header: "Worker Phone",
+        accessor: "eDoc.encounter.healthWorker.phone",
         minWidth: 80,
       },
       {
         Header: "ID",
-        accessor: "record.localId",
+        accessor: "eDoc.encounter.localIndex",
         minWidth: 40,
       },
       {
         Header: "Patient",
-        accessor: "record.patient.lastName",
+        accessor: row => {
+          const p = row.eDoc.encounter.patient;
+          return `${p.firstName} ${p.lastName}`;
+        },
+        id: "patient.name",
         minWidth: 120,
       },
       {
         Header: "Triage",
-        accessor: row => row.triage == null ? "Loading.." : firstLine(row.triage.notes),
+        accessor: row => row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
         id: "triage",
         minWidth: 200,
       },
       {
         Header: "EVD",
-        accessor: r => r.triage == null ? ".." : (r.triage.testIndicatesEVD ? "yes" : "no"),
+        accessor: r => r.tDoc == null ? ".." : (r.tDoc.triage.testIndicatesEVD ? "yes" : "no"),
         id: "evd",
         minWidth: 40,
       },
@@ -161,7 +174,7 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
   public render(): React.ReactNode {
     const { selected } = this.state;
     return selected != null ? (
-      <Redirect to={`/patient-detail/${selected.uid}`}/>
+      <Redirect to={`/patient-detail/${selected.docId}`}/>
     ) : (
       <ReactTable
         data={this.state.rows}

@@ -25,7 +25,7 @@ ReactDOM.render(
        <Switch>
         <Route exact path="/" component={IndexPage} />
         <Route path="/patients" component={PatientListPage} />
-        <Route path="/patient-detail/:uid" component={PatientDetailPage} />
+        <Route path="/patient-detail/:docId" component={PatientDetailPage} />
         <Route component={FourOhFour} />
       </Switch>
     </Router>

@@ -3,31 +3,32 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import deepEqual from "deep-equal";
 import React, { ChangeEvent } from 'react';
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { PatientRecord, PatientRecordTriage } from "./protocol";
-import { getApi } from "./api";
+import { EncounterDocument, EncounterTriageDocument, EncounterTriageInfo } from "audere-lib/dist/ebPhotoStoreProtocol";
+import { getApi, triageDoc } from "./api";
 
 type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
 
 export interface PatientDetailMatchParams {
-  uid: string;
+  docId: string;
 }
 
 export interface PatientDetailPageProps extends RouteComponentProps<PatientDetailMatchParams> {
 }
 
 export interface PatientDetailPageState {
-  record: PatientRecord | null;
-  triage: PatientRecordTriage | null;
+  eDoc: EncounterDocument | null;
+  tDoc: EncounterTriageDocument | null;
 }
 
 class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPageProps, PatientDetailPageState> {
   constructor(props: PatientDetailPageProps) {
     super(props);
-    this.state = { record: null, triage: null };
+    this.state = { eDoc: null, tDoc: null };
   }
 
   componentDidMount() {
@@ -35,23 +36,30 @@ class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPagePro
   }
 
   private load = async (): Promise<void> => {
-    const { uid } = this.props.match.params;
+    const { docId } = this.props.match.params;
     const api = getApi();
-    const record = await api.loadRecord(uid);
-    const triage = await api.loadTriage(uid);
-    this.setState({ triage, record });
+
+    // TODO: show errors
+    const [encounter, triage] = await Promise.all([
+      api.loadEncounter(docId),
+      api.loadTriage(docId)
+    ]);
+    this.setState({
+      eDoc: encounter.data() as EncounterDocument || null,
+      tDoc: triage.data() as EncounterTriageDocument || null,
+    });
   }
 
   public render(): React.ReactNode {
-    const { record, triage } = this.state;
-    return record == null ? (
+    const { eDoc: encounter, tDoc: triage } = this.state;
+    return encounter == null ? (
       <div>Loading...</div>
     ) : (
       <div>
-        <PatientInfoPane record={record}/>
-        <HealthWorkerPane record={record}/>
-        <TriagePane record={record} triage={triage} reload={this.load}/>
-        <PhotoPane record={record}/>
+        <PatientInfoPane eDoc={encounter}/>
+        <HealthWorkerPane eDoc={encounter}/>
+        <TriagePane eDoc={encounter} tDoc={triage} reload={this.load}/>
+        <PhotoPane eDoc={encounter}/>
       </div>
     );
   }
@@ -59,19 +67,19 @@ class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPagePro
 export const PatientDetailPage = withRouter(PatientDetailPageAssumeRouter);
 
 interface PatientDetailPaneProps {
-  record: PatientRecord;
+  eDoc: EncounterDocument;
 }
 
 class HealthWorkerPane extends React.Component<PatientDetailPaneProps> {
   public render(): React.ReactNode {
-    const { chw } = this.props.record;
+    const { healthWorker } = this.props.eDoc.encounter;
     return (
       <div className="HealthWorkerPane">
         <h2>Health Worker</h2>
         <table>
-          <tr><td>Name:</td><td>{chw.firstName} {chw.lastName}</td></tr>
-          <tr><td>Phone:</td><td>{chw.phone}</td></tr>
-          <tr><td>Notes:</td>{chw.notes}</tr>
+          <tr><td>Name:</td><td>{healthWorker.firstName} {healthWorker.lastName}</td></tr>
+          <tr><td>Phone:</td><td>{healthWorker.phone}</td></tr>
+          <tr><td>Notes:</td>{healthWorker.notes}</tr>
         </table>
       </div>
     );
@@ -80,15 +88,15 @@ class HealthWorkerPane extends React.Component<PatientDetailPaneProps> {
 
 class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
   public render(): React.ReactNode {
-    const { localId, patient } = this.props.record;
+    const { localIndex, patient } = this.props.eDoc.encounter;
     return (
       <div className="PatientInfoPane">
         <h2>Patient</h2>
         <table>
-          <tr><td>Local ID:</td><td>{localId}</td></tr>
+          <tr><td>Local ID:</td><td>{localIndex}</td></tr>
           <tr><td>Name:</td><td>{patient.firstName} {patient.lastName}</td></tr>
           <tr><td>Phone:</td><td>{patient.phone}</td></tr>
-          <tr><td>Notes:</td><td>{patient.notes}</td></tr>
+          <tr><td>Details:</td><td>{patient.details}</td></tr>
         </table>
       </div>
     );
@@ -97,48 +105,57 @@ class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
 
 interface TriageProps extends PatientDetailPaneProps {
   reload: () => Promise<void>
-  record: PatientRecord,
-  triage: PatientRecordTriage | null,
+  tDoc: EncounterTriageDocument | null,
 }
 
 interface TriageState {
   busy: boolean;
-  notes: string;
-  testIndicatesEVD: boolean;
+  original: EncounterTriageInfo,
+  edited: EncounterTriageInfo,
   error: string | null;
 }
 
 class TriagePane extends React.Component<TriageProps, TriageState> {
   constructor(props: TriageProps) {
     super(props);
-    const { triage } = props;
+    const { triage } = props.tDoc || triageDoc("", "", false);
     this.state = {
-      busy: triage == null,
+      busy: false,
       error: null,
-      notes: (triage && triage.notes) || "Loading...",
-      testIndicatesEVD: (triage && triage.testIndicatesEVD) || false,
+      original: triage,
+      edited: triage,
     };
   }
 
-  onEVDChange = (e: InputChangeEvent) => this.setState({ testIndicatesEVD: e.target.checked })
-  onNotesChange = (e: TextAreaChangeEvent) => this.setState({ notes: e.target.value });
+  onEVDChange = (e: InputChangeEvent) => this.setState({
+    edited: {
+      ...this.state.edited,
+      testIndicatesEVD: e.target.checked
+    }
+  });
+  onNotesChange = (e: TextAreaChangeEvent) => this.setState({
+    edited: {
+      ...this.state.edited,
+      notes: e.target.value
+    }
+});
 
   save = async() => {
     this.setState({ busy: true });
-    const { uid } = this.props.record;
-    const { notes, testIndicatesEVD } = this.state;
+    const { docId } = this.props.eDoc;
+    const { notes, testIndicatesEVD } = this.state.edited;
     const api = getApi();
     try {
-      await api.saveTriage(uid, { uid, notes, testIndicatesEVD });
-      this.setState({ busy: false });
+      await api.saveTriage(triageDoc(docId, notes, testIndicatesEVD));
+      this.setState({ busy: false, original: this.state.edited });
     } catch (err) {
       this.setState({ busy: false, error: err.message });
     }
-
   }
 
   public render(): React.ReactNode {
-    const { busy, notes, testIndicatesEVD, error } = this.state;
+    const { busy, edited, original, error } = this.state;
+    const { notes, testIndicatesEVD } = edited;
     return (
       <div className="TriagePane">
         <h2>Triage</h2>
@@ -170,7 +187,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
 
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || deepEqual(edited, original, { strict: true })}
           onClick={this.save}
         >Save</button>
       </div>
@@ -180,17 +197,22 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
 
 class PhotoPane extends React.Component<PatientDetailPaneProps> {
   public render(): React.ReactNode {
-    const { photo } = this.props.record;
-    // TODO: can we get a CDN url?
+    const { rdtPhotos } = this.props.eDoc.encounter;
     return (
-      <div className="PhotoPane">
-        <h2>RDT Photo</h2>
-        <table>
-          <tr><td>Timestamp:</td><td>{photo.timestamp}</td></tr>
-          <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
-          <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
-        </table>
-      </div>
+      <div>{
+        rdtPhotos.map(photo => (
+          <div className="PhotoPane">
+            <h2>RDT Photo</h2>
+            <table>
+              <tr><td>Timestamp:</td><td>{photo.timestamp}</td></tr>
+              <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
+              <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
+              <tr><td>PhotoID:</td><td>{photo.photoId}</td></tr>
+            </table>
+          </div>
+        ))
+        // TODO load photo from storage
+      }</div>
     );
   }
 }

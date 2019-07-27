@@ -3,30 +3,55 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { PatientRecord, PatientRecordTriage, SAMPLE_PATIENT_RECORDS, SAMPLE_TRIAGES } from "./protocol";
+import { DocumentType, EncounterDocument, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getRoot } from "./util";
 
+// TODO: remove
 export interface User {
-  email: string;
-  token: string;
+  email: string,
+  token: string,
 }
 
-// TODO
+const firebase = (global as any).firebase as any;
+
+type QuerySnapshot = any; // firebase.firestore.QuerySnapshot;
+type DocumentSnapshot = any; // firebase.firestore.DocumentSnapshot;
+
+const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
+const DEFAULT_TRIAGE_COLLECTION = "triages";
+
+function getEncounterCollection() {
+  return DEFAULT_ENCOUNTER_COLLECTION;
+}
+
+function getTriageCollection() {
+  return DEFAULT_TRIAGE_COLLECTION;
+}
+
+// Protocol constants
+export const PROTOCOL_V1 = 1;
+export const SENDER_NAME = "sender";
+export const RECEIVER_NAME = "receiver";
+export const FIELD_PATH = {
+  protocolVersion: "_transport.protocolVersion",
+  contentHash: "_transport.contentHash",
+  lastWriter: "_transport.lastWriter",
+  receivedAt: "_transport.receivedAt",
+  sentAt: "_transport.sentAt",
+  receivedByUser: "_transport.receivedByUser",
+  receivedByHost: "_transport.receivedByHost"
+};
+
 export class Api {
-  csrf: string | null;
-  baseUrl: string | null;
   session: Storage;
-  triages: Map<string, PatientRecordTriage>;
 
   constructor() {
     const root = getRoot();
-    this.csrf = (root && root.dataset.csrf) || null;
-    this.baseUrl = (root && root.dataset.baseUrl) || null;
     this.session = window.sessionStorage;
-    this.triages = new Map(SAMPLE_TRIAGES.map(
-      x => [x.uid, x] as [string, PatientRecordTriage]
-    ));
   }
+
+  // --------------------------------------
+  // CLEANUP
 
   isAuthenticated(): boolean {
     return ["UserEmail", "UserToken"]
@@ -58,33 +83,77 @@ export class Api {
     await this.delay(500);
   }
 
-  async loadPatientRecord(): Promise<PatientRecord[]> {
-    await this.delay(1000);
-    return SAMPLE_PATIENT_RECORDS;
-  }
-
-  async loadRecord(uid: string): Promise<PatientRecord> {
-    await this.delay(1000);
-    const matches = SAMPLE_PATIENT_RECORDS.filter(record => record.uid === uid);
-    return expectOne(matches, "record", uid);
-  }
-
-  async loadTriage(uid: string): Promise<PatientRecordTriage> {
-    await this.delay(300);
-    const triage = this.triages.get(uid);
-    if (triage == null) {
-      throw new Error(`No triage found for uid ${uid}`);
-    }
-    return triage;
-  }
-
-  async saveTriage(uid: string, triage: PatientRecordTriage): Promise<void> {
-    await this.delay(300);
-    this.triages.set(uid, triage);
-  }
-
   async delay(ms: number) {
     await new Promise(f => setTimeout(f, ms));
+  }
+
+  // CLEANUP
+  // --------------------------------------
+
+  async loadEncounters(): Promise<QuerySnapshot> {
+    const db = firebase.firestore();
+    const collection = db.collection(getEncounterCollection());
+
+    const query = collection
+      .where(FIELD_PATH.protocolVersion, "==", PROTOCOL_V1)
+      .orderBy(FIELD_PATH.sentAt)
+      .limit(256);
+    return await logIfError("loadEncounters", "get", () => query.get());
+  }
+
+  async loadEncounter(docId: string): Promise<DocumentSnapshot> {
+    const db = firebase.firestore();
+    const collection = db.collection(getEncounterCollection());
+    const doc = collection.doc(docId);
+    return await logIfError("loadEncounter", "get", () => doc.get());
+  }
+
+  async loadTriage(docId: string): Promise<DocumentSnapshot> {
+    const db = firebase.firestore();
+    const collection = db.collection(getTriageCollection());
+    const doc = collection.doc(docId);
+    return await logIfError("loadTriage", "get", () => doc.get());
+  }
+
+  async saveTriage(triage: EncounterTriageDocument): Promise<void> {
+    const db = firebase.firestore();
+    const collection = db.collection(getTriageCollection());
+    const doc = collection.doc(triage.docId);
+    return await logIfError("saveTriage", "set", () => doc.set(triage));
+  }
+}
+
+async function logIfError<T>(
+  func: string,
+  location: string,
+  call: () => Promise<T>
+): Promise<T> {
+  try {
+    return await call();
+  } catch (err) {
+    if ((err as any).logged) {
+      throw err;
+    } else {
+      throw logError(func, location, err);
+    }
+  }
+}
+
+function logError(func: string, location: string, err: any): LoggedError {
+  const message = err != null ? err.message : "";
+  const name = err != null ? err.name : "";
+  const summary = `${func}: ${location} threw '${name}': '${message}'`;
+  // TODO
+  console.log(summary);
+  return new LoggedError(summary);
+}
+
+class LoggedError extends Error {
+  readonly logged: boolean;
+
+  constructor(message: string) {
+    super(message);
+    this.logged = true;
   }
 }
 
@@ -101,4 +170,20 @@ export function getApi() {
     api = new Api();
   }
   return api;
+}
+
+export function triageDoc(
+  docId: string,
+  notes: string,
+  testIndicatesEVD: boolean
+): EncounterTriageDocument {
+  return {
+    documentType: DocumentType.Triage,
+    schemaId: 1,
+    docId,
+    triage: {
+      notes,
+      testIndicatesEVD
+    }
+  };
 }
