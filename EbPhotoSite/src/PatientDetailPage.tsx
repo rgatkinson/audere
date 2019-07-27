@@ -195,23 +195,83 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
   }
 }
 
-class PhotoPane extends React.Component<PatientDetailPaneProps> {
+interface PhotoPaneState {
+  urls: PhotoFetchResult[],
+}
+
+interface PhotoFetchResult {
+  url?: string,
+  error?: Error,
+}
+
+class PhotoPane extends React.Component<PatientDetailPaneProps, PhotoPaneState> {
+
+  constructor(props: PatientDetailPaneProps) {
+    super(props);
+    this.state = {
+      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult)),
+    };
+
+    const { rdtPhotos } = this.props.eDoc.encounter;
+    rdtPhotos.forEach(async (photo, i) => {
+      const url = await this.getUrl(photo.photoId);
+      const urls = [...this.state.urls];
+      urls.splice(i, 1, url);
+      this.setState({ urls });
+    });
+  }
+
+  private async getUrl(photoId: string): Promise<PhotoFetchResult> {
+    try {
+      return { url: await getApi().photoUrl(photoId) };
+    } catch (error) {
+      return { error };
+    }
+  }
+
   public render(): React.ReactNode {
     const { rdtPhotos } = this.props.eDoc.encounter;
+    const { urls } = this.state;
     return (
       <div>{
-        rdtPhotos.map(photo => (
-          <div className="PhotoPane">
-            <h2>RDT Photo</h2>
-            <table>
-              <tr><td>Timestamp:</td><td>{photo.timestamp}</td></tr>
-              <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
-              <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
-              <tr><td>PhotoID:</td><td>{photo.photoId}</td></tr>
-            </table>
-          </div>
-        ))
-        // TODO load photo from storage
+        rdtPhotos.map((photo, i) => {
+          const { url, error } = urls[i] ||
+            ({error: new Error(JSON.stringify(urls))} as PhotoFetchResult);
+          return (
+            <div className="PhotoPane">
+              <h2>RDT Photo</h2>
+              <table>
+                <tr><td>Timestamp:</td><td>{photo.timestamp}</td></tr>
+                <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
+                <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
+              </table>
+              {url != null && (
+                // CSS hack to avoid modifying the image aspect ratio,
+                // while supporting right-click "Save Image As".
+                <div style={{
+                  height: "400px",
+                  width: "400px",
+                  backgroundImage: `url(${url})`,
+                  backgroundSize: "contain",
+                  backgroundPosition: "center center",
+                  backgroundRepeat: "no-repeat",
+                  backgroundColor: "gray",
+                }}>
+                  <img
+                    src={url}
+                    width="100%"
+                    height="100%"
+                    alt="RDT Result"
+                    style={{
+                      opacity: 0
+                    }}
+                  />
+                </div>
+              )}
+              {error != null && <div>ERROR: {error.message}</div>}
+            </div>
+          );
+        })
       }</div>
     );
   }

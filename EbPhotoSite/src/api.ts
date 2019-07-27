@@ -3,8 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, EncounterDocument, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { getRoot } from "./util";
+import { DocumentType, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
 
 // TODO: remove
 export interface User {
@@ -46,7 +45,6 @@ export class Api {
   session: Storage;
 
   constructor() {
-    const root = getRoot();
     this.session = window.sessionStorage;
   }
 
@@ -121,6 +119,12 @@ export class Api {
     const doc = collection.doc(triage.docId);
     return await logIfError("saveTriage", "set", () => doc.set(triage));
   }
+
+  photoUrl(photoId: string): Promise<string> {
+    return firebase.storage()
+      .ref(`photos/${photoId}.jpg`)
+      .getDownloadURL();
+  }
 }
 
 async function logIfError<T>(
@@ -155,13 +159,6 @@ class LoggedError extends Error {
     super(message);
     this.logged = true;
   }
-}
-
-function expectOne<T>(array: T[], noun: string, criterion: string): T {
-  if (array.length !== 1) {
-    throw new Error(`Expected one ${noun} to match ${criterion}, got ${array.length}`);
-  }
-  return array[0];
 }
 
 let api: Api | null = null;
