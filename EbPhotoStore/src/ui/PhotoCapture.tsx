@@ -8,12 +8,13 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  PermissionsAndroid,
   StyleSheet,
   TouchableOpacity,
   View
 } from "react-native";
 import { connect } from "react-redux";
-import { PermissionsAndroid } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RNCamera } from "react-native-camera";
 import Geolocation from "react-native-geolocation-service";
 import {
@@ -32,7 +33,7 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class PhotoCapture extends React.Component<Props> {
+class PhotoCapture extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
 
   async componentDidMount() {
@@ -86,7 +87,7 @@ class PhotoCapture extends React.Component<Props> {
   };
 
   _takePicture = async () => {
-    const { dispatch } = this.props;
+    const { t, dispatch } = this.props;
     if (!this.state.spinner) {
       this.setState({ spinner: true });
 
@@ -125,11 +126,9 @@ class PhotoCapture extends React.Component<Props> {
         // PhotoStore.getPhoto(guid);            // Returns either the photoUri or the base64 encoding
         //                                          for use on details page
       } catch (e) {
-        Alert.alert(
-          "",
-          "There was an error capturing the photo, please try again",
-          [{ text: "OK", onPress: () => {} }]
-        );
+        Alert.alert("", t("error"), [
+          { text: t("common:ok"), onPress: () => {} }
+        ]);
         this.setState({ spinner: false });
       }
     }
@@ -155,7 +154,7 @@ class PhotoCapture extends React.Component<Props> {
     );
   }
 }
-export default connect()(PhotoCapture);
+export default connect()(withNamespaces("photoCapture")(PhotoCapture));
 
 const styles = StyleSheet.create({
   container: {

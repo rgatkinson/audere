@@ -6,6 +6,7 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { toggleDemoMode, Action, StoreState } from "../../store";
 import MultiTapContainer from "./MultiTapContainer";
 import Text from "./Text";
@@ -16,13 +17,13 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class NavigationBar extends React.Component<Props> {
+class TitleBar extends React.Component<Props & WithNamespaces> {
   _toggleDemoMode = () => {
     this.props.dispatch(toggleDemoMode());
   };
 
   render() {
-    const { demoMode } = this.props;
+    const { demoMode, t } = this.props;
     return (
       <MultiTapContainer
         active={true}
@@ -31,7 +32,7 @@ class NavigationBar extends React.Component<Props> {
         onMultiTap={this._toggleDemoMode}
       >
         {demoMode && <View style={styles.demoView} />}
-        <Text style={styles.title} content={"EbPhotoStore"} />
+        <Text style={styles.title} content={t("title")} />
       </MultiTapContainer>
     );
   }
@@ -39,7 +40,7 @@ class NavigationBar extends React.Component<Props> {
 
 export default connect((state: StoreState) => ({
   demoMode: state.meta.demoMode
-}))(NavigationBar);
+}))(withNamespaces("titleBar")(TitleBar));
 
 const styles = StyleSheet.create({
   demoView: {

@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { viewDetails, Action, StoreState } from "../store";
 import Text from "./components/Text";
 import Title from "./components/Title";
@@ -12,22 +13,21 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class CameraPermissionRequired extends React.Component<Props> {
+class CameraPermissionRequired extends React.Component<Props & WithNamespaces> {
   async componentDidMount() {
     await this.requestCameraPermission();
   }
 
   async requestCameraPermission() {
+    const { t } = this.props;
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
-          title: "EVD Track Camera Permission",
-          message:
-            "EVD Track needs access to your camera" +
-            "to record patient test results.",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
+          title: t("alertTitle"),
+          message: t("alertMsg"),
+          buttonNegative: t("common:cancel"),
+          buttonPositive: t("common:ok")
         }
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -39,13 +39,14 @@ class CameraPermissionRequired extends React.Component<Props> {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Title label="Camera Permission Required" />
-        <Text content="We're sorry, but access to your device's camera is required. To continue, please update your device settings." />
-        <Text content="How to Update:" />
-        <Text content="Go to Settings > Apps > EVT Track > Permissions." />
-        <Text content="Toggle the Camera switch to on." />
+        <Title label={t("title")} />
+        <Text content={t("why")} />
+        <Text content={t("howToUpdate")} />
+        <Text content={t("whereUpdate")} />
+        <Text content={t("howUpdate")} />
       </View>
     );
   }
@@ -53,7 +54,7 @@ class CameraPermissionRequired extends React.Component<Props> {
 
 export default connect((state: StoreState, props: Props) => ({
   currentPatient: state.meta.currentPatient
-}))(CameraPermissionRequired);
+}))(withNamespaces("cameraPermissions")(CameraPermissionRequired));
 
 const styles = StyleSheet.create({
   container: {

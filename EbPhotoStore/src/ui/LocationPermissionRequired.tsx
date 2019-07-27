@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { PermissionsAndroid } from "react-native";
+import { PermissionsAndroid, StyleSheet, View } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { viewDetails, Action, StoreState } from "../store";
 import Text from "./components/Text";
@@ -12,22 +12,23 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class LocationPermissionRequired extends React.Component<Props> {
+class LocationPermissionRequired extends React.Component<
+  Props & WithNamespaces
+> {
   async componentDidMount() {
     await this.requestLocationPermission();
   }
 
   async requestLocationPermission() {
+    const { t } = this.props;
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: "EVD Track Location Permission",
-          message:
-            "EVD Track needs access to your location" +
-            "so it can accurately report patient data.",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
+          title: t("alertTitle"),
+          message: t("alertMsg"),
+          buttonNegative: t("common:cancel"),
+          buttonPositive: t("common:ok")
         }
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -39,13 +40,14 @@ class LocationPermissionRequired extends React.Component<Props> {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Title label="Location Permission Required" />
-        <Text content="We're sorry, but access to your device's location is required. To continue, please update your device settings." />
-        <Text content="How to Update:" />
-        <Text content="Go to Settings > Apps > EVT Track > Permissions." />
-        <Text content="Toggle the Location switch to on." />
+        <Title label={t("title")} />
+        <Text content={t("why")} />
+        <Text content={t("howToUpdate")} />
+        <Text content={t("whereUpdate")} />
+        <Text content={t("howUpdate")} />
       </View>
     );
   }
@@ -53,7 +55,7 @@ class LocationPermissionRequired extends React.Component<Props> {
 
 export default connect((state: StoreState, props: Props) => ({
   currentPatient: state.meta.currentPatient
-}))(LocationPermissionRequired);
+}))(withNamespaces("locationPermissions")(LocationPermissionRequired));
 
 const styles = StyleSheet.create({
   container: {

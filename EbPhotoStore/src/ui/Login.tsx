@@ -1,6 +1,7 @@
 import React from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import { login, Action, StoreState } from "../store";
 import Button from "./components/Button";
@@ -22,12 +23,12 @@ interface State {
   notes: string;
 }
 
-class Login extends React.Component<Props, State> {
+class Login extends React.Component<Props & WithNamespaces, State> {
   _firstNameInput: any;
   _phoneInput: any;
   _notesInput: any;
 
-  constructor(props: Props) {
+  constructor(props: Props & WithNamespaces) {
     super(props);
 
     if (props.healthWorkerInfo != null) {
@@ -89,23 +90,24 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
+    const { t } = this.props;
     const { lastName, firstName, phone, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>
-          <Title label="Enter your information below to begin tracking patients you test for Ebola." />
-          <Text content="Last Name" />
+          <Title label={t("title")} />
+          <Text content={t("lastName")} />
           <TextInput
-            placeholder="Last Name"
+            placeholder={t("lastName")}
             returnKeyType="next"
             style={styles.input}
             value={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusFirstName}
           />
-          <Text content="First Name" />
+          <Text content={t("firstName")} />
           <TextInput
-            placeholder="First Name"
+            placeholder={t("firstName")}
             ref={this._firstNameInput}
             returnKeyType="next"
             style={styles.input}
@@ -113,9 +115,9 @@ class Login extends React.Component<Props, State> {
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusPhone}
           />
-          <Text content="Mobile number" />
+          <Text content={t("mobileNumber")} />
           <NumberInput
-            placeholder="Phone Number"
+            placeholder={t("mobileNumber")}
             ref={this._phoneInput}
             returnKeyType="next"
             style={styles.input}
@@ -123,11 +125,7 @@ class Login extends React.Component<Props, State> {
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusNotes}
           />
-          <Text
-            bold={true}
-            content="Notes to share with government health team"
-          />
-          <Text content="(e.g. your location, credentials, etc.)" />
+          <Text content={t("notes")} />
           <TextInput
             placeholder=""
             multiline={true}
@@ -141,7 +139,7 @@ class Login extends React.Component<Props, State> {
         </ScrollView>
         <Button
           enabled={!!lastName && !!firstName && !!phone}
-          label="Login"
+          label={t("login")}
           primary={true}
           style={styles.button}
           onPress={this._login}
@@ -153,7 +151,7 @@ class Login extends React.Component<Props, State> {
 
 export default connect((state: StoreState) => ({
   healthWorkerInfo: state.meta.healthWorkerInfo
-}))(Login);
+}))(withNamespaces("login")(Login));
 
 const styles = StyleSheet.create({
   button: {

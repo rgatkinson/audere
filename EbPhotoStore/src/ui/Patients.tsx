@@ -1,6 +1,7 @@
 import React from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { PermissionsAndroid } from "react-native";
 import {
   viewDetails,
@@ -20,7 +21,7 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class Patients extends React.Component<Props> {
+class Patients extends React.Component<Props & WithNamespaces> {
   async componentDidMount() {
     await this.requestLocationPermission();
   }
@@ -60,12 +61,13 @@ class Patients extends React.Component<Props> {
   };
 
   render() {
+    const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Title label="Patient List" />
+        <Title label={t("patientList")} />
         <Button
           enabled={true}
-          label="+ Add New Patient"
+          label={t("addNewPatient")}
           primary={true}
           style={styles.button}
           onPress={this._addPatient}
@@ -79,7 +81,7 @@ class Patients extends React.Component<Props> {
         />
         <Button
           enabled={true}
-          label="Log Out"
+          label={t("logOut")}
           primary={false}
           style={styles.button}
           onPress={this._logout}
@@ -138,4 +140,4 @@ const styles = StyleSheet.create({
 
 export default connect((state: StoreState) => ({
   patients: state.patients
-}))(Patients);
+}))(withNamespaces("patients")(Patients));

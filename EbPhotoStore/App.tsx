@@ -8,9 +8,11 @@ import { Store } from "redux";
 import { Persistor } from "redux-persist";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { I18nextProvider, withNamespaces } from "react-i18next";
 import { getStore, getPersistor } from "./src/store/";
 import AppController from "./src/ui/AppController";
 import Splash from "./src/ui/Splash";
+import i18n from "./src/i18n";
 
 export default class App extends React.Component {
   state = {
@@ -39,13 +41,15 @@ export default class App extends React.Component {
     }
 
     return (
-      <Provider store={this.store}>
-        <PersistGate loading={null} persistor={this.persistor!}>
-          <Fragment>
-            <AppController />
-          </Fragment>
-        </PersistGate>
-      </Provider>
+      <I18nextProvider i18n={i18n}>
+        <Provider store={this.store}>
+          <PersistGate loading={null} persistor={this.persistor!}>
+            <Fragment>
+              <AppController />
+            </Fragment>
+          </PersistGate>
+        </Provider>
+      </I18nextProvider>
     );
   }
 }

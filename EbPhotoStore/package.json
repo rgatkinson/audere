@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "audere-lib": "link:../lib",
+    "i18next": "^17.0.6",
     "immutable": "^4.0.0-rc.12",
     "react": "16.8.6",
+    "react-i18next": "9.0.10",
     "react-native": "0.60.4",
     "react-native-camera": "^3.0.0",
     "react-native-firebase": "^5.5.5",
@@ -25,6 +27,7 @@
     "@babel/core": "^7.5.5",
     "@babel/runtime": "^7.5.5",
     "@react-native-community/eslint-config": "^0.0.5",
+    "@types/i18next": "^12.1.0",
     "@types/react": "^16.8.23",
     "@types/react-native": "^0.60.2",
     "babel-jest": "^24.8.0",

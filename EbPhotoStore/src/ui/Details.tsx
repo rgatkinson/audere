@@ -10,6 +10,7 @@ import {
   View
 } from "react-native";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
@@ -47,13 +48,13 @@ interface State {
   notes?: string;
 }
 
-class Details extends React.Component<Props, State> {
+class Details extends React.Component<Props & WithNamespaces, State> {
   _lastNameInput: any;
   _phoneInput: any;
   _detailsInput: any;
   _notesInput: any;
 
-  constructor(props: Props) {
+  constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
       firstName: props.patientInfo.firstName,
@@ -165,28 +166,32 @@ class Details extends React.Component<Props, State> {
   };
 
   render() {
+    const { t } = this.props;
     const { firstName, lastName, phone, details, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>
           <View style={styles.titleRow}>
             <TouchableOpacity onPress={this._back}>
-              <Title label="< Back to Patient List" />
+              <Title label={t("backToPatientList")} />
             </TouchableOpacity>
-            <Text content={"Patient ID: " + this.props.id} style={styles.id} />
+            <Text
+              content={t("patientId", { id: this.props.id })}
+              style={styles.id}
+            />
           </View>
-          <Text content="Patient first name" />
+          <Text content={t("patientFirstName")} />
           <TextInput
-            placeholder="Patient first name"
+            placeholder={t("patientFirstName")}
             returnKeyType="next"
             style={styles.input}
             value={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusLastName}
           />
-          <Text content="Patient last name" />
+          <Text content={t("patientLastName")} />
           <TextInput
-            placeholder="Patient last name"
+            placeholder={t("patientLastName")}
             ref={this._lastNameInput}
             returnKeyType="next"
             style={styles.input}
@@ -194,7 +199,7 @@ class Details extends React.Component<Props, State> {
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusPhone}
           />
-          <Text content="Patient mobile number" />
+          <Text content={t("patientMobile")} />
           <NumberInput
             placeholder=""
             ref={this._phoneInput}
@@ -204,7 +209,7 @@ class Details extends React.Component<Props, State> {
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusDetails}
           />
-          <Text content="Patient contact details (address, location)" />
+          <Text content={t("patientDetails")} />
           <TextInput
             placeholder=""
             multiline={true}
@@ -216,7 +221,7 @@ class Details extends React.Component<Props, State> {
             onChangeText={this._updateDetails}
             onSubmitEditing={this._focusNotes}
           />
-          <Text content="CHW notes for patient (Shared with government workers)" />
+          <Text content={t("patientNotes")} />
           <TextInput
             placeholder=""
             multiline={true}
@@ -237,7 +242,7 @@ class Details extends React.Component<Props, State> {
           )}
           <Button
             enabled={true}
-            label="Add Photo"
+            label={t("addPhoto")}
             primary={true}
             style={styles.button}
             onPress={this._takePhoto}
@@ -300,4 +305,4 @@ export default connect((state: StoreState, props: Props) => ({
     props.id < state.patients.length
       ? state.patients[props.id].photoInfo
       : undefined
-}))(Details);
+}))(withNamespaces("details")(Details));

@@ -1,0 +1,56 @@
+{
+  "common": {
+    "ok": "Ok",
+    "cancel": "Cancel",
+    "button": {
+      "yes": "Yes"
+    }
+  },
+  "patients": {
+    "patientList": "Patient List",
+    "addNewPatient": "+ Add New Patient",
+    "logOut": "Log Out"
+  },
+  "login": {
+    "title": "Enter your information below to begin tracking patients you test for Ebola.",
+    "lastName": "Last Name",
+    "firstName": "First Name",
+    "mobileNumber": "Mobile Number",
+    "notes": "Notes to share with government health team (e.g. your location, credentials, etc.)",
+    "login": "Login"
+  },
+  "details": {
+    "backToPatientList": "< Back to Patient List",
+    "patientId": "Patient ID: {{id}}",
+    "patientFirstName": "Patient first name",
+    "patientLastName": "Patient last name",
+    "patientMobile": "Patient mobile number",
+    "patientDetails": "Patient contact details (address, location)",
+    "patientNotes": "CHW notes for patient (Shared with government workers)",
+    "addPhoto": "Add Photo"
+  },
+  "titleBar": {
+    "title": "EVD Track"
+  },
+  "photoCapture": {
+    "error": "There was an error capturing the photo, please try again"
+  },
+  "cameraPermissions": {
+    "alertTitle": "EVD Track Camera Permission",
+    "alertMsg": "EVD Track needs access to your camera to record patient test results.",
+    "title": "Camera Permission Required",
+    "why": "We're sorry, but access to your device's camera is required. To continue, please update your device settings.",
+    "howToUpdate": "How to Update:",
+    "whereUpdate": "Go to Settings > Apps > EVT Track > Permissions.",
+    "howUpdate": "Toggle the Camera switch to on."
+  },
+  "locationPermissions": {
+    "alertTitle": "EVD Track Location Permission",
+    "alertMsg": "EVD Track needs access to your location so it can accurately report patient data.",
+    "title": "Location Permission Required",
+    "why": "We're sorry, but access to your device's location is required. To continue, please update your device settings.",
+    "howToUpdate": "How to Update:",
+    "whereUpdate": "Go to Settings > Apps > EVT Track > Permissions.",
+    "howUpdate": "Toggle the Location switch to on."
+  }
+}
