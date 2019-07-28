@@ -23,7 +23,8 @@ let _previousNumLines: string | undefined;
 
 export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
-  const blueAnswer = getSelectedButton(state, BlueLineConfig);
+  //const blueAnswer = getSelectedButton(state, BlueLineConfig);
+  const blueAnswer = "yes"; // For Quidel: skip question and hardcode blueAnswer=yes
   return blueAnswer === "yes"
     ? getRemoteConfig("rdtTimeoutSeconds") > 0
       ? "RDTInstructions"
