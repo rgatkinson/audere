@@ -3,10 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import uuidv4 from "uuid/v4";
+
 import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
 
 export type PatientEncounter = {
   id: number;
+  uuid: string;
   patientInfo: PatientInfo;
   notes?: string;
   photoInfo?: PhotoInfo;
@@ -37,6 +40,7 @@ export default function reducer(state = initialState, action: PatientAction) {
         ...state,
         {
           id: state.length,
+          uuid: uuidv4(),
           patientInfo: action.patientInfo,
           notes: action.notes
         }
@@ -47,7 +51,7 @@ export default function reducer(state = initialState, action: PatientAction) {
           return patient;
         }
         return {
-          id: patient.id,
+          ...patient,
           patientInfo: action.patientInfo,
           notes: action.notes,
           ...patient

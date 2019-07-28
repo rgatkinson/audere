@@ -36,15 +36,14 @@ export interface ProtocolDocumentBase {
 export interface DeviceInfo {
   installation: string;
   clientVersion: ClientVersionInfo;
-  clientBuild: number;
-  yearClass: string;
+  clientBuild: string;
   idiomText: string;
   platform: object;
 }
 
 export enum DocumentType {
   Encounter = "ENCOUNTER",
-  Triage = "TRIAGE",
+  Triage = "TRIAGE"
 }
 
 export type ProtocolDocument = EncounterDocument | EncounterTriageDocument;

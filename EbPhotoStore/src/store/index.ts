@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
+  applyMiddleware,
   createStore,
   combineReducers,
   Store,
@@ -25,6 +26,8 @@ export * from "./meta";
 
 import { default as patients, PatientAction } from "./patients";
 export * from "./patients";
+
+import { uploaderMiddleware } from "./uploader";
 
 type ClearStateAction = { type: "CLEAR_STATE" };
 export function clearState(): ClearStateAction {
@@ -64,7 +67,10 @@ async function getStoreImpl() {
     key: "store",
     storage
   };
-  return createStore(persistReducer(persistConfig, rootReducer));
+  return createStore(
+    persistReducer(persistConfig, rootReducer),
+    applyMiddleware(uploaderMiddleware)
+  );
 }
 
 export async function getPersistor() {

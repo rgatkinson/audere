@@ -9,8 +9,7 @@ export interface ProtocolDocumentBase {
 export interface DeviceInfo {
     installation: string;
     clientVersion: ClientVersionInfo;
-    clientBuild: number;
-    yearClass: string;
+    clientBuild: string;
     idiomText: string;
     platform: object;
 }
