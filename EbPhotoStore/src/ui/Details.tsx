@@ -6,6 +6,7 @@ import {
   PermissionsAndroid,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View
 } from "react-native";
 import { connect } from "react-redux";
