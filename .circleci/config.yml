@@ -609,6 +609,10 @@ jobs:
             - node_modules
       #      - run: *set_firebase_config
       - run:
+          name: Rash build-hacks
+          command: |
+            ./scripts/build-hacks
+      - run:
           name: Download Android dependencies
           command: |
             cd android

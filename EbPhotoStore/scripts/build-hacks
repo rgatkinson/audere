@@ -1,0 +1,13 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euo pipefail
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+function updateAudereLib() {
+  echo "Copying audere-lib"
+  cp -r $REPO_ROOT_DIR/lib/ $REPO_ROOT_DIR/EbPhotoStore/node_modules/audere-lib
+}
+updateAudereLib
