@@ -9,6 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { EncounterDocument, EncounterTriageDocument, EncounterTriageInfo } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
+import { localeDate } from "./util";
 
 type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
@@ -241,7 +242,7 @@ class PhotoPane extends React.Component<PatientDetailPaneProps, PhotoPaneState> 
             <div className="PhotoPane">
               <h2>RDT Photo</h2>
               <table>
-                <tr><td>Timestamp:</td><td>{photo.timestamp}</td></tr>
+                <tr><td>Timestamp:</td><td>{localeDate(photo.timestamp)}</td></tr>
                 <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
                 <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
               </table>

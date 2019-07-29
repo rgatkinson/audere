@@ -11,6 +11,7 @@ import "react-table/react-table.css";
 import { EncounterDocument, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import { LoggedInAs } from "./LoggedInAs";
+import { localeDate, last } from './util';
 
 export interface PatientsListPageProps extends RouteComponentProps<{}> {
 }
@@ -125,7 +126,11 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
     return [
       {
         Header: "Timestamp",
-        accessor: "eDoc.encounter.rdtPhotos[0].timestamp",
+        accessor: row => {
+          const photo = last(row.eDoc.encounter.rdtPhotos);
+          return localeDate(photo == null ? "" : photo.timestamp);
+        },
+        id: "timestamp",
         minWidth: 150,
       },
       {
