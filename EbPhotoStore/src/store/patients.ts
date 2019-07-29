@@ -12,7 +12,7 @@ export type PatientEncounter = {
   uuid: string;
   patientInfo: PatientInfo;
   notes?: string;
-  photoInfo?: PhotoInfo;
+  photoInfo: PhotoInfo[];
 };
 
 export type PatientAction =
@@ -27,7 +27,12 @@ export type PatientAction =
       patientInfo: PatientInfo;
       notes?: string;
     }
-  | { type: "SAVE_PHOTO"; id: number; photoInfo: PhotoInfo };
+  | {
+      type: "SAVE_PHOTO";
+      patientId: number;
+      photoUri: string;
+      photoInfo: PhotoInfo;
+    };
 
 export type PatientState = PatientEncounter[];
 
@@ -42,7 +47,8 @@ export default function reducer(state = initialState, action: PatientAction) {
           id: state.length,
           uuid: uuidv4(),
           patientInfo: action.patientInfo,
-          notes: action.notes
+          notes: action.notes,
+          photoInfo: []
         }
       ];
     case "UPDATE_PATIENT":
@@ -59,15 +65,20 @@ export default function reducer(state = initialState, action: PatientAction) {
       });
     case "SAVE_PHOTO":
       return state.map((patient, index) => {
-        if (index != action.id) {
+        if (index != action.patientId) {
           return patient;
         }
         return {
           ...patient,
-          photoInfo: action.photoInfo
+          photoInfo: [
+            ...patient.photoInfo,
+            {
+              ...action.photoInfo,
+              localPath: action.photoUri
+            }
+          ]
         };
       });
-
     default:
       return state;
   }
@@ -97,10 +108,15 @@ export function updatePatient(
   };
 }
 
-export function savePhoto(id: number, photoInfo: PhotoInfo): PatientAction {
+export function savePhoto(
+  patientId: number,
+  photoUri: string,
+  photoInfo: PhotoInfo
+): PatientAction {
   return {
     type: "SAVE_PHOTO",
-    id,
+    patientId,
+    photoUri,
     photoInfo
   };
 }

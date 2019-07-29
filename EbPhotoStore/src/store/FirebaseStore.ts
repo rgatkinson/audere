@@ -5,7 +5,7 @@
 
 import RNDeviceInfo from "react-native-device-info";
 import firebase from "react-native-firebase";
-import { DocumentReference } from "react-native-firebase/firestore";
+import RNFS from "react-native-fs";
 import {
   FirestoreProtocolDocument,
   DocumentType,
@@ -54,8 +54,7 @@ export async function syncEncounter(docId: string, encounter: EncounterInfo) {
     encounter
   });
   const doc = getEncounterCollection().doc(docId);
-  console.log(docId);
-  console.log(JSON.stringify(encounterDocument));
+  console.log(`Uploading encounter ${docId}`);
   await doc.set(encounterDocument);
 }
 
@@ -69,5 +68,3 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
     }
   };
 }
-
-export async function uploadPhoto(docId: string) {}

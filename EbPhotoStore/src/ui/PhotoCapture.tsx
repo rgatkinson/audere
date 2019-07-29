@@ -17,6 +17,8 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { RNCamera } from "react-native-camera";
 import Geolocation from "react-native-geolocation-service";
+import RNFS from "react-native-fs";
+import uuidv4 from "uuid/v4";
 import {
   savePhoto,
   viewDetails,
@@ -26,7 +28,10 @@ import {
   Screen,
   StoreState
 } from "../store";
+import { startUpload } from "../transport/photoUploader";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "./styles";
+
+const LOCAL_DIR_NAME = RNFS.DocumentDirectoryPath + "/photos";
 
 interface Props {
   id: number;
@@ -94,14 +99,20 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
       try {
         const photoData = await this.camera.current!.takePictureAsync({
           quality: 0.8,
-          base64: true,
           orientation: "portrait",
           fixOrientation: true
         });
+
+        const photoId = uuidv4();
+        const localPath = `file://${LOCAL_DIR_NAME}/${photoId}.jpg`;
+        await RNFS.mkdir(LOCAL_DIR_NAME);
+        await RNFS.copyFile(photoData.uri, localPath);
+
         this.setState({ spinner: false });
+        startUpload(photoId, localPath);
         this.props.dispatch(
-          savePhoto(this.props.id, {
-            photoId: photoData.base64,
+          savePhoto(this.props.id, localPath, {
+            photoId,
             timestamp: new Date().getTime().toString(),
             gps: {
               latitude: this.state.lat.toString(),
@@ -130,6 +141,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
           { text: t("common:ok"), onPress: () => {} }
         ]);
         this.setState({ spinner: false });
+        console.warn(e);
       }
     }
   };

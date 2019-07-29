@@ -36,7 +36,7 @@ interface Props {
   isNew: boolean;
   patientInfo: PatientInfo;
   notes?: string;
-  photoInfo?: PhotoInfo;
+  photoUri?: string;
   dispatch(action: Action): void;
 }
 
@@ -232,13 +232,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             value={notes}
             onChangeText={this._updateNotes}
           />
-          {this.props.photoInfo && (
-            <Image
-              style={styles.photo}
-              source={{
-                uri: `data:image/gif;base64,${this.props.photoInfo.photoId}`
-              }}
-            />
+          {this.props.photoUri && (
+            <Image style={styles.photo} source={{ uri: this.props.photoUri }} />
           )}
           <Button
             enabled={true}
@@ -301,8 +296,10 @@ export default connect((state: StoreState, props: Props) => ({
     props.id < state.patients.length
       ? state.patients[props.id].notes
       : undefined,
-  photoInfo:
+  photoUri:
     props.id < state.patients.length
-      ? state.patients[props.id].photoInfo
+      ? state.patients[props.id].photoInfo[
+          state.patients[props.id].photoInfo.length - 1
+        ].localPath
       : undefined
 }))(withNamespaces("details")(Details));

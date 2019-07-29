@@ -27,6 +27,9 @@ export * from "./meta";
 import { default as patients, PatientAction } from "./patients";
 export * from "./patients";
 
+import { default as photoUploads, PhotoUploadAction } from "./photoUploads";
+export * from "./photoUploads";
+
 import { uploaderMiddleware } from "./uploader";
 
 type ClearStateAction = { type: "CLEAR_STATE" };
@@ -34,11 +37,16 @@ export function clearState(): ClearStateAction {
   return { type: "CLEAR_STATE" };
 }
 
-export type Action = MetaAction | PatientAction | ClearStateAction;
+export type Action =
+  | MetaAction
+  | PatientAction
+  | ClearStateAction
+  | PhotoUploadAction;
 
 const reducer = combineReducers({
   meta,
-  patients
+  patients,
+  photoUploads
 });
 
 const rootReducer = (state: StoreState | undefined, action: Action) => {

@@ -5,8 +5,10 @@
 
 import { default as meta, MetaState } from "./meta";
 import { default as patients, PatientState } from "./patients";
+import { PhotoUploadsState } from "./photoUploads";
 
 export interface StoreState {
   meta: MetaState;
   patients: PatientState;
+  photoUploads: PhotoUploadsState;
 }

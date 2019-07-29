@@ -11,7 +11,8 @@ import {
   PatientInfo,
   EncounterInfo
 } from "audere-lib/ebPhotoStoreProtocol";
-import { syncEncounter, uploadPhoto } from "./FirebaseStore";
+import { syncEncounter } from "./FirebaseStore";
+import { retryUploads } from "../transport/photoUploader";
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -25,16 +26,13 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
       case "ADD_PATIENT":
       case "UPDATE_PATIENT":
         patientId = state.meta.currentPatient;
-        if (patientId != undefined) {
+        if (patientId !== undefined) {
           const encounterDocument = reduxToFirebase(state, patientId);
           syncEncounter(state.patients[patientId].uuid, encounterDocument);
         }
         break;
-      case "SAVE_PHOTO":
-        patientId = state.meta.currentPatient;
-        if (patientId != undefined) {
-          //uploadPhoto(action.photoId);
-        }
+      case "VIEW_PATIENTS":
+        retryUploads();
         break;
     }
     return result;
@@ -46,8 +44,6 @@ export function reduxToFirebase(
   patientId: number
 ): EncounterInfo {
   const reduxPatient = state.patients[patientId];
-  const samples = [];
-  //TODO(ram): Add photo
   if (!state.meta.healthWorkerInfo) {
     throw Error("No community health worker data available");
   }
@@ -60,7 +56,7 @@ export function reduxToFirebase(
     healthWorker,
     localIndex: reduxPatient.id.toString(),
     patient: reduxPatient.patientInfo,
-    rdtPhotos: [],
+    rdtPhotos: reduxPatient.photoInfo,
     notes: reduxPatient.notes || ""
   };
 }
