@@ -113,7 +113,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
         this.props.dispatch(
           savePhoto(this.props.id, localPath, {
             photoId,
-            timestamp: new Date().getTime().toString(),
+            timestamp: new Date().toISOString(),
             gps: {
               latitude: this.state.lat.toString(),
               longitude: this.state.long.toString()
