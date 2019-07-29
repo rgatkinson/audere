@@ -22,13 +22,25 @@
   "details": {
     "evdPositive": "Positive for Ebola",
     "backToPatientList": "< Back to Patient List",
-    "patientId": "Patient ID: {{id}}",
-    "patientFirstName": "Patient first name",
-    "patientLastName": "Patient last name",
-    "patientMobile": "Patient mobile number",
-    "patientDetails": "Patient contact details (address, location)",
-    "patientNotes": "CHW notes for patient (Shared with government workers)",
-    "addPhoto": "Add Photo"
+    "patientId": "**Patient ID:** {{id}}",
+    "patientFirstName": "**Patient first name**",
+    "firstName": "First name",
+    "patientLastName": "**Patient last name**",
+    "lastName": "Last name",
+    "patientMobile": "**Patient mobile number**",
+    "patientDetails": "**Patient contact details** (address, location)",
+    "patientNotes": "**CHW notes for patient** (Shared with government workers)",
+    "addPhoto": "Add Photo",
+    "photoNote": "Click to add a photo of the RDT strip to this record",
+    "retakePhoto": "Retake photo",
+    "details": "**Photo capture details**\n",
+    "date": "**Date & Time:** {{ts}}\n",
+    "location": "**Location:** {{lat}}, {{long}}\n",
+    "recordedBy": "\n**Record entered by:**\n{{firstName}} {{lastName}}",
+    "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or a government health worker has questions, you will be contacted on this phone via voice, text, or a message below.",
+    "startChat": "\n**Chat with a government health worker about {{firstName}} {{lastName}}:**",
+    "chatPlaceholder": "Enter a note to send to a government health worker",
+    "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by a government healthcare worker at {{phone}} (via voice or text)"
   },
   "titleBar": {
     "title": "EVD Track"

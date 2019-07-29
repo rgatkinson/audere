@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import {
   FONT_BOLD,
-  FONT_EXTRA_BOLD,
   FONT_ITALIC,
   FONT_NORMAL,
   LINK_COLOR,
@@ -28,13 +27,22 @@ interface Props {
   bold?: boolean;
   center?: boolean;
   content: string;
-  extraBold?: boolean;
   italic?: boolean;
   style?: StyleProp<TextStyle>;
   onPress?: (event: GestureResponderEvent) => void;
 }
 
 export default class Text extends React.PureComponent<Props> {
+  _makeBold(content: string, bold: boolean, index: number) {
+    return bold ? (
+      <SystemText key={index + content} style={styles.bold}>
+        {content}
+      </SystemText>
+    ) : (
+      content
+    );
+  }
+
   render() {
     const { bold, center, content, italic, style, onPress } = this.props;
     return (
@@ -50,7 +58,9 @@ export default class Text extends React.PureComponent<Props> {
         accessibilityLabel={content}
         onPress={onPress}
       >
-        {content}
+        {content
+          .split("**")
+          .map((str, i) => this._makeBold(str, i % 2 == 1, i))}
       </SystemText>
     );
   }
@@ -58,7 +68,7 @@ export default class Text extends React.PureComponent<Props> {
 
 const styles = StyleSheet.create({
   bold: {
-    fontFamily: FONT_BOLD
+    fontWeight: "bold"
   },
   center: {
     textAlign: "center"
@@ -68,9 +78,6 @@ const styles = StyleSheet.create({
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
     lineHeight: 22
-  },
-  extraBold: {
-    fontFamily: FONT_EXTRA_BOLD
   },
   italic: {
     fontFamily: FONT_ITALIC

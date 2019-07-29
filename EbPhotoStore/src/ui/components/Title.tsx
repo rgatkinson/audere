@@ -20,9 +20,7 @@ interface Props {
 
 export default class Title extends React.Component<Props> {
   render() {
-    return (
-      <Text content={this.props.label} extraBold={true} style={styles.title} />
-    );
+    return <Text content={this.props.label} style={styles.title} />;
   }
 }
 
@@ -31,6 +29,7 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: LARGE_TEXT,
+    fontWeight: "bold",
     lineHeight: LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
     marginTop: GUTTER / 2,
     marginBottom: GUTTER

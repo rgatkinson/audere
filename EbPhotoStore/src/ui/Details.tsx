@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Dimensions,
   Image,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
+import { HealthWorkerInfo, PatientInfo } from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
   openCamera,
@@ -21,6 +21,7 @@ import {
   viewPatients,
   Action,
   PatientEncounter,
+  LocalPhotoInfo,
   Screen,
   StoreState
 } from "../store";
@@ -38,11 +39,12 @@ import {
 
 interface Props {
   evdPositive?: boolean;
+  healthWorkerInfo: HealthWorkerInfo;
   id: number;
   isNew: boolean;
   patientInfo: PatientInfo;
   notes?: string;
-  photoUri?: string;
+  photoInfo?: LocalPhotoInfo;
   dispatch(action: Action): void;
 }
 
@@ -172,14 +174,21 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { evdPositive, id, patientInfo, photoUri, t } = this.props;
+    const {
+      evdPositive,
+      healthWorkerInfo,
+      id,
+      patientInfo,
+      photoInfo,
+      t
+    } = this.props;
     const { firstName, lastName, phone, details, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {!!evdPositive && (
           <Text content={t("evdPositive")} style={styles.evdPos} />
         )}
-        <ScrollView style={styles.content}>
+        <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.titleRow}>
             <TouchableOpacity onPress={this._back}>
               <Title label={t("backToPatientList")} />
@@ -188,7 +197,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           </View>
           <Text content={t("patientFirstName")} />
           <TextInput
-            placeholder={t("patientFirstName")}
+            placeholder={t("firstName")}
             returnKeyType="next"
             style={styles.input}
             value={firstName}
@@ -197,7 +206,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientLastName")} />
           <TextInput
-            placeholder={t("patientLastName")}
+            placeholder={t("lastName")}
             ref={this._lastNameInput}
             returnKeyType="next"
             style={styles.input}
@@ -238,28 +247,78 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             value={notes}
             onChangeText={this._updateNotes}
           />
-          {photoUri && (
-            <Image style={styles.photo} source={{ uri: photoUri }} />
+          {photoInfo ? (
+            <Fragment>
+              <View style={styles.grid}>
+                <Image
+                  style={[styles.photo, styles.gridItem]}
+                  source={{ uri: photoInfo.localPath }}
+                />
+                <View style={[styles.photoDetails, styles.gridItem]}>
+                  <Text content={t("details")} />
+                  <Text
+                    content={t("date", { ts: photoInfo.photoInfo.timestamp })}
+                  />
+                  <Text
+                    content={t("location", {
+                      lat: photoInfo.photoInfo.gps.latitude,
+                      long: photoInfo.photoInfo.gps.longitude
+                    })}
+                  />
+                </View>
+              </View>
+              <TouchableOpacity onPress={this._takePhoto}>
+                <Text content={t("retakePhoto")} style={styles.link} />
+              </TouchableOpacity>
+              <Text
+                content={t("recordedBy", {
+                  firstName: healthWorkerInfo!.firstName,
+                  lastName: healthWorkerInfo!.lastName
+                })}
+              />
+              <Text content={t("followUp")} />
+              <Text content={t("startChat", { firstName, lastName })} />
+              <TextInput
+                multiline={true}
+                numberOfLines={2}
+                placeholder={t("chatPlaceholder")}
+                returnKeyType="done"
+                style={styles.input}
+              />
+            </Fragment>
+          ) : (
+            <Fragment>
+              <View style={styles.grid}>
+                <Button
+                  enabled={true}
+                  label={t("addPhoto")}
+                  primary={true}
+                  style={[styles.button, styles.gridItem]}
+                  onPress={this._takePhoto}
+                />
+                <Text content={t("photoNote")} style={styles.gridItem} />
+              </View>
+              <Text
+                content={t("recordedBy", {
+                  firstName: healthWorkerInfo!.firstName,
+                  lastName: healthWorkerInfo!.lastName
+                })}
+              />
+              <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
+            </Fragment>
           )}
-          <Button
-            enabled={true}
-            label={t("addPhoto")}
-            primary={true}
-            style={styles.button}
-            onPress={this._takePhoto}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
     );
   }
 }
 
-const width = Dimensions.get("window").width / 2;
-const height = Dimensions.get("window").height / 2;
+const width = Dimensions.get("window").width / 3;
+const height = Dimensions.get("window").height / 3;
 
 const styles = StyleSheet.create({
   button: {
-    margin: GUTTER
+    marginRight: GUTTER
   },
   container: {
     flex: 1
@@ -274,6 +333,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center"
   },
+  grid: {
+    marginVertical: GUTTER,
+    flexDirection: "row"
+  },
+  gridItem: {
+    flex: 1
+  },
   id: {
     fontSize: LARGE_TEXT,
     lineHeight: LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
@@ -284,9 +350,17 @@ const styles = StyleSheet.create({
     marginVertical: GUTTER,
     paddingVertical: GUTTER
   },
+  link: {
+    color: "blue",
+    padding: GUTTER,
+    textDecorationLine: "underline"
+  },
   photo: {
     height,
     width
+  },
+  photoDetails: {
+    padding: GUTTER
   },
   titleRow: {
     alignSelf: "stretch",
@@ -296,6 +370,7 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState, props: Props) => ({
+  healthWorkerInfo: state.meta.healthWorkerInfo,
   evdPositive:
     props.id < state.patients.length
       ? state.patients[props.id].evdPositive
@@ -314,12 +389,12 @@ export default connect((state: StoreState, props: Props) => ({
           lastName: "",
           phone: ""
         },
-  photoUri:
+  photoInfo:
     props.id < state.patients.length
       ? state.patients[props.id].photoInfo.length > 0
         ? state.patients[props.id].photoInfo[
             state.patients[props.id].photoInfo.length - 1
-          ].localPath
+          ]
         : undefined
       : undefined
 }))(withNamespaces("details")(Details));
