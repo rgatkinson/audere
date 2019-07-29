@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { format } from "date-fns";
 import { HealthWorkerInfo, PatientInfo } from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
@@ -254,7 +255,12 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 <View style={[styles.photoDetails, styles.gridItem]}>
                   <Text content={t("details")} />
                   <Text
-                    content={t("date", { ts: photoInfo.photoInfo.timestamp })}
+                    content={t("date", {
+                      ts: format(
+                        new Date(photoInfo.photoInfo.timestamp),
+                        "DD MMMM YYYY, hh:mm a"
+                      )
+                    })}
                   />
                   <Text
                     content={t("location", {
