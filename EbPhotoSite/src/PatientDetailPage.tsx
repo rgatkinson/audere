@@ -10,6 +10,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { EncounterDocument, EncounterTriageDocument, EncounterTriageInfo } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
+import { LoggedInAs } from "./LoggedInAs";
 
 type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
@@ -53,16 +54,22 @@ class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPagePro
 
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
-    return encounter == null ? (
-      <div>Loading...</div>
-    ) : (
+    return (
       <div>
-        <PatientInfoPane eDoc={encounter}/>
-        <HealthWorkerPane eDoc={encounter}/>
-        <TriagePane eDoc={encounter} tDoc={triage} reload={this.load}/>
-        <PhotoPane eDoc={encounter}/>
+        <LoggedInAs />
+        {encounter == null ? (
+          <div>Loading...</div>
+        ) : (
+          <div>
+            <PatientInfoPane eDoc={encounter}/>
+            <HealthWorkerPane eDoc={encounter}/>
+            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load}/>
+            <PhotoPane eDoc={encounter}/>
+          </div>
+        )}
       </div>
-    );
+    )
+
   }
 }
 export const PatientDetailPage = withRouter(PatientDetailPageAssumeRouter);

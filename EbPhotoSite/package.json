@@ -41,6 +41,8 @@
   "devDependencies": {
     "@types/deep-equal": "^1.0.1",
     "@types/react-router-dom": "^4.3.4",
-    "@types/react-table": "^6.8.5"
+    "@types/react-table": "^6.8.5",
+    "firebase": "6.3.3",
+    "firebaseui": "4.1.0"
   }
 }

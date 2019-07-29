@@ -4,14 +4,9 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { DocumentType, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import * as Firebase from "firebase";
 
-// TODO: remove
-export interface User {
-  email: string,
-  token: string,
-}
-
-const firebase = (global as any).firebase as any;
+const firebase = (global as any).firebase as typeof Firebase;
 
 type QuerySnapshot = any; // firebase.firestore.QuerySnapshot;
 type DocumentSnapshot = any; // firebase.firestore.DocumentSnapshot;
@@ -51,34 +46,8 @@ export class Api {
   // --------------------------------------
   // CLEANUP
 
-  isAuthenticated(): boolean {
-    return ["UserEmail", "UserToken"]
-      .every(key => this.session.getItem(key) != null);
-  }
-
-  currentUser(): User | null {
-    const email = this.session.getItem("UserEmail");
-    const token = this.session.getItem("UserToken");
-    if (email != null && token != null) {
-      return { email, token };
-    } else {
-      return null;
-    }
-  }
-
-  async login(email: string, password: string): Promise<User> {
-    await this.delay(500);
-    if (password === email) {
-      throw new Error(`No valid user found with that email and password.`);
-    }
-    this.session.setItem("UserEmail", email);
-    this.session.setItem("UserToken", password);
-    return { email, token: password };
-  }
-
   async logout(): Promise<void> {
-    this.session.clear();
-    await this.delay(500);
+    await firebase.auth().signOut();
   }
 
   async delay(ms: number) {
