@@ -6,7 +6,8 @@
     "start": "../scripts/generate-build-info EbPhotoStore; ./scripts/build-hacks; react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "lint-fix": "prettier --write *.ts{,x} 'src/**/*.ts{,x}'"
+    "lint-fix": "prettier --write *.ts{,x} 'src/**/*.ts{,x}'",
+    "postinstall": "npx jetify"
   },
   "dependencies": {
     "@react-native-community/netinfo": "^4.1.3",
