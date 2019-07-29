@@ -600,14 +600,17 @@ jobs:
       - restore_cache:
           key: rash-node-cache-{{ checksum "package.json" }}
       - run:
-          name: flu@home Yarn Install
+          name: Rash Yarn Install
           command: |
             yarn install
       - save_cache:
           key: rash-node-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      #      - run: *set_firebase_config
+      - run:
+          name: Set Firebase Config
+          command: |
+            echo "$RASH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
       - run:
           name: Rash build-hacks
           command: |
