@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { PermissionsAndroid } from "react-native";
 import {
+  setEvdStatus,
   viewDetails,
   logout,
   Action,
@@ -17,6 +18,7 @@ import Title from "./components/Title";
 import { BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
 
 interface Props {
+  demoMode: boolean;
   patients: PatientEncounter[];
   dispatch(action: Action): void;
 }
@@ -60,6 +62,14 @@ class Patients extends React.Component<Props & WithNamespaces> {
     return patient.id.toString();
   };
 
+  _onLongPress = (id: number) => {
+    const { demoMode } = this.props;
+    if (demoMode) {
+      const { dispatch, patients } = this.props;
+      dispatch(setEvdStatus(id, !patients[id].evdPositive));
+    }
+  };
+
   render() {
     const { t } = this.props;
     return (
@@ -76,7 +86,11 @@ class Patients extends React.Component<Props & WithNamespaces> {
           data={this.props.patients}
           keyExtractor={this._keyExtractor}
           renderItem={({ item }) => (
-            <PatientRow patient={item} onPress={this._viewPatient} />
+            <PatientRow
+              patient={item}
+              onPress={this._viewPatient}
+              onLongPress={this._onLongPress}
+            />
           )}
         />
         <Button
@@ -93,6 +107,7 @@ class Patients extends React.Component<Props & WithNamespaces> {
 
 interface PatientRowProps {
   patient: PatientEncounter;
+  onLongPress: (id: number) => void;
   onPress: (id: number) => void;
 }
 
@@ -101,19 +116,32 @@ class PatientRow extends React.Component<PatientRowProps> {
     this.props.onPress(this.props.patient.id);
   };
 
-  render() {
+  _onLongPress = () => {
+    this.props.onLongPress(this.props.patient.id);
+  };
+
+  _getPatientName = () => {
+    const { patient } = this.props;
     return (
-      <TouchableOpacity style={styles.patient} onPress={this._onPress}>
-        <Text
-          content={
-            this.props.patient.patientInfo.lastName +
-            ", " +
-            this.props.patient.patientInfo.firstName +
-            " (ID: " +
-            this.props.patient.id +
-            ")"
-          }
-        />
+      patient.patientInfo.lastName +
+      ", " +
+      patient.patientInfo.firstName +
+      " (ID: " +
+      patient.id +
+      ")"
+    );
+  };
+
+  render() {
+    const { patient } = this.props;
+    return (
+      <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>
+        <View style={[styles.patient, patient.evdPositive && styles.evdPos]}>
+          <Text content={this._getPatientName()} style={styles.patientName} />
+          {patient.evdPositive && (
+            <Text content="Ebola +" style={styles.patientStatus} />
+          )}
+        </View>
       </TouchableOpacity>
     );
   }
@@ -130,14 +158,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: GUTTER
   },
+  evdPos: {
+    backgroundColor: "pink"
+  },
   patient: {
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: "row",
     height: INPUT_HEIGHT,
+    paddingHorizontal: GUTTER / 2,
     paddingTop: GUTTER
+  },
+  patientName: {
+    flex: 3
+  },
+  patientStatus: {
+    flex: 1,
+    fontWeight: "bold"
   }
 });
 
 export default connect((state: StoreState) => ({
+  demoMode: state.meta.demoMode,
   patients: state.patients
 }))(withNamespaces("patients")(Patients));

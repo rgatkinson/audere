@@ -20,6 +20,7 @@
     "login": "Login"
   },
   "details": {
+    "evdPositive": "Positive for Ebola",
     "backToPatientList": "< Back to Patient List",
     "patientId": "Patient ID: {{id}}",
     "patientFirstName": "Patient first name",

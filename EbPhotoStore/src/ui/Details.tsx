@@ -29,9 +29,15 @@ import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import Title from "./components/Title";
-import { GUTTER, LARGE_TEXT, LINE_HEIGHT_DIFFERENCE } from "./styles";
+import {
+  GUTTER,
+  NAV_BAR_HEIGHT,
+  LARGE_TEXT,
+  LINE_HEIGHT_DIFFERENCE
+} from "./styles";
 
 interface Props {
+  evdPositive?: boolean;
   id: number;
   isNew: boolean;
   patientInfo: PatientInfo;
@@ -166,19 +172,19 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { t } = this.props;
+    const { evdPositive, id, patientInfo, photoUri, t } = this.props;
     const { firstName, lastName, phone, details, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
+        {!!evdPositive && (
+          <Text content={t("evdPositive")} style={styles.evdPos} />
+        )}
         <ScrollView style={styles.content}>
           <View style={styles.titleRow}>
             <TouchableOpacity onPress={this._back}>
               <Title label={t("backToPatientList")} />
             </TouchableOpacity>
-            <Text
-              content={t("patientId", { id: this.props.id })}
-              style={styles.id}
-            />
+            <Text content={t("patientId", { id })} style={styles.id} />
           </View>
           <Text content={t("patientFirstName")} />
           <TextInput
@@ -232,8 +238,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             value={notes}
             onChangeText={this._updateNotes}
           />
-          {this.props.photoUri && (
-            <Image style={styles.photo} source={{ uri: this.props.photoUri }} />
+          {photoUri && (
+            <Image style={styles.photo} source={{ uri: photoUri }} />
           )}
           <Button
             enabled={true}
@@ -261,6 +267,13 @@ const styles = StyleSheet.create({
   content: {
     padding: GUTTER
   },
+  evdPos: {
+    backgroundColor: "pink",
+    fontWeight: "bold",
+    height: NAV_BAR_HEIGHT,
+    textAlign: "center",
+    textAlignVertical: "center"
+  },
   id: {
     fontSize: LARGE_TEXT,
     lineHeight: LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
@@ -283,7 +296,16 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState, props: Props) => ({
+  evdPositive:
+    props.id < state.patients.length
+      ? state.patients[props.id].evdPositive
+      : undefined,
   isNew: props.id === state.patients.length,
+  notes:
+    props.id < state.patients.length
+      ? state.patients[props.id].notes
+      : undefined,
+
   patientInfo:
     props.id < state.patients.length
       ? state.patients[props.id].patientInfo
@@ -292,14 +314,12 @@ export default connect((state: StoreState, props: Props) => ({
           lastName: "",
           phone: ""
         },
-  notes:
-    props.id < state.patients.length
-      ? state.patients[props.id].notes
-      : undefined,
   photoUri:
     props.id < state.patients.length
-      ? state.patients[props.id].photoInfo[
-          state.patients[props.id].photoInfo.length - 1
-        ].localPath
+      ? state.patients[props.id].photoInfo.length > 0
+        ? state.patients[props.id].photoInfo[
+            state.patients[props.id].photoInfo.length - 1
+          ].localPath
+        : undefined
       : undefined
 }))(withNamespaces("details")(Details));

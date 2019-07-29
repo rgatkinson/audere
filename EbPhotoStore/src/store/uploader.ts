@@ -56,7 +56,9 @@ export function reduxToFirebase(
     healthWorker,
     localIndex: reduxPatient.id.toString(),
     patient: reduxPatient.patientInfo,
-    rdtPhotos: reduxPatient.photoInfo,
+    rdtPhotos: reduxPatient.photoInfo.map(
+      localPhotoInfo => localPhotoInfo.photoInfo
+    ),
     notes: reduxPatient.notes || ""
   };
 }

@@ -7,12 +7,18 @@ import uuidv4 from "uuid/v4";
 
 import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
 
+export type LocalPhotoInfo = {
+  photoInfo: PhotoInfo;
+  localPath: string;
+};
+
 export type PatientEncounter = {
   id: number;
   uuid: string;
   patientInfo: PatientInfo;
   notes?: string;
-  photoInfo: PhotoInfo[];
+  photoInfo: LocalPhotoInfo[];
+  evdPositive?: boolean;
 };
 
 export type PatientAction =
@@ -32,7 +38,8 @@ export type PatientAction =
       patientId: number;
       photoUri: string;
       photoInfo: PhotoInfo;
-    };
+    }
+  | { type: "SET_EVD_STATUS"; id: number; evdStatus: boolean };
 
 export type PatientState = PatientEncounter[];
 
@@ -57,12 +64,22 @@ export default function reducer(state = initialState, action: PatientAction) {
           return patient;
         }
         return {
-          ...patient,
           patientInfo: action.patientInfo,
           notes: action.notes,
           ...patient
         };
       });
+    case "SET_EVD_STATUS":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          evdPositive: action.evdStatus
+        };
+      });
+
     case "SAVE_PHOTO":
       return state.map((patient, index) => {
         if (index != action.patientId) {
@@ -73,7 +90,7 @@ export default function reducer(state = initialState, action: PatientAction) {
           photoInfo: [
             ...patient.photoInfo,
             {
-              ...action.photoInfo,
+              photoInfo: action.photoInfo,
               localPath: action.photoUri
             }
           ]
@@ -105,6 +122,14 @@ export function updatePatient(
     id,
     patientInfo,
     notes
+  };
+}
+
+export function setEvdStatus(id: number, evdStatus: boolean): PatientAction {
+  return {
+    type: "SET_EVD_STATUS",
+    id,
+    evdStatus
   };
 }
 
