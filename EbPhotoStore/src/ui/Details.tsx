@@ -6,7 +6,6 @@ import {
   PermissionsAndroid,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View
 } from "react-native";
 import { connect } from "react-redux";
@@ -29,7 +28,6 @@ import Button from "./components/Button";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
-import Title from "./components/Title";
 import {
   GUTTER,
   NAV_BAR_HEIGHT,
@@ -45,6 +43,7 @@ interface Props {
   patientInfo: PatientInfo;
   notes?: string;
   photoInfo?: LocalPhotoInfo;
+  setupBackInfo(s: Screen, onBack: () => void): void;
   dispatch(action: Action): void;
 }
 
@@ -64,6 +63,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
+    this.props.setupBackInfo(Screen.PatientDetails, this._back);
     this.state = {
       firstName: props.patientInfo.firstName,
       lastName: props.patientInfo.lastName,
@@ -190,9 +190,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
         )}
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.titleRow}>
-            <TouchableOpacity onPress={this._back}>
-              <Title label={t("backToPatientList")} />
-            </TouchableOpacity>
             <Text content={t("patientId", { id })} style={styles.id} />
           </View>
           <Text content={t("patientFirstName")} />

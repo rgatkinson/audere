@@ -4,17 +4,29 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { toggleDemoMode, Action, StoreState } from "../../store";
 import MultiTapContainer from "./MultiTapContainer";
 import Text from "./Text";
-import { GUTTER, NAV_BAR_HEIGHT, SYSTEM_FONT, SYSTEM_TEXT } from "../styles";
+import {
+  GUTTER,
+  NAV_BAR_HEIGHT,
+  REGULAR_TEXT,
+  SYSTEM_FONT,
+  SYSTEM_TEXT
+} from "../styles";
 
 interface Props {
   demoMode: boolean;
   dispatch(action: Action): void;
+  onBack?(event: GestureResponderEvent): void;
 }
 
 class TitleBar extends React.Component<Props & WithNamespaces> {
@@ -23,7 +35,7 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { demoMode, t } = this.props;
+    const { demoMode, onBack, t } = this.props;
     return (
       <MultiTapContainer
         active={true}
@@ -32,7 +44,15 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
         onMultiTap={this._toggleDemoMode}
       >
         {demoMode && <View style={styles.demoView} />}
+        {!!onBack ? (
+          <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
+            <Text style={styles.actionContent} content="&#10094;" />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.actionContainer} />
+        )}
         <Text style={styles.title} content={t("title")} />
+        <View style={styles.actionContainer} />
       </MultiTapContainer>
     );
   }
@@ -53,8 +73,9 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
+    flexDirection: "row",
     height: NAV_BAR_HEIGHT,
-    justifyContent: "center",
+    justifyContent: "space-between",
     paddingHorizontal: GUTTER / 2
   },
   title: {
@@ -62,5 +83,15 @@ const styles = StyleSheet.create({
     fontFamily: SYSTEM_FONT,
     fontSize: SYSTEM_TEXT,
     fontWeight: "bold"
+  },
+  actionContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    width: 30
+  },
+  actionContent: {
+    fontSize: REGULAR_TEXT,
+    textAlign: "center",
+    paddingHorizontal: GUTTER / 2
   }
 });

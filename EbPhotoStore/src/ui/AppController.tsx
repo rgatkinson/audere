@@ -25,6 +25,7 @@ interface Props {
 
 class AppController extends React.Component<Props> {
   _backHandler: any;
+  _onBackCallbacks: { [s: string]: () => void } = {};
 
   componentDidMount() {
     this._backHandler = BackHandler.addEventListener(
@@ -39,25 +40,49 @@ class AppController extends React.Component<Props> {
     }
   }
 
+  shouldComponentUpdate(props: Props) {
+    return props.screen !== this.props.screen;
+  }
+
+  _setupBackInfo = (s: Screen, onBack: () => void) => {
+    this._onBackCallbacks[s] = onBack;
+    this.forceUpdate();
+  };
+
+  _shouldShowBack = () => {
+    return (
+      !!this._onBackCallbacks[this.props.screen] ||
+      [
+        Screen.Camera,
+        Screen.LocationPermission,
+        Screen.CameraPermission
+      ].findIndex(e => {
+        return e === this.props.screen;
+      }) >= 0
+    );
+  };
+
   _handleBackPress = () => {
-    switch (this.props.screen) {
-      case Screen.Patients:
-        this.props.dispatch(logout());
-        return true;
-      case Screen.PatientDetails:
-        this.props.dispatch(viewPatients());
-        return true;
-      case Screen.Camera:
-        this.props.dispatch(viewDetails(this.props.currentPatient!));
-        return true;
-      case Screen.LocationPermission:
-        this.props.dispatch(viewPatients());
-        return true;
-      case Screen.CameraPermission:
-        this.props.dispatch(viewDetails(this.props.currentPatient!));
-        return true;
+    if (!!this._onBackCallbacks[this.props.screen]) {
+      this._onBackCallbacks[this.props.screen]();
+      return true;
+    } else {
+      switch (this.props.screen) {
+        case Screen.Patients:
+          this.props.dispatch(logout());
+          return true;
+        case Screen.Camera:
+          this.props.dispatch(viewDetails(this.props.currentPatient!));
+          return true;
+        case Screen.LocationPermission:
+          this.props.dispatch(viewPatients());
+          return true;
+        case Screen.CameraPermission:
+          this.props.dispatch(viewDetails(this.props.currentPatient!));
+          return true;
+      }
+      return false;
     }
-    return false;
   };
 
   _getScreen = () => {
@@ -67,7 +92,12 @@ class AppController extends React.Component<Props> {
       case Screen.Patients:
         return <Patients />;
       case Screen.PatientDetails:
-        return <Details id={this.props.currentPatient} />;
+        return (
+          <Details
+            id={this.props.currentPatient}
+            setupBackInfo={this._setupBackInfo}
+          />
+        );
       case Screen.Camera:
         return <PhotoCapture id={this.props.currentPatient} />;
       case Screen.LocationPermission:
@@ -80,7 +110,7 @@ class AppController extends React.Component<Props> {
   render() {
     return (
       <Fragment>
-        <TitleBar />
+        <TitleBar onBack={this._shouldShowBack() && this._handleBackPress} />
         {this._getScreen()}
       </Fragment>
     );
