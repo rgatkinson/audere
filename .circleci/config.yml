@@ -78,11 +78,18 @@ set_firebase_config: &set_firebase_config
           echo "$COUGH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
           echo "$COUGH_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
         fi
+        grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
+        ;;
+      rash)
+        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+          echo "$RASH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+        else 
+          echo "$RASH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+        fi
         ;;
       *) echo 1>&2 "Unsupported product '$PRODUCT' for set_firebase_config"; false;;
     esac
     grep project_id android/app/google-services.json
-    grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
 
 version: 2
 jobs:
@@ -607,10 +614,7 @@ jobs:
           key: rash-node-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run:
-          name: Set Firebase Config
-          command: |
-            echo "$RASH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+      - run: *set_firebase_config
       - run:
           name: Run setup scripts
           command: |
