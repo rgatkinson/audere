@@ -17,6 +17,7 @@ export type PatientEncounter = {
   uuid: string;
   patientInfo: PatientInfo;
   notes?: string;
+  triageNotes?: string;
   photoInfo: LocalPhotoInfo[];
   evdPositive?: boolean;
 };
@@ -39,7 +40,8 @@ export type PatientAction =
       photoUri: string;
       photoInfo: PhotoInfo;
     }
-  | { type: "SET_EVD_STATUS"; id: number; evdStatus: boolean };
+  | { type: "SET_EVD_STATUS"; id: number; evdStatus: boolean }
+  | { type: "SET_TRIAGE_NOTES"; id: number; notes: string };
 
 export type PatientState = PatientEncounter[];
 
@@ -77,6 +79,16 @@ export default function reducer(state = initialState, action: PatientAction) {
         return {
           ...patient,
           evdPositive: action.evdStatus
+        };
+      });
+    case "SET_TRIAGE_NOTES":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          triageNotes: action.notes
         };
       });
 
@@ -130,6 +142,14 @@ export function setEvdStatus(id: number, evdStatus: boolean): PatientAction {
     type: "SET_EVD_STATUS",
     id,
     evdStatus
+  };
+}
+
+export function setTriageNotes(id: number, notes: string): PatientAction {
+  return {
+    type: "SET_TRIAGE_NOTES",
+    id,
+    notes
   };
 }
 

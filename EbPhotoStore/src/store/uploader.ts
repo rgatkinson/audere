@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
+import { MiddlewareAPI, Dispatch, AnyAction, Store } from "redux";
 import { PatientState, StoreState } from "./index";
 import {
   DocumentType,
@@ -11,7 +11,8 @@ import {
   PatientInfo,
   EncounterInfo
 } from "audere-lib/ebPhotoStoreProtocol";
-import { syncEncounter } from "./FirebaseStore";
+import { syncEncounter, initializeListener } from "./FirebaseStore";
+import { setEvdStatus, setTriageNotes } from "./patients";
 import { retryUploads } from "../transport/photoUploader";
 
 // This is similar to the logger example at
@@ -61,4 +62,17 @@ export function reduxToFirebase(
     ),
     notes: reduxPatient.notes || ""
   };
+}
+
+export function initializeFirebaseListener(store: Store<StoreState>) {
+  initializeListener(doc => {
+    const patient = store
+      .getState()
+      .patients.find(patient => patient.uuid == doc.docId);
+    if (!patient) {
+      return;
+    }
+    store.dispatch(setEvdStatus(patient.id, doc.triage.testIndicatesEVD));
+    store.dispatch(setTriageNotes(patient.id, doc.triage.notes));
+  });
 }

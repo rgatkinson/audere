@@ -12,7 +12,11 @@ import {
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { format } from "date-fns";
-import { HealthWorkerInfo, PatientInfo } from "audere-lib/ebPhotoStoreProtocol";
+import {
+  HealthWorkerInfo,
+  PatientInfo,
+  Message
+} from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
   openCamera,
@@ -40,6 +44,7 @@ interface Props {
   patientInfo: PatientInfo;
   notes?: string;
   photoInfo?: LocalPhotoInfo;
+  messages?: Message[];
   setupBackInfo(s: Screen, onBack: () => void): void;
   dispatch(action: Action): void;
 }
@@ -173,6 +178,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   render() {
     const {
       evdPositive,
+      messages,
       healthWorkerInfo,
       id,
       patientInfo,
@@ -283,6 +289,18 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               />
               <Text content={t("followUp")} />
               <Text content={t("startChat", { firstName, lastName })} />
+              <Text
+                content={
+                  messages
+                    ? messages
+                        .map(
+                          message =>
+                            `${message.sender.name}: ${message.content}`
+                        )
+                        .join("\n")
+                    : ""
+                }
+              />
               <TextInput
                 multiline={true}
                 numberOfLines={2}
@@ -393,10 +411,21 @@ const styles = StyleSheet.create({
 
 export default connect((state: StoreState, props: Props) => ({
   healthWorkerInfo: state.meta.healthWorkerInfo,
+  // TODO(ram): derive evdPositive from diagnoses collection instead of evdPositive
   evdPositive:
     props.id < state.patients.length
       ? state.patients[props.id].evdPositive
       : undefined,
+  // TODO(ram): derive messages from messages collection instead of triageNotes
+  messages:
+    props.id < state.patients.length
+      ? [
+          {
+            content: state.patients[props.id].triageNotes,
+            sender: { name: "Government worker" }
+          }
+        ]
+      : [],
   isNew: props.id === state.patients.length,
   notes:
     props.id < state.patients.length

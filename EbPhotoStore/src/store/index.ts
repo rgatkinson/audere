@@ -30,7 +30,7 @@ export * from "./patients";
 import { default as photoUploads, PhotoUploadAction } from "./photoUploads";
 export * from "./photoUploads";
 
-import { uploaderMiddleware } from "./uploader";
+import { uploaderMiddleware, initializeFirebaseListener } from "./uploader";
 
 type ClearStateAction = { type: "CLEAR_STATE" };
 export function clearState(): ClearStateAction {
@@ -75,10 +75,12 @@ async function getStoreImpl() {
     key: "store",
     storage
   };
-  return createStore(
+  const store = await createStore(
     persistReducer(persistConfig, rootReducer),
     applyMiddleware(uploaderMiddleware)
   );
+  initializeFirebaseListener(store);
+  return store;
 }
 
 export async function getPersistor() {

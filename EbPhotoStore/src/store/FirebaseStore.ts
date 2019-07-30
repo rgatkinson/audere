@@ -10,10 +10,12 @@ import {
   FirestoreProtocolDocument,
   DocumentType,
   EncounterDocument,
-  EncounterInfo
+  EncounterInfo,
+  EncounterTriageDocument
 } from "audere-lib/ebPhotoStoreProtocol";
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
+const DEFAULT_TRIAGE_COLLECTION = "triages";
 
 const DEVICE_INFO = {
   installation: RNDeviceInfo.getInstanceID(),
@@ -37,6 +39,12 @@ function loadBuildInfo() {
 function getEncounterCollection() {
   const collectionName =
     process.env.FIRESTORE_ENCOUNTER_COLLECTION || DEFAULT_ENCOUNTER_COLLECTION;
+  return firebase.firestore().collection(collectionName);
+}
+
+function getTriageCollection() {
+  const collectionName =
+    process.env.FIRESTORE_TRIAGE_COLLECTION || DEFAULT_TRIAGE_COLLECTION;
   return firebase.firestore().collection(collectionName);
 }
 
@@ -67,4 +75,15 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
       protocolVersion: 1
     }
   };
+}
+
+export async function initializeListener(
+  callback: (doc: EncounterTriageDocument) => void
+) {
+  getTriageCollection().onSnapshot(collection => {
+    collection.docChanges.forEach(docChange => {
+      const doc = docChange.doc.data() as EncounterTriageDocument;
+      callback(doc);
+    });
+  });
 }
