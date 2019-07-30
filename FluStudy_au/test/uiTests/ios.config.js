@@ -25,7 +25,7 @@ if (!(device in device_list)) {
 const PLATFORM = "iOS";
 const config = {
   platformName: "iOS",
-  platformVersion: "12.2",
+  platformVersion: "12.4",
   deviceName: device,
   app: path.join(
     os.homedir(),
