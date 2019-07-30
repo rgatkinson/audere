@@ -96,7 +96,7 @@ class HealthWorkerPane extends React.Component<PatientDetailPaneProps> {
 
 class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
   public render(): React.ReactNode {
-    const { localIndex, patient } = this.props.eDoc.encounter;
+    const { localIndex, patient, notes } = this.props.eDoc.encounter;
     return (
       <div className="PatientInfoPane">
         <h2>Patient</h2>
@@ -104,7 +104,8 @@ class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
           <tr><td>Local ID:</td><td>{localIndex}</td></tr>
           <tr><td>Name:</td><td>{patient.firstName} {patient.lastName}</td></tr>
           <tr><td>Phone:</td><td>{patient.phone}</td></tr>
-          <tr><td>Details:</td><td>{patient.details}</td></tr>
+          <tr><td>Patient Contact Details:</td><td>{patient.details}</td></tr>
+          <tr><td>Notes:</td><td>{notes}</td></tr>
         </table>
       </div>
     );
