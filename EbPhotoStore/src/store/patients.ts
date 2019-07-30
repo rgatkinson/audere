@@ -64,9 +64,9 @@ export default function reducer(state = initialState, action: PatientAction) {
           return patient;
         }
         return {
+          ...patient,
           patientInfo: action.patientInfo,
-          notes: action.notes,
-          ...patient
+          notes: action.notes
         };
       });
     case "SET_EVD_STATUS":
