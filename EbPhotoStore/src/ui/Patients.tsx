@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  PermissionsAndroid
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -33,25 +27,6 @@ interface Props {
 class Patients extends React.Component<Props & WithNamespaces> {
   async componentDidMount() {
     this.props.setupBackInfo(Screen.Patients, this._logout);
-    await this.requestLocationPermission();
-  }
-
-  async requestLocationPermission() {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: "EVD Track Location Permission",
-          message:
-            "EVD Track needs access to your location" +
-            "so it can accurately report patient data.",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
-        }
-      );
-    } catch (err) {
-      console.warn(err);
-    }
   }
 
   _addPatient = () => {
