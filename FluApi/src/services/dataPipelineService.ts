@@ -131,6 +131,27 @@ function getPiiDataNodes(): ManagedSqlNode[] {
 }
 
 function getNonPiiDataNodes(): ManagedSqlNode[] {
+  const testResultNav = "survey->'events' @> '[{\"refId\":\"TestResult\"}]'";
+
+  const backfillResultsExplanation =
+    caseIf(
+      testResultNav,
+      answerValue(SURVEY_QUESTIONS.find(s => s.id === "PinkWhenBlue")),
+      "null"
+    );
+
+  const backfillResultsShown =
+    caseIf(
+      testResultNav,
+      matchesIfNotNull(
+        backfillResultsExplanation,
+        'No, there are no pink lines',
+        'negative',
+        'positive'
+      ),
+      "null"
+    );
+
   return [
     new ManagedSqlType({
       name: "cough_derived.survey_response",
@@ -214,8 +235,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo' as rdtinfo,
           survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
           survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
-          survey->'rdtInfo'->>'resultShown' as rdtinfo_resultshown,
-          survey->'rdtInfo'->>'resultShownExplanation' as rdtinfo_resultshownexplanation,
+          coalesce(survey->'rdtInfo'->>'resultShown', (${backfillResultsShown})) as rdtinfo_resultshown,
+          coalesce(survey->'rdtInfo'->>'resultShownExplanation', ${backfillResultsExplanation}) as rdtinfo_resultshownexplanation,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripFound' as rdtreaderresult_teststripfound,
           survey->'rdtInfo'->'rdtReaderResult'->>'skippedDueToMemWarning' as rdtreaderresult_skippedduetomemwarning,
           survey->'rdtInfo'->'rdtReaderResult'->>'isCentered' as rdtreaderresult_iscentered,
@@ -540,6 +561,94 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
       default:
         throw new Error(`Unexpected SurveyQuestionType: ${question.type}`);
     }
+  }
+}
+
+function matchesIfNotNull(
+  expression: string,
+  valueToMatch: string,
+  matchValue: string,
+  noMatchValue: string  
+): string {
+  return `
+    case
+      when ${expression} = null then null
+      when ${expression} = '${valueToMatch}' then '${matchValue}'
+      else '${noMatchValue}'
+    end
+  `;
+}
+
+function caseIf(
+  ifExpression: string,
+  thenExpression: string,
+  elseExpression: string
+): string {
+  return `
+    case
+      when ${ifExpression} then ${thenExpression}
+      else ${elseExpression}
+    end
+  `;
+}
+
+function answerValue(question: SurveyQuestion): string {
+  const qid = question.id.toLowerCase();
+
+  function getSingleAnswerOption(): string {
+    // `.answer` is `[{"valueIndex": N}]`, where N is an index into `.answerOptions`.
+    // `.answerOptions` is `[{"id":"","text":""},...]
+    // So we want to return the text of the selected answer index
+    return `
+      jsonb_extract_path(
+        response_${qid}->'answerOptions',
+        response_${qid}->'answer'->0->>'valueIndex'
+      )->>'text'
+    `;
+  }
+
+  function getAnswerOptionsList(): string {
+    // `.answer` is `{"valueIndex": N0, "valueIndex": N1}`, where N0,N1 are indexes
+    // into `.answerOptions`.
+    // `.answerOptions` is `[{"id":"","text":""},...]
+    // We want to return the text answer from each selected option in a list
+    return `
+      (select
+        array_to_string(array_agg(jsonb_extract_path(
+          response_${qid}->'answerOptions',
+          a->>'valueIndex'
+        )->>'text'), ',')
+      from
+        jsonb_array_elements(response_${qid}->'answer') a)
+    `;
+  }
+
+  switch (question.type) {
+    // Text is just a label, and results in no data in db.
+    case SurveyQuestionType.Text:
+      return `null`;
+
+    // `.answer` is a string with the data we want
+    case SurveyQuestionType.DatePicker:
+      return `response_${qid}->'answer'->0->'valueDateTime'`;
+
+    case SurveyQuestionType.TextInput:
+      return `response_${qid}->'answer'->0->'valueString'`;
+
+    case SurveyQuestionType.ButtonGrid:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.Dropdown:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.RadioGrid:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.OptionQuestion: 
+      return getAnswerOptionsList();
+
+    default:
+      throw new Error(`Unexpected SurveyQuestionType: ${question.type}`);
   }
 }
 
