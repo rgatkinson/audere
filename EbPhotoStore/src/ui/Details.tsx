@@ -251,10 +251,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             <Fragment>
               <View style={styles.grid}>
                 <Image
-                  style={[styles.photo, styles.gridItem]}
+                  style={styles.photo}
                   source={{ uri: photoInfo.localPath }}
                 />
-                <View style={[styles.photoDetails, styles.gridItem]}>
+                <View style={styles.photoDetails}>
                   <Text content={t("details")} />
                   <Text
                     content={t("date", {
@@ -274,12 +274,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               </View>
               <View style={[styles.grid, { marginTop: 0 }]}>
                 <TouchableOpacity onPress={this._takePhoto}>
-                  <Text
-                    content={t("retakePhoto")}
-                    style={[styles.gridItem, styles.link]}
-                  />
+                  <Text content={t("retakePhoto")} style={styles.link} />
                 </TouchableOpacity>
-                <View style={[styles.photoDetails, styles.gridItem]} />
+                <View style={styles.photoDetails} />
               </View>
               <Text
                 content={t("recordedBy", {
@@ -316,17 +313,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   enabled={!!firstName || !!lastName}
                   label={t("addPhoto")}
                   primary={true}
-                  style={[
-                    styles.button,
-                    styles.gridItem,
-                    { marginBottom: 0, width: "50%" }
-                  ]}
+                  style={styles.button}
                   onPress={this._takePhoto}
                 />
-                <Text
-                  content={t("photoNote")}
-                  style={[styles.gridItem, { width: "50%" }]}
-                />
+                <Text content={t("photoNote")} style={{ width: "50%" }} />
               </View>
               <Text
                 content={t("recordedBy", {
@@ -348,7 +338,9 @@ const height = Dimensions.get("window").height / 3;
 
 const styles = StyleSheet.create({
   button: {
-    marginRight: GUTTER
+    marginRight: GUTTER,
+    marginBottom: 0,
+    width: "50%"
   },
   container: {
     flex: 1
@@ -375,14 +367,7 @@ const styles = StyleSheet.create({
     paddingBottom: GUTTER / 4
   },
   inputSingle: {
-    marginHorizontal: 0,
-    marginVertical: 0,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderTopWidth: 0,
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-    borderBottomWidth: 1
+    padding: 0
   },
   inputMulti: {
     borderWidth: 1
@@ -393,7 +378,6 @@ const styles = StyleSheet.create({
     marginRight: GUTTER,
     flexDirection: "row"
   },
-  gridItem: {},
   link: {
     color: "blue",
     textAlign: "center",

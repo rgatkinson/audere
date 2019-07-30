@@ -24,7 +24,7 @@ interface State {
 }
 
 class Login extends React.Component<Props & WithNamespaces, State> {
-  _firstNameInput: any;
+  _lastNameInput: any;
   _phoneInput: any;
   _notesInput: any;
 
@@ -45,21 +45,21 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       };
     }
 
-    this._firstNameInput = React.createRef<TextInput>();
+    this._lastNameInput = React.createRef<TextInput>();
     this._phoneInput = React.createRef<NumberInput>();
     this._notesInput = React.createRef<TextInput>();
   }
+
+  _updateFirstName = (firstName: string) => {
+    this.setState({ firstName });
+  };
 
   _updateLastName = (lastName: string) => {
     this.setState({ lastName });
   };
 
-  _focusFirstName = () => {
-    this._firstNameInput.current!.focus();
-  };
-
-  _updateFirstName = (firstName: string) => {
-    this.setState({ firstName });
+  _focusLastName = () => {
+    this._lastNameInput.current!.focus();
   };
 
   _focusPhone = () => {
@@ -97,25 +97,25 @@ class Login extends React.Component<Props & WithNamespaces, State> {
         <ScrollView style={styles.content}>
           <Title label={t("title")} />
           <Text
-            content={t("loginLastName")}
+            content={t("loginFirstName")}
             style={[styles.titleRow, { paddingTop: 0 }]}
           />
           <TextInput
-            placeholder={t("lastName")}
-            returnKeyType="next"
-            style={styles.inputSingle}
-            value={lastName}
-            onChangeText={this._updateLastName}
-            onSubmitEditing={this._focusFirstName}
-          />
-          <Text content={t("loginFirstName")} style={styles.titleRow} />
-          <TextInput
             placeholder={t("firstName")}
-            ref={this._firstNameInput}
             returnKeyType="next"
             style={styles.inputSingle}
             value={firstName}
             onChangeText={this._updateFirstName}
+            onSubmitEditing={this._focusLastName}
+          />
+          <Text content={t("loginLastName")} style={styles.titleRow} />
+          <TextInput
+            placeholder={t("lastName")}
+            ref={this._lastNameInput}
+            returnKeyType="next"
+            style={styles.inputSingle}
+            value={lastName}
+            onChangeText={this._updateLastName}
             onSubmitEditing={this._focusPhone}
           />
           <Text content={t("loginMobileNumber")} style={styles.titleRow} />
@@ -172,14 +172,7 @@ const styles = StyleSheet.create({
     paddingBottom: GUTTER / 4
   },
   inputSingle: {
-    marginHorizontal: 0,
-    marginVertical: 0,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderTopWidth: 0,
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-    borderBottomWidth: 1
+    padding: 0
   },
   inputMulti: {
     borderWidth: 1

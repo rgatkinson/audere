@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     color: TEXT_COLOR,
     borderColor: BORDER_COLOR,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
     padding: GUTTER / 2
