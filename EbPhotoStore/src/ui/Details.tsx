@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import firebase from "react-native-firebase";
 import { format } from "date-fns";
 import {
   HealthWorkerInfo,
@@ -30,6 +31,7 @@ import {
   StoreState
 } from "../store";
 import Button from "./components/Button";
+import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
@@ -239,6 +241,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientDetails")} style={styles.titleRow} />
           <TextInput
+            blurOnSubmit={true}
             placeholder=""
             multiline={true}
             numberOfLines={3}
@@ -251,6 +254,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientNotes")} style={styles.titleRow} />
           <TextInput
+            blurOnSubmit={true}
             placeholder=""
             multiline={true}
             numberOfLines={3}
@@ -299,25 +303,15 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               />
               <Text content={t("followUp")} />
               <Text content={t("startChat", { firstName, lastName })} />
-              <Text
-                content={
-                  messages
-                    ? messages
-                        .map(
-                          message =>
-                            `${message.sender.name}: ${message.content}`
-                        )
-                        .join("\n")
-                    : ""
-                }
-              />
               <TextInput
+                blurOnSubmit={true}
                 multiline={true}
                 numberOfLines={2}
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"
                 style={styles.inputMulti}
               />
+              {!!messages && <Chat messages={messages} />}
             </Fragment>
           ) : (
             <Fragment>
@@ -413,13 +407,40 @@ export default connect((state: StoreState, props: Props) => ({
     props.id < state.patients.length
       ? state.patients[props.id].evdPositive
       : undefined,
-  // TODO(ram): derive messages from messages collection instead of triageNotes
+  // TODO(ram): derive messages from messages collection
   messages:
     props.id < state.patients.length
       ? [
           {
-            content: state.patients[props.id].triageNotes,
-            sender: { name: "Government worker" }
+            timestamp: "2019-07-30T22:17:46.497Z",
+            content: "Drat this patient is positive for ebola",
+            sender: { uid: 34, name: "Government worker 1" }
+          },
+          {
+            timestamp: "2019-07-30T22:24:46.497Z",
+            content:
+              "Please bring them back in for evaluation as soon as possible",
+            sender: { uid: 34, name: "Government worker 1" }
+          },
+          {
+            timestamp: "2019-07-30T22:28:14.760Z",
+            content: "Ok I will track them down",
+            sender: { uid: firebase.auth().currentUser!.uid }
+          },
+          {
+            timestamp: "2019-07-30T22:32:14.760Z",
+            content: "Any updates?",
+            sender: { uid: 34, name: "Government worker 2" }
+          },
+          {
+            timestamp: "2019-07-30T22:36:14.760Z",
+            content: "Yes, she is coming in tomorrow",
+            sender: { uid: firebase.auth().currentUser!.uid }
+          },
+          {
+            timestamp: "2019-07-30T22:42:14.760Z",
+            content: "Great, thank you",
+            sender: { uid: 34, name: "Government worker 1" }
           }
         ]
       : [],

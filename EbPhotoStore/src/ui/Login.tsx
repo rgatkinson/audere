@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import { login, Action, StoreState } from "../store";
-import firebase from "react-native-firebase";
 import Button from "./components/Button";
 import NumberInput from "./components/NumberInput";
 import TextInput from "./components/TextInput";
@@ -153,6 +152,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("notes")} style={styles.titleRow} />
           <TextInput
+            blurOnSubmit={true}
             placeholder=""
             multiline={true}
             numberOfLines={3}

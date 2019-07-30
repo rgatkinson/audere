@@ -24,6 +24,7 @@ interface Props {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoCorrect?: boolean;
   autoFocus?: boolean;
+  blurOnSubmit?: boolean;
   editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
   placeholder: string;
@@ -54,6 +55,7 @@ export default class TextInput extends React.Component<Props> {
         autoCapitalize={this.props.autoCapitalize}
         autoCorrect={this.props.autoCorrect}
         autoFocus={this.props.autoFocus}
+        blurOnSubmit={this.props.blurOnSubmit}
         editable={this.props.editable}
         keyboardType={
           !!this.props.keyboardType ? this.props.keyboardType : "default"

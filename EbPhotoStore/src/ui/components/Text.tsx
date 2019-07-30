@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import {
   FONT_BOLD,
-  FONT_ITALIC,
   FONT_NORMAL,
   LINK_COLOR,
   REGULAR_TEXT,
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
     lineHeight: 22
   },
   italic: {
-    fontFamily: FONT_ITALIC
+    fontStyle: "italic"
   },
   linkStyle: {
     color: LINK_COLOR,
