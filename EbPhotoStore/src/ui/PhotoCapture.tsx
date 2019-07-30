@@ -46,11 +46,13 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
     Geolocation.getCurrentPosition(
       position => {
         this.setState({
+          haveLocation: true,
           lat: position.coords.latitude,
           long: position.coords.longitude
         });
       },
       error => {
+        this.setState({ haveLocation: true });
         console.log(error.code, error.message);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
@@ -78,9 +80,10 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
   }
 
   state = {
+    spinner: true,
+    haveLocation: false,
     lat: 0,
-    long: 0,
-    spinner: true
+    long: 0
   };
 
   _cameraReady = () => {
@@ -121,21 +124,6 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
           })
         );
         this.props.dispatch(viewDetails(this.props.id));
-
-        // TODO: Michael to save photo.
-        // NOTE: Temporarily storing the base64 string in redux. Once a PhotoStore api is available,
-        // will switch to storing a PhotoID.
-        // NOTE: Ideally remove base64 option from above because it is slow. Should generate
-        // asynchronously within PhotoStore from the uri
-        // TODO generate a guid here to store in redux for the patient. The PhotoStore
-        // should initially return the photo uri for displaying to the user, but once available
-        // provide the base64 encoding.
-        // API:
-        // PhotoStore.savePhoto(guid, photoUri); // Put mapping from guid to photo in photo store,
-        //                                          which should generate base64 encoding and upload
-        //                                          photo to server
-        // PhotoStore.getPhoto(guid);            // Returns either the photoUri or the base64 encoding
-        //                                          for use on details page
       } catch (e) {
         Alert.alert("", t("error"), [
           { text: t("common:ok"), onPress: () => {} }
@@ -156,12 +144,19 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
           onCameraReady={this._cameraReady}
           onMountError={this._cameraError}
         />
-        <TouchableOpacity
-          style={styles.outerCircle}
-          onPress={this._takePicture}
-        >
-          <View style={styles.circle} />
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.outerCircle}
+            onPress={this._takePicture}
+          >
+            <View style={styles.circle} />
+          </TouchableOpacity>
+        </View>
+        <ActivityIndicator
+          animating={this.state.spinner || !this.state.haveLocation}
+          size="large"
+          style={styles.spinner}
+        />
       </View>
     );
   }
@@ -169,6 +164,14 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
 export default connect()(withNamespaces("photoCapture")(PhotoCapture));
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: "center",
+    bottom: GUTTER,
+    justifyContent: "center",
+    left: 0,
+    position: "absolute",
+    right: 0
+  },
   container: {
     backgroundColor: "black",
     flex: 1,
@@ -178,6 +181,14 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     flex: 1
   },
+  circle: {
+    backgroundColor: "white",
+    borderColor: "transparent",
+    borderRadius: 30,
+    borderWidth: 3,
+    height: 60,
+    width: 60
+  },
   outerCircle: {
     alignItems: "center",
     justifyContent: "center",
@@ -185,16 +196,15 @@ const styles = StyleSheet.create({
     borderWidth: 7,
     borderRadius: 40,
     height: 80,
-    width: 80,
-    position: "absolute",
-    left: (Dimensions.get("window").width - 80) / 2,
-    bottom: GUTTER / 2
+    width: 80
   },
-  circle: {
-    backgroundColor: "white",
-    borderRadius: 30,
-    borderWidth: 3,
-    height: 60,
-    width: 60
+  spinner: {
+    alignItems: "center",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: "50%"
   }
 });
