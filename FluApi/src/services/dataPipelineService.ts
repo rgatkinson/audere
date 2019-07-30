@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Sequelize } from "sequelize";
+import { Sequelize, Transaction } from "sequelize";
 import { SplitSql } from "../util/sql";
 import { Hash } from "../util/crypto";
 import {
@@ -60,12 +60,21 @@ export class DataPipelineService {
       if (state != null && state.hash === hash) {
         const refresh = node.getRefresh();
         if (refresh != null) {
-          await runQuery(sql, refresh);
+          await sql.transaction(async t => {
+            for (let i = 0; i < refresh.length; i++) {
+              await runQuery(sql, refresh[i], t);
+            }
+          });
         }
       } else {
         const drop = node.getDelete();
         await runQuery(sql, drop);
-        await runQuery(sql, node.getCreate());
+        const create = node.getCreate();
+        await sql.transaction(async t => {
+          for (let i = 0; i < create.length; i++) {
+            await runQuery(sql, create[i], t);
+          }
+        });
         await nodeState.upsert({ name, hash, cleanup: drop });
       }
     }
@@ -79,11 +88,17 @@ interface SqlNodeMetadata {
   spec: string; // Specification for how to create.
 }
 
+interface SequelizeTableReference {
+  tableName: string;
+  id: string;
+  timestamp: string;
+}
+
 interface ManagedSqlNode {
   readonly meta: SqlNodeMetadata;
 
-  getCreate(): string;
-  getRefresh(): string | null;
+  getCreate(): string[];
+  getRefresh(): string[] | null;
   getDelete(): string;
 }
 
@@ -93,7 +108,7 @@ class ManagedSqlType implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () => `create type ${this.meta.name} as ${this.meta.spec};`;
+  getCreate = () => [`create type ${this.meta.name} as ${this.meta.spec};`];
   getRefresh = () => null;
   getDelete = () => `drop type if exists ${this.meta.name} cascade;`;
 }
@@ -104,7 +119,7 @@ class ManagedView implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () => `create view ${this.meta.name} as ${this.meta.spec};`;
+  getCreate = () => [`create view ${this.meta.name} as ${this.meta.spec};`];
   getRefresh = () => null;
   getDelete = () => dropTableLike(this.meta.name);
 }
@@ -115,15 +130,81 @@ class ManagedMaterializedView implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () =>
-    `create materialized view ${this.meta.name} as ${this.meta.spec};`;
-  getRefresh = () => `refresh materialized view ${this.meta.name};`;
+  getCreate = () => [
+    `create materialized view ${this.meta.name} as ${this.meta.spec};`
+  ];
+  getRefresh = () => [`refresh materialized view ${this.meta.name};`];
   getDelete = () => dropTableLike(this.meta.name);
 }
 
-async function runQuery(sql: Sequelize, query: string): Promise<void> {
+class ManagedTable implements ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+  readonly deleteStaleRows: string;
+  readonly insertNewRows: string;
+
+  constructor(
+    meta: SqlNodeMetadata,
+    deleteStaleRows: string,
+    insertNewRows: string
+  ) {
+    this.meta = meta;
+    this.deleteStaleRows = deleteStaleRows;
+    this.insertNewRows = insertNewRows;
+  }
+
+  getCreate = () => [
+    `create table ${this.meta.name} as ${this.meta.spec};`,
+    `alter table ${this.meta.name} add column id serial primary key;`,
+    `alter table ${this.meta.name} add column "createdAt" timestamp default now();`
+  ];
+  getRefresh = () => [
+    this.deleteStaleRows,
+    this.insertNewRows
+  ];
+  getDelete = () => dropTableLike(this.meta.name);
+}
+
+class SequelizeSourceTable extends ManagedTable {
+  constructor(meta: SqlNodeMetadata, ref: SequelizeTableReference) {
+    super(
+      meta,
+      `
+      delete from ${meta.name}
+      where id in (
+        select
+          tbl.id
+        from
+          ${meta.name} as tbl
+          join ${ref.tableName} as source on source.id = tbl."${ref.id}"
+        where
+          tbl."updatedAt" < spec."${ref.timestamp}"
+      )
+      `,
+      `
+      insert into ${meta.name}
+      select
+        spec.*
+      from
+        (${meta.spec}) as spec
+        left join ${meta.name} as tbl on tbl."${ref.id}" = spec."${ref.id}"
+      where
+        tbl.id is null
+      `
+    )
+  }
+}
+
+async function runQuery(
+  sql: Sequelize,
+  query: string,
+  transaction?: Transaction
+): Promise<void> {
   debug(`=== Running SQL ===\n${query}`);
-  await sql.query(query);
+  if (transaction != null) {
+    await sql.query(query, { transaction: transaction });
+  } else {
+    await sql.query(query);
+  }
 }
 
 function getPiiDataNodes(): ManagedSqlNode[] {
@@ -297,64 +378,71 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
 
 function getFirebaseDataNodes(): ManagedSqlNode[] {
   return [
-    new ManagedMaterializedView({
-      name: "cough_derived.analytics",
-      deps: [],
-      spec: `
-        select
-          id,
-          "createdAt",
-          "updatedAt",
+    new SequelizeSourceTable(
+      {
+        name: "cough_derived.analytics",
+        deps: [],
+        spec: `
+          select
+            id as source_id,
+            "createdAt" as source_created,
+            "updatedAt" as source_updated,
 
-          event->>'event_date' as event_date,
-          event->>'event_timestamp' as event_timestamp,
-          event->>'event_name' as event_name,
-          event->>'event_previous_timestamp' as event_previous_timestamp,
-          event->>'event_value_in_usd' as event_value_usd,
-          event->>'event_bundle_sequence_id' as event_bundle_sequence_id,
-          event->>'event_server_timestamp_offset' as event_server_timestamp_offset,
-          event->>'user_id' as user_id,
-          event->>'user_pseudo_id' as user_pseudo_id,
-          event->>'user_first_touch_timestamp' as user_first_touch_timestamp,
-          event->'user_ltv'->>'revenue' as ltv_revenue,
-          event->'user_ltv'->>'currency' as ltv_currency,
-          event->'device'->>'category' as device_category,
-          event->'device'->>'mobile_brand_name' as mobile_brand_name,
-          event->'device'->>'mobile_model_name' as mobile_model_name,
-          event->'device'->>'mobile_marketing_name' as mobile_marketing_name,
-          event->'device'->>'mobile_os_hardware_model' as mobile_os_hardware_model,
-          event->'device'->>'operating_system' as device_operating_system,
-          event->'device'->>'operating_system_version' as device_operating_system_version,
-          event->'device'->>'vendor_id' as device_vendor_id,
-          event->'device'->>'advertising_id' as device_advertising_id,
-          event->'device'->>'language' as device_language,
-          event->'device'->>'is_limited_ad_tracking' as is_limited_ad_tracking,
-          event->'device'->>'time_zone_offset_seconds' as device_time_zone_offset_seconds,
-          event->'device'->>'browser' as device_browser,
-          event->'device'->>'browser_version' as device_browser_version,
-          event->'device'->'web_info'->>'browser' as web_info_browser,
-          event->'device'->'web_info'->>'browser_version' as web_info_browser_version,
-          event->'device'->'web_info'->>'hostname' as web_info_hostname,
-          event->'geo'->>'continent' as continent,
-          event->'geo'->>'country' as country,
-          event->'geo'->>'region' as region,
-          event->'geo'->>'city' as city,
-          event->'geo'->>'sub_continent' as sub_continent,
-          event->'geo'->>'metro' as metro,
-          event->'app_info'->>'id' as app_info_id,
-          event->'app_info'->>'version' as app_info_version,
-          event->'app_info'->>'install_store' as install_store,
-          event->'app_info'->>'firebase_app_id' as firebase_app_id,
-          event->'app_info'->>'install_source' as install_source,
-          event->'traffic_source'->>'name' as traffic_source_name,
-          event->'traffic_source'->>'medium' as traffic_source_medium,
-          event->'traffic_source'->>'source' as traffic_source,
-          event->>'stream_id' as stream_id,
-          event->>'platform' as platform,
-          event->'event_dimensions'->>'hostname' as hostname
-        from cough.firebase_analytics
-      `
-    }),
+            event->>'event_date' as event_date,
+            event->>'event_timestamp' as event_timestamp,
+            event->>'event_name' as event_name,
+            event->>'event_previous_timestamp' as event_previous_timestamp,
+            event->>'event_value_in_usd' as event_value_usd,
+            event->>'event_bundle_sequence_id' as event_bundle_sequence_id,
+            event->>'event_server_timestamp_offset' as event_server_timestamp_offset,
+            event->>'user_id' as user_id,
+            event->>'user_pseudo_id' as user_pseudo_id,
+            event->>'user_first_touch_timestamp' as user_first_touch_timestamp,
+            event->'user_ltv'->>'revenue' as ltv_revenue,
+            event->'user_ltv'->>'currency' as ltv_currency,
+            event->'device'->>'category' as device_category,
+            event->'device'->>'mobile_brand_name' as mobile_brand_name,
+            event->'device'->>'mobile_model_name' as mobile_model_name,
+            event->'device'->>'mobile_marketing_name' as mobile_marketing_name,
+            event->'device'->>'mobile_os_hardware_model' as mobile_os_hardware_model,
+            event->'device'->>'operating_system' as device_operating_system,
+            event->'device'->>'operating_system_version' as device_operating_system_version,
+            event->'device'->>'vendor_id' as device_vendor_id,
+            event->'device'->>'advertising_id' as device_advertising_id,
+            event->'device'->>'language' as device_language,
+            event->'device'->>'is_limited_ad_tracking' as is_limited_ad_tracking,
+            event->'device'->>'time_zone_offset_seconds' as device_time_zone_offset_seconds,
+            event->'device'->>'browser' as device_browser,
+            event->'device'->>'browser_version' as device_browser_version,
+            event->'device'->'web_info'->>'browser' as web_info_browser,
+            event->'device'->'web_info'->>'browser_version' as web_info_browser_version,
+            event->'device'->'web_info'->>'hostname' as web_info_hostname,
+            event->'geo'->>'continent' as continent,
+            event->'geo'->>'country' as country,
+            event->'geo'->>'region' as region,
+            event->'geo'->>'city' as city,
+            event->'geo'->>'sub_continent' as sub_continent,
+            event->'geo'->>'metro' as metro,
+            event->'app_info'->>'id' as app_info_id,
+            event->'app_info'->>'version' as app_info_version,
+            event->'app_info'->>'install_store' as install_store,
+            event->'app_info'->>'firebase_app_id' as firebase_app_id,
+            event->'app_info'->>'install_source' as install_source,
+            event->'traffic_source'->>'name' as traffic_source_name,
+            event->'traffic_source'->>'medium' as traffic_source_medium,
+            event->'traffic_source'->>'source' as traffic_source,
+            event->>'stream_id' as stream_id,
+            event->>'platform' as platform,
+            event->'event_dimensions'->>'hostname' as hostname
+          from cough.firebase_analytics
+        `
+      },
+      {
+        tableName: "cough.firebase_analytics",
+        id: "source_id",
+        timestamp: "source_updated"
+      }
+    ),
 
     new ManagedMaterializedView({
       name: "cough_derived.analytics_event_params",
@@ -703,8 +791,12 @@ function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
   const hashes = new Map();
   for (let node of nodesByName.values()) {
     const hash = new Hash();
-    hash.update(node.getCreate());
-    hash.update(node.getRefresh());
+    const create = node.getCreate();
+    create.forEach(s => hash.update(s));
+    const refresh = node.getRefresh();
+    if (Array.isArray(refresh)) {
+      refresh.forEach(s => hash.update(s));
+    }
     hash.update(node.getDelete());
     node.meta.deps.forEach(name => hash.update(hashes.get(name)));
     hashes.set(node.meta.name, hash.toString());
