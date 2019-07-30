@@ -136,7 +136,8 @@ export interface AuthUser {
 // an EncounterDocument, representing a set of diagnoses based on the
 // photo(s) uploaded.
 //
-// Typically there will be only one diagnosis per encounter.  For
+// Typically there will be only one diagnosis per condition tested by
+// the RDT, per encounter.
 //
 
 export interface Diagnosis {
