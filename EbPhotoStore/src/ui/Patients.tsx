@@ -20,13 +20,19 @@ import firebase from "react-native-firebase";
 interface Props {
   demoMode: boolean;
   patients: PatientEncounter[];
-  setupBackInfo(s: Screen, onBack: () => void): void;
+  setupBackInfo(
+    s: Screen,
+    onBack: () => void,
+    shouldShowBack: () => boolean
+  ): void;
   dispatch(action: Action): void;
 }
 
 class Patients extends React.Component<Props & WithNamespaces> {
   async componentDidMount() {
-    this.props.setupBackInfo(Screen.Patients, this._logout);
+    this.props.setupBackInfo(Screen.Patients, this._logout, () => {
+      return false;
+    });
   }
 
   _addPatient = () => {
@@ -61,7 +67,7 @@ class Patients extends React.Component<Props & WithNamespaces> {
         <View style={styles.rowContainer}>
           <Title
             label={t("patientList")}
-            style={{ flex: 1, marginTop: GUTTER }}
+            style={{ flex: 2, marginTop: GUTTER }}
           />
           <Button
             enabled={true}
@@ -69,6 +75,7 @@ class Patients extends React.Component<Props & WithNamespaces> {
             primary={true}
             style={[styles.button, { flex: 1, marginBottom: 0 }]}
             onPress={this._addPatient}
+            small={true}
           />
         </View>
         <FlatList
@@ -100,7 +107,7 @@ interface PatientRowProps {
   onPress: (id: number) => void;
 }
 
-class PatientRow extends React.Component<PatientRowProps> {
+class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
   _onPress = () => {
     this.props.onPress(this.props.patient.id);
   };
@@ -122,19 +129,26 @@ class PatientRow extends React.Component<PatientRowProps> {
   };
 
   render() {
-    const { patient } = this.props;
+    const { patient, t } = this.props;
     return (
       <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>
         <View style={[styles.patient, patient.evdPositive && styles.evdPos]}>
           <Text content={this._getPatientName()} style={styles.patientName} />
           {patient.evdPositive && (
-            <Text content="Ebola +" style={styles.patientStatus} />
+            <Text content={t("evdPositive")} style={styles.patientStatus} />
           )}
+          {patient.evdPositive == false && (
+            <Text content={t("evdNegative")} style={styles.patientStatus} />
+          )}
+          <View style={styles.patientChat}>
+            {/*TODO: chat bubble*/ false && <Text content="&#x1f4ac;" />}
+          </View>
         </View>
       </TouchableOpacity>
     );
   }
 }
+const PatientRow = withNamespaces("patients")(PatientRowImpl);
 
 const styles = StyleSheet.create({
   container: {
@@ -162,11 +176,14 @@ const styles = StyleSheet.create({
     paddingTop: GUTTER
   },
   patientName: {
-    flex: 3
+    flex: 4
   },
   patientStatus: {
     flex: 1,
     fontWeight: "bold"
+  },
+  patientChat: {
+    width: 30
   }
 });
 

@@ -29,6 +29,7 @@ interface Props {
   fontSize?: number;
   primary: boolean;
   label: string;
+  small?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?(event: GestureResponderEvent): void;
@@ -42,12 +43,22 @@ export default class Button extends React.Component<Props> {
   };
 
   render() {
-    const { enabled, fontSize, label, primary, style, textStyle } = this.props;
+    const {
+      enabled,
+      fontSize,
+      label,
+      primary,
+      small,
+      style,
+      textStyle
+    } = this.props;
     return (
       <TouchableOpacity
         disabled={!enabled}
         style={[
           styles.button,
+          !small && styles.buttonMed,
+          !!small && styles.buttonSm,
           { opacity: enabled ? 0.95 : 0.5 },
           primary && styles.primaryButton,
           style && style
@@ -57,6 +68,8 @@ export default class Button extends React.Component<Props> {
         <Text
           style={[
             styles.text,
+            !small && styles.textMed,
+            !!small && styles.textSm,
             primary ? styles.primaryButtonText : styles.secondaryButtonText,
             !!fontSize && { fontSize: fontSize },
             textStyle && textStyle
@@ -74,21 +87,35 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     borderColor: PRIMARY_COLOR,
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  buttonMed: {
     borderRadius: BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
-    flexDirection: "row",
     height: INPUT_HEIGHT,
-    justifyContent: "center",
     marginBottom: GUTTER * 2,
     width: BUTTON_WIDTH
+  },
+  buttonSm: {
+    borderRadius: BORDER_RADIUS / 2,
+    borderWidth: BORDER_WIDTH / 2,
+    height: (INPUT_HEIGHT * 3) / 4,
+    marginBottom: GUTTER,
+    width: (BUTTON_WIDTH * 3) / 4
   },
   check: {
     paddingRight: GUTTER / 2
   },
   text: {
     fontFamily: FONT_SEMI_BOLD,
-    fontSize: INPUT_TEXT,
     textAlign: "center"
+  },
+  textMed: {
+    fontSize: INPUT_TEXT
+  },
+  textSm: {
+    fontSize: (INPUT_TEXT * 3) / 4
   },
   primaryButton: {
     backgroundColor: PRIMARY_COLOR

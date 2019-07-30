@@ -17,10 +17,11 @@ import MultiTapContainer from "./MultiTapContainer";
 import Text from "./Text";
 import {
   GUTTER,
+  LARGE_TEXT,
   NAV_BAR_HEIGHT,
   REGULAR_TEXT,
   SYSTEM_FONT,
-  SYSTEM_TEXT
+  STATUS_BAR_HEIGHT
 } from "../styles";
 
 interface Props {
@@ -46,7 +47,7 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
         {demoMode && <View style={styles.demoView} />}
         {!!onBack ? (
           <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
-            <Text style={styles.actionContent} content="&#10094;" />
+            <Text style={styles.actionContent} content={t("back")} />
           </TouchableOpacity>
         ) : (
           <View style={styles.actionContainer} />
@@ -69,29 +70,32 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: NAV_BAR_HEIGHT
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
   },
   container: {
     alignItems: "center",
     flexDirection: "row",
-    height: NAV_BAR_HEIGHT,
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
     justifyContent: "space-between",
     paddingHorizontal: GUTTER / 2
   },
   title: {
-    color: "black",
+    color: "white",
     fontFamily: SYSTEM_FONT,
-    fontSize: SYSTEM_TEXT,
-    fontWeight: "bold"
+    fontSize: LARGE_TEXT,
+    fontWeight: "bold",
+    paddingTop: STATUS_BAR_HEIGHT
   },
   actionContainer: {
     alignItems: "center",
     flexDirection: "row",
-    width: 30
+    width: 80
   },
   actionContent: {
+    color: "white",
     fontSize: REGULAR_TEXT,
     textAlign: "center",
-    paddingHorizontal: GUTTER / 2
+    paddingHorizontal: GUTTER / 2,
+    paddingTop: STATUS_BAR_HEIGHT
   }
 });

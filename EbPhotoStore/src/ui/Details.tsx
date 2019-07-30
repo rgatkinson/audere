@@ -46,7 +46,11 @@ interface Props {
   notes?: string;
   photoInfo?: LocalPhotoInfo;
   messages?: Message[];
-  setupBackInfo(s: Screen, onBack: () => void): void;
+  setupBackInfo(
+    s: Screen,
+    onBack: () => void,
+    shouldShowBack: () => boolean
+  ): void;
   dispatch(action: Action): void;
 }
 
@@ -66,7 +70,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.props.setupBackInfo(Screen.PatientDetails, this._back);
+    this.props.setupBackInfo(Screen.PatientDetails, this._back, () => {
+      return true;
+    });
     this.state = {
       firstName: props.patientInfo.firstName,
       lastName: props.patientInfo.lastName,
@@ -196,21 +202,27 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       messages,
       healthWorkerInfo,
       id,
-      patientInfo,
       photoInfo,
       t
     } = this.props;
     const { firstName, lastName, phone, details, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
-        {!!evdPositive && (
-          <Text content={t("evdPositive")} style={styles.evdPos} />
+        {evdPositive !== undefined && (
+          <Text
+            content={!!evdPositive ? t("evdPositive") : t("evdNegative")}
+            style={[
+              styles.evdCommon,
+              !!evdPositive && styles.evdPos,
+              !evdPositive && styles.evdNeg
+            ]}
+          />
         )}
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.idContainer}>
-            <Text content={t("patientId", { id })} style={styles.id} />
+            <Text content={t("patientFirstName")} style={styles.titleLeft} />
+            <Text content={t("patientId", { id })} style={styles.idRight} />
           </View>
-          <Text content={t("patientFirstName")} />
           <TextInput
             autoFocus={this.state.firstName == ""}
             placeholder=""
@@ -272,8 +284,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   style={styles.photo}
                   source={{ uri: photoInfo.localPath }}
                 />
-                <View style={styles.photoDetails}>
-                  <Text content={t("details")} />
+                <View style={[styles.photoDetails, styles.gridItem]}>
                   <Text
                     content={t("date", {
                       ts: format(
@@ -296,13 +307,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 </TouchableOpacity>
                 <View style={styles.photoDetails} />
               </View>
-              <Text
-                content={t("recordedBy", {
-                  firstName: healthWorkerInfo!.firstName,
-                  lastName: healthWorkerInfo!.lastName
-                })}
-              />
-              <Text content={t("followUp")} />
+              {evdPositive === undefined ? (
+                <Text content={t("followUp")} />
+              ) : null}
               <Text content={t("startChat", { firstName, lastName })} />
               <TextInput
                 blurOnSubmit={true}
@@ -326,12 +333,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 />
                 <Text content={t("photoNote")} style={{ width: "50%" }} />
               </View>
-              <Text
-                content={t("recordedBy", {
-                  firstName: healthWorkerInfo!.firstName,
-                  lastName: healthWorkerInfo!.lastName
-                })}
-              />
               <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
             </Fragment>
           )}
@@ -356,19 +357,29 @@ const styles = StyleSheet.create({
   content: {
     padding: GUTTER
   },
-  evdPos: {
-    backgroundColor: "pink",
+  evdCommon: {
     fontWeight: "bold",
     height: NAV_BAR_HEIGHT,
     textAlign: "center",
     textAlignVertical: "center"
   },
+  evdPos: {
+    backgroundColor: "pink"
+  },
+  evdNeg: {
+    backgroundColor: "lightgreen"
+  },
   idContainer: {
     flexDirection: "row",
     justifyContent: "flex-end"
   },
-  id: {
-    fontSize: SMALL_TEXT
+  titleLeft: {
+    flex: 2,
+    paddingBottom: GUTTER / 4
+  },
+  idRight: {
+    flex: 1,
+    textAlign: "right"
   },
   titleRow: {
     paddingTop: GUTTER,

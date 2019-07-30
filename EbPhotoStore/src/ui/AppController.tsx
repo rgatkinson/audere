@@ -1,5 +1,11 @@
 import React, { Fragment } from "react";
-import { BackHandler, Text, View } from "react-native";
+import {
+  BackHandler,
+  Image,
+  ImageBackground,
+  StatusBar,
+  View
+} from "react-native";
 import { connect } from "react-redux";
 import {
   logout,
@@ -16,7 +22,7 @@ import CameraPermissionRequired from "./CameraPermissionRequired";
 import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
-import firebase from "react-native-firebase";
+import { SPLASH_IMAGE } from "./styles";
 
 interface Props {
   currentPatient?: number;
@@ -24,9 +30,14 @@ interface Props {
   dispatch(action: Action): void;
 }
 
+interface BackCallbacks {
+  onBack(): void;
+  shouldShowBack(): boolean;
+}
+
 class AppController extends React.Component<Props> {
   _backHandler: any;
-  _onBackCallbacks: { [s: string]: () => void } = {};
+  _onBackCallbacks: { [s: string]: BackCallbacks } = {};
 
   componentDidMount() {
     this._backHandler = BackHandler.addEventListener(
@@ -45,14 +56,19 @@ class AppController extends React.Component<Props> {
     return props.screen !== this.props.screen;
   }
 
-  _setupBackInfo = (s: Screen, onBack: () => void) => {
-    this._onBackCallbacks[s] = onBack;
+  _setupBackInfo = (
+    s: Screen,
+    onBack: () => void,
+    shouldShowBack: () => boolean
+  ) => {
+    this._onBackCallbacks[s] = { onBack, shouldShowBack };
     this.forceUpdate();
   };
 
   _shouldShowBack = () => {
     return (
-      !!this._onBackCallbacks[this.props.screen] ||
+      (!!this._onBackCallbacks[this.props.screen] &&
+        this._onBackCallbacks[this.props.screen].shouldShowBack()) ||
       [
         Screen.Camera,
         Screen.LocationPermission,
@@ -65,7 +81,7 @@ class AppController extends React.Component<Props> {
 
   _handleBackPress = () => {
     if (!!this._onBackCallbacks[this.props.screen]) {
-      this._onBackCallbacks[this.props.screen]();
+      this._onBackCallbacks[this.props.screen].onBack();
       return true;
     } else {
       switch (this.props.screen) {
@@ -111,7 +127,17 @@ class AppController extends React.Component<Props> {
   render() {
     return (
       <Fragment>
-        <TitleBar onBack={this._shouldShowBack() && this._handleBackPress} />
+        <ImageBackground
+          source={SPLASH_IMAGE}
+          style={[{ alignSelf: "stretch", width: "100%" }]}
+        >
+          <StatusBar
+            backgroundColor="transparent"
+            barStyle="light-content"
+            translucent={true}
+          />
+          <TitleBar onBack={this._shouldShowBack() && this._handleBackPress} />
+        </ImageBackground>
         {this._getScreen()}
       </Fragment>
     );
