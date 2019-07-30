@@ -16,22 +16,15 @@ class LocationPermissionRequired extends React.Component<
   Props & WithNamespaces
 > {
   async componentDidMount() {
-    await this.requestLocationPermission();
+    await this.checkLocationPermission();
   }
 
-  async requestLocationPermission() {
-    const { t } = this.props;
+  async checkLocationPermission() {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: t("alertTitle"),
-          message: t("alertMsg"),
-          buttonNegative: t("common:cancel"),
-          buttonPositive: t("common:ok")
-        }
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      if (granted) {
         this.props.dispatch(viewDetails(this.props.currentPatient));
       }
     } catch (err) {

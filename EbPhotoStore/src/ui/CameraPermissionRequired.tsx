@@ -15,22 +15,16 @@ interface Props {
 
 class CameraPermissionRequired extends React.Component<Props & WithNamespaces> {
   async componentDidMount() {
-    await this.requestCameraPermission();
+    await this.checkCameraPermission();
   }
 
-  async requestCameraPermission() {
+  async checkCameraPermission() {
     const { t } = this.props;
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: t("alertTitle"),
-          message: t("alertMsg"),
-          buttonNegative: t("common:cancel"),
-          buttonPositive: t("common:ok")
-        }
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.CAMERA
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      if (granted) {
         this.props.dispatch(viewDetails(this.props.currentPatient));
       }
     } catch (err) {

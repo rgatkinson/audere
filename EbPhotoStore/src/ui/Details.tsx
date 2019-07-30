@@ -22,6 +22,7 @@ import {
   openCamera,
   updatePatient,
   logout,
+  viewCameraPermission,
   viewLocationPermission,
   viewPatients,
   Action,
@@ -80,23 +81,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._notesInput = React.createRef<TextInput>();
   }
 
-  async componentDidMount() {
-    await this.checkLocationPermission();
-  }
-
-  async checkLocationPermission() {
-    try {
-      const granted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-      if (!granted) {
-        this.props.dispatch(viewLocationPermission());
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  }
-
   _updateFirstName = (firstName: string) => {
     this.setState({ firstName });
   };
@@ -133,9 +117,40 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.setState({ notes });
   };
 
-  _takePhoto = () => {
+  _takePhoto = async () => {
     this._save();
-    this.props.dispatch(openCamera());
+    const { t, dispatch } = this.props;
+    try {
+      const locationPermission = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: t("locationPermissions:alertTitle"),
+          message: t("locationPermissions:alertMsg"),
+          buttonNegative: t("common:cancel"),
+          buttonPositive: t("common:ok")
+        }
+      );
+      if (locationPermission === PermissionsAndroid.RESULTS.GRANTED) {
+        const cameraPermission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: t("cameraPermissions:alertTitle"),
+            message: t("cameraPermissions:alertMsg"),
+            buttonNegative: t("common:cancel"),
+            buttonPositive: t("common:ok")
+          }
+        );
+        if (cameraPermission === PermissionsAndroid.RESULTS.GRANTED) {
+          dispatch(openCamera());
+        } else {
+          dispatch(viewCameraPermission());
+        }
+      } else {
+        dispatch(viewLocationPermission());
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   };
 
   _save = () => {

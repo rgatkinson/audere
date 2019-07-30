@@ -56,17 +56,17 @@
     "alertMsg": "EVD Track needs access to your camera to record patient test results.",
     "title": "Camera Permission Required",
     "why": "We're sorry, but access to your device's camera is required. To continue, please update your device settings.",
-    "howToUpdate": "How to Update:",
-    "whereUpdate": "Go to Settings > Apps > EVT Track > Permissions.",
-    "howUpdate": "Toggle the Camera switch to on."
+    "howToUpdate": "\n**How to Update:**\n",
+    "whereUpdate": "Go to **Settings** > **Apps** > **EVD Track** > **Permissions**.",
+    "howUpdate": "\nToggle the **Camera** switch to **on**."
   },
   "locationPermissions": {
     "alertTitle": "EVD Track Location Permission",
     "alertMsg": "EVD Track needs access to your location so it can accurately report patient data.",
     "title": "Location Permission Required",
     "why": "We're sorry, but access to your device's location is required. To continue, please update your device settings.",
-    "howToUpdate": "How to Update:",
-    "whereUpdate": "Go to Settings > Apps > EVT Track > Permissions.",
-    "howUpdate": "Toggle the Location switch to on."
+    "howToUpdate": "\n**How to Update:**\n",
+    "whereUpdate": "Go to **Settings** > **Apps** > **EVD Track** > **Permissions**.",
+    "howUpdate": "\nToggle the **Location** switch to **on**."
   }
 }
