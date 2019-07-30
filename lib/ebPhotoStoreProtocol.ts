@@ -106,6 +106,49 @@ export interface PhotoDbInfo extends PhotoInfo {
   jpegBase64: string;
 }
 
+// ========================================
+// Message
+//
+// In Firestore, these go in a collection called "messages" inside
+// an EncounterDocument, representing a set of messages exchanged
+// that are related to that encounter.  Both ends of the conversation
+// write messages here.
+//
+// For now, the name of each message is `${timestamp}.${sender.uid}`
+// to guarantee stable sorting that should approximate message send
+// order.
+
+export interface Message {
+  timestamp: string; // new Date().toISOString()
+  sender: AuthUser;
+  content: string;
+}
+
+export interface AuthUser {
+  uid: string; // user.uid
+  name: string; // human-readable name of user, e.g. email
+}
+
+// ========================================
+// Diagnosis
+//
+// In Firestore, these go in a collection called "diagnoses" inside
+// an EncounterDocument, representing a set of diagnoses based on the
+// photo(s) uploaded.
+//
+// Typically there will be only one diagnosis per encounter.  For
+//
+
+export interface Diagnosis {
+  tag: ConditionTag; // Identify a specific condition the RDT tests for.
+  value: boolean;    // Did the RDT indicate the presence of this condition?
+  notes?: string;    // Any notes associated with the diagnosis.
+}
+
+export enum ConditionTag {
+  Ebola = "EBOLA", // TODO: this should be the proper name of the RDT.
+}
+
 // ================================================================================
 // Triage
 

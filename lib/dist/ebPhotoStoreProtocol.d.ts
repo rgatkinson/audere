@@ -64,6 +64,23 @@ export interface GPSInfo {
 export interface PhotoDbInfo extends PhotoInfo {
     jpegBase64: string;
 }
+export interface Message {
+    timestamp: string;
+    sender: AuthUser;
+    content: string;
+}
+export interface AuthUser {
+    uid: string;
+    name: string;
+}
+export interface Diagnosis {
+    tag: ConditionTag;
+    value: boolean;
+    notes?: string;
+}
+export declare enum ConditionTag {
+    Ebola = "EBOLA"
+}
 export interface EncounterTriageDocument extends ProtocolDocumentBase {
     documentType: DocumentType.Triage;
     schemaId: 1;
