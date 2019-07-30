@@ -16,6 +16,7 @@ import CameraPermissionRequired from "./CameraPermissionRequired";
 import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
+import firebase from "react-native-firebase";
 
 interface Props {
   currentPatient?: number;
@@ -90,7 +91,7 @@ class AppController extends React.Component<Props> {
       case Screen.Login:
         return <Login />;
       case Screen.Patients:
-        return <Patients />;
+        return <Patients setupBackInfo={this._setupBackInfo} />;
       case Screen.PatientDetails:
         return (
           <Details

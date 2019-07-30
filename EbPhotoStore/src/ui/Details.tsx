@@ -21,12 +21,10 @@ import {
   addPatient,
   openCamera,
   updatePatient,
-  logout,
   viewCameraPermission,
   viewLocationPermission,
   viewPatients,
   Action,
-  PatientEncounter,
   LocalPhotoInfo,
   Screen,
   StoreState

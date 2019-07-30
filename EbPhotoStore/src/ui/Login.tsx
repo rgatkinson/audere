@@ -4,12 +4,16 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import { login, Action, StoreState } from "../store";
+import firebase from "react-native-firebase";
 import Button from "./components/Button";
 import NumberInput from "./components/NumberInput";
 import TextInput from "./components/TextInput";
 import Text from "./components/Text";
 import Title from "./components/Title";
 import { GUTTER } from "./styles";
+import PhoneLoginVerification, {
+  PhoneVerificationDismissal
+} from "./PhoneLoginVerification";
 
 interface Props {
   healthWorkerInfo?: HealthWorkerInfo;
@@ -21,6 +25,7 @@ interface State {
   lastName?: string;
   phone?: string;
   notes: string;
+  showConfirmation: boolean;
 }
 
 class Login extends React.Component<Props & WithNamespaces, State> {
@@ -37,11 +42,13 @@ class Login extends React.Component<Props & WithNamespaces, State> {
         firstName,
         lastName,
         phone,
-        notes
+        notes,
+        showConfirmation: false
       };
     } else {
       this.state = {
-        notes: ""
+        notes: "",
+        showConfirmation: false
       };
     }
 
@@ -79,14 +86,25 @@ class Login extends React.Component<Props & WithNamespaces, State> {
   };
 
   _login = () => {
-    this.props.dispatch(
-      login({
-        lastName: this.state.lastName!,
-        firstName: this.state.firstName!,
-        phone: this.state.phone!,
-        notes: this.state.notes ? this.state.notes : ""
-      })
-    );
+    this.setState({ showConfirmation: true });
+  };
+
+  _onConfirmationDismssed = (reason: PhoneVerificationDismissal) => {
+    if (reason === PhoneVerificationDismissal.VERIFIED) {
+      this.props.dispatch(
+        login({
+          lastName: this.state.lastName!,
+          firstName: this.state.firstName!,
+          phone: this.state.phone!,
+          notes: this.state.notes ? this.state.notes : ""
+        })
+      );
+
+      // We don't setState here because the login() call above will unmount us,
+      // making the setState call invalid.
+      return;
+    }
+    this.setState({ showConfirmation: false });
   };
 
   render() {
@@ -94,6 +112,11 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     const { lastName, firstName, phone, notes } = this.state;
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <PhoneLoginVerification
+          phone={this.state.phone || ""}
+          visible={this.state.showConfirmation}
+          onDismiss={this._onConfirmationDismssed}
+        />
         <ScrollView style={styles.content}>
           <Title label={t("title")} />
           <Text

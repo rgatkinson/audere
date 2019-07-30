@@ -1,5 +1,11 @@
 import React from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  PermissionsAndroid
+} from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -15,14 +21,39 @@ import Button from "./components/Button";
 import Text from "./components/Text";
 import Title from "./components/Title";
 import { BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
+import firebase from "react-native-firebase";
 
 interface Props {
   demoMode: boolean;
   patients: PatientEncounter[];
+  setupBackInfo(s: Screen, onBack: () => void): void;
   dispatch(action: Action): void;
 }
 
 class Patients extends React.Component<Props & WithNamespaces> {
+  async componentDidMount() {
+    this.props.setupBackInfo(Screen.Patients, this._logout);
+    await this.requestLocationPermission();
+  }
+
+  async requestLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "EVD Track Location Permission",
+          message:
+            "EVD Track needs access to your location" +
+            "so it can accurately report patient data.",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK"
+        }
+      );
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   _addPatient = () => {
     this.props.dispatch(viewDetails(this.props.patients.length));
   };
@@ -32,6 +63,7 @@ class Patients extends React.Component<Props & WithNamespaces> {
   };
 
   _logout = () => {
+    firebase.auth().signOut();
     this.props.dispatch(logout());
   };
 

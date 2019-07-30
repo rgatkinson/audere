@@ -3,7 +3,8 @@
     "ok": "Ok",
     "cancel": "Cancel",
     "button": {
-      "yes": "Yes"
+      "yes": "Yes",
+      "submit": "Submit"
     }
   },
   "login": {
@@ -21,6 +22,13 @@
     "patientList": "Patient List",
     "addNewPatient": "Add New",
     "logOut": "Log Out"
+  },
+  "phoneLoginVerification": {
+    "verificationCode": "Verification Code:",
+    "placeholder": "123456",
+    "authErrorTitle": "Authentication Error",
+    "incorrectCodeTitle": "Incorrect Code",
+    "incorrectCodeBody": "Please check that the code you entered is correct"
   },
   "details": {
     "evdPositive": "Positive for Ebola",
