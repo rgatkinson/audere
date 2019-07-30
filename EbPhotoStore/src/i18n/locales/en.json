@@ -6,36 +6,39 @@
       "yes": "Yes"
     }
   },
-  "patients": {
-    "patientList": "Patient List",
-    "addNewPatient": "+ Add New Patient",
-    "logOut": "Log Out"
-  },
   "login": {
     "title": "Enter your information below to begin tracking patients you test for Ebola.",
+    "loginLastName": "**Last Name**",
     "lastName": "Last Name",
+    "loginFirstName": "**First Name**",
     "firstName": "First Name",
+    "loginMobileNumber": "**Mobile Number**",
     "mobileNumber": "Mobile Number",
-    "notes": "Notes to share with government health team (e.g. your location, credentials, etc.)",
+    "notes": "**Notes to share with government health team** (e.g. your location, credentials, etc.)",
     "login": "Login"
+  },
+  "patients": {
+    "patientList": "Patient List",
+    "addNewPatient": "Add New",
+    "logOut": "Log Out"
   },
   "details": {
     "evdPositive": "Positive for Ebola",
-    "backToPatientList": "< Back to Patient List",
     "patientId": "**Patient ID:** {{id}}",
     "patientFirstName": "**Patient first name**",
     "firstName": "First name",
     "patientLastName": "**Patient last name**",
     "lastName": "Last name",
-    "patientMobile": "**Patient mobile number**",
+    "patientMobileNumber": "**Patient mobile number**",
+    "mobileNumber": "Mobile number",
     "patientDetails": "**Patient contact details** (address, location)",
     "patientNotes": "**CHW notes for patient** (Shared with government workers)",
     "addPhoto": "Add Photo",
     "photoNote": "Click to add a photo of the RDT strip to this record",
     "retakePhoto": "Retake photo",
     "details": "**Photo capture details**\n",
-    "date": "**Date & Time:** {{ts}}\n",
-    "location": "**Location:** {{lat}}, {{long}}\n",
+    "date": "**Date & Time:**\n{{ts}}\n",
+    "location": "**Location:**\n{{lat}}\n{{long}}\n",
     "recordedBy": "\n**Record entered by:**\n{{firstName}} {{lastName}}",
     "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or a government health worker has questions, you will be contacted on this phone via voice, text, or a message below.",
     "startChat": "\n**Chat with a government health worker about {{firstName}} {{lastName}}:**",

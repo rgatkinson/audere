@@ -74,14 +74,19 @@ class Patients extends React.Component<Props & WithNamespaces> {
     const { t } = this.props;
     return (
       <View style={styles.container}>
-        <Title label={t("patientList")} />
-        <Button
-          enabled={true}
-          label={t("addNewPatient")}
-          primary={true}
-          style={styles.button}
-          onPress={this._addPatient}
-        />
+        <View style={styles.rowContainer}>
+          <Title
+            label={t("patientList")}
+            style={{ flex: 1, marginTop: GUTTER }}
+          />
+          <Button
+            enabled={true}
+            label={t("addNewPatient")}
+            primary={true}
+            style={[styles.button, { flex: 1, marginBottom: 0 }]}
+            onPress={this._addPatient}
+          />
+        </View>
         <FlatList
           data={this.props.patients}
           keyExtractor={this._keyExtractor}
@@ -148,15 +153,18 @@ class PatientRow extends React.Component<PatientRowProps> {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    alignSelf: "center",
-    margin: GUTTER
-  },
   container: {
     alignSelf: "stretch",
     flex: 1,
     justifyContent: "center",
     margin: GUTTER
+  },
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  button: {
+    alignSelf: "center"
   },
   evdPos: {
     backgroundColor: "pink"

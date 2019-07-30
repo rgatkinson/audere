@@ -96,43 +96,46 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView style={styles.content}>
           <Title label={t("title")} />
-          <Text content={t("lastName")} />
+          <Text
+            content={t("loginLastName")}
+            style={[styles.titleRow, { paddingTop: 0 }]}
+          />
           <TextInput
             placeholder={t("lastName")}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusFirstName}
           />
-          <Text content={t("firstName")} />
+          <Text content={t("loginFirstName")} style={styles.titleRow} />
           <TextInput
             placeholder={t("firstName")}
             ref={this._firstNameInput}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusPhone}
           />
-          <Text content={t("mobileNumber")} />
+          <Text content={t("loginMobileNumber")} style={styles.titleRow} />
           <NumberInput
             placeholder={t("mobileNumber")}
             ref={this._phoneInput}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={phone}
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusNotes}
           />
-          <Text content={t("notes")} />
+          <Text content={t("notes")} style={styles.titleRow} />
           <TextInput
             placeholder=""
             multiline={true}
-            numberOfLines={2}
+            numberOfLines={3}
             ref={this._notesInput}
             returnKeyType="done"
-            style={styles.input}
+            style={styles.inputMulti}
             value={notes}
             onChangeText={this._updateNotes}
           />
@@ -164,7 +167,21 @@ const styles = StyleSheet.create({
   content: {
     padding: GUTTER
   },
-  input: {
-    marginBottom: GUTTER
+  titleRow: {
+    paddingTop: GUTTER,
+    paddingBottom: GUTTER / 4
+  },
+  inputSingle: {
+    marginHorizontal: 0,
+    marginVertical: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 1
+  },
+  inputMulti: {
+    borderWidth: 1
   }
 });

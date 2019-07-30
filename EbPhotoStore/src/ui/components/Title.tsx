@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
 import Text from "./Text";
 import {
   FONT_NORMAL,
@@ -16,11 +16,17 @@ import {
 
 interface Props {
   label: string;
+  style?: StyleProp<TextStyle | ViewStyle>;
 }
 
 export default class Title extends React.Component<Props> {
   render() {
-    return <Text content={this.props.label} style={styles.title} />;
+    return (
+      <Text
+        content={this.props.label}
+        style={[styles.title, this.props.style]}
+      />
+    );
   }
 }
 

@@ -54,6 +54,6 @@ export const SPLASH_RATIO = 1.05;
 export const KEYBOARD_BEHAVIOR =
   Platform.OS === "android" ? undefined : "padding";
 export const HIGHLIGHT_STYLE = { borderWidth: 1, borderColor: "red" };
-export const LINE_HEIGHT_DIFFERENCE = 8;
+export const LINE_HEIGHT_DIFFERENCE = 2;
 export const CUSTOM_BULLET_OFFSET = 3;
 export const FEATHER_SIZE = 20;

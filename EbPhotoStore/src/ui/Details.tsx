@@ -30,12 +30,7 @@ import Button from "./components/Button";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
-import {
-  GUTTER,
-  NAV_BAR_HEIGHT,
-  LARGE_TEXT,
-  LINE_HEIGHT_DIFFERENCE
-} from "./styles";
+import { GUTTER, NAV_BAR_HEIGHT, SMALL_TEXT } from "./styles";
 
 interface Props {
   evdPositive?: boolean;
@@ -191,58 +186,58 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           <Text content={t("evdPositive")} style={styles.evdPos} />
         )}
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.titleRow}>
+          <View style={styles.idContainer}>
             <Text content={t("patientId", { id })} style={styles.id} />
           </View>
           <Text content={t("patientFirstName")} />
           <TextInput
             placeholder={t("firstName")}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusLastName}
           />
-          <Text content={t("patientLastName")} />
+          <Text content={t("patientLastName")} style={styles.titleRow} />
           <TextInput
             placeholder={t("lastName")}
             ref={this._lastNameInput}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusPhone}
           />
-          <Text content={t("patientMobile")} />
+          <Text content={t("patientMobileNumber")} style={styles.titleRow} />
           <NumberInput
-            placeholder=""
+            placeholder={t("mobileNumber")}
             ref={this._phoneInput}
             returnKeyType="next"
-            style={styles.input}
+            style={styles.inputSingle}
             value={phone}
             onChangeText={this._updatePhone}
             onSubmitEditing={this._focusDetails}
           />
-          <Text content={t("patientDetails")} />
+          <Text content={t("patientDetails")} style={styles.titleRow} />
           <TextInput
             placeholder=""
             multiline={true}
-            numberOfLines={2}
+            numberOfLines={3}
             ref={this._detailsInput}
             returnKeyType="done"
-            style={styles.input}
+            style={styles.inputMulti}
             value={details}
             onChangeText={this._updateDetails}
             onSubmitEditing={this._focusNotes}
           />
-          <Text content={t("patientNotes")} />
+          <Text content={t("patientNotes")} style={styles.titleRow} />
           <TextInput
             placeholder=""
             multiline={true}
-            numberOfLines={2}
+            numberOfLines={3}
             ref={this._notesInput}
             returnKeyType="done"
-            style={styles.input}
+            style={styles.inputMulti}
             value={notes}
             onChangeText={this._updateNotes}
           />
@@ -271,9 +266,15 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   />
                 </View>
               </View>
-              <TouchableOpacity onPress={this._takePhoto}>
-                <Text content={t("retakePhoto")} style={styles.link} />
-              </TouchableOpacity>
+              <View style={[styles.grid, { marginTop: 0 }]}>
+                <TouchableOpacity onPress={this._takePhoto}>
+                  <Text
+                    content={t("retakePhoto")}
+                    style={[styles.gridItem, styles.link]}
+                  />
+                </TouchableOpacity>
+                <View style={[styles.photoDetails, styles.gridItem]} />
+              </View>
               <Text
                 content={t("recordedBy", {
                   firstName: healthWorkerInfo!.firstName,
@@ -287,20 +288,27 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 numberOfLines={2}
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"
-                style={styles.input}
+                style={styles.inputMulti}
               />
             </Fragment>
           ) : (
             <Fragment>
               <View style={styles.grid}>
                 <Button
-                  enabled={true}
+                  enabled={!!firstName || !!lastName}
                   label={t("addPhoto")}
                   primary={true}
-                  style={[styles.button, styles.gridItem]}
+                  style={[
+                    styles.button,
+                    styles.gridItem,
+                    { marginBottom: 0, width: "50%" }
+                  ]}
                   onPress={this._takePhoto}
                 />
-                <Text content={t("photoNote")} style={styles.gridItem} />
+                <Text
+                  content={t("photoNote")}
+                  style={[styles.gridItem, { width: "50%" }]}
+                />
               </View>
               <Text
                 content={t("recordedBy", {
@@ -337,27 +345,42 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center"
   },
-  grid: {
-    marginVertical: GUTTER,
-    flexDirection: "row"
-  },
-  gridItem: {
-    flex: 1
+  idContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end"
   },
   id: {
-    fontSize: LARGE_TEXT,
-    lineHeight: LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
-    marginTop: GUTTER / 2,
-    marginBottom: GUTTER
+    fontSize: SMALL_TEXT
   },
-  input: {
-    marginVertical: GUTTER,
-    paddingVertical: GUTTER
+  titleRow: {
+    paddingTop: GUTTER,
+    paddingBottom: GUTTER / 4
   },
+  inputSingle: {
+    marginHorizontal: 0,
+    marginVertical: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 1
+  },
+  inputMulti: {
+    borderWidth: 1
+  },
+  grid: {
+    marginTop: GUTTER,
+    marginBottom: 0,
+    marginRight: GUTTER,
+    flexDirection: "row"
+  },
+  gridItem: {},
   link: {
     color: "blue",
-    padding: GUTTER,
-    textDecorationLine: "underline"
+    textAlign: "center",
+    textDecorationLine: "underline",
+    width
   },
   photo: {
     height,
@@ -365,11 +388,6 @@ const styles = StyleSheet.create({
   },
   photoDetails: {
     padding: GUTTER
-  },
-  titleRow: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "space-between"
   }
 });
 
