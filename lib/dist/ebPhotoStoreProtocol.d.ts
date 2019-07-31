@@ -15,7 +15,9 @@ export interface DeviceInfo {
 }
 export declare enum DocumentType {
     Encounter = "ENCOUNTER",
-    Triage = "TRIAGE"
+    Triage = "TRIAGE",
+    MessagingToken = "MESSAGING_TOKEN",
+    Notification = "NOTIFICATION"
 }
 export declare type ProtocolDocument = EncounterDocument | EncounterTriageDocument;
 export declare type TransportMetadata = {
@@ -36,6 +38,7 @@ export interface EncounterInfo {
     isDemo: boolean;
     healthWorker: HealthWorkerInfo;
     localIndex: string;
+    patientId: number;
     patient: PatientInfo;
     rdtPhotos: PhotoInfo[];
     notes: string;
@@ -89,4 +92,22 @@ export interface EncounterTriageDocument extends ProtocolDocumentBase {
 export interface EncounterTriageInfo {
     notes: string;
     testIndicatesEVD: boolean;
+}
+export interface MessagingTokenDocument extends ProtocolDocumentBase {
+    documentType: DocumentType.MessagingToken;
+    schemaId: 1;
+    uid: string;
+    phone: string;
+    token: string;
+}
+export interface Notification extends ProtocolDocumentBase {
+    documentType: DocumentType.Notification;
+    schemaId: 1;
+    patientId: number;
+    docId: string;
+    notificationType: NotificationType;
+}
+export declare enum NotificationType {
+    Chat = "CHAT",
+    Diagnosis = "DIAGNOSIS"
 }
