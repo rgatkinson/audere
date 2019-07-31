@@ -13,10 +13,10 @@ import firebase from "react-native-firebase";
 import Text from "./components/Text";
 import {
   GUTTER,
-  HEADER_TEXT_COLOR,
   MENU_ITEM_HEIGHT,
   MENU_ITEM_WIDTH,
-  NAV_BAR_HEIGHT
+  NAV_BAR_HEIGHT,
+  TEXT_COLOR
 } from "./styles";
 
 interface Props {
@@ -98,11 +98,11 @@ const styles = StyleSheet.create({
     width: MENU_ITEM_WIDTH,
     padding: GUTTER / 2,
     borderWidth: 1,
-    borderColor: HEADER_TEXT_COLOR,
+    borderColor: TEXT_COLOR,
     marginTop: -1,
     backgroundColor: "white"
   },
   menuItemText: {
-    color: HEADER_TEXT_COLOR
+    color: TEXT_COLOR
   }
 });
