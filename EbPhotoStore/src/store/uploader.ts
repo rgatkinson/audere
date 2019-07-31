@@ -15,6 +15,7 @@ import {
 import {
   syncEncounter,
   sendChatMessage,
+  uploadToken,
   initializeListener,
   initializeMessageListener
 } from "./FirebaseStore";
@@ -54,6 +55,9 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         state.patients.forEach((patient, index) => {
           initializeMessageListener(patient.uuid, getMessageListener(dispatch));
         });
+        break;
+      case "SET_FCM_TOKEN":
+        uploadToken(state.meta.healthWorkerInfo!.phone, action.fcmToken);
         break;
     }
     return result;

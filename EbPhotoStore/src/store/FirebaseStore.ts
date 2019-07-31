@@ -6,6 +6,7 @@
 import RNDeviceInfo from "react-native-device-info";
 import firebase from "react-native-firebase";
 import RNFS from "react-native-fs";
+import uuidv4 from "uuid/v4";
 import {
   AuthUser,
   FirestoreProtocolDocument,
@@ -13,12 +14,14 @@ import {
   EncounterDocument,
   EncounterInfo,
   EncounterTriageDocument,
-  Message
+  Message,
+  MessagingTokenDocument
 } from "audere-lib/ebPhotoStoreProtocol";
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
 const DEFAULT_TRIAGE_COLLECTION = "triages";
 const DEFAULT_MESSAGES_COLLECTION = "messages";
+const DEFAULT_TOKEN_COLLECTION = "messaging_tokens";
 
 const DEVICE_INFO = {
   installation: RNDeviceInfo.getInstanceID(),
@@ -59,6 +62,12 @@ function getTriageCollection() {
   return firebase.firestore().collection(collectionName);
 }
 
+function getTokenCollection() {
+  const collectionName =
+    process.env.FIRESTORE_TOKEN_COLLECTION || DEFAULT_TOKEN_COLLECTION;
+  return firebase.firestore().collection(collectionName);
+}
+
 export async function initializeFirestore() {
   // This enables offline caching
   await firebase.firestore().settings({ persistence: true });
@@ -75,6 +84,20 @@ export async function syncEncounter(docId: string, encounter: EncounterInfo) {
   const doc = getEncounterCollection().doc(docId);
   console.log(`Uploading encounter ${docId}`);
   await doc.set(encounterDocument);
+}
+
+export async function uploadToken(phone: string, token: string) {
+  const tokenDoc: MessagingTokenDocument = {
+    device: DEVICE_INFO,
+    docId: uuidv4(),
+    documentType: DocumentType.MessagingToken,
+    phone,
+    schemaId: 1,
+    token,
+    uid: firebase.auth().currentUser!.uid
+  };
+  const doc = getTriageCollection().doc();
+  await doc.set(tokenDoc);
 }
 
 function frame(document: EncounterDocument): FirestoreProtocolDocument {
