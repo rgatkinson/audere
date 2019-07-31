@@ -178,11 +178,6 @@ class PatientTable extends React.Component<
         minWidth: 110
       },
       {
-        Header: "Patient ID",
-        accessor: "eDoc.encounter.localIndex",
-        minWidth: 50
-      },
-      {
         Header: "Patient Name",
         accessor: row => {
           const p = row.eDoc.encounter.patient;
