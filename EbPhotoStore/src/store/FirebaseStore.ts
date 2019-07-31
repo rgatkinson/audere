@@ -7,15 +7,18 @@ import RNDeviceInfo from "react-native-device-info";
 import firebase from "react-native-firebase";
 import RNFS from "react-native-fs";
 import {
+  AuthUser,
   FirestoreProtocolDocument,
   DocumentType,
   EncounterDocument,
   EncounterInfo,
-  EncounterTriageDocument
+  EncounterTriageDocument,
+  Message
 } from "audere-lib/ebPhotoStoreProtocol";
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
 const DEFAULT_TRIAGE_COLLECTION = "triages";
+const DEFAULT_MESSAGES_COLLECTION = "messages";
 
 const DEVICE_INFO = {
   installation: RNDeviceInfo.getInstanceID(),
@@ -40,6 +43,14 @@ function getEncounterCollection() {
   const collectionName =
     process.env.FIRESTORE_ENCOUNTER_COLLECTION || DEFAULT_ENCOUNTER_COLLECTION;
   return firebase.firestore().collection(collectionName);
+}
+
+function getMessagesCollection(patientId: string) {
+  const collectionName =
+    process.env.FIRESTORE_MESSAGE_COLLECTION || DEFAULT_MESSAGES_COLLECTION;
+  return getEncounterCollection()
+    .doc(patientId)
+    .collection(collectionName);
 }
 
 function getTriageCollection() {
@@ -77,7 +88,7 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
   };
 }
 
-export async function initializeListener(
+export function initializeListener(
   callback: (doc: EncounterTriageDocument) => void
 ) {
   getTriageCollection().onSnapshot(collection => {
@@ -86,4 +97,26 @@ export async function initializeListener(
       callback(doc);
     });
   });
+}
+
+// Ram: React native firebase adds support for collectiongroups in v6,
+// which is still in beta as of 7/30/19. Until we upgrade, add a listener
+// per patient...
+export function initializeMessageListener(
+  patientId: string,
+  callback: (patientId: string, message: Message) => void
+) {
+  getMessagesCollection(patientId).onSnapshot(collection => {
+    collection.docChanges.forEach(docChange => {
+      const doc = docChange.doc.data() as Message;
+      callback(patientId, doc);
+    });
+  });
+}
+
+export async function sendChatMessage(patientId: string, message: Message) {
+  const messageDocId = `${message.timestamp}.${message.sender.uid}`;
+  const messageDoc = getMessagesCollection(patientId).doc(messageDocId);
+  console.log(`Uploading message ${messageDocId}`);
+  await messageDoc.set(message);
 }

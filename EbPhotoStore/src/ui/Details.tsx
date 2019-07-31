@@ -22,6 +22,7 @@ import {
   addPatient,
   openCamera,
   updatePatient,
+  sendChatMessage,
   viewCameraPermission,
   viewLocationPermission,
   viewPatients,
@@ -60,6 +61,7 @@ interface State {
   phone: string;
   details?: string;
   notes?: string;
+  chatMessage?: string;
 }
 
 class Details extends React.Component<Props & WithNamespaces, State> {
@@ -121,6 +123,29 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   _updateNotes = (notes: string) => {
     this.setState({ notes });
+  };
+
+  _updateChatMessage = (chatMessage: string) => {
+    this.setState({ chatMessage });
+  };
+
+  _sendChatMessage = () => {
+    if (!this.state.chatMessage) {
+      return;
+    }
+    const message: Message = {
+      timestamp: new Date().toISOString(),
+      sender: {
+        uid: firebase.auth().currentUser!.uid,
+        name:
+          this.props.healthWorkerInfo.firstName +
+          " " +
+          this.props.healthWorkerInfo.lastName
+      },
+      content: this.state.chatMessage
+    };
+    this.props.dispatch(sendChatMessage(this.props.id, message));
+    this.setState({ chatMessage: undefined });
   };
 
   _takePhoto = async () => {
@@ -205,7 +230,14 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       photoInfo,
       t
     } = this.props;
-    const { firstName, lastName, phone, details, notes } = this.state;
+    const {
+      firstName,
+      lastName,
+      phone,
+      details,
+      notes,
+      chatMessage
+    } = this.state;
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -319,6 +351,15 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"
                 style={styles.inputMulti}
+                value={chatMessage}
+                onChangeText={this._updateChatMessage}
+              />
+              <Button
+                enabled={true}
+                primary={true}
+                label="Send"
+                style={{ marginVertical: 10 }}
+                onPress={this._sendChatMessage}
               />
               {!!messages && <Chat messages={messages} />}
             </Fragment>
@@ -454,7 +495,8 @@ export default connect((state: StoreState, props: Props) => ({
             timestamp: "2019-07-30T22:42:14.760Z",
             content: "Great, thank you",
             sender: { uid: 34, name: "Government worker 1" }
-          }
+          },
+          ...(state.patients[props.id].messages || [])
         ]
       : [],
   isNew: props.id === state.patients.length,

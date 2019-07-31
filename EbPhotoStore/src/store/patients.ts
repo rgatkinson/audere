@@ -4,8 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import uuidv4 from "uuid/v4";
+import deepEqual from "deep-equal";
 
-import { PatientInfo, PhotoInfo } from "audere-lib/ebPhotoStoreProtocol";
+import {
+  AuthUser,
+  Message,
+  PatientInfo,
+  PhotoInfo
+} from "audere-lib/ebPhotoStoreProtocol";
 
 export type LocalPhotoInfo = {
   photoInfo: PhotoInfo;
@@ -20,6 +26,7 @@ export type PatientEncounter = {
   triageNotes?: string;
   photoInfo: LocalPhotoInfo[];
   evdPositive?: boolean;
+  messages: Message[];
 };
 
 export type PatientAction =
@@ -40,6 +47,16 @@ export type PatientAction =
       photoUri: string;
       photoInfo: PhotoInfo;
     }
+  | {
+      type: "SEND_MESSAGE";
+      patientId: number;
+      message: Message;
+    }
+  | {
+      type: "RECEIVE_MESSAGE";
+      patientUuid: string;
+      message: Message;
+    }
   | { type: "SET_EVD_STATUS"; id: number; evdStatus: boolean }
   | { type: "SET_TRIAGE_NOTES"; id: number; notes: string };
 
@@ -47,7 +64,10 @@ export type PatientState = PatientEncounter[];
 
 const initialState: PatientState = [];
 
-export default function reducer(state = initialState, action: PatientAction) {
+export default function reducer(
+  state = initialState,
+  action: PatientAction
+): PatientState {
   switch (action.type) {
     case "ADD_PATIENT":
       return [
@@ -57,7 +77,8 @@ export default function reducer(state = initialState, action: PatientAction) {
           uuid: uuidv4(),
           patientInfo: action.patientInfo,
           notes: action.notes,
-          photoInfo: []
+          photoInfo: [],
+          messages: []
         }
       ];
     case "UPDATE_PATIENT":
@@ -69,6 +90,32 @@ export default function reducer(state = initialState, action: PatientAction) {
           ...patient,
           patientInfo: action.patientInfo,
           notes: action.notes
+        };
+      });
+    case "RECEIVE_MESSAGE":
+      return state.map((patient, index) => {
+        if (patient.uuid != action.patientUuid) {
+          return patient;
+        }
+        if (
+          patient.messages.some(message => deepEqual(message, action.message))
+        ) {
+          return patient;
+        }
+        return {
+          ...patient,
+          messages: [...(patient.messages || []), action.message]
+        };
+      });
+      break;
+    case "SEND_MESSAGE":
+      return state.map((patient, index) => {
+        if (index != action.patientId) {
+          return patient;
+        }
+        return {
+          ...patient,
+          messages: [...(patient.messages || []), action.message]
         };
       });
     case "SET_EVD_STATUS":
@@ -134,6 +181,28 @@ export function updatePatient(
     id,
     patientInfo,
     notes
+  };
+}
+
+export function sendChatMessage(
+  patientId: number,
+  message: Message
+): PatientAction {
+  return {
+    type: "SEND_MESSAGE",
+    patientId,
+    message
+  };
+}
+
+export function receiveChatMessage(
+  patientUuid: string,
+  message: Message
+): PatientAction {
+  return {
+    type: "RECEIVE_MESSAGE",
+    patientUuid,
+    message
   };
 }
 
