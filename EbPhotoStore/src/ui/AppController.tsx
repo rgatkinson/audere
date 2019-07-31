@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+<<<<<<< HEAD
 import {
   BackHandler,
   Image,
@@ -6,14 +7,19 @@ import {
   StatusBar,
   View
 } from "react-native";
+=======
+import { Alert, BackHandler } from "react-native";
+>>>>>>> Added notification + message receiving for Android in both foreground and background
 import { connect } from "react-redux";
+import firebase from "react-native-firebase";
 import {
   logout,
   viewPatients,
   viewDetails,
   Action,
   Screen,
-  StoreState
+  StoreState,
+  setFcmToken
 } from "../store";
 import Login from "./Login";
 import Patients from "./Patients";
@@ -26,6 +32,7 @@ import { SPLASH_IMAGE } from "./styles";
 
 interface Props {
   currentPatient?: number;
+  fcmToken?: string;
   screen: Screen;
   dispatch(action: Action): void;
 }
@@ -37,19 +44,70 @@ interface BackCallbacks {
 
 class AppController extends React.Component<Props> {
   _backHandler: any;
+<<<<<<< HEAD
   _onBackCallbacks: { [s: string]: BackCallbacks } = {};
+=======
+  _onBackCallbacks: { [s: string]: () => void } = {};
+  _onTokenRefreshListener: any;
+  _notificationListener: any;
+>>>>>>> Added notification + message receiving for Android in both foreground and background
 
-  componentDidMount() {
+  async componentDidMount() {
     this._backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       this._handleBackPress
     );
+
+    await this._checkNotificationPermissions();
+
+    this._onTokenRefreshListener = firebase
+      .messaging()
+      .onTokenRefresh((fcmToken: string) => {
+        this.props.dispatch(setFcmToken(fcmToken));
+      });
+
+    const hasPermission = await this._requestPermission();
+
+    if (hasPermission) {
+      this._createNotificationListeners();
+    }
   }
 
   componentWillUnmount() {
     if (this._backHandler != null) {
       this._backHandler.remove();
     }
+
+    if (this._onTokenRefreshListener != null) {
+      this._onTokenRefreshListener();
+    }
+
+    if (this._notificationListener != null) {
+      this._notificationListener();
+    }
+  }
+
+  _showAlert(
+    title: string,
+    body: string,
+    buttonText?: string,
+    patientId?: string
+  ) {
+    Alert.alert(
+      title,
+      body,
+      [
+        {
+          text: !!buttonText ? buttonText : "OK",
+          onPress: () => {
+            if (this.props.screen !== "LOGIN" && patientId) {
+              this.props.dispatch(viewDetails(parseInt(patientId)));
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   }
 
   shouldComponentUpdate(props: Props) {
@@ -77,6 +135,45 @@ class AppController extends React.Component<Props> {
         return e === this.props.screen;
       }) >= 0
     );
+  };
+
+  _createNotificationListeners = async () => {
+    // Notification received in foreground
+    this._notificationListener = firebase
+      .notifications()
+      .onNotification(notification => {
+        const { body, data, title } = notification;
+        this._showAlert(title, body, data.patientId);
+      });
+  };
+
+  _checkNotificationPermissions = async () => {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this._getToken();
+    } else {
+      this._requestPermission();
+    }
+  };
+
+  _getToken = async () => {
+    let fcmToken = this.props.fcmToken;
+    if (!fcmToken) {
+      fcmToken = await firebase.messaging().getToken();
+      if (fcmToken) {
+        this.props.dispatch(setFcmToken(fcmToken));
+      }
+    }
+  };
+
+  _requestPermission = async () => {
+    try {
+      await firebase.messaging().requestPermission();
+      this._getToken();
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   _handleBackPress = () => {
@@ -145,5 +242,6 @@ class AppController extends React.Component<Props> {
 }
 export default connect((state: StoreState) => ({
   currentPatient: state.meta.currentPatient,
+  fcmToken: state.meta.fcmToken,
   screen: state.meta.screen
 }))(AppController);

@@ -178,11 +178,14 @@ dependencies {
     implementation project(':@react-native-community_netinfo')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation "com.google.android.gms:play-services-base:15.0.0"
     implementation 'com.google.firebase:firebase-firestore:19.0.1'
     implementation 'com.google.firebase:firebase-storage:18.1.1'
     implementation 'com.google.firebase:firebase-auth:18.1.0'
     implementation 'androidx.multidex:multidex:2.0.0'
+    implementation "com.google.firebase:firebase-messaging:15.0.2"
+    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 
     compile project(':react-native-fs')
 

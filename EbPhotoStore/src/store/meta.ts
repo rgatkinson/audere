@@ -22,10 +22,12 @@ export type MetaAction =
   | { type: "VIEW_CAMERA_PERMISSION" }
   | { type: "VIEW_LOCATION_PERMISSION" }
   | { type: "VIEW_DETAILS"; id: number }
-  | { type: "OPEN_CAMERA" };
+  | { type: "OPEN_CAMERA" }
+  | { type: "SET_FCM_TOKEN"; fcmToken: string };
 
 export type MetaState = {
   currentPatient?: number;
+  fcmToken?: string;
   healthWorkerInfo?: HealthWorkerInfo;
   demoMode: boolean;
   screen: Screen;
@@ -81,6 +83,11 @@ export default function reducer(state = initialState, action: MetaAction) {
         ...state,
         screen: Screen.Camera
       };
+    case "SET_FCM_TOKEN":
+      return {
+        ...state,
+        fcmToken: action.fcmToken
+      };
     default:
       return state;
   }
@@ -132,5 +139,12 @@ export function viewCameraPermission(): MetaAction {
 export function viewLocationPermission(): MetaAction {
   return {
     type: "VIEW_LOCATION_PERMISSION"
+  };
+}
+
+export function setFcmToken(fcmToken: string): MetaAction {
+  return {
+    type: "SET_FCM_TOKEN",
+    fcmToken
   };
 }

@@ -8,7 +8,7 @@ import { Store } from "redux";
 import { Persistor } from "redux-persist";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { I18nextProvider, withNamespaces } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
 import { getStore, getPersistor } from "./src/store/";
 import AppController from "./src/ui/AppController";
 import Splash from "./src/ui/Splash";

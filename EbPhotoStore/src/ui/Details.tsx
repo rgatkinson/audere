@@ -206,6 +206,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       t
     } = this.props;
     const { firstName, lastName, phone, details, notes } = this.state;
+
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {evdPositive !== undefined && (

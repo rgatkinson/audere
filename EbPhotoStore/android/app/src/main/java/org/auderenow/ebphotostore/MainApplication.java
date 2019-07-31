@@ -15,6 +15,9 @@ import com.facebook.soloader.SoLoader;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 import java.util.List;
 
@@ -35,6 +38,8 @@ public class MainApplication extends Application implements ReactApplication {
       packages.add(new RNFirebaseFirestorePackage());
       packages.add(new RNFirebaseStoragePackage());
       packages.add(new RNFirebaseAuthPackage());
+      packages.add(new RNFirebaseMessagingPackage());
+      packages.add(new RNFirebaseNotificationsPackage());
       return packages;
     }
 
