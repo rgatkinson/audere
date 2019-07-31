@@ -212,7 +212,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           </View>
           <Text content={t("patientFirstName")} />
           <TextInput
-            placeholder={t("firstName")}
+            autoFocus={this.state.firstName == ""}
+            placeholder=""
             returnKeyType="next"
             style={styles.inputSingle}
             value={firstName}
@@ -221,7 +222,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientLastName")} style={styles.titleRow} />
           <TextInput
-            placeholder={t("lastName")}
+            placeholder=""
             ref={this._lastNameInput}
             returnKeyType="next"
             style={styles.inputSingle}
@@ -231,7 +232,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientMobileNumber")} style={styles.titleRow} />
           <NumberInput
-            placeholder={t("mobileNumber")}
+            placeholder=""
             ref={this._phoneInput}
             returnKeyType="next"
             style={styles.inputSingle}
@@ -241,8 +242,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("patientDetails")} style={styles.titleRow} />
           <TextInput
+            placeholder={t("patientDetailsPlaceholder")}
             blurOnSubmit={true}
-            placeholder=""
             multiline={true}
             numberOfLines={3}
             ref={this._detailsInput}
@@ -255,7 +256,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           <Text content={t("patientNotes")} style={styles.titleRow} />
           <TextInput
             blurOnSubmit={true}
-            placeholder=""
+            placeholder={t("patientNotesPlaceholder")}
             multiline={true}
             numberOfLines={3}
             ref={this._notesInput}

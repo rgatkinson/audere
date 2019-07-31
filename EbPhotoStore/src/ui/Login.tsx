@@ -123,7 +123,8 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             style={[styles.titleRow, { paddingTop: 0 }]}
           />
           <TextInput
-            placeholder={t("firstName")}
+            autoFocus={true}
+            placeholder=""
             returnKeyType="next"
             style={styles.inputSingle}
             value={firstName}
@@ -132,7 +133,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("loginLastName")} style={styles.titleRow} />
           <TextInput
-            placeholder={t("lastName")}
+            placeholder=""
             ref={this._lastNameInput}
             returnKeyType="next"
             style={styles.inputSingle}
@@ -142,7 +143,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           />
           <Text content={t("loginMobileNumber")} style={styles.titleRow} />
           <NumberInput
-            placeholder={t("mobileNumber")}
+            placeholder=""
             ref={this._phoneInput}
             returnKeyType="next"
             style={styles.inputSingle}
@@ -153,7 +154,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           <Text content={t("notes")} style={styles.titleRow} />
           <TextInput
             blurOnSubmit={true}
-            placeholder=""
+            placeholder={t("notesPlaceholder")}
             multiline={true}
             numberOfLines={3}
             ref={this._notesInput}
