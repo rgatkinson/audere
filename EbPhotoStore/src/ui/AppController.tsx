@@ -1,17 +1,8 @@
 import React, { Fragment } from "react";
-<<<<<<< HEAD
-import {
-  BackHandler,
-  Image,
-  ImageBackground,
-  StatusBar,
-  View
-} from "react-native";
-=======
-import { Alert, BackHandler } from "react-native";
->>>>>>> Added notification + message receiving for Android in both foreground and background
+import { Alert, BackHandler, ImageBackground, StatusBar } from "react-native";
 import { connect } from "react-redux";
 import firebase from "react-native-firebase";
+import i18n from "i18next";
 import {
   logout,
   viewPatients,
@@ -44,13 +35,9 @@ interface BackCallbacks {
 
 class AppController extends React.Component<Props> {
   _backHandler: any;
-<<<<<<< HEAD
   _onBackCallbacks: { [s: string]: BackCallbacks } = {};
-=======
-  _onBackCallbacks: { [s: string]: () => void } = {};
   _onTokenRefreshListener: any;
   _notificationListener: any;
->>>>>>> Added notification + message receiving for Android in both foreground and background
 
   async componentDidMount() {
     this._backHandler = BackHandler.addEventListener(
@@ -98,7 +85,7 @@ class AppController extends React.Component<Props> {
       body,
       [
         {
-          text: !!buttonText ? buttonText : "OK",
+          text: !!buttonText ? buttonText : i18n.t("common:ok"),
           onPress: () => {
             if (this.props.screen !== "LOGIN" && patientId) {
               this.props.dispatch(viewDetails(parseInt(patientId)));
