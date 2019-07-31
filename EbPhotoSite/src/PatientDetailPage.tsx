@@ -4,13 +4,18 @@
 // can be found in the LICENSE file distributed with this file.
 
 import deepEqual from "deep-equal";
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { EncounterDocument, EncounterTriageDocument, EncounterTriageInfo } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  EncounterDocument,
+  EncounterTriageDocument,
+  EncounterTriageInfo
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
 import { LoggedInAs } from "./LoggedInAs";
+import "./PatientDetailPage.css";
 
 type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
@@ -19,15 +24,18 @@ export interface PatientDetailMatchParams {
   docId: string;
 }
 
-export interface PatientDetailPageProps extends RouteComponentProps<PatientDetailMatchParams> {
-}
+export interface PatientDetailPageProps
+  extends RouteComponentProps<PatientDetailMatchParams> {}
 
 export interface PatientDetailPageState {
   eDoc: EncounterDocument | null;
   tDoc: EncounterTriageDocument | null;
 }
 
-class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPageProps, PatientDetailPageState> {
+class PatientDetailPageAssumeRouter extends React.Component<
+  PatientDetailPageProps,
+  PatientDetailPageState
+> {
   constructor(props: PatientDetailPageProps) {
     super(props);
     this.state = { eDoc: null, tDoc: null };
@@ -47,29 +55,58 @@ class PatientDetailPageAssumeRouter extends React.Component<PatientDetailPagePro
       api.loadTriage(docId)
     ]);
     this.setState({
-      eDoc: encounter.data() as EncounterDocument || null,
-      tDoc: triage.data() as EncounterTriageDocument || null,
+      eDoc: (encounter.data() as EncounterDocument) || null,
+      tDoc: (triage.data() as EncounterTriageDocument) || null
     });
-  }
+  };
 
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
       <div>
-        <LoggedInAs />
+        <div className="PatientDetailHeader">
+          <div
+            style={{
+              float: "left",
+              clear: "none",
+              visibility: "hidden"
+            }}
+          >
+            <LoggedInAs />
+          </div>
+
+          <div
+            style={{
+              float: "right",
+              clear: "none"
+            }}
+          >
+            <LoggedInAs />
+          </div>
+
+          <div
+            className="PatientDetailHeaderTitle"
+            style={{
+              clear: "none"
+            }}
+          >
+            CHW Ebola Test Tracker
+          </div>
+        </div>
+        <div className="PatientListLink">
+          <a href={`/patients/`}>Back to Patient List</a>
+        </div>
         {encounter == null ? (
           <div>Loading...</div>
         ) : (
           <div>
-            <PatientInfoPane eDoc={encounter}/>
-            <HealthWorkerPane eDoc={encounter}/>
-            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load}/>
-            <PhotoPane eDoc={encounter}/>
+            <PatientInfoPane eDoc={encounter} />
+            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load} />
+            <PhotoPane eDoc={encounter} />
           </div>
         )}
       </div>
-    )
-
+    );
   }
 }
 export const PatientDetailPage = withRouter(PatientDetailPageAssumeRouter);
@@ -78,34 +115,27 @@ interface PatientDetailPaneProps {
   eDoc: EncounterDocument;
 }
 
-class HealthWorkerPane extends React.Component<PatientDetailPaneProps> {
-  public render(): React.ReactNode {
-    const { healthWorker } = this.props.eDoc.encounter;
-    return (
-      <div className="HealthWorkerPane">
-        <h2>Health Worker</h2>
-        <table>
-          <tr><td>Name:</td><td>{healthWorker.firstName} {healthWorker.lastName}</td></tr>
-          <tr><td>Phone:</td><td>{healthWorker.phone}</td></tr>
-          <tr><td>Notes:</td>{healthWorker.notes}</tr>
-        </table>
-      </div>
-    );
-  }
-}
-
 class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
   public render(): React.ReactNode {
     const { localIndex, patient, notes } = this.props.eDoc.encounter;
     return (
       <div className="PatientInfoPane">
-        <h2>Patient</h2>
+        <h2>
+          {patient.firstName} {patient.lastName} (ID: {localIndex})
+        </h2>
         <table>
-          <tr><td>Local ID:</td><td>{localIndex}</td></tr>
-          <tr><td>Name:</td><td>{patient.firstName} {patient.lastName}</td></tr>
-          <tr><td>Phone:</td><td>{patient.phone}</td></tr>
-          <tr><td>Patient Contact Details:</td><td>{patient.details}</td></tr>
-          <tr><td>Notes:</td><td>{notes}</td></tr>
+          <tr>
+            <td>Phone:</td>
+            <td>{patient.phone}</td>
+          </tr>
+          <tr>
+            <td>Contact Details:</td>
+            <td>{patient.details}</td>
+          </tr>
+          <tr>
+            <td>Patient Details:</td>
+            <td>{notes}</td>
+          </tr>
         </table>
       </div>
     );
@@ -113,14 +143,14 @@ class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
 }
 
 interface TriageProps extends PatientDetailPaneProps {
-  reload: () => Promise<void>
-  tDoc: EncounterTriageDocument | null,
+  reload: () => Promise<void>;
+  tDoc: EncounterTriageDocument | null;
 }
 
 interface TriageState {
   busy: boolean;
-  original: EncounterTriageInfo,
-  edited: EncounterTriageInfo,
+  original: EncounterTriageInfo;
+  edited: EncounterTriageInfo;
   error: string | null;
 }
 
@@ -132,24 +162,26 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       busy: false,
       error: null,
       original: triage,
-      edited: triage,
+      edited: triage
     };
   }
 
-  onEVDChange = (e: InputChangeEvent) => this.setState({
-    edited: {
-      ...this.state.edited,
-      testIndicatesEVD: e.target.checked
-    }
-  });
-  onNotesChange = (e: TextAreaChangeEvent) => this.setState({
-    edited: {
-      ...this.state.edited,
-      notes: e.target.value
-    }
-});
+  onEVDChange = (e: InputChangeEvent) =>
+    this.setState({
+      edited: {
+        ...this.state.edited,
+        testIndicatesEVD: e.target.checked
+      }
+    });
+  onNotesChange = (e: TextAreaChangeEvent) =>
+    this.setState({
+      edited: {
+        ...this.state.edited,
+        notes: e.target.value
+      }
+    });
 
-  save = async() => {
+  save = async () => {
     this.setState({ busy: true });
     const { docId } = this.props.eDoc;
     const { notes, testIndicatesEVD } = this.state.edited;
@@ -160,14 +192,14 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     } catch (err) {
       this.setState({ busy: false, error: err.message });
     }
-  }
+  };
 
   public render(): React.ReactNode {
     const { busy, edited, original, error } = this.state;
     const { notes, testIndicatesEVD } = edited;
     return (
       <div className="TriagePane">
-        <h2>Triage</h2>
+        <h2>Does the below image indicate EVD positivity?</h2>
 
         <div className="EditDetail">
           <label htmlFor="test-indicates-evd">Test Indicates EVD:</label>
@@ -180,45 +212,29 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           />
         </div>
 
-        <div className="EditDetail">
-          <label htmlFor="notes">Notes:</label>
-          <textarea
-            id="notes"
-            disabled={busy}
-            value={notes}
-            onChange={this.onNotesChange}
-          />
-        </div>
-
-        {error != null &&
-          <div className="Error">{error}</div>
-        }
-
-        <button
-          type="button"
-          disabled={busy || deepEqual(edited, original, { strict: true })}
-          onClick={this.save}
-        >Save</button>
+        {error != null && <div className="Error">{error}</div>}
       </div>
     );
   }
 }
 
 interface PhotoPaneState {
-  urls: PhotoFetchResult[],
+  urls: PhotoFetchResult[];
 }
 
 interface PhotoFetchResult {
-  url?: string,
-  error?: Error,
+  url?: string;
+  error?: Error;
 }
 
-class PhotoPane extends React.Component<PatientDetailPaneProps, PhotoPaneState> {
-
+class PhotoPane extends React.Component<
+  PatientDetailPaneProps,
+  PhotoPaneState
+> {
   constructor(props: PatientDetailPaneProps) {
     super(props);
     this.state = {
-      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult)),
+      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult))
     };
 
     const { rdtPhotos } = this.props.eDoc.encounter;
@@ -240,48 +256,93 @@ class PhotoPane extends React.Component<PatientDetailPaneProps, PhotoPaneState> 
 
   public render(): React.ReactNode {
     const { rdtPhotos } = this.props.eDoc.encounter;
+    const { healthWorker } = this.props.eDoc.encounter;
     const { urls } = this.state;
     return (
-      <div>{
-        rdtPhotos.map((photo, i) => {
-          const { url, error } = urls[i] ||
-            ({error: new Error(JSON.stringify(urls))} as PhotoFetchResult);
+      <div>
+        {rdtPhotos.map((photo, i) => {
+          const { url, error } =
+            urls[i] ||
+            ({ error: new Error(JSON.stringify(urls)) } as PhotoFetchResult);
           return (
             <div className="PhotoPane">
-              <h2>RDT Photo</h2>
               <table>
-                <tr><td>Timestamp:</td><td>{localeDate(photo.timestamp)}</td></tr>
-                <tr><td>Latitude:</td><td>{photo.gps.latitude}</td></tr>
-                <tr><td>Longitude:</td>{photo.gps.longitude}</tr>
+                <tr>
+                  <td>
+                    {url != null && (
+                      // CSS hack to avoid modifying the image aspect ratio,
+                      // while supporting right-click "Save Image As".
+                      <div
+                        style={{
+                          height: "400px",
+                          width: "400px",
+                          backgroundImage: `url(${url})`,
+                          backgroundSize: "contain",
+                          backgroundPosition: "center center",
+                          backgroundRepeat: "no-repeat",
+                          backgroundColor: "gray"
+                        }}
+                      >
+                        <img
+                          src={url}
+                          width="100%"
+                          height="100%"
+                          alt="RDT Result"
+                          style={{
+                            opacity: 0
+                          }}
+                        />
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <table>
+                      <tr>
+                        <th>Tested On:</th>
+                      </tr>
+                      <tr>
+                        <td>{localeDate(photo.timestamp)}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Tested By:</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          {healthWorker.firstName} {healthWorker.lastName}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>{healthWorker.phone}</td>
+                      </tr>
+                      <tr>({healthWorker.notes})</tr>
+                      <tr>
+                        <td>
+                          <br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Location:</th>
+                      </tr>
+                      <tr>
+                        <td>Latitude: {photo.gps.latitude}</td>
+                      </tr>
+                      <tr>
+                        <td>Longitude: {photo.gps.longitude}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
               </table>
-              {url != null && (
-                // CSS hack to avoid modifying the image aspect ratio,
-                // while supporting right-click "Save Image As".
-                <div style={{
-                  height: "400px",
-                  width: "400px",
-                  backgroundImage: `url(${url})`,
-                  backgroundSize: "contain",
-                  backgroundPosition: "center center",
-                  backgroundRepeat: "no-repeat",
-                  backgroundColor: "gray",
-                }}>
-                  <img
-                    src={url}
-                    width="100%"
-                    height="100%"
-                    alt="RDT Result"
-                    style={{
-                      opacity: 0
-                    }}
-                  />
-                </div>
-              )}
               {error != null && <div>ERROR: {error.message}</div>}
             </div>
           );
-        })
-      }</div>
+        })}
+      </div>
     );
   }
 }
