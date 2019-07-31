@@ -134,11 +134,11 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
       <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>
         <View style={[styles.patient, patient.evdPositive && styles.evdPos]}>
           <Text content={this._getPatientName()} style={styles.patientName} />
-          {patient.evdPositive && (
-            <Text content={t("evdPositive")} style={styles.patientStatus} />
-          )}
-          {patient.evdPositive == false && (
-            <Text content={t("evdNegative")} style={styles.patientStatus} />
+          {patient.evdPositive !== undefined && (
+            <Text
+              content={t(patient.evdPositive ? "evdPositive" : "evdNegative")}
+              style={styles.patientStatus}
+            />
           )}
           <View style={styles.patientChat}>
             {/*TODO: chat bubble*/ false && <Text content="&#x1f4ac;" />}

@@ -15,12 +15,16 @@ import {
 } from "react-native";
 import {
   BORDER_RADIUS,
+  BORDER_RADIUS_SM,
   BORDER_WIDTH,
   BUTTON_WIDTH,
+  BUTTON_WIDTH_SM,
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
+  INPUT_HEIGHT_SM,
   INPUT_TEXT,
+  EXTRA_SMALL_TEXT,
   PRIMARY_COLOR
 } from "../styles";
 
@@ -57,7 +61,6 @@ export default class Button extends React.Component<Props> {
         disabled={!enabled}
         style={[
           styles.button,
-          !small && styles.buttonMed,
           !!small && styles.buttonSm,
           { opacity: enabled ? 0.95 : 0.5 },
           primary && styles.primaryButton,
@@ -88,9 +91,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: PRIMARY_COLOR,
     flexDirection: "row",
-    justifyContent: "center"
-  },
-  buttonMed: {
+    justifyContent: "center",
     borderRadius: BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
     height: INPUT_HEIGHT,
@@ -98,11 +99,10 @@ const styles = StyleSheet.create({
     width: BUTTON_WIDTH
   },
   buttonSm: {
-    borderRadius: BORDER_RADIUS / 2,
-    borderWidth: BORDER_WIDTH / 2,
-    height: (INPUT_HEIGHT * 3) / 4,
+    borderRadius: BORDER_RADIUS_SM,
+    height: INPUT_HEIGHT_SM,
     marginBottom: GUTTER,
-    width: (BUTTON_WIDTH * 3) / 4
+    width: BUTTON_WIDTH_SM
   },
   check: {
     paddingRight: GUTTER / 2
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: INPUT_TEXT
   },
   textSm: {
-    fontSize: (INPUT_TEXT * 3) / 4
+    fontSize: EXTRA_SMALL_TEXT
   },
   primaryButton: {
     backgroundColor: PRIMARY_COLOR

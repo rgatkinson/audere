@@ -284,7 +284,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   style={styles.photo}
                   source={{ uri: photoInfo.localPath }}
                 />
-                <View style={[styles.photoDetails, styles.gridItem]}>
+                <View style={styles.photoDetails}>
                   <Text
                     content={t("date", {
                       ts: format(
