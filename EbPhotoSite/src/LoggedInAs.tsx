@@ -3,23 +3,26 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent } from "react";
 import { Redirect } from "react-router-dom";
 import * as Firebase from "firebase";
 
 import { getApi } from "./api";
+import "./LoggedInAs.css";
 
 const firebase = (global as any).firebase as typeof Firebase;
 
-export interface LoggedInAsProps {
-}
+export interface LoggedInAsProps {}
 
 export interface LoggedInAsState {
   busy: boolean;
   user: Firebase.User | null;
 }
 
-export class LoggedInAs extends React.Component<LoggedInAsProps, LoggedInAsState> {
+export class LoggedInAs extends React.Component<
+  LoggedInAsProps,
+  LoggedInAsState
+> {
   private unsubscribeAuth: () => void;
 
   constructor(props: LoggedInAsProps) {
@@ -32,7 +35,7 @@ export class LoggedInAs extends React.Component<LoggedInAsProps, LoggedInAsState
   }
 
   componentDidMount() {
-    this.unsubscribeAuth = firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
       this.setState({
         busy: false,
         user: user
@@ -49,25 +52,37 @@ export class LoggedInAs extends React.Component<LoggedInAsProps, LoggedInAsState
     const api = getApi();
     this.setState({ busy: true });
     await api.logout();
-  }
+  };
 
   whoAmI() {
     if (this.state.busy) {
       return "Loading...";
     } else if (this.state.user != null) {
-      return `Logged in as ${this.state.user.email}`;
+      return (
+        <div>
+          <div>Logged in as:</div>
+          <div>{this.state.user.email}</div>
+        </div>
+      );
     } else {
       return <Redirect to="/" />;
     }
   }
 
   render() {
-    const { busy, user } = this.state;
+    const { busy } = this.state;
     return (
       <div className="WhoAmI">
+        {this.whoAmI()}
         <div>
-          {this.whoAmI()}
-          <button type="button" disabled={busy} onClick={this.logout}>Log out</button>
+          <button
+            className="Logout"
+            type="button"
+            disabled={busy}
+            onClick={this.logout}
+          >
+            Log out
+          </button>
         </div>
       </div>
     );

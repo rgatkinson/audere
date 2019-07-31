@@ -3,24 +3,30 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent } from "react";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
-import ReactTable, { Column } from 'react-table';
+import ReactTable, { Column } from "react-table";
 import "react-table/react-table.css";
 
-import { EncounterDocument, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  EncounterDocument,
+  EncounterTriageDocument
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import { LoggedInAs } from "./LoggedInAs";
-import { localeDate, last } from './util';
+import { localeDate, last } from "./util";
+import "./PatientList.css";
 
-export interface PatientsListPageProps extends RouteComponentProps<{}> {
-}
+export interface PatientsListPageProps extends RouteComponentProps<{}> {}
 
 export interface PatientsListPageState {
   eDocs: EncounterDocument[] | null;
 }
 
-class PatientListPageAssumeRouter extends React.Component<PatientsListPageProps, PatientsListPageState> {
+class PatientListPageAssumeRouter extends React.Component<
+  PatientsListPageProps,
+  PatientsListPageState
+> {
   constructor(props: PatientsListPageProps) {
     super(props);
     this.state = { eDocs: null };
@@ -41,13 +47,48 @@ class PatientListPageAssumeRouter extends React.Component<PatientsListPageProps,
     e.preventDefault();
     // TODO: guard against injection via docId here.
     this.props.history.push(`/patient-detail/${eDoc.docId}`);
-  }
+  };
 
   public render(): React.ReactNode {
     const { eDocs: records } = this.state;
     return (
       <div>
-        <LoggedInAs />
+        <div className="PatientListHeader">
+          <div
+            style={{
+              float: "left",
+              clear: "none",
+              visibility: "hidden"
+            }}
+          >
+            <LoggedInAs />
+          </div>
+
+          <div
+            style={{
+              float: "right",
+              clear: "none"
+            }}
+          >
+            <LoggedInAs />
+          </div>
+
+          <div
+            className="PatientListHeaderTitle"
+            style={{
+              clear: "none"
+            }}
+          >
+            CHW Ebola Test Tracker
+          </div>
+        </div>
+        <div className="PatientListLegend">
+          The list below displays patients who have been tested in their
+          community for Ebola by a Community Health Worker.
+          <br />
+          Click on a row to see details for a specific patient and to contact
+          the CHW who tested the patient.
+        </div>
         {records == null ? (
           "Loading..."
         ) : (
@@ -67,7 +108,7 @@ interface PatientTableRow {
 
 interface PatientTableProps {
   eDocs: EncounterDocument[];
-  onSelect: (e: MouseEvent, record: EncounterDocument) => void
+  onSelect: (e: MouseEvent, record: EncounterDocument) => void;
 }
 
 interface PatientTableState {
@@ -75,12 +116,15 @@ interface PatientTableState {
   selected: EncounterDocument | null;
 }
 
-class PatientTable extends React.Component<PatientTableProps, PatientTableState> {
+class PatientTable extends React.Component<
+  PatientTableProps,
+  PatientTableState
+> {
   constructor(props: PatientTableProps) {
     super(props);
     this.state = {
       selected: null,
-      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: null })),
+      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: null }))
     };
   }
 
@@ -98,12 +142,12 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
           const triage = await api.loadTriage(eDoc.docId);
           return {
             eDoc,
-            tDoc: triage.data() as EncounterTriageDocument || {
+            tDoc: (triage.data() as EncounterTriageDocument) || {
               triage: {
                 notes: "",
-                testIndicatesEVD: false,
+                testIndicatesEVD: false
               }
-            },
+            }
           };
         } catch (err) {
           console.log(`PatientListPage error loading triage '${eDoc.docId}'`);
@@ -120,66 +164,68 @@ class PatientTable extends React.Component<PatientTableProps, PatientTableState>
         this.props.onSelect(e, row.original.eDoc);
       }
     };
-  }
+  };
 
   columns(): Column<PatientTableRow>[] {
     return [
       {
-        Header: "Timestamp",
+        Header: "Date Tested",
         accessor: row => {
           const photo = last(row.eDoc.encounter.rdtPhotos);
           return localeDate(photo == null ? "" : photo.timestamp);
         },
         id: "timestamp",
-        minWidth: 150,
+        minWidth: 110
       },
       {
-        Header: "Worker Name",
-        accessor: row => {
-          const w = row.eDoc.encounter.healthWorker;
-          return `${w.firstName} ${w.lastName}`;
-        },
-        id: "healthWorker.name",
-        minWidth: 120,
-      },
-      {
-        Header: "Worker Phone",
-        accessor: "eDoc.encounter.healthWorker.phone",
-        minWidth: 80,
-      },
-      {
-        Header: "ID",
+        Header: "Patient ID",
         accessor: "eDoc.encounter.localIndex",
-        minWidth: 40,
+        minWidth: 50
       },
       {
-        Header: "Patient",
+        Header: "Patient Name",
         accessor: row => {
           const p = row.eDoc.encounter.patient;
           return `${p.firstName} ${p.lastName}`;
         },
         id: "patient.name",
-        minWidth: 120,
+        minWidth: 110
       },
       {
-        Header: "Triage",
-        accessor: row => row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
-        id: "triage",
-        minWidth: 200,
-      },
-      {
-        Header: "EVD",
-        accessor: r => r.tDoc == null ? ".." : (r.tDoc.triage.testIndicatesEVD ? "yes" : "no"),
+        Header: "EVD Test Result",
+        accessor: r =>
+          r.tDoc == null ? ".." : r.tDoc.triage.testIndicatesEVD ? "yes" : "no",
         id: "evd",
-        minWidth: 40,
+        minWidth: 90
       },
+      {
+        Header: "EVD Result Notes",
+        accessor: row =>
+          row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
+        id: "triage",
+        minWidth: 200
+      },
+      {
+        Header: "CHW Name",
+        accessor: row => {
+          const w = row.eDoc.encounter.healthWorker;
+          return `${w.firstName} ${w.lastName}`;
+        },
+        id: "healthWorker.name",
+        minWidth: 110
+      },
+      {
+        Header: "CHW Phone #",
+        accessor: "eDoc.encounter.healthWorker.phone",
+        minWidth: 80
+      }
     ];
   }
 
   public render(): React.ReactNode {
     const { selected } = this.state;
     return selected != null ? (
-      <Redirect to={`/patient-detail/${selected.docId}`}/>
+      <Redirect to={`/patient-detail/${selected.docId}`} />
     ) : (
       <ReactTable
         data={this.state.rows}
