@@ -3,15 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorker from "./serviceWorker";
 import { getRoot } from "./util";
 import { LoginPage } from "./LoginPage";
 import { PatientListPage } from "./PatientListPage";
 import { PatientDetailPage } from "./PatientDetailPage";
+import { SimpleMap } from "./SimpleMap";
 
 class FourOhFour extends React.Component {
   public render(): React.ReactNode {
@@ -20,16 +21,15 @@ class FourOhFour extends React.Component {
 }
 
 ReactDOM.render(
-  (
-    <Router>
-       <Switch>
-        <Route exact path="/" component={LoginPage} />
-        <Route path="/patients" component={PatientListPage} />
-        <Route path="/patient-detail/:docId" component={PatientDetailPage} />
-        <Route component={FourOhFour} />
-      </Switch>
-    </Router>
-  ),
+  <Router>
+    <Switch>
+      <Route exact path="/" component={LoginPage} />
+      <Route path="/patients" component={PatientListPage} />
+      <Route path="/patient-detail/:docId" component={PatientDetailPage} />
+      <Route path="/map" component={SimpleMap} />
+      <Route component={FourOhFour} />
+    </Switch>
+  </Router>,
   getRoot()
 );
 
