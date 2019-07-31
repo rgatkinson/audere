@@ -38,7 +38,6 @@ export interface EncounterInfo {
     isDemo: boolean;
     healthWorker: HealthWorkerInfo;
     localIndex: string;
-    patientId: number;
     patient: PatientInfo;
     rdtPhotos: PhotoInfo[];
     notes: string;
@@ -103,7 +102,7 @@ export interface MessagingTokenDocument extends ProtocolDocumentBase {
 export interface Notification extends ProtocolDocumentBase {
     documentType: DocumentType.Notification;
     schemaId: 1;
-    patientId: number;
+    localIndex: string;
     docId: string;
     notificationType: NotificationType;
 }
