@@ -22,3 +22,7 @@
 .PatientListLegend {
   padding: 0.5rem;
 }
+
+.ReactTable .rt-tr:hover .rt-td {
+  background: #d3d3d3;
+}

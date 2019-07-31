@@ -162,6 +162,12 @@ class PatientTable extends React.Component<
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
         this.props.onSelect(e, row.original.eDoc);
+      },
+      style: {
+        background:
+          row && row.original.tDoc && row.original.tDoc.triage.testIndicatesEVD
+            ? "#FFC0CB"
+            : "white"
       }
     };
   };
