@@ -89,13 +89,6 @@ class Patients extends React.Component<Props & WithNamespaces> {
             />
           )}
         />
-        <Button
-          enabled={true}
-          label={t("logOut")}
-          primary={false}
-          style={styles.button}
-          onPress={this._logout}
-        />
       </View>
     );
   }
@@ -160,9 +153,6 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: "row",
     alignItems: "center"
-  },
-  button: {
-    alignSelf: "center"
   },
   evdPos: {
     backgroundColor: "pink"

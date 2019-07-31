@@ -19,6 +19,7 @@ import CameraPermissionRequired from "./CameraPermissionRequired";
 import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
+import AppMenu from "./AppMenu";
 import { SPLASH_IMAGE } from "./styles";
 
 interface Props {
@@ -33,7 +34,14 @@ interface BackCallbacks {
   shouldShowBack(): boolean;
 }
 
-class AppController extends React.Component<Props> {
+interface State {
+  showAppMenu: boolean;
+}
+
+class AppController extends React.Component<Props, State> {
+  state: State = {
+    showAppMenu: false
+  };
   _backHandler: any;
   _onBackCallbacks: { [s: string]: BackCallbacks } = {};
   _onTokenRefreshListener: any;
@@ -97,8 +105,11 @@ class AppController extends React.Component<Props> {
     );
   }
 
-  shouldComponentUpdate(props: Props) {
-    return props.screen !== this.props.screen;
+  shouldComponentUpdate(props: Props, state: State) {
+    return (
+      props.screen !== this.props.screen ||
+      state.showAppMenu !== this.state.showAppMenu
+    );
   }
 
   _setupBackInfo = (
@@ -186,6 +197,14 @@ class AppController extends React.Component<Props> {
     }
   };
 
+  _handleMenuPress = () => {
+    this.setState({ showAppMenu: !this.state.showAppMenu });
+  };
+
+  _handleMenuDismiss = () => {
+    this.setState({ showAppMenu: false });
+  };
+
   _getScreen = () => {
     switch (this.props.screen) {
       case Screen.Login:
@@ -220,8 +239,15 @@ class AppController extends React.Component<Props> {
             barStyle="light-content"
             translucent={true}
           />
-          <TitleBar onBack={this._shouldShowBack() && this._handleBackPress} />
+          <TitleBar
+            onBack={this._shouldShowBack() && this._handleBackPress}
+            onMenu={this._handleMenuPress}
+          />
         </ImageBackground>
+        <AppMenu
+          visible={this.state.showAppMenu}
+          onDismiss={this._handleMenuDismiss}
+        />
         {this._getScreen()}
       </Fragment>
     );

@@ -28,6 +28,7 @@ interface Props {
   demoMode: boolean;
   dispatch(action: Action): void;
   onBack?(event: GestureResponderEvent): void;
+  onMenu?(event: GestureResponderEvent): void;
 }
 
 class TitleBar extends React.Component<Props & WithNamespaces> {
@@ -36,7 +37,7 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { demoMode, onBack, t } = this.props;
+    const { demoMode, onBack, onMenu, t } = this.props;
     return (
       <MultiTapContainer
         active={true}
@@ -53,7 +54,15 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
           <View style={styles.actionContainer} />
         )}
         <Text style={styles.title} content={t("title")} />
-        <View style={styles.actionContainer} />
+        <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
+          <Text
+            style={[
+              styles.actionContent,
+              { textAlign: "right", fontSize: LARGE_TEXT }
+            ]}
+            content="&#9776;"
+          />
+        </TouchableOpacity>
       </MultiTapContainer>
     );
   }
@@ -93,8 +102,8 @@ const styles = StyleSheet.create({
   },
   actionContent: {
     color: "white",
+    flex: 1,
     fontSize: REGULAR_TEXT,
-    textAlign: "center",
     paddingHorizontal: GUTTER / 2,
     paddingTop: STATUS_BAR_HEIGHT
   }

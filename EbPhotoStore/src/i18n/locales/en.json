@@ -7,6 +7,14 @@
       "submit": "Submit"
     }
   },
+  "titleBar": {
+    "title": "EVD Track",
+    "back": "\u276E Back"
+  },
+  "appMenu": {
+    "logout": "Log Out",
+    "about": "About"
+  },
   "login": {
     "title": "Enter your information below to begin tracking patients you test for Ebola.",
     "loginLastName": "**CHW last name**",
@@ -20,8 +28,7 @@
     "patientList": "Patient List",
     "addNewPatient": "Add New",
     "evdPositive": "Ebola +",
-    "evdNegative": "Ebola -",
-    "logOut": "Log Out"
+    "evdNegative": "Ebola -"
   },
   "phoneLoginVerification": {
     "verificationCode": "Verification Code:",
@@ -51,10 +58,6 @@
     "startChat": "\n**Chat with a government health worker regarding {{firstName}} {{lastName}}:**",
     "chatPlaceholder": "Enter a note to send to a government health worker",
     "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by a government healthcare worker at {{phone}} (via voice or text)"
-  },
-  "titleBar": {
-    "title": "EVD Track",
-    "back": "\u276E Back"
   },
   "photoCapture": {
     "error": "There was an error capturing the photo, please try again"
