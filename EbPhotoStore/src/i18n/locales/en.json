@@ -31,15 +31,16 @@
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
   "details": {
-    "evdPositive": "Positive for Ebola",
-    "evdNegative": "Negative for Ebola",
+    "evdPositive": "Likely positive for Ebola",
+    "evdNegative": "Likely negative for Ebola",
+    "reviewedBy": "Image reviewed by {{name}} on {{date}}",
     "patientId": "**ID:** {{id}}",
     "patientFirstName": "**Patient first name**",
     "patientLastName": "**Patient last name**",
     "patientMobileNumber": "**Patient mobile number**",
     "patientDetails": "**Patient contact details**",
     "patientDetailsPlaceholder": "E.g. address, location",
-    "patientNotes": "**CHW notes for patient**",
+    "patientNotes": "**CHW notes regarding patient**",
     "patientNotesPlaceholder": "Will be shared with government workers",
     "addPhoto": "Add Photo",
     "photoNote": "Click to add a photo of the RDT strip to this record",
@@ -47,7 +48,7 @@
     "date": "**Photo captured on:**\n{{ts}}\n",
     "location": "**Location:**\nLatitude: {{lat}}\nLongitude: {{long}}",
     "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or a government health worker has questions, you will be contacted on this phone via voice, text, or a message below.",
-    "startChat": "\n**Chat with a government health worker about {{firstName}} {{lastName}}:**",
+    "startChat": "\n**Chat with a government health worker regarding {{firstName}} {{lastName}}:**",
     "chatPlaceholder": "Enter a note to send to a government health worker",
     "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by a government healthcare worker at {{phone}} (via voice or text)"
   },

@@ -36,7 +36,7 @@ import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
-import { GUTTER, NAV_BAR_HEIGHT, SMALL_TEXT } from "./styles";
+import { GUTTER, NAV_BAR_HEIGHT, LARGE_TEXT } from "./styles";
 
 interface Props {
   evdPositive?: boolean;
@@ -332,18 +332,23 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                       long: photoInfo.photoInfo.gps.longitude
                     })}
                   />
+                  <Button
+                    style={styles.retakeButton}
+                    enabled={true}
+                    primary={false}
+                    small={true}
+                    label={t("retakePhoto")}
+                    onPress={this._takePhoto}
+                  />
                 </View>
-              </View>
-              <View style={[styles.grid, { marginTop: 0 }]}>
-                <TouchableOpacity onPress={this._takePhoto}>
-                  <Text content={t("retakePhoto")} style={styles.link} />
-                </TouchableOpacity>
-                <View style={styles.photoDetails} />
               </View>
               {evdPositive === undefined ? (
                 <Text content={t("followUp")} />
               ) : null}
-              <Text content={t("startChat", { firstName, lastName })} />
+              <Text
+                style={styles.titleRow}
+                content={t("startChat", { firstName, lastName })}
+              />
               <TextInput
                 blurOnSubmit={true}
                 multiline={true}
@@ -400,6 +405,7 @@ const styles = StyleSheet.create({
     padding: GUTTER
   },
   evdCommon: {
+    fontSize: LARGE_TEXT,
     fontWeight: "bold",
     height: NAV_BAR_HEIGHT,
     textAlign: "center",
@@ -439,18 +445,16 @@ const styles = StyleSheet.create({
     marginRight: GUTTER,
     flexDirection: "row"
   },
-  link: {
-    color: "blue",
-    textAlign: "center",
-    textDecorationLine: "underline",
-    width
-  },
   photo: {
     height,
     width
   },
   photoDetails: {
     padding: GUTTER
+  },
+  retakeButton: {
+    marginVertical: GUTTER,
+    backgroundColor: "lightgrey"
   }
 });
 
