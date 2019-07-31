@@ -1,0 +1,24 @@
+.PatientListHeader {
+  background-color: #8cb2de;
+  border-width: 0px;
+  border-color: black;
+  border: solid;
+  overflow: hidden;
+  height: 5rem;
+  line-height: 1rem;
+  text-align: center;
+}
+
+.PatientListHeaderTitle {
+  padding-top: 1.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 1.4rem;
+  font-style: bold;
+  text-align: center;
+}
+
+.PatientListLegend {
+  padding: 0.5rem;
+}

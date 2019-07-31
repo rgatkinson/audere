@@ -1,0 +1,17 @@
+div.WhoAmI {
+  padding: 0.8rem;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.1rem;
+  text-align: left;
+  visibility: inherit;
+}
+
+div.WhoAmI button {
+  font-size: 0.8rem;
+  padding: 1.5 rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  border-radius: 2rem;
+  visibility: inherit;
+}
