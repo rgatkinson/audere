@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import * as AWS from "aws-sdk";
+import { Op } from "sequelize";
 import { SplitSql } from "../util/sql";
 import {
   CoughModels,
@@ -119,6 +120,13 @@ export class CoughEndpoint {
     );
     const surveys = await this.models.survey.findAll({
       where: {
+        survey: {
+          workflow: {
+            surveyCompletedAt: {
+              [Op.ne]: null
+            }
+          }
+        },
         "$photo_upload_log.cough_survey_id$": null
       },
       include: [
