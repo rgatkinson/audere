@@ -14,3 +14,17 @@ body {
 .ReactTable .rt-th {
   font-weight: bold;
 }
+
+.ReactTable .-sort-desc::before {
+  content: "▼";
+  float: right;
+  margin: 3px;
+  font-size: 0.7em;
+}
+
+.ReactTable .-sort-asc::before {
+  content: "▲";
+  float: right;
+  margin: 1px 3px 5px 3px;
+  font-size: 0.7em;
+}

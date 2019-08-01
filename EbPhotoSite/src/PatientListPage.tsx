@@ -146,10 +146,25 @@ class PatientTable extends React.Component<
         Header: "Date Tested",
         accessor: row => {
           const photo = last(row.eDoc.encounter.rdtPhotos);
+          if (!photo) {
+            return "Not Tested";
+          }
           return localeDate(photo == null ? "" : photo.timestamp);
         },
         id: "timestamp",
-        minWidth: 110
+        minWidth: 110,
+        sortMethod: (a, b) => {
+          if (a === b) {
+            return 0;
+          }
+          if (a === "Not Tested") {
+            return -1;
+          }
+          if (b === "Not Tested") {
+            return 1;
+          }
+          return a > b ? 1 : -1;
+        }
       },
       {
         Header: "Patient Name",
@@ -202,6 +217,12 @@ class PatientTable extends React.Component<
         show-pagination={false}
         default-page-size={100}
         getTrProps={this.getTrProps}
+        defaultSorted={[
+          {
+            id: "timestamp",
+            desc: true
+          }
+        ]}
       />
     );
   }
