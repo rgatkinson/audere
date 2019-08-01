@@ -167,7 +167,7 @@ class AppController extends React.Component<Props, State> {
   _requestPermission = async () => {
     try {
       await firebase.messaging().requestPermission();
-      this._getToken();
+      await this._getToken();
       return true;
     } catch (error) {
       return false;
