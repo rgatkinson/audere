@@ -17,6 +17,7 @@ import {
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
 import { LoggedInAs } from "./LoggedInAs";
+import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
 
@@ -139,6 +140,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
             <PatientInfoPane eDoc={encounter}/>
             <TriagePane eDoc={encounter} tDoc={triage} reload={this.load} triageChangedAction={this.triageChangeHandler}/>
             <PhotoPane eDoc={encounter}/>
+            <Chat localIndex={encounter.encounter.localIndex} parentDocId={encounter.docId} phone={encounter.encounter.healthWorker.phone}/>
           </div>
         )}
       </div>

@@ -5,7 +5,6 @@
 
 import { DocumentType, EncounterTriageDocument, MessagingTokenDocument, Notification } from "audere-lib/dist/ebPhotoStoreProtocol";
 import * as Firebase from "firebase";
-import axios from "axios";
 
 const firebase = (global as any).firebase as typeof Firebase;
 
@@ -13,11 +12,16 @@ type QuerySnapshot = any; // firebase.firestore.QuerySnapshot;
 type DocumentSnapshot = any; // firebase.firestore.DocumentSnapshot;
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
+const DEFAULT_MESSAGES_COLLECTION = "messages";
 const DEFAULT_TOKEN_COLLECTION = "messaging_tokens";
 const DEFAULT_TRIAGE_COLLECTION = "triages";
 
 function getEncounterCollection() {
   return DEFAULT_ENCOUNTER_COLLECTION;
+}
+
+function getMessagesCollection() {
+  return DEFAULT_MESSAGES_COLLECTION;
 }
 
 function getTokenCollection() {
@@ -82,6 +86,15 @@ export class Api {
   // CLEANUP
   // --------------------------------------
 
+  getMessagesReference(docId: string): Firebase.firestore.CollectionReference {
+    const db = firebase.firestore();
+    const collection = db.collection(getEncounterCollection())
+      .doc(docId)
+      .collection(getMessagesCollection());
+
+    return collection;
+  }
+
   async getRegistrationToken(phone: string): Promise<MessagingTokenDocument | null> {
     const db = firebase.firestore();
     const collection = db.collection(getTokenCollection());
@@ -129,6 +142,27 @@ export class Api {
     const collection = db.collection(getTriageCollection());
     const doc = collection.doc(triage.docId);
     return await logIfError("saveTriage", "set", () => doc.set(triage));
+  }
+
+  async sendMessage(
+    docId: string,
+    sender: Firebase.User,
+    message: string
+  ): Promise<void> {
+    const timestamp = new Date().toISOString();
+    const contents = {
+      timestamp: timestamp,
+      sender: {
+        uid: sender.uid,
+        name: sender.displayName
+      },
+      content: message
+    };
+    
+    const ref = this.getMessagesReference(docId);
+    const doc = ref.doc(`${timestamp}.${sender.uid}`);
+    
+    return await logIfError("sendMessage", "set", () => doc.set(contents));
   }
 
   photoUrl(photoId: string): Promise<string> {
