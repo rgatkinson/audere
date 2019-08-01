@@ -7,6 +7,7 @@ import { NativeModules } from "react-native";
 import i18n from "i18next";
 import enStrings from "./locales/en.json";
 import frStrings from "./locales/fr.json";
+import { format } from "date-fns";
 
 const languageDetector = {
   type: "languageDetector",
@@ -24,7 +25,13 @@ i18n.use(languageDetector).init({
   ns: ["common"],
   defaultNS: "common",
   interpolation: {
-    escapeValue: false
+    escapeValue: false,
+    format: function(value, frmt, lng) {
+      if (value instanceof Date) {
+        return format(value, frmt);
+      }
+      return value;
+    }
   },
   react: {
     bindI18n: "languageChanged",

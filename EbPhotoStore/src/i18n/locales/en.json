@@ -6,7 +6,8 @@
       "yes": "Yes",
       "submit": "Submit",
       "cancel": "Cancel"
-    }
+    },
+    "dateTime": "{{date, DD MMMM YYYY, HH:mm}}"
   },
   "titleBar": {
     "title": "EVD Track",
@@ -56,7 +57,7 @@
     "addPhoto": "Add Photo",
     "photoNote": "Click to add a photo of the RDT strip to this record",
     "retakePhoto": "Retake photo",
-    "date": "**Photo captured on:**\n{{ts}}\n",
+    "capturedOn": "**Photo captured on:**\n",
     "location": "**Location:**\nLatitude: {{lat}}\nLongitude: {{long}}",
     "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or a government health worker has questions, you will be contacted on this phone via voice, text, or a message below.",
     "startChat": "\n**Chat with a government health worker regarding {{firstName}} {{lastName}}:**",

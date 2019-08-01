@@ -5,11 +5,10 @@
 
 import React, { Fragment } from "react";
 import { StyleSheet } from "react-native";
-import { connect } from "react-redux";
 import firebase from "react-native-firebase";
-import { format } from "date-fns";
 import { Message } from "audere-lib/ebPhotoStoreProtocol";
 import Text from "./Text";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { GUTTER, SMALL_TEXT } from "../styles";
 
 interface Props {
@@ -25,7 +24,7 @@ export default class Chat extends React.Component<Props> {
         {[...messages]
           .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
           .map(message => (
-            <ChatMessage
+            <TranslatedChatMessage
               key={message.sender.uid + message.timestamp}
               local={message.sender.uid === uid}
               message={message}
@@ -41,9 +40,9 @@ interface MessageProps {
   message: Message;
 }
 
-class ChatMessage extends React.Component<MessageProps> {
+class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
   render() {
-    const { local, message } = this.props;
+    const { local, message, t } = this.props;
     return (
       <Fragment>
         <Text
@@ -55,7 +54,7 @@ class ChatMessage extends React.Component<MessageProps> {
           ]}
         />
         <Text
-          content={format(message.timestamp, "DD MMMM YYYY, hh:mm a")}
+          content={t("dateTime", { date: new Date(message.timestamp) })}
           italic={true}
           style={[styles.sender, local && styles.local]}
         />
@@ -70,6 +69,7 @@ class ChatMessage extends React.Component<MessageProps> {
     );
   }
 }
+const TranslatedChatMessage = withNamespaces("common")(ChatMessage);
 
 const styles = StyleSheet.create({
   message: {

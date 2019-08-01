@@ -12,7 +12,6 @@ import {
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase from "react-native-firebase";
-import { format } from "date-fns";
 import {
   HealthWorkerInfo,
   PatientInfo,
@@ -317,12 +316,13 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 />
                 <View style={styles.photoDetails}>
                   <Text
-                    content={t("date", {
-                      ts: format(
-                        new Date(photoInfo.photoInfo.timestamp),
-                        "DD MMMM YYYY, hh:mm a"
-                      )
-                    })}
+                    content={
+                      t("capturedOn") +
+                      t("common:dateTime", {
+                        date: new Date(photoInfo.photoInfo.timestamp)
+                      }) +
+                      "\n"
+                    }
                   />
                   <Text
                     content={t("location", {
