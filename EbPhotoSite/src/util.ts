@@ -1,5 +1,6 @@
 import { EncounterDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
+import { format } from "date-fns";
 
 // Copyright (c) 2019 by Audere
 //
@@ -11,7 +12,7 @@ export function getRoot() {
 }
 
 export function localeDate(timestamp: string): string {
-  return date(timestamp).toLocaleString();
+  return format(date(timestamp), "DD/MM/YYYY, HH:mm");
 }
 
 export function date(timestamp: string): Date {
