@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     marginHorizontal: GUTTER / 2
   },
   titleImage: {
-    aspectRatio: 5.3333333333,
+    aspectRatio: 112 / 23,
     width: 140
   }
 });
