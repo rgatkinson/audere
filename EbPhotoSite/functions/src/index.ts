@@ -18,11 +18,14 @@ export const notify = functions.https.onCall(async (data, context) => {
   }
 
   const notification = data as NotificationRequest;
+  const document: admin.messaging.DataMessagePayload = {};
+
+  Object.keys(notification.notification).forEach(key => {
+    document[key] = (notification.notification as any)[key].toString();
+  });
 
   const payload = {
-    data: {
-      document: JSON.stringify(notification.notification)
-    },
+    data: document,
     notification: {
       title: notification.title,
       body: notification.body
