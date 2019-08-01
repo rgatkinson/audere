@@ -3,8 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, EncounterTriageDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import { DocumentType, EncounterTriageDocument, MessagingTokenDocument, Notification } from "audere-lib/dist/ebPhotoStoreProtocol";
 import * as Firebase from "firebase";
+import axios from "axios";
 
 const firebase = (global as any).firebase as typeof Firebase;
 
@@ -12,10 +13,15 @@ type QuerySnapshot = any; // firebase.firestore.QuerySnapshot;
 type DocumentSnapshot = any; // firebase.firestore.DocumentSnapshot;
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
+const DEFAULT_TOKEN_COLLECTION = "messaging_tokens";
 const DEFAULT_TRIAGE_COLLECTION = "triages";
 
 function getEncounterCollection() {
   return DEFAULT_ENCOUNTER_COLLECTION;
+}
+
+function getTokenCollection() {
+  return DEFAULT_TOKEN_COLLECTION;
 }
 
 function getTriageCollection() {
@@ -54,8 +60,44 @@ export class Api {
     await new Promise(f => setTimeout(f, ms));
   }
 
+  async pushNotification(
+    token: string,
+    title: string,
+    body: string,
+    notification: Notification,
+    messageGroup?: string
+  ): Promise<void> {
+    const notificationRequest = {
+      token: token,
+      group: messageGroup,
+      title: title,
+      body: body,
+      notification: notification
+    };
+
+    const notify = firebase.functions().httpsCallable("notify");
+    await notify(notificationRequest);
+  }
+
   // CLEANUP
   // --------------------------------------
+
+  async getRegistrationToken(phone: string): Promise<MessagingTokenDocument | null> {
+    const db = firebase.firestore();
+    const collection = db.collection(getTokenCollection());
+
+    const query = collection
+      .where("phone", "==", phone)
+      .limit(1);
+    const result = await logIfError("getRegistrationToken", "get", () => query.get());
+
+    if (result.size > 0) {
+      const data = result.docs[0].data() as MessagingTokenDocument;
+      return data;
+    } else {
+      return null;
+    }
+  }
 
   async loadEncounters(): Promise<QuerySnapshot> {
     const db = firebase.firestore();

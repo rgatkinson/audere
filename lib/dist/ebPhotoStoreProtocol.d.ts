@@ -110,3 +110,10 @@ export declare enum NotificationType {
     Chat = "CHAT",
     Diagnosis = "DIAGNOSIS"
 }
+export interface NotificationRequest {
+    token: string;
+    group: string;
+    title: string;
+    body: string;
+    notification: Notification;
+}

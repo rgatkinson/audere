@@ -7,9 +7,12 @@ import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import {
+  DocumentType,
   EncounterDocument,
   EncounterTriageDocument,
-  EncounterTriageInfo
+  EncounterTriageInfo,
+  NotificationType,
+  Notification
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
@@ -60,6 +63,39 @@ class PatientDetailPageAssumeRouter extends React.Component<
     });
   };
 
+  triageChangeHandler = async (): Promise<void> => {
+    if (this.state.eDoc != null) {
+      const api = getApi();
+      const { eDoc } = this.state;
+      const phone = eDoc.encounter.healthWorker.phone;
+
+      console.log(`Triage status changed for document ${eDoc.docId}`);
+
+      const doc = await api.getRegistrationToken(phone);
+
+      if (doc != null && doc.token != null) {
+        const details: Notification = {
+          documentType: DocumentType.Notification,
+          schemaId: 1,
+          localIndex: eDoc.encounter.localIndex,
+          docId: eDoc.docId,
+          notificationType: NotificationType.Diagnosis
+        };
+
+        await api.pushNotification(
+          doc.token,
+          "Updated EVD diagnosis",
+          "An encounter was triaged, etc",
+          details,
+          "triage_evd"
+        );
+      } else {
+        console.warn(`No registration token found for phone number ${phone}, ` +
+          `no notification of triage will be sent`);
+      }
+    }
+  }
+
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
@@ -100,9 +136,9 @@ class PatientDetailPageAssumeRouter extends React.Component<
           <div>Loading...</div>
         ) : (
           <div>
-            <PatientInfoPane eDoc={encounter} />
-            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load} />
-            <PhotoPane eDoc={encounter} />
+            <PatientInfoPane eDoc={encounter}/>
+            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load} triageChangedAction={this.triageChangeHandler}/>
+            <PhotoPane eDoc={encounter}/>
           </div>
         )}
       </div>
@@ -145,10 +181,12 @@ class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
 interface TriageProps extends PatientDetailPaneProps {
   reload: () => Promise<void>;
   tDoc: EncounterTriageDocument | null;
+  triageChangedAction: () => Promise<void>;
 }
 
 interface TriageState {
   busy: boolean;
+
   edited: EncounterTriageInfo;
   error: string | null;
 }
@@ -192,6 +230,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     const api = getApi();
     try {
       await api.saveTriage(triageDoc(docId, notes, testIndicatesEVD));
+      await this.props.triageChangedAction();
       this.setState({ busy: false });
     } catch (err) {
       this.setState({ busy: false, error: err.message });

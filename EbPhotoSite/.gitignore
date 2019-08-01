@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+# local dependencies
+/functions/*.tgz
+
 # testing
 /coverage
 
