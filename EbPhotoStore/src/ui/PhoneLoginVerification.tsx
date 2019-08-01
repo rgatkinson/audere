@@ -22,18 +22,7 @@ interface Props {
   onDismiss(reason: PhoneVerificationDismissal): void;
 }
 
-interface State {
-  code: string;
-}
-
-class PhoneLoginVerification extends React.Component<
-  Props & WithNamespaces,
-  State
-> {
-  state: State = {
-    code: ""
-  };
-
+class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
   _authUnsubscribe: (() => void) | null = null;
   _confirmer: RNFirebase.ConfirmationResult | null = null;
 
@@ -71,15 +60,10 @@ class PhoneLoginVerification extends React.Component<
     }
   };
 
-  _onChangeCode = (code: string) => {
-    this.setState({ code });
-    this._validateCode();
-  };
-
-  _validateCode = async () => {
+  _validateCode = async (code: string) => {
     if (this._confirmer) {
       try {
-        const user = await this._confirmer.confirm(this.state.code);
+        const user = await this._confirmer.confirm(code);
 
         if (user) {
           this.props.onDismiss(PhoneVerificationDismissal.VERIFIED);
@@ -119,7 +103,7 @@ class PhoneLoginVerification extends React.Component<
       >
         <View style={styles.container}>
           <Text content={t("verificationCode", { phone })} />
-          <DigitInput digits={6} onSubmitEditing={this._onChangeCode} />
+          <DigitInput digits={6} onSubmitEditing={this._validateCode} />
           <View style={styles.buttons}>
             <Button
               label={t("common:cancel")}
@@ -127,13 +111,6 @@ class PhoneLoginVerification extends React.Component<
               primary={false}
               style={[styles.button, { marginRight: GUTTER }]}
               onPress={this._onCancel}
-            />
-            <Button
-              enabled={this.state.code.length > 0}
-              label={t("common:button:submit")}
-              primary={true}
-              style={styles.button}
-              onPress={this._validateCode}
             />
           </View>
         </View>

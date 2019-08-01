@@ -187,7 +187,7 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:15.0.2"
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 
-    compile project(':react-native-fs')
+    implementation project(':react-native-fs')
 
     if (enableHermes) {
       def hermesPath = "../../node_modules/hermesvm/android/";
