@@ -31,3 +31,34 @@
 .PhotoPane th {
   text-align: left;
 }
+
+.PatientInfoPane td {
+  padding-right: 16px;
+  padding-bottom: 8px;
+}
+
+.TriagePane {
+  margin-bottom: 1.5rem;
+}
+
+.TriagePane h3 {
+  margin-bottom: 0.5rem;
+}
+
+.TriagePane input[type="button"] {
+  height: 1.5rem;
+  width: 4rem;
+  border-radius: 0.75rem;
+  box-shadow: none;
+  border-color: black;
+  margin-right: 0.5rem;
+  outline: none;
+}
+
+.TriagePane .evdPressed {
+  background-color: #8cb2de;
+}
+
+body {
+  font-family: "Roboto";
+}

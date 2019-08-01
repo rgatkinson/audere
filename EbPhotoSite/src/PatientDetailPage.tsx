@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import deepEqual from "deep-equal";
 import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
@@ -149,7 +148,6 @@ interface TriageProps extends PatientDetailPaneProps {
 
 interface TriageState {
   busy: boolean;
-  original: EncounterTriageInfo;
   edited: EncounterTriageInfo;
   error: string | null;
 }
@@ -161,18 +159,23 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     this.state = {
       busy: false,
       error: null,
-      original: triage,
       edited: triage
     };
   }
 
-  onEVDChange = (e: InputChangeEvent) =>
+  changeEVD(testIndicatesEVD: boolean) {
     this.setState({
       edited: {
         ...this.state.edited,
-        testIndicatesEVD: e.target.checked
+        testIndicatesEVD
       }
     });
+    this.save(testIndicatesEVD);
+  }
+
+  onEVDYes = () => this.changeEVD(true);
+  onEVDNo = () => this.changeEVD(false);
+
   onNotesChange = (e: TextAreaChangeEvent) =>
     this.setState({
       edited: {
@@ -181,34 +184,41 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       }
     });
 
-  save = async () => {
+  save = async (testIndicatesEVD: boolean) => {
     this.setState({ busy: true });
     const { docId } = this.props.eDoc;
-    const { notes, testIndicatesEVD } = this.state.edited;
+    const { notes } = this.state.edited;
     const api = getApi();
     try {
       await api.saveTriage(triageDoc(docId, notes, testIndicatesEVD));
-      this.setState({ busy: false, original: this.state.edited });
+      this.setState({ busy: false });
     } catch (err) {
       this.setState({ busy: false, error: err.message });
     }
   };
 
   public render(): React.ReactNode {
-    const { busy, edited, original, error } = this.state;
-    const { notes, testIndicatesEVD } = edited;
+    const { busy, edited, error } = this.state;
+    const { testIndicatesEVD } = edited;
     return (
       <div className="TriagePane">
-        <h2>Does the below image indicate EVD positivity?</h2>
-
+        <h3>Does the below image indicate EVD positivity?</h3>
         <div className="EditDetail">
-          <label htmlFor="test-indicates-evd">Test Indicates EVD:</label>
           <input
-            type="checkbox"
-            name="NAME-test-indicates-evd"
-            checked={testIndicatesEVD}
+            type="button"
+            value="Yes"
+            name="NAME-test-indicates-evd-yes"
+            className={testIndicatesEVD ? "evdPressed" : "evdUnpressed"}
             disabled={busy}
-            onChange={this.onEVDChange}
+            onClick={this.onEVDYes}
+          />
+          <input
+            type="button"
+            value="No"
+            name="NAME-test-indicates-evd-no"
+            className={testIndicatesEVD ? "evdUnpressed" : "evdPressed"}
+            disabled={busy}
+            onClick={this.onEVDNo}
           />
         </div>
 
@@ -280,7 +290,8 @@ class PhotoPane extends React.Component<
                           backgroundSize: "contain",
                           backgroundPosition: "center center",
                           backgroundRepeat: "no-repeat",
-                          backgroundColor: "gray"
+                          backgroundColor: "gray",
+                          marginRight: "1rem"
                         }}
                       >
                         <img
