@@ -12,7 +12,7 @@ import { getRoot } from "./util";
 import { LoginPage } from "./LoginPage";
 import { PatientListPage } from "./PatientListPage";
 import { PatientDetailPage } from "./PatientDetailPage";
-import { SimpleMap } from "./SimpleMap";
+import { MapPage } from "./MapPage";
 
 class FourOhFour extends React.Component {
   public render(): React.ReactNode {
@@ -26,7 +26,7 @@ ReactDOM.render(
       <Route exact path="/" component={LoginPage} />
       <Route path="/patients" component={PatientListPage} />
       <Route path="/patient-detail/:docId" component={PatientDetailPage} />
-      <Route path="/map" component={SimpleMap} />
+      <Route path="/map" component={MapPage} />
       <Route component={FourOhFour} />
     </Switch>
   </Router>,

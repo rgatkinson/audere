@@ -1,3 +1,6 @@
+import { EncounterDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import { getApi } from "./api";
+
 // Copyright (c) 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
@@ -25,4 +28,9 @@ export function last<T>(array: Array<T>): T | null {
   } else {
     return array[array.length - 1];
   }
+}
+
+export async function loadAllEncounters(): Promise<EncounterDocument[]> {
+  const snapshot = (await getApi().loadEncounters()) as firebase.firestore.QuerySnapshot;
+  return snapshot.docs.map(e => e.data() as EncounterDocument);
 }

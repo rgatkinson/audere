@@ -15,6 +15,7 @@ import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
 import { LoggedInAs } from "./LoggedInAs";
 import "./PatientDetailPage.css";
+import { SimpleMap } from "./SimpleMap";
 
 type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
@@ -291,7 +292,8 @@ class PhotoPane extends React.Component<
                           backgroundPosition: "center center",
                           backgroundRepeat: "no-repeat",
                           backgroundColor: "gray",
-                          marginRight: "1rem"
+                          marginRight: "1rem",
+                          marginBottom: "0.5rem"
                         }}
                       >
                         <img
@@ -305,8 +307,6 @@ class PhotoPane extends React.Component<
                         />
                       </div>
                     )}
-                  </td>
-                  <td>
                     <table>
                       <tr>
                         <th>Tested On:</th>
@@ -336,6 +336,18 @@ class PhotoPane extends React.Component<
                           <br />
                         </td>
                       </tr>
+                    </table>
+                  </td>
+                  <td>
+                    <SimpleMap
+                      encounters={[this.props.eDoc]}
+                      style={{
+                        height: "400px",
+                        width: "400px",
+                        marginBottom: "0.5rem"
+                      }}
+                    />
+                    <table>
                       <tr>
                         <th>Location:</th>
                       </tr>

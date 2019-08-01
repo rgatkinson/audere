@@ -4,12 +4,10 @@
 // can be found in the LICENSE file distributed with this file
 
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
 import {
   EncounterDocument,
   EncounterInfo
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { getApi } from "./api";
 import {
   GoogleMap,
   Marker,
@@ -25,7 +23,10 @@ const apiKey = "AIzaSyAgQB01v0gEm2L93fAfB_dnf_JJR8K-gAM";
 const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${apiKey}`;
 const DEFAULT_ZOOM = 11;
 
-export interface SimpleMapProps extends RouteComponentProps<{}> {}
+interface Props {
+  encounters: EncounterDocument[];
+  style: React.CSSProperties;
+}
 
 interface Location {
   name: string;
@@ -36,18 +37,27 @@ interface Location {
   diagnosis: number;
 }
 
-export interface SimpleMapState {
+interface State {
   locations: Location[] | null;
 }
 
-export class SimpleMap extends React.Component<SimpleMapProps, SimpleMapState> {
-  constructor(props: SimpleMapProps) {
+export class SimpleMap extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { locations: null };
   }
 
-  componentDidMount() {
-    this.load();
+  static getDerivedStateFromProps(props: Props, state: State): State | null {
+    console.log("Encounters from props", props.encounters);
+    if (
+      !state.locations ||
+      props.encounters.length !== state.locations.length
+    ) {
+      return {
+        locations: SimpleMap.getLocations(props.encounters)
+      };
+    }
+    return null;
   }
 
   private rad2degr(rad: number) {
@@ -93,12 +103,8 @@ export class SimpleMap extends React.Component<SimpleMapProps, SimpleMapState> {
     }
   }
 
-  private async load(): Promise<void> {
-    const encounters = await getApi().loadEncounters();
-    const eDocs = encounters.docs.map(
-      (x: any) => x.data() as EncounterDocument
-    );
-    const locations = eDocs
+  private static getLocations(encounters: EncounterDocument[]) {
+    return encounters
       .filter(
         (eDoc: EncounterDocument) =>
           !!eDoc.encounter.rdtPhotos && eDoc.encounter.rdtPhotos.length > 0
@@ -115,7 +121,6 @@ export class SimpleMap extends React.Component<SimpleMapProps, SimpleMapState> {
           docId: eDoc.docId
         };
       });
-    this.setState({ locations });
   }
 
   MyGoogleMap = withScriptjs(
@@ -142,8 +147,8 @@ export class SimpleMap extends React.Component<SimpleMapProps, SimpleMapState> {
     ))
   );
   loadingElement = <div />;
-  containerElement = <div style={{ height: "100vh" }} />;
-  mapElement = <div style={{ height: "100vh" }} />;
+  containerElement = <div style={this.props.style} />;
+  mapElement = <div style={this.props.style} />;
   map = (
     <this.MyGoogleMap
       loadingElement={this.loadingElement}
@@ -155,14 +160,19 @@ export class SimpleMap extends React.Component<SimpleMapProps, SimpleMapState> {
 
   public render(): React.ReactNode {
     const { locations } = this.state;
+    console.log(
+      "Location count:",
+      locations,
+      locations ? locations.length : locations
+    );
     return (
       <div>
         {apiKey == null ? (
           "Cannot load map. Google Cloud API key is not configured."
-        ) : locations == null ? (
+        ) : locations == null || locations.length === 0 ? (
           "Loading..."
         ) : (
-          <div style={{ height: "100vh" }}>{this.map}</div>
+          <div style={this.props.style}>{this.map}</div>
         )}
       </div>
     );

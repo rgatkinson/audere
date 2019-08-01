@@ -32,6 +32,10 @@
   text-align: left;
 }
 
+.PhotoPane td {
+  vertical-align: top;
+}
+
 .PatientInfoPane td {
   padding-right: 16px;
   padding-bottom: 8px;
