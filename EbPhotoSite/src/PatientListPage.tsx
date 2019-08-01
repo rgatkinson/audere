@@ -13,7 +13,6 @@ import {
   EncounterTriageDocument
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
-import { EbSiteHeader } from "./EbSiteHeader";
 import { localeDate, last } from "./util";
 import "./PatientList.css";
 
@@ -53,7 +52,6 @@ class PatientListPageAssumeRouter extends React.Component<
     const { eDocs: records } = this.state;
     return (
       <div>
-        <EbSiteHeader />
         <div className="PatientListLegendHeader">Patient Lists</div>
         <div className="PatientListLegend">
           Click on a row to see details for a specific patient and to contact

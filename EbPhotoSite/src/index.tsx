@@ -13,6 +13,8 @@ import { LoginPage } from "./LoginPage";
 import { PatientListPage } from "./PatientListPage";
 import { PatientDetailPage } from "./PatientDetailPage";
 import { MapPage } from "./MapPage";
+import { EbSiteHeader } from "./EbSiteHeader";
+import { EbSiteFooter } from "./EbSiteFooter";
 
 class FourOhFour extends React.Component {
   public render(): React.ReactNode {
@@ -22,6 +24,7 @@ class FourOhFour extends React.Component {
 
 ReactDOM.render(
   <Router>
+    <EbSiteHeader />
     <Switch>
       <Route exact path="/" component={LoginPage} />
       <Route path="/patients" component={PatientListPage} />
@@ -29,6 +32,7 @@ ReactDOM.render(
       <Route path="/map" component={MapPage} />
       <Route component={FourOhFour} />
     </Switch>
+    <EbSiteFooter />
   </Router>,
   getRoot()
 );

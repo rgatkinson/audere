@@ -89,9 +89,11 @@ export class LoggedInAs extends React.Component<
             <td>
               <div className="WhoAmI">
                 {this.whoAmI()}
-                <div className="Logout" onClick={this.logout}>
-                  Logout
-                </div>
+                {this.state.user !== null && (
+                  <div className="Logout" onClick={this.logout}>
+                    Logout
+                  </div>
+                )}
               </div>
             </td>
           </tr>

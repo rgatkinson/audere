@@ -16,7 +16,6 @@ import {
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
-import { EbSiteHeader } from "./EbSiteHeader";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -103,7 +102,6 @@ class PatientDetailPageAssumeRouter extends React.Component<
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
       <div>
-        <EbSiteHeader />
         <div className="PatientListLink">
           <a href={`/patients/`}>Back to Patient List</a>
         </div>
@@ -111,10 +109,19 @@ class PatientDetailPageAssumeRouter extends React.Component<
           <div>Loading...</div>
         ) : (
           <div>
-            <PatientInfoPane eDoc={encounter}/>
-            <TriagePane eDoc={encounter} tDoc={triage} reload={this.load} triageChangedAction={this.triageChangeHandler}/>
-            <PhotoPane eDoc={encounter}/>
-            <Chat localIndex={encounter.encounter.localIndex} parentDocId={encounter.docId} phone={encounter.encounter.healthWorker.phone}/>
+            <PatientInfoPane eDoc={encounter} />
+            <TriagePane
+              eDoc={encounter}
+              tDoc={triage}
+              reload={this.load}
+              triageChangedAction={this.triageChangeHandler}
+            />
+            <PhotoPane eDoc={encounter} />
+            <Chat
+              localIndex={encounter.encounter.localIndex}
+              parentDocId={encounter.docId}
+              phone={encounter.encounter.healthWorker.phone}
+            />
           </div>
         )}
       </div>
