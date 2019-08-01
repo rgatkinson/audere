@@ -4,11 +4,17 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { ReturnKeyTypeOptions, StyleProp, TextStyle } from "react-native";
+import {
+  ReturnKeyTypeOptions,
+  StyleProp,
+  TextStyle,
+  KeyboardType
+} from "react-native";
 import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
+  keyboardType?: KeyboardType;
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
@@ -49,7 +55,9 @@ export default class NumberInput extends React.PureComponent<Props, State> {
       <TextInput
         autoCorrect={false}
         autoFocus={this.props.autoFocus}
-        keyboardType={"number-pad"}
+        keyboardType={
+          this.props.keyboardType ? this.props.keyboardType : "number-pad"
+        }
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}

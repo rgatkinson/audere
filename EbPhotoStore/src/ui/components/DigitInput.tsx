@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  ReturnKeyTypeOptions,
-  StyleProp,
-  StyleSheet,
-  TextStyle,
-  View
-} from "react-native";
+import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import NumberInput from "./NumberInput";
 import { EXTRA_LARGE_TEXT } from "../styles";
 

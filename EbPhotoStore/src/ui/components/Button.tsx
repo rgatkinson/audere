@@ -14,18 +14,19 @@ import {
   ViewStyle
 } from "react-native";
 import {
-  BORDER_RADIUS,
-  BORDER_RADIUS_SM,
+  BUTTON_BORDER_RADIUS,
   BORDER_WIDTH,
   BUTTON_WIDTH,
   BUTTON_WIDTH_SM,
-  FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
   INPUT_HEIGHT_SM,
   INPUT_TEXT,
   EXTRA_SMALL_TEXT,
-  PRIMARY_COLOR
+  HIGHLIGHT_COLOR,
+  FONT_ROBO_BOLD,
+  REGULAR_TEXT,
+  BUTTON_BORDER_RADIUS
 } from "../styles";
 
 interface Props {
@@ -89,17 +90,18 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderColor: PRIMARY_COLOR,
+    backgroundColor: HIGHLIGHT_COLOR,
+    borderColor: HIGHLIGHT_COLOR,
     flexDirection: "row",
     justifyContent: "center",
-    borderRadius: BORDER_RADIUS,
+    borderRadius: BUTTON_BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
     height: INPUT_HEIGHT,
     marginBottom: GUTTER * 2,
     width: BUTTON_WIDTH
   },
   buttonSm: {
-    borderRadius: BORDER_RADIUS_SM,
+    borderRadius: BUTTON_BORDER_RADIUS,
     height: INPUT_HEIGHT_SM,
     marginBottom: GUTTER,
     width: BUTTON_WIDTH_SM
@@ -108,7 +110,10 @@ const styles = StyleSheet.create({
     paddingRight: GUTTER / 2
   },
   text: {
-    fontFamily: FONT_SEMI_BOLD,
+    color: "#fff",
+    fontFamily: FONT_ROBO_BOLD,
+    fontSize: REGULAR_TEXT,
+    fontWeight: "bold",
     textAlign: "center"
   },
   textMed: {
@@ -118,12 +123,12 @@ const styles = StyleSheet.create({
     fontSize: EXTRA_SMALL_TEXT
   },
   primaryButton: {
-    backgroundColor: PRIMARY_COLOR
+    backgroundColor: HIGHLIGHT_COLOR
   },
   primaryButtonText: {
     color: "white"
   },
   secondaryButtonText: {
-    color: PRIMARY_COLOR
+    color: "white"
   }
 });

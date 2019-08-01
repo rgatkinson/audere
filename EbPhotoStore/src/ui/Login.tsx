@@ -9,7 +9,7 @@ import NumberInput from "./components/NumberInput";
 import TextInput from "./components/TextInput";
 import Text from "./components/Text";
 import Title from "./components/Title";
-import { GUTTER } from "./styles";
+import { GUTTER, FONT_COLOR, FONT_ROBO_MEDIUM, REGULAR_TEXT } from "./styles";
 import PhoneLoginVerification, {
   PhoneVerificationDismissal
 } from "./PhoneLoginVerification";
@@ -21,6 +21,7 @@ interface Props {
 
 interface State {
   firstName?: string;
+  focused?: number;
   lastName?: string;
   phone?: string;
   notes: string;
@@ -39,6 +40,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       const { firstName, lastName, phone, notes } = props.healthWorkerInfo;
       this.state = {
         firstName,
+        focused: 0,
         lastName,
         phone,
         notes,
@@ -46,6 +48,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       };
     } else {
       this.state = {
+        focused: 0,
         notes: "",
         showConfirmation: false
       };
@@ -113,7 +116,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       <Fragment>
         <KeyboardAvoidingView style={styles.container} behavior="padding">
           <ScrollView style={styles.content}>
-            <Title label={t("title")} />
+            <Title label={t("signIn")} />
             <Text
               content={t("loginFirstName")}
               style={[styles.titleRow, { paddingTop: 0 }]}
@@ -195,11 +198,15 @@ const styles = StyleSheet.create({
     padding: GUTTER
   },
   titleRow: {
+    color: FONT_COLOR,
+    fontFamily: FONT_ROBO_MEDIUM,
+    fontSize: REGULAR_TEXT,
     paddingTop: GUTTER,
     paddingBottom: GUTTER / 4
   },
   inputSingle: {
-    padding: 0
+    padding: 0,
+    borderBottomColor: FONT_COLOR
   },
   inputMulti: {
     borderWidth: 1
