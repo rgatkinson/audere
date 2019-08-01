@@ -82,10 +82,8 @@ class PatientListPageAssumeRouter extends React.Component<
             CHW Ebola Test Tracker
           </div>
         </div>
+        <div className="PatientListLegendHeader">Patient Lists</div>
         <div className="PatientListLegend">
-          The list below displays patients who have been tested in their
-          community for Ebola by a Community Health Worker.
-          <br />
           Click on a row to see details for a specific patient and to contact
           the CHW who tested the patient.
         </div>
