@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Alert, BackHandler, ImageBackground, StatusBar } from "react-native";
+import { Alert, BackHandler, StatusBar, View } from "react-native";
 import { connect } from "react-redux";
 import firebase from "react-native-firebase";
 import i18n from "i18next";
@@ -20,7 +20,7 @@ import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
 import AppMenu from "./AppMenu";
-import { SPLASH_IMAGE } from "./styles";
+import { SPLASH_IMAGE, TITLEBAR_COLOR } from "./styles";
 
 interface Props {
   currentPatient?: number;
@@ -230,20 +230,25 @@ class AppController extends React.Component<Props, State> {
   render() {
     return (
       <Fragment>
-        <ImageBackground
-          source={SPLASH_IMAGE}
-          style={[{ alignSelf: "stretch", width: "100%" }]}
+        <View
+          style={[
+            {
+              alignSelf: "stretch",
+              backgroundColor: TITLEBAR_COLOR,
+              width: "100%"
+            }
+          ]}
         >
           <StatusBar
             backgroundColor="transparent"
-            barStyle="light-content"
+            barStyle="dark-content"
             translucent={true}
           />
           <TitleBar
             onBack={this._shouldShowBack() && this._handleBackPress}
             onMenu={this._handleMenuPress}
           />
-        </ImageBackground>
+        </View>
         <AppMenu
           visible={this.state.showAppMenu}
           onDismiss={this._handleMenuDismiss}

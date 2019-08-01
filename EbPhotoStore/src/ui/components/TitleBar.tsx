@@ -6,6 +6,7 @@
 import React from "react";
 import {
   GestureResponderEvent,
+  Image,
   StyleSheet,
   TouchableOpacity,
   View
@@ -20,8 +21,9 @@ import {
   LARGE_TEXT,
   NAV_BAR_HEIGHT,
   REGULAR_TEXT,
-  SYSTEM_FONT,
-  STATUS_BAR_HEIGHT
+  STATUS_BAR_HEIGHT,
+  TITLE_IMAGE,
+  TITLEBAR_TEXT_COLOR
 } from "../styles";
 
 interface Props {
@@ -41,28 +43,30 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
     return (
       <MultiTapContainer
         active={true}
-        style={styles.container}
+        style={styles.barContainer}
         taps={4}
         onMultiTap={this._toggleDemoMode}
       >
         {demoMode && <View style={styles.demoView} />}
-        {!!onBack ? (
-          <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
-            <Text style={styles.actionContent} content={t("back")} />
+        <View style={styles.titleContainer}>
+          {!!onBack ? (
+            <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
+              <Text style={styles.actionContent} content={t("back")} />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.actionContainer} />
+          )}
+          <Image source={TITLE_IMAGE} style={styles.titleImage} />
+          <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
+            <Text
+              style={[
+                styles.actionContent,
+                { textAlign: "right", fontSize: LARGE_TEXT, fontWeight: "bold" }
+              ]}
+              content="&#9776;"
+            />
           </TouchableOpacity>
-        ) : (
-          <View style={styles.actionContainer} />
-        )}
-        <Text style={styles.title} content={t("title")} />
-        <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
-          <Text
-            style={[
-              styles.actionContent,
-              { textAlign: "right", fontSize: LARGE_TEXT }
-            ]}
-            content="&#9776;"
-          />
-        </TouchableOpacity>
+        </View>
       </MultiTapContainer>
     );
   }
@@ -73,6 +77,9 @@ export default connect((state: StoreState) => ({
 }))(withNamespaces("titleBar")(TitleBar));
 
 const styles = StyleSheet.create({
+  barContainer: {
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
+  },
   demoView: {
     backgroundColor: "rgba(1, 128, 1, 0.5)",
     position: "absolute",
@@ -81,30 +88,24 @@ const styles = StyleSheet.create({
     right: 0,
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
   },
-  container: {
-    alignItems: "center",
+  titleContainer: {
+    marginTop: STATUS_BAR_HEIGHT,
+    marginBottom: GUTTER / 2,
+    flex: 1,
     flexDirection: "row",
-    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
-    justifyContent: "space-between",
-    paddingHorizontal: GUTTER / 2
-  },
-  title: {
-    color: "white",
-    fontFamily: SYSTEM_FONT,
-    fontSize: LARGE_TEXT,
-    fontWeight: "bold",
-    paddingTop: STATUS_BAR_HEIGHT
+    alignItems: "flex-end",
+    justifyContent: "space-between"
   },
   actionContainer: {
-    alignItems: "center",
-    flexDirection: "row",
     width: 80
   },
   actionContent: {
-    color: "white",
-    flex: 1,
+    color: TITLEBAR_TEXT_COLOR,
     fontSize: REGULAR_TEXT,
-    paddingHorizontal: GUTTER / 2,
-    paddingTop: STATUS_BAR_HEIGHT
+    marginHorizontal: GUTTER / 2
+  },
+  titleImage: {
+    aspectRatio: 5.3333333333,
+    width: 140
   }
 });
