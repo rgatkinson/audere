@@ -147,31 +147,27 @@ class PatientTable extends React.Component<
     };
   };
 
+  private getTimestamp(row: PatientTableRow) {
+    const photo = last(row.eDoc.encounter.rdtPhotos);
+    if (!photo) {
+      return null;
+    }
+    return photo.timestamp;
+  }
+
   columns(): Column<PatientTableRow>[] {
     return [
       {
         Header: "Date Tested",
         accessor: row => {
-          const photo = last(row.eDoc.encounter.rdtPhotos);
-          if (!photo) {
-            return "Not Tested";
-          }
-          return localeDate(photo == null ? "" : photo.timestamp);
+          return this.getTimestamp(row);
+        },
+        Cell: cellInfo => {
+          const timestamp = this.getTimestamp(cellInfo.original);
+          return timestamp ? localeDate(timestamp) : "Not Tested";
         },
         id: "timestamp",
-        minWidth: 110,
-        sortMethod: (a, b) => {
-          if (a === b) {
-            return 0;
-          }
-          if (a === "Not Tested") {
-            return -1;
-          }
-          if (b === "Not Tested") {
-            return 1;
-          }
-          return a > b ? 1 : -1;
-        }
+        minWidth: 110
       },
       {
         Header: "Patient Name",
