@@ -25,8 +25,7 @@ import {
   EXTRA_SMALL_TEXT,
   HIGHLIGHT_COLOR,
   FONT_ROBO_BOLD,
-  REGULAR_TEXT,
-  BUTTON_BORDER_RADIUS
+  REGULAR_TEXT
 } from "../styles";
 
 interface Props {

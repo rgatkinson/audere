@@ -35,7 +35,16 @@ import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
-import { GUTTER, NAV_BAR_HEIGHT, LARGE_TEXT } from "./styles";
+import {
+  GUTTER,
+  HIGHLIGHT_COLOR,
+  LARGE_TEXT,
+  NAV_BAR_HEIGHT,
+  TAKE_PHOTO_LARGE_IMAGE,
+  TAKE_PHOTO_SMALL_IMAGE,
+  TEXT_COLOR,
+  TITLEBAR_COLOR
+} from "./styles";
 import { BackCallback } from "./AppController";
 
 interface Props {
@@ -224,6 +233,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       messages,
       healthWorkerInfo,
       id,
+      isNew,
       photoInfo,
       t
     } = this.props;
@@ -235,6 +245,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       notes,
       chatMessage
     } = this.state;
+    const isValidForPhoto = !!firstName || !!lastName;
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -309,40 +320,53 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           {photoInfo ? (
             <Fragment>
-              <View style={styles.grid}>
-                <Image
-                  style={styles.photo}
-                  source={{ uri: photoInfo.localPath }}
+              <View style={styles.photoContainer}>
+                <Text
+                  content={t("patientTestStripImage")}
+                  style={styles.titleRow}
                 />
-                <View style={styles.photoDetails}>
-                  <Text
-                    content={
-                      t("capturedOn") +
-                      t("common:dateTime", {
-                        date: new Date(photoInfo.photoInfo.timestamp)
-                      }) +
-                      "\n"
-                    }
+                <View style={styles.grid}>
+                  <Image
+                    style={styles.photo}
+                    source={{ uri: photoInfo.localPath }}
                   />
-                  <Text
-                    content={t("location", {
-                      lat: photoInfo.photoInfo.gps.latitude,
-                      long: photoInfo.photoInfo.gps.longitude
-                    })}
-                  />
-                  <Button
-                    style={styles.retakeButton}
-                    enabled={true}
-                    primary={false}
-                    small={true}
-                    label={t("retakePhoto")}
-                    onPress={this._takePhoto}
-                  />
+                  <View style={styles.photoDetails}>
+                    <Text
+                      content={
+                        t("capturedOn") +
+                        t("common:dateTime", {
+                          date: new Date(photoInfo.photoInfo.timestamp)
+                        }) +
+                        "\n"
+                      }
+                    />
+                    <Text
+                      content={t("location", {
+                        lat: photoInfo.photoInfo.gps.latitude,
+                        long: photoInfo.photoInfo.gps.longitude
+                      })}
+                    />
+                    <View style={{ flex: 1, justifyContent: "flex-end" }}>
+                      <TouchableOpacity
+                        onPress={this._takePhoto}
+                        style={styles.takePhotoContainer}
+                      >
+                        <Image
+                          source={TAKE_PHOTO_SMALL_IMAGE}
+                          style={styles.takePhotoSmall}
+                        />
+                        <Text
+                          content={t("retakePhoto").toUpperCase()}
+                          style={styles.takePhotoText}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
+                {evdPositive === undefined ? (
+                  <Text content={t("followUp")} />
+                ) : null}
               </View>
-              {evdPositive === undefined ? (
-                <Text content={t("followUp")} />
-              ) : null}
               <Text
                 style={styles.titleRow}
                 content={t("startChat", { firstName, lastName })}
@@ -360,19 +384,72 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               />
               {!!messages && <Chat messages={messages} />}
             </Fragment>
+          ) : !isNew ? (
+            <Fragment>
+              <View style={styles.photoContainer}>
+                <Text
+                  content={t("patientTestStripImage")}
+                  style={styles.titleRow}
+                />
+                <View style={styles.grid}>
+                  <TouchableOpacity onPress={this._takePhoto}>
+                    <View style={[styles.photo, styles.emptyPhoto]}>
+                      <Image
+                        style={styles.takePhotoLarge}
+                        source={TAKE_PHOTO_LARGE_IMAGE}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                  <View style={styles.photoDetails}>
+                    <Text
+                      content={t("noPhotoCaptured")}
+                      style={{ marginBottom: GUTTER / 2 }}
+                    />
+                    <TouchableOpacity
+                      onPress={this._takePhoto}
+                      style={styles.takePhotoContainer}
+                    >
+                      <Image
+                        source={TAKE_PHOTO_SMALL_IMAGE}
+                        style={styles.takePhotoSmall}
+                      />
+                      <Text
+                        content={t("addPhoto").toUpperCase()}
+                        style={styles.takePhotoText}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
+              </View>
+            </Fragment>
           ) : (
             <Fragment>
-              <View style={styles.grid}>
-                <Button
-                  enabled={!!firstName || !!lastName}
-                  label={t("addPhoto")}
-                  primary={true}
-                  style={styles.button}
-                  onPress={this._takePhoto}
+              <View style={styles.photoContainer}>
+                <Text
+                  content={t("patientTestStripImage")}
+                  style={styles.titleRow}
                 />
-                <Text content={t("photoNote")} style={{ width: "50%" }} />
+                <Text content={t("photoNote")} />
+                <TouchableOpacity
+                  disabled={!isValidForPhoto}
+                  onPress={this._takePhoto}
+                  style={[
+                    styles.takePhotoContainer,
+                    !isValidForPhoto && { opacity: 0.5 }
+                  ]}
+                >
+                  <Image
+                    source={TAKE_PHOTO_LARGE_IMAGE}
+                    style={[styles.takePhotoLarge, { marginRight: GUTTER / 2 }]}
+                  />
+                  <Text
+                    content={t("addPhoto").toUpperCase()}
+                    style={styles.takePhotoText}
+                  />
+                </TouchableOpacity>
+                <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
               </View>
-              <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
             </Fragment>
           )}
         </ScrollView>
@@ -431,9 +508,15 @@ const styles = StyleSheet.create({
   inputMulti: {
     borderWidth: 1
   },
-  grid: {
+  photoContainer: {
+    backgroundColor: TITLEBAR_COLOR,
+    marginHorizontal: -GUTTER,
+    paddingHorizontal: GUTTER,
     marginTop: GUTTER,
-    marginBottom: 0,
+    paddingBottom: GUTTER
+  },
+  grid: {
+    marginVertical: 0,
     marginRight: GUTTER,
     flexDirection: "row"
   },
@@ -441,12 +524,33 @@ const styles = StyleSheet.create({
     height,
     width
   },
-  photoDetails: {
-    padding: GUTTER
+  emptyPhoto: {
+    borderWidth: 1,
+    borderColor: TEXT_COLOR,
+    backgroundColor: "white",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   },
-  retakeButton: {
-    marginVertical: GUTTER,
-    backgroundColor: "lightgrey"
+  photoDetails: {
+    paddingHorizontal: GUTTER
+  },
+  takePhotoContainer: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  takePhotoLarge: {
+    height: 49,
+    width: 49,
+    marginVertical: GUTTER / 2
+  },
+  takePhotoSmall: {
+    height: 33,
+    width: 33,
+    marginRight: GUTTER / 2
+  },
+  takePhotoText: {
+    color: HIGHLIGHT_COLOR
   }
 });
 
