@@ -142,9 +142,10 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             onSubmitEditing={this._focusPhone}
           />
           <Text content={t("loginMobileNumber")} style={styles.titleRow} />
-          <NumberInput
+          <TextInput
             placeholder=""
             ref={this._phoneInput}
+            keyboardType={"phone-pad"}
             returnKeyType="next"
             style={styles.inputSingle}
             value={phone}
