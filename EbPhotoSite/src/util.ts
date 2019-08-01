@@ -1,4 +1,11 @@
-import { EncounterDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  AuthUser,
+  ConditionTag,
+  DocumentType,
+  EncounterDocument,
+  EncounterTriageDocument,
+  EncounterTriageInfo
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import { format } from "date-fns";
 
@@ -34,4 +41,40 @@ export function last<T>(array: Array<T>): T | null {
 export async function loadAllEncounters(): Promise<EncounterDocument[]> {
   const snapshot = (await getApi().loadEncounters()) as firebase.firestore.QuerySnapshot;
   return snapshot.docs.map(e => e.data() as EncounterDocument);
+}
+
+export function triageDocFromTriage(
+  docId: string,
+  triage: EncounterTriageInfo
+): EncounterTriageDocument {
+  return {
+    documentType: DocumentType.Triage,
+    schemaId: 1,
+    docId,
+    triage
+  };
+}
+
+export function triageDoc(
+  docId: string,
+  notes: string,
+  testIndicatesEVD: boolean,
+  diagnoser: AuthUser
+): EncounterTriageDocument {
+  return {
+    documentType: DocumentType.Triage,
+    schemaId: 1,
+    docId,
+    triage: {
+      notes,
+      diagnoses: [
+        {
+          tag: ConditionTag.Ebola,
+          value: testIndicatesEVD,
+          diagnoser,
+          timestamp: new Date().toISOString()
+        }
+      ]
+    }
+  };
 }

@@ -79,6 +79,8 @@ export interface Diagnosis {
     tag: ConditionTag;
     value: boolean;
     notes?: string;
+    timestamp: string;
+    diagnoser: AuthUser;
 }
 export declare enum ConditionTag {
     Ebola = "EBOLA"
@@ -90,7 +92,8 @@ export interface EncounterTriageDocument extends ProtocolDocumentBase {
 }
 export interface EncounterTriageInfo {
     notes: string;
-    testIndicatesEVD: boolean;
+    testIndicatesEVD?: boolean;
+    diagnoses?: Diagnosis[];
 }
 export interface MessagingTokenDocument extends ProtocolDocumentBase {
     documentType: DocumentType.MessagingToken;

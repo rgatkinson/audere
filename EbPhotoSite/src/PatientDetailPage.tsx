@@ -11,11 +11,13 @@ import {
   EncounterDocument,
   EncounterTriageDocument,
   EncounterTriageInfo,
+  ConditionTag,
   NotificationType,
   Notification
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { getApi, triageDoc } from "./api";
-import { localeDate } from "./util";
+import { getApi, getAuthUser } from "./api";
+import { localeDate, triageDocFromTriage } from "./util";
+import { EbSiteHeader } from "./EbSiteHeader";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -177,7 +179,9 @@ interface TriageState {
 class TriagePane extends React.Component<TriageProps, TriageState> {
   constructor(props: TriageProps) {
     super(props);
-    const { triage } = props.tDoc || triageDoc("", "", false);
+    const triage = props.tDoc
+      ? props.tDoc.triage
+      : { notes: "", diagnoses: [] };
     this.state = {
       busy: false,
       error: null,
@@ -185,14 +189,25 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     };
   }
 
-  changeEVD(testIndicatesEVD: boolean) {
-    this.setState({
-      edited: {
-        ...this.state.edited,
-        testIndicatesEVD
-      }
-    });
-    this.save(testIndicatesEVD);
+  async changeEVD(testIndicatesEVD: boolean) {
+    const authUser = await getAuthUser();
+    this.setState(
+      state => ({
+        edited: {
+          ...state.edited,
+          diagnoses: [
+            ...(state.edited.diagnoses || []),
+            {
+              tag: ConditionTag.Ebola,
+              value: testIndicatesEVD,
+              diagnoser: authUser,
+              timestamp: new Date().toISOString()
+            }
+          ]
+        }
+      }),
+      () => this.save(testIndicatesEVD)
+    );
   }
 
   onEVDYes = () => this.changeEVD(true);
@@ -212,7 +227,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     const { notes } = this.state.edited;
     const api = getApi();
     try {
-      await api.saveTriage(triageDoc(docId, notes, testIndicatesEVD));
+      await api.saveTriage(triageDocFromTriage(docId, this.state.edited));
       await this.props.triageChangedAction();
       this.setState({ busy: false });
     } catch (err) {
@@ -222,7 +237,10 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
 
   public render(): React.ReactNode {
     const { busy, edited, error } = this.state;
-    const { testIndicatesEVD } = edited;
+    const diagnosis =
+      edited.diagnoses &&
+      edited.diagnoses.length >= 1 &&
+      edited.diagnoses[edited.diagnoses.length - 1];
     return (
       <div className="TriagePane">
         <h3>Does the below image indicate EVD positivity?</h3>
@@ -231,7 +249,9 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             type="button"
             value="Yes"
             name="NAME-test-indicates-evd-yes"
-            className={testIndicatesEVD ? "evdPressed" : "evdUnpressed"}
+            className={
+              diagnosis && diagnosis.value ? "evdPressed" : "evdUnpressed"
+            }
             disabled={busy}
             onClick={this.onEVDYes}
           />
@@ -239,12 +259,13 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             type="button"
             value="No"
             name="NAME-test-indicates-evd-no"
-            className={testIndicatesEVD ? "evdUnpressed" : "evdPressed"}
+            className={
+              diagnosis && !diagnosis.value ? "evdPressed" : "evdUnpressed"
+            }
             disabled={busy}
             onClick={this.onEVDNo}
           />
         </div>
-
         {error != null && <div className="Error">{error}</div>}
       </div>
     );

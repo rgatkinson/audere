@@ -144,8 +144,10 @@ export interface AuthUser {
 
 export interface Diagnosis {
   tag: ConditionTag; // Identify a specific condition the RDT tests for.
-  value: boolean;    // Did the RDT indicate the presence of this condition?
-  notes?: string;    // Any notes associated with the diagnosis.
+  value: boolean; // Did the RDT indicate the presence of this condition?
+  notes?: string; // Any notes associated with the diagnosis.
+  timestamp: string;
+  diagnoser: AuthUser;
 }
 
 export enum ConditionTag {
@@ -167,7 +169,8 @@ export interface EncounterTriageDocument extends ProtocolDocumentBase {
 
 export interface EncounterTriageInfo {
   notes: string;
-  testIndicatesEVD: boolean;
+  testIndicatesEVD?: boolean;
+  diagnoses?: Diagnosis[];
 }
 
 // ========================================

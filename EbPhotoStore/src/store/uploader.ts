@@ -99,7 +99,12 @@ export function initializeFirebaseListener(store: Store<StoreState>) {
     if (!patient) {
       return;
     }
-    store.dispatch(setEvdStatus(patient.id, doc.triage.testIndicatesEVD));
+    const diagnoses = doc.triage.diagnoses;
+    const evdPositive =
+      !!diagnoses &&
+      diagnoses.length > 0 &&
+      diagnoses[diagnoses.length - 1].value;
+    store.dispatch(setEvdStatus(patient.id, evdPositive));
     store.dispatch(setTriageNotes(patient.id, doc.triage.notes));
   });
 }

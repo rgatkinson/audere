@@ -113,7 +113,7 @@ class PatientTable extends React.Component<
             tDoc: (triage.data() as EncounterTriageDocument) || {
               triage: {
                 notes: "",
-                testIndicatesEVD: false
+                diagnoses: []
               }
             }
           };
@@ -126,16 +126,23 @@ class PatientTable extends React.Component<
     this.setState({ rows });
   }
 
+  private triageIsPositive(tDoc: EncounterTriageDocument): boolean {
+    const diagnoses = tDoc && tDoc.triage.diagnoses;
+    return (
+      !!diagnoses &&
+      diagnoses.length > 0 &&
+      diagnoses[diagnoses.length - 1].value
+    );
+  }
+
   private getTrProps = (state: any, row: any, column: any, instance: any) => {
+    const evd = row && this.triageIsPositive(row.original.tDoc);
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
         this.props.onSelect(e, row.original.eDoc);
       },
       style: {
-        background:
-          row && row.original.tDoc && row.original.tDoc.triage.testIndicatesEVD
-            ? "#FFC0CB"
-            : "white"
+        background: evd ? "#FFC0CB" : "white"
       }
     };
   };
@@ -176,11 +183,22 @@ class PatientTable extends React.Component<
         minWidth: 110
       },
       {
+        Header: "Triaged",
+        accessor: r =>
+          r.tDoc == null
+            ? ".."
+            : r.tDoc.triage.diagnoses && r.tDoc.triage.diagnoses.length > 0
+            ? "yes"
+            : "no",
+        id: "triaged",
+        minWidth: 90
+      },
+      {
         Header: "EVD Test Result",
         accessor: r =>
-          r.tDoc == null ? ".." : r.tDoc.triage.testIndicatesEVD ? "yes" : "no",
+          r.tDoc == null ? ".." : this.triageIsPositive(r.tDoc) ? "yes" : "no",
         id: "evd",
-        minWidth: 90
+        minWidth: 70
       },
       {
         Header: "EVD Result Notes",

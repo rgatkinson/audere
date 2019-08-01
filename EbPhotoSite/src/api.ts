@@ -3,13 +3,23 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, EncounterTriageDocument, MessagingTokenDocument, Notification } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  AuthUser,
+  ConditionTag,
+  DocumentType,
+  EncounterDocument,
+  EncounterTriageDocument,
+  EncounterTriageInfo,
+  MessagingTokenDocument,
+  Notification,
+  Diagnosis
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import * as Firebase from "firebase";
 
 const firebase = (global as any).firebase as typeof Firebase;
 
-type QuerySnapshot = any; // firebase.firestore.QuerySnapshot;
-type DocumentSnapshot = any; // firebase.firestore.DocumentSnapshot;
+type QuerySnapshot = Firebase.firestore.QuerySnapshot;
+type DocumentSnapshot = Firebase.firestore.DocumentSnapshot;
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
 const DEFAULT_MESSAGES_COLLECTION = "messages";
@@ -88,21 +98,24 @@ export class Api {
 
   getMessagesReference(docId: string): Firebase.firestore.CollectionReference {
     const db = firebase.firestore();
-    const collection = db.collection(getEncounterCollection())
+    const collection = db
+      .collection(getEncounterCollection())
       .doc(docId)
       .collection(getMessagesCollection());
 
     return collection;
   }
 
-  async getRegistrationToken(phone: string): Promise<MessagingTokenDocument | null> {
+  async getRegistrationToken(
+    phone: string
+  ): Promise<MessagingTokenDocument | null> {
     const db = firebase.firestore();
     const collection = db.collection(getTokenCollection());
 
-    const query = collection
-      .where("phone", "==", phone)
-      .limit(1);
-    const result = await logIfError("getRegistrationToken", "get", () => query.get());
+    const query = collection.where("phone", "==", phone).limit(1);
+    const result = await logIfError("getRegistrationToken", "get", () =>
+      query.get()
+    );
 
     if (result.size > 0) {
       const data = result.docs[0].data() as MessagingTokenDocument;
@@ -158,15 +171,16 @@ export class Api {
       },
       content: message
     };
-    
+
     const ref = this.getMessagesReference(docId);
     const doc = ref.doc(`${timestamp}.${sender.uid}`);
-    
+
     return await logIfError("sendMessage", "set", () => doc.set(contents));
   }
 
   photoUrl(photoId: string): Promise<string> {
-    return firebase.storage()
+    return firebase
+      .storage()
       .ref(`photos/${photoId}.jpg`)
       .getDownloadURL();
   }
@@ -214,18 +228,22 @@ export function getApi() {
   return api;
 }
 
-export function triageDoc(
-  docId: string,
-  notes: string,
-  testIndicatesEVD: boolean
-): EncounterTriageDocument {
+export async function getAuthUser(): Promise<AuthUser> {
+  const currentUser = firebase.auth().currentUser;
+  if (!currentUser) {
+    return new Promise((res, rej) =>
+      firebase.auth().onAuthStateChanged(user =>
+        user === null
+          ? rej("Auth failed")
+          : res({
+              uid: user.uid,
+              name: user.email || ""
+            })
+      )
+    );
+  }
   return {
-    documentType: DocumentType.Triage,
-    schemaId: 1,
-    docId,
-    triage: {
-      notes,
-      testIndicatesEVD
-    }
+    uid: currentUser.uid,
+    name: currentUser.email || ""
   };
 }
