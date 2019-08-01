@@ -100,11 +100,17 @@ export function initializeFirebaseListener(store: Store<StoreState>) {
       return;
     }
     const diagnoses = doc.triage.diagnoses;
-    const evdPositive =
-      !!diagnoses &&
-      diagnoses.length > 0 &&
-      diagnoses[diagnoses.length - 1].value;
-    store.dispatch(setEvdStatus(patient.id, evdPositive));
+    if (diagnoses && diagnoses.length > 0) {
+      const diagnosis = diagnoses[diagnoses.length - 1];
+      store.dispatch(
+        setEvdStatus(
+          patient.id,
+          diagnosis.value,
+          diagnosis.diagnoser,
+          diagnosis.timestamp
+        )
+      );
+    }
     store.dispatch(setTriageNotes(patient.id, doc.triage.notes));
   });
 }

@@ -26,6 +26,10 @@ export type PatientEncounter = {
   triageNotes?: string;
   photoInfo: LocalPhotoInfo[];
   evdPositive?: boolean;
+  diagnosisInfo?: {
+    diagnoser: AuthUser;
+    timestamp: string;
+  };
   messages: Message[];
 };
 
@@ -57,7 +61,13 @@ export type PatientAction =
       patientUuid: string;
       message: Message;
     }
-  | { type: "SET_EVD_STATUS"; id: number; evdStatus: boolean }
+  | {
+      type: "SET_EVD_STATUS";
+      id: number;
+      evdStatus: boolean;
+      diagnoser: AuthUser;
+      timestamp: string;
+    }
   | { type: "SET_TRIAGE_NOTES"; id: number; notes: string };
 
 export type PatientState = PatientEncounter[];
@@ -125,7 +135,11 @@ export default function reducer(
         }
         return {
           ...patient,
-          evdPositive: action.evdStatus
+          evdPositive: action.evdStatus,
+          diagnosisInfo: {
+            diagnoser: action.diagnoser,
+            timestamp: action.timestamp
+          }
         };
       });
     case "SET_TRIAGE_NOTES":
@@ -206,11 +220,18 @@ export function receiveChatMessage(
   };
 }
 
-export function setEvdStatus(id: number, evdStatus: boolean): PatientAction {
+export function setEvdStatus(
+  id: number,
+  evdStatus: boolean,
+  diagnoser: AuthUser,
+  timestamp: string
+): PatientAction {
   return {
     type: "SET_EVD_STATUS",
     id,
-    evdStatus
+    evdStatus,
+    diagnoser,
+    timestamp
   };
 }
 
