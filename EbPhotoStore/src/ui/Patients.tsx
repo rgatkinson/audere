@@ -28,11 +28,40 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class Patients extends React.Component<Props & WithNamespaces> {
+interface State {
+  patients: PatientEncounter[];
+}
+
+class Patients extends React.Component<Props & WithNamespaces, State> {
+  state: State = {
+    patients: []
+  };
+
   async componentDidMount() {
     this.props.setupBackInfo(Screen.Patients, this._logout, () => {
       return false;
     });
+  }
+
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (props.patients.length != state.patients.length) {
+      return {
+        patients: [...props.patients].sort((a, b) => {
+          if (!!a.patientInfo.lastName.localeCompare(b.patientInfo.lastName)) {
+            return a.patientInfo.lastName.localeCompare(b.patientInfo.lastName);
+          } else if (
+            !!a.patientInfo.firstName.localeCompare(b.patientInfo.firstName)
+          ) {
+            return a.patientInfo.firstName.localeCompare(
+              b.patientInfo.firstName
+            );
+          } else {
+            return a.id - b.id;
+          }
+        })
+      };
+    }
+    return null;
   }
 
   _addPatient = () => {
@@ -73,13 +102,13 @@ class Patients extends React.Component<Props & WithNamespaces> {
             enabled={true}
             label={t("addNewPatient")}
             primary={true}
-            style={[styles.button, { flex: 1, marginBottom: 0 }]}
+            style={{ flex: 1, marginBottom: 0 }}
             onPress={this._addPatient}
             small={true}
           />
         </View>
         <FlatList
-          data={this.props.patients}
+          data={this.state.patients}
           keyExtractor={this._keyExtractor}
           renderItem={({ item }) => (
             <PatientRow

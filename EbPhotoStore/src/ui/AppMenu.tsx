@@ -57,10 +57,7 @@ class AppMenu extends React.Component<Props & WithNamespaces> {
             </TouchableWithoutFeedback>
             {loggedIn && (
               <View style={styles.menuItemContainer}>
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={this._onLogout}
-                >
+                <TouchableOpacity onPress={this._onLogout}>
                   <Text style={styles.menuItemText} content={t("logout")} />
                 </TouchableOpacity>
               </View>

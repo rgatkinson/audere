@@ -22,8 +22,7 @@ export default class Chat extends React.Component<Props> {
     const uid = firebase.auth().currentUser!.uid;
     return (
       <Fragment>
-        {messages
-          .map(message => message)
+        {[...messages]
           .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
           .map(message => (
             <ChatMessage
