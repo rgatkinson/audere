@@ -15,6 +15,8 @@ import {
 import { getApi } from "./api";
 import { localeDate, last } from "./util";
 import "./PatientList.css";
+import mapIcon from "./img/mapview.png";
+import listIcon from "./img/listview.png";
 
 export interface PatientsListPageProps extends RouteComponentProps<{}> {}
 
@@ -51,7 +53,7 @@ class PatientListPageAssumeRouter extends React.Component<
   public render(): React.ReactNode {
     const { eDocs: records } = this.state;
     return (
-      <div>
+      <div className="PatientListBody">
         <div className="PatientListLegendHeader">Patient Lists</div>
         <div className="PatientListLegend">
           Click on a row to see details for a specific patient and to contact
@@ -60,7 +62,23 @@ class PatientListPageAssumeRouter extends React.Component<
         {records == null ? (
           "Loading..."
         ) : (
-          <PatientTable eDocs={records} onSelect={this.select} />
+          <div>
+            <table className="PatientTableTitle">
+              <tr>
+                <td>Un-triaged Patients () </td>
+                <td className="ListViewIcon">
+                  <img src={listIcon} />
+                </td>
+                <td className="ListViewText">List View</td>
+
+                <td className="MapViewIcon">
+                  <img src={mapIcon} />
+                </td>
+                <td className="MapViewText">Map View</td>
+              </tr>
+            </table>
+            <PatientTable eDocs={records} onSelect={this.select} />
+          </div>
         )}
       </div>
     );

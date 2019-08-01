@@ -61,7 +61,7 @@ export class LoggedInAs extends React.Component<
     } else if (this.state.user != null) {
       return (
         <div>
-          <div>Welcome,</div>
+          <div className="UserWelcome">Welcome,</div>
           <div className="UserName">{this.state.user.email}</div>
         </div>
       );

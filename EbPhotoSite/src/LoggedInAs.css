@@ -3,13 +3,13 @@ body {
   margin: 0px;
   padding: 0px;
   font-family: "Roboto", sans-serif;
+  font-size: 14pt;
+  line-height: 16pt;
 }
 
 div.WhoAmI {
   padding-top: 17px;
   margin-right: 40px;
-  font-size: 0.9rem;
-  line-height: 1.1rem;
   text-align: left;
   visibility: inherit;
   vertical-align: middle;
@@ -18,6 +18,7 @@ div.WhoAmI {
 .Logout {
   color: #0088ff;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .ProfileImage {
@@ -27,6 +28,11 @@ div.WhoAmI {
   vertical-align: middle;
 }
 
+.UserWelcome {
+  color: #4d4d4d;
+}
+
 .UserName {
   font-weight: bold;
+  color: #4d4d4d;
 }

@@ -2,29 +2,82 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+.PatientListBody {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.PatientListLegendHeader {
+  font: "Roboto", sans-serif;
+  color: #989898;
+  font-weight: lighter;
+  font-size: 36pt;
+  padding-left: 0px;
+}
+
 .PatientListLegend {
-  padding: 0.5rem;
+  font: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 16pt;
+}
+
+.PatientTableTitle {
+  padding: 40px 0px 20px 0px;
+  font: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 24pt;
+}
+
+.ListViewIcon {
+  vertical-align: middle;
+  padding-left: 10px;
+}
+
+.MapViewIcon {
+  vertical-align: middle;
+  padding-left: 10px;
+}
+
+.ListViewText {
+  font: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 13pt;
+}
+
+.MapViewText {
+  font: "Roboto", sans-serif;
+  color: #0088ff;
+  font-size: 13pt;
 }
 
 .ReactTable .rt-tr:hover .rt-td {
-  background: #d3d3d3;
+  background: #f2f2f2;
   cursor: pointer;
 }
 
 .ReactTable .rt-th {
-  font-weight: bold;
+  font: "Roboto", sans-serif;
+  font-size: 15pt;
+  color: #014080;
+}
+
+.ReactTable .rt-td {
+  height: 50px;
+  font: "Roboto", sans-serif;
+  font-size: 15pt;
+  color: #4d4d4d;
 }
 
 .ReactTable .-sort-desc::before {
   content: "▼";
   float: right;
   margin: 3px;
-  font-size: 0.7em;
+  font-weight: bold;
 }
 
 .ReactTable .-sort-asc::before {
   content: "▲";
   float: right;
   margin: 1px 3px 5px 3px;
-  font-size: 0.7em;
+  font-weight: bold;
 }
