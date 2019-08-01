@@ -10,7 +10,10 @@
   },
   "titleBar": {
     "title": "EVD Track",
-    "back": "\u276E Back"
+    "backFull": "\u276E {{back}}",
+    "back": "Back",
+    "list": "List",
+    "detail": "Detail"
   },
   "appMenu": {
     "logout": "Log Out",

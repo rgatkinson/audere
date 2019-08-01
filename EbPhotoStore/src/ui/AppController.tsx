@@ -20,7 +20,7 @@ import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
 import AppMenu from "./AppMenu";
-import { SPLASH_IMAGE, TITLEBAR_COLOR } from "./styles";
+import { TITLEBAR_COLOR } from "./styles";
 
 interface Props {
   currentPatient?: number;
@@ -29,9 +29,10 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-interface BackCallbacks {
+export interface BackCallback {
   onBack(): void;
-  shouldShowBack(): boolean;
+  shouldShowBack?(): boolean;
+  backText?: string;
 }
 
 interface State {
@@ -43,7 +44,7 @@ class AppController extends React.Component<Props, State> {
     showAppMenu: false
   };
   _backHandler: any;
-  _onBackCallbacks: { [s: string]: BackCallbacks } = {};
+  _onBackCallbacks: { [s: string]: BackCallback } = {};
   _onTokenRefreshListener: any;
   _notificationListener: any;
 
@@ -112,19 +113,16 @@ class AppController extends React.Component<Props, State> {
     );
   }
 
-  _setupBackInfo = (
-    s: Screen,
-    onBack: () => void,
-    shouldShowBack: () => boolean
-  ) => {
-    this._onBackCallbacks[s] = { onBack, shouldShowBack };
+  _setupBackInfo = (s: Screen, info: BackCallback) => {
+    this._onBackCallbacks[s] = info;
     this.forceUpdate();
   };
 
   _shouldShowBack = () => {
     return (
       (!!this._onBackCallbacks[this.props.screen] &&
-        this._onBackCallbacks[this.props.screen].shouldShowBack()) ||
+        (!this._onBackCallbacks[this.props.screen].shouldShowBack ||
+          this._onBackCallbacks[this.props.screen].shouldShowBack!())) ||
       [
         Screen.Camera,
         Screen.LocationPermission,
@@ -246,6 +244,10 @@ class AppController extends React.Component<Props, State> {
           />
           <TitleBar
             onBack={this._shouldShowBack() && this._handleBackPress}
+            backText={
+              !!this._onBackCallbacks[this.props.screen] &&
+              this._onBackCallbacks[this.props.screen].backText
+            }
             onMenu={this._handleMenuPress}
           />
         </View>

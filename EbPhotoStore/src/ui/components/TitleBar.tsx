@@ -30,6 +30,7 @@ interface Props {
   demoMode: boolean;
   dispatch(action: Action): void;
   onBack?(event: GestureResponderEvent): void;
+  backText?: string;
   onMenu?(event: GestureResponderEvent): void;
 }
 
@@ -39,7 +40,7 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { demoMode, onBack, onMenu, t } = this.props;
+    const { backText, demoMode, onBack, onMenu, t } = this.props;
     return (
       <MultiTapContainer
         active={true}
@@ -51,7 +52,10 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
         <View style={styles.titleContainer}>
           {!!onBack ? (
             <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
-              <Text style={styles.actionContent} content={t("back")} />
+              <Text
+                style={styles.actionContent}
+                content={t("backFull", { back: t(backText || "back") })}
+              />
             </TouchableOpacity>
           ) : (
             <View style={styles.actionContainer} />

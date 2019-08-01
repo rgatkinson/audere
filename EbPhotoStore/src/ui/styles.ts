@@ -55,6 +55,7 @@ export const LOGO_HEIGHT = 120;
 export const IMAGE_WIDTH = "100%";
 export const SPLASH_IMAGE = { uri: "splash" };
 export const TITLE_IMAGE = { uri: "title" };
+export const ADD_PHOTO_IMAGE = { uri: "addphoto" };
 export const ASPECT_RATIO = 1.75;
 export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const SPLASH_RATIO = 1.05;

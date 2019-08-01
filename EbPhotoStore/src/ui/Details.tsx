@@ -37,6 +37,7 @@ import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import { GUTTER, NAV_BAR_HEIGHT, LARGE_TEXT } from "./styles";
+import { BackCallback } from "./AppController";
 
 interface Props {
   evdPositive?: boolean;
@@ -47,11 +48,7 @@ interface Props {
   notes?: string;
   photoInfo?: LocalPhotoInfo;
   messages?: Message[];
-  setupBackInfo(
-    s: Screen,
-    onBack: () => void,
-    shouldShowBack: () => boolean
-  ): void;
+  setupBackInfo(s: Screen, info: BackCallback): void;
   dispatch(action: Action): void;
 }
 
@@ -72,8 +69,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.props.setupBackInfo(Screen.PatientDetails, this._back, () => {
-      return true;
+    this.props.setupBackInfo(Screen.PatientDetails, {
+      onBack: this._back,
+      backText: "list"
     });
     this.state = {
       firstName: props.patientInfo.firstName,

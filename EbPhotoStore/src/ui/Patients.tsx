@@ -1,5 +1,11 @@
 import React from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -14,17 +20,14 @@ import {
 import Button from "./components/Button";
 import Text from "./components/Text";
 import Title from "./components/Title";
-import { BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
+import { ADD_PHOTO_IMAGE, BORDER_COLOR, GUTTER, INPUT_HEIGHT } from "./styles";
 import firebase from "react-native-firebase";
+import { BackCallback } from "./AppController";
 
 interface Props {
   demoMode: boolean;
   patients: PatientEncounter[];
-  setupBackInfo(
-    s: Screen,
-    onBack: () => void,
-    shouldShowBack: () => boolean
-  ): void;
+  setupBackInfo(s: Screen, info: BackCallback): void;
   dispatch(action: Action): void;
 }
 
@@ -38,8 +41,11 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
   };
 
   async componentDidMount() {
-    this.props.setupBackInfo(Screen.Patients, this._logout, () => {
-      return false;
+    this.props.setupBackInfo(Screen.Patients, {
+      onBack: this._logout,
+      shouldShowBack: () => {
+        return false;
+      }
     });
   }
 
@@ -163,7 +169,11 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
             />
           )}
           <View style={styles.patientChat}>
-            {/*TODO: chat bubble*/ false && <Text content="&#x1f4ac;" />}
+            {!patient.photoInfo.length ? (
+              <Image source={ADD_PHOTO_IMAGE} style={styles.patientStatusImg} />
+            ) : (
+              /*TODO: chat bubble*/ false && <Text content="&#x1f4ac;" />
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -203,6 +213,10 @@ const styles = StyleSheet.create({
   },
   patientChat: {
     width: 30
+  },
+  patientStatusImg: {
+    width: 24,
+    height: 24
   }
 });
 
