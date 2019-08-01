@@ -22,13 +22,16 @@ export default class Chat extends React.Component<Props> {
     const uid = firebase.auth().currentUser!.uid;
     return (
       <Fragment>
-        {messages.reverse().map(message => (
-          <ChatMessage
-            key={message.sender.uid + message.timestamp}
-            local={message.sender.uid === uid}
-            message={message}
-          />
-        ))}
+        {messages
+          .map(message => message)
+          .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+          .map(message => (
+            <ChatMessage
+              key={message.sender.uid + message.timestamp}
+              local={message.sender.uid === uid}
+              message={message}
+            />
+          ))}
       </Fragment>
     );
   }

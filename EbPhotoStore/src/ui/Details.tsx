@@ -358,13 +358,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 style={styles.inputMulti}
                 value={chatMessage}
                 onChangeText={this._updateChatMessage}
-              />
-              <Button
-                enabled={true}
-                primary={true}
-                label="Send"
-                style={{ marginVertical: 10 }}
-                onPress={this._sendChatMessage}
+                onSubmitEditing={this._sendChatMessage}
               />
               {!!messages && <Chat messages={messages} />}
             </Fragment>
@@ -468,40 +462,7 @@ export default connect((state: StoreState, props: Props) => ({
   // TODO(ram): derive messages from messages collection
   messages:
     props.id < state.patients.length
-      ? [
-          {
-            timestamp: "2019-07-30T22:17:46.497Z",
-            content: "Drat this patient is positive for ebola",
-            sender: { uid: 34, name: "Government worker 1" }
-          },
-          {
-            timestamp: "2019-07-30T22:24:46.497Z",
-            content:
-              "Please bring them back in for evaluation as soon as possible",
-            sender: { uid: 34, name: "Government worker 1" }
-          },
-          {
-            timestamp: "2019-07-30T22:28:14.760Z",
-            content: "Ok I will track them down",
-            sender: { uid: firebase.auth().currentUser!.uid }
-          },
-          {
-            timestamp: "2019-07-30T22:32:14.760Z",
-            content: "Any updates?",
-            sender: { uid: 34, name: "Government worker 2" }
-          },
-          {
-            timestamp: "2019-07-30T22:36:14.760Z",
-            content: "Yes, she is coming in tomorrow",
-            sender: { uid: firebase.auth().currentUser!.uid }
-          },
-          {
-            timestamp: "2019-07-30T22:42:14.760Z",
-            content: "Great, thank you",
-            sender: { uid: 34, name: "Government worker 1" }
-          },
-          ...(state.patients[props.id].messages || [])
-        ]
+      ? state.patients[props.id].messages || []
       : [],
   isNew: props.id === state.patients.length,
   notes:
