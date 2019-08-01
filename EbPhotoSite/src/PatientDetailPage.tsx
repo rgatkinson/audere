@@ -86,7 +86,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
         await api.pushNotification(
           doc.token,
           "Updated EVD diagnosis",
-          "An encounter was triaged, etc",
+          "A patient's test result interpretation is available",
           details,
           "triage_evd"
         );

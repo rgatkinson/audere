@@ -89,7 +89,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
 
         await api.pushNotification(
           doc.token,
-          "New chat message",
+          `Message from ${currentUser.displayName}`,
           input,
           details,
           "chw_chat"
