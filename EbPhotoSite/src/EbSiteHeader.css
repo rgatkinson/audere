@@ -1,0 +1,30 @@
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Roboto", sans-serif;
+}
+
+.PatientListHeader {
+  background-color: #f2f2f2;
+  overflow: hidden;
+  height: 100px;
+  line-height: 1rem;
+}
+
+.PatientListLegendHeader {
+  padding-top: 1.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 2.5rem;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.PatientListHeaderLogo {
+  padding-left: 40px;
+  padding-top: 27px;
+  display: inline-block;
+  vertical-align: middle;
+}

@@ -13,7 +13,7 @@ import {
   EncounterTriageDocument
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
-import { LoggedInAs } from "./LoggedInAs";
+import { EbSiteHeader } from "./EbSiteHeader";
 import { localeDate, last } from "./util";
 import "./PatientList.css";
 
@@ -53,35 +53,7 @@ class PatientListPageAssumeRouter extends React.Component<
     const { eDocs: records } = this.state;
     return (
       <div>
-        <div className="PatientListHeader">
-          <div
-            style={{
-              float: "left",
-              clear: "none",
-              visibility: "hidden"
-            }}
-          >
-            <LoggedInAs />
-          </div>
-
-          <div
-            style={{
-              float: "right",
-              clear: "none"
-            }}
-          >
-            <LoggedInAs />
-          </div>
-
-          <div
-            className="PatientListHeaderTitle"
-            style={{
-              clear: "none"
-            }}
-          >
-            CHW Ebola Test Tracker
-          </div>
-        </div>
+        <EbSiteHeader />
         <div className="PatientListLegendHeader">Patient Lists</div>
         <div className="PatientListLegend">
           Click on a row to see details for a specific patient and to contact

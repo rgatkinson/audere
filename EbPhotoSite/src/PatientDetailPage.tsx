@@ -16,7 +16,7 @@ import {
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, triageDoc } from "./api";
 import { localeDate } from "./util";
-import { LoggedInAs } from "./LoggedInAs";
+import { EbSiteHeader } from "./EbSiteHeader";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -91,45 +91,19 @@ class PatientDetailPageAssumeRouter extends React.Component<
           "triage_evd"
         );
       } else {
-        console.warn(`No registration token found for phone number ${phone}, ` +
-          `no notification of triage will be sent`);
+        console.warn(
+          `No registration token found for phone number ${phone}, ` +
+            `no notification of triage will be sent`
+        );
       }
     }
-  }
+  };
 
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
       <div>
-        <div className="PatientDetailHeader">
-          <div
-            style={{
-              float: "left",
-              clear: "none",
-              visibility: "hidden"
-            }}
-          >
-            <LoggedInAs />
-          </div>
-
-          <div
-            style={{
-              float: "right",
-              clear: "none"
-            }}
-          >
-            <LoggedInAs />
-          </div>
-
-          <div
-            className="PatientDetailHeaderTitle"
-            style={{
-              clear: "none"
-            }}
-          >
-            CHW Ebola Test Tracker
-          </div>
-        </div>
+        <EbSiteHeader />
         <div className="PatientListLink">
           <a href={`/patients/`}>Back to Patient List</a>
         </div>

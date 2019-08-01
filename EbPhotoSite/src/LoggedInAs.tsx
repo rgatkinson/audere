@@ -8,6 +8,7 @@ import { Redirect } from "react-router-dom";
 import * as Firebase from "firebase";
 
 import { getApi } from "./api";
+import profileImage from "./img/userprofile.png";
 import "./LoggedInAs.css";
 
 const firebase = (global as any).firebase as typeof Firebase;
@@ -60,8 +61,8 @@ export class LoggedInAs extends React.Component<
     } else if (this.state.user != null) {
       return (
         <div>
-          <div>Logged in as:</div>
-          <div>{this.state.user.email}</div>
+          <div>Welcome,</div>
+          <div className="UserName">{this.state.user.email}</div>
         </div>
       );
     } else {
@@ -72,18 +73,29 @@ export class LoggedInAs extends React.Component<
   render() {
     const { busy } = this.state;
     return (
-      <div className="WhoAmI">
-        {this.whoAmI()}
-        <div>
-          <button
-            className="Logout"
-            type="button"
-            disabled={busy}
-            onClick={this.logout}
-          >
-            Log out
-          </button>
-        </div>
+      <div>
+        <table>
+          <tr>
+            <td>
+              <div
+                className="ProfileImage"
+                style={{
+                  clear: "none"
+                }}
+              >
+                <img src={profileImage} />
+              </div>
+            </td>
+            <td>
+              <div className="WhoAmI">
+                {this.whoAmI()}
+                <div className="Logout" onClick={this.logout}>
+                  Logout
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </div>
     );
   }
