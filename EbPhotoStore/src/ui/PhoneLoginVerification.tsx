@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  KeyboardAvoidingView,
-  Modal,
-  StyleSheet,
-  Alert,
-  View
-} from "react-native";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase, { RNFirebase } from "react-native-firebase";
+import Modal from "react-native-modal";
 import Button from "./components/Button";
-import NumberInput from "./components/NumberInput";
+import DigitInput from "./components/DigitInput";
 import Text from "./components/Text";
-import { GUTTER, DISABLED_COLOR } from "./styles";
+import { GUTTER, STATUS_BAR_HEIGHT } from "./styles";
 
 const DEFAULT_COUNTRY_CODE = "+1";
 const TEST_PHONE_NUMBER = "2068675309";
@@ -39,7 +34,6 @@ class PhoneLoginVerification extends React.Component<
     code: ""
   };
 
-  _codeInput: React.RefObject<NumberInput> | null = null;
   _authUnsubscribe: (() => void) | null = null;
   _confirmer: RNFirebase.ConfirmationResult | null = null;
 
@@ -79,6 +73,7 @@ class PhoneLoginVerification extends React.Component<
 
   _onChangeCode = (code: string) => {
     this.setState({ code });
+    this._validateCode();
   };
 
   _validateCode = async () => {
@@ -110,31 +105,27 @@ class PhoneLoginVerification extends React.Component<
   };
 
   render() {
-    const { t } = this.props;
+    const { phone, t, visible } = this.props;
     return (
       <Modal
-        visible={this.props.visible}
-        transparent={true}
-        onRequestClose={this._onCancel}
-        onShow={this._startFirebaseLogin}
+        animationIn={"fadeIn"}
+        animationOut={"fadeOut"}
+        avoidKeyboard={true}
+        backdropOpacity={0.5}
+        coverScreen={false}
+        isVisible={visible}
+        style={styles.modal}
+        onModalWillShow={this._startFirebaseLogin}
       >
-        <KeyboardAvoidingView style={styles.container} behavior="padding">
-          <Text content={t("verificationCode")} />
-          <NumberInput
-            placeholder={t("placeholder")}
-            ref={this._codeInput}
-            returnKeyType="next"
-            style={styles.input}
-            value={this.state.code}
-            onChangeText={this._onChangeCode}
-            onSubmitEditing={this._validateCode}
-          />
+        <View style={styles.container}>
+          <Text content={t("verificationCode", { phone })} />
+          <DigitInput digits={6} onSubmitEditing={this._onChangeCode} />
           <View style={styles.buttons}>
             <Button
               label={t("common:cancel")}
               enabled={true}
               primary={false}
-              style={styles.button}
+              style={[styles.button, { marginRight: GUTTER }]}
               onPress={this._onCancel}
             />
             <Button
@@ -145,7 +136,7 @@ class PhoneLoginVerification extends React.Component<
               onPress={this._validateCode}
             />
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
     );
   }
@@ -155,21 +146,24 @@ export default withNamespaces("phoneLoginVerification")(PhoneLoginVerification);
 
 const styles = StyleSheet.create({
   button: {
-    margin: GUTTER,
-    width: 125
+    marginTop: GUTTER,
+    marginBottom: 0,
+    flex: 1
   },
   buttons: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     justifyContent: "center"
   },
   container: {
-    margin: GUTTER * 2,
-    padding: GUTTER,
-    backgroundColor: DISABLED_COLOR,
-    maxHeight: 200
+    alignSelf: "stretch",
+    backgroundColor: "white",
+    justifyContent: "center",
+    opacity: 1,
+    padding: GUTTER
   },
-  input: {
-    marginBottom: GUTTER
+  modal: {
+    alignItems: "center",
+    justifyContent: "center"
   }
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -110,69 +110,71 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     const { t } = this.props;
     const { lastName, firstName, phone, notes } = this.state;
     return (
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <Fragment>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
+          <ScrollView style={styles.content}>
+            <Title label={t("title")} />
+            <Text
+              content={t("loginFirstName")}
+              style={[styles.titleRow, { paddingTop: 0 }]}
+            />
+            <TextInput
+              autoFocus={true}
+              placeholder=""
+              returnKeyType="next"
+              style={styles.inputSingle}
+              value={firstName}
+              onChangeText={this._updateFirstName}
+              onSubmitEditing={this._focusLastName}
+            />
+            <Text content={t("loginLastName")} style={styles.titleRow} />
+            <TextInput
+              placeholder=""
+              ref={this._lastNameInput}
+              returnKeyType="next"
+              style={styles.inputSingle}
+              value={lastName}
+              onChangeText={this._updateLastName}
+              onSubmitEditing={this._focusPhone}
+            />
+            <Text content={t("loginMobileNumber")} style={styles.titleRow} />
+            <NumberInput
+              keyboardType={"phone-pad"}
+              placeholder=""
+              ref={this._phoneInput}
+              returnKeyType="next"
+              style={styles.inputSingle}
+              value={phone}
+              onChangeText={this._updatePhone}
+              onSubmitEditing={this._focusNotes}
+            />
+            <Text content={t("notes")} style={styles.titleRow} />
+            <TextInput
+              blurOnSubmit={true}
+              placeholder={t("notesPlaceholder")}
+              multiline={true}
+              numberOfLines={3}
+              ref={this._notesInput}
+              returnKeyType="done"
+              style={styles.inputMulti}
+              value={notes}
+              onChangeText={this._updateNotes}
+            />
+          </ScrollView>
+          <Button
+            enabled={!!lastName && !!firstName && !!phone}
+            label={t("login")}
+            primary={true}
+            style={styles.button}
+            onPress={this._login}
+          />
+        </KeyboardAvoidingView>
         <PhoneLoginVerification
           phone={this.state.phone || ""}
           visible={this.state.showConfirmation}
           onDismiss={this._onConfirmationDismssed}
         />
-        <ScrollView style={styles.content}>
-          <Title label={t("title")} />
-          <Text
-            content={t("loginFirstName")}
-            style={[styles.titleRow, { paddingTop: 0 }]}
-          />
-          <TextInput
-            autoFocus={true}
-            placeholder=""
-            returnKeyType="next"
-            style={styles.inputSingle}
-            value={firstName}
-            onChangeText={this._updateFirstName}
-            onSubmitEditing={this._focusLastName}
-          />
-          <Text content={t("loginLastName")} style={styles.titleRow} />
-          <TextInput
-            placeholder=""
-            ref={this._lastNameInput}
-            returnKeyType="next"
-            style={styles.inputSingle}
-            value={lastName}
-            onChangeText={this._updateLastName}
-            onSubmitEditing={this._focusPhone}
-          />
-          <Text content={t("loginMobileNumber")} style={styles.titleRow} />
-          <TextInput
-            placeholder=""
-            ref={this._phoneInput}
-            keyboardType={"phone-pad"}
-            returnKeyType="next"
-            style={styles.inputSingle}
-            value={phone}
-            onChangeText={this._updatePhone}
-            onSubmitEditing={this._focusNotes}
-          />
-          <Text content={t("notes")} style={styles.titleRow} />
-          <TextInput
-            blurOnSubmit={true}
-            placeholder={t("notesPlaceholder")}
-            multiline={true}
-            numberOfLines={3}
-            ref={this._notesInput}
-            returnKeyType="done"
-            style={styles.inputMulti}
-            value={notes}
-            onChangeText={this._updateNotes}
-          />
-        </ScrollView>
-        <Button
-          enabled={!!lastName && !!firstName && !!phone}
-          label={t("login")}
-          primary={true}
-          style={styles.button}
-          onPress={this._login}
-        />
-      </KeyboardAvoidingView>
+      </Fragment>
     );
   }
 }

@@ -4,7 +4,8 @@
     "cancel": "Cancel",
     "button": {
       "yes": "Yes",
-      "submit": "Submit"
+      "submit": "Submit",
+      "cancel": "Cancel"
     }
   },
   "titleBar": {
@@ -31,7 +32,7 @@
     "evdNegative": "Ebola -"
   },
   "phoneLoginVerification": {
-    "verificationCode": "Verification Code:",
+    "verificationCode": "Please enter the 6-digit code sent to **{{phone}}**:",
     "placeholder": "123456",
     "authErrorTitle": "Authentication Error",
     "incorrectCodeTitle": "Incorrect Code",
