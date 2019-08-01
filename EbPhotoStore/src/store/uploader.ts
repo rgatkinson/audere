@@ -57,7 +57,10 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         });
         break;
       case "SET_FCM_TOKEN":
-        uploadToken(state.meta.healthWorkerInfo!.phone, action.fcmToken);
+      case "LOGIN":
+        if (state.meta.healthWorkerInfo && state.meta.fcmToken) {
+          uploadToken(state.meta.healthWorkerInfo.phone, state.meta.fcmToken);
+        }
         break;
     }
     return result;

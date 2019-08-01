@@ -87,6 +87,8 @@ export async function syncEncounter(docId: string, encounter: EncounterInfo) {
 }
 
 export async function uploadToken(phone: string, token: string) {
+  console.log("Uploading token");
+  const uid = firebase.auth().currentUser!.uid;
   const tokenDoc: MessagingTokenDocument = {
     device: DEVICE_INFO,
     docId: uuidv4(),
@@ -94,9 +96,10 @@ export async function uploadToken(phone: string, token: string) {
     phone,
     schemaId: 1,
     token,
-    uid: firebase.auth().currentUser!.uid
+    uid
   };
-  const doc = getTriageCollection().doc();
+  console.log(JSON.stringify(tokenDoc));
+  const doc = getTokenCollection().doc(uid);
   await doc.set(tokenDoc);
 }
 
