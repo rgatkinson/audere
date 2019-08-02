@@ -100,7 +100,8 @@ class PatientListPageAssumeRouter extends React.Component<
     const { eDocs: records } = this.state;
     return (
       <div className="PatientListBody">
-        <div className="PatientListLegendHeader">Patient Lists</div>
+        <div />
+        <div className="PatientListTitle">Patient Lists</div>
         <div className="PatientListLegend">
           Click on a row to see details for a specific patient and to contact
           the CHW who tested the patient.
