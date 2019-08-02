@@ -5,14 +5,9 @@
 
 import {
   AuthUser,
-  ConditionTag,
-  DocumentType,
-  EncounterDocument,
   EncounterTriageDocument,
-  EncounterTriageInfo,
   MessagingTokenDocument,
-  Notification,
-  Diagnosis
+  Notification
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import * as Firebase from "firebase";
 
@@ -148,6 +143,13 @@ export class Api {
     const collection = db.collection(getTriageCollection());
     const doc = collection.doc(docId);
     return await logIfError("loadTriage", "get", () => doc.get());
+  }
+
+  async loadTriages(): Promise<QuerySnapshot> {
+    const db = firebase.firestore();
+    const collection = db.collection(getTriageCollection());
+    const query = collection.limit(256);
+    return await logIfError("loadTriages", "get", () => query.get());
   }
 
   async saveTriage(triage: EncounterTriageDocument): Promise<void> {

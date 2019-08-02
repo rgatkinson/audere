@@ -48,7 +48,6 @@ export class SimpleMap extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromProps(props: Props, state: State): State | null {
-    console.log("Encounters from props", props.encounters);
     if (
       !state.locations ||
       props.encounters.length !== state.locations.length
@@ -160,11 +159,6 @@ export class SimpleMap extends React.Component<Props, State> {
 
   public render(): React.ReactNode {
     const { locations } = this.state;
-    console.log(
-      "Location count:",
-      locations,
-      locations ? locations.length : locations
-    );
     return (
       <div>
         {apiKey == null ? (

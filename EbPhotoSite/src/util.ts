@@ -43,6 +43,11 @@ export async function loadAllEncounters(): Promise<EncounterDocument[]> {
   return snapshot.docs.map(e => e.data() as EncounterDocument);
 }
 
+export async function loadAllTriages(): Promise<EncounterTriageDocument[]> {
+  const snapshot = (await getApi().loadTriages()) as firebase.firestore.QuerySnapshot;
+  return snapshot.docs.map(e => e.data() as EncounterTriageDocument);
+}
+
 export function triageDocFromTriage(
   docId: string,
   triage: EncounterTriageInfo

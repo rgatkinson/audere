@@ -8,7 +8,7 @@ body {
 }
 
 .PatientListLegendHeader {
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #989898;
   font-weight: lighter;
   font-size: 36pt;
@@ -16,16 +16,27 @@ body {
 }
 
 .PatientListLegend {
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #4d4d4d;
   font-size: 16pt;
 }
 
 .PatientTableTitle {
   padding: 40px 0px 20px 0px;
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #4d4d4d;
   font-size: 24pt;
+}
+
+.PatientTableTitle .viewButton {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.PatientTableTitle img {
+  margin-right: 6px;
 }
 
 .ListViewIcon {
@@ -39,13 +50,13 @@ body {
 }
 
 .ListViewText {
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #4d4d4d;
   font-size: 13pt;
 }
 
 .MapViewText {
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #0088ff;
   font-size: 13pt;
 }
@@ -56,14 +67,14 @@ body {
 }
 
 .ReactTable .rt-th {
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 15pt;
   color: #014080;
 }
 
 .ReactTable .rt-td {
   height: 50px;
-  font: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 15pt;
   color: #4d4d4d;
 }
