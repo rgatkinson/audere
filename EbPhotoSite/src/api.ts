@@ -231,18 +231,14 @@ export function getApi() {
 }
 
 export async function getAuthUser(): Promise<AuthUser> {
-  const currentUser = firebase.auth().currentUser;
+  let currentUser = firebase.auth().currentUser;
   if (!currentUser) {
-    return new Promise((res, rej) =>
-      firebase.auth().onAuthStateChanged(user =>
-        user === null
-          ? rej("Auth failed")
-          : res({
-              uid: user.uid,
-              name: user.displayName || ""
-            })
-      )
+    currentUser = await new Promise((res, rej) =>
+      firebase.auth().onAuthStateChanged(res)
     );
+    if (currentUser === null) {
+      throw new Error("Auth failed");
+    }
   }
   return {
     uid: currentUser.uid,
