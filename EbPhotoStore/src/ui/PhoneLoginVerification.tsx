@@ -1,12 +1,12 @@
 import React from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View, ActivityIndicator } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase, { RNFirebase } from "react-native-firebase";
 import Modal from "react-native-modal";
 import Button from "./components/Button";
 import DigitInput from "./components/DigitInput";
 import Text from "./components/Text";
-import { GUTTER } from "./styles";
+import { GUTTER, PRIMARY_COLOR } from "./styles";
 
 const DEFAULT_COUNTRY_CODE_US = "+1";
 const DEFAULT_COUNTRY_CODE_CONGO = "+243";
@@ -23,7 +23,17 @@ interface Props {
   onDismiss(reason: PhoneVerificationDismissal): void;
 }
 
-class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
+interface State {
+  validating: boolean;
+}
+
+class PhoneLoginVerification extends React.Component<
+  Props & WithNamespaces,
+  State
+> {
+  state: State = {
+    validating: false
+  };
   _authUnsubscribe: (() => void) | null = null;
   _confirmer: RNFirebase.ConfirmationResult | null = null;
 
@@ -49,6 +59,9 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
   }
 
   _startFirebaseLogin = async () => {
+    console.log("***** Starting login");
+
+    this.setState({ validating: false });
     if (!this._authUnsubscribe) {
       this._authUnsubscribe = firebase
         .auth()
@@ -58,27 +71,39 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
       this._confirmer = await firebase
         .auth()
         .signInWithPhoneNumber(this._getCanonicalPhone());
+      console.log("***** Have confirmer?", !!this._confirmer);
     } catch (error) {
       Alert.alert(this.props.t("authErrorTitle"), error.message);
     }
   };
 
-  _validateCode = async (code: string) => {
-    if (this._confirmer) {
-      try {
-        const user = await this._confirmer.confirm(code);
+  _runValidation = async (code: string) => {
+    try {
+      console.log("***** Here's the code", code);
+      const user = await this._confirmer!.confirm(code);
 
-        if (user) {
-          this.props.onDismiss(PhoneVerificationDismissal.VERIFIED);
-          return;
-        }
-      } catch {
-        // fall through to error handler below
+      console.log("***** Logged in?", !!user);
+      if (user) {
+        this.props.onDismiss(PhoneVerificationDismissal.VERIFIED);
+        return;
       }
+    } catch {
+      // fall through to error handler below
     }
+    this.setState({ validating: false });
 
     const { t } = this.props;
     Alert.alert(t("incorrectCodeTitle"), t("incorrectCodeBody"));
+  };
+
+  _validateCode = async (code: string) => {
+    console.log("***** Validating with confirmer:", !!this._confirmer);
+    if (this._confirmer) {
+      this.setState({ validating: true }, () => this._runValidation(code));
+    } else {
+      const { t } = this.props;
+      Alert.alert(t("incorrectCodeTitle"), t("incorrectCodeBody"));
+    }
   };
 
   _onAuthChanged = (user: RNFirebase.User | null) => {
@@ -93,6 +118,7 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { phone, t, visible } = this.props;
+    const { validating } = this.state;
     return (
       <Modal
         animationIn={"fadeIn"}
@@ -107,6 +133,9 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
         <View style={styles.container}>
           <Text content={t("verificationCode", { phone })} />
           <DigitInput digits={6} onSubmitEditing={this._validateCode} />
+          {validating ? (
+            <ActivityIndicator size={"large"} color={PRIMARY_COLOR} />
+          ) : null}
           <View style={styles.buttons}>
             <Button
               label={t("common:cancel")}
