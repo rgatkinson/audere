@@ -13,7 +13,7 @@ import {
   EncounterTriageDocument
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { localeDate, last } from "./util";
-import "./PatientList.css";
+import "./PatientTable.css";
 
 interface PatientTableRow {
   eDoc: EncounterDocument;
@@ -160,6 +160,7 @@ export class PatientTable extends React.Component<
         columns={this.columns()}
         show-pagination={false}
         default-page-size={100}
+        defaultPageSize={10}
         getTrProps={this.getTrProps}
         defaultSorted={[
           {

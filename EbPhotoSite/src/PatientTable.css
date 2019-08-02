@@ -1,0 +1,31 @@
+.ReactTable .rt-tr:hover .rt-td {
+  background: #f2f2f2;
+  cursor: pointer;
+}
+
+.ReactTable .rt-th {
+  font-family: "Roboto", sans-serif;
+  font-size: 14pt;
+  color: #014080;
+}
+
+.ReactTable .rt-td {
+  height: 30px;
+  font-family: "Roboto", sans-serif;
+  font-size: 14pt;
+  color: #4d4d4d;
+}
+
+.ReactTable .-sort-desc::before {
+  content: "▼";
+  float: right;
+  margin: 3px;
+  font-weight: bold;
+}
+
+.ReactTable .-sort-asc::before {
+  content: "▲";
+  float: right;
+  margin: 1px 3px 5px 3px;
+  font-weight: bold;
+}
