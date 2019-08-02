@@ -17,6 +17,7 @@ import { toggleDemoMode, Action, StoreState } from "../../store";
 import MultiTapContainer from "./MultiTapContainer";
 import Text from "./Text";
 import {
+  DEMO_MODE_COLOR,
   GUTTER,
   LARGE_TEXT,
   NAV_BAR_HEIGHT,
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
   },
   demoView: {
-    backgroundColor: "rgba(1, 128, 1, 0.5)",
+    backgroundColor: DEMO_MODE_COLOR,
     position: "absolute",
     top: 0,
     left: 0,

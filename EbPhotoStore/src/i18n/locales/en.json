@@ -36,7 +36,7 @@
     "id": "ID",
     "status": "STATUS",
     "info": "\u24D8",
-    "addNewPatient": "+",
+    "plus": "+",
     "evdPositive": "Ebola +",
     "evdNegative": "Ebola -"
   },

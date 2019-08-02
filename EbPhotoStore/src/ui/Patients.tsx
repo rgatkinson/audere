@@ -240,7 +240,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
           <Title label={t("patients")} style={{ marginBottom: 0 }} />
           <Button
             enabled={true}
-            label={t("addNewPatient")}
+            label={t("plus")}
             primary={true}
             onPress={this._addPatient}
             fontSize={40}
@@ -334,7 +334,7 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
     const hasPhoto = patient.photoInfo.length > 0;
     return (
       <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>
-        <View style={[styles.patient, patient.evdPositive && styles.evdPos]}>
+        <View style={styles.patient}>
           <Text
             content={this._getPatientName()}
             numberOfLines={1}
@@ -347,8 +347,9 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
           />
           {patient.evdPositive !== undefined ? (
             <Text
+              bold={true}
               content={t(patient.evdPositive ? "evdPositive" : "evdNegative")}
-              style={[styles.status, styles.statusText]}
+              style={[styles.status, patient.evdPositive && styles.evdPos]}
             />
           ) : (
             <View style={styles.status} />
@@ -387,9 +388,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: GUTTER / 2
-  },
-  evdPos: {
-    backgroundColor: EVD_POSITIVE_COLOR
   },
   patient: {
     borderBottomColor: BORDER_COLOR,
@@ -436,8 +434,8 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     width: 12
   },
-  statusText: {
-    fontWeight: "bold"
+  evdPos: {
+    color: EVD_POSITIVE_COLOR
   }
 });
 

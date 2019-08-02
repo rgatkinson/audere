@@ -39,15 +39,14 @@ import Title from "./components/Title";
 import {
   EXTRA_SMALL_TEXT,
   EVD_NEGATIVE_COLOR,
-  EVD_NEGATIVE_BORDER_COLOR,
   EVD_POSITIVE_COLOR,
-  EVD_POSITIVE_BORDER_COLOR,
   GUTTER,
   HIGHLIGHT_COLOR,
   LARGE_TEXT,
   TAKE_PHOTO_LARGE_IMAGE,
   TAKE_PHOTO_SMALL_IMAGE,
   TEXT_COLOR,
+  THICK_BORDER_WIDTH,
   TITLEBAR_COLOR
 } from "./styles";
 import { BackCallback } from "./AppController";
@@ -289,7 +288,12 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           >
             <Text
               content={!!evdPositive ? t("evdPositive") : t("evdNegative")}
-              style={styles.evdCommon}
+              style={[
+                styles.evdCommon,
+                {
+                  color: !!evdPositive ? EVD_POSITIVE_COLOR : EVD_NEGATIVE_COLOR
+                }
+              ]}
             />
             {diagnosisInfo !== undefined && (
               <Text
@@ -560,18 +564,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: undefined,
     marginHorizontal: GUTTER,
-    marginTop: GUTTER,
-    marginBottom: GUTTER / 2
+    marginTop: GUTTER
   },
   evdPos: {
-    backgroundColor: EVD_POSITIVE_COLOR,
-    borderColor: EVD_POSITIVE_BORDER_COLOR,
-    borderWidth: 2
+    borderColor: EVD_POSITIVE_COLOR,
+    borderWidth: THICK_BORDER_WIDTH
   },
   evdNeg: {
-    backgroundColor: EVD_NEGATIVE_COLOR,
-    borderColor: EVD_NEGATIVE_BORDER_COLOR,
-    borderWidth: 2
+    borderColor: EVD_NEGATIVE_COLOR,
+    borderWidth: THICK_BORDER_WIDTH
   },
   diagnosisInfo: {
     fontSize: EXTRA_SMALL_TEXT,

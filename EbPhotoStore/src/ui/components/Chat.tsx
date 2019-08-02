@@ -9,7 +9,12 @@ import firebase from "react-native-firebase";
 import { Message } from "audere-lib/ebPhotoStoreProtocol";
 import Text from "./Text";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { GUTTER, SMALL_TEXT } from "../styles";
+import {
+  CHAT_LOCAL_MESSAGE_COLOR,
+  CHAT_REMOTE_MESSAGE_COLOR,
+  GUTTER,
+  SMALL_TEXT
+} from "../styles";
 
 interface Props {
   messages: Message[];
@@ -79,14 +84,14 @@ const styles = StyleSheet.create({
   },
   foreignMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#dbdbdb"
+    backgroundColor: CHAT_REMOTE_MESSAGE_COLOR
   },
   local: {
     textAlign: "right"
   },
   localMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#94dbe4"
+    backgroundColor: CHAT_LOCAL_MESSAGE_COLOR
   },
   sender: {
     fontSize: SMALL_TEXT,
