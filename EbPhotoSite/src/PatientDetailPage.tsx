@@ -102,7 +102,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
-      <div>
+      <div className="PatientDetailPage">
         {encounter == null ? (
           <div>Loading...</div>
         ) : (
@@ -170,8 +170,10 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
           </h2>
           {diagnosis && this.renderDiagnosisBubble(diagnosis)}
         </div>
-        <div className="PatientListLink">
-          <a href={`/patients/`}>Back to Patient List</a>
+        <div>
+          <a className="PatientListLink" href={`/patients/`}>
+            ← Back to Patient List
+          </a>
         </div>
         <h3>Patient Information</h3>
         <table>

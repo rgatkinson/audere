@@ -10,9 +10,20 @@ h2 {
   padding-left: 0px;
 }
 
+.PatientDetailPage {
+  padding: 40px;
+}
+
 .PatientInfoHeader {
   display: flex;
   align-items: center;
+}
+
+.PatientListLink {
+  text-decoration: none;
+  color: #08F;
+  font-size: 12pt;
+  font-weight: bold;
 }
 
 .DiagnosisBubble {
