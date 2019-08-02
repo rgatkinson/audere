@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase from "react-native-firebase";
 import {
+  AuthUser,
   HealthWorkerInfo,
   PatientInfo,
   Message
@@ -30,16 +31,20 @@ import {
   Screen,
   StoreState
 } from "../store";
-import Button from "./components/Button";
 import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
+import Title from "./components/Title";
 import {
+  EXTRA_SMALL_TEXT,
+  EVD_NEGATIVE_COLOR,
+  EVD_NEGATIVE_BORDER_COLOR,
+  EVD_POSITIVE_COLOR,
+  EVD_POSITIVE_BORDER_COLOR,
   GUTTER,
   HIGHLIGHT_COLOR,
   LARGE_TEXT,
-  NAV_BAR_HEIGHT,
   TAKE_PHOTO_LARGE_IMAGE,
   TAKE_PHOTO_SMALL_IMAGE,
   TEXT_COLOR,
@@ -48,6 +53,12 @@ import {
 import { BackCallback } from "./AppController";
 
 interface Props {
+  diagnosisInfo?:
+    | {
+        diagnoser: AuthUser;
+        timestamp: string;
+      }
+    | undefined;
   evdPositive?: boolean;
   healthWorkerInfo: HealthWorkerInfo;
   id: number;
@@ -74,6 +85,11 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   _phoneInput: any;
   _detailsInput: any;
   _notesInput: any;
+  _wasNew: boolean = false; /* Used to temporarily cache isNew state during transition
+                              to the "Take photo" page. Otherwise when the details are
+                              saved, isNew goes false and the screen re-renders,
+                              flipping the photo section to the "Needs photo capture!"
+                              variant. */
 
   constructor(props: Props & WithNamespaces) {
     super(props);
@@ -155,6 +171,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   _takePhoto = async () => {
+    this._wasNew = this.props.isNew;
     this._save();
     const { t, dispatch } = this.props;
     try {
@@ -230,6 +247,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   render() {
     const {
       evdPositive,
+      diagnosisInfo,
       messages,
       healthWorkerInfo,
       id,
@@ -250,20 +268,44 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {evdPositive !== undefined && (
-          <Text
-            content={!!evdPositive ? t("evdPositive") : t("evdNegative")}
+          <View
             style={[
-              styles.evdCommon,
               !!evdPositive && styles.evdPos,
               !evdPositive && styles.evdNeg
             ]}
-          />
+          >
+            <Text
+              content={!!evdPositive ? t("evdPositive") : t("evdNegative")}
+              style={styles.evdCommon}
+            />
+            {diagnosisInfo !== undefined && (
+              <Text
+                content={t("reviewedBy", {
+                  name: diagnosisInfo.diagnoser.name,
+                  date: t("common:date", {
+                    date: new Date(diagnosisInfo.timestamp)
+                  })
+                })}
+                style={styles.diagnosisInfo}
+                italic={true}
+              />
+            )}
+          </View>
         )}
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.idContainer}>
-            <Text content={t("patientFirstName")} style={styles.titleLeft} />
+            <Title
+              label={t("details")}
+              style={[
+                styles.titleLeft,
+                {
+                  marginBottom: 0
+                }
+              ]}
+            />
             <Text content={t("patientId", { id })} style={styles.idRight} />
           </View>
+          <Text content={t("patientFirstName")} style={styles.titleRow} />
           <TextInput
             autoFocus={this.state.firstName == ""}
             placeholder=""
@@ -384,7 +426,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               />
               {!!messages && <Chat messages={messages} />}
             </Fragment>
-          ) : !isNew ? (
+          ) : !(isNew || this._wasNew) ? (
             <Fragment>
               <View style={styles.photoContainer}>
                 <Text
@@ -476,27 +518,37 @@ const styles = StyleSheet.create({
   evdCommon: {
     fontSize: LARGE_TEXT,
     fontWeight: "bold",
-    height: NAV_BAR_HEIGHT,
-    textAlign: "center",
-    textAlignVertical: "center"
+    lineHeight: undefined,
+    marginHorizontal: GUTTER,
+    marginTop: GUTTER,
+    marginBottom: GUTTER / 2
   },
   evdPos: {
-    backgroundColor: "pink"
+    backgroundColor: EVD_POSITIVE_COLOR,
+    borderColor: EVD_POSITIVE_BORDER_COLOR,
+    borderWidth: 2
   },
   evdNeg: {
-    backgroundColor: "lightgreen"
+    backgroundColor: EVD_NEGATIVE_COLOR,
+    borderColor: EVD_NEGATIVE_BORDER_COLOR,
+    borderWidth: 2
+  },
+  diagnosisInfo: {
+    fontSize: EXTRA_SMALL_TEXT,
+    marginHorizontal: GUTTER,
+    marginBottom: GUTTER
   },
   idContainer: {
     flexDirection: "row",
-    justifyContent: "flex-end"
+    alignItems: "flex-end"
   },
   titleLeft: {
-    flex: 2,
-    paddingBottom: GUTTER / 4
+    flex: 2
   },
   idRight: {
     flex: 1,
-    textAlign: "right"
+    textAlign: "right",
+    marginBottom: 1
   },
   titleRow: {
     paddingTop: GUTTER,
@@ -556,6 +608,10 @@ const styles = StyleSheet.create({
 
 export default connect((state: StoreState, props: Props) => ({
   healthWorkerInfo: state.meta.healthWorkerInfo,
+  diagnosisInfo:
+    props.id < state.patients.length
+      ? state.patients[props.id].diagnosisInfo
+      : undefined,
   // TODO(ram): derive evdPositive from diagnoses collection instead of evdPositive
   evdPositive:
     props.id < state.patients.length
@@ -571,7 +627,6 @@ export default connect((state: StoreState, props: Props) => ({
     props.id < state.patients.length
       ? state.patients[props.id].notes
       : undefined,
-
   patientInfo:
     props.id < state.patients.length
       ? state.patients[props.id].patientInfo

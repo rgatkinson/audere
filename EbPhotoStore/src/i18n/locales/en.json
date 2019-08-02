@@ -7,7 +7,8 @@
       "submit": "Submit",
       "cancel": "Cancel"
     },
-    "dateTime": "{{date, DD MMMM YYYY, HH:mm}}"
+    "dateTime": "{{date, DD MMMM YYYY, HH:mm}}",
+    "date": "{{date, DD MMMM YYYY}}"
   },
   "titleBar": {
     "title": "EVD Track",
@@ -22,9 +23,9 @@
   },
   "login": {
     "signIn": "Sign In",
-    "loginLastName": "**Last Name**",
-    "loginFirstName": "**First Name**",
-    "loginMobileNumber": "**Mobile Number**",
+    "loginLastName": "**Last name**",
+    "loginFirstName": "**First name**",
+    "loginMobileNumber": "**Mobile number**",
     "notes": "**Notes to share with administrators**",
     "notesPlaceholder": "E.g. your location, credentials, etc.",
     "login": "Login"
@@ -47,9 +48,10 @@
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
   "details": {
-    "evdPositive": "Likely positive for Ebola",
-    "evdNegative": "Likely negative for Ebola",
-    "reviewedBy": "Image reviewed by {{name}} on {{date}}",
+    "details": "Patient Details",
+    "evdPositive": "Triaged as Ebola POSITIVE",
+    "evdNegative": "Triaged as Ebola NEGATIVE",
+    "reviewedBy": "Image reviewed by: **{{name}}** on **{{date}}**",
     "patientId": "**ID:** {{id}}",
     "patientFirstName": "**First & middle name**",
     "patientLastName": "**Last name**",

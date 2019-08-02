@@ -27,6 +27,7 @@ import Text from "./components/Text";
 import Title from "./components/Title";
 import {
   BORDER_COLOR,
+  EVD_POSITIVE_COLOR,
   GUTTER,
   ICON_SIZE,
   INPUT_HEIGHT,
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: GUTTER / 2
   },
   evdPos: {
-    backgroundColor: "pink"
+    backgroundColor: EVD_POSITIVE_COLOR
   },
   patient: {
     borderBottomColor: BORDER_COLOR,
