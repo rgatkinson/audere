@@ -7,6 +7,7 @@ import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import {
+  Diagnosis,
   DocumentType,
   EncounterDocument,
   EncounterTriageDocument,
@@ -16,7 +17,7 @@ import {
   Notification
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, getAuthUser } from "./api";
-import { localeDate, triageDocFromTriage } from "./util";
+import { last, localeDate, triageDocFromTriage } from "./util";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -103,14 +104,12 @@ class PatientDetailPageAssumeRouter extends React.Component<
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
       <div>
-        <div className="PatientListLink">
-          <a href={`/patients/`}>Back to Patient List</a>
-        </div>
         {encounter == null ? (
           <div>Loading...</div>
         ) : (
           <div>
-            <PatientInfoPane eDoc={encounter} />
+            <PatientInfoPane eDoc={encounter} tDoc={triage} />
+            <TestDetailPane eDoc={encounter} />
             <TriagePane
               eDoc={encounter}
               tDoc={triage}
@@ -131,29 +130,60 @@ class PatientDetailPageAssumeRouter extends React.Component<
 }
 export const PatientDetailPage = withRouter(PatientDetailPageAssumeRouter);
 
-interface PatientDetailPaneProps {
+interface PatientInfoPaneProps {
   eDoc: EncounterDocument;
+  tDoc: EncounterTriageDocument | null;
 }
 
-class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
+class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
+  private renderDiagnosisBubble(diagnosis: Diagnosis) {
+    const { value: evdPositive, diagnoser, timestamp } = diagnosis;
+    const className = evdPositive ? "Positive" : "Negative";
+    const message = evdPositive
+      ? "*Likely POSITIVE for Ebola"
+      : "*Likely NEGATIVE for Ebola";
+    return (
+      <div className={`DiagnosisBubble ${className}`}>
+        <div className={`Message ${className}`}>{message}</div>
+        <div className="Details">
+          <div className="Detail">
+            Reviewed by: <strong>{diagnoser.name}</strong>
+          </div>
+          <div className="Detail">
+            Date: <strong>{localeDate(timestamp)}</strong>
+          </div>
+        </div>
+      </div>
+    );
+  }
   public render(): React.ReactNode {
     const { localIndex, patient, notes } = this.props.eDoc.encounter;
+    const triaged =
+      this.props.tDoc &&
+      this.props.tDoc.triage.diagnoses &&
+      this.props.tDoc.triage.diagnoses.length > 0;
+    const diagnosis = triaged && last(this.props.tDoc!.triage.diagnoses!);
     return (
       <div className="PatientInfoPane">
-        <h2>
-          {patient.firstName} {patient.lastName} (ID: {localIndex})
-        </h2>
+        <div className="PatientInfoHeader">
+          <h2>
+            {patient.firstName} {patient.lastName} (ID: {localIndex})
+          </h2>
+          {diagnosis && this.renderDiagnosisBubble(diagnosis)}
+        </div>
+        <div className="PatientListLink">
+          <a href={`/patients/`}>Back to Patient List</a>
+        </div>
+        <h3>Patient Information</h3>
         <table>
           <tr>
-            <td>Phone:</td>
+            <td>Phone</td>
+            <td>Contact Details</td>
+            <td>CHW Notes</td>
+          </tr>
+          <tr>
             <td>{patient.phone}</td>
-          </tr>
-          <tr>
-            <td>Contact Details:</td>
             <td>{patient.details}</td>
-          </tr>
-          <tr>
-            <td>CHW Notes:</td>
             <td>{notes}</td>
           </tr>
         </table>
@@ -162,7 +192,42 @@ class PatientInfoPane extends React.Component<PatientDetailPaneProps> {
   }
 }
 
-interface TriageProps extends PatientDetailPaneProps {
+interface TestDetailPaneProps {
+  eDoc: EncounterDocument;
+}
+
+class TestDetailPane extends React.Component<TestDetailPaneProps> {
+  public render() {
+    const { encounter } = this.props.eDoc;
+    const photo = last(encounter.rdtPhotos);
+    const timestamp = photo ? localeDate(photo.timestamp) : "Not Tested";
+    const chwName =
+      encounter.healthWorker.firstName + " " + encounter.healthWorker.lastName;
+    const { phone, notes } = encounter.healthWorker;
+
+    return (
+      <div>
+        <h3>Patient Test Detail</h3>
+        <table>
+          <tr>
+            <td>Tested on:</td>
+            <td>Tested by:</td>
+            <td>Contact info:</td>
+            <td>About this CHW:</td>
+          </tr>
+          <tr>
+            <td>{timestamp}</td>
+            <td>{chwName}</td>
+            <td>{phone}</td>
+            <td>{notes}</td>
+          </tr>
+        </table>
+      </div>
+    );
+  }
+}
+
+interface TriageProps extends TestDetailPaneProps {
   reload: () => Promise<void>;
   tDoc: EncounterTriageDocument | null;
   triageChangedAction: () => Promise<void>;
@@ -273,8 +338,6 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             value={notes}
             onChange={this.onNotesChange}
           />
-        </div>
-        <div>
           <input
             type="button"
             value="Save"
@@ -298,11 +361,8 @@ interface PhotoFetchResult {
   error?: Error;
 }
 
-class PhotoPane extends React.Component<
-  PatientDetailPaneProps,
-  PhotoPaneState
-> {
-  constructor(props: PatientDetailPaneProps) {
+class PhotoPane extends React.Component<TestDetailPaneProps, PhotoPaneState> {
+  constructor(props: PatientInfoPaneProps) {
     super(props);
     this.state = {
       urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult))
@@ -367,36 +427,6 @@ class PhotoPane extends React.Component<
                         />
                       </div>
                     )}
-                    <table>
-                      <tr>
-                        <th>Tested On:</th>
-                      </tr>
-                      <tr>
-                        <td>{localeDate(photo.timestamp)}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <br />
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Tested By:</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          {healthWorker.firstName} {healthWorker.lastName}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>{healthWorker.phone}</td>
-                      </tr>
-                      <tr>({healthWorker.notes})</tr>
-                      <tr>
-                        <td>
-                          <br />
-                        </td>
-                      </tr>
-                    </table>
                   </td>
                   <td>
                     <SimpleMap
@@ -409,13 +439,13 @@ class PhotoPane extends React.Component<
                     />
                     <table>
                       <tr>
-                        <th>Location:</th>
+                        <th>Test Location:</th>
                       </tr>
                       <tr>
-                        <td>Latitude: {photo.gps.latitude}</td>
-                      </tr>
-                      <tr>
-                        <td>Longitude: {photo.gps.longitude}</td>
+                        <td>
+                          {parseFloat(photo.gps.latitude).toFixed(6)},{" "}
+                          {parseFloat(photo.gps.longitude).toFixed(6)}
+                        </td>
                       </tr>
                     </table>
                   </td>
