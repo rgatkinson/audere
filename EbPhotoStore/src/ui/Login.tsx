@@ -133,6 +133,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               index={0}
               inputStyle={styles.inputSingle}
               inputValue={firstName}
+              onBlur={this._removeHighlight}
               onChangeText={this._updateFirstName}
               onFocus={this._onInputFocus}
               onSubmitEditing={this._focusLastName}
@@ -147,6 +148,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               index={1}
               inputStyle={styles.inputSingle}
               inputValue={lastName}
+              onBlur={this._removeHighlight}
               onChangeText={this._updateLastName}
               onFocus={this._onInputFocus}
               onSubmitEditing={this._focusPhone}
@@ -163,6 +165,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               focusedIndex={focusedIndex}
               index={2}
               inputStyle={styles.inputSingle}
+              onBlur={this._removeHighlight}
               onFocus={this._onInputFocus}
               textContent={t("loginMobileNumber")}
               textStyle={styles.titleRow}
@@ -176,6 +179,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               placeholder={t("notesPlaceholder")}
               multiline={true}
               numberOfLines={3}
+              onBlur={this._removeHighlight}
               onFocus={this._onInputFocus}
               innerRef={this._notesInput}
               returnKeyType="done"

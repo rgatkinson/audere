@@ -5,8 +5,6 @@
 
 import React, { Fragment } from "react";
 import {
-  KeyboardTypeOptions,
-  ReturnKeyTypeOptions,
   StyleProp,
   StyleSheet,
   TextInput as SystemTextInput,
@@ -16,14 +14,7 @@ import {
 } from "react-native";
 import Text from "./Text";
 import NumberInput from "./NumberInput";
-import {
-  BORDER_COLOR,
-  FONT_NORMAL,
-  GUTTER,
-  REGULAR_TEXT,
-  TEXT_COLOR,
-  HIGHLIGHT_COLOR
-} from "../styles";
+import { HIGHLIGHT_COLOR } from "../styles";
 import TextInput from "./TextInput";
 
 interface Props {
@@ -41,6 +32,7 @@ interface Props {
   returnKeyType: ReturnKeyType;
   textStyle?: StyleProp<TextStyle>;
   textContent: string;
+  onBlur?: () => void;
   onEndEditing?: (e: any) => void;
   onChangeText(text: string): void;
   onFocus?: (key: number) => void;
@@ -68,6 +60,7 @@ export default class LabelNumberInput extends React.Component<Props> {
       innerRef,
       keyboardType,
       onChangeText,
+      onBlur,
       onKeyPress,
       onSubmitEditing,
       placeholder,
@@ -87,6 +80,7 @@ export default class LabelNumberInput extends React.Component<Props> {
         <NumberInput
           autoFocus={autoFocus}
           keyboardType={keyboardType}
+          onBlur={onBlur}
           onChangeText={onChangeText}
           onFocus={this._onFocus}
           onKeyPress={onKeyPress}

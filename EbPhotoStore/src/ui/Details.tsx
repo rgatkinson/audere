@@ -252,7 +252,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.setState({ focusedIndex });
   };
 
-  _removeFocus = () => {
+  _removeHighlight = () => {
     this.setState({ focusedIndex: undefined });
   };
 
@@ -324,6 +324,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             index={0}
             inputStyle={styles.inputSingle}
             inputValue={firstName}
+            onBlur={this._removeHighlight}
             onChangeText={this._updateFirstName}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusLastName}
@@ -338,6 +339,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             innerRef={this._lastNameInput}
             inputStyle={styles.inputSingle}
             inputValue={lastName}
+            onBlur={this._removeHighlight}
             onChangeText={this._updateLastName}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusPhone}
@@ -353,6 +355,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             inputValue={phone}
             innerRef={this._phoneInput}
             keyboardType={"phone-pad"}
+            onBlur={this._removeHighlight}
             onChangeText={this._updatePhone}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusDetails}
@@ -370,6 +373,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             innerRef={this._detailsInput}
             multiline={true}
             numberOfLines={3}
+            onBlur={this._removeHighlight}
             onChangeText={this._updateDetails}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusNotes}
@@ -386,9 +390,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             innerRef={this._notesInput}
             multiline={true}
             numberOfLines={3}
+            onBlur={this._removeHighlight}
             onFocus={this._onInputFocus}
             onChangeText={this._updateNotes}
-            onSubmitEditing={this._removeFocus}
+            onSubmitEditing={this._removeHighlight}
             placeholder={t("patientNotesPlaceholder")}
             returnKeyType="done"
             textContent={t("patientNotes")}
@@ -450,6 +455,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 inputValue={chatMessage}
                 multiline={true}
                 numberOfLines={2}
+                onBlur={this._removeHighlight}
                 onChangeText={this._updateChatMessage}
                 onFocus={this._onInputFocus}
                 onSubmitEditing={this._sendChatMessage}

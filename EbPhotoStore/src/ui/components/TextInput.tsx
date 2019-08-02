@@ -34,6 +34,7 @@ interface Props {
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string | null;
+  onBlur?: () => void;
   onEndEditing?: (e: any) => void;
   onChangeText?(text: string): void;
   onFocus?: () => void;
@@ -60,6 +61,7 @@ export default class TextInput extends React.Component<Props> {
         keyboardType={
           !!this.props.keyboardType ? this.props.keyboardType : "default"
         }
+        onBlur={this.props.onBlur}
         onEndEditing={this.props.onEndEditing}
         onFocus={this.props.onFocus}
         multiline={this.props.multiline}

@@ -24,6 +24,7 @@ interface Props {
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string | null;
+  onBlur?: () => void;
   onChangeText(text: string): void;
   onFocus?: () => void;
   onKeyPress?: (e: any) => void;
@@ -55,7 +56,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { autoFocus, focusLocal, innerRef, onFocus } = this.props;
+    const { autoFocus, focusLocal, innerRef, onBlur, onFocus } = this.props;
     return (
       <TextInput
         autoCorrect={false}
@@ -63,6 +64,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
         keyboardType={
           this.props.keyboardType ? this.props.keyboardType : "number-pad"
         }
+        onBlur={this.props.onBlur}
         onFocus={!!focusLocal ? onFocus : this.props.onFocus}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}

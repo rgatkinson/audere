@@ -30,6 +30,7 @@ interface Props {
   returnKeyType: ReturnKeyType;
   textStyle?: StyleProp<TextStyle>;
   textContent: string;
+  onBlur?: () => void;
   onEndEditing?: (e: any) => void;
   onChangeText?(text: string): void;
   onFocus?: (key: number) => void;
@@ -58,6 +59,7 @@ export default class LabelTextInput extends React.Component<Props> {
       inputValue,
       multiline,
       numberOfLines,
+      onBlur,
       onChangeText,
       onEndEditing,
       onKeyPress,
@@ -81,6 +83,7 @@ export default class LabelTextInput extends React.Component<Props> {
           blurOnSubmit={blurOnSubmit}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          onBlur={onBlur}
           onChangeText={onChangeText}
           onEndEditing={onEndEditing}
           onFocus={this._onFocus}
