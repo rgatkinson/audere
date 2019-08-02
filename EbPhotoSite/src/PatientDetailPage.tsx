@@ -64,7 +64,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
     });
   };
 
-  triageChangeHandler = async (): Promise<void> => {
+  triageChangeHandler = async (tDoc: EncounterTriageDocument): Promise<void> => {
     if (this.state.eDoc != null) {
       const api = getApi();
       const { eDoc } = this.state;
@@ -97,6 +97,10 @@ class PatientDetailPageAssumeRouter extends React.Component<
         );
       }
     }
+
+    this.setState({
+      tDoc: tDoc
+    });
   };
 
   public render(): React.ReactNode {
@@ -228,7 +232,7 @@ class TestDetailPane extends React.Component<PatientInfoPaneProps> {
 
 interface TriageProps extends PatientInfoPaneProps {
   reload: () => Promise<void>;
-  triageChangedAction: () => Promise<void>;
+  triageChangedAction: (tDoc: EncounterTriageDocument) => Promise<void>;
 }
 
 interface TriageState {
@@ -288,8 +292,9 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     const { docId } = this.props.eDoc;
     const api = getApi();
     try {
-      await api.saveTriage(triageDocFromTriage(docId, this.state.edited));
-      await this.props.triageChangedAction();
+      const updated = triageDocFromTriage(docId, this.state.edited);
+      await api.saveTriage(updated);
+      await this.props.triageChangedAction(updated);
       this.setState({ busy: false });
     } catch (err) {
       this.setState({ busy: false, error: err.message });
