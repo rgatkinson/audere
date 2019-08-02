@@ -145,11 +145,7 @@ class AppController extends React.Component<Props, State> {
       .onNotification(notification => {
         const { body, title } = notification;
         if (this.state.appState.match(/inactive|background/)) {
-          this._showAlert(
-            title,
-            body,
-            JSON.parse(notification.data.document).localIndex
-          );
+          this._showAlert(title, body, notification.data.localIndex);
         }
       });
   };
