@@ -22,7 +22,6 @@ import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
 
-type InputChangeEvent = ChangeEvent<HTMLInputElement>;
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
 
 export interface PatientDetailMatchParams {
@@ -109,14 +108,14 @@ class PatientDetailPageAssumeRouter extends React.Component<
         ) : (
           <div>
             <PatientInfoPane eDoc={encounter} tDoc={triage} />
-            <TestDetailPane eDoc={encounter} />
+            <TestDetailPane eDoc={encounter} tDoc={triage} />
             <TriagePane
               eDoc={encounter}
               tDoc={triage}
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
             />
-            <PhotoPane eDoc={encounter} />
+            <PhotoPane eDoc={encounter} tDoc={triage} />
             <Chat
               localIndex={encounter.encounter.localIndex}
               parentDocId={encounter.docId}
@@ -192,11 +191,7 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
   }
 }
 
-interface TestDetailPaneProps {
-  eDoc: EncounterDocument;
-}
-
-class TestDetailPane extends React.Component<TestDetailPaneProps> {
+class TestDetailPane extends React.Component<PatientInfoPaneProps> {
   public render() {
     const { encounter } = this.props.eDoc;
     const photo = last(encounter.rdtPhotos);
@@ -227,9 +222,8 @@ class TestDetailPane extends React.Component<TestDetailPaneProps> {
   }
 }
 
-interface TriageProps extends TestDetailPaneProps {
+interface TriageProps extends PatientInfoPaneProps {
   reload: () => Promise<void>;
-  tDoc: EncounterTriageDocument | null;
   triageChangedAction: () => Promise<void>;
 }
 
@@ -361,7 +355,7 @@ interface PhotoFetchResult {
   error?: Error;
 }
 
-class PhotoPane extends React.Component<TestDetailPaneProps, PhotoPaneState> {
+class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
   constructor(props: PatientInfoPaneProps) {
     super(props);
     this.state = {
@@ -387,7 +381,6 @@ class PhotoPane extends React.Component<TestDetailPaneProps, PhotoPaneState> {
 
   public render(): React.ReactNode {
     const { rdtPhotos } = this.props.eDoc.encounter;
-    const { healthWorker } = this.props.eDoc.encounter;
     const { urls } = this.state;
     return (
       <div>
@@ -431,6 +424,7 @@ class PhotoPane extends React.Component<TestDetailPaneProps, PhotoPaneState> {
                   <td>
                     <SimpleMap
                       encounters={[this.props.eDoc]}
+                      tDocs={this.props.tDoc ? [this.props.tDoc] : []}
                       style={{
                         height: "400px",
                         width: "400px",

@@ -6,7 +6,8 @@
 import React from "react";
 import {
   EncounterDocument,
-  EncounterInfo
+  EncounterInfo,
+  EncounterTriageDocument
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import {
   GoogleMap,
@@ -25,6 +26,7 @@ const DEFAULT_ZOOM = 11;
 
 interface Props {
   encounters: EncounterDocument[];
+  tDocs: EncounterTriageDocument[];
   style: React.CSSProperties;
 }
 
@@ -53,7 +55,7 @@ export class SimpleMap extends React.Component<Props, State> {
       props.encounters.length !== state.locations.length
     ) {
       return {
-        locations: SimpleMap.getLocations(props.encounters)
+        locations: SimpleMap.getLocations(props.encounters, props.tDocs)
       };
     }
     return null;
@@ -102,7 +104,26 @@ export class SimpleMap extends React.Component<Props, State> {
     }
   }
 
-  private static getLocations(encounters: EncounterDocument[]) {
+  private static getDiagnosis(
+    eDoc: EncounterDocument,
+    tDocs: EncounterTriageDocument[]
+  ) {
+    const tDoc = tDocs.find(t => t.docId === eDoc.docId);
+
+    if (tDoc === undefined || !tDoc.triage.diagnoses) {
+      return EVD_UNTRIAGED;
+    }
+    const { diagnoses } = tDoc.triage;
+    if (diagnoses.length > 0 && diagnoses[diagnoses.length - 1].value) {
+      return EVD_POS;
+    }
+    return EVD_NEG;
+  }
+
+  private static getLocations(
+    encounters: EncounterDocument[],
+    tDocs: EncounterTriageDocument[]
+  ) {
     return encounters
       .filter(
         (eDoc: EncounterDocument) =>
@@ -110,13 +131,14 @@ export class SimpleMap extends React.Component<Props, State> {
       )
       .map((eDoc: EncounterDocument) => {
         const enc: EncounterInfo = eDoc.encounter;
+        const diagnosis = SimpleMap.getDiagnosis(eDoc, tDocs);
         //const triage = await getApi().loadTriage(eDoc.docId);
         return {
           name: enc.patient.lastName + ", " + enc.patient.firstName,
           date: enc.rdtPhotos[0].timestamp.substring(0, 10),
           latitude: +enc.rdtPhotos[0].gps.latitude,
           longitude: +enc.rdtPhotos[0].gps.longitude,
-          diagnosis: Math.ceil(Math.random() * 3.0), // TODO: Read this from the triage doc
+          diagnosis,
           docId: eDoc.docId
         };
       });

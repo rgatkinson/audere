@@ -64,7 +64,11 @@ export class PatientBlock extends React.Component<Props, State> {
 
   render() {
     const mainView = this.state.showMap ? (
-      <SimpleMap encounters={this.props.eDocs} style={{ height: "50rem" }} />
+      <SimpleMap
+        encounters={this.props.eDocs}
+        tDocs={this.props.tDocs}
+        style={{ height: "50rem" }}
+      />
     ) : (
       <PatientTable
         eDocs={this.props.eDocs}

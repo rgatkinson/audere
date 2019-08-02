@@ -5,31 +5,40 @@
 
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { EncounterDocument } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  EncounterDocument,
+  EncounterTriageDocument
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import { SimpleMap } from "./SimpleMap";
-import { loadAllEncounters } from "./util";
+import { loadAllEncounters, loadAllTriages } from "./util";
 
 interface Props extends RouteComponentProps<{}> {}
 
 interface State {
   encounters: EncounterDocument[];
+  tDocs: EncounterTriageDocument[];
 }
 
 export class MapPage extends React.Component<Props, State> {
   state = {
-    encounters: []
+    encounters: [],
+    tDocs: []
   };
 
   async componentDidMount() {
-    const encounters = await loadAllEncounters();
+    const [encounters, tDocs] = await Promise.all([
+      loadAllEncounters(),
+      loadAllTriages()
+    ]);
 
-    this.setState({ encounters });
+    this.setState({ encounters, tDocs });
   }
 
   render() {
     return (
       <SimpleMap
         encounters={this.state.encounters}
+        tDocs={this.state.tDocs}
         style={{ height: "100vh" }}
       />
     );
