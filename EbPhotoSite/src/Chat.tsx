@@ -27,6 +27,7 @@ export interface ChatState {
 export class Chat extends React.Component<ChatProps, ChatState> {
   private unsubscribeAuth: () => void;
   private unsubscribeMessages: () => void;
+  private _messageList: any;
 
   constructor(props: ChatProps) {
     super(props);
@@ -40,6 +41,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
 
     this.unsubscribeAuth = () => {};
     this.unsubscribeMessages = () => {};
+    this._messageList = React.createRef();
   }
 
   componentDidMount() {
@@ -54,7 +56,16 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     const collection = api.getMessagesReference(this.props.parentDocId);
     this.unsubscribeMessages = collection.onSnapshot(collection => {
       const messages = collection.docs.map(d => d.data() as Message);
-      this.setState({ messages: messages });
+      const messageList = this._messageList.current;
+      const scrolledDown =
+        messageList.scrollTop >=
+        messageList.scrollHeight - messageList.offsetHeight;
+      this.setState({ messages: messages }, () => {
+        const messageList = this._messageList.current;
+        if (scrolledDown) {
+          messageList.scrollTop = messageList.scrollHeight;
+        }
+      });
     });
   }
 
@@ -157,7 +168,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       <div>
         <p className="chat-title">Chat with community health worker:</p>
         <div className="chat-box">
-          <ul className="message-list">
+          <ul className="message-list" ref={this._messageList}>
             {messages
               .sort((a, b) => (a.timestamp < b.timestamp ? -1 : 1))
               .map(m => this.renderMessage(m))}
