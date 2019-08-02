@@ -338,13 +338,11 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             innerRef={this._lastNameInput}
             inputStyle={styles.inputSingle}
             inputValue={lastName}
-            keyboardType={"phone-pad"}
             onChangeText={this._updateLastName}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusPhone}
             placeholder=""
             returnKeyType="next"
-            style={styles.inputSingle}
             textContent={t("patientLastName")}
             textStyle={styles.titleRow}
           />
@@ -354,6 +352,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             inputStyle={[styles.inputSingle, { marginBottom: GUTTER }]}
             inputValue={phone}
             innerRef={this._phoneInput}
+            keyboardType={"phone-pad"}
             onChangeText={this._updatePhone}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusDetails}
