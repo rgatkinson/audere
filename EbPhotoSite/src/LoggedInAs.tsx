@@ -77,14 +77,16 @@ export class LoggedInAs extends React.Component<
         <table>
           <tr>
             <td>
-              <div
-                className="ProfileImage"
-                style={{
-                  clear: "none"
-                }}
-              >
-                <img src={profileImage} />
-              </div>
+              {this.state.user !== null && (
+                <div
+                  className="ProfileImage"
+                  style={{
+                    clear: "none"
+                  }}
+                >
+                  <img src={profileImage} />
+                </div>
+              )}
             </td>
             <td>
               <div className="WhoAmI">

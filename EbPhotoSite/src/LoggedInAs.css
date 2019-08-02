@@ -3,8 +3,8 @@ body {
   margin: 0px;
   padding: 0px;
   font-family: "Roboto", sans-serif;
-  font-size: 14pt;
-  line-height: 16pt;
+  font-size: 12pt;
+  line-height: 14pt;
 }
 
 div.WhoAmI {
@@ -19,6 +19,7 @@ div.WhoAmI {
   color: #0088ff;
   cursor: pointer;
   font-weight: bold;
+  padding-top: 5px;
 }
 
 .ProfileImage {
