@@ -2,21 +2,25 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+.PatientInfoPane {
+  padding: 0px 0px 0px 0px;
+}
+
 .PatientDetailPage h2 {
   color: #989898;
   font-weight: lighter;
   font-size: 30pt;
-  padding-left: 0px;
+  padding: 0px 0px 0px 0px;
 }
 
 .PatientDetailPage h3 {
   font-weight: normal;
-  color: #4D4D4D;
+  color: #4d4d4d;
   font-size: 22pt;
 }
 
 .PatientDetailPage {
-  padding: 40px;
+  padding: 0px 40px 40px 40px;
 }
 
 .PatientInfoHeader {
@@ -26,7 +30,7 @@ body {
 
 .PatientListLink {
   text-decoration: none;
-  color: #08F;
+  color: #08f;
   font-size: 15pt;
   font-weight: bold;
 }
@@ -40,7 +44,8 @@ body {
   margin-left: 30px;
 }
 
-.DiagnosisBubble:after, .DiagnosisBubble:before {
+.DiagnosisBubble:after,
+.DiagnosisBubble:before {
   right: 100%;
   top: 50%;
   border: solid transparent;
@@ -104,7 +109,6 @@ body {
   text-align: right;
 }
 
-
 .PatientDetailHeader {
   background-color: #8cb2de;
   border-width: 0px;
@@ -137,7 +141,7 @@ body {
 
 .DetailTable {
   font-size: 14pt;
-  color: #4D4D4D;
+  color: #4d4d4d;
   border-collapse: collapse;
   width: 100%;
   max-width: 1200px;
@@ -166,7 +170,7 @@ body {
 .TriagePane h3 {
   margin-bottom: 0.5rem;
   font-size: 21pt;
-  color: #4D4D4D;
+  color: #4d4d4d;
   font-weight: bold;
 }
 
@@ -187,7 +191,7 @@ body {
 
 .TriagePane .evdUnpressed {
   color: #989898;
-  background-color: #E5E5E5;
+  background-color: #e5e5e5;
 }
 
 .TriagePane .triageNotes textarea {

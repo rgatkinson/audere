@@ -1,12 +1,16 @@
-.PatientListBody {
-  margin-left: 30px;
-  margin-right: 30px;
+body {
+  font-family: "Roboto", sans-serif;
 }
 
-.PatientListTitle {
+.PatientListBody {
+  padding: 0px 40px 40px 40px;
+}
+
+.PatientListTitle h2 {
+  font-weight: 100;
   font-size: 30pt;
-  padding: 30px 0px 10px 0px;
-  font-family: "Roboto Light", sans-serif;
+  padding: 0px 0px 0px 0px;
+  font-family: "Roboto", sans-serif;
   color: #989898;
 }
 
