@@ -3,16 +3,17 @@
 }
 
 .chat-box {
-  border: 1px solid black;
-  padding: 10px;
-  height: 300px;
+  border: 1px solid #989898;
+  padding: 25px;
+  height: 750px;
   width: 750px;
+  border-radius: 5px;
 }
 
 .message-list {
-  padding: 20px 0;
+  padding: 20px 5px;
   overflow: auto;
-  height: 75%;
+  height: 680px;
   margin: 0 auto;
   list-style: none;
   padding-left: 0;
@@ -27,7 +28,6 @@
 }
 
 .message.current-user {
-  /*justify-content: flex-end;*/
   flex-direction: row-reverse;
   text-align: left;
 }
@@ -35,7 +35,7 @@
 .message-content {
   display: inline-block;
   color: black;
-  font-size: 12px;
+  font-size: 12pt;
 }
 
 .current-user > .message-content {
@@ -45,35 +45,41 @@
 .message-content > .user-name {
   display: block;
   padding-bottom: 4px;
+  padding-top: 10px;
+  font-style: italic;
+  color: #4D4D4D;
 }
 
 .message-content > .text {
-  padding: 10px;
+  padding: 20px;
   max-width: 400px;
   margin: 0;
   border-radius: 6px;
-  color: black;
-  background-color: #d3d3d3;
+  color: #4D4D4D;
+  background-color: #F2F2F2;
 }
 
 .current-user > .message-content .text {
-  background-color: #93ccea;
-  color: black;
+  background-color: #B8E1FF;
+  color: #4D4D4D;
 }
 
 .chat-form {
   display: flex;
-  width: 100%;
   justify-content: space-between;
-  max-width: 500px;
   margin: 0 auto 10px;
 }
 
 .chat-input {
   padding: 5px;
   font-size: 12px;
-  border-radius: 4px;
   flex-grow: 1;
+  border: 2px solid #989898;
+}
+
+.chat-input::placeholder {
+  font-style: italic;
+  color: #4D4D4D;
 }
 
 .chat-button {

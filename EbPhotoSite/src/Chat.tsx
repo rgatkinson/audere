@@ -4,7 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { DocumentType, Message, Notification, NotificationType } from "audere-lib/dist/ebPhotoStoreProtocol";
+import {
+  DocumentType,
+  Message,
+  Notification,
+  NotificationType
+} from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import * as Firebase from "firebase";
 import "./Chat.css";
@@ -75,12 +80,13 @@ export class Chat extends React.Component<ChatProps, ChatState> {
   }
 
   onChange(e: any) {
-    this.setState({ input: e.target.value});
+    this.setState({ input: e.target.value });
   }
 
   async onSubmit(e: any) {
     e.preventDefault();
     const { currentUser, input } = this.state;
+    this.setState({ input: "" });
 
     if (currentUser != null && input != null && input.trim().length > 0) {
       const { localIndex, parentDocId, phone } = this.props;
@@ -106,16 +112,27 @@ export class Chat extends React.Component<ChatProps, ChatState> {
           "chw_chat"
         );
       } else {
-        console.warn(`No registration token found for phone number ${phone}, ` +
-          `no notification of triage will be sent`);
+        console.warn(
+          `No registration token found for phone number ${phone}, ` +
+            `no notification of triage will be sent`
+        );
       }
     }
-
-    this.setState({ input: ""});
   }
 
-  private monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+  private monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
   ];
 
   renderMessage(message: Message) {
@@ -131,13 +148,19 @@ export class Chat extends React.Component<ChatProps, ChatState> {
         const ampm = hours >= 12 ? "pm" : "am";
         hours = hours % 12;
         hours = hours === 0 ? 12 : hours;
-        const dateString = date.getDate() + " " +
-          this.monthNames[date.getMonth()] + " " +
-          date.getFullYear() + ", " +
-          hours + ":" +
-          date.getMinutes() + " " +
+        const dateString =
+          date.getDate() +
+          " " +
+          this.monthNames[date.getMonth()] +
+          " " +
+          date.getFullYear() +
+          ", " +
+          hours +
+          ":" +
+          date.getMinutes() +
+          " " +
           ampm;
-        
+
         if (userTag != null) {
           userTag = ` by ${userTag}`;
         }
@@ -154,16 +177,14 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       <li className={className}>
         <div className="message-content">
           <div className="text">{content}</div>
-          <div className="user-name">
-            {userTag}
-          </div>
+          <div className="user-name">{userTag}</div>
         </div>
       </li>
-    )
+    );
   }
 
   render() {
-    const { busy, messages } = this.state;
+    const { messages } = this.state;
     return (
       <div>
         <p className="chat-title">Chat with community health worker:</p>
@@ -174,11 +195,16 @@ export class Chat extends React.Component<ChatProps, ChatState> {
               .map(m => this.renderMessage(m))}
           </ul>
           <form className="chat-form" onSubmit={e => this.onSubmit(e)}>
-            <input className="chat-input" onChange={e => this.onChange(e)} value={this.state.input} type="text"/>
-            <button className="chat-button" disabled={busy}>Send</button>
+            <input
+              className="chat-input"
+              placeholder="Enter a note to send to the clinic CHW"
+              onChange={e => this.onChange(e)}
+              value={this.state.input}
+              type="text"
+            />
           </form>
         </div>
       </div>
-    )
+    );
   }
 }
