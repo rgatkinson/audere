@@ -5,7 +5,7 @@
 
 import React from "react";
 import {
-  KeyboardTypeOptions,
+  KeyboardType,
   ReturnKeyTypeOptions,
   StyleProp,
   TextStyle
@@ -14,7 +14,10 @@ import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
-  keyboardType?: KeyboardTypeOptions;
+  focusLocal?: boolean;
+  innerRef?: React.RefObject<TextInput>;
+  keyboardType?: KeyboardType;
+
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
@@ -22,6 +25,7 @@ interface Props {
   style?: StyleProp<TextStyle>;
   value?: string | null;
   onChangeText(text: string): void;
+  onFocus?: () => void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
@@ -51,16 +55,18 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   };
 
   render() {
+    const { autoFocus, focusLocal, innerRef, onFocus } = this.props;
     return (
       <TextInput
         autoCorrect={false}
-        autoFocus={this.props.autoFocus}
+        autoFocus={autoFocus}
         keyboardType={
           this.props.keyboardType ? this.props.keyboardType : "number-pad"
         }
+        onFocus={!!focusLocal ? onFocus : this.props.onFocus}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
-        ref={this.textInput}
+        ref={focusLocal ? this.textInput : innerRef}
         returnKeyType={this.props.returnKeyType}
         style={this.props.style}
         value={this.state.text}

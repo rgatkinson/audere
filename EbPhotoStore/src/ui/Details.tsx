@@ -51,6 +51,8 @@ import {
   TITLEBAR_COLOR
 } from "./styles";
 import { BackCallback } from "./AppController";
+import LabelTextInput from "./components/LabelTextInput";
+import LabelNumberInput from "./components/LabelNumberInput";
 
 interface Props {
   diagnosisInfo?:
@@ -74,6 +76,7 @@ interface Props {
 interface State {
   firstName: string;
   lastName: string;
+  focusedIndex?: number;
   phone: string;
   details?: string;
   notes?: string;
@@ -100,6 +103,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.state = {
       firstName: props.patientInfo.firstName,
       lastName: props.patientInfo.lastName,
+      focusedIndex: 0,
       phone: props.patientInfo.phone,
       details: props.patientInfo.details,
       notes: props.notes
@@ -244,6 +248,14 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.props.dispatch(viewPatients());
   };
 
+  _onInputFocus = (focusedIndex: number) => {
+    this.setState({ focusedIndex });
+  };
+
+  _removeFocus = () => {
+    this.setState({ focusedIndex: undefined });
+  };
+
   render() {
     const {
       evdPositive,
@@ -257,6 +269,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     } = this.props;
     const {
       firstName,
+      focusedIndex,
       lastName,
       phone,
       details,
@@ -305,60 +318,79 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             />
             <Text content={t("patientId", { id })} style={styles.idRight} />
           </View>
-          <Text content={t("patientFirstName")} style={styles.titleRow} />
-          <TextInput
+          <LabelTextInput
             autoFocus={this.state.firstName == ""}
-            placeholder=""
-            returnKeyType="next"
-            style={styles.inputSingle}
-            value={firstName}
+            focusedIndex={focusedIndex}
+            index={0}
+            inputStyle={styles.inputSingle}
+            inputValue={firstName}
             onChangeText={this._updateFirstName}
+            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusLastName}
-          />
-          <Text content={t("patientLastName")} style={styles.titleRow} />
-          <TextInput
             placeholder=""
-            ref={this._lastNameInput}
             returnKeyType="next"
-            style={styles.inputSingle}
-            value={lastName}
+            textContent={t("patientFirstName")}
+            textStyle={styles.titleLeft}
+          />
+          <LabelTextInput
+            focusedIndex={focusedIndex}
+            index={1}
+            innerRef={this._lastNameInput}
+            inputStyle={styles.inputSingle}
+            inputValue={lastName}
             onChangeText={this._updateLastName}
+            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusPhone}
-          />
-          <Text content={t("patientMobileNumber")} style={styles.titleRow} />
-          <NumberInput
             placeholder=""
-            ref={this._phoneInput}
             returnKeyType="next"
-            style={styles.inputSingle}
-            value={phone}
+            textContent={t("patientLastName")}
+            textStyle={styles.titleRow}
+          />
+          <LabelNumberInput
+            focusedIndex={focusedIndex}
+            index={2}
+            inputStyle={[styles.inputSingle, { marginBottom: GUTTER }]}
+            inputValue={phone}
+            innerRef={this._phoneInput}
             onChangeText={this._updatePhone}
+            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusDetails}
+            placeholder=""
+            returnKeyType="next"
+            textContent={t("patientMobileNumber")}
+            textStyle={styles.titleRow}
           />
-          <Text content={t("patientDetails")} style={styles.titleRow} />
-          <TextInput
-            placeholder={t("patientDetailsPlaceholder")}
+          <LabelTextInput
             blurOnSubmit={true}
+            focusedIndex={focusedIndex}
+            index={3}
+            inputStyle={styles.inputMulti}
+            inputValue={details}
+            innerRef={this._detailsInput}
             multiline={true}
             numberOfLines={3}
-            ref={this._detailsInput}
-            returnKeyType="done"
-            style={styles.inputMulti}
-            value={details}
             onChangeText={this._updateDetails}
+            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusNotes}
+            placeholder={t("patientDetailsPlaceholder")}
+            returnKeyType="done"
+            textContent={t("patientDetails")}
           />
-          <Text content={t("patientNotes")} style={styles.titleRow} />
-          <TextInput
+          <LabelTextInput
             blurOnSubmit={true}
-            placeholder={t("patientNotesPlaceholder")}
+            focusedIndex={focusedIndex}
+            index={4}
+            inputStyle={styles.inputMulti}
+            inputValue={notes}
+            innerRef={this._notesInput}
             multiline={true}
             numberOfLines={3}
-            ref={this._notesInput}
-            returnKeyType="done"
-            style={styles.inputMulti}
-            value={notes}
+            onFocus={this._onInputFocus}
             onChangeText={this._updateNotes}
+            onSubmitEditing={this._removeFocus}
+            placeholder={t("patientNotesPlaceholder")}
+            returnKeyType="done"
+            textContent={t("patientNotes")}
           />
           {photoInfo ? (
             <Fragment>
@@ -409,20 +441,21 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   <Text content={t("followUp")} />
                 ) : null}
               </View>
-              <Text
-                style={styles.titleRow}
-                content={t("startChat", { firstName, lastName })}
-              />
-              <TextInput
+              <LabelTextInput
                 blurOnSubmit={true}
+                focusedIndex={focusedIndex}
+                index={5}
+                inputStyle={styles.inputMulti}
+                inputValue={chatMessage}
                 multiline={true}
                 numberOfLines={2}
+                onChangeText={this._updateChatMessage}
+                onFocus={this._onInputFocus}
+                onSubmitEditing={this._sendChatMessage}
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"
-                style={styles.inputMulti}
-                value={chatMessage}
-                onChangeText={this._updateChatMessage}
-                onSubmitEditing={this._sendChatMessage}
+                textContent={t("startChat", { firstName, lastName })}
+                textStyle={styles.titleRow}
               />
               {!!messages && <Chat messages={messages} />}
             </Fragment>
@@ -558,7 +591,8 @@ const styles = StyleSheet.create({
     padding: 0
   },
   inputMulti: {
-    borderWidth: 1
+    borderWidth: 1,
+    marginBottom: GUTTER
   },
   photoContainer: {
     backgroundColor: TITLEBAR_COLOR,

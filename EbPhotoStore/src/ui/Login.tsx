@@ -5,9 +5,10 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import { login, Action, StoreState } from "../store";
 import Button from "./components/Button";
+import LabelTextInput from "./components/LabelTextInput";
 import NumberInput from "./components/NumberInput";
 import TextInput from "./components/TextInput";
-import Text from "./components/Text";
+import LabelNumberInput from "./components/LabelNumberInput";
 import Title from "./components/Title";
 import { GUTTER, FONT_COLOR, FONT_ROBO_MEDIUM, REGULAR_TEXT } from "./styles";
 import PhoneLoginVerification, {
@@ -21,7 +22,7 @@ interface Props {
 
 interface State {
   firstName?: string;
-  focused?: number;
+  focusedIndex?: number;
   lastName?: string;
   phone?: string;
   notes: string;
@@ -40,7 +41,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       const { firstName, lastName, phone, notes } = props.healthWorkerInfo;
       this.state = {
         firstName,
-        focused: 0,
+        focusedIndex: 0,
         lastName,
         phone,
         notes,
@@ -48,7 +49,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       };
     } else {
       this.state = {
-        focused: 0,
+        focusedIndex: 0,
         notes: "",
         showConfirmation: false
       };
@@ -91,6 +92,10 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     this.setState({ showConfirmation: true });
   };
 
+  _removeHighlight = () => {
+    this.setState({ focusedIndex: undefined });
+  };
+
   _onConfirmationDismssed = (reason: PhoneVerificationDismissal) => {
     if (reason === PhoneVerificationDismissal.VERIFIED) {
       this.props.dispatch(
@@ -109,59 +114,78 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     this.setState({ showConfirmation: false });
   };
 
+  _onInputFocus = (focusedIndex: number) => {
+    this.setState({ focusedIndex });
+  };
+
   render() {
     const { t } = this.props;
-    const { lastName, firstName, phone, notes } = this.state;
+    const { firstName, focusedIndex, lastName, notes, phone } = this.state;
+
     return (
       <Fragment>
         <KeyboardAvoidingView style={styles.container} behavior="padding">
           <ScrollView style={styles.content}>
             <Title label={t("signIn")} />
-            <Text
-              content={t("loginFirstName")}
-              style={[styles.titleRow, { paddingTop: 0 }]}
-            />
-            <TextInput
+            <LabelTextInput
               autoFocus={true}
-              placeholder=""
-              returnKeyType="next"
-              style={styles.inputSingle}
-              value={firstName}
+              focusedIndex={focusedIndex}
+              index={0}
+              inputStyle={styles.inputSingle}
+              inputValue={firstName}
               onChangeText={this._updateFirstName}
+              onFocus={this._onInputFocus}
               onSubmitEditing={this._focusLastName}
-            />
-            <Text content={t("loginLastName")} style={styles.titleRow} />
-            <TextInput
               placeholder=""
-              ref={this._lastNameInput}
               returnKeyType="next"
-              style={styles.inputSingle}
-              value={lastName}
-              onChangeText={this._updateLastName}
-              onSubmitEditing={this._focusPhone}
+              textContent={t("loginFirstName")}
+              textStyle={[styles.titleRow, { paddingTop: 0 }]}
             />
-            <Text content={t("loginMobileNumber")} style={styles.titleRow} />
-            <NumberInput
+            <LabelTextInput
+              focusedIndex={focusedIndex}
+              innerRef={this._lastNameInput}
+              index={1}
+              inputStyle={styles.inputSingle}
+              inputValue={lastName}
+              onChangeText={this._updateLastName}
+              onFocus={this._onInputFocus}
+              onSubmitEditing={this._focusPhone}
+              placeholder=""
+              returnKeyType="next"
+              textContent={t("loginLastName")}
+              textStyle={[styles.titleRow]}
+            />
+            <LabelNumberInput
               keyboardType={"phone-pad"}
               placeholder=""
-              ref={this._phoneInput}
+              innerRef={this._phoneInput}
               returnKeyType="next"
-              style={styles.inputSingle}
-              value={phone}
+              focusedIndex={focusedIndex}
+              index={2}
+              inputStyle={styles.inputSingle}
+              onFocus={this._onInputFocus}
+              textContent={t("loginMobileNumber")}
+              textStyle={styles.titleRow}
+              inputValue={phone}
               onChangeText={this._updatePhone}
               onSubmitEditing={this._focusNotes}
             />
-            <Text content={t("notes")} style={styles.titleRow} />
-            <TextInput
+            <LabelTextInput
               blurOnSubmit={true}
+              focusedIndex={focusedIndex}
               placeholder={t("notesPlaceholder")}
               multiline={true}
               numberOfLines={3}
-              ref={this._notesInput}
+              onFocus={this._onInputFocus}
+              innerRef={this._notesInput}
               returnKeyType="done"
-              style={styles.inputMulti}
-              value={notes}
+              inputStyle={styles.inputMulti}
+              index={3}
+              textContent={t("notes")}
+              textStyle={styles.titleRow}
+              inputValue={notes}
               onChangeText={this._updateNotes}
+              onSubmitEditing={this._removeHighlight}
             />
           </ScrollView>
           <Button
