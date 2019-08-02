@@ -63,6 +63,11 @@
   background-color: #8cb2de;
 }
 
+.TriagePane .triageNotes {
+  margin: 5px;
+  width: 500px;
+}
+
 body {
   font-family: "Roboto";
 }

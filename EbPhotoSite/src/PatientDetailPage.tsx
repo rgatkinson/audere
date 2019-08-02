@@ -17,7 +17,6 @@ import {
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, getAuthUser } from "./api";
 import { localeDate, triageDocFromTriage } from "./util";
-import { EbSiteHeader } from "./EbSiteHeader";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -206,7 +205,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           ]
         }
       }),
-      () => this.save(testIndicatesEVD)
+      () => this.save()
     );
   }
 
@@ -221,10 +220,9 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       }
     });
 
-  save = async (testIndicatesEVD: boolean) => {
+  save = async () => {
     this.setState({ busy: true });
     const { docId } = this.props.eDoc;
-    const { notes } = this.state.edited;
     const api = getApi();
     try {
       await api.saveTriage(triageDocFromTriage(docId, this.state.edited));
@@ -241,6 +239,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       edited.diagnoses &&
       edited.diagnoses.length >= 1 &&
       edited.diagnoses[edited.diagnoses.length - 1];
+    const { notes } = this.state.edited;
     return (
       <div className="TriagePane">
         <h3>Does the below image indicate EVD positivity?</h3>
@@ -264,6 +263,24 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             }
             disabled={busy}
             onClick={this.onEVDNo}
+          />
+        </div>
+        <div>
+          <textarea
+            id="notes"
+            className="triageNotes"
+            disabled={busy}
+            value={notes}
+            onChange={this.onNotesChange}
+          />
+        </div>
+        <div>
+          <input
+            type="button"
+            value="Save"
+            className={"evdPressed"}
+            disabled={busy}
+            onClick={this.save}
           />
         </div>
         {error != null && <div className="Error">{error}</div>}
