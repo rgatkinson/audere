@@ -309,7 +309,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
         <div className="EditDetail">
           <input
             type="button"
-            value="Yes"
+            value="YES"
             name="NAME-test-indicates-evd-yes"
             className={
               diagnosis && diagnosis.value ? "evdPressed" : "evdUnpressed"
@@ -319,7 +319,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           />
           <input
             type="button"
-            value="No"
+            value="NO"
             name="NAME-test-indicates-evd-no"
             className={
               diagnosis && !diagnosis.value ? "evdPressed" : "evdUnpressed"
@@ -328,18 +328,18 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             onClick={this.onEVDNo}
           />
         </div>
-        <div>
+        <div className="triageNotes">
           <textarea
             id="notes"
-            className="triageNotes"
             disabled={busy}
             value={notes}
             onChange={this.onNotesChange}
+            placeholder={"Add additional triage notes here"}
           />
           <input
             type="button"
-            value="Save"
-            className={"evdPressed"}
+            value="SAVE"
+            className={"evdUnpressed"}
             disabled={busy}
             onClick={this.save}
           />
