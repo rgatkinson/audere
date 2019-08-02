@@ -102,7 +102,10 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
         const photoData = await this.camera.current!.takePictureAsync({
           quality: 0.8,
           orientation: "portrait",
-          fixOrientation: true
+          fixOrientation: false,
+          skipProcessing: true,
+          pauseAfterCapture: true,
+          width: 640
         });
 
         const photoId = uuidv4();
