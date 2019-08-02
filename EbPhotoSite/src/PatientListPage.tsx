@@ -81,13 +81,13 @@ class PatientListPageAssumeRouter extends React.Component<
     return (
       <div>
         <PatientBlock
-          headerLabel={"Untriaged Patients"}
+          headerLabel={`Untriaged Patients (${untriagedDocs.length})`}
           eDocs={untriagedDocs}
           tDocs={[]}
           onSelectRow={this._select}
         />
         <PatientBlock
-          headerLabel={"Triaged Patients"}
+          headerLabel={`Triaged Patients (${triagedDocs.length})`}
           eDocs={triagedDocs}
           tDocs={this.state.tDocs}
           onSelectRow={this._select}
