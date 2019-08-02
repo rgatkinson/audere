@@ -7,6 +7,9 @@
   font-family: "Roboto", sans-serif;
   font-size: 14pt;
   color: #014080;
+  text-align: left;
+  border-bottom: 1px solid #e5e5e5;
+  height: 40px;
 }
 
 .ReactTable .rt-td {
@@ -14,18 +17,28 @@
   font-family: "Roboto", sans-serif;
   font-size: 14pt;
   color: #4d4d4d;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .ReactTable .-sort-desc::before {
   content: "▼";
   float: right;
   margin: 3px;
-  font-weight: bold;
 }
 
 .ReactTable .-sort-asc::before {
   content: "▲";
   float: right;
   margin: 1px 3px 5px 3px;
+}
+
+.ReactTable .rt-thead .rt-th.-sort-asc,
+.ReactTable .rt-thead .rt-td.-sort-asc {
+  box-shadow: none;
+  font-weight: bold;
+}
+.ReactTable .rt-thead .rt-th.-sort-desc,
+.ReactTable .rt-thead .rt-td.-sort-desc {
+  box-shadow: none;
   font-weight: bold;
 }
