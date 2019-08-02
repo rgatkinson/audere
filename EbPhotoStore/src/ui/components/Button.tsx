@@ -18,13 +18,13 @@ import {
   BORDER_WIDTH,
   BUTTON_WIDTH,
   BUTTON_WIDTH_SM,
+  EXTRA_SMALL_TEXT,
+  FONT_ROBO_BOLD,
   GUTTER,
+  HIGHLIGHT_COLOR,
   INPUT_HEIGHT,
   INPUT_HEIGHT_SM,
   INPUT_TEXT,
-  EXTRA_SMALL_TEXT,
-  HIGHLIGHT_COLOR,
-  FONT_ROBO_BOLD,
   REGULAR_TEXT
 } from "../styles";
 
@@ -74,7 +74,7 @@ export default class Button extends React.Component<Props> {
             !small && styles.textMed,
             !!small && styles.textSm,
             primary ? styles.primaryButtonText : styles.secondaryButtonText,
-            !!fontSize && { fontSize: fontSize },
+            !!fontSize && { fontSize },
             textStyle && textStyle
           ]}
           accessibilityLabel={label.toUpperCase()}
@@ -89,7 +89,6 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    backgroundColor: HIGHLIGHT_COLOR,
     borderColor: HIGHLIGHT_COLOR,
     flexDirection: "row",
     justifyContent: "center",
@@ -113,7 +112,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT_ROBO_BOLD,
     fontSize: REGULAR_TEXT,
     fontWeight: "bold",
-    textAlign: "center"
+    lineHeight: INPUT_HEIGHT,
+    textAlign: "center",
+    textAlignVertical: "center"
   },
   textMed: {
     fontSize: INPUT_TEXT
@@ -128,6 +129,6 @@ const styles = StyleSheet.create({
     color: "white"
   },
   secondaryButtonText: {
-    color: "white"
+    color: HIGHLIGHT_COLOR
   }
 });

@@ -5,6 +5,18 @@
 
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 
+export enum Sort {
+  name = "NAME",
+  id = "ID",
+  status = "STATUS",
+  info = "INFO"
+}
+
+export enum Order {
+  down = "DOWN",
+  up = "UP"
+}
+
 export enum Screen {
   Login = "LOGIN",
   Patients = "PATIENTS",
@@ -23,19 +35,24 @@ export type MetaAction =
   | { type: "VIEW_LOCATION_PERMISSION" }
   | { type: "VIEW_DETAILS"; id: number }
   | { type: "OPEN_CAMERA" }
+  | { type: "SAVE_SORT"; sortBy: Sort[]; order: Order }
   | { type: "SET_FCM_TOKEN"; fcmToken: string };
 
 export type MetaState = {
   currentPatient?: number;
+  demoMode: boolean;
   fcmToken?: string;
   healthWorkerInfo?: HealthWorkerInfo;
-  demoMode: boolean;
+  order: Order;
   screen: Screen;
+  sortBy: Sort[];
 };
 
 const initialState: MetaState = {
   demoMode: false,
-  screen: Screen.Login
+  order: Order.down,
+  screen: Screen.Login,
+  sortBy: [Sort.name, Sort.id]
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -87,6 +104,12 @@ export default function reducer(state = initialState, action: MetaAction) {
       return {
         ...state,
         fcmToken: action.fcmToken
+      };
+    case "SAVE_SORT":
+      return {
+        ...state,
+        order: action.order,
+        sortBy: action.sortBy
       };
     default:
       return state;
@@ -146,5 +169,13 @@ export function setFcmToken(fcmToken: string): MetaAction {
   return {
     type: "SET_FCM_TOKEN",
     fcmToken
+  };
+}
+
+export function saveSort(sortBy: Sort[], order: Order): MetaAction {
+  return {
+    type: "SAVE_SORT",
+    sortBy,
+    order
   };
 }

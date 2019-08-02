@@ -7,6 +7,7 @@ import { Dimensions, NativeModules, Platform, StatusBar } from "react-native";
 const { PlatformConstants } = NativeModules;
 const deviceType = PlatformConstants.interfaceIdiom;
 
+export const ICON_SIZE = 24;
 export const PRIMARY_COLOR = "#0F5DA7";
 export const SECONDARY_COLOR = "#7065AB";
 export const TEXT_COLOR = "#4D4D4D";

@@ -26,7 +26,9 @@ interface Props {
   bold?: boolean;
   center?: boolean;
   content: string;
+  ellipsizeMode?: any;
   italic?: boolean;
+  numberOfLines?: number;
   style?: StyleProp<TextStyle>;
   onPress?: (event: GestureResponderEvent) => void;
 }
@@ -43,9 +45,21 @@ export default class Text extends React.PureComponent<Props> {
   }
 
   render() {
-    const { bold, center, content, italic, style, onPress } = this.props;
+    const {
+      bold,
+      center,
+      content,
+      ellipsizeMode,
+      italic,
+      numberOfLines,
+      style,
+      onPress
+    } = this.props;
     return (
       <SystemText
+        accessibilityLabel={content}
+        ellipsizeMode={ellipsizeMode}
+        numberOfLines={numberOfLines}
         selectable={true}
         style={[
           styles.text,
@@ -54,7 +68,6 @@ export default class Text extends React.PureComponent<Props> {
           italic && styles.italic,
           style
         ]}
-        accessibilityLabel={content}
         onPress={onPress}
       >
         {content

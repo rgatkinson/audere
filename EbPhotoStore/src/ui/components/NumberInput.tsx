@@ -5,16 +5,16 @@
 
 import React from "react";
 import {
+  KeyboardTypeOptions,
   ReturnKeyTypeOptions,
   StyleProp,
-  TextStyle,
-  KeyboardType
+  TextStyle
 } from "react-native";
 import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
-  keyboardType?: KeyboardType;
+  keyboardType?: KeyboardTypeOptions;
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;

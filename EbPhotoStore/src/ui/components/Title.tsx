@@ -32,11 +32,11 @@ export default class Title extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   title: {
-    lineHeight: TITLE_TEXT + LINE_HEIGHT_DIFFERENCE,
-    marginTop: GUTTER / 2,
-    marginBottom: GUTTER,
     color: FONT_COLOR_LIGHT,
     fontFamily: FONT_ROBO_LIGHT,
-    fontSize: TITLE_TEXT
+    fontSize: TITLE_TEXT,
+    lineHeight: TITLE_TEXT + LINE_HEIGHT_DIFFERENCE,
+    marginBottom: GUTTER,
+    marginTop: GUTTER / 2
   }
 });

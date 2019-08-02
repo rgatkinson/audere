@@ -30,8 +30,12 @@
     "login": "Login"
   },
   "patients": {
-    "patientList": "Patient List",
-    "addNewPatient": "Add New",
+    "patients": "Patients",
+    "name": "NAME",
+    "id": "ID",
+    "status": "STATUS",
+    "info": "\u24D8",
+    "addNewPatient": "+",
     "evdPositive": "Ebola +",
     "evdNegative": "Ebola -"
   },
