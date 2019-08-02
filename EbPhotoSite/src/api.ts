@@ -246,6 +246,6 @@ export async function getAuthUser(): Promise<AuthUser> {
   }
   return {
     uid: currentUser.uid,
-    name: currentUser.displayName || ""
+    name: currentUser.displayName || currentUser.email || ""
   };
 }
