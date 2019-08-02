@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Alert, BackHandler, StatusBar, View } from "react-native";
+import { Alert, AppState, BackHandler, StatusBar, View } from "react-native";
 import { connect } from "react-redux";
 import firebase from "react-native-firebase";
 import i18n from "i18next";
@@ -37,11 +37,13 @@ export interface BackCallback {
 
 interface State {
   showAppMenu: boolean;
+  appState: string;
 }
 
 class AppController extends React.Component<Props, State> {
   state: State = {
-    showAppMenu: false
+    showAppMenu: false,
+    appState: AppState.currentState
   };
   _backHandler: any;
   _onBackCallbacks: { [s: string]: BackCallback } = {};
@@ -53,6 +55,8 @@ class AppController extends React.Component<Props, State> {
       "hardwareBackPress",
       this._handleBackPress
     );
+
+    AppState.addEventListener("change", this._handleAppStateChange);
 
     await this._checkNotificationPermissions();
 
@@ -81,20 +85,21 @@ class AppController extends React.Component<Props, State> {
     if (this._notificationListener != null) {
       this._notificationListener();
     }
+
+    AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
-  _showAlert(
-    title: string,
-    body: string,
-    buttonText?: string,
-    patientId?: string
-  ) {
+  _handleAppStateChange = (nextAppState: string) => {
+    this.setState({ appState: nextAppState });
+  };
+
+  _showAlert(title: string, body: string, patientId?: string) {
     Alert.alert(
       title,
       body,
       [
         {
-          text: !!buttonText ? buttonText : i18n.t("common:ok"),
+          text: i18n.t("common:ok"),
           onPress: () => {
             if (this.props.screen !== "LOGIN" && patientId) {
               this.props.dispatch(viewDetails(parseInt(patientId)));
@@ -138,8 +143,14 @@ class AppController extends React.Component<Props, State> {
     this._notificationListener = firebase
       .notifications()
       .onNotification(notification => {
-        const { body, data, title } = notification;
-        this._showAlert(title, body, data.patientId);
+        const { body, title } = notification;
+        if (this.state.appState.match(/inactive|background/)) {
+          this._showAlert(
+            title,
+            body,
+            JSON.parse(notification.data.document).localIndex
+          );
+        }
       });
   };
 
