@@ -1,13 +1,18 @@
 body {
-  font-family: "Roboto";
+  font-family: "Roboto", sans-serif;
 }
 
-h2 {
-  font-family: "Roboto", sans-serif;
+.PatientDetailPage h2 {
   color: #989898;
   font-weight: lighter;
-  font-size: 36pt;
+  font-size: 30pt;
   padding-left: 0px;
+}
+
+.PatientDetailPage h3 {
+  font-weight: normal;
+  color: #4D4D4D;
+  font-size: 22pt;
 }
 
 .PatientDetailPage {
@@ -22,7 +27,7 @@ h2 {
 .PatientListLink {
   text-decoration: none;
   color: #08F;
-  font-size: 12pt;
+  font-size: 15pt;
   font-weight: bold;
 }
 
@@ -130,17 +135,28 @@ h2 {
   text-align: left;
 }
 
+.DetailTable {
+  font-size: 14pt;
+  color: #4D4D4D;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1200px;
+  table-layout: fixed;
+}
+.DetailTable .Header {
+  font-weight: bold;
+  border-bottom: 1px solid #989898;
+}
+.DetailTable td {
+  padding: 10px 0px;
+}
+
 .PhotoPane th {
   text-align: left;
 }
 
 .PhotoPane td {
   vertical-align: top;
-}
-
-.PatientInfoPane td {
-  padding-right: 16px;
-  padding-bottom: 8px;
 }
 
 .TriagePane {

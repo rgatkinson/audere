@@ -176,16 +176,18 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
           </a>
         </div>
         <h3>Patient Information</h3>
-        <table>
-          <tr>
+        <table className="DetailTable">
+          <tr className="Header">
             <td>Phone</td>
             <td>Contact Details</td>
-            <td>CHW Notes</td>
+            <td>Patient Details</td>
+            <td />
           </tr>
-          <tr>
+          <tr className="Content">
             <td>{patient.phone}</td>
             <td>{patient.details}</td>
             <td>{notes}</td>
+            <td />
           </tr>
         </table>
       </div>
@@ -205,14 +207,14 @@ class TestDetailPane extends React.Component<PatientInfoPaneProps> {
     return (
       <div>
         <h3>Patient Test Detail</h3>
-        <table>
-          <tr>
-            <td>Tested on:</td>
-            <td>Tested by:</td>
-            <td>Contact info:</td>
-            <td>About this CHW:</td>
+        <table className="DetailTable">
+          <tr className="Header">
+            <td>Tested on</td>
+            <td>Tested by</td>
+            <td>Contact info</td>
+            <td>About this CHW</td>
           </tr>
-          <tr>
+          <tr className="Content">
             <td>{timestamp}</td>
             <td>{chwName}</td>
             <td>{phone}</td>
