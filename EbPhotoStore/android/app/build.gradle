@@ -184,7 +184,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:18.1.1'
     implementation 'com.google.firebase:firebase-auth:18.1.0'
     implementation 'androidx.multidex:multidex:2.0.0'
-    implementation "com.google.firebase:firebase-messaging:15.0.2"
+    implementation "com.google.firebase:firebase-messaging:19.0.1"
     implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 
     implementation project(':react-native-fs')

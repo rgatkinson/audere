@@ -1,14 +1,15 @@
 import React from "react";
-import { Alert, Dimensions, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase, { RNFirebase } from "react-native-firebase";
 import Modal from "react-native-modal";
 import Button from "./components/Button";
 import DigitInput from "./components/DigitInput";
 import Text from "./components/Text";
-import { GUTTER, STATUS_BAR_HEIGHT } from "./styles";
+import { GUTTER } from "./styles";
 
-const DEFAULT_COUNTRY_CODE = "+1";
+const DEFAULT_COUNTRY_CODE_US = "+1";
+const DEFAULT_COUNTRY_CODE_CONGO = "+243";
 const TEST_PHONE_NUMBER = "2068675309";
 
 export enum PhoneVerificationDismissal {
@@ -34,15 +35,17 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
   }
 
   _getCanonicalPhone() {
-    if (this.props.phone.startsWith("+")) {
-      return this.props.phone;
+    const { phone } = this.props;
+    if (phone.startsWith("+")) {
+      return phone;
     }
+    const prefix =
+      phone.length === 1 || phone.length === 10
+        ? DEFAULT_COUNTRY_CODE_US
+        : DEFAULT_COUNTRY_CODE_CONGO;
 
     // Allows us to easily use the test account
-    return (
-      DEFAULT_COUNTRY_CODE +
-      (this.props.phone.length == 1 ? TEST_PHONE_NUMBER : this.props.phone)
-    );
+    return prefix + (phone.length === 1 ? TEST_PHONE_NUMBER : this.props.phone);
   }
 
   _startFirebaseLogin = async () => {

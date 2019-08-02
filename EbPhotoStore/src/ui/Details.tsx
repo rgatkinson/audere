@@ -338,11 +338,13 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             innerRef={this._lastNameInput}
             inputStyle={styles.inputSingle}
             inputValue={lastName}
+            keyboardType={"phone-pad"}
             onChangeText={this._updateLastName}
             onFocus={this._onInputFocus}
             onSubmitEditing={this._focusPhone}
             placeholder=""
             returnKeyType="next"
+            style={styles.inputSingle}
             textContent={t("patientLastName")}
             textStyle={styles.titleRow}
           />
