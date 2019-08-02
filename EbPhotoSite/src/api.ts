@@ -239,13 +239,13 @@ export async function getAuthUser(): Promise<AuthUser> {
           ? rej("Auth failed")
           : res({
               uid: user.uid,
-              name: user.email || ""
+              name: user.displayName || ""
             })
       )
     );
   }
   return {
     uid: currentUser.uid,
-    name: currentUser.email || ""
+    name: currentUser.displayName || ""
   };
 }
