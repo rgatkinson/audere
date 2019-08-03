@@ -5,7 +5,7 @@
 .chat-box {
   border: 1px solid #989898;
   padding: 25px;
-  height: 750px;
+  height: 350px;
   width: 750px;
   border-radius: 5px;
 }
@@ -13,7 +13,7 @@
 .message-list {
   padding: 20px 5px;
   overflow: auto;
-  height: 680px;
+  height: 280px;
   margin: 0 auto;
   list-style: none;
   padding-left: 0;
