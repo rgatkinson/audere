@@ -4,8 +4,8 @@
 
 .chat-box {
   border: 1px solid #989898;
-  padding: 25px;
-  height: 350px;
+  padding: 10px;
+  height: 300px;
   width: 750px;
   border-radius: 5px;
 }
@@ -13,7 +13,7 @@
 .message-list {
   padding: 20px 5px;
   overflow: auto;
-  height: 280px;
+  height: 230px;
   margin: 0 auto;
   list-style: none;
   padding-left: 0;
@@ -45,13 +45,13 @@
 .message-content > .user-name {
   display: block;
   padding-bottom: 4px;
-  padding-top: 10px;
+  padding-top: 3px;
   font-style: italic;
   color: #4D4D4D;
 }
 
 .message-content > .text {
-  padding: 20px;
+  padding: 10px;
   max-width: 400px;
   margin: 0;
   border-radius: 6px;
