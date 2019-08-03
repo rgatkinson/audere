@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { format } from "date-fns";
 import {
   DocumentType,
   Message,
@@ -120,21 +121,6 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     }
   }
 
-  private monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-
   renderMessage(message: Message) {
     const { content, sender, timestamp } = message;
     const { currentUser } = this.state;
@@ -144,22 +130,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       const date = new Date(timestamp);
 
       if (date != null) {
-        let hours = date.getHours();
-        const ampm = hours >= 12 ? "pm" : "am";
-        hours = hours % 12;
-        hours = hours === 0 ? 12 : hours;
-        const dateString =
-          date.getDate() +
-          " " +
-          this.monthNames[date.getMonth()] +
-          " " +
-          date.getFullYear() +
-          ", " +
-          hours +
-          ":" +
-          date.getMinutes() +
-          " " +
-          ampm;
+        const dateString = format(date, "DD MMMM YYYY, HH:mm");
 
         if (userTag != null) {
           userTag = ` by ${userTag}`;
