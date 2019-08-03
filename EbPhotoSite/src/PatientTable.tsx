@@ -90,7 +90,7 @@ export class PatientTable extends React.Component<
   }
 
   private redIfPositive = (state: any, rowInfo: RowInfo) =>
-    this.triageIsPositive(rowInfo.original.tDoc)
+    rowInfo && this.triageIsPositive(rowInfo.original.tDoc)
       ? {
           style: {
             color: "#c00"
@@ -127,7 +127,7 @@ export class PatientTable extends React.Component<
           return this.getTimestamp(row);
         },
         Cell: cellInfo => {
-          const timestamp = this.getTimestamp(cellInfo.original);
+          const timestamp = cellInfo && this.getTimestamp(cellInfo.original);
           return timestamp ? localeDate(timestamp) : "Not Tested";
         },
         id: "timestamp",
