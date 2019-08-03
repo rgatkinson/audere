@@ -67,7 +67,7 @@ export class PatientBlock extends React.Component<Props, State> {
       <SimpleMap
         encounters={this.props.eDocs}
         tDocs={this.props.tDocs}
-        style={{ height: "50rem" }}
+        style={{ height: "25rem" }}
         zoom={6}
       />
     ) : (
