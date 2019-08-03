@@ -12,6 +12,10 @@
   height: 40px;
 }
 
+.ReactTable .rt-tr-group {
+  margin-bottom: -1px;
+}
+
 .ReactTable .rt-td {
   height: 30px;
   font-family: "Roboto", sans-serif;

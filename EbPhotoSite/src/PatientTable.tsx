@@ -5,7 +5,7 @@
 
 import React, { MouseEvent } from "react";
 import { Redirect } from "react-router-dom";
-import ReactTable, { Column } from "react-table";
+import ReactTable, { Column, ReactTableFunction, RowInfo } from "react-table";
 import "react-table/react-table.css";
 
 import {
@@ -76,7 +76,7 @@ export class PatientTable extends React.Component<
         this.props.onSelect(e, row.original.eDoc);
       },
       style: {
-        background: evd ? "#FFC0CB" : "white"
+        border: evd ? "1px solid #c00" : "white"
       }
     };
   };
@@ -89,14 +89,28 @@ export class PatientTable extends React.Component<
     return photo.timestamp;
   }
 
+  private redIfPositive = (state: any, rowInfo: RowInfo) =>
+    this.triageIsPositive(rowInfo.original.tDoc)
+      ? {
+          style: {
+            color: "#c00"
+          }
+        }
+      : {};
+
   columns(): Column<PatientTableRow>[] {
     const evdResultColumns: Column<PatientTableRow>[] = [
       {
         Header: "EVD Test Result",
         accessor: r =>
-          r.tDoc == null ? ".." : this.triageIsPositive(r.tDoc) ? "yes" : "no",
+          r.tDoc == null
+            ? ".."
+            : this.triageIsPositive(r.tDoc)
+            ? "POSITIVE"
+            : "NEGATIVE",
         id: "evd",
-        minWidth: 70
+        minWidth: 90,
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction
       },
       {
         Header: "EVD Result Notes",
@@ -117,7 +131,8 @@ export class PatientTable extends React.Component<
           return timestamp ? localeDate(timestamp) : "Not Tested";
         },
         id: "timestamp",
-        minWidth: 110
+        minWidth: 110,
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction
       },
       {
         Header: "Patient Name",
@@ -126,7 +141,8 @@ export class PatientTable extends React.Component<
           return `${p.firstName} ${p.lastName}`;
         },
         id: "patient.name",
-        minWidth: 110
+        minWidth: 110,
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction
       },
       {
         Header: "CHW Name",
