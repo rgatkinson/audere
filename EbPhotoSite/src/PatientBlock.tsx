@@ -68,6 +68,7 @@ export class PatientBlock extends React.Component<Props, State> {
         encounters={this.props.eDocs}
         tDocs={this.props.tDocs}
         style={{ height: "50rem" }}
+        zoom={6}
       />
     ) : (
       <PatientTable

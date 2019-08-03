@@ -64,7 +64,9 @@ class PatientDetailPageAssumeRouter extends React.Component<
     });
   };
 
-  triageChangeHandler = async (tDoc: EncounterTriageDocument): Promise<void> => {
+  triageChangeHandler = async (
+    tDoc: EncounterTriageDocument
+  ): Promise<void> => {
     if (this.state.eDoc != null) {
       const api = getApi();
       const { eDoc } = this.state;
@@ -439,6 +441,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                         width: "400px",
                         marginBottom: "0.5rem"
                       }}
+                      zoom={11}
                     />
                     <table>
                       <tr>

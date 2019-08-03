@@ -40,6 +40,7 @@ export class MapPage extends React.Component<Props, State> {
         encounters={this.state.encounters}
         tDocs={this.state.tDocs}
         style={{ height: "100vh" }}
+        zoom={6}
       />
     );
   }

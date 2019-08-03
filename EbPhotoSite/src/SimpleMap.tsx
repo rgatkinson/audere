@@ -22,12 +22,12 @@ const EVD_NEG = 2;
 const EVD_UNTRIAGED = 3;
 const apiKey = "AIzaSyAgQB01v0gEm2L93fAfB_dnf_JJR8K-gAM";
 const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${apiKey}`;
-const DEFAULT_ZOOM = 11;
 
 interface Props {
   encounters: EncounterDocument[];
   tDocs: EncounterTriageDocument[];
   style: React.CSSProperties;
+  zoom: number;
 }
 
 interface Location {
@@ -148,7 +148,7 @@ export class SimpleMap extends React.Component<Props, State> {
     withGoogleMap(() => (
       <GoogleMap
         defaultCenter={this.computeCenter(this.state.locations!)}
-        defaultZoom={DEFAULT_ZOOM}
+        defaultZoom={this.props.zoom}
       >
         {this.state.locations!.map(location => (
           <Marker
