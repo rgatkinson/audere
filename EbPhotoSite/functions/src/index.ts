@@ -28,13 +28,18 @@ export const notify = functions.https.onCall(async (data, context) => {
     data: document,
     notification: {
       title: notification.title,
-      body: notification.body
+      body: notification.body,
+      sound: "default",
+      android_channel_id: "eb_photo_store"
     }
   };
 
   let options = {};
   if (notification.group != null) {
-    options = { collapseKey: notification.group };
+    options = {
+      collapseKey: notification.group,
+      priority: "high"
+    };
   }
 
   const sendResponse = await admin.messaging().sendToDevice(
