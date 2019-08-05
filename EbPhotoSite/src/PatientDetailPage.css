@@ -69,12 +69,12 @@ body {
 }
 
 .DiagnosisBubble.Positive:before {
-  border-color: white;
+  border-color: rgba(255, 0, 0, 0);
   border-right-color: red;
 }
 
 .DiagnosisBubble.Negative:before {
-  border-color: white;
+  border-color: rgba(0, 255, 0, 0);
   border-right-color: green;
 }
 
