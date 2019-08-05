@@ -311,15 +311,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
         )}
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.idContainer}>
-            <Title
-              label={t("details")}
-              style={[
-                styles.titleLeft,
-                {
-                  marginBottom: 0
-                }
-              ]}
-            />
+            <Title label={t("details")} style={styles.titleLeft} />
             <Text content={t("patientId", { id })} style={styles.idRight} />
           </View>
           <LabelTextInput
@@ -335,7 +327,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             placeholder=""
             returnKeyType="next"
             textContent={t("patientFirstName")}
-            textStyle={styles.titleLeft}
+            textStyle={styles.titleRow}
           />
           <LabelTextInput
             focusedIndex={focusedIndex}
@@ -584,7 +576,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end"
   },
   titleLeft: {
-    flex: 2
+    flex: 2,
+    marginBottom: 0
   },
   idRight: {
     flex: 1,
