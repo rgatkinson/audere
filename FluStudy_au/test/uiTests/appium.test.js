@@ -24,7 +24,7 @@ const screen_x = deviceInfo.SCREEN_X;
 const screen_y = deviceInfo.SCREEN_Y;
 const fs = require("fs");
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000000;
 const PORT = 4723;
 const driver = wd.promiseChainRemote("localhost", PORT);
 
