@@ -1,8 +1,7 @@
-import React from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import React, { Fragment } from "react";
+import { Alert, Dimensions, Modal, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase, { RNFirebase } from "react-native-firebase";
-import Modal from "react-native-modal";
 import Button from "./components/Button";
 import DigitInput from "./components/DigitInput";
 import Text from "./components/Text";
@@ -94,30 +93,30 @@ class PhoneLoginVerification extends React.Component<Props & WithNamespaces> {
   render() {
     const { phone, t, visible } = this.props;
     return (
-      <Modal
-        animationIn={"fadeIn"}
-        animationOut={"fadeOut"}
-        avoidKeyboard={true}
-        backdropOpacity={0.5}
-        coverScreen={false}
-        isVisible={visible}
-        style={styles.modal}
-        onModalWillShow={this._startFirebaseLogin}
-      >
-        <View style={styles.container}>
-          <Text content={t("verificationCode", { phone })} />
-          <DigitInput digits={6} onSubmitEditing={this._validateCode} />
-          <View style={styles.buttons}>
-            <Button
-              label={t("common:cancel")}
-              enabled={true}
-              primary={false}
-              style={[styles.button, { marginRight: GUTTER }]}
-              onPress={this._onCancel}
-            />
+      <Fragment>
+        {visible && <View style={styles.overlay} />}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={visible}
+          onRequestClose={this._onCancel}
+          onShow={this._startFirebaseLogin}
+        >
+          <View style={styles.modal}>
+            <Text content={t("verificationCode", { phone })} />
+            <DigitInput digits={6} onSubmitEditing={this._validateCode} />
+            <View style={styles.buttons}>
+              <Button
+                label={t("common:cancel")}
+                enabled={true}
+                primary={false}
+                style={[styles.button, { marginRight: GUTTER }]}
+                onPress={this._onCancel}
+              />
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </Fragment>
     );
   }
 }
@@ -135,15 +134,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center"
   },
-  container: {
+  modal: {
     alignSelf: "stretch",
+    alignItems: "center",
     backgroundColor: "white",
     justifyContent: "center",
-    opacity: 1,
-    padding: GUTTER
+    left: GUTTER,
+    padding: GUTTER,
+    position: "absolute",
+    right: GUTTER,
+    top: Dimensions.get("window").height / 5,
   },
-  modal: {
-    alignItems: "center",
-    justifyContent: "center"
-  }
+  overlay: {
+    backgroundColor: "black",
+    bottom: 0,
+    left: 0,
+    opacity: 0.5,
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
 });
