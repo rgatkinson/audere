@@ -750,6 +750,7 @@ resource "aws_iam_group_membership" "administrators" {
     "mmarucheck",
     "philip",
     "ram",
+    "shawna"
   ]
 }
 
