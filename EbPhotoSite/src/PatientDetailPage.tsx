@@ -186,7 +186,7 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
           <tr className="Header">
             <td>Phone</td>
             <td>Contact Details</td>
-            <td>Patient Details</td>
+            <td>CHW Notes</td>
             <td />
           </tr>
           <tr className="Content">
