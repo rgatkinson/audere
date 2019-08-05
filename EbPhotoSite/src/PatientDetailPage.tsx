@@ -5,6 +5,7 @@
 
 import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import ExifOrientationImg from "react-exif-orientation-img";
 
 import {
   Diagnosis,
@@ -405,28 +406,20 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                 <tr>
                   <td>
                     {url != null && (
-                      // CSS hack to avoid modifying the image aspect ratio,
-                      // while supporting right-click "Save Image As".
                       <div
                         style={{
-                          height: "400px",
-                          width: "400px",
-                          backgroundImage: `url(${url})`,
-                          backgroundSize: "contain",
-                          backgroundPosition: "center center",
-                          backgroundRepeat: "no-repeat",
                           backgroundColor: "gray",
                           marginRight: "1rem",
                           marginBottom: "0.5rem"
                         }}
                       >
-                        <img
+                        <ExifOrientationImg
                           src={url}
-                          width="100%"
-                          height="100%"
                           alt="RDT Result"
                           style={{
-                            opacity: 0
+                            width: "400px",
+                            height: "400px",
+                            objectFit: "contain"
                           }}
                         />
                       </div>
