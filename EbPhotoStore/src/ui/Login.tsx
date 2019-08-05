@@ -22,7 +22,6 @@ interface Props {
 
 interface State {
   firstName?: string;
-  focusedIndex?: number;
   lastName?: string;
   phone?: string;
   notes: string;
@@ -41,7 +40,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       const { firstName, lastName, phone, notes } = props.healthWorkerInfo;
       this.state = {
         firstName,
-        focusedIndex: 0,
         lastName,
         phone,
         notes,
@@ -49,7 +47,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       };
     } else {
       this.state = {
-        focusedIndex: 0,
         notes: "",
         showConfirmation: false
       };
@@ -92,10 +89,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     this.setState({ showConfirmation: true });
   };
 
-  _removeHighlight = () => {
-    this.setState({ focusedIndex: undefined });
-  };
-
   _onConfirmationDismssed = (reason: PhoneVerificationDismissal) => {
     if (reason === PhoneVerificationDismissal.VERIFIED) {
       this.props.dispatch(
@@ -114,13 +107,9 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     this.setState({ showConfirmation: false });
   };
 
-  _onInputFocus = (focusedIndex: number) => {
-    this.setState({ focusedIndex });
-  };
-
   render() {
     const { t } = this.props;
-    const { firstName, focusedIndex, lastName, notes, phone } = this.state;
+    const { firstName, lastName, notes, phone } = this.state;
 
     return (
       <Fragment>
@@ -129,13 +118,9 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             <Title label={t("signIn")} />
             <LabelTextInput
               autoFocus={true}
-              focusedIndex={focusedIndex}
-              index={0}
               inputStyle={styles.inputSingle}
               inputValue={firstName}
-              onBlur={this._removeHighlight}
               onChangeText={this._updateFirstName}
-              onFocus={this._onInputFocus}
               onSubmitEditing={this._focusLastName}
               placeholder=""
               returnKeyType="next"
@@ -143,14 +128,10 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               textStyle={[styles.titleRow, { paddingTop: 0 }]}
             />
             <LabelTextInput
-              focusedIndex={focusedIndex}
-              innerRef={this._lastNameInput}
-              index={1}
+              ref={this._lastNameInput}
               inputStyle={styles.inputSingle}
               inputValue={lastName}
-              onBlur={this._removeHighlight}
               onChangeText={this._updateLastName}
-              onFocus={this._onInputFocus}
               onSubmitEditing={this._focusPhone}
               placeholder=""
               returnKeyType="next"
@@ -160,13 +141,9 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             <LabelNumberInput
               keyboardType={"phone-pad"}
               placeholder=""
-              innerRef={this._phoneInput}
+              ref={this._phoneInput}
               returnKeyType="next"
-              focusedIndex={focusedIndex}
-              index={2}
               inputStyle={styles.inputSingle}
-              onBlur={this._removeHighlight}
-              onFocus={this._onInputFocus}
               textContent={t("loginMobileNumber")}
               textStyle={styles.titleRow}
               inputValue={phone}
@@ -175,21 +152,16 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             />
             <LabelTextInput
               blurOnSubmit={true}
-              focusedIndex={focusedIndex}
               placeholder={t("notesPlaceholder")}
               multiline={true}
               numberOfLines={3}
-              onBlur={this._removeHighlight}
-              onFocus={this._onInputFocus}
-              innerRef={this._notesInput}
+              ref={this._notesInput}
               returnKeyType="done"
               inputStyle={styles.inputMulti}
-              index={3}
               textContent={t("notes")}
               textStyle={styles.titleRow}
               inputValue={notes}
               onChangeText={this._updateNotes}
-              onSubmitEditing={this._removeHighlight}
             />
           </ScrollView>
           <Button

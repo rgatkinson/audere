@@ -7,7 +7,6 @@ import React, { Fragment } from "react";
 import {
   StyleProp,
   StyleSheet,
-  TextInput as SystemTextInput,
   TextStyle,
   ReturnKeyType,
   View
@@ -23,29 +22,36 @@ interface Props {
   inputStyle?: StyleProp<TextStyle>;
   inputValue?: string;
   index?: number;
-  innerRef?: React.RefObject<TextInput>;
   multiline?: boolean;
   numberOfLines?: number;
   placeholder: string;
   returnKeyType: ReturnKeyType;
   textStyle?: StyleProp<TextStyle>;
   textContent: string;
-  onBlur?: () => void;
   onEndEditing?: (e: any) => void;
   onChangeText?(text: string): void;
-  onFocus?: (key: number) => void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
 
-export default class LabelTextInput extends React.Component<Props> {
-  textInput = React.createRef<SystemTextInput>();
+interface State {
+  isFocused: boolean;
+}
+
+export default class LabelTextInput extends React.Component<Props, State> {
+  state: State = {
+    isFocused: false
+  };
+
+  textInput = React.createRef<TextInput>();
 
   _onFocus = () => {
-    const { index, onFocus } = this.props;
-    if (index != undefined && onFocus != undefined) {
-      onFocus(index);
-    }
+    this.setState({ isFocused: true });
+    console.log("on focus");
+  };
+
+  _onBlur = () => {
+    this.setState({ isFocused: false });
   };
 
   render() {
@@ -54,12 +60,10 @@ export default class LabelTextInput extends React.Component<Props> {
       blurOnSubmit,
       focusedIndex,
       index,
-      innerRef,
       inputStyle,
       inputValue,
       multiline,
       numberOfLines,
-      onBlur,
       onChangeText,
       onEndEditing,
       onKeyPress,
@@ -70,31 +74,29 @@ export default class LabelTextInput extends React.Component<Props> {
       textStyle
     } = this.props;
 
-    const highlighted = focusedIndex === index;
-
     return (
       <Fragment>
         <Text
           content={textContent}
-          style={[textStyle, highlighted && styles.highlightText]}
+          style={[textStyle, this.state.isFocused && styles.highlightText]}
         />
         <TextInput
           autoFocus={autoFocus}
           blurOnSubmit={blurOnSubmit}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          onBlur={onBlur}
+          onBlur={this._onBlur}
           onChangeText={onChangeText}
           onEndEditing={onEndEditing}
           onFocus={this._onFocus}
           onKeyPress={onKeyPress}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
-          ref={innerRef}
+          ref={this.textInput}
           returnKeyType={returnKeyType}
           style={[
             inputStyle,
-            highlighted &&
+            this.state.isFocused &&
               (multiline ? styles.multilineHighlight : styles.highlightInput)
           ]}
           value={inputValue}

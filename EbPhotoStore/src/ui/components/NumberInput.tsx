@@ -14,10 +14,7 @@ import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
-  focusLocal?: boolean;
-  innerRef?: React.RefObject<TextInput>;
   keyboardType?: KeyboardType;
-
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
@@ -56,7 +53,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { autoFocus, focusLocal, innerRef, onBlur, onFocus } = this.props;
+    const { autoFocus, onBlur, onFocus } = this.props;
     return (
       <TextInput
         autoCorrect={false}
@@ -64,11 +61,11 @@ export default class NumberInput extends React.PureComponent<Props, State> {
         keyboardType={
           this.props.keyboardType ? this.props.keyboardType : "number-pad"
         }
-        onBlur={this.props.onBlur}
-        onFocus={!!focusLocal ? onFocus : this.props.onFocus}
+        onBlur={onBlur}
+        onFocus={onFocus}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
-        ref={focusLocal ? this.textInput : innerRef}
+        ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
         style={this.props.style}
         value={this.state.text}

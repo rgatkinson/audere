@@ -37,7 +37,7 @@ export default class DigitInput extends React.Component<Props> {
         key={"digitInput" + index}
         placeholder="-"
         placeholderTextColor="black"
-        innerRef={this.inputRefs[index]}
+        ref={this.inputRefs[index]}
         returnKeyType={index == this.props.digits - 1 ? "done" : "next"}
         style={[styles.digitInput, this.props.style]}
         onKeyPress={(e: any) => {

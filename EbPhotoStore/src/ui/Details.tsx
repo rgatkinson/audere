@@ -75,7 +75,6 @@ interface Props {
 interface State {
   firstName: string;
   lastName: string;
-  focusedIndex?: number;
   phone: string;
   details?: string;
   notes?: string;
@@ -102,7 +101,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.state = {
       firstName: props.patientInfo.firstName,
       lastName: props.patientInfo.lastName,
-      focusedIndex: 0,
       phone: props.patientInfo.phone,
       details: props.patientInfo.details,
       notes: props.notes
@@ -247,14 +245,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.props.dispatch(viewPatients());
   };
 
-  _onInputFocus = (focusedIndex: number) => {
-    this.setState({ focusedIndex });
-  };
-
-  _removeHighlight = () => {
-    this.setState({ focusedIndex: undefined });
-  };
-
   render() {
     const {
       evdPositive,
@@ -268,7 +258,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     } = this.props;
     const {
       firstName,
-      focusedIndex,
       lastName,
       phone,
       details,
@@ -316,13 +305,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           </View>
           <LabelTextInput
             autoFocus={this.state.firstName == ""}
-            focusedIndex={focusedIndex}
-            index={0}
             inputStyle={styles.inputSingle}
             inputValue={firstName}
-            onBlur={this._removeHighlight}
             onChangeText={this._updateFirstName}
-            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusLastName}
             placeholder=""
             returnKeyType="next"
@@ -330,14 +315,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             textStyle={styles.titleRow}
           />
           <LabelTextInput
-            focusedIndex={focusedIndex}
-            index={1}
-            innerRef={this._lastNameInput}
+            ref={this._lastNameInput}
             inputStyle={styles.inputSingle}
             inputValue={lastName}
-            onBlur={this._removeHighlight}
             onChangeText={this._updateLastName}
-            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusPhone}
             placeholder=""
             returnKeyType="next"
@@ -345,15 +326,11 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             textStyle={styles.titleRow}
           />
           <LabelNumberInput
-            focusedIndex={focusedIndex}
-            index={2}
             inputStyle={[styles.inputSingle, { marginBottom: GUTTER }]}
             inputValue={phone}
-            innerRef={this._phoneInput}
+            ref={this._phoneInput}
             keyboardType={"phone-pad"}
-            onBlur={this._removeHighlight}
             onChangeText={this._updatePhone}
-            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusDetails}
             placeholder=""
             returnKeyType="next"
@@ -362,16 +339,12 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <LabelTextInput
             blurOnSubmit={true}
-            focusedIndex={focusedIndex}
-            index={3}
             inputStyle={styles.inputMulti}
             inputValue={details}
-            innerRef={this._detailsInput}
+            ref={this._detailsInput}
             multiline={true}
             numberOfLines={3}
-            onBlur={this._removeHighlight}
             onChangeText={this._updateDetails}
-            onFocus={this._onInputFocus}
             onSubmitEditing={this._focusNotes}
             placeholder={t("patientDetailsPlaceholder")}
             returnKeyType="done"
@@ -379,17 +352,12 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <LabelTextInput
             blurOnSubmit={true}
-            focusedIndex={focusedIndex}
-            index={4}
             inputStyle={styles.inputMulti}
             inputValue={notes}
-            innerRef={this._notesInput}
+            ref={this._notesInput}
             multiline={true}
             numberOfLines={3}
-            onBlur={this._removeHighlight}
-            onFocus={this._onInputFocus}
             onChangeText={this._updateNotes}
-            onSubmitEditing={this._removeHighlight}
             placeholder={t("patientNotesPlaceholder")}
             returnKeyType="done"
             textContent={t("patientNotes")}
@@ -445,15 +413,11 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               </View>
               <LabelTextInput
                 blurOnSubmit={true}
-                focusedIndex={focusedIndex}
-                index={5}
                 inputStyle={styles.inputMulti}
                 inputValue={chatMessage}
                 multiline={true}
                 numberOfLines={2}
-                onBlur={this._removeHighlight}
                 onChangeText={this._updateChatMessage}
-                onFocus={this._onInputFocus}
                 onSubmitEditing={this._sendChatMessage}
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"

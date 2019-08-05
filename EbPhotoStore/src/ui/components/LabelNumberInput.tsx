@@ -7,7 +7,6 @@ import React, { Fragment } from "react";
 import {
   StyleProp,
   StyleSheet,
-  TextInput as SystemTextInput,
   TextStyle,
   ReturnKeyType,
   KeyboardType
@@ -24,7 +23,6 @@ interface Props {
   inputStyle?: StyleProp<TextStyle>;
   inputValue?: string;
   index?: number;
-  innerRef?: React.RefObject<TextInput>;
   keyboardType?: KeyboardType;
   multiline?: boolean;
   numberOfLines?: number;
@@ -32,22 +30,29 @@ interface Props {
   returnKeyType: ReturnKeyType;
   textStyle?: StyleProp<TextStyle>;
   textContent: string;
-  onBlur?: () => void;
   onEndEditing?: (e: any) => void;
   onChangeText(text: string): void;
-  onFocus?: (key: number) => void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
 
-export default class LabelNumberInput extends React.Component<Props> {
-  textInput = React.createRef<SystemTextInput>();
+interface State {
+  isFocused: boolean;
+}
+
+export default class LabelNumberInput extends React.Component<Props, State> {
+  state: State = {
+    isFocused: false
+  };
+
+  textInput = React.createRef<NumberInput>();
 
   _onFocus = () => {
-    const { index, onFocus } = this.props;
-    if (index != undefined && onFocus != undefined) {
-      onFocus(index);
-    }
+    this.setState({ isFocused: true });
+  };
+
+  _onBlur = () => {
+    this.setState({ isFocused: false });
   };
 
   render() {
@@ -57,10 +62,8 @@ export default class LabelNumberInput extends React.Component<Props> {
       index,
       inputStyle,
       inputValue,
-      innerRef,
       keyboardType,
       onChangeText,
-      onBlur,
       onKeyPress,
       onSubmitEditing,
       placeholder,
@@ -69,26 +72,24 @@ export default class LabelNumberInput extends React.Component<Props> {
       textStyle
     } = this.props;
 
-    const highlighted = focusedIndex === index;
-
     return (
       <Fragment>
         <Text
           content={textContent}
-          style={[textStyle, highlighted && styles.highlightText]}
+          style={[textStyle, this.state.isFocused && styles.highlightText]}
         />
         <NumberInput
           autoFocus={autoFocus}
           keyboardType={keyboardType}
-          onBlur={onBlur}
+          onBlur={this._onBlur}
           onChangeText={onChangeText}
           onFocus={this._onFocus}
           onKeyPress={onKeyPress}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
-          innerRef={innerRef}
+          ref={this.textInput}
           returnKeyType={returnKeyType}
-          style={[inputStyle, highlighted && styles.highlightInput]}
+          style={[inputStyle, this.state.isFocused && styles.highlightInput]}
           value={inputValue}
         />
       </Fragment>
