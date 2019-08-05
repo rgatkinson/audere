@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   },
   multilineHighlight: {
     borderWidth: 2,
+    borderBottomWidth: 2,
     borderColor: HIGHLIGHT_COLOR
   }
 });
