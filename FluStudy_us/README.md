@@ -2,13 +2,11 @@
 
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/audere)
-
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=c97dd3b896e5aceacec319919414658655db7037)](https://circleci.com/gh/AudereNow/audere)
 
 ## Overview
 
 FluStudy_us is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic & location data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi).
-
 
 ## Developer setup
 
@@ -16,7 +14,6 @@ If you are part of the Audere organization, see https://github.com/AudereNow/aud
 
 Otherwise, you will need to set up your own Apple Developer and Firebase accounts and configure the app accordingly.
 We use cocoapods for dependencies and fastlane for iOS cert management.
-
 
 ## React Native Template
 

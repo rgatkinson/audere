@@ -2,7 +2,7 @@
 
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/audere)
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=c97dd3b896e5aceacec319919414658655db7037)](https://circleci.com/gh/AudereNow/audere)
 
 ## Overview
 

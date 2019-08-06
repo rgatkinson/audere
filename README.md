@@ -1,6 +1,6 @@
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/audere)
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=c97dd3b896e5aceacec319919414658655db7037)](https://circleci.com/gh/AudereNow/audere)
 
 # Audere
 
@@ -34,18 +34,18 @@ The flu apps track consent and survey information about flu symptoms in particip
 The application has two primary components, a React Native application for participants and a data collection API that persists participant data.
 These applications are built using CircleCI and deployed to AWS.
 
-* [FluStudy_au](https://github.com/AudereNow/audere/tree/master/FluStudy_au)
-* [FluStudy_us](https://github.com/AudereNow/audere/tree/master/FluStudy_us)
-* [FluTrack](https://github.com/AudereNow/audere/tree/master/FluTrack)
-* [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi)
-* [Terraform scripts](https://github.com/AudereNow/audere/tree/master/terraform)
+- [FluStudy_au](https://github.com/AudereNow/audere/tree/master/FluStudy_au)
+- [FluStudy_us](https://github.com/AudereNow/audere/tree/master/FluStudy_us)
+- [FluTrack](https://github.com/AudereNow/audere/tree/master/FluTrack)
+- [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi)
+- [Terraform scripts](https://github.com/AudereNow/audere/tree/master/terraform)
 
 ### Development setup
 
 Building this project requires the following dependencies:
 
-* [CircleCI](https://circleci.com/)
-* [Docker](https://www.docker.com/)
+- [CircleCI](https://circleci.com/)
+- [Docker](https://www.docker.com/)
 
 The project can be built locally by executing the CircleCI target `circleci local execute --job build`.
 This will execute the configured build action within a local Docker CircleCI server, which builds and tests the application modules.
