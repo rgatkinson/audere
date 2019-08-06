@@ -43,10 +43,11 @@
     // in order for Crashlytics to upload its data.  If you simply change the code and rebuild, Xcode
     // will redeploy, thereby deleting your crash data (from device or simulator).
     //
-    // int r = arc4random_uniform(2);
-    // if (r != 0) {
-    //  [[Crashlytics sharedInstance] crash];
-    // }
+  NSLog(@"*** App entering foreground");
+     int r = arc4random_uniform(2);
+//     if (r != 0) {
+      [[Crashlytics sharedInstance] crash];
+  //   }
     [super applicationWillEnterForeground:application];
 }
 
