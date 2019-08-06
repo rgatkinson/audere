@@ -25,10 +25,14 @@ export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
   return blueAnswer === "yes"
-    ? getRemoteConfig("rdtTimeoutSeconds") > 0
-      ? "RDTInstructions"
-      : "NonRDTInstructions"
+    ? "TestStripSurvey2"
     : "InvalidResult";
+}
+
+export function getPinkWhenBlueNextScreen() {
+  return getRemoteConfig("rdtTimeoutSeconds") > 0
+    ? "RDTInstructions"
+    : "NonRDTInstructions";
 }
 
 export async function getTestStripConfirmationNextScreen() {

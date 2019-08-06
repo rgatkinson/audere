@@ -1050,7 +1050,6 @@ export const RaceConfig: OptionQuestion = {
 export const BlueLineConfig: SurveyQuestion = {
   id: "BlueLine",
   title: "blueLine",
-  description: "blueLine",
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
@@ -1069,12 +1068,12 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
     },
   ],
   title: "pinkLine",
-  description: "seeExample",
   buttons: [
     {
       key: "noPink",
       primary: false,
       enabled: true,
+      helpImageUri: "blueonly",
     },
     {
       key: "yesAboveBlue",
