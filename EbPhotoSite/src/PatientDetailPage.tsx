@@ -377,9 +377,11 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
     const { rdtPhotos } = this.props.eDoc.encounter;
     rdtPhotos.forEach(async (photo, i) => {
       const url = await this.getUrl(photo.photoId);
-      const urls = [...this.state.urls];
-      urls.splice(i, 1, url);
-      this.setState({ urls });
+      this.setState(state => {
+        const urls = [...state.urls];
+        urls.splice(i, 1, url);
+        return { urls };
+      });
     });
   }
 
