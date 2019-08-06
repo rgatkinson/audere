@@ -47,7 +47,6 @@ export default class LabelTextInput extends React.Component<Props, State> {
 
   _onFocus = () => {
     this.setState({ isFocused: true });
-    console.log("on focus");
   };
 
   _onBlur = () => {

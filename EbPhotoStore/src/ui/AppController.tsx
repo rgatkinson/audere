@@ -21,6 +21,7 @@ import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./components/TitleBar";
 import AppMenu from "./AppMenu";
 import { TITLEBAR_COLOR } from "./styles";
+import { NotificationOpen } from "react-native-firebase/notifications";
 
 interface Props {
   currentPatient?: number;
@@ -46,9 +47,11 @@ class AppController extends React.Component<Props, State> {
     appState: AppState.currentState,
   };
   _backHandler: any;
+  _channel: any;
   _onBackCallbacks: { [s: string]: BackCallback } = {};
   _onTokenRefreshListener: any;
   _notificationListener: any;
+  _notificationOpenedListener: any;
 
   async componentDidMount() {
     this._backHandler = BackHandler.addEventListener(
@@ -57,6 +60,18 @@ class AppController extends React.Component<Props, State> {
     );
 
     AppState.addEventListener("change", this._handleAppStateChange);
+
+    const channelConfig = {
+      channelId: "eb_photo_store",
+      channelName: "Channel Name"
+    };
+
+    this._channel = new firebase.notifications.Android.Channel(
+      channelConfig.channelId,
+      channelConfig.channelName,
+      firebase.notifications.Android.Importance.Max
+    ).setDescription("A natural description of the channel");
+    firebase.notifications().android.createChannel(this._channel);
 
     await this._checkNotificationPermissions();
 
@@ -87,6 +102,8 @@ class AppController extends React.Component<Props, State> {
     }
 
     AppState.removeEventListener("change", this._handleAppStateChange);
+
+    firebase.notifications().android.deleteChannel("eb_photo_store");
   }
 
   _handleAppStateChange = (nextAppState: string) => {
@@ -110,7 +127,6 @@ class AppController extends React.Component<Props, State> {
       { cancelable: false }
     );
   }
-
   shouldComponentUpdate(props: Props, state: State) {
     return (
       props.screen !== this.props.screen ||
@@ -139,13 +155,24 @@ class AppController extends React.Component<Props, State> {
   };
 
   _createNotificationListeners = async () => {
-    // Notification received in foreground
     this._notificationListener = firebase
       .notifications()
       .onNotification(notification => {
-        const { body, title } = notification;
         if (this.state.appState.match(/inactive|background/)) {
+          const { body, title } = notification;
+
           this._showAlert(title, body, notification.data.localIndex);
+        }
+      });
+
+    this._notificationOpenedListener = firebase
+      .notifications()
+      .onNotificationOpened((notificationOpen: NotificationOpen) => {
+        if (notificationOpen.notification.data) {
+          const patientId = notificationOpen.notification.data.localIndex;
+          if (this.props.screen !== "LOGIN" && patientId) {
+            this.props.dispatch(viewDetails(parseInt(patientId)));
+          }
         }
       });
   };
