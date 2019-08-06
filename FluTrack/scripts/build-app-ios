@@ -57,4 +57,4 @@ curl --user "${CIRCLE_TOKEN}":\
      -X POST\
      --header "Content-Type: application/json"\
      -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_ios", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'"}}' \
-https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
+https://circleci.com/api/v1.1/project/github/AudereNow/audere/tree/"$BRANCH"

@@ -48,13 +48,13 @@ echo ""
 echo "  ACTION REQUIRED:"
 echo ""
 echo "    Add the public key at '$GITHUB/id_rsa.pub'"
-echo "    to the list at 'https://github.com/AudereNow/learn/settings/keys'"
+echo "    to the list at 'https://github.com/AudereNow/audere/settings/keys'"
 echo ""
 if [[ "$MACHTYPE" =~ apple-darwin ]]; then
   echo "    Opening id_rsa.pub in TextEdit and the GitHub page for you..."
   echo ""
   open -e "$GITHUB/id_rsa.pub"
-  open "https://github.com/AudereNow/learn/settings/keys"
+  open "https://github.com/AudereNow/audere/settings/keys"
 fi
 echo "================================================================================"
 

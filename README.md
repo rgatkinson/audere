@@ -1,6 +1,6 @@
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/learn.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/learn)
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/audere)
 
 # Audere
 
@@ -34,11 +34,11 @@ The flu apps track consent and survey information about flu symptoms in particip
 The application has two primary components, a React Native application for participants and a data collection API that persists participant data.
 These applications are built using CircleCI and deployed to AWS.
 
-* [FluStudy_au](https://github.com/AudereNow/learn/tree/master/FluStudy_au)
-* [FluStudy_us](https://github.com/AudereNow/learn/tree/master/FluStudy_us)
-* [FluTrack](https://github.com/AudereNow/learn/tree/master/FluTrack)
-* [FluApi](https://github.com/AudereNow/learn/tree/master/FluApi)
-* [Terraform scripts](https://github.com/AudereNow/learn/tree/master/terraform)
+* [FluStudy_au](https://github.com/AudereNow/audere/tree/master/FluStudy_au)
+* [FluStudy_us](https://github.com/AudereNow/audere/tree/master/FluStudy_us)
+* [FluTrack](https://github.com/AudereNow/audere/tree/master/FluTrack)
+* [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi)
+* [Terraform scripts](https://github.com/AudereNow/audere/tree/master/terraform)
 
 ### Development setup
 

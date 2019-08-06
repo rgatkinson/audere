@@ -2,17 +2,17 @@
 
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/learn.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/learn)
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/audere)
 
 
 ## Overview
 
-FluStudy_au is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/learn/tree/master/FluApi).
+FluStudy_au is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi).
 
 
 ## Developer setup
 
-If you are part of the Audere organization, see https://github.com/AudereNow/learn/wiki/Running-From-Source-on-iOS for instructions on running from source.
+If you are part of the Audere organization, see https://github.com/AudereNow/audere/wiki/Running-From-Source-on-iOS for instructions on running from source.
 
 Otherwise, you will need to set up your own Apple Developer and Firebase accounts and configure the app accordingly.
 We use cocoapods for dependencies and fastlane for iOS cert management.

@@ -18,8 +18,8 @@ This application requires a database with PostGIS extensions available. It is re
 
 ### Database migrations
 
-Database migrations are managed using Sequelize. Migrations should be checked in to the [db/migrations folder](https://github.com/AudereNow/learn/tree/master/FluApi/db/migrations) and should include an up Promise for application and a down Promise for undo. Migrations are run as part of the `yarn setup` step and new migrations can be applied by rerunning `yarn setup`.
+Database migrations are managed using Sequelize. Migrations should be checked in to the [db/migrations folder](https://github.com/AudereNow/audere/tree/master/FluApi/db/migrations) and should include an up Promise for application and a down Promise for undo. Migrations are run as part of the `yarn setup` step and new migrations can be applied by rerunning `yarn setup`.
 
 ## Shared
 
-Some types are shared between FluApi and other applications. These are imported as a [common lib](https://github.com/AudereNow/learn/tree/master/lib) and shared within this repo.
+Some types are shared between FluApi and other applications. These are imported as a [common lib](https://github.com/AudereNow/audere/tree/master/lib) and shared within this repo.

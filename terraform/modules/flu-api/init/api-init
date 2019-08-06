@@ -22,7 +22,7 @@ git config --global user.name "Audere Service Account"
 git config --global user.email "test@auderenow.org"
 ssh-keyscan -t rsa github.com >> "$HOME/.ssh/known_hosts"
 ssh -T -oStrictHostKeyChecking=accept-new git@github.com || true
-git clone git@github.com:AudereNow/learn.git audere
+git clone git@github.com:AudereNow/audere.git audere
 
 cp "$SELF_DIR/bash_profile" ~/.bash_profile
 . ~/.bash_profile
