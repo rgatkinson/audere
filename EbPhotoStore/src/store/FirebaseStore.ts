@@ -23,7 +23,7 @@ const DEFAULT_TRIAGE_COLLECTION = "triages";
 const DEFAULT_MESSAGES_COLLECTION = "messages";
 const DEFAULT_TOKEN_COLLECTION = "messaging_tokens";
 
-const DEVICE_INFO = {
+export const DEVICE_INFO = {
   installation: RNDeviceInfo.getInstanceID(),
   clientVersion: loadBuildInfo(),
   clientBuild: RNDeviceInfo.getBuildNumber(),

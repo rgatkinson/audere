@@ -1,6 +1,8 @@
 import React from "react";
 import {
+  Alert,
   Modal,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -8,6 +10,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { logout, Action } from "../store";
+import { DEVICE_INFO } from "../store/FirebaseStore";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase from "react-native-firebase";
 import Text from "./components/Text";
@@ -37,7 +40,27 @@ class AppMenu extends React.Component<Props & WithNamespaces> {
   };
 
   _onAbout = () => {
-    //TBD
+    const { t } = this.props;
+    Alert.alert(
+      t("buildInfo:title"),
+      t("buildInfo:version") +
+        DEVICE_INFO.clientVersion.version +
+        t("buildInfo:build") +
+        DEVICE_INFO.clientBuild +
+        t("buildInfo:commit") +
+        DEVICE_INFO.clientVersion.hash +
+        t("buildInfo:date") +
+        DEVICE_INFO.clientVersion.buildDate +
+        t("buildInfo:device") +
+        Platform.OS +
+        " " +
+        Platform.Version +
+        t("buildInfo:installation") +
+        DEVICE_INFO.installation +
+        t("buildInfo:apiServer") +
+        firebase.app().options.databaseURL
+    );
+
     this.props.onDismiss();
   };
 

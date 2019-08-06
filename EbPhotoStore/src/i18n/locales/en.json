@@ -21,6 +21,16 @@
     "logout": "Log Out",
     "about": "About"
   },
+  "buildInfo": {
+    "title": "About EVD Track",
+    "version": "Version: ",
+    "build": "\nBuild: ",
+    "commit": "\nCommit: ",
+    "date": "\nDate: ",
+    "device": "\nDevice: ",
+    "installation": "\nInstallation: ",
+    "apiServer": "\nAPI Server: "
+  },
   "login": {
     "signIn": "Sign In",
     "loginLastName": "**Last name**",
