@@ -45,8 +45,8 @@ export class AsprenClient {
 
     const metadata = objects.Contents.reduce((prev, curr) => {
       if (curr.Key.endsWith(".xlsx")) {
-        const prevMs = prev.LastModified.getUTCMilliseconds();
-        const currMs = curr.LastModified.getUTCMilliseconds();
+        const prevMs = prev.LastModified.getTime();
+        const currMs = curr.LastModified.getTime();
         return prevMs > currMs ? prev : curr;
       } else {
         return prev;
