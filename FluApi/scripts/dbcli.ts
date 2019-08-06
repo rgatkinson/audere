@@ -137,7 +137,8 @@ const fever: FeverUpdater = {
 
 enum Release {
   Sniffles = "sniffles",
-  Fever = "fever"
+  Fever = "fever",
+  Cough = "cough",
 }
 
 yargs.strict(true);
@@ -254,6 +255,11 @@ yargs.command({
   command: "create-access-key <release>",
   builder: yargs => yargs.string("release"),
   handler: command(cmdCreateAccessKey)
+});
+yargs.command({
+  command: "show-access-key <release> <part>",
+  builder: yargs => yargs.string("release").string("part"),
+  handler: command(cmdShowAccessKey)
 });
 yargs.command({
   command: "show <release> <kind> <row>",
@@ -1129,6 +1135,37 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   console.log();
 }
 
+interface ShowAccessKeyArgs {
+  release: Release;
+  part: string;
+}
+
+async function cmdShowAccessKey(argv: ShowAccessKeyArgs): Promise<void> {
+  const components = [
+    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
+    getKeyA(argv.release),
+    argv.part,
+  ];
+  const buffers = components.map(base64url.toBuffer);
+  const buffer = buffers.reduce(bufferXor, Buffer.alloc(0));
+  const key = base64url(buffer);
+
+  console.log(key);
+}
+
+function getKeyA(release: Release): string {
+  switch (release) {
+    case Release.Sniffles:
+      return "TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB";
+    case Release.Fever:
+      return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
+    case Release.Cough:
+      return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
+    default:
+      throw failRelease(release);
+  }
+}
+
 interface RecoverVisitArgs {
   barcode: string;
 }
@@ -1434,8 +1471,9 @@ function runCode(program: string, ...args: string[]): Promise<number> {
 
 function accessKey(release: Release) {
   return forApp(release, {
-    sniffles: snifflesModels.accessKey,
-    fever: feverModels.accessKey
+    sniffles: () => snifflesModels.accessKey,
+    fever: () => feverModels.accessKey,
+    cough: () => { throw failRelease(release); },
   });
 }
 
@@ -1474,39 +1512,27 @@ function updater(release: Release, kind: string): SomeUpdater {
 
 function piiUpdater(release: Release) {
   return forApp<SnifflesPiiUpdater | FeverPiiUpdater>(release, {
-    sniffles: sniffles.pii,
-    fever: fever.pii
+    sniffles: () => sniffles.pii,
+    fever: () => fever.pii,
+    cough: () => { throw failRelease(release); },
   });
 }
 
 function nonPiiUpdater(release: Release) {
   return forApp<SnifflesNonPiiUpdater | FeverNonPiiUpdater>(release, {
-    sniffles: sniffles.nonPii,
-    fever: fever.nonPii
+    sniffles: () => sniffles.nonPii,
+    fever: () => fever.nonPii,
+    cough: () => { throw failRelease(release); },
   });
 }
 
-function forApp<T>(release: Release, choices: { [key in Release]: T }) {
-  {
-    const required = Object.keys(Release)
-      .map(x => Release[x])
-      .sort();
-    const provided = Object.keys(choices).sort();
-    if (!_.isEqual(required, provided)) {
-      throw new Error(
-        `Internal error: forApp called with choices that don't match releases: ` +
-          `required=[${required.join(",")}] ` +
-          `provided=[${provided.join(",")}]`
-      );
-    }
-  }
-
+function forApp<T>(release: Release, choices: { [key in Release]: () => T }) {
   const choice = choices[release];
   if (choice == null) {
     throw failRelease(release);
   }
 
-  return choice;
+  return choice();
 }
 
 async function makeRecoveryFirebase(): Promise<App> {
@@ -1561,6 +1587,9 @@ function failKind(kind: string): never {
 }
 
 function failRelease(release: string | Release): never {
+  if (release === "cough") {
+    throw fail("This command is not yet implemented for cough");
+  }
   throw fail(
     `Unrecognized release: '${release}', ` +
       `expected one of '${Object.keys(Release).join("', '")}'`
