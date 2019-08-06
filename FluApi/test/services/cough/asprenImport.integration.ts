@@ -21,7 +21,7 @@ describe("import ASPREN reports", () => {
   async function cleanDb() {
     await Promise.all([
       cough.asprenData.destroy({ where: {} }),
-      cough.asprenFile.destroy({ where: {} })
+      cough.asprenFile.destroy({ where: {} }),
     ]);
   }
 
@@ -31,7 +31,7 @@ describe("import ASPREN reports", () => {
     const listRequest = mock(AWS.Request);
     when(listRequest.promise()).thenResolve({
       Contents: list,
-      $response: null
+      $response: null,
     });
     s3.listObjectsV2 = params => {
       return instance(listRequest);
@@ -46,7 +46,7 @@ describe("import ASPREN reports", () => {
 
     when(getRequest.promise()).thenResolve({
       Body: outputBuffer,
-      $response: null
+      $response: null,
     });
     s3.getObject = params => {
       return instance(getRequest);
@@ -75,14 +75,14 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
-      fileshareBucket: "string"
+      fileshareBucket: "string",
     };
     const list = [
       {
         Key: "abc",
         LastModified: new Date(),
-        ETag: "def"
-      }
+        ETag: "def",
+      },
     ];
 
     const s3 = getS3Client(list, asprenReports.default);
@@ -94,8 +94,8 @@ describe("import ASPREN reports", () => {
     const file = await cough.asprenFile.findOne({
       where: {
         key: list[0].Key,
-        hash: list[0].ETag
-      }
+        hash: list[0].ETag,
+      },
     });
     const rows = await cough.asprenData.findAll({});
 
@@ -107,14 +107,14 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
-      fileshareBucket: "string"
+      fileshareBucket: "string",
     };
     const list = [
       {
         Key: "abc",
         LastModified: new Date(),
-        ETag: "def"
-      }
+        ETag: "def",
+      },
     ];
 
     const s3 = getS3Client(list, asprenReports.default);
@@ -123,7 +123,7 @@ describe("import ASPREN reports", () => {
 
     await cough.asprenFile.create({
       key: list[0].Key,
-      hash: list[0].ETag
+      hash: list[0].ETag,
     });
 
     await svc.importAsprenReports();
@@ -136,14 +136,14 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
-      fileshareBucket: "string"
+      fileshareBucket: "string",
     };
     const list = [
       {
         Key: "abc",
         LastModified: new Date(),
-        ETag: "def"
-      }
+        ETag: "def",
+      },
     ];
 
     const s3 = getS3Client(list, asprenReports.default);
@@ -179,7 +179,7 @@ describe("import ASPREN reports", () => {
         comorbitiesDescription: undefined,
         healthcareWorkerStatus: undefined,
         overseasIllness: undefined,
-        overseasLocation: undefined
+        overseasLocation: undefined,
       },
       {
         barcode: "12345679",
@@ -209,8 +209,8 @@ describe("import ASPREN reports", () => {
         comorbitiesDescription: undefined,
         healthcareWorkerStatus: undefined,
         overseasIllness: undefined,
-        overseasLocation: undefined
-      }
+        overseasLocation: undefined,
+      },
     ]);
 
     await svc.importAsprenReports();

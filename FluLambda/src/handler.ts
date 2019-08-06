@@ -18,11 +18,11 @@ export const cronGet = async (event: any) => {
     });
 
     const res = await axios.get(process.env.TARGET_URL, {
-      timeout: +process.env.TIMEOUT || 5000
+      timeout: +process.env.TIMEOUT || 5000,
     });
 
     return res.data;
-  } catch(e) {
+  } catch (e) {
     console.log("Error occurred:");
     console.log(e.message);
     console.log(e.stack);

@@ -15,7 +15,7 @@ import {
   EncounterInfo,
   EncounterTriageDocument,
   Message,
-  MessagingTokenDocument
+  MessagingTokenDocument,
 } from "audere-lib/ebPhotoStoreProtocol";
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
@@ -30,8 +30,8 @@ const DEVICE_INFO = {
   idiomText: RNDeviceInfo.getDeviceType(),
   platform: {
     osName: RNDeviceInfo.getSystemName(),
-    osVersion: RNDeviceInfo.getSystemVersion()
-  }
+    osVersion: RNDeviceInfo.getSystemVersion(),
+  },
 };
 
 function loadBuildInfo() {
@@ -79,7 +79,7 @@ export async function syncEncounter(docId: string, encounter: EncounterInfo) {
     docId,
     device: DEVICE_INFO,
     documentType: DocumentType.Encounter,
-    encounter
+    encounter,
   });
   const doc = getEncounterCollection().doc(docId);
   console.log(`Uploading encounter ${docId}`);
@@ -96,7 +96,7 @@ export async function uploadToken(phone: string, token: string) {
     phone,
     schemaId: 1,
     token,
-    uid
+    uid,
   };
   console.log(JSON.stringify(tokenDoc));
   const doc = getTokenCollection().doc(uid);
@@ -109,8 +109,8 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
     _transport: {
       sentAt: new Date().toISOString(),
       lastWriter: "sender",
-      protocolVersion: 1
-    }
+      protocolVersion: 1,
+    },
   };
 }
 

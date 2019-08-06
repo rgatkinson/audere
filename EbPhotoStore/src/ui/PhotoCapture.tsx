@@ -10,7 +10,7 @@ import {
   PermissionsAndroid,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -25,7 +25,7 @@ import {
   viewLocationPermission,
   Action,
   Screen,
-  StoreState
+  StoreState,
 } from "../store";
 import { startUpload } from "../transport/photoUploader";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "./styles";
@@ -47,7 +47,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
         this.setState({
           haveLocation: true,
           lat: position.coords.latitude,
-          long: position.coords.longitude
+          long: position.coords.longitude,
         });
       },
       error => {
@@ -82,7 +82,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
     spinner: true,
     haveLocation: false,
     lat: 0,
-    long: 0
+    long: 0,
   };
 
   _cameraReady = () => {
@@ -105,7 +105,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
           fixOrientation: false,
           skipProcessing: true,
           pauseAfterCapture: true,
-          width: 640
+          width: 640,
         });
 
         const photoId = uuidv4();
@@ -121,14 +121,14 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
             timestamp: new Date().toISOString(),
             gps: {
               latitude: this.state.lat.toString(),
-              longitude: this.state.long.toString()
-            }
+              longitude: this.state.long.toString(),
+            },
           })
         );
         this.props.dispatch(viewDetails(this.props.id));
       } catch (e) {
         Alert.alert("", t("error"), [
-          { text: t("common:ok"), onPress: () => {} }
+          { text: t("common:ok"), onPress: () => {} },
         ]);
         this.setState({ spinner: false });
         console.warn(e);
@@ -172,16 +172,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     left: 0,
     position: "absolute",
-    right: 0
+    right: 0,
   },
   container: {
     backgroundColor: "black",
     flex: 1,
-    marginHorizontal: -SCREEN_MARGIN
+    marginHorizontal: -SCREEN_MARGIN,
   },
   camera: {
     alignSelf: "stretch",
-    flex: 1
+    flex: 1,
   },
   circle: {
     backgroundColor: "white",
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 3,
     height: 60,
-    width: 60
+    width: 60,
   },
   outerCircle: {
     alignItems: "center",
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     borderWidth: 7,
     borderRadius: 40,
     height: 80,
-    width: 80
+    width: 80,
   },
   spinner: {
     alignItems: "center",
@@ -207,6 +207,6 @@ const styles = StyleSheet.create({
     left: 0,
     position: "absolute",
     right: 0,
-    top: "50%"
-  }
+    top: "50%",
+  },
 });

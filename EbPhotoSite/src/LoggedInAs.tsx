@@ -30,7 +30,7 @@ export class LoggedInAs extends React.Component<
     super(props);
     this.state = {
       busy: true,
-      user: null
+      user: null,
     };
     this.unsubscribeAuth = () => {};
   }
@@ -39,7 +39,7 @@ export class LoggedInAs extends React.Component<
     this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
       this.setState({
         busy: false,
-        user: user
+        user: user,
       });
     });
   }
@@ -81,7 +81,7 @@ export class LoggedInAs extends React.Component<
                 <div
                   className="ProfileImage"
                   style={{
-                    clear: "none"
+                    clear: "none",
                   }}
                 >
                   <img src={profileImage} />

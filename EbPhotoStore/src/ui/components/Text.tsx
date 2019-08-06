@@ -12,14 +12,14 @@ import {
   Text as SystemText,
   TextStyle,
   Image,
-  GestureResponderEvent
+  GestureResponderEvent,
 } from "react-native";
 import {
   FONT_BOLD,
   FONT_NORMAL,
   LINK_COLOR,
   REGULAR_TEXT,
-  TEXT_COLOR
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -53,7 +53,7 @@ export default class Text extends React.PureComponent<Props> {
       italic,
       numberOfLines,
       style,
-      onPress
+      onPress,
     } = this.props;
     return (
       <SystemText
@@ -66,7 +66,7 @@ export default class Text extends React.PureComponent<Props> {
           bold && styles.bold,
           center && styles.center,
           italic && styles.italic,
-          style
+          style,
         ]}
         onPress={onPress}
       >
@@ -80,22 +80,22 @@ export default class Text extends React.PureComponent<Props> {
 
 const styles = StyleSheet.create({
   bold: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   center: {
-    textAlign: "center"
+    textAlign: "center",
   },
   text: {
     color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
-    lineHeight: 22
+    lineHeight: 22,
   },
   italic: {
-    fontStyle: "italic"
+    fontStyle: "italic",
   },
   linkStyle: {
     color: LINK_COLOR,
-    fontFamily: FONT_BOLD
-  }
+    fontFamily: FONT_BOLD,
+  },
 });

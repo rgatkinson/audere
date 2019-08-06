@@ -11,7 +11,7 @@ import { VisitJobResult } from "../../models/db/sniffles";
 const SEATTLE_CHILDRENS = "seattle-childrens";
 const LOCATIONS_REQURING_UPLOAD = {
   ChildrensHospitalSeattle: SEATTLE_CHILDRENS,
-  ChildrensHospitalBellevue: SEATTLE_CHILDRENS
+  ChildrensHospitalBellevue: SEATTLE_CHILDRENS,
 };
 
 export class HipaaUploader {
@@ -40,14 +40,14 @@ export class HipaaUploader {
           const group = LOCATIONS_REQURING_UPLOAD[visit.nonPii.visit.location];
           if (!group) {
             results.set(visit.nonPii.id, {
-              result: { skipped: "Not required for this location" }
+              result: { skipped: "Not required for this location" },
             });
             return;
           }
 
           if (visit.pii.visit.consents.length === 0) {
             results.set(visit.nonPii.id, {
-              result: { skipped: "No signed consents found" }
+              result: { skipped: "No signed consents found" },
             });
             return;
           }

@@ -23,7 +23,7 @@ export function defineSmartyStreetsResponse(
     "smarty_street_responses",
     {
       inputAddress: jsonbColumn("input_address"),
-      responseAddresses: jsonbColumn("response_addresses")
+      responseAddresses: jsonbColumn("response_addresses"),
     }
   );
 }

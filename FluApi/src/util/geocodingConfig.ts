@@ -29,7 +29,7 @@ async function createConfig(secrets: SecretConfig): Promise<GeocodingConfig> {
   const [authId, authToken, postgisUrl] = await Promise.all([
     secrets.get("SMARTYSTREETS_AUTH_ID"),
     secrets.get("SMARTYSTREETS_AUTH_TOKEN"),
-    secrets.get("POSTGIS_DATABASE_URL")
+    secrets.get("POSTGIS_DATABASE_URL"),
   ]);
   return { baseUrl, authId, authToken, postgisUrl };
 }

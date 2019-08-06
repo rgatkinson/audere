@@ -13,7 +13,7 @@ import {
   startPhotoUpload,
   retryPhotoUpload,
   photoUploadFailed,
-  photoUploadFinished
+  photoUploadFinished,
 } from "../store";
 
 NetInfo.addEventListener(state => {

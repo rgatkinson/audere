@@ -7,7 +7,7 @@ import React, { MouseEvent } from "react";
 
 import {
   EncounterDocument,
-  EncounterTriageDocument
+  EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import "./PatientList.css";
 import mapIcon from "./img/mapview.png";
@@ -28,7 +28,7 @@ interface State {
 
 export class PatientBlock extends React.Component<Props, State> {
   state: State = {
-    showMap: false
+    showMap: false,
   };
 
   _onShowList = () => {

@@ -12,7 +12,7 @@ import {
   NumberAnswer,
   OptionAnswer,
   StringAnswer,
-  EventType
+  EventType,
 } from "audere-lib/hutchProtocol";
 import { LocationType } from "audere-lib/locations";
 import moment from "moment";
@@ -54,7 +54,7 @@ describe("encounter mapper", () => {
         id: homeAddress,
         region: homeRegion,
         city: homeCity,
-        state: homeState
+        state: homeState,
       };
       return this;
     }
@@ -75,7 +75,7 @@ describe("encounter mapper", () => {
         id: tempAddress,
         region: tempRegion,
         city: tempCity,
-        state: tempState
+        state: tempState,
       };
       return this;
     }
@@ -86,7 +86,7 @@ describe("encounter mapper", () => {
         id: workAddress,
         region: workRegion,
         city: workCity,
-        state: workState
+        state: workState,
       };
       return this;
     }
@@ -125,7 +125,7 @@ describe("encounter mapper", () => {
         samples: this.samples,
         events: this.events,
         participant: this.participant,
-        followUpResponses: this.followUpResponses
+        followUpResponses: this.followUpResponses,
       };
     }
   }
@@ -138,11 +138,11 @@ describe("encounter mapper", () => {
         text: "Do you like cookies?",
         answer: [
           {
-            valueString: "Yes"
-          }
-        ]
-      }
-    ]
+            valueString: "Yes",
+          },
+        ],
+      },
+    ],
   };
 
   const response2 = {
@@ -153,11 +153,11 @@ describe("encounter mapper", () => {
         text: "How many cookies did you eat yesterday?",
         answer: [
           {
-            valueInteger: 4
-          }
-        ]
-      }
-    ]
+            valueInteger: 4,
+          },
+        ],
+      },
+    ],
   };
 
   describe("map encounter", () => {
@@ -182,21 +182,21 @@ describe("encounter mapper", () => {
         id: "beach house",
         region: "beach",
         city: "Malibu",
-        state: "CA"
+        state: "CA",
       });
       expect(encounter.locations).toContainEqual({
         use: LocationUse.Temp,
         id: "vacation",
         region: "carribean",
         city: "Key West",
-        state: "FL"
+        state: "FL",
       });
       expect(encounter.locations).toContainEqual({
         use: LocationUse.Work,
         id: "company",
         region: "city",
         city: "Seattle",
-        state: "WA"
+        state: "WA",
       });
       expect(encounter.site.type).toBe(LocationType.Hospital);
       expect(encounter.startTimestamp).toBe(now);
@@ -236,22 +236,22 @@ describe("encounter mapper", () => {
 
       expect(encounter.events).toContainEqual({
         time: consentDate,
-        eventType: EventType.ConsentSigned
+        eventType: EventType.ConsentSigned,
       });
 
       expect(encounter.events).toContainEqual({
         time: barcodeDate,
-        eventType: EventType.BarcodeScanned
+        eventType: EventType.BarcodeScanned,
       });
 
       expect(encounter.events).toContainEqual({
         time: questionnaireDate,
-        eventType: EventType.StartedQuestionnaire
+        eventType: EventType.StartedQuestionnaire,
       });
 
       expect(encounter.events).toContainEqual({
         time: screeningDate,
-        eventType: EventType.SymptomsScreened
+        eventType: EventType.SymptomsScreened,
       });
     });
 
@@ -274,7 +274,7 @@ describe("encounter mapper", () => {
 
       expect(encounter.events[0]).toEqual({
         time: date1,
-        eventType: EventType.BarcodeScanned
+        eventType: EventType.BarcodeScanned,
       });
     });
 
@@ -320,12 +320,12 @@ describe("encounter mapper", () => {
                   city: "Seattle",
                   state: "WA",
                   postalCode: "98109",
-                  country: "US"
-                }
-              }
-            ]
-          }
-        ]
+                  country: "US",
+                },
+              },
+            ],
+          },
+        ],
       };
 
       const input = new DetailsBuilder().withResponse(response).build();
@@ -349,32 +349,32 @@ describe("encounter mapper", () => {
             text: "What is your favorite color?",
             answer: [
               {
-                valueIndex: 0
+                valueIndex: 0,
               },
               {
-                valueIndex: 3
-              }
+                valueIndex: 3,
+              },
             ],
             answerOptions: [
               {
                 id: "0",
-                text: "Blue"
+                text: "Blue",
               },
               {
                 id: "1",
-                text: "Green"
+                text: "Green",
               },
               {
                 id: "2",
-                text: "Red"
+                text: "Red",
               },
               {
                 id: "3",
-                text: "Yellow"
-              }
-            ]
-          }
-        ]
+                text: "Yellow",
+              },
+            ],
+          },
+        ],
       };
 
       const now = moment().toISOString();
@@ -408,32 +408,32 @@ describe("encounter mapper", () => {
             text: "What is your favorite color?",
             answer: [
               {
-                valueIndex: 0
+                valueIndex: 0,
               },
               {
-                valueIndex: 3
-              }
+                valueIndex: 3,
+              },
             ],
             answerOptions: [
               {
                 id: "0",
-                text: "Blue"
+                text: "Blue",
               },
               {
                 id: "1",
-                text: "Green"
+                text: "Green",
               },
               {
                 id: "2",
-                text: "Red"
+                text: "Red",
               },
               {
                 id: "3",
-                text: "Yellow"
-              }
-            ]
-          }
-        ]
+                text: "Yellow",
+              },
+            ],
+          },
+        ],
       };
 
       const now = moment().toISOString();
@@ -466,7 +466,7 @@ describe("encounter mapper", () => {
       care___7: 0,
       care___8: 0,
       care_other: undefined,
-      found_study: 3
+      found_study: 3,
     };
 
     const now = moment().toISOString();
@@ -484,22 +484,22 @@ describe("encounter mapper", () => {
         question: {
           token: "daily_activity",
           text:
-            "Over the last week, did your illness prevent you from going to work or school, going to a social event, or exercising/working out?"
+            "Over the last week, did your illness prevent you from going to work or school, going to a social event, or exercising/working out?",
         },
         options: [
           {
             token: "no",
-            text: "No"
+            text: "No",
           },
           {
             token: "yes",
-            text: "Yes"
-          }
+            text: "Yes",
+          },
         ],
         answer: {
           type: "Option",
-          chosenOptions: [surveyData.daily_activity]
-        }
+          chosenOptions: [surveyData.daily_activity],
+        },
       })
     );
 
@@ -508,26 +508,26 @@ describe("encounter mapper", () => {
         question: {
           token: "medications",
           text:
-            "Are you currently taking antibiotics (e.g. Amoxiil, penicilin, Z-pack, Bactrim, Agumentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?"
+            "Are you currently taking antibiotics (e.g. Amoxiil, penicilin, Z-pack, Bactrim, Agumentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?",
         },
         options: [
           {
             token: "yes",
-            text: "Yes"
+            text: "Yes",
           },
           {
             token: "no",
-            text: "No"
+            text: "No",
           },
           {
             token: "doNotKnow",
-            text: "Do not Know"
-          }
+            text: "Do not Know",
+          },
         ],
         answer: {
           type: "Option",
-          chosenOptions: [1]
-        }
+          chosenOptions: [1],
+        },
       })
     );
 
@@ -536,46 +536,46 @@ describe("encounter mapper", () => {
         question: {
           token: "care",
           text:
-            "In the last week did you go to any of the following for health care treatment or advice about your illness? (Select any you visited or received advice from)"
+            "In the last week did you go to any of the following for health care treatment or advice about your illness? (Select any you visited or received advice from)",
         },
         options: [
           {
             token: "care___1",
-            text: "Pharmacy"
+            text: "Pharmacy",
           },
           {
             token: "care___2",
-            text: "Primary care clinic"
+            text: "Primary care clinic",
           },
           {
             token: "care___3",
-            text: "Urgent care clinic"
+            text: "Urgent care clinic",
           },
           {
             token: "care___4",
-            text: "Naturopath"
+            text: "Naturopath",
           },
           {
             token: "care___5",
-            text: "Online health care provider"
+            text: "Online health care provider",
           },
           {
             token: "care___6",
-            text: "Emergency department"
+            text: "Emergency department",
           },
           {
             token: "care___7",
-            text: "Other"
+            text: "Other",
           },
           {
             token: "care___8",
-            text: "None of the above"
-          }
+            text: "None of the above",
+          },
         ],
         answer: {
           type: "Option",
-          chosenOptions: [1, 3, 5]
-        }
+          chosenOptions: [1, 3, 5],
+        },
       })
     );
 
@@ -583,46 +583,46 @@ describe("encounter mapper", () => {
       expect.objectContaining({
         question: {
           token: "found_study",
-          text: "How did you hear about the flu@home study?"
+          text: "How did you hear about the flu@home study?",
         },
         options: [
           {
             token: "onlineSearch",
-            text: "Online search"
+            text: "Online search",
           },
           {
             token: "couponSite",
-            text: "Coupon site"
+            text: "Coupon site",
           },
           {
             token: "appStore",
-            text: "App Store"
+            text: "App Store",
           },
           {
             token: "fluNearYou",
-            text: "Flu Near You community"
+            text: "Flu Near You community",
           },
           {
             token: "friend",
-            text: "A friend"
+            text: "A friend",
           },
           {
             token: "onlineAd",
-            text: "Other online ad"
+            text: "Other online ad",
           },
           {
             token: "localClinic",
-            text: "Local health clinic"
+            text: "Local health clinic",
           },
           {
             token: "other",
-            text: "Other"
-          }
+            text: "Other",
+          },
         ],
         answer: {
           type: "Option",
-          chosenOptions: [2]
-        }
+          chosenOptions: [2],
+        },
       })
     );
   });

@@ -24,7 +24,7 @@ export class S3DirectoryServer {
     this.s3 = new LazyAsync(async () => {
       return {
         s3: new AWS.S3({ region: "us-west-2", signatureVersion: "v4" }),
-        s3Config: await getS3Config(new SecretConfig(this.sql))
+        s3Config: await getS3Config(new SecretConfig(this.sql)),
       };
     });
   }
@@ -40,7 +40,7 @@ export class S3DirectoryServer {
     const { s3, s3Config } = await this.s3.get();
     const params: AWS.S3.ListObjectsV2Request = {
       Bucket: s3Config.fluReportsBucket,
-      Prefix: this.path
+      Prefix: this.path,
     };
     if (req.query.startAfter) {
       params.StartAfter =
@@ -53,9 +53,9 @@ export class S3DirectoryServer {
       return {
         url: s3.getSignedUrl("getObject", {
           Bucket: s3Config.fluReportsBucket,
-          Key: obj.Key
+          Key: obj.Key,
         }),
-        label: obj.Key.substring(this.path.length)
+        label: obj.Key.substring(this.path.length),
       };
     });
     res.render("s3files.html", {
@@ -66,7 +66,7 @@ export class S3DirectoryServer {
         ? `?startAfter=${querystring.escape(
             lastKey.substring(this.path.length)
           )}`
-        : null
+        : null,
     });
   }
 
@@ -83,7 +83,7 @@ export class S3DirectoryServer {
     do {
       const params: AWS.S3.ListObjectsV2Request = {
         Bucket: s3Config.fluReportsBucket,
-        Prefix: this.path
+        Prefix: this.path,
       };
       if (response) {
         params.ContinuationToken = response.NextContinuationToken;
@@ -95,12 +95,12 @@ export class S3DirectoryServer {
           const file = await s3
             .getObject({
               Bucket: s3Config.fluReportsBucket,
-              Key: key
+              Key: key,
             })
             .promise();
           console.log(key.substring(this.path.length));
           archive.append(file.Body, {
-            name: key.substring(this.path.length)
+            name: key.substring(this.path.length),
           });
         })
       );

@@ -462,8 +462,8 @@ class SurveyQuestion extends Component<
               typeof this._getValue("numberInput") === "number"
                 ? "" + this._getValue("numberInput")
                 : typeof this._getValue("numberInput") === "object"
-                  ? ""
-                  : undefined
+                ? ""
+                : undefined
             }
             onChangeText={text => {
               const numericText = text.replace(/[^0-9]/g, "");

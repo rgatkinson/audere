@@ -19,7 +19,7 @@ describe("Smarty Streets geocoder", () => {
           city: "Gilbert",
           state: "AZ",
           postalCode: "85297",
-          country: "US"
+          country: "US",
         },
         {
           use: AddressInfoUse.Work,
@@ -27,10 +27,10 @@ describe("Smarty Streets geocoder", () => {
           city: "Belmont",
           state: "MA",
           postalCode: "02478",
-          country: "US"
-        }
-      ]
-    ]
+          country: "US",
+        },
+      ],
+    ],
   ]);
 
   describe("geocode", () => {
@@ -46,7 +46,7 @@ describe("Smarty Streets geocoder", () => {
         async send(request) {
           validate(request);
           return exampleResponse;
-        }
+        },
       };
 
       const geocoder = new SmartyStreetsGeocoder(client);
@@ -73,7 +73,7 @@ describe("Smarty Streets geocoder", () => {
           response.lookups = lookups;
           calls++;
           return response;
-        }
+        },
       };
 
       const lotsOfAddressInfo = new Map();
@@ -93,7 +93,7 @@ describe("Smarty Streets geocoder", () => {
       const client = {
         async send(request) {
           return exampleResponse;
-        }
+        },
       };
 
       const geocoder = new SmartyStreetsGeocoder(client);

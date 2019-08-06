@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import { connect } from "react-redux";
 import { logout, Action } from "../store";
@@ -16,7 +16,7 @@ import {
   MENU_ITEM_HEIGHT,
   MENU_ITEM_WIDTH,
   NAV_BAR_HEIGHT,
-  TEXT_COLOR
+  TEXT_COLOR,
 } from "./styles";
 
 interface Props {
@@ -81,14 +81,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     alignItems: "flex-end",
-    paddingTop: NAV_BAR_HEIGHT
+    paddingTop: NAV_BAR_HEIGHT,
   },
   dismissContainer: {
     position: "absolute",
     left: 0,
     top: 0,
     right: 0,
-    bottom: 0
+    bottom: 0,
   },
   menuItemContainer: {
     height: MENU_ITEM_HEIGHT,
@@ -97,9 +97,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: TEXT_COLOR,
     marginTop: -1,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   menuItemText: {
-    color: TEXT_COLOR
-  }
+    color: TEXT_COLOR,
+  },
 });

@@ -52,7 +52,7 @@ export enum PatientInfoGender {
   Male = "male",
   Female = "female",
   Other = "other",
-  Unknown = "unknown"
+  Unknown = "unknown",
 }
 
 export interface TelecomInfo {
@@ -63,13 +63,13 @@ export interface TelecomInfo {
 export enum TelecomInfoSystem {
   Phone = "phone",
   SMS = "sms",
-  Email = "email"
+  Email = "email",
 }
 
 export enum AddressInfoUse {
   Home = "home",
   Work = "work",
-  Temp = "temp"
+  Temp = "temp",
 }
 
 export interface AddressInfo {
@@ -84,7 +84,7 @@ export enum ConsentInfoSignerType {
   Subject = "Subject",
   Parent = "Parent",
   Representative = "Representative",
-  Researcher = "Researcher"
+  Researcher = "Researcher",
 }
 
 export interface QuestionInfo {

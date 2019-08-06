@@ -142,7 +142,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
           const addressParts = [
             result.deliveryLine1,
             result.deliveryLine2,
-            result.lastLine
+            result.lastLine,
           ]
             .filter(c => c != null)
             .join(", ");
@@ -160,7 +160,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
             state: state,
             latitude: latitude,
             longitude: longitude,
-            postalCode: zipCode
+            postalCode: zipCode,
           };
 
           addresses.push(address);
@@ -169,7 +169,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
         const r: GeocodingResponse = {
           id: id,
           use: use,
-          addresses: addresses
+          addresses: addresses,
         };
 
         responses.push(r);

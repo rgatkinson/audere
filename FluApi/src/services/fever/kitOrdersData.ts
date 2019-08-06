@@ -7,7 +7,7 @@ import { PIIInfo } from "audere-lib/feverProtocol";
 import {
   BatchItem,
   SurveyBatchDataAccess,
-  BatchItemWithCsruid
+  BatchItemWithCsruid,
 } from "./surveyBatchData";
 import {
   BatchAttributes,
@@ -15,7 +15,7 @@ import {
   BatchItemAttributes,
   SurveyAttributes,
   FeverModels,
-  defineFeverModels
+  defineFeverModels,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
@@ -49,7 +49,7 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<
     this.fever.surveyNonPii.hasOne(this.itemModel, {
       foreignKey: "surveyId",
       as: "items",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
   }
 
@@ -59,10 +59,10 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<
         isDemo: false,
         workflow: {
           screeningCompletedAt: {
-            [Sequelize.Op.ne]: null
-          }
-        }
-      }
+            [Sequelize.Op.ne]: null,
+          },
+        },
+      },
     };
   }
 
@@ -95,34 +95,34 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<
     if (items != null) {
       filter = {
         ...filter,
-        ...{ id: items.map(x => x.surveyId) }
+        ...{ id: items.map(x => x.surveyId) },
       };
     } else {
       filter = {
         ...filter,
-        ...{ "$items.surveyId$": null }
+        ...{ "$items.surveyId$": null },
       };
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({
       where: {
-        ...filter
+        ...filter,
       },
       include: [
         {
           model: this.itemModel,
           as: "items",
-          required: false
-        }
+          required: false,
+        },
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     if (surveys != null && surveys.length > 0) {
       const result: BatchItemWithCsruid[] = surveys.map(s => {
         const item: BatchItemWithCsruid = {
           surveyId: +s.id,
-          csruid: s.csruid
+          csruid: s.csruid,
         };
 
         if (items != null) {
@@ -149,8 +149,8 @@ export class KitRecipientsDataAccess extends SurveyBatchDataAccess<
     return await this.fever.surveyPii.findAll({
       where: {
         ...filter,
-        csruid: csruids
-      }
+        csruid: csruids,
+      },
     });
   }
 }

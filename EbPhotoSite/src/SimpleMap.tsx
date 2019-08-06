@@ -7,14 +7,14 @@ import React from "react";
 import {
   EncounterDocument,
   EncounterInfo,
-  EncounterTriageDocument
+  EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import {
   GoogleMap,
   Marker,
   InfoWindow,
   withGoogleMap,
-  withScriptjs
+  withScriptjs,
 } from "react-google-maps";
 
 const EVD_POS = 1;
@@ -55,7 +55,7 @@ export class SimpleMap extends React.Component<Props, State> {
       props.encounters.length !== state.locations.length
     ) {
       return {
-        locations: SimpleMap.getLocations(props.encounters, props.tDocs)
+        locations: SimpleMap.getLocations(props.encounters, props.tDocs),
       };
     }
     return null;
@@ -139,7 +139,7 @@ export class SimpleMap extends React.Component<Props, State> {
           latitude: +enc.rdtPhotos[0].gps.latitude,
           longitude: +enc.rdtPhotos[0].gps.longitude,
           diagnosis,
-          docId: eDoc.docId
+          docId: eDoc.docId,
         };
       });
   }

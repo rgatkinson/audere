@@ -10,14 +10,14 @@ import {
   HealthWorkerInfo,
   Message,
   PatientInfo,
-  EncounterInfo
+  EncounterInfo,
 } from "audere-lib/ebPhotoStoreProtocol";
 import {
   syncEncounter,
   sendChatMessage,
   uploadToken,
   initializeListener,
-  initializeMessageListener
+  initializeMessageListener,
 } from "./FirebaseStore";
 import { setEvdStatus, setTriageNotes, receiveChatMessage } from "./patients";
 import { retryUploads } from "../transport/photoUploader";
@@ -77,7 +77,7 @@ export function reduxToFirebase(
   }
   const healthWorker: HealthWorkerInfo = {
     ...state.meta.healthWorkerInfo,
-    notes: state.meta.healthWorkerInfo.notes || ""
+    notes: state.meta.healthWorkerInfo.notes || "",
   };
   return {
     isDemo: false,
@@ -87,7 +87,7 @@ export function reduxToFirebase(
     rdtPhotos: reduxPatient.photoInfo.map(
       localPhotoInfo => localPhotoInfo.photoInfo
     ),
-    notes: reduxPatient.notes || ""
+    notes: reduxPatient.notes || "",
   };
 }
 

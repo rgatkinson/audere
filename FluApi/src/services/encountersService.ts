@@ -12,14 +12,14 @@ import { HutchUploader } from "../external/hutchUploader";
 import {
   EncounterDetailsService,
   EncounterKey,
-  KeyedEncounter
+  KeyedEncounter,
 } from "./encounterDetailsService";
 import { sha256 } from "../util/crypto";
 import { GeocodingResponse, GeocodedAddress } from "../models/geocoding";
 import {
   NonPIIEncounterDetails,
   PIIEncounterDetails,
-  AddressDetails
+  AddressDetails,
 } from "../models/encounterDetails";
 import logger from "../util/logger";
 
@@ -92,7 +92,7 @@ export class EncountersService {
 
       return {
         key: encounter.key,
-        encounter: Mapper.mapEncounter(scrubbed)
+        encounter: Mapper.mapEncounter(scrubbed),
       };
     });
 
@@ -122,7 +122,7 @@ export class EncountersService {
         inputAddress.city,
         inputAddress.state,
         inputAddress.postalCode,
-        inputAddress.country
+        inputAddress.country,
       ];
 
       city = inputAddress.city;
@@ -151,7 +151,7 @@ export class EncountersService {
           id: sha256(this.hashSecret, streetAddress),
           region: region,
           city: city,
-          state: state
+          state: state,
         };
       } else {
         return {
@@ -159,7 +159,7 @@ export class EncountersService {
           id: sha256(this.hashSecret, streetAddress),
           region: region,
           city: undefined,
-          state: undefined
+          state: undefined,
         };
       }
     }
@@ -171,7 +171,7 @@ export class EncountersService {
     name,
     gender,
     birthDate,
-    postalCode
+    postalCode,
   }: ParticipantIdentifierParts): string {
     return sha256(
       this.hashSecret,
@@ -319,13 +319,13 @@ export class EncountersService {
             : details.firstName + " " + details.lastName,
         gender: details.gender,
         birthDate: details.birthDate,
-        postalCode: userPostalCode
+        postalCode: userPostalCode,
       }),
       locations: locations,
       samples: details.samples,
       events: details.events,
       birthYear: birthYear,
-      followUpResponses: details.followUpResponses
+      followUpResponses: details.followUpResponses,
     };
   }
 

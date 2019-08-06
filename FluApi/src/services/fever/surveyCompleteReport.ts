@@ -7,7 +7,7 @@ import {
   AddressInfo,
   AddressInfoUse,
   PIIInfo,
-  TelecomInfoSystem
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { Batch } from "./surveyBatchData";
 import { SurveyAttributes } from "../../models/db/fever";
@@ -62,7 +62,7 @@ export abstract class SurveyCompletedReport extends PIIReport<
         "Box Barcode": i.boxBarcode,
         "Workflow ID": i.workflowId.toFixed(),
         "Audere System ID": i.surveyId.toFixed(),
-        "Incentive Amount": i.incentiveAmount
+        "Incentive Amount": i.incentiveAmount,
       };
 
       rows.push(row);
@@ -114,7 +114,7 @@ export abstract class SurveyCompletedReport extends PIIReport<
       timestamp: pii.survey.workflow.surveyCompletedAt,
       dateReceived: item.dateReceived,
       boxBarcode: item.boxBarcode,
-      incentiveAmount: incentiveAmount
+      incentiveAmount: incentiveAmount,
     };
 
     return recipient;

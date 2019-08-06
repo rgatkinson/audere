@@ -11,7 +11,7 @@ import {
   Text,
   TextStyle,
   TouchableOpacity,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import {
   BUTTON_BORDER_RADIUS,
@@ -25,7 +25,7 @@ import {
   INPUT_HEIGHT,
   INPUT_HEIGHT_SM,
   INPUT_TEXT,
-  REGULAR_TEXT
+  REGULAR_TEXT,
 } from "../styles";
 
 interface Props {
@@ -54,7 +54,7 @@ export default class Button extends React.Component<Props> {
       primary,
       small,
       style,
-      textStyle
+      textStyle,
     } = this.props;
     return (
       <TouchableOpacity
@@ -64,7 +64,7 @@ export default class Button extends React.Component<Props> {
           !!small && styles.buttonSm,
           { opacity: enabled ? 0.95 : 0.5 },
           primary && styles.primaryButton,
-          style && style
+          style && style,
         ]}
         onPress={this.handlePress}
       >
@@ -75,7 +75,7 @@ export default class Button extends React.Component<Props> {
             !!small && styles.textSm,
             primary ? styles.primaryButtonText : styles.secondaryButtonText,
             !!fontSize && { fontSize },
-            textStyle && textStyle
+            textStyle && textStyle,
           ]}
           accessibilityLabel={label.toUpperCase()}
         >
@@ -96,16 +96,16 @@ const styles = StyleSheet.create({
     borderWidth: BORDER_WIDTH,
     height: INPUT_HEIGHT,
     marginBottom: GUTTER * 2,
-    width: BUTTON_WIDTH
+    width: BUTTON_WIDTH,
   },
   buttonSm: {
     borderRadius: BUTTON_BORDER_RADIUS,
     height: INPUT_HEIGHT_SM,
     marginBottom: GUTTER,
-    width: BUTTON_WIDTH_SM
+    width: BUTTON_WIDTH_SM,
   },
   check: {
-    paddingRight: GUTTER / 2
+    paddingRight: GUTTER / 2,
   },
   text: {
     color: "#fff",
@@ -114,21 +114,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: INPUT_HEIGHT,
     textAlign: "center",
-    textAlignVertical: "center"
+    textAlignVertical: "center",
   },
   textMed: {
-    fontSize: INPUT_TEXT
+    fontSize: INPUT_TEXT,
   },
   textSm: {
-    fontSize: EXTRA_SMALL_TEXT
+    fontSize: EXTRA_SMALL_TEXT,
   },
   primaryButton: {
-    backgroundColor: HIGHLIGHT_COLOR
+    backgroundColor: HIGHLIGHT_COLOR,
   },
   primaryButtonText: {
-    color: "white"
+    color: "white",
   },
   secondaryButtonText: {
-    color: HIGHLIGHT_COLOR
-  }
+    color: HIGHLIGHT_COLOR,
+  },
 });

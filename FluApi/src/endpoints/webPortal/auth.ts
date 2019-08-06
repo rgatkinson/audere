@@ -76,7 +76,7 @@ export class AuthManager {
       uuid: uuidv4(),
       userid,
       salt,
-      token: makeToken({ salt, userid, password })
+      token: makeToken({ salt, userid, password }),
     });
   }
 
@@ -101,7 +101,7 @@ export class AuthManager {
     const user = await this.findUser(userid);
     await this.models.permissions.create({
       userId: user.id,
-      permission
+      permission,
     });
   }
 
@@ -110,8 +110,8 @@ export class AuthManager {
     const permissionsRevoked = await this.models.permissions.destroy({
       where: {
         userId: user.id,
-        permission
-      }
+        permission,
+      },
     });
     if (permissionsRevoked === 0) {
       throw new Error("Could not find a permission to revoke");
@@ -127,8 +127,8 @@ export class AuthManager {
       return !!(await this.models.permissions.findOne({
         where: {
           userId: user.id,
-          permission
-        }
+          permission,
+        },
       }));
     } catch (e) {
       logger.error(
@@ -162,7 +162,7 @@ function makeToken({ salt, userid, password }: TokenParts): string {
 }
 
 export const Permissions = {
-  SEATTLE_CHILDRENS_HIPAA_ACCESS: "seattleChildrensHipaaAccess"
+  SEATTLE_CHILDRENS_HIPAA_ACCESS: "seattleChildrensHipaaAccess",
 };
 
 export function authorizationMiddleware(

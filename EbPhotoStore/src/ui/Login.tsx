@@ -12,7 +12,7 @@ import LabelNumberInput from "./components/LabelNumberInput";
 import Title from "./components/Title";
 import { GUTTER, FONT_COLOR, FONT_ROBO_MEDIUM, REGULAR_TEXT } from "./styles";
 import PhoneLoginVerification, {
-  PhoneVerificationDismissal
+  PhoneVerificationDismissal,
 } from "./PhoneLoginVerification";
 
 interface Props {
@@ -43,12 +43,12 @@ class Login extends React.Component<Props & WithNamespaces, State> {
         lastName,
         phone,
         notes,
-        showConfirmation: false
+        showConfirmation: false,
       };
     } else {
       this.state = {
         notes: "",
-        showConfirmation: false
+        showConfirmation: false,
       };
     }
 
@@ -96,7 +96,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           lastName: this.state.lastName!,
           firstName: this.state.firstName!,
           phone: this.state.phone!,
-          notes: this.state.notes ? this.state.notes : ""
+          notes: this.state.notes ? this.state.notes : "",
         })
       );
 
@@ -183,32 +183,32 @@ class Login extends React.Component<Props & WithNamespaces, State> {
 }
 
 export default connect((state: StoreState) => ({
-  healthWorkerInfo: state.meta.healthWorkerInfo
+  healthWorkerInfo: state.meta.healthWorkerInfo,
 }))(withNamespaces("login")(Login));
 
 const styles = StyleSheet.create({
   button: {
     alignSelf: "center",
-    marginVertical: GUTTER / 2
+    marginVertical: GUTTER / 2,
   },
   container: {
-    flex: 1
+    flex: 1,
   },
   content: {
-    padding: GUTTER
+    padding: GUTTER,
   },
   titleRow: {
     color: FONT_COLOR,
     fontFamily: FONT_ROBO_MEDIUM,
     fontSize: REGULAR_TEXT,
     paddingTop: GUTTER,
-    paddingBottom: GUTTER / 4
+    paddingBottom: GUTTER / 4,
   },
   inputSingle: {
     padding: 0,
-    borderBottomColor: FONT_COLOR
+    borderBottomColor: FONT_COLOR,
   },
   inputMulti: {
-    borderWidth: 1
-  }
+    borderWidth: 1,
+  },
 });

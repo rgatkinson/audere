@@ -12,7 +12,7 @@ import {
   ResponseItemInfo,
   SampleInfo,
   VisitCommonInfo,
-  VisitInfo
+  VisitInfo,
 } from "audere-lib/snifflesProtocol";
 
 export class VisitInfoBuilder {
@@ -21,12 +21,12 @@ export class VisitInfoBuilder {
     name: "Fake Name",
     birthDate: "1900-01-01",
     telecom: [],
-    address: []
+    address: [],
   };
 
   private readonly defaultSample = {
     sample_type: "SampleType",
-    code: "Code"
+    code: "Code",
   };
 
   private samples = [];
@@ -34,13 +34,13 @@ export class VisitInfoBuilder {
   private readonly nonpiiResponseItem = {
     id: "CakeVeracity",
     text: "Is the cake a lie?",
-    answer: [{ valueString: "Yes" }]
+    answer: [{ valueString: "Yes" }],
   };
 
   private readonly piiResponseItem = {
     id: "BirthDate",
     text: "What is your birth date?",
-    answer: [{ valueString: "1900-01-01" }]
+    answer: [{ valueString: "1900-01-01" }],
   };
 
   private responses = [];
@@ -55,9 +55,9 @@ export class VisitInfoBuilder {
         kind: EventInfoKind.Visit,
         at: "2019-01-01T00:00:00Z",
         until: "2019-01-01T01:00:00Z",
-        refId: "CompletedQuestionnaire"
-      }
-    ]
+        refId: "CompletedQuestionnaire",
+      },
+    ],
   };
 
   private isDemo = false;
@@ -134,9 +134,9 @@ export class VisitInfoBuilder {
           item:
             this.responses.length > 0
               ? this.responses
-              : [this.piiResponseItem, this.nonpiiResponseItem]
-        }
-      ]
+              : [this.piiResponseItem, this.nonpiiResponseItem],
+        },
+      ],
     };
   }
 }

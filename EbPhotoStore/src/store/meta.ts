@@ -9,12 +9,12 @@ export enum Sort {
   name = "NAME",
   id = "ID",
   status = "STATUS",
-  info = "INFO"
+  info = "INFO",
 }
 
 export enum Order {
   down = "DOWN",
-  up = "UP"
+  up = "UP",
 }
 
 export enum Screen {
@@ -23,7 +23,7 @@ export enum Screen {
   PatientDetails = "PATIENT_DETAILS",
   Camera = "CAMERA",
   CameraPermission = "CAMERA_PERMISSION",
-  LocationPermission = "LOCATION_PERMISSION"
+  LocationPermission = "LOCATION_PERMISSION",
 }
 
 export type MetaAction =
@@ -52,7 +52,7 @@ const initialState: MetaState = {
   demoMode: false,
   order: Order.down,
   screen: Screen.Login,
-  sortBy: [Sort.name, Sort.id]
+  sortBy: [Sort.name, Sort.id],
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -64,52 +64,52 @@ export default function reducer(state = initialState, action: MetaAction) {
         ...state,
         currentPatient: undefined,
         healthWorkerInfo: action.healthWorkerInfo,
-        screen: Screen.Patients
+        screen: Screen.Patients,
       };
     case "LOGOUT":
       return {
         ...state,
         currentPatient: undefined,
         healthWorkerInfo: undefined,
-        screen: Screen.Login
+        screen: Screen.Login,
       };
     case "VIEW_PATIENTS":
       return {
         ...state,
         currentPatient: undefined,
-        screen: Screen.Patients
+        screen: Screen.Patients,
       };
     case "VIEW_DETAILS":
       return {
         ...state,
         currentPatient: action.id,
-        screen: Screen.PatientDetails
+        screen: Screen.PatientDetails,
       };
     case "VIEW_CAMERA_PERMISSION":
       return {
         ...state,
-        screen: Screen.CameraPermission
+        screen: Screen.CameraPermission,
       };
     case "VIEW_LOCATION_PERMISSION":
       return {
         ...state,
-        screen: Screen.LocationPermission
+        screen: Screen.LocationPermission,
       };
     case "OPEN_CAMERA":
       return {
         ...state,
-        screen: Screen.Camera
+        screen: Screen.Camera,
       };
     case "SET_FCM_TOKEN":
       return {
         ...state,
-        fcmToken: action.fcmToken
+        fcmToken: action.fcmToken,
       };
     case "SAVE_SORT":
       return {
         ...state,
         order: action.order,
-        sortBy: action.sortBy
+        sortBy: action.sortBy,
       };
     default:
       return state;
@@ -118,57 +118,57 @@ export default function reducer(state = initialState, action: MetaAction) {
 
 export function toggleDemoMode(): MetaAction {
   return {
-    type: "TOGGLE_DEMO_MODE"
+    type: "TOGGLE_DEMO_MODE",
   };
 }
 
 export function login(healthWorkerInfo: HealthWorkerInfo): MetaAction {
   return {
     type: "LOGIN",
-    healthWorkerInfo
+    healthWorkerInfo,
   };
 }
 
 export function logout(): MetaAction {
   return {
-    type: "LOGOUT"
+    type: "LOGOUT",
   };
 }
 
 export function viewPatients(): MetaAction {
   return {
-    type: "VIEW_PATIENTS"
+    type: "VIEW_PATIENTS",
   };
 }
 
 export function viewDetails(id: number): MetaAction {
   return {
     type: "VIEW_DETAILS",
-    id
+    id,
   };
 }
 
 export function openCamera(): MetaAction {
   return {
-    type: "OPEN_CAMERA"
+    type: "OPEN_CAMERA",
   };
 }
 
 export function viewCameraPermission(): MetaAction {
   return {
-    type: "VIEW_CAMERA_PERMISSION"
+    type: "VIEW_CAMERA_PERMISSION",
   };
 }
 export function viewLocationPermission(): MetaAction {
   return {
-    type: "VIEW_LOCATION_PERMISSION"
+    type: "VIEW_LOCATION_PERMISSION",
   };
 }
 
 export function setFcmToken(fcmToken: string): MetaAction {
   return {
     type: "SET_FCM_TOKEN",
-    fcmToken
+    fcmToken,
   };
 }
 
@@ -176,6 +176,6 @@ export function saveSort(sortBy: Sort[], order: Order): MetaAction {
   return {
     type: "SAVE_SORT",
     sortBy,
-    order
+    order,
   };
 }

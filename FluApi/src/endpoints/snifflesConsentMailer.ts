@@ -7,13 +7,13 @@ import { Op } from "sequelize";
 
 import {
   defineConsentEmail,
-  ConsentEmailModel
+  ConsentEmailModel,
 } from "../models/db/consentEmail";
 import {
   defineSnifflesModels,
   SnifflesModels,
   VisitPIIInstance,
-  VisitNonPIIInstance
+  VisitNonPIIInstance,
 } from "../models/db/sniffles";
 import logger from "../util/logger";
 import { SplitSql } from "../util/sql";
@@ -22,7 +22,7 @@ import { emailConsent } from "../util/visit";
 const MAX_EMAILS_PER_REQUEST = 100;
 const SIGNATURE_REQUIRED_LOCATIONS = [
   "ChildrensHospitalSeattle",
-  "ChildrensHospitalBellevue"
+  "ChildrensHospitalBellevue",
 ];
 
 type SendConsentEmailResult = {
@@ -61,8 +61,8 @@ export class ConsentEmailerEndpoint {
         where: {
           visitId: resentConsentEmailResults.map(result =>
             result.visitId.toString()
-          )
-        }
+          ),
+        },
       }
     );
 
@@ -87,7 +87,7 @@ export class ConsentEmailerEndpoint {
           emailRequested: result.emailRequested,
           visitId: result.visitId,
           signaturesSent: result.signaturesSent,
-          consentsSent: result.consentsSent
+          consentsSent: result.consentsSent,
         }))
     );
 
@@ -130,7 +130,7 @@ export class ConsentEmailerEndpoint {
         emailRequested: false,
         emailResent: false,
         consentsSent: 0,
-        signaturesSent: false
+        signaturesSent: false,
       };
     }
     const includeSignatures = SIGNATURE_REQUIRED_LOCATIONS.includes(
@@ -148,7 +148,7 @@ export class ConsentEmailerEndpoint {
         emailRequested: emailResult.emailRequsted,
         emailResent: includeResendingMessage,
         consentsSent: emailResult.consentsEmailed || 0,
-        signaturesSent: includeSignatures
+        signaturesSent: includeSignatures,
       };
     } catch (e) {
       logger.error(
@@ -161,7 +161,7 @@ export class ConsentEmailerEndpoint {
         emailRequested: false,
         emailResent: false,
         consentsSent: 0,
-        signaturesSent: false
+        signaturesSent: false,
       };
     }
   }
@@ -172,10 +172,10 @@ export class ConsentEmailerEndpoint {
         csruid: nonPiiVisits.map(visit => visit.csruid),
         visit: {
           complete: {
-            [Op.eq]: "true"
-          }
-        }
-      }
+            [Op.eq]: "true",
+          },
+        },
+      },
     });
     return { nonPiiVisits, piiVisits };
   }
@@ -185,19 +185,19 @@ export class ConsentEmailerEndpoint {
       where: {
         visit: {
           complete: {
-            [Op.eq]: "true"
-          }
+            [Op.eq]: "true",
+          },
         },
-        "$consent_email.id$": null
+        "$consent_email.id$": null,
       },
       include: [
         {
           model: this.consentEmailModel,
-          required: false
-        }
+          required: false,
+        },
       ],
       limit: maxToGet,
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     return await this.addAllPii(nonPiiVisits);
@@ -208,22 +208,22 @@ export class ConsentEmailerEndpoint {
       where: {
         visit: {
           complete: {
-            [Op.eq]: "true"
+            [Op.eq]: "true",
           },
           location: {
-            [Op.in]: SIGNATURE_REQUIRED_LOCATIONS
-          }
+            [Op.in]: SIGNATURE_REQUIRED_LOCATIONS,
+          },
         },
-        "$consent_email.signatures_sent$": false
+        "$consent_email.signatures_sent$": false,
       },
       include: [
         {
           model: this.consentEmailModel,
-          required: true
-        }
+          required: true,
+        },
       ],
       limit: maxToGet,
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     return await this.addAllPii(nonPiiVisits);

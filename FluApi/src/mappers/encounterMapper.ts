@@ -90,7 +90,7 @@ export function mapEncounter(
     sampleCodes: sampleCodes,
     responses: responses,
     events: events,
-    age: age
+    age: age,
   };
 
   return output;
@@ -111,27 +111,27 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
       if (a.valueBoolean != null) {
         converted.push({
           type: "String",
-          value: String(a.valueBoolean)
+          value: String(a.valueBoolean),
         });
       } else if (a.valueDateTime != null) {
         converted.push({
           type: "String",
-          value: a.valueDateTime
+          value: a.valueDateTime,
         });
       } else if (a.valueDecimal != null) {
         converted.push({
           type: "Number",
-          value: a.valueDecimal
+          value: a.valueDecimal,
         });
       } else if (a.valueInteger != null) {
         converted.push({
           type: "Number",
-          value: a.valueInteger
+          value: a.valueInteger,
         });
       } else if (a.valueString != null) {
         converted.push({
           type: "String",
-          value: a.valueString
+          value: a.valueString,
         });
       } else if (a.valueIndex != null) {
         selectedOptions.push(+a.valueIndex);
@@ -139,7 +139,7 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
         selectedOptions.push(+a.valueOther.selectedIndex);
       } else if (a.valueDeclined != null) {
         converted.push({
-          type: "Declined"
+          type: "Declined",
         });
       } else {
         throw new Error("Response with no set answer");
@@ -149,7 +149,7 @@ function mapAnswers(answers: Model.AnswerInfo[]): Encounter.Answer[] {
     if (selectedOptions.length > 0) {
       converted.push({
         type: "Option",
-        chosenOptions: selectedOptions
+        chosenOptions: selectedOptions,
       });
     }
   }
@@ -170,7 +170,7 @@ function mapAnswerOptions(
 
   return options.map(o => ({
     token: o.id,
-    text: o.text
+    text: o.text,
   }));
 }
 
@@ -218,28 +218,28 @@ function mapEvents(
     if (barcodeScanned != null) {
       results.push({
         time: barcodeScanned,
-        eventType: Encounter.EventType.BarcodeScanned
+        eventType: Encounter.EventType.BarcodeScanned,
       });
     }
 
     if (startedQuestionnaire != null) {
       results.push({
         time: startedQuestionnaire,
-        eventType: Encounter.EventType.StartedQuestionnaire
+        eventType: Encounter.EventType.StartedQuestionnaire,
       });
     }
 
     if (symptomsScreened != null) {
       results.push({
         time: symptomsScreened,
-        eventType: Encounter.EventType.SymptomsScreened
+        eventType: Encounter.EventType.SymptomsScreened,
       });
     }
 
     if (consentDate != null) {
       results.push({
         time: consentDate,
-        eventType: Encounter.EventType.ConsentSigned
+        eventType: Encounter.EventType.ConsentSigned,
       });
     }
   }
@@ -269,7 +269,7 @@ function mapResponses(
         converted.push({
           question: { token: i.id, text: i.text },
           options: options.length > 0 ? options : undefined,
-          answer: ans
+          answer: ans,
         });
       });
     });
@@ -309,7 +309,7 @@ function mapSamples(
 
     return {
       type: sampleType,
-      code: s.code
+      code: s.code,
     };
   });
 }

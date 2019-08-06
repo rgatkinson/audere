@@ -9,7 +9,7 @@ import {
   StyleSheet,
   TextStyle,
   ReturnKeyType,
-  KeyboardType
+  KeyboardType,
 } from "react-native";
 import Text from "./Text";
 import NumberInput from "./NumberInput";
@@ -42,7 +42,7 @@ interface State {
 
 export default class LabelNumberInput extends React.Component<Props, State> {
   state: State = {
-    isFocused: false
+    isFocused: false,
   };
 
   textInput = React.createRef<NumberInput>();
@@ -69,7 +69,7 @@ export default class LabelNumberInput extends React.Component<Props, State> {
       placeholder,
       returnKeyType,
       textContent,
-      textStyle
+      textStyle,
     } = this.props;
 
     return (
@@ -104,13 +104,13 @@ export default class LabelNumberInput extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   highlightInput: {
     borderBottomColor: HIGHLIGHT_COLOR,
-    borderBottomWidth: 2
+    borderBottomWidth: 2,
   },
   highlightText: {
-    color: HIGHLIGHT_COLOR
+    color: HIGHLIGHT_COLOR,
   },
   multilineHighlight: {
     borderWidth: 2,
-    borderColor: HIGHLIGHT_COLOR
-  }
+    borderColor: HIGHLIGHT_COLOR,
+  },
 });

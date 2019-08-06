@@ -27,8 +27,8 @@ export class BigQueryTableImporter {
       projectId: this.config.coughProject,
       credentials: {
         client_email: this.config.coughEmail,
-        private_key: this.config.coughKey.replace(/\\n/g, "\n")
-      }
+        private_key: this.config.coughKey.replace(/\\n/g, "\n"),
+      },
     });
   }
 
@@ -77,7 +77,7 @@ export class BigQueryTableImporter {
       autoPaginate: false,
 
       // Currently hardcoding 10k max per request
-      maxResults: 10000
+      maxResults: 10000,
     };
 
     if (pageToken != null) {
@@ -92,14 +92,12 @@ export class BigQueryTableImporter {
     const token = (<bigquery.ITableDataList>result[2]).pageToken;
 
     logger.info(
-      `Received ${
-        result[0].length
-      } rows from table ${table} with page token ${token}`
+      `Received ${result[0].length} rows from table ${table} with page token ${token}`
     );
 
     return {
       results: result[0],
-      token: token
+      token: token,
     };
   }
 }

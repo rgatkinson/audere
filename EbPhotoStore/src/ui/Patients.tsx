@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -20,7 +20,7 @@ import {
   PatientEncounter,
   Screen,
   Sort,
-  StoreState
+  StoreState,
 } from "../store";
 import Button from "./components/Button";
 import Text from "./components/Text";
@@ -31,7 +31,7 @@ import {
   GUTTER,
   ICON_SIZE,
   INPUT_HEIGHT,
-  REGULAR_TEXT
+  REGULAR_TEXT,
 } from "./styles";
 import firebase from "react-native-firebase";
 import { BackCallback } from "./AppController";
@@ -55,7 +55,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     super(props);
     this.state = {
       sortBy: props.sortBy,
-      order: props.order
+      order: props.order,
     };
   }
 
@@ -64,7 +64,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
       onBack: this._logout,
       shouldShowBack: () => {
         return false;
-      }
+      },
     });
   }
 
@@ -191,11 +191,11 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
   _sortBy = (sort: Sort) => {
     if (this.state.sortBy[0] === sort) {
       this.setState({
-        order: this.state.order === Order.down ? Order.up : Order.down
+        order: this.state.order === Order.down ? Order.up : Order.down,
       });
     } else {
       this.setState({
-        sortBy: [sort, ...this.state.sortBy.filter(s => s != sort)]
+        sortBy: [sort, ...this.state.sortBy.filter(s => s != sort)],
       });
     }
   };
@@ -220,7 +220,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     return (
       <Image
         source={{
-          uri: this.state.order === Order.down ? "arrowdown" : "arrowup"
+          uri: this.state.order === Order.down ? "arrowdown" : "arrowup",
         }}
         style={styles.arrow}
       />
@@ -272,7 +272,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
           <TouchableOpacity
             style={[
               styles.iconContainer,
-              { flexDirection: "row", paddingTop: 1 }
+              { flexDirection: "row", paddingTop: 1 },
             ]}
             onPress={this._sortByInfo}
           >
@@ -375,19 +375,19 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 2,
     marginBottom: 0,
-    width: INPUT_HEIGHT
+    width: INPUT_HEIGHT,
   },
   container: {
     alignSelf: "stretch",
     flex: 1,
     justifyContent: "center",
-    margin: GUTTER
+    margin: GUTTER,
   },
   rowContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: GUTTER / 2
+    paddingHorizontal: GUTTER / 2,
   },
   patient: {
     borderBottomColor: BORDER_COLOR,
@@ -395,53 +395,53 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: INPUT_HEIGHT,
     paddingHorizontal: GUTTER / 2,
-    paddingTop: GUTTER
+    paddingTop: GUTTER,
   },
   name: {
     marginBottom: 0,
     paddingRight: GUTTER / 2,
-    width: rowWidth * 0.55
+    width: rowWidth * 0.55,
   },
   unicodeHeader: {
-    lineHeight: REGULAR_TEXT + 2
+    lineHeight: REGULAR_TEXT + 2,
   },
   header: {
     color: "#014080",
     lineHeight: REGULAR_TEXT,
-    marginBottom: 0
+    marginBottom: 0,
   },
   id: {
     paddingRight: GUTTER / 2,
-    width: rowWidth * 0.15
+    width: rowWidth * 0.15,
   },
   status: {
     width: rowWidth * 0.3,
-    paddingRight: GUTTER / 2
+    paddingRight: GUTTER / 2,
   },
   iconContainer: {
-    width: ICON_SIZE + GUTTER
+    width: ICON_SIZE + GUTTER,
   },
   icon: {
     height: ICON_SIZE,
     marginBottom: (INPUT_HEIGHT - ICON_SIZE) / 2,
     resizeMode: "contain",
-    width: ICON_SIZE
+    width: ICON_SIZE,
   },
   arrow: {
     height: 12,
     marginLeft: 2,
     marginTop: 2,
     resizeMode: "contain",
-    width: 12
+    width: 12,
   },
   evdPos: {
-    color: EVD_POSITIVE_COLOR
-  }
+    color: EVD_POSITIVE_COLOR,
+  },
 });
 
 export default connect((state: StoreState) => ({
   demoMode: state.meta.demoMode,
   patients: state.patients,
   sortBy: state.meta.sortBy,
-  order: state.meta.order
+  order: state.meta.order,
 }))(withNamespaces("patients")(Patients));

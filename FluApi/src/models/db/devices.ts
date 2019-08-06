@@ -8,7 +8,7 @@ import {
   Model,
   SplitSql,
   stringColumn,
-  unique
+  unique,
 } from "../../util/sql";
 
 export interface DeviceSettingAttributes {
@@ -23,6 +23,6 @@ export function defineDeviceSetting(
   return defineModel<DeviceSettingAttributes>(sql.nonPii, "device_settings", {
     device: unique(stringColumn(), "device_key_unique"),
     key: unique(stringColumn(), "device_key_unique"),
-    setting: stringColumn()
+    setting: stringColumn(),
   });
 }

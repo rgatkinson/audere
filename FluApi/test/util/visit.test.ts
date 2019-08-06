@@ -27,21 +27,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 4 }]
-          }
+            answer: [{ valueIndex: 4 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -59,8 +59,8 @@ describe("Visit model", () => {
             name: "Mickey Mouse",
             terms: "Terms terms terms terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .build();
       const visitNonPII = new VisitInfoBuilder()
@@ -72,21 +72,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -109,8 +109,8 @@ describe("Visit model", () => {
             terms: "Terms terms terms terms...",
             signerType: ConsentInfoSignerType.Representative,
             relation: "wife",
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .withName("Mickey Mouse")
         .build();
@@ -123,21 +123,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -159,15 +159,15 @@ describe("Visit model", () => {
             name: "Mickey Mouse",
             terms: "Terms terms terms terms\n\nterms terms terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
+            date: "1/1/2019",
           },
           {
             name: "Mickey Mouse",
             terms:
               "**More terms more terms\n\nmore terms more terms**\n\nmore terms more terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .build();
       const visitNonPII = new VisitInfoBuilder()
@@ -179,21 +179,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -216,14 +216,14 @@ describe("Visit model", () => {
             name: "Mickey Mouse",
             terms: "Terms terms terms terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
+            date: "1/1/2019",
           },
           {
             name: "Mickey Mouse",
             terms: "More terms more terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .build();
       const visitNonPII = new VisitInfoBuilder()
@@ -235,21 +235,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -271,15 +271,15 @@ describe("Visit model", () => {
             name: "Mickey Mouse",
             terms: "Terms terms terms terms\n\nterms terms terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
+            date: "1/1/2019",
           },
           {
             name: "Mickey Mouse",
             terms:
               "**More terms more terms\n\nmore terms more terms**\n\nmore terms more terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .build();
       const visitNonPII = new VisitInfoBuilder()
@@ -291,21 +291,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(
@@ -328,15 +328,15 @@ describe("Visit model", () => {
             name: "Mickey Mouse",
             terms: "Terms terms terms terms\n\nterms terms terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
+            date: "1/1/2019",
           },
           {
             name: "Mickey Mouse",
             terms:
               "**More terms more terms\n\nmore terms more terms**\n\nmore terms more terms...",
             signerType: ConsentInfoSignerType.Subject,
-            date: "1/1/2019"
-          }
+            date: "1/1/2019",
+          },
         ])
         .build();
       const visitNonPII = new VisitInfoBuilder()
@@ -348,21 +348,21 @@ describe("Visit model", () => {
             answerOptions: [
               {
                 id: "sendCopyOfMyConsent",
-                text: "Send me a copy of my consent"
+                text: "Send me a copy of my consent",
               },
               {
                 id: "askAboutMyIllness",
-                text: "To ask me questions about my illness/cold"
+                text: "To ask me questions about my illness/cold",
               },
               {
                 id: "learnAboutStudy",
-                text: "To learn more about this study and related topics"
+                text: "To learn more about this study and related topics",
               },
               { id: "allOfTheAbove", text: "All of the above" },
-              { id: "doNotEmailMe", text: "Please do not email me" }
+              { id: "doNotEmailMe", text: "Please do not email me" },
             ],
-            answer: [{ valueIndex: 3 }]
-          }
+            answer: [{ valueIndex: 3 }],
+          },
         ])
         .build();
       const emailParams = getConsentEmailParams(

@@ -37,7 +37,7 @@ export const FIELD_PATH = {
   receivedAt: "_transport.receivedAt",
   sentAt: "_transport.sentAt",
   receivedByUser: "_transport.receivedByUser",
-  receivedByHost: "_transport.receivedByHost"
+  receivedByHost: "_transport.receivedByHost",
 };
 
 export class FirebaseReceiver {
@@ -56,7 +56,7 @@ export class FirebaseReceiver {
     const docRef = collection.doc("health-check.json");
 
     await docRef.set({
-      status: "OK"
+      status: "OK",
     });
     const docSnap = await docRef.get();
     const data = await docSnap.data();
@@ -214,7 +214,7 @@ export function connectorFromCredentials(
 function getOrCreateApp(credentials: string): firebase.app.App {
   if (theOneApp == null) {
     theOneApp = firebase.initializeApp({
-      credential: firebase.credential.cert(JSON.parse(credentials))
+      credential: firebase.credential.cert(JSON.parse(credentials)),
     });
   }
   return theOneApp;

@@ -47,13 +47,13 @@ class LocationPermissionRequired extends React.Component<
 }
 
 export default connect((state: StoreState, props: Props) => ({
-  currentPatient: state.meta.currentPatient
+  currentPatient: state.meta.currentPatient,
 }))(withNamespaces("locationPermissions")(LocationPermissionRequired));
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     flex: 1,
-    margin: GUTTER
-  }
+    margin: GUTTER,
+  },
 });

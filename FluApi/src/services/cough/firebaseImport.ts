@@ -67,8 +67,8 @@ export class FirebaseImport {
 
     const existingVersions = await this.models.firebaseAnalyticsTable.findAll({
       where: {
-        name: Array.from(candidateVersions.keys())
-      }
+        name: Array.from(candidateVersions.keys()),
+      },
     });
 
     const toUpdate: Map<string, number> = new Map();
@@ -107,8 +107,8 @@ export class FirebaseImport {
         logger.info(`Destroying existing rows with event date ${eventDate}`);
         await this.models.firebaseAnalytics.destroy({
           where: {
-            event_date: eventDate
-          }
+            event_date: eventDate,
+          },
         });
 
         let token: string;
@@ -123,12 +123,12 @@ export class FirebaseImport {
           token = analytics.token;
           const rows = analytics.results.map(r => ({
             event_date: eventDate,
-            event: r
+            event: r,
           }));
 
           logger.info(`Creating ${rows.length} analytic events`);
           await this.models.firebaseAnalytics.bulkCreate(rows, {
-            transaction: t
+            transaction: t,
           });
         } while (token != null);
 
@@ -137,10 +137,10 @@ export class FirebaseImport {
         await this.models.firebaseAnalyticsTable.upsert(
           {
             name: name,
-            modified: lastModified
+            modified: lastModified,
           },
           {
-            transaction: t
+            transaction: t,
           }
         );
       });

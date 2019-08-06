@@ -25,7 +25,7 @@ import {
   PatientInfoGender,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 } from "./common";
 
 export {
@@ -34,7 +34,7 @@ export {
   PatientInfoGender,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 };
 
 export interface ProtocolDocumentBase {
@@ -70,7 +70,7 @@ export interface ResponseItemInfo extends QuestionInfo {
 
 export enum DocumentType {
   Survey = "SURVEY",
-  Photo = "PHOTO"
+  Photo = "PHOTO",
 }
 
 export type ProtocolDocument = SurveyDocument | PhotoDocument;
@@ -177,7 +177,7 @@ export interface EventInfo extends common.EventInfo {
 export enum EventInfoKind {
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
-  Render = "render"
+  Render = "render",
 }
 
 // ================================================================================
@@ -214,7 +214,7 @@ export interface RDTReaderResult {
 export enum RDTReaderExposureResult {
   UNDER_EXPOSED,
   NORMAL,
-  OVER_EXPOSED
+  OVER_EXPOSED,
 }
 
 // Must be kept in sync with native RDTReader/ImageProcessor.h
@@ -222,5 +222,5 @@ export enum RDTReaderSizeResult {
   RIGHT_SIZE,
   LARGE,
   SMALL,
-  INVALID
+  INVALID,
 }

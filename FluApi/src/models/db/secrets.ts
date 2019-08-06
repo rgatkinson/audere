@@ -14,6 +14,6 @@ export interface SecretAttributes {
 export function defineSecret(sql: SplitSql): Model<SecretAttributes> {
   return defineModel<SecretAttributes>(sql.nonPii, "secrets", {
     key: stringColumn(),
-    value: stringColumn()
+    value: stringColumn(),
   });
 }

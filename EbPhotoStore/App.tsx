@@ -16,7 +16,7 @@ import i18n from "./src/i18n";
 
 export default class App extends React.Component {
   state = {
-    appReady: false
+    appReady: false,
   };
 
   store?: Store;
@@ -29,7 +29,7 @@ export default class App extends React.Component {
   async _loadAssets() {
     await Promise.all([
       getStore().then(store => (this.store = store)),
-      getPersistor().then(persistor => (this.persistor = persistor))
+      getPersistor().then(persistor => (this.persistor = persistor)),
     ]);
 
     this.setState({ appReady: true });

@@ -9,7 +9,7 @@ import {
   SplitSql,
   booleanColumn,
   integerColumn,
-  unique
+  unique,
 } from "../../util/sql";
 
 export interface ConsentEmailAttributes {
@@ -25,6 +25,6 @@ export function defineConsentEmail(sql: SplitSql): ConsentEmailModel {
     visitId: unique(integerColumn("visit_id")),
     emailRequested: booleanColumn("email_requested"),
     consentsSent: integerColumn("consents_sent"),
-    signaturesSent: booleanColumn("signatures_sent")
+    signaturesSent: booleanColumn("signatures_sent"),
   });
 }

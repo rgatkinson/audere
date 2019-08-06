@@ -26,7 +26,7 @@ export default class DigitInput extends React.Component<Props> {
   }
 
   state = {
-    digits: new Array(this.props.digits)
+    digits: new Array(this.props.digits),
   };
 
   _getNumberInput = (index: number) => {
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     alignItems: "center",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   digitInput: {
     alignSelf: "stretch",
     flex: 1,
     fontSize: EXTRA_LARGE_TEXT,
     textAlign: "center",
-    borderBottomWidth: 0
-  }
+    borderBottomWidth: 0,
+  },
 });

@@ -5,7 +5,7 @@
 
 import {
   ResponseInfo,
-  ResponseItemInfo
+  ResponseItemInfo,
 } from "audere-lib/dist/snifflesProtocol";
 
 const PII_RESPONSE_KEYS = new Set([
@@ -22,7 +22,7 @@ const PII_RESPONSE_KEYS = new Set([
   // "BedAssignment",
 
   "BirthDate",
-  "WorkAddress"
+  "WorkAddress",
 ]);
 
 export type ResponseInfoMapper = (ResponseInfo) => ResponseInfo;
@@ -34,7 +34,7 @@ export function filterResponsePII(allowPII: boolean): ResponseInfoMapper {
   function mapResponse(response: ResponseInfo): ResponseInfo {
     return {
       id: response.id,
-      item: (response.item || []).filter(matchResponseItem)
+      item: (response.item || []).filter(matchResponseItem),
     };
   }
 

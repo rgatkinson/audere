@@ -14,13 +14,13 @@ const languageDetector = {
   async: false,
   detect: () => NativeModules.I18nManager.localeIdentifier.substring(0, 2),
   init: () => {},
-  cacheUserLanguage: () => {}
+  cacheUserLanguage: () => {},
 };
 i18n.use(languageDetector).init({
   fallbackLng: ["en"],
   resources: {
     en: enStrings,
-    fr: frStrings
+    fr: frStrings,
   },
   ns: ["common"],
   defaultNS: "common",
@@ -31,11 +31,11 @@ i18n.use(languageDetector).init({
         return format(value, frmt);
       }
       return value;
-    }
+    },
   },
   react: {
     bindI18n: "languageChanged",
-    bindStore: false
-  }
+    bindStore: false,
+  },
 });
 export default i18n;

@@ -4,11 +4,11 @@ import { createSplitSql } from "../../src/util/sql";
 import {
   defineSnifflesModels,
   SnifflesModels,
-  VisitJobResult
+  VisitJobResult,
 } from "../../src/models/db/sniffles";
 import {
   documentContentsPII,
-  documentContentsNonPII
+  documentContentsNonPII,
 } from "../util/sample_data";
 
 const tuple = <T extends any[]>(...args: T): T => args;
@@ -33,8 +33,8 @@ describe("SnifflesVisitJobs", () => {
           return new Map(
             visits.map(visit => tuple(visit.nonPii.id, { result: {} }))
           );
-        }
-      }
+        },
+      },
     ]);
 
   it("runs a job on a new visit", async () => {
@@ -56,7 +56,9 @@ describe("SnifflesVisitJobs", () => {
       await Promise.all([
         visitNonPII.destroy(),
         visitPII.destroy(),
-        snifflesModels.visitJobRecord.destroy({ where: { jobName: "fakeJob" } })
+        snifflesModels.visitJobRecord.destroy({
+          where: { jobName: "fakeJob" },
+        }),
       ]);
     }
   });
@@ -74,7 +76,7 @@ describe("SnifflesVisitJobs", () => {
     const jobRecord = await snifflesModels.visitJobRecord.create({
       visitId: visitNonPII.id,
       jobName: "fakeJob",
-      result: {}
+      result: {},
     });
 
     try {
@@ -85,7 +87,9 @@ describe("SnifflesVisitJobs", () => {
       await Promise.all([
         visitNonPII.destroy(),
         visitPII.destroy(),
-        snifflesModels.visitJobRecord.destroy({ where: { jobName: "fakeJob" } })
+        snifflesModels.visitJobRecord.destroy({
+          where: { jobName: "fakeJob" },
+        }),
       ]);
     }
   });
@@ -103,7 +107,7 @@ describe("SnifflesVisitJobs", () => {
     const jobRecord = await snifflesModels.visitJobRecord.create({
       visitId: visitNonPII.id,
       jobName: "fakeJob",
-      result: {}
+      result: {},
     });
 
     try {
@@ -116,8 +120,8 @@ describe("SnifflesVisitJobs", () => {
         visitPII.destroy(),
         jobRecord.destroy(),
         snifflesModels.visitJobRecord.destroy({
-          where: { jobName: "newFakeJob" }
-        })
+          where: { jobName: "newFakeJob" },
+        }),
       ]);
     }
   });
@@ -138,14 +142,16 @@ describe("SnifflesVisitJobs", () => {
       await snifflesVisitJobs.runJobs(-1);
 
       jobRecord = await snifflesModels.visitJobRecord.find({
-        where: { jobName: "fakeJob", visitId: visitNonPII.id }
+        where: { jobName: "fakeJob", visitId: visitNonPII.id },
       });
       expect(jobRecord).toBeTruthy();
     } finally {
       await Promise.all([
         visitNonPII.destroy(),
         visitPII.destroy(),
-        snifflesModels.visitJobRecord.destroy({ where: { jobName: "fakeJob" } })
+        snifflesModels.visitJobRecord.destroy({
+          where: { jobName: "fakeJob" },
+        }),
       ]);
     }
   });

@@ -13,7 +13,7 @@ const TEST_PHONE_NUMBER = "2068675309";
 
 export enum PhoneVerificationDismissal {
   CANCELED,
-  VERIFIED
+  VERIFIED,
 }
 
 interface Props {
@@ -127,12 +127,12 @@ const styles = StyleSheet.create({
   button: {
     marginTop: GUTTER,
     marginBottom: 0,
-    flex: 1
+    flex: 1,
   },
   buttons: {
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   modal: {
     alignSelf: "stretch",

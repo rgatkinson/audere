@@ -10,7 +10,7 @@ import {
   Action,
   Screen,
   StoreState,
-  setFcmToken
+  setFcmToken,
 } from "../store";
 import Login from "./Login";
 import Patients from "./Patients";
@@ -43,7 +43,7 @@ interface State {
 class AppController extends React.Component<Props, State> {
   state: State = {
     showAppMenu: false,
-    appState: AppState.currentState
+    appState: AppState.currentState,
   };
   _backHandler: any;
   _onBackCallbacks: { [s: string]: BackCallback } = {};
@@ -104,8 +104,8 @@ class AppController extends React.Component<Props, State> {
             if (this.props.screen !== "LOGIN" && patientId) {
               this.props.dispatch(viewDetails(parseInt(patientId)));
             }
-          }
-        }
+          },
+        },
       ],
       { cancelable: false }
     );
@@ -131,7 +131,7 @@ class AppController extends React.Component<Props, State> {
       [
         Screen.Camera,
         Screen.LocationPermission,
-        Screen.CameraPermission
+        Screen.CameraPermission,
       ].findIndex(e => {
         return e === this.props.screen;
       }) >= 0
@@ -240,8 +240,8 @@ class AppController extends React.Component<Props, State> {
             {
               alignSelf: "stretch",
               backgroundColor: TITLEBAR_COLOR,
-              width: "100%"
-            }
+              width: "100%",
+            },
           ]}
         >
           <StatusBar
@@ -270,5 +270,5 @@ class AppController extends React.Component<Props, State> {
 export default connect((state: StoreState) => ({
   currentPatient: state.meta.currentPatient,
   fcmToken: state.meta.fcmToken,
-  screen: state.meta.screen
+  screen: state.meta.screen,
 }))(AppController);

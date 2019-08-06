@@ -30,7 +30,7 @@ import {
   ConsentInfoSignerType,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 } from "./common";
 
 export {
@@ -44,7 +44,7 @@ export {
   ConsentInfoSignerType,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 };
 
 export interface ProtocolDocumentBase {
@@ -91,7 +91,7 @@ export enum DocumentType {
   Survey = "SURVEY",
   Feedback = "FEEDBACK",
   Analytics = "ANALYTICS",
-  Photo = "PHOTO"
+  Photo = "PHOTO",
 }
 
 export type ProtocolDocument =
@@ -237,7 +237,7 @@ export enum LogRecordLevel {
   Info = "INFO",
   Warn = "WARN",
   Error = "ERROR",
-  Fatal = "FATAL"
+  Fatal = "FATAL",
 }
 
 // ================================================================================
@@ -269,5 +269,5 @@ export enum EventInfoKind {
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
   Interaction = "interaction",
-  Render = "render"
+  Render = "render",
 }

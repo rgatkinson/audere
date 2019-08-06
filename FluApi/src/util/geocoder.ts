@@ -43,10 +43,10 @@ export async function createGeocoder(
     // This globally enables search path options, if not enabled search path
     // options are deleted from config.
     dialectOptions: {
-      prependSearchPath: true
+      prependSearchPath: true,
     },
     logging: false,
-    operatorsAliases: false
+    operatorsAliases: false,
   });
 
   const geocoder: GeocodingService = new GeocodingService(

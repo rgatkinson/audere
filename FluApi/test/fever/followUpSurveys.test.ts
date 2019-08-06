@@ -11,7 +11,7 @@ import {
   capture,
   deepEqual,
   verify,
-  anything
+  anything,
 } from "ts-mockito";
 import { FollowUpDataAccess } from "../../src/services/fever/followUpData";
 import { FollowUpSurveys } from "../../src/services/fever/followUpSurveys";
@@ -45,7 +45,7 @@ describe("sending follow up surveys", () => {
       makeRandomIncentiveRecipient(2),
       makeRandomIncentiveRecipient(3),
       makeRandomIncentiveRecipient(4),
-      makeRandomIncentiveRecipient(5)
+      makeRandomIncentiveRecipient(5),
     ];
     const batch = { id: 8, items: items };
 
@@ -102,8 +102,8 @@ describe("importing survey results", () => {
         care___7: 1,
         care___8: 1,
         care_other: "",
-        found_study: 1
-      }
+        found_study: 1,
+      },
     ];
 
     const client = mock(REDCapClient);

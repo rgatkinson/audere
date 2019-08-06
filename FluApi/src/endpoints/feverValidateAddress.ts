@@ -57,11 +57,11 @@ export class FeverValidateAddress {
               city: city,
               state: state,
               postalCode: zipcode,
-              country: "US"
-            }
-          }
-        ]
-      ]
+              country: "US",
+            },
+          },
+        ],
+      ],
     ]);
   }
 
@@ -72,7 +72,7 @@ export class FeverValidateAddress {
         address2: address.address2 === "Undefined" ? "" : address.address2,
         city: address.city,
         state: address.state,
-        zipcode: address.postalCode
+        zipcode: address.postalCode,
       };
     });
   }
@@ -89,7 +89,7 @@ export class FeverValidateAddress {
           firstName: inputAddress.firstName,
           lastName: inputAddress.lastName,
           country: addr.country || "",
-          postalCode: addr.zipcode
+          postalCode: addr.zipcode,
         };
         if (addr.address2) {
           formattedAddress.line.push(addr.address2);
@@ -106,15 +106,15 @@ export class FeverValidateAddress {
           {
             [Op.or]: formattedAddresses.map(address => ({
               "survey.patient.address::jsonb": {
-                [Op.contains]: cast(JSON.stringify([address]), "JSONB")
-              }
-            }))
+                [Op.contains]: cast(JSON.stringify([address]), "JSONB"),
+              },
+            })),
           },
           {
-            [Op.not]: { csruid }
-          }
-        ]
-      }
+            [Op.not]: { csruid },
+          },
+        ],
+      },
     });
     logger.info(`[AddressValidator] ${duplicates.length} duplicates found`);
     return duplicates.length > 0;

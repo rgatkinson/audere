@@ -9,7 +9,7 @@ import {
   partPath,
   get1,
   set1,
-  validateField
+  validateField,
 } from "../../scripts/util/pathEdit";
 
 describe("partPath", () => {
@@ -60,11 +60,11 @@ describe("getPart", () => {
             3,
             4,
             {
-              c: 5
-            }
-          ]
-        }
-      ]
+              c: 5,
+            },
+          ],
+        },
+      ],
     };
     expect(getPart(obj, partPath("a[2].b[3].c"))).toEqual(5);
   });
@@ -73,7 +73,7 @@ describe("getPart", () => {
 describe("setPart", () => {
   it("sets top level object field", () => {
     const obj = {
-      a: 5
+      a: 5,
     };
     expect(setPart(obj, partPath("a"), 10)).toEqual({ a: 10 });
   });
@@ -89,15 +89,15 @@ describe("setPart", () => {
         "c",
         {
           d: {
-            e: [1, 2, []]
-          }
-        }
-      ]
+            e: [1, 2, []],
+          },
+        },
+      ],
     };
     expect(setPart(obj, partPath("b"), 42)).toEqual({ a: "a", b: 42 });
     expect(setPart(obj, partPath("b[2]"), 42)).toEqual({
       a: "a",
-      b: ["b", "c", 42]
+      b: ["b", "c", 42],
     });
     expect(setPart(obj, partPath("b[2].d"), 42)).toEqual({
       a: "a",
@@ -105,9 +105,9 @@ describe("setPart", () => {
         "b",
         "c",
         {
-          d: 42
-        }
-      ]
+          d: 42,
+        },
+      ],
     });
   });
 });

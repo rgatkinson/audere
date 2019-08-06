@@ -14,7 +14,7 @@ describe("cronGet handler", () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...OLD_ENV };
-    process.env.TARGET_URL="https://www.flu.com/upload";
+    process.env.TARGET_URL = "https://www.flu.com/upload";
     serviceUrl = new Url(process.env.TARGET_URL);
   });
 

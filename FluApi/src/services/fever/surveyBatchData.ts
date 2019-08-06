@@ -8,13 +8,13 @@ import {
   SurveyAttributes,
   BatchAttributes,
   BatchItemAttributes,
-  BatchDiscardAttributes
+  BatchDiscardAttributes,
 } from "../../models/db/fever";
 import { PIIInfo } from "audere-lib/feverProtocol";
 import Sequelize from "sequelize";
 import {
   GaplessSeqAttributes,
-  defineGaplessSeq
+  defineGaplessSeq,
 } from "../../models/db/gaplessSeq";
 import logger from "../../util/logger";
 
@@ -81,7 +81,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
     this.batchModel.hasMany(this.itemModel, {
       foreignKey: "batchId",
       as: "items",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
   }
 
@@ -112,7 +112,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
       if (discarded != null && discarded.length > 0) {
         const inserts = discarded.map(id => ({
           batchId: batchId,
-          workflowId: id
+          workflowId: id,
         }));
 
         await this.discardModel.bulkCreate(inserts, { transaction: t });
@@ -131,16 +131,16 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
 
     const data = await this.batchModel.find({
       where: {
-        uploaded: false
+        uploaded: false,
       },
       include: [
         {
           model: this.itemModel,
           as: "items",
-          attributes: ["id", "surveyId"]
-        }
+          attributes: ["id", "surveyId"],
+        },
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     if (data != null) {
@@ -150,7 +150,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
 
       const batchItems: BatchItem[] = queryResult.items.map(i => ({
         workflowId: i.id,
-        surveyId: i.surveyId
+        surveyId: i.surveyId,
       }));
 
       return { id: batchId, items: batchItems };
@@ -206,7 +206,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
 
         return {
           id: batchId,
-          items: trackedItems
+          items: trackedItems,
         };
       }
     );
@@ -215,7 +215,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
   private async createNewBatchId(t: Sequelize.Transaction): Promise<number> {
     const batchSeq = await this.gaplessSeq.find({
       where: { name: this.batchSeq },
-      transaction: t
+      transaction: t,
     });
 
     const prevId = batchSeq.index;
@@ -224,7 +224,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
     const created = await this.batchModel.create(
       {
         id: prevId + 1,
-        uploaded: false
+        uploaded: false,
       },
       { transaction: t }
     );
@@ -239,7 +239,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
   ): Promise<T[]> {
     const itemSeq = await this.gaplessSeq.find({
       where: { name: this.itemSeq },
-      transaction: t
+      transaction: t,
     });
 
     const nextVal = itemSeq.index + 1;
@@ -254,12 +254,12 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
         id: numericId,
         batchId: batchId,
         surveyId: item.surveyId,
-        uploaded: false
+        uploaded: false,
       });
     }
 
     const tracked = await this.itemModel.bulkCreate(assigned, {
-      transaction: t
+      transaction: t,
     });
 
     // We don't re-query because we are not relying on any columns that should
@@ -268,7 +268,7 @@ export abstract class SurveyBatchDataAccess<T extends BatchItem> {
       const item = items.find(i => i.surveyId === x.surveyId);
       return {
         ...item,
-        workflowId: x.id
+        workflowId: x.id,
       };
     });
   }

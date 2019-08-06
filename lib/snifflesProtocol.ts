@@ -30,7 +30,7 @@ import {
   ConsentInfoSignerType,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 } from "./common";
 
 export {
@@ -44,7 +44,7 @@ export {
   ConsentInfoSignerType,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 };
 
 export interface ProtocolDocumentBase {
@@ -91,7 +91,7 @@ export enum DocumentType {
   Feedback = "FEEDBACK",
   Log = "LOG", // only used for crash logs
   LogBatch = "LOG_BATCH",
-  Backup = "BACKUP"
+  Backup = "BACKUP",
 }
 
 export type ProtocolDocument =
@@ -188,7 +188,7 @@ export interface EventInfo extends common.EventInfo {
 export enum EventInfoKind {
   Visit = "visit",
   Response = "response",
-  Sample = "sample"
+  Sample = "sample",
 }
 
 // ================================================================================
@@ -218,7 +218,7 @@ export enum LogLevel {
   Info = 1,
   Warn = 2,
   Error = 3,
-  Fatal = 4
+  Fatal = 4,
 }
 
 export interface LogInfo {
@@ -251,7 +251,7 @@ export enum LogRecordLevel {
   Info = "INFO",
   Warn = "WARN",
   Error = "ERROR",
-  Fatal = "FATAL"
+  Fatal = "FATAL",
 }
 
 export interface BackupDocument extends ProtocolDocumentBase {

@@ -12,7 +12,7 @@ import {
   anyNumber,
   anyString,
   deepEqual,
-  verify
+  verify,
 } from "ts-mockito";
 import { ReceivedKits } from "../../src/services/fever/receivedKits";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
@@ -27,7 +27,7 @@ describe("exporting barcodes to REDCap", () => {
       code: "secret",
       scannedAt: "2019-04-14",
       state: "WA",
-      recordId: 1
+      recordId: 1,
     };
 
     const dao = mock(ReceivedKitsData);
@@ -62,7 +62,7 @@ describe("importing received kits", () => {
       utmBarcode: "22334455",
       rdtBarcode: "abcdefgh",
       stripBarcode: "aabbccdd",
-      recordId: 1
+      recordId: 1,
     };
 
     const redcap = mock(REDCapClient);
@@ -71,7 +71,7 @@ describe("importing received kits", () => {
     const dao = mock(ReceivedKitsData);
     const match = { id: 115, code: "12345678" };
     when(dao.matchBarcodes(deepEqual([record.boxBarcode]))).thenResolve([
-      match
+      match,
     ]);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();
 
@@ -99,7 +99,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
+        recordId: 1,
       },
       {
         dateReceived: "2018-01-01",
@@ -107,8 +107,8 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 2
-      }
+        recordId: 2,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -152,7 +152,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
+        recordId: 1,
       },
       {
         dateReceived: "2018-01-01",
@@ -160,8 +160,8 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 2
-      }
+        recordId: 2,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -206,7 +206,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
+        recordId: 1,
       },
       {
         dateReceived: "2018-01-01",
@@ -214,8 +214,8 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 2
-      }
+        recordId: 2,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -224,7 +224,7 @@ describe("importing received kits", () => {
     const dao = mock(ReceivedKitsData);
     const matches = [
       { id: 123, code: "12345678", kitId: 1, recordId: 1, fileId: 1 },
-      { id: 456, code: "98765432", kitId: 2, recordId: 2, fileId: 2 }
+      { id: 456, code: "98765432", kitId: 2, recordId: 2, fileId: 2 },
     ];
     when(dao.matchBarcodes(deepEqual(["12345678", "98765432"]))).thenResolve(
       matches
@@ -254,7 +254,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
+        recordId: 1,
       },
       {
         dateReceived: "2018-01-02",
@@ -262,8 +262,8 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 2
-      }
+        recordId: 2,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -300,7 +300,7 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
+        recordId: 1,
       },
       {
         dateReceived: "2018-01-02",
@@ -308,8 +308,8 @@ describe("importing received kits", () => {
         utmBarcode: "22334455",
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
-        recordId: 1
-      }
+        recordId: 1,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -320,7 +320,7 @@ describe("importing received kits", () => {
     // Duplicate in Audere
     const matches = [
       { id: 123, code: "12345678", kitId: 1, recordId: 1, fileId: 1 },
-      { id: 124, code: "12345678" }
+      { id: 124, code: "12345678" },
     ];
 
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
@@ -350,8 +350,8 @@ describe("importing received kits", () => {
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
         fileId: 1,
-        recordId: 1
-      }
+        recordId: 1,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -390,8 +390,8 @@ describe("importing received kits", () => {
         rdtBarcode: "abcdefgh",
         stripBarcode: "aabbccdd",
         fileId: 1,
-        recordId: 1
-      }
+        recordId: 1,
+      },
     ];
 
     const redcap = mock(REDCapClient);
@@ -402,7 +402,7 @@ describe("importing received kits", () => {
     // Different record id
     const matches = [
       { id: 123, code: "12345678", kitId: 1, recordId: 555 },
-      { id: 124, code: "12345678" }
+      { id: 124, code: "12345678" },
     ];
     when(dao.matchBarcodes(deepEqual(["12345678"]))).thenResolve(matches);
     when(dao.importReceivedKits(anyNumber(), anything())).thenResolve();

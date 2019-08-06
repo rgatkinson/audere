@@ -28,18 +28,17 @@ export default class Text extends React.Component<Props> {
           this.props.style,
         ]}
       >
-        {this.props.content.split("**").map(
-          (str, i) =>
-            i % 2 == 0 ? (
-              <SystemText key={i + str}>{str}</SystemText>
-            ) : (
-              <SystemText
-                key={i + str}
-                style={this.props.extraBold ? styles.extraBold : styles.bold}
-              >
-                {str}
-              </SystemText>
-            )
+        {this.props.content.split("**").map((str, i) =>
+          i % 2 == 0 ? (
+            <SystemText key={i + str}>{str}</SystemText>
+          ) : (
+            <SystemText
+              key={i + str}
+              style={this.props.extraBold ? styles.extraBold : styles.bold}
+            >
+              {str}
+            </SystemText>
+          )
         )}
       </SystemText>
     );

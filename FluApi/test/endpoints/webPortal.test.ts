@@ -77,7 +77,7 @@ describe("webPortal", () => {
       .send({
         _csrf: loginCSRF,
         username,
-        password
+        password,
       })
       .expect(302, /\.\/index$/)
       .expect(res => (post = res));
@@ -104,7 +104,7 @@ describe("webPortal", () => {
       .send({
         // _csrf: loginCSRF,
         username,
-        password
+        password,
       })
       .expect(403);
   });
@@ -129,7 +129,7 @@ describe("webPortal", () => {
       .send({
         _csrf: loginCSRF,
         username: "incorrect",
-        password
+        password,
       })
       .expect(302, /\.\/login$/);
   });
@@ -154,7 +154,7 @@ describe("webPortal", () => {
       .send({
         _csrf: loginCSRF,
         username,
-        password: "incorrect"
+        password: "incorrect",
       })
       .expect(302, /\.\/login$/);
   });

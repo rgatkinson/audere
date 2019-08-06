@@ -107,9 +107,7 @@ export class LogBatcher implements Logger {
       this.echo(
         `LogBatcher:` +
           ` needsUpload=${needsUpload}` +
-          `, adding ${adding.length}+${state.records.length}=${
-            records.length
-          }` +
+          `, adding ${adding.length}+${state.records.length}=${records.length}` +
           `, size=${size}` +
           `, dur=${durationMs}ms`
       );

@@ -9,11 +9,11 @@ import { SplitSql } from "../util/sql";
 import {
   CoughModels,
   defineCoughModels,
-  ImportProblemAttributes
+  ImportProblemAttributes,
 } from "../models/db/cough";
 import {
   connectorFromSqlSecrets,
-  FirebaseReceiver
+  FirebaseReceiver,
 } from "../external/firebase";
 import logger from "../util/logger";
 import { requestId } from "../util/expressApp";
@@ -21,7 +21,7 @@ import {
   DocumentType,
   SurveyDocument,
   SurveyNonPIIInfo,
-  PhotoDocument
+  PhotoDocument,
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
 import { SecretConfig } from "../util/secretsConfig";
@@ -74,7 +74,7 @@ export class CoughEndpoint {
       successes: [],
       errors: [],
       timestamp: new Date().toISOString(),
-      requestId: reqId
+      requestId: reqId,
     };
 
     // Set Content-Type now since headers have to go before body and we start
@@ -123,18 +123,18 @@ export class CoughEndpoint {
         survey: {
           workflow: {
             surveyCompletedAt: {
-              [Op.ne]: null
-            }
-          }
+              [Op.ne]: null,
+            },
+          },
         },
-        "$photo_upload_log.cough_survey_id$": null
+        "$photo_upload_log.cough_survey_id$": null,
       },
       include: [
         {
           model: this.models.photoUploadLog,
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     });
     const results = await Promise.all(
       surveys.map(async survey => {
@@ -157,7 +157,7 @@ export class CoughEndpoint {
               "PhotoGUID",
               "ManualPhoto",
               rdtPhotosSecret
-            )
+            ),
           ]);
         } catch (e) {
           console.error(e);
@@ -171,7 +171,7 @@ export class CoughEndpoint {
     );
     res.json({
       success: results.filter(result => result !== null).length,
-      error: results.filter(result => result === null).length
+      error: results.filter(result => result === null).length,
     });
   };
 
@@ -194,8 +194,8 @@ export class CoughEndpoint {
     }
     const photoRecord = await this.models.photo.findOne({
       where: {
-        docId: photoSample.code
-      }
+        docId: photoSample.code,
+      },
     });
     await (await this.s3Uploader.get()).writeRDTPhoto(
       rdtPhotosSecret,
@@ -267,15 +267,13 @@ export class CoughEndpoint {
     result: ImportResult
   ): Promise<ImportProblemAttributes> {
     logger.error(
-      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${
-        spec.collection
-      }': ${err.message}`
+      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
     );
 
     const firebaseCollection = spec.collection;
     const firebaseId = spec.id;
     const existing = await this.models.importProblem.findOne({
-      where: { firebaseCollection, firebaseId }
+      where: { firebaseCollection, firebaseId },
     });
 
     const problem = {
@@ -283,7 +281,7 @@ export class CoughEndpoint {
       firebaseCollection,
       firebaseId,
       attempts: existing == null ? 1 : existing.attempts + 1,
-      lastError: err.message
+      lastError: err.message,
     };
     result.errors.push(asImportError(problem));
     await this.models.importProblem.upsert(problem);
@@ -316,8 +314,8 @@ export class CoughEndpoint {
       photo: {
         timestamp: doc.photo.timestamp,
         photoId: doc.photo.photoId,
-        jpegBase64
-      }
+        jpegBase64,
+      },
     });
   };
 
@@ -344,7 +342,7 @@ function asImportError(problem: ImportProblemAttributes): ImportError {
     collection: problem.firebaseCollection,
     id: problem.firebaseId,
     error: problem.lastError,
-    attempts: problem.attempts
+    attempts: problem.attempts,
   };
 }
 

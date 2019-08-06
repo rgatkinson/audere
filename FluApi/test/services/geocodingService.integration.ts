@@ -9,13 +9,13 @@ import { AddressInfoUse } from "audere-lib/common";
 import { SmartyStreetsGeocoder } from "../../src/external/smartyStreetsGeocoder";
 import {
   defineSmartyStreetsResponse,
-  SmartyStreetsResponseModel
+  SmartyStreetsResponseModel,
 } from "../../src/models/db/smartyStreetsResponses";
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { createGeocoder } from "../../src/util/geocoder";
 import {
   GeocodingService,
-  canonicalizeAddressInfo
+  canonicalizeAddressInfo,
 } from "../../src/services/geocodingService";
 import { SecretConfig } from "../../src/util/secretsConfig";
 import exampleResponse from "../resources/geocodingObjectResponse.json";
@@ -29,8 +29,8 @@ describe("geocoder cache", () => {
       city: "CITYVILLE",
       state: "CA",
       postalCode: "99999",
-      country: "US"
-    }
+      country: "US",
+    },
   };
   const address2 = {
     use: AddressInfoUse.Work,
@@ -39,8 +39,8 @@ describe("geocoder cache", () => {
       city: "TOWNOPOLIS",
       state: "WA",
       postalCode: "00000",
-      country: "US"
-    }
+      country: "US",
+    },
   };
   const address3 = {
     use: AddressInfoUse.Temp,
@@ -49,12 +49,12 @@ describe("geocoder cache", () => {
       city: "Village",
       state: "MT",
       postalCode: "12345",
-      country: "US"
-    }
+      country: "US",
+    },
   };
 
   const addressInfo: Map<string, AddressDetails[]> = new Map([
-    ["1", [address1, address2, address3]]
+    ["1", [address1, address2, address3]],
   ]);
 
   let smartyStreetsResponses: SmartyStreetsResponseModel;
@@ -75,8 +75,8 @@ describe("geocoder cache", () => {
         where: {
           inputAddress: [address1, address2, address3].map(a =>
             canonicalizeAddressInfo(a.value)
-          )
-        }
+          ),
+        },
       });
     } catch (e) {
       console.error(e);
@@ -90,7 +90,7 @@ describe("geocoder cache", () => {
       async send(request) {
         smartyStreetsCalls++;
         return exampleResponse;
-      }
+      },
     };
     const smartyStreets = new SmartyStreetsGeocoder(client);
     geocoder = await createGeocoder(secrets, sql, false, smartyStreets);
@@ -101,9 +101,9 @@ describe("geocoder cache", () => {
         smartyStreetsResponses.find({
           where: {
             inputAddress: {
-              [Op.eq]: canonicalizeAddressInfo(key.value)
-            }
-          }
+              [Op.eq]: canonicalizeAddressInfo(key.value),
+            },
+          },
         })
       )
     );
@@ -120,7 +120,7 @@ describe("geocoder cache", () => {
       async send(request) {
         smartyStreetsCalls++;
         return exampleResponse;
-      }
+      },
     };
     const smartyStreets = new SmartyStreetsGeocoder(client);
     geocoder = await createGeocoder(secrets, sql, false, smartyStreets);
@@ -139,7 +139,7 @@ describe("geocoder cache", () => {
     const client = {
       async send(request) {
         return emptyResponse;
-      }
+      },
     };
     const smartyStreets = new SmartyStreetsGeocoder(client);
     geocoder = await createGeocoder(secrets, sql, false, smartyStreets);

@@ -12,7 +12,7 @@ import {
   GeocodingService,
   cleanAddressString,
   canonicalizeAddressInfo,
-  addressInfosEqual
+  addressInfosEqual,
 } from "../../src/services/geocodingService";
 import { CensusTractService } from "../../src/services/censusTractService";
 import { AddressDetails } from "../../src/models/encounterDetails";
@@ -24,7 +24,7 @@ describe("geocoding service", () => {
         addresses: Map<string, AddressInfo[]>
       ): Promise<GeocodingResponse[]> {
         return handle();
-      }
+      },
     };
 
     return client;
@@ -42,7 +42,7 @@ describe("geocoding service", () => {
       ...request.line,
       request.city,
       request.state,
-      request.postalCode
+      request.postalCode,
     ];
 
     return {
@@ -57,9 +57,9 @@ describe("geocoding service", () => {
           state: request.state,
           latitude: lat,
           longitude: lng,
-          postalCode: postalCode
-        }
-      ]
+          postalCode: postalCode,
+        },
+      ],
     };
   }
 
@@ -70,8 +70,8 @@ describe("geocoding service", () => {
       city: "Town",
       state: "PL",
       postalCode: "00000",
-      country: "US"
-    }
+      country: "US",
+    },
   };
 
   let homeLat = 4;
@@ -85,8 +85,8 @@ describe("geocoding service", () => {
       city: "City",
       state: "PL",
       postalCode: "00001",
-      country: "US"
-    }
+      country: "US",
+    },
   };
 
   let workLat = -13;
@@ -120,7 +120,7 @@ describe("geocoding service", () => {
       },
       bulkCreate(responses) {
         this.cachedResponsesCreated = responses;
-      }
+      },
     } as unknown) as SmartyStreetsResponseModel;
   };
 
@@ -192,8 +192,8 @@ describe("geocoding service", () => {
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
           inputAddress: canonicalizeAddressInfo(workAddress.value),
-          responseAddresses: workCoded.addresses
-        }
+          responseAddresses: workCoded.addresses,
+        },
       ]);
       let geoService: GeocodingService = new GeocodingService(
         makeClient(geoResponse),
@@ -225,8 +225,8 @@ describe("geocoding service", () => {
       const mockSmartyStreetsCache: any = makeMockSmartyStreetsCacheModel([
         {
           inputAddress: canonicalizeAddressInfo(workAddress.value),
-          responseAddresses: [workCoded.addresses]
-        }
+          responseAddresses: [workCoded.addresses],
+        },
       ]);
       let geoService: GeocodingService = new GeocodingService(
         makeClient(geoResponse),
@@ -265,7 +265,7 @@ describe("geocoding service", () => {
         line: ["8 VILLANOVA", null],
         state: "CA",
         country: "US",
-        postalCode: "92606"
+        postalCode: "92606",
       };
       const addr2 = {
         use: AddressInfoUse.Home,
@@ -273,7 +273,7 @@ describe("geocoding service", () => {
         city: "IRVINE",
         state: "CA",
         postalCode: "92606",
-        country: "US"
+        country: "US",
       };
 
       expect(addressInfosEqual(addr1, addr2)).toBe(true);

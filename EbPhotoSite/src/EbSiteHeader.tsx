@@ -18,7 +18,7 @@ export class EbSiteHeader extends React.Component<EbSiteHeaderProps> {
         <div
           className="PatientListHeaderLogo"
           style={{
-            clear: "none"
+            clear: "none",
           }}
         >
           <img src={logo} />
@@ -26,7 +26,7 @@ export class EbSiteHeader extends React.Component<EbSiteHeaderProps> {
         <div
           style={{
             float: "right",
-            clear: "none"
+            clear: "none",
           }}
         >
           <LoggedInAs />

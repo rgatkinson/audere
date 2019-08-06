@@ -9,7 +9,7 @@ import "react-table/react-table.css";
 
 import {
   EncounterDocument,
-  EncounterTriageDocument
+  EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { loadAllEncounters, loadAllTriages } from "./util";
 import "./PatientList.css";
@@ -34,7 +34,7 @@ class PatientListPageAssumeRouter extends React.Component<
       eDocs: null,
       tDocs: [],
       showTriagedMap: false,
-      showUntriagedMap: false
+      showUntriagedMap: false,
     };
   }
 
@@ -45,12 +45,12 @@ class PatientListPageAssumeRouter extends React.Component<
   private async load(): Promise<void> {
     const [encounters, triages] = await Promise.all([
       loadAllEncounters(),
-      loadAllTriages()
+      loadAllTriages(),
     ]);
 
     this.setState({
       eDocs: encounters,
-      tDocs: triages
+      tDocs: triages,
     });
   }
 
@@ -71,7 +71,7 @@ class PatientListPageAssumeRouter extends React.Component<
       ),
       untriagedDocs: this.state.eDocs!.filter(
         d => !triagedDocIds.includes(d.docId)
-      )
+      ),
     };
   }
 

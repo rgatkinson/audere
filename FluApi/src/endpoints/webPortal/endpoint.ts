@@ -16,7 +16,7 @@ import {
   createApp,
   render,
   wrap,
-  requestId
+  requestId,
 } from "../../util/expressApp";
 import { SplitSql } from "../../util/sql";
 import { SecretConfig } from "../../util/secretsConfig";
@@ -29,7 +29,7 @@ import {
   getThisSunday,
   getExcelReport,
   getFeverMetrics,
-  getFeverExcelReport
+  getFeverExcelReport,
 } from "./metrics";
 import logger from "../../util/logger";
 import { S3DirectoryServer } from "./s3server";
@@ -38,18 +38,18 @@ const INDEX_PAGE_LINKS = [
   {
     label: "Metrics for FluTrack kiosk app (codename Sniffles)",
     url: "./metrics",
-    permissionsRequired: []
+    permissionsRequired: [],
   },
   {
     label: "Metrics for flu@home (codename Fever)",
     url: "./feverMetrics",
-    permissionsRequired: []
+    permissionsRequired: [],
   },
   {
     label: "Seattle Children's HIPAA and consent forms",
     url: "./seattleChildrensForms",
-    permissionsRequired: [Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS]
-  }
+    permissionsRequired: [Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS],
+  },
 ];
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
@@ -112,12 +112,12 @@ async function addSession(
     secret,
     cookie: {
       sameSite: true,
-      secure
+      secure,
     },
     store,
     proxy: secure,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
   };
 
   if (secure) {
@@ -144,7 +144,7 @@ function addHandlers(
     wrap(async (req, res) =>
       res.render("index.html", {
         ...userContext(req),
-        links: await indexPageLinks(req, authManager)
+        links: await indexPageLinks(req, authManager),
       })
     )
   );
@@ -156,7 +156,7 @@ function addHandlers(
     `${process.env.NODE_ENV.toLowerCase()}/shared/hipaa-forms/seattle-childrens/`,
     () => ({
       static: Array.isArray(app.mountpath) ? app.mountpath[0] : app.mountpath,
-      title: "Seattle Children's Flu Study Consent and HIPAA Forms"
+      title: "Seattle Children's Flu Study Consent and HIPAA Forms",
     })
   );
   app.get(
@@ -244,7 +244,7 @@ function addHandlers(
           surveyStatsByAdminData,
           lastQuestionData,
           studyIdData,
-          feedbackData
+          feedbackData,
         } = await getMetrics(startDate, endDate);
         res.render("metrics.ejs", {
           static: app.mountpath,
@@ -253,7 +253,7 @@ function addHandlers(
           lastQuestionData: lastQuestionData,
           feedbackData: feedbackData,
           startDate: startDate,
-          endDate: endDate
+          endDate: endDate,
         });
       })
     );
@@ -267,7 +267,7 @@ function addHandlers(
           surveyStatsData,
           lastScreenData,
           statesData,
-          studyIdData
+          studyIdData,
         } = await getFeverMetrics(startDate, endDate);
         res.render("feverMetrics.ejs", {
           static: app.mountpath,
@@ -276,7 +276,7 @@ function addHandlers(
           statesData: statesData,
           studyIdData: studyIdData,
           startDate: startDate,
-          endDate: endDate
+          endDate: endDate,
         });
       })
     );
@@ -323,14 +323,14 @@ function addHandlers(
   function userContext(req) {
     return {
       ...loginContext(req),
-      user: req.user
+      user: req.user,
     };
   }
 
   function loginContext(req) {
     return {
       static: app.mountpath,
-      csrf: req.csrfToken()
+      csrf: req.csrfToken(),
     };
   }
 
@@ -362,7 +362,7 @@ function createSessionStore(sql: SplitSql) {
   defineSiteUserModels(sql);
   return new SequelizeSessionStore({
     db: sql.pii,
-    table: SESSION_TABLE_NAME
+    table: SESSION_TABLE_NAME,
   });
 }
 

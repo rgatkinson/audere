@@ -65,8 +65,8 @@ export class REDCapClient {
     try {
       const response = await this.api.post<T>("", data, {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
 
       return response;
@@ -128,7 +128,7 @@ export class REDCapClient {
       boxBarcode: row.box_barcode,
       utmBarcode: row.utm_barcode,
       rdtBarcode: row.rdt_barcode,
-      stripBarcode: row.strip_barcode
+      stripBarcode: row.strip_barcode,
     }));
   }
 
@@ -219,7 +219,7 @@ export class REDCapClient {
     untrackedBarcodes.forEach(b => {
       const record: any = {
         participant_entered_kit_ba: b.code,
-        state_from_audere: b.state
+        state_from_audere: b.state,
       };
 
       if (b.scannedAt != null) {

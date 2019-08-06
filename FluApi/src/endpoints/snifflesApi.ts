@@ -16,7 +16,7 @@ import {
   ConsentInfo,
   NonPIIConsentInfo,
   LogBatchDocument,
-  ProtocolDocument
+  ProtocolDocument,
 } from "audere-lib/snifflesProtocol";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
@@ -27,8 +27,8 @@ import { requestId } from "../util/expressApp";
 
 const clientLogger = createLogger({
   transports: [
-    new winston.transports.File({ filename: "clients.log", level: "debug" })
-  ]
+    new winston.transports.File({ filename: "clients.log", level: "debug" }),
+  ],
 });
 
 const FEEDBACK_EMAIL = "feedback@auderenow.org";
@@ -43,7 +43,7 @@ export class SnifflesEndpoint {
 
   public async putDocumentWithKey(req, res, next) {
     const matchingKey = await this.models.accessKey.findOne({
-      where: { key: req.params.key, valid: true }
+      where: { key: req.params.key, valid: true },
     });
 
     if (!matchingKey) {
@@ -77,13 +77,13 @@ export class SnifflesEndpoint {
           this.models.visitNonPii.upsert({
             csruid,
             device: visitDocument.device,
-            visit: visitNonPII
+            visit: visitNonPII,
           }),
           this.models.visitPii.upsert({
             csruid,
             device: visitDocument.device,
-            visit: visitPII
-          })
+            visit: visitPII,
+          }),
         ]);
         break;
       }
@@ -98,12 +98,12 @@ export class SnifflesEndpoint {
             JSON.stringify(feedbackDocument.device, null, 2),
           to: [FEEDBACK_EMAIL],
           from: FEEDBACK_SENDER_EMAIL,
-          replyTo: FEEDBACK_EMAIL
+          replyTo: FEEDBACK_EMAIL,
         });
         await this.models.feedback.create({
           subject: feedbackDocument.feedback.subject,
           body: feedbackDocument.feedback.body,
-          device: feedbackDocument.device
+          device: feedbackDocument.device,
         });
         break;
       }
@@ -115,7 +115,7 @@ export class SnifflesEndpoint {
         await this.models.clientLog.create({
           log: log.logentry,
           level: log.level,
-          device: logDocument.device
+          device: logDocument.device,
         });
         break;
       }
@@ -142,7 +142,7 @@ export function extractVisitNonPii(visit: VisitInfo): VisitNonPIIDbInfo {
     consents: deIdentifyConsents(visit.consents),
     giftcards: visit.giftcards,
     samples: visit.samples,
-    responses: (visit.responses || []).map(filterResponsePII(false))
+    responses: (visit.responses || []).map(filterResponsePII(false)),
   };
 }
 
@@ -152,7 +152,7 @@ export function extractVisitPii(visit: VisitInfo): VisitPIIInfo {
     gps_location: visit.gps_location,
     patient: visit.patient,
     consents: visit.consents,
-    responses: (visit.responses || []).map(filterResponsePII(true))
+    responses: (visit.responses || []).map(filterResponsePII(true)),
   };
 }
 
@@ -162,7 +162,7 @@ function extractVisitCommon(visit: VisitInfo): VisitCommonInfo {
     complete: visit.complete,
     location: visit.location,
     administrator: visit.administrator,
-    events: visit.events
+    events: visit.events,
   };
 }
 
@@ -175,7 +175,7 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
     terms: consent.terms,
     signerType: consent.signerType,
     date: consent.date,
-    ...(consent.relation == null ? {} : { relation: consent.relation })
+    ...(consent.relation == null ? {} : { relation: consent.relation }),
   };
 }
 

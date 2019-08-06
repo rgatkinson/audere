@@ -36,8 +36,9 @@ export class FeverCronReportEndpoint {
     this.incentives = new LazyAsync(() => createIncentives(sql, s3));
     this.kits = new LazyAsync(() => createKits(sql, secrets, s3));
     this.followUps = new LazyAsync(() => createFollowUps(sql, secrets, s3));
-    this.receivedKits =
-      new LazyAsync(() => createReceivedKits(sql, secrets, s3));
+    this.receivedKits = new LazyAsync(() =>
+      createReceivedKits(sql, secrets, s3)
+    );
   }
 
   async exportBarcodes(req, res, next) {

@@ -56,11 +56,11 @@ export class HutchUploader {
       await this.api.post("api/enrollment", e, {
         auth: {
           username: this.user,
-          password: this.password
+          password: this.password,
         },
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
     } catch (error) {
       logger.error(`Call to upload encounter ${e.id} from ${e.site} failed`);

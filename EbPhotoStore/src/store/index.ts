@@ -11,7 +11,7 @@ import {
   Middleware,
   Dispatch,
   AnyAction,
-  MiddlewareAPI
+  MiddlewareAPI,
 } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -46,7 +46,7 @@ export type Action =
 const reducer = combineReducers({
   meta,
   patients,
-  photoUploads
+  photoUploads,
 });
 
 const rootReducer = (state: StoreState | undefined, action: Action) => {
@@ -73,7 +73,7 @@ async function getStoreImpl() {
   const persistConfig = {
     transforms: [immutableTransform()],
     key: "store",
-    storage
+    storage,
   };
   const store = await createStore(
     persistReducer(persistConfig, rootReducer),

@@ -13,7 +13,7 @@ import {
   SurveyInfo,
   SurveyNonPIIDbInfo,
   TelecomInfoSystem,
-  ConsentInfoSignerType
+  ConsentInfoSignerType,
 } from "audere-lib/feverProtocol";
 
 export const DEVICE = {
@@ -23,13 +23,13 @@ export const DEVICE = {
     buildDate: "buildDate",
     hash: "hash",
     name: "name",
-    version: "version"
+    version: "version",
   },
   yearClass: "2020",
   idiomText: "handset",
   platform: JSON.stringify({
-    ios: {}
-  })
+    ios: {},
+  }),
 };
 
 export const FAKE_EMAIL = "fakename@email.org";
@@ -41,55 +41,55 @@ export const PATIENT_INFO = {
   telecom: [
     {
       system: TelecomInfoSystem.Email,
-      value: FAKE_EMAIL
-    }
+      value: FAKE_EMAIL,
+    },
   ],
-  address: []
+  address: [],
 };
 
 const SAMPLE_INFO = {
   sample_type: "SampleType",
-  code: "Code"
+  code: "Code",
 };
 
 const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
   text: "Is the cake a lie?",
-  answer: [{ valueBoolean: true }]
+  answer: [{ valueBoolean: true }],
 };
 
 const PII_RESPONSE_ITEM = {
   id: "BirthDate",
   text: "What is your birth date?",
-  answer: [{ valueString: "1900-01-01" }]
+  answer: [{ valueString: "1900-01-01" }],
 };
 
 const CONSENT_NONPII_INFO = {
   terms: "I agree.",
   signerType: ConsentInfoSignerType.Subject,
-  date: "2019-01-01"
+  date: "2019-01-01",
 };
 
 const CONSENT_INFO = {
   ...CONSENT_NONPII_INFO,
   firstName: "Fake",
   lastName: "Name",
-  signature: "AAAAAAAAAA"
+  signature: "AAAAAAAAAA",
 };
 
 const COMMON_INFO: CommonInfo = {
   isDemo: false,
   workflow: {
     screeningCompletedAt: "2019-01-01T00:00:00Z",
-    surveyStartedAt: "2019-01-01T00:00:00Z"
+    surveyStartedAt: "2019-01-01T00:00:00Z",
   },
   events: [
     {
       kind: EventInfoKind.Sample,
       at: "2019-01-01T00:00:00Z",
-      until: "2019-01-01T01:00:00Z"
-    }
-  ]
+      until: "2019-01-01T01:00:00Z",
+    },
+  ],
 };
 export const PII: PIIInfo = {
   ...COMMON_INFO,
@@ -98,9 +98,9 @@ export const PII: PIIInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [PII_RESPONSE_ITEM]
-    }
-  ]
+      item: [PII_RESPONSE_ITEM],
+    },
+  ],
 };
 
 export const SURVEY_NONPII: SurveyNonPIIDbInfo = {
@@ -110,9 +110,9 @@ export const SURVEY_NONPII: SurveyNonPIIDbInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [NONPII_RESPONSE_ITEM]
-    }
-  ]
+      item: [NONPII_RESPONSE_ITEM],
+    },
+  ],
 };
 export const SURVEY_INFO: SurveyInfo = {
   ...SURVEY_NONPII,
@@ -121,9 +121,9 @@ export const SURVEY_INFO: SurveyInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM]
-    }
-  ]
+      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM],
+    },
+  ],
 };
 
 export function surveyPost(csruid: string): SurveyDocument {
@@ -132,7 +132,7 @@ export function surveyPost(csruid: string): SurveyDocument {
     csruid,
     documentType: DocumentType.Survey,
     device: DEVICE,
-    survey: SURVEY_INFO
+    survey: SURVEY_INFO,
   };
 }
 

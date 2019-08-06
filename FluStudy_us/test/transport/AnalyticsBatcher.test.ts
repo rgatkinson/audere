@@ -3,8 +3,19 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, AnalyticsInfo, LogRecordInfo, LogRecordLevel, EventInfoKind } from "audere-lib/feverProtocol";
-import { LazyUploader, AnalyticsBatcher, ConfigOptions, PendingState } from "../../src/transport/AnalyticsBatcher";
+import {
+  DocumentType,
+  AnalyticsInfo,
+  LogRecordInfo,
+  LogRecordLevel,
+  EventInfoKind,
+} from "audere-lib/feverProtocol";
+import {
+  LazyUploader,
+  AnalyticsBatcher,
+  ConfigOptions,
+  PendingState,
+} from "../../src/transport/AnalyticsBatcher";
 import { ticks } from "../util";
 import { newCSRUID } from "../../src/util/csruid";
 
@@ -14,11 +25,8 @@ jest.mock("../../src/util/csruid");
 (<any>newCSRUID).mockImplementation(async () => "CSRUID");
 
 describe("AnalyticsBatcher", () => {
-
   if (true) {
-    it("No longer exists", () => {
-
-    });
+    it("No longer exists", () => {});
   } else {
     it("saves small logs locally without uploading", async () => {
       const env = new TestEnv();
@@ -41,10 +49,11 @@ describe("AnalyticsBatcher", () => {
     });
 
     it("uploads after passing size limit", async () => {
-      const env = new TestEnv({targetBatchSizeInChars: 200});
+      const env = new TestEnv({ targetBatchSizeInChars: 200 });
       env.bind();
 
-      const message = "This is a test.  This is only a test.  Had this been an actual message...";
+      const message =
+        "This is a test.  This is only a test.  Had this been an actual message...";
 
       env.logger.fatal(message);
       env.logger.error(message);
@@ -59,7 +68,8 @@ describe("AnalyticsBatcher", () => {
 
       expect(env.uploads.length).toBeGreaterThan(0);
       const entries = env.uploads.reduce(
-        (acc: LogRecordInfo[], entry: Analytics) => acc.concat(entry.document.logs),
+        (acc: LogRecordInfo[], entry: Analytics) =>
+          acc.concat(entry.document.logs),
         []
       );
       expect(entries.map(entry => entry.level)).toEqual([

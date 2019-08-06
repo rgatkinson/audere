@@ -117,37 +117,36 @@ export default class SelectAdminScreen extends React.Component<Props> {
             onPress={this._addName}
           />
         </View>
-        {!!this.props.admins &&
-          this.props.admins.length > 0 && (
-            <View>
-              <OptionList
-                data={this._getSelectedOptions()}
-                numColumns={1}
-                multiSelect={false}
-                fullWidth={true}
-                backgroundColor="#fff"
-                onChange={data => {
-                  const admin = data.find(option => option.selected);
-                  if (!!admin) {
-                    this.props.dispatch(setAdministrator(admin.key));
-                  }
+        {!!this.props.admins && this.props.admins.length > 0 && (
+          <View>
+            <OptionList
+              data={this._getSelectedOptions()}
+              numColumns={1}
+              multiSelect={false}
+              fullWidth={true}
+              backgroundColor="#fff"
+              onChange={data => {
+                const admin = data.find(option => option.selected);
+                if (!!admin) {
+                  this.props.dispatch(setAdministrator(admin.key));
+                }
+              }}
+            />
+            <View style={styles.buttonContainer}>
+              <Button
+                enabled={true}
+                key="clear"
+                label="Clear All"
+                primary={false}
+                style={styles.button}
+                onPress={() => {
+                  this.props.dispatch(setAdmins([]));
+                  this.props.dispatch(setAdministrator(null));
                 }}
               />
-              <View style={styles.buttonContainer}>
-                <Button
-                  enabled={true}
-                  key="clear"
-                  label="Clear All"
-                  primary={false}
-                  style={styles.button}
-                  onPress={() => {
-                    this.props.dispatch(setAdmins([]));
-                    this.props.dispatch(setAdministrator(null));
-                  }}
-                />
-              </View>
             </View>
-          )}
+          </View>
+        )}
       </ScreenContainer>
     );
   }

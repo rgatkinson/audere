@@ -7,7 +7,7 @@ import request from "supertest";
 import {
   DocumentType,
   SurveyDocument,
-  SurveyInfo
+  SurveyInfo,
 } from "audere-lib/feverProtocol";
 import { createPublicApp } from "../../src/app";
 import {
@@ -18,7 +18,7 @@ import {
   surveyPost,
   surveyNonPIIInDb,
   makeCSRUID,
-  DEVICE
+  DEVICE,
 } from "./feverSampleData";
 import { createSplitSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/db/fever";
@@ -40,7 +40,7 @@ describe("putFeverDocument", () => {
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     done();
   });
@@ -79,7 +79,7 @@ describe("putFeverDocument", () => {
       device: { info: "☢" },
       documentType: DocumentType.Survey,
       csruid,
-      survey: SURVEY_INFO
+      survey: SURVEY_INFO,
     };
     const contentsBuffer = Buffer.from(JSON.stringify(contents));
 
@@ -114,7 +114,7 @@ describe("putFeverDocument", () => {
       .expect(200);
 
     const dbNonPII = await models.surveyNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(dbNonPII.csruid).toEqual(csruid);
     expect(dbNonPII.device).toEqual(contentsPost.device);
@@ -147,14 +147,14 @@ describe("putFeverDocument", () => {
     const newPatient = {
       ...PATIENT_INFO,
       firstName: "New",
-      lastName: "FakeName"
+      lastName: "FakeName",
     };
     const newProtocolContents: SurveyDocument = {
       ...contentsPost,
       survey: {
         ...SURVEY_INFO,
-        patient: newPatient
-      }
+        patient: newPatient,
+      },
     };
     await request(publicApp)
       .put(`/api/fever/documents/${accessKey.key}/${csruid}`)
@@ -195,7 +195,7 @@ describe("putFeverDocument", () => {
     const where = { where: { csruid } };
     await Promise.all([
       models.surveyNonPii.destroy(where),
-      models.surveyPii.destroy(where)
+      models.surveyPii.destroy(where),
     ]);
   });
 
@@ -244,7 +244,7 @@ describe("putDocumentWithKey", () => {
     const where = { where: { csruid } };
     const accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
 
     await request(publicApp)
@@ -281,7 +281,7 @@ describe("putDocumentWithKey", () => {
     const where = { where: { csruid } };
     const accessKey = await models.accessKey.create({
       key: "accesskey3",
-      valid: false
+      valid: false,
     });
 
     await request(publicApp)

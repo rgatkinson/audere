@@ -7,7 +7,7 @@ import {
   AddressInfo,
   AddressInfoUse,
   PIIInfo,
-  TelecomInfoSystem
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { Batch, BatchItemWithCsruid } from "./surveyBatchData";
 import { PIIReport, RenderResult } from "./piiReport";
@@ -77,7 +77,7 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
           Email: i.email,
           Timestamp: i.timestamp,
           "Workflow ID": i.workflowId.toFixed(),
-          "Audere System ID": i.surveyId.toFixed()
+          "Audere System ID": i.surveyId.toFixed(),
         };
 
         rows.push(row);
@@ -128,7 +128,7 @@ export class KitOrders extends PIIReport<BatchItemWithCsruid, KitRecipient> {
       // This email address is used by the UW for the fulfillment house and
       // for answering questions about the mailing process.
       email: email == null ? undefined : email.value,
-      timestamp: pii.survey.workflow.screeningCompletedAt
+      timestamp: pii.survey.workflow.screeningCompletedAt,
     };
 
     return recipient;

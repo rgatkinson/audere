@@ -10,7 +10,7 @@ import {
   PhotoUploader,
   RETRY_DELAY,
 } from "../../src/transport/PhotoUploader";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 import base64url from "base64url";
 
 interface CapturedSave {

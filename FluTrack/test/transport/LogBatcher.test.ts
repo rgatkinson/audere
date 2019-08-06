@@ -3,14 +3,23 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { DocumentType, LogBatchInfo, LogRecordInfo, LogRecordLevel } from "audere-lib/snifflesProtocol";
-import { LazyUploader, LogBatcher, ConfigOptions, PendingLogState } from "../../src/transport/LogBatcher";
+import {
+  DocumentType,
+  LogBatchInfo,
+  LogRecordInfo,
+  LogRecordLevel,
+} from "audere-lib/snifflesProtocol";
+import {
+  LazyUploader,
+  LogBatcher,
+  ConfigOptions,
+  PendingLogState,
+} from "../../src/transport/LogBatcher";
 import { ticks } from "../util";
 
 jest.useFakeTimers();
 
 describe("LogBatcher", () => {
-
   it("saves small logs locally without uploading", async () => {
     const env = new TestEnv();
     env.bind();
@@ -24,10 +33,11 @@ describe("LogBatcher", () => {
   });
 
   it("uploads after passing size limit", async () => {
-    const env = new TestEnv({targetBatchSizeInChars: 200});
+    const env = new TestEnv({ targetBatchSizeInChars: 200 });
     env.bind();
 
-    const message = "This is a test.  This is only a test.  Had this been an actual message...";
+    const message =
+      "This is a test.  This is only a test.  Had this been an actual message...";
 
     env.logger.fatal(message);
     env.logger.error(message);
@@ -41,7 +51,8 @@ describe("LogBatcher", () => {
 
     expect(env.uploads.length).toBeGreaterThan(0);
     const entries = env.uploads.reduce(
-      (acc: LogRecordInfo[], entry: LogBatch) => acc.concat(entry.document.records),
+      (acc: LogRecordInfo[], entry: LogBatch) =>
+        acc.concat(entry.document.records),
       []
     );
     expect(entries.map(entry => entry.level)).toEqual([
@@ -57,10 +68,14 @@ describe("LogBatcher", () => {
   });
 
   it("does nothing until db is decrypted", async () => {
-    const env = new TestEnv({targetBatchSizeInChars: 200, startEncrypted: true});
+    const env = new TestEnv({
+      targetBatchSizeInChars: 200,
+      startEncrypted: true,
+    });
     env.bind();
 
-    const message = "This is a test.  This is only a test.  Had this been an actual message...";
+    const message =
+      "This is a test.  This is only a test.  Had this been an actual message...";
 
     env.logger.fatal(message);
     env.logger.error(message);

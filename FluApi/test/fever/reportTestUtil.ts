@@ -7,7 +7,7 @@ import { surveyPIIInDb } from "../endpoints/feverSampleData";
 import {
   TelecomInfoSystem,
   AddressInfoUse,
-  PIIInfo
+  PIIInfo,
 } from "audere-lib/feverProtocol";
 import { SurveyAttributes } from "../../src/models/db/fever";
 import { Batch, BatchItem } from "../../src/services/fever/surveyBatchData";
@@ -24,7 +24,7 @@ export function makeBatchData(
   for (let i = 0; i < num; i++) {
     items.push({
       workflowId: i,
-      surveyId: i
+      surveyId: i,
     });
     surveys.push(makePiiData(i));
   }
@@ -38,7 +38,7 @@ function makePiiData(id: number): SurveyAttributes<PIIInfo> {
 
   data.survey.patient.telecom.push({
     system: TelecomInfoSystem.Email,
-    value: "email" + id + "@email.com"
+    value: "email" + id + "@email.com",
   });
 
   data.survey.patient.address.push({
@@ -49,7 +49,7 @@ function makePiiData(id: number): SurveyAttributes<PIIInfo> {
     city: "Schenectady",
     state: "NY",
     postalCode: "12345",
-    country: "US"
+    country: "US",
   });
 
   return data;
@@ -69,9 +69,9 @@ export function makeRandomGeoResponse(item: BatchItem): GeocodingResponse {
         postalCode: makeRandomString(),
         latitude: 1,
         longitude: 1,
-        censusTract: makeRandomString()
-      }
-    ]
+        censusTract: makeRandomString(),
+      },
+    ],
   };
 }
 
@@ -83,7 +83,7 @@ export function makeRandomKitReceipient(num: number): KitRecipient {
     lastName: makeRandomString(),
     homeAddress: undefined,
     email: makeRandomString(),
-    timestamp: makeRandomString()
+    timestamp: makeRandomString(),
   };
 }
 
@@ -101,13 +101,13 @@ export function makeRandomIncentiveRecipient(
       state: makeRandomString(),
       postalCode: makeRandomString(),
       country: makeRandomString(),
-      line: [makeRandomString()]
+      line: [makeRandomString()],
     },
     email: makeRandomString(),
     timestamp: makeRandomString(),
     dateReceived: makeRandomString(),
     boxBarcode: makeRandomString(),
-    incentiveAmount: "50.00"
+    incentiveAmount: "50.00",
   };
 }
 

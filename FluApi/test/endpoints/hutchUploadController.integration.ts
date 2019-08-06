@@ -9,7 +9,7 @@ import {
   AddressInfo,
   DocumentType,
   VisitInfo,
-  AddressInfoUse
+  AddressInfoUse,
 } from "audere-lib/snifflesProtocol";
 import { VisitInfoBuilder } from "../visitInfoBuilder";
 import rawResponse from "../resources/geocodingRawResponse.json";
@@ -22,20 +22,20 @@ import { getHutchConfig } from "../../src/util/hutchUploadConfig";
 import {
   defineSnifflesModels,
   VisitNonPIIInstance,
-  VisitPIIInstance
+  VisitPIIInstance,
 } from "../../src/models/db/sniffles";
 import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import {
   defineFeverModels,
   FeverModels,
-  SurveyInstance
+  SurveyInstance,
 } from "../../src/models/db/fever";
 import { SurveyDocumentBuilder } from "../surveyDocumentBuilder";
 import {
   PIIInfo,
   SurveyNonPIIDbInfo,
-  SurveyDocument
+  SurveyDocument,
 } from "audere-lib/feverProtocol";
 import { Encounter } from "audere-lib/hutchProtocol";
 
@@ -62,11 +62,11 @@ describe("export controller", () => {
     hutchUpload = defineHutchUpload(sql);
     feverAccessKey = await feverModels.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     snifflesAccessKey = await snifflesModels.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
 
     const secrets = new SecretConfig(sql);
@@ -109,11 +109,11 @@ describe("export controller", () => {
       .expect(200);
 
     const surveyPii = await feverModels.surveyPii.findOne({
-      where: { csruid: survey.csruid }
+      where: { csruid: survey.csruid },
     });
 
     const surveyNonPii = await feverModels.surveyNonPii.findOne({
-      where: { csruid: survey.csruid }
+      where: { csruid: survey.csruid },
     });
 
     return [surveyNonPii, surveyPii];
@@ -133,9 +133,9 @@ describe("export controller", () => {
         deviceName: "My Phone",
         yearClass: "2020",
         idiomText: "handset",
-        platform: "iOS"
+        platform: "iOS",
       },
-      visit: visit
+      visit: visit,
     };
 
     await request(publicApp)
@@ -144,11 +144,11 @@ describe("export controller", () => {
       .expect(200);
 
     const visitPii = await snifflesModels.visitPii.findOne({
-      where: { csruid: csruid }
+      where: { csruid: csruid },
     });
 
     const visitNonPii = await snifflesModels.visitNonPii.findOne({
-      where: { csruid: csruid }
+      where: { csruid: csruid },
     });
 
     return [visitNonPii, visitPii];
@@ -221,7 +221,7 @@ describe("export controller", () => {
 
       await hutchUpload.bulkCreate([
         { visitId: +c1[0].id },
-        { surveyId: +c2[0].id }
+        { surveyId: +c2[0].id },
       ]);
 
       await request(internalApp)
@@ -254,8 +254,8 @@ describe("export controller", () => {
           care___7: 0,
           care___8: 0,
           care_other: undefined,
-          found_study: 3
-        }
+          found_study: 3,
+        },
       });
 
       await request(internalApp)
@@ -303,8 +303,8 @@ describe("export controller", () => {
 
       const uploaded = await hutchUpload.findAll({
         where: {
-          visitId: c[0].id
-        }
+          visitId: c[0].id,
+        },
       });
 
       expect(uploaded.length).toBe(1);
@@ -334,7 +334,7 @@ describe("export controller", () => {
         city: "Hollywood",
         state: "CA",
         postalCode: "90086",
-        country: "US"
+        country: "US",
       };
 
       const visitId1 = "ABC123-_".repeat(8);
@@ -359,7 +359,7 @@ describe("export controller", () => {
           city: "Seattle",
           state: "WA",
           postalCode: "98102",
-          country: "US"
+          country: "US",
         };
 
         const visitInfo = new VisitInfoBuilder().withAddress(address).build();

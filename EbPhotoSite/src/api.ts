@@ -7,7 +7,7 @@ import {
   AuthUser,
   EncounterTriageDocument,
   MessagingTokenDocument,
-  Notification
+  Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import * as Firebase from "firebase";
 
@@ -48,7 +48,7 @@ export const FIELD_PATH = {
   receivedAt: "_transport.receivedAt",
   sentAt: "_transport.sentAt",
   receivedByUser: "_transport.receivedByUser",
-  receivedByHost: "_transport.receivedByHost"
+  receivedByHost: "_transport.receivedByHost",
 };
 
 export class Api {
@@ -81,7 +81,7 @@ export class Api {
       group: messageGroup,
       title: title,
       body: body,
-      notification: notification
+      notification: notification,
     };
 
     const notify = firebase.functions().httpsCallable("notify");
@@ -169,9 +169,9 @@ export class Api {
       timestamp: timestamp,
       sender: {
         uid: sender.uid,
-        name: sender.displayName
+        name: sender.displayName,
       },
-      content: message
+      content: message,
     };
 
     const ref = this.getMessagesReference(docId);
@@ -242,6 +242,6 @@ export async function getAuthUser(): Promise<AuthUser> {
   }
   return {
     uid: currentUser.uid,
-    name: currentUser.displayName || currentUser.email || ""
+    name: currentUser.displayName || currentUser.email || "",
   };
 }

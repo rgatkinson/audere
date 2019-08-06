@@ -10,7 +10,7 @@ import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
-  SURVEY_QUESTIONS
+  SURVEY_QUESTIONS,
 } from "audere-lib/coughQuestionConfig";
 import { defineDataNode } from "../models/db/dataPipeline";
 import { tuple2 } from "../util/tuple";
@@ -131,7 +131,7 @@ class ManagedMaterializedView implements ManagedSqlNode {
   }
 
   getCreate = () => [
-    `create materialized view ${this.meta.name} as ${this.meta.spec};`
+    `create materialized view ${this.meta.name} as ${this.meta.spec};`,
   ];
   getRefresh = () => [`refresh materialized view ${this.meta.name};`];
   getDelete = () => dropTableLike(this.meta.name);
@@ -155,12 +155,9 @@ class ManagedTable implements ManagedSqlNode {
   getCreate = () => [
     `create table ${this.meta.name} as ${this.meta.spec};`,
     `alter table ${this.meta.name} add column id serial primary key;`,
-    `alter table ${this.meta.name} add column "createdAt" timestamp default now();`
+    `alter table ${this.meta.name} add column "createdAt" timestamp default now();`,
   ];
-  getRefresh = () => [
-    this.deleteStaleRows,
-    this.insertNewRows
-  ];
+  getRefresh = () => [this.deleteStaleRows, this.insertNewRows];
   getDelete = () => dropTableLike(this.meta.name);
 }
 
@@ -190,7 +187,7 @@ class SequelizeSourceTable extends ManagedTable {
       where
         tbl.id is null
       `
-    )
+    );
   }
 }
 
@@ -214,24 +211,22 @@ function getPiiDataNodes(): ManagedSqlNode[] {
 function getNonPiiDataNodes(): ManagedSqlNode[] {
   const testResultNav = "survey->'events' @> '[{\"refId\":\"TestResult\"}]'";
 
-  const backfillResultsExplanation =
-    caseIf(
-      testResultNav,
-      answerValue(SURVEY_QUESTIONS.find(s => s.id === "PinkWhenBlue")),
-      "null"
-    );
+  const backfillResultsExplanation = caseIf(
+    testResultNav,
+    answerValue(SURVEY_QUESTIONS.find(s => s.id === "PinkWhenBlue")),
+    "null"
+  );
 
-  const backfillResultsShown =
-    caseIf(
-      testResultNav,
-      matchesIfNotNull(
-        backfillResultsExplanation,
-        'No, there are no pink lines',
-        'negative',
-        'positive'
-      ),
-      "null"
-    );
+  const backfillResultsShown = caseIf(
+    testResultNav,
+    matchesIfNotNull(
+      backfillResultsExplanation,
+      "No, there are no pink lines",
+      "negative",
+      "positive"
+    ),
+    "null"
+  );
 
   return [
     new ManagedSqlType({
@@ -242,7 +237,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
         text text,
         answer jsonb,
         "answerOptions" jsonb
-      )`
+      )`,
     }),
 
     new ManagedMaterializedView({
@@ -251,7 +246,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
       spec: `
         select * from cough.current_surveys
         where survey->>'isDemo' = 'false'
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
@@ -268,14 +263,14 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           ${namedResponseColumns(SURVEY_QUESTIONS).join(",\n  ")},
           ${namedSampleColumns().join(",\n  ")}
         from cough_derived.non_demo_surveys
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
       name: "cough_derived.surveys",
       deps: [
         "cough_derived.survey_response",
-        "cough_derived.survey_named_array_items"
+        "cough_derived.survey_named_array_items",
       ],
       spec: `
         select
@@ -330,7 +325,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
         from cough_derived.survey_named_array_items
-      `
+      `,
     }),
 
     new ManagedView({
@@ -371,8 +366,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           overseas_illness,
           overseas_location
         from cough.aspren_data
-      `
-    })
+      `,
+    }),
   ];
 }
 
@@ -435,12 +430,12 @@ function getFirebaseDataNodes(): ManagedSqlNode[] {
             event->>'platform' as platform,
             event->'event_dimensions'->>'hostname' as hostname
           from cough.firebase_analytics
-        `
+        `,
       },
       {
         tableName: "cough.firebase_analytics",
         id: "source_id",
-        timestamp: "source_updated"
+        timestamp: "source_updated",
       }
     ),
 
@@ -458,7 +453,7 @@ function getFirebaseDataNodes(): ManagedSqlNode[] {
         from
           cough.firebase_analytics a,
           jsonb_array_elements(a.event->'event_params') e
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
@@ -476,8 +471,8 @@ function getFirebaseDataNodes(): ManagedSqlNode[] {
         from
           cough.firebase_analytics a,
           jsonb_array_elements(a.event->'user_properties') u
-      `
-    })
+      `,
+    }),
   ];
 }
 
@@ -497,7 +492,7 @@ function namedResponseColumns(questions: SurveyQuestion[]): string[] {
             )}
           )::text
         ) as response_${question.id.toLowerCase()}
-      `
+      `,
     ];
   }
 }
@@ -563,7 +558,7 @@ function namedSampleColumns(): string[] {
           "RDTReaderHCPhotoGUID"
         )})::text
       )->>'code' as samples_rdtreaderhcphotoguid
-    `
+    `,
   ];
 }
 
@@ -575,7 +570,7 @@ function sampleColumns(): string[] {
     "samples_rdtreaderphotoguid",
     "samples_rdtreaderhcphotoguid",
     `coalesce(samples_code128, samples_1, samples_manualentry) as samples_barcode`,
-    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`
+    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`,
   ];
 }
 
@@ -595,14 +590,14 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
         return [
           `
           response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
-        `
+        `,
         ];
 
       case SurveyQuestionType.TextInput:
         return [
           `
           response_${qid}->'answer'->0->>'valueString' as ${qid}
-        `
+        `,
         ];
 
       case SurveyQuestionType.ButtonGrid:
@@ -617,7 +612,7 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
               response_${qid}->'answerOptions',
               response_${qid}->'answer'->0->>'valueIndex'
             )->>'id' as ${qid}
-          `
+          `,
         ];
 
       case SurveyQuestionType.OptionQuestion: {
@@ -656,7 +651,7 @@ function matchesIfNotNull(
   expression: string,
   valueToMatch: string,
   matchValue: string,
-  noMatchValue: string  
+  noMatchValue: string
 ): string {
   return `
     case
@@ -732,7 +727,7 @@ function answerValue(question: SurveyQuestion): string {
     case SurveyQuestionType.RadioGrid:
       return getSingleAnswerOption();
 
-    case SurveyQuestionType.OptionQuestion: 
+    case SurveyQuestionType.OptionQuestion:
       return getAnswerOptionsList();
 
     default:

@@ -29,7 +29,7 @@ async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
     secrets.get("GCP_PROJECT_COUGH"),
     secrets.get("GCP_FIREBASE_ANALYTICS_DATASET_COUGH"),
     secrets.get("GCP_BQ_CREDENTIALS_EMAIL_COUGH"),
-    secrets.get("GCP_BQ_CREDENTIALS_KEY_COUGH")
+    secrets.get("GCP_BQ_CREDENTIALS_KEY_COUGH"),
   ]);
   return { coughProject, coughDataset, coughEmail, coughKey };
 }

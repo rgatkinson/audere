@@ -13,7 +13,7 @@ describe("S3 uploader", () => {
   const s3Config: S3Config = {
     fluReportsBucket: "test_bucket",
     asprenReportsBucket: "not_test_bucket",
-    fileshareBucket: "fileshare_bucket"
+    fileshareBucket: "fileshare_bucket",
   };
 
   it("should upload incentive reports", async () => {

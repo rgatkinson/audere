@@ -9,7 +9,7 @@ import {
   AsprenDataAttributes,
   CurrentSeasonVaccinationStatus,
   IndigenousStatus,
-  PreviousSeasonVaccinationStatus
+  PreviousSeasonVaccinationStatus,
 } from "../models/db/cough";
 import { S3Config } from "../util/s3Config";
 import logger from "../util/logger";
@@ -37,14 +37,14 @@ export class AsprenClient {
    */
   public async getLatestAsprenReport(): Promise<AsprenReportFile> {
     const listParams = {
-      Bucket: this.config.asprenReportsBucket
+      Bucket: this.config.asprenReportsBucket,
     };
 
     const objects = await this.s3.listObjectsV2(listParams).promise();
     logger.info(`${objects.KeyCount} keys listed in ASPREN bucket.`);
 
     const metadata = objects.Contents.reduce((prev, curr) => {
-      if (curr.Key.endsWith("\.xlsx")) {
+      if (curr.Key.endsWith(".xlsx")) {
         const prevMs = prev.LastModified.getUTCMilliseconds();
         const currMs = curr.LastModified.getUTCMilliseconds();
         return prevMs > currMs ? prev : curr;
@@ -65,7 +65,7 @@ export class AsprenClient {
     const getParams = {
       Bucket: this.config.asprenReportsBucket,
       Key: metadata.Key,
-      IfMatch: metadata.ETag
+      IfMatch: metadata.ETag,
     };
 
     const object = await this.s3.getObject(getParams).promise();
@@ -94,12 +94,13 @@ export class AsprenClient {
     return {
       key: metadata.Key,
       hash: metadata.ETag,
-      records: records
+      records: records,
     };
   }
 
   private validRow(row: any): boolean {
-     return "ATSI" in row &&
+    return (
+      "ATSI" in row &&
       "CURRENT_SEASON_VACC" in row &&
       "VACC_PREV_SEASON" in row &&
       "OVERSEAS" in row &&
@@ -125,7 +126,8 @@ export class AsprenClient {
       "YAMAGATA" in row &&
       "DATE_ONSET" in row &&
       "COMORBIDITIES" in row &&
-      "HCW_STATUS" in row;
+      "HCW_STATUS" in row
+    );
   }
 
   /**
@@ -188,7 +190,7 @@ export class AsprenClient {
         comorbitiesDescription === "B" ? undefined : comorbitiesDescription,
       healthcareWorkerStatus: this.parseYesNo(row["HCW_STATUS"]),
       overseasIllness: overseasIllness,
-      overseasLocation: overseasLocation
+      overseasLocation: overseasLocation,
     };
   }
 

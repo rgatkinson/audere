@@ -25,11 +25,11 @@ async function createConfig(secrets: SecretConfig): Promise<S3Config> {
   const [
     fluReportsBucket,
     asprenReportsBucket,
-    fileshareBucket
+    fileshareBucket,
   ] = await Promise.all([
     secrets.get("S3_REPORT_BUCKET"),
     secrets.get("S3_ASPREN_BUCKET"),
-    secrets.get("S3_FILESHARE_BUCKET")
+    secrets.get("S3_FILESHARE_BUCKET"),
   ]);
   return { fluReportsBucket, asprenReportsBucket, fileshareBucket };
 }

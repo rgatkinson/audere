@@ -7,7 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -16,7 +16,7 @@ import {
   AuthUser,
   HealthWorkerInfo,
   PatientInfo,
-  Message
+  Message,
 } from "audere-lib/ebPhotoStoreProtocol";
 import {
   addPatient,
@@ -29,7 +29,7 @@ import {
   Action,
   LocalPhotoInfo,
   Screen,
-  StoreState
+  StoreState,
 } from "../store";
 import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
@@ -47,7 +47,7 @@ import {
   TAKE_PHOTO_SMALL_IMAGE,
   TEXT_COLOR,
   THICK_BORDER_WIDTH,
-  TITLEBAR_COLOR
+  TITLEBAR_COLOR,
 } from "./styles";
 import { BackCallback } from "./AppController";
 import LabelTextInput from "./components/LabelTextInput";
@@ -96,14 +96,14 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     super(props);
     this.props.setupBackInfo(Screen.PatientDetails, {
       onBack: this._back,
-      backText: "list"
+      backText: "list",
     });
     this.state = {
       firstName: props.patientInfo.firstName,
       lastName: props.patientInfo.lastName,
       phone: props.patientInfo.phone,
       details: props.patientInfo.details,
-      notes: props.notes
+      notes: props.notes,
     };
 
     this._lastNameInput = React.createRef<TextInput>();
@@ -163,9 +163,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
         name:
           this.props.healthWorkerInfo.firstName +
           " " +
-          this.props.healthWorkerInfo.lastName
+          this.props.healthWorkerInfo.lastName,
       },
-      content: this.state.chatMessage
+      content: this.state.chatMessage,
     };
     this.props.dispatch(sendChatMessage(this.props.id, message));
     this.setState({ chatMessage: undefined });
@@ -182,7 +182,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           title: t("locationPermissions:alertTitle"),
           message: t("locationPermissions:alertMsg"),
           buttonNegative: t("common:cancel"),
-          buttonPositive: t("common:ok")
+          buttonPositive: t("common:ok"),
         }
       );
       if (locationPermission === PermissionsAndroid.RESULTS.GRANTED) {
@@ -192,7 +192,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             title: t("cameraPermissions:alertTitle"),
             message: t("cameraPermissions:alertMsg"),
             buttonNegative: t("common:cancel"),
-            buttonPositive: t("common:ok")
+            buttonPositive: t("common:ok"),
           }
         );
         if (cameraPermission === PermissionsAndroid.RESULTS.GRANTED) {
@@ -218,7 +218,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               firstName,
               lastName,
               phone,
-              details
+              details,
             },
             notes
           )
@@ -232,7 +232,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             firstName,
             lastName,
             phone,
-            details
+            details,
           },
           notes
         )
@@ -254,7 +254,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       id,
       isNew,
       photoInfo,
-      t
+      t,
     } = this.props;
     const {
       firstName,
@@ -262,7 +262,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       phone,
       details,
       notes,
-      chatMessage
+      chatMessage,
     } = this.state;
     const isValidForPhoto = !!firstName || !!lastName;
 
@@ -272,7 +272,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           <View
             style={[
               !!evdPositive && styles.evdPos,
-              !evdPositive && styles.evdNeg
+              !evdPositive && styles.evdNeg,
             ]}
           >
             <Text
@@ -280,8 +280,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               style={[
                 styles.evdCommon,
                 {
-                  color: !!evdPositive ? EVD_POSITIVE_COLOR : EVD_NEGATIVE_COLOR
-                }
+                  color: !!evdPositive
+                    ? EVD_POSITIVE_COLOR
+                    : EVD_NEGATIVE_COLOR,
+                },
               ]}
             />
             {diagnosisInfo !== undefined && (
@@ -289,8 +291,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 content={t("reviewedBy", {
                   name: diagnosisInfo.diagnoser.name,
                   date: t("common:date", {
-                    date: new Date(diagnosisInfo.timestamp)
-                  })
+                    date: new Date(diagnosisInfo.timestamp),
+                  }),
                 })}
                 style={styles.diagnosisInfo}
                 italic={true}
@@ -379,7 +381,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                       content={
                         t("capturedOn") +
                         t("common:dateTime", {
-                          date: new Date(photoInfo.photoInfo.timestamp)
+                          date: new Date(photoInfo.photoInfo.timestamp),
                         }) +
                         "\n"
                       }
@@ -387,7 +389,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                     <Text
                       content={t("location", {
                         lat: photoInfo.photoInfo.gps.latitude,
-                        long: photoInfo.photoInfo.gps.longitude
+                        long: photoInfo.photoInfo.gps.longitude,
                       })}
                     />
                     <View style={{ flex: 1, justifyContent: "flex-end" }}>
@@ -478,7 +480,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   onPress={this._takePhoto}
                   style={[
                     styles.takePhotoContainer,
-                    !isValidForPhoto && { opacity: 0.5 }
+                    !isValidForPhoto && { opacity: 0.5 },
                   ]}
                 >
                   <Image
@@ -507,73 +509,73 @@ const styles = StyleSheet.create({
   button: {
     marginRight: GUTTER,
     marginBottom: 0,
-    width: "50%"
+    width: "50%",
   },
   container: {
-    flex: 1
+    flex: 1,
   },
   content: {
-    padding: GUTTER
+    padding: GUTTER,
   },
   evdCommon: {
     fontSize: LARGE_TEXT,
     fontWeight: "bold",
     lineHeight: undefined,
     marginHorizontal: GUTTER,
-    marginTop: GUTTER
+    marginTop: GUTTER,
   },
   evdPos: {
     borderColor: EVD_POSITIVE_COLOR,
-    borderWidth: THICK_BORDER_WIDTH
+    borderWidth: THICK_BORDER_WIDTH,
   },
   evdNeg: {
     borderColor: EVD_NEGATIVE_COLOR,
-    borderWidth: THICK_BORDER_WIDTH
+    borderWidth: THICK_BORDER_WIDTH,
   },
   diagnosisInfo: {
     fontSize: EXTRA_SMALL_TEXT,
     marginHorizontal: GUTTER,
-    marginBottom: GUTTER
+    marginBottom: GUTTER,
   },
   idContainer: {
     flexDirection: "row",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
   },
   titleLeft: {
     flex: 2,
-    marginBottom: 0
+    marginBottom: 0,
   },
   idRight: {
     flex: 1,
     textAlign: "right",
-    marginBottom: 1
+    marginBottom: 1,
   },
   titleRow: {
     paddingTop: GUTTER,
-    paddingBottom: GUTTER / 4
+    paddingBottom: GUTTER / 4,
   },
   inputSingle: {
-    padding: 0
+    padding: 0,
   },
   inputMulti: {
     borderWidth: 1,
-    marginBottom: GUTTER
+    marginBottom: GUTTER,
   },
   photoContainer: {
     backgroundColor: TITLEBAR_COLOR,
     marginHorizontal: -GUTTER,
     paddingHorizontal: GUTTER,
     marginTop: GUTTER,
-    paddingBottom: GUTTER
+    paddingBottom: GUTTER,
   },
   grid: {
     marginVertical: 0,
     marginRight: GUTTER,
-    flexDirection: "row"
+    flexDirection: "row",
   },
   photo: {
     height,
-    width
+    width,
   },
   emptyPhoto: {
     borderWidth: 1,
@@ -581,28 +583,28 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   photoDetails: {
-    paddingHorizontal: GUTTER
+    paddingHorizontal: GUTTER,
   },
   takePhotoContainer: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   takePhotoLarge: {
     height: 49,
     width: 49,
-    marginVertical: GUTTER / 2
+    marginVertical: GUTTER / 2,
   },
   takePhotoSmall: {
     height: 33,
     width: 33,
-    marginRight: GUTTER / 2
+    marginRight: GUTTER / 2,
   },
   takePhotoText: {
-    color: HIGHLIGHT_COLOR
-  }
+    color: HIGHLIGHT_COLOR,
+  },
 });
 
 export default connect((state: StoreState, props: Props) => ({
@@ -632,7 +634,7 @@ export default connect((state: StoreState, props: Props) => ({
       : {
           firstName: "",
           lastName: "",
-          phone: ""
+          phone: "",
         },
   photoInfo:
     props.id < state.patients.length
@@ -641,5 +643,5 @@ export default connect((state: StoreState, props: Props) => ({
             state.patients[props.id].photoInfo.length - 1
           ]
         : undefined
-      : undefined
+      : undefined,
 }))(withNamespaces("details")(Details));

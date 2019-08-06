@@ -60,9 +60,7 @@ export default class ManualBarcodeScreen extends React.Component<Props> {
     if (!!this.state.barcode1 && this.state.barcode1 === this.state.barcode2) {
       Alert.alert(
         "Submit?",
-        `Bar code with data ${this.state.barcode1} will be recorded for ${
-          this.props.name
-        }.`,
+        `Bar code with data ${this.state.barcode1} will be recorded for ${this.props.name}.`,
         [
           {
             text: "Cancel",

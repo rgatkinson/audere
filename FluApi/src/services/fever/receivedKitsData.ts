@@ -6,7 +6,7 @@
 import {
   defineFeverModels,
   FeverModels,
-  ReceivedKitAttributes
+  ReceivedKitAttributes,
 } from "../../models/db/fever";
 import { KitRecord } from "../../models/kitRecord";
 import { SplitSql } from "../../util/sql";
@@ -75,8 +75,8 @@ export class ReceivedKitsData {
     // Get the participant's address information to dervice state
     const piiData = await this.fever.surveyPii.findAll({
       where: {
-        csruid: untrackedSamples.map(s => <string>s.csruid)
-      }
+        csruid: untrackedSamples.map(s => <string>s.csruid),
+      },
     });
 
     const states = new Map();
@@ -122,7 +122,7 @@ export class ReceivedKitsData {
           code: <string>s.code,
           scannedAt: scannedAt,
           state: states.get(s.csruid),
-          recordId: s.recordId ? <string>s.recordId : undefined
+          recordId: s.recordId ? <string>s.recordId : undefined,
         });
       }
     });
@@ -189,15 +189,15 @@ export class ReceivedKitsData {
           { file: file.toLowerCase() },
           {
             returning: true,
-            transaction: t
+            transaction: t,
           }
         );
 
         if (receivedKits.size > 0) {
           const existing = await this.fever.receivedKit.findAll({
             where: {
-              surveyId: Array.from(receivedKits.keys())
-            }
+              surveyId: Array.from(receivedKits.keys()),
+            },
           });
 
           const records: ReceivedKitAttributes[] = [];
@@ -214,13 +214,13 @@ export class ReceivedKitsData {
               fileId: f.id,
               linked: linked,
               boxBarcode: v.boxBarcode,
-              dateReceived: v.dateReceived
+              dateReceived: v.dateReceived,
             });
           });
 
           for (let i = 0; i < records.length; i++) {
             await this.fever.receivedKit.upsert(records[i], {
-              transaction: t
+              transaction: t,
             });
           }
         }
@@ -250,11 +250,11 @@ export class ReceivedKitsData {
             boxBarcode: k,
             linked: true,
             dateReceived: undefined,
-            fileId: undefined
+            fileId: undefined,
           },
           {
             transaction: t,
-            fields: ["recordId", "boxBarcode", "linked"]
+            fields: ["recordId", "boxBarcode", "linked"],
           }
         );
       }

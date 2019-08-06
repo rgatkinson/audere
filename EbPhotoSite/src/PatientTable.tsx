@@ -10,7 +10,7 @@ import "react-table/react-table.css";
 
 import {
   EncounterDocument,
-  EncounterTriageDocument
+  EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { localeDate, last } from "./util";
 import "./PatientTable.css";
@@ -39,7 +39,7 @@ export class PatientTable extends React.Component<
     super(props);
     this.state = {
       selected: null,
-      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: undefined }))
+      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: undefined })),
     };
   }
 
@@ -51,7 +51,7 @@ export class PatientTable extends React.Component<
     const rows = this.props.eDocs.map(eDoc => {
       return {
         eDoc,
-        tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId)
+        tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId),
       };
     });
     this.setState({ rows });
@@ -76,8 +76,8 @@ export class PatientTable extends React.Component<
         this.props.onSelect(e, row.original.eDoc);
       },
       style: {
-        border: evd ? "1px solid #c00" : "white"
-      }
+        border: evd ? "1px solid #c00" : "white",
+      },
     };
   };
 
@@ -93,8 +93,8 @@ export class PatientTable extends React.Component<
     rowInfo && this.triageIsPositive(rowInfo.original.tDoc)
       ? {
           style: {
-            color: "#c00"
-          }
+            color: "#c00",
+          },
         }
       : {};
 
@@ -110,15 +110,15 @@ export class PatientTable extends React.Component<
             : "NEGATIVE",
         id: "evd",
         minWidth: 90,
-        getProps: (this.redIfPositive as unknown) as ReactTableFunction
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
         Header: "EVD Result Notes",
         accessor: row =>
           row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
         id: "triage",
-        minWidth: 200
-      }
+        minWidth: 200,
+      },
     ];
     let mainColumns: Column<PatientTableRow>[] = [
       {
@@ -132,7 +132,7 @@ export class PatientTable extends React.Component<
         },
         id: "timestamp",
         minWidth: 110,
-        getProps: (this.redIfPositive as unknown) as ReactTableFunction
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
         Header: "Patient Name",
@@ -142,7 +142,7 @@ export class PatientTable extends React.Component<
         },
         id: "patient.name",
         minWidth: 110,
-        getProps: (this.redIfPositive as unknown) as ReactTableFunction
+        getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
         Header: "CHW Name",
@@ -151,13 +151,13 @@ export class PatientTable extends React.Component<
           return `${w.firstName} ${w.lastName}`;
         },
         id: "healthWorker.name",
-        minWidth: 110
+        minWidth: 110,
       },
       {
         Header: "CHW Phone #",
         accessor: "eDoc.encounter.healthWorker.phone",
-        minWidth: 80
-      }
+        minWidth: 80,
+      },
     ];
 
     if (this.props.tDocs.length > 0) {
@@ -181,8 +181,8 @@ export class PatientTable extends React.Component<
         defaultSorted={[
           {
             id: "timestamp",
-            desc: true
-          }
+            desc: true,
+          },
         ]}
       />
     );

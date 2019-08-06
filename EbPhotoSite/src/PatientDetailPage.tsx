@@ -15,7 +15,7 @@ import {
   EncounterTriageInfo,
   ConditionTag,
   NotificationType,
-  Notification
+  Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, getAuthUser } from "./api";
 import { last, localeDate, triageDocFromTriage } from "./util";
@@ -57,11 +57,11 @@ class PatientDetailPageAssumeRouter extends React.Component<
     // TODO: show errors
     const [encounter, triage] = await Promise.all([
       api.loadEncounter(docId),
-      api.loadTriage(docId)
+      api.loadTriage(docId),
     ]);
     this.setState({
       eDoc: (encounter.data() as EncounterDocument) || null,
-      tDoc: (triage.data() as EncounterTriageDocument) || null
+      tDoc: (triage.data() as EncounterTriageDocument) || null,
     });
   };
 
@@ -83,7 +83,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
           schemaId: 1,
           localIndex: eDoc.encounter.localIndex,
           docId: eDoc.docId,
-          notificationType: NotificationType.Diagnosis
+          notificationType: NotificationType.Diagnosis,
         };
 
         await api.pushNotification(
@@ -102,7 +102,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
     }
 
     this.setState({
-      tDoc: tDoc
+      tDoc: tDoc,
     });
   };
 
@@ -254,7 +254,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     this.state = {
       busy: false,
       error: null,
-      edited: triage
+      edited: triage,
     };
   }
 
@@ -270,10 +270,10 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
               tag: ConditionTag.Ebola,
               value: testIndicatesEVD,
               diagnoser: authUser,
-              timestamp: new Date().toISOString()
-            }
-          ]
-        }
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        },
       }),
       () => this.save()
     );
@@ -286,8 +286,8 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     this.setState({
       edited: {
         ...this.state.edited,
-        notes: e.target.value
-      }
+        notes: e.target.value,
+      },
     });
 
   save = async () => {
@@ -371,7 +371,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
   constructor(props: PatientInfoPaneProps) {
     super(props);
     this.state = {
-      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult))
+      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult)),
     };
 
     const { rdtPhotos } = this.props.eDoc.encounter;
@@ -412,7 +412,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                         style={{
                           backgroundColor: "gray",
                           marginRight: "1rem",
-                          marginBottom: "0.5rem"
+                          marginBottom: "0.5rem",
                         }}
                       >
                         <ExifOrientationImg
@@ -421,7 +421,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                           style={{
                             width: "400px",
                             height: "400px",
-                            objectFit: "contain"
+                            objectFit: "contain",
                           }}
                         />
                       </div>
@@ -434,7 +434,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                       style={{
                         height: "400px",
                         width: "400px",
-                        marginBottom: "0.5rem"
+                        marginBottom: "0.5rem",
                       }}
                       zoom={11}
                     />

@@ -212,7 +212,7 @@ export async function getMetrics(
     ORDER BY t1.location, t1.appstarttime, t1.createdat;`;
   const studyIdData = (await clientQuery(studyIdQuery)).map(study => ({
     ...study,
-    studyid: study.studyid.substring(0, 21)
+    studyid: study.studyid.substring(0, 21),
   }));
 
   const feedbackQuery = `
@@ -226,7 +226,7 @@ export async function getMetrics(
     surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
-    feedbackData
+    feedbackData,
   };
 }
 
@@ -311,7 +311,7 @@ function filterLastQuestionData(lastQuestionData): object {
     lastquestion: "(Completed Survey)",
     count: completedCount,
     percent: (Math.round(completedPercent * 10) / 10).toFixed(1),
-    lastquestiontext: ""
+    lastquestiontext: "",
   });
   return lastQuestionFiltered;
 }
@@ -322,21 +322,21 @@ export async function getExcelReport(startDate: string, endDate: string) {
     surveyStatsByAdminData,
     lastQuestionData,
     studyIdData,
-    feedbackData
+    feedbackData,
   } = await getMetrics(startDate, endDate);
 
   const styles = {
     small: {
-      font: { sz: 11 }
+      font: { sz: 11 },
     },
     default: {},
     title: {
-      font: { sz: 14 }
+      font: { sz: 14 },
     },
     columnHeader: {
       fill: { fgColor: { rgb: "FF4b2e83" } },
-      font: { color: { rgb: "FFFFFFFF" }, underline: true }
-    }
+      font: { color: { rgb: "FFFFFFFF" }, underline: true },
+    },
   };
 
   const defaultCell = {
@@ -344,114 +344,114 @@ export async function getExcelReport(startDate: string, endDate: string) {
     width: 70,
     cellStyle: function(value, row) {
       return { alignment: { horizontal: "right" } };
-    }
+    },
   };
   const surveyStatsSpec = {
     grouping: {
       displayName: "Location",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     formstarts: {
       displayName: "Started",
-      ...defaultCell
+      ...defaultCell,
     },
     eligible: {
       displayName: "Eligible",
-      ...defaultCell
+      ...defaultCell,
     },
     consented: {
       displayName: "Consented",
-      ...defaultCell
+      ...defaultCell,
     },
     completed: {
       displayName: "Completed",
-      ...defaultCell
+      ...defaultCell,
     },
     specimenscanned: {
       displayName: "Specimen Scanned",
-      ...defaultCell
+      ...defaultCell,
     },
     giftcards: {
       displayName: "Gift Cards",
-      ...defaultCell
+      ...defaultCell,
     },
     adverseevents: {
       displayName: "Adverse Events",
-      ...defaultCell
+      ...defaultCell,
     },
     questionsanswered: {
       displayName: "Total Responses",
-      ...defaultCell
+      ...defaultCell,
     },
     declinedresponses: {
       displayName: "PNTS Responses",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const lastQuestionSpec = {
     lastquestion: {
       displayName: "Question Key",
       headerStyle: styles.columnHeader,
-      width: 120
+      width: 120,
     },
     count: {
       displayName: "Count",
-      ...defaultCell
+      ...defaultCell,
     },
     percent: {
       displayName: "%",
-      ...defaultCell
+      ...defaultCell,
     },
     lastquestiontext: {
       displayName: "Sample Text",
       headerStyle: styles.columnHeader,
-      width: 300
-    }
+      width: 300,
+    },
   };
 
   const surveyStatsByAdminSpec = {
     grouping: {
       displayName: "Administrator",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     formstarts: {
       displayName: "Started",
-      ...defaultCell
+      ...defaultCell,
     },
     eligible: {
       displayName: "Eligible",
-      ...defaultCell
+      ...defaultCell,
     },
     consented: {
       displayName: "Consented",
-      ...defaultCell
+      ...defaultCell,
     },
     completed: {
       displayName: "Completed",
-      ...defaultCell
+      ...defaultCell,
     },
     specimenscanned: {
       displayName: "Specimen Scanned",
-      ...defaultCell
+      ...defaultCell,
     },
     giftcards: {
       displayName: "Gift Cards",
-      ...defaultCell
+      ...defaultCell,
     },
     adverseevents: {
       displayName: "Adverse Events",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const studyIdSpec = {
     location: {
       displayName: "Location",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     appstarttime: {
       displayName: "App Start Time (" + getTimezoneAbbrev() + ")",
@@ -459,37 +459,37 @@ export async function getExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     devicename: {
       displayName: "iPad Name",
       headerStyle: styles.columnHeader,
-      width: 100
+      width: 100,
     },
     administrator: {
       displayName: "Administrator",
       headerStyle: styles.columnHeader,
-      width: 100
+      width: 100,
     },
     consentdate: {
       displayName: "Consent Date",
       headerStyle: styles.columnHeader,
-      width: 100
+      width: 100,
     },
     giftcardcode: {
       displayName: "Giftcard Code",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     giftcardtype: {
       displayName: "Giftcard Type",
       headerStyle: styles.columnHeader,
-      width: 80
+      width: 80,
     },
     specimencode: {
       displayName: "Specimen Code",
       headerStyle: styles.columnHeader,
-      width: 80
+      width: 80,
     },
     createdat: {
       displayName: "Data Received (" + getTimezoneAbbrev() + ")",
@@ -497,16 +497,16 @@ export async function getExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return toStudyDateString(value);
       },
-      width: 150
+      width: 150,
     },
     studyid: {
       displayName: "Study ID",
       headerStyle: styles.columnHeader,
-      width: 170
+      width: 170,
     },
     dbid: {
       displayName: "DB ID",
-      ...defaultCell
+      ...defaultCell,
     },
     events: {
       displayName: "App Event Times (" + getTimezoneAbbrev() + ")",
@@ -528,32 +528,32 @@ export async function getExcelReport(startDate: string, endDate: string) {
       cellStyle: function(value, row) {
         return styles.small;
       },
-      width: 200
-    }
+      width: 200,
+    },
   };
 
   const dateRangeHeading = {
     value: "Data from " + startDate + " to " + endDate,
-    style: styles.title
+    style: styles.title,
   };
   const generatedHeading = {
     value: "Report generated " + toStudyDateString(new Date()),
-    style: styles.default
+    style: styles.default,
   };
   const surveyStatsHeading = [
     [{ value: "SFS Stats by Location", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const surveyStatsByAdminHeading = [
     [{ value: "SFS Stats by Administrator", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const lastQuestionHeading = [
     [{ value: "Last Question on Screen", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const studyIdHeading = [
     [{ value: "Study IDs, Barcodes, Timestamps, etc.", style: styles.title }],
@@ -562,9 +562,9 @@ export async function getExcelReport(startDate: string, endDate: string) {
     [
       {
         value: "Sorted by Location, then App Start Time.",
-        style: styles.default
-      }
-    ]
+        style: styles.default,
+      },
+    ],
   ];
   const helpHeading = [
     [{ value: "Explanation of Metrics Columns", style: styles.title }],
@@ -572,45 +572,45 @@ export async function getExcelReport(startDate: string, endDate: string) {
     [
       "Started",
       null,
-      "How many started, i.e. clicked Get Started from Welcome page"
+      "How many started, i.e. clicked Get Started from Welcome page",
     ],
     [
       "Eligible",
       null,
-      "How many eligible to participate (reported >= 2 symptoms)"
+      "How many eligible to participate (reported >= 2 symptoms)",
     ],
     ["Consented", null, "How many signed at least one consent form"],
     [
       "Completed",
       null,
-      "How many completed the questionnaire, i.e. got to the MedicalInsurance q"
+      "How many completed the questionnaire, i.e. got to the MedicalInsurance q",
     ],
     ["Specimen Scanned", null, "How many had a specimen scanned"],
     [
       "Gift Cards",
       null,
-      "How many gift cards were scanned, not counting duplicate code for same person"
+      "How many gift cards were scanned, not counting duplicate code for same person",
     ],
     ["Adverse Events", null, "How many had adverse events recorded"],
     ["Total Responses", null, "Total number of questions answered"],
     [
       "PNTS Responses",
       null,
-      'Number of questions answered "Prefer Not To Say"'
+      'Number of questions answered "Prefer Not To Say"',
     ],
     [""],
     ['"Details" sheet columns'],
     [
       "App Start Time",
       null,
-      "Time on iPad of clicking Get Started from Welcome page"
+      "Time on iPad of clicking Get Started from Welcome page",
     ],
     ["iPad Name", null, "Name of iPad set in iPad Settings"],
     ["Administrator", null, 'Name of study administrator aka "clinician"'],
     [
       "Consent Date",
       null,
-      "Date on iPad when the user signed the consent form"
+      "Date on iPad when the user signed the consent form",
     ],
     ["Giftcard Code", null, "Gift card barcode; * means manually entered"],
     ["Giftcard Type", null, "Amazon, Target, etc."],
@@ -618,48 +618,48 @@ export async function getExcelReport(startDate: string, endDate: string) {
     [
       "Data Received",
       null,
-      "Time on server when it started to receive this survey's data"
+      "Time on server when it started to receive this survey's data",
     ],
     [
       "Study ID",
       null,
-      "Unique ID for associating this survey with other specimens (longitudinal usage)"
+      "Unique ID for associating this survey with other specimens (longitudinal usage)",
     ],
     ["DB ID", null, "Internal ID for Audere use"],
     ["App Event Times", null, "Timestamps for app events"],
     [
       null,
       null,
-      "  StartedForm: When the user clicked Get Started from Welcome page"
+      "  StartedForm: When the user clicked Get Started from Welcome page",
     ],
     [
       null,
       null,
-      '  Enrolled: When the "You are now enrolled in the Seattle Flu Study. Please'
+      '  Enrolled: When the "You are now enrolled in the Seattle Flu Study. Please',
     ],
     [null, null, '     answer the following questions..." screen appeared'],
     [
       null,
       null,
-      '  CompletedQuestionnaire: When the "Questionnaire Complete!" screen appeared'
+      '  CompletedQuestionnaire: When the "Questionnaire Complete!" screen appeared',
     ],
     [null, null, "  SpecimenScanned: When a specimen barcode was saved"],
     [null, null, "  GiftcardScanned: When a gift card barcode was saved"],
     [
       null,
       null,
-      "  CompletedForm: When this record became internally marked as final, closed to updates"
-    ]
+      "  CompletedForm: When this record became internally marked as final, closed to updates",
+    ],
   ];
 
   const merges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 9 } },
     { start: { row: 2, column: 1 }, end: { row: 2, column: 9 } },
-    { start: { row: 3, column: 1 }, end: { row: 3, column: 9 } }
+    { start: { row: 3, column: 1 }, end: { row: 3, column: 9 } },
   ];
   const helpMerges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 13 } },
-    { start: { row: 2, column: 1 }, end: { row: 2, column: 13 } }
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 13 } },
   ];
 
   const report = excel.buildExport([
@@ -668,36 +668,36 @@ export async function getExcelReport(startDate: string, endDate: string) {
       merges: merges,
       heading: surveyStatsHeading,
       specification: surveyStatsSpec,
-      data: surveyStatsData
+      data: surveyStatsData,
     },
     {
       name: "By Administrator",
       merges: merges,
       heading: surveyStatsByAdminHeading,
       specification: surveyStatsByAdminSpec,
-      data: surveyStatsByAdminData
+      data: surveyStatsByAdminData,
     },
     {
       name: "Last Question",
       merges: merges,
       heading: lastQuestionHeading,
       specification: lastQuestionSpec,
-      data: lastQuestionData
+      data: lastQuestionData,
     },
     {
       name: "Details",
       merges: merges,
       heading: studyIdHeading,
       specification: studyIdSpec,
-      data: studyIdData
+      data: studyIdData,
     },
     {
       name: "Help",
       merges: helpMerges,
       heading: helpHeading,
       specification: {},
-      data: []
-    }
+      data: [],
+    },
   ]);
 
   return report;
@@ -712,12 +712,12 @@ export async function getExcelDataSummary(startDate: string, endDate: string) {
   const styles = {
     default: {},
     title: {
-      font: { sz: 14 }
+      font: { sz: 14 },
     },
     columnHeader: {
       fill: { fgColor: { rgb: "FF4b2e83" } },
-      font: { color: { rgb: "FFFFFFFF" }, underline: true }
-    }
+      font: { color: { rgb: "FFFFFFFF" }, underline: true },
+    },
   };
 
   const defaultCell = {
@@ -725,77 +725,77 @@ export async function getExcelDataSummary(startDate: string, endDate: string) {
     width: 70,
     cellStyle: function(value, row) {
       return { alignment: { horizontal: "right" } };
-    }
+    },
   };
 
   const ageSpec = {
     bucket: {
       displayName: "Age Bucket",
       headerStyle: styles.columnHeader,
-      width: 100
+      width: 100,
     },
     n: {
       displayName: "Count",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const symptomsSpec = {
     symptom: {
       displayName: "Symptom",
       headerStyle: styles.columnHeader,
-      width: 180
+      width: 180,
     },
     n: {
       displayName: "Count",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const zipcodeSpec = {
     zipcode: {
       displayName: "Zip code",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     n: {
       displayName: "Count",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const dateRangeHeading = {
     value: "Data from " + startDate + " to " + endDate,
-    style: styles.title
+    style: styles.title,
   };
   const generatedHeading = {
     value: "Report generated " + toStudyDateString(new Date()),
-    style: styles.default
+    style: styles.default,
   };
   const ageHeading = [
     [{ value: "Age Distribution", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const symptomsHeading = [
     [{ value: "Symptoms Distribution", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const zipcodeHeading = [
     [
       {
         value: "Zip Code Distribution (home + work addresses)",
-        style: styles.title
-      }
+        style: styles.title,
+      },
     ],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
 
   const merges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 7 } },
-    { start: { row: 2, column: 1 }, end: { row: 2, column: 7 } }
+    { start: { row: 2, column: 1 }, end: { row: 2, column: 7 } },
   ];
 
   const report = excel.buildExport([
@@ -804,22 +804,22 @@ export async function getExcelDataSummary(startDate: string, endDate: string) {
       merges: merges,
       heading: ageHeading,
       specification: ageSpec,
-      data: ageData
+      data: ageData,
     },
     {
       name: "Symptoms",
       merges: merges,
       heading: symptomsHeading,
       specification: symptomsSpec,
-      data: symptomsData
+      data: symptomsData,
     },
     {
       name: "Zip Codes",
       merges: merges,
       heading: zipcodeHeading,
       specification: zipcodeSpec,
-      data: zipcodeData
-    }
+      data: zipcodeData,
+    },
   ]);
 
   return report;
@@ -850,22 +850,22 @@ export async function getFeverMetrics(
   const rowsNonPii = await feverModels.surveyNonPii.findAll({
     include: [
       {
-        model: feverModels.receivedKit
-      }
+        model: feverModels.receivedKit,
+      },
     ],
     where: {
       survey: {
-        isDemo: false
+        isDemo: false,
       },
       createdAt: {
         [Op.between]: [
           new Date(`${startDate} 00:00:00.000${offset}`),
-          new Date(`${endDate} 23:59:59.999${offset}`)
-        ]
-      }
+          new Date(`${endDate} 23:59:59.999${offset}`),
+        ],
+      },
     },
     order: ["id"],
-    raw: true
+    raw: true,
   });
 
   //Aggregate by age
@@ -949,7 +949,7 @@ export async function getFeverMetrics(
       finished: 0,
       kitsreturned: 0,
       test1errors: 0,
-      test2errors: 0
+      test2errors: 0,
     }),
     (acc, row) => ({
       ...acc,
@@ -965,7 +965,7 @@ export async function getFeverMetrics(
       finished: acc.finished + finishedApp(row),
       kitsreturned: acc.kitsreturned + returnedKit(row),
       test1errors: acc.test1errors + test1Errors(row),
-      test2errors: acc.test2errors + test2Errors(row)
+      test2errors: acc.test2errors + test2Errors(row),
     })
   );
   let ageData = ageCounts.sort((a, b) => a.age.localeCompare(b.age));
@@ -986,7 +986,7 @@ export async function getFeverMetrics(
         finished: previousValue.finished + currentValue.finished,
         kitsreturned: previousValue.kitsreturned + currentValue.kitsreturned,
         test1errors: previousValue.test1errors + currentValue.test1errors,
-        test2errors: previousValue.test2errors + currentValue.test2errors
+        test2errors: previousValue.test2errors + currentValue.test2errors,
       };
     });
     ageData.push(total);
@@ -997,16 +997,16 @@ export async function getFeverMetrics(
   const rowsPii = await feverModels.surveyPii.findAll({
     where: {
       survey: {
-        isDemo: false
+        isDemo: false,
       },
       createdAt: {
         [Op.between]: [
           new Date(`${startDate} 00:00:00.000${offset}`),
-          new Date(`${endDate} 23:59:59.999${offset}`)
-        ]
-      }
+          new Date(`${endDate} 23:59:59.999${offset}`),
+        ],
+      },
     },
-    raw: true
+    raw: true,
   });
 
   //Aggregate data by U. S. State
@@ -1022,7 +1022,7 @@ export async function getFeverMetrics(
     .sort((a, b) => b.count - a.count)
     .map(x => ({
       ...x,
-      percent: ((x.count / validPii.length) * 100).toFixed(1)
+      percent: ((x.count / validPii.length) * 100).toFixed(1),
     }));
 
   //Aggregate data by last screen viewed
@@ -1043,7 +1043,7 @@ export async function getFeverMetrics(
       .sort((a, b) => b.count - a.count)
       .map(x => ({
         ...x,
-        percent: ((x.count / rowsUnfinishedSurveys.length) * 100).toFixed(1)
+        percent: ((x.count / rowsUnfinishedSurveys.length) * 100).toFixed(1),
       }))
   );
 
@@ -1056,8 +1056,8 @@ export async function getFeverMetrics(
           {
             city: row.survey.patient.address[0].city,
             state: row.survey.patient.address[0].state,
-            gender: row.survey.patient.gender
-          }
+            gender: row.survey.patient.gender,
+          },
         ] as [string, object]
     )
   );
@@ -1229,7 +1229,7 @@ export async function getFeverMetrics(
       fatigueonset: symptomOnset(row, "fatigue"),
       achesonset: symptomOnset(row, "muscleOrBodyAches"),
       runnynoseonset: symptomOnset(row, "runningNose"),
-      shortnessofbreathonset: symptomOnset(row, "shortnessOfBreath")
+      shortnessofbreathonset: symptomOnset(row, "shortnessOfBreath"),
     });
   });
 
@@ -1273,7 +1273,7 @@ function funnelAgeData(ageData): object {
       test1errors:
         ((totalRow.test1errors / totalRow.count) * 100).toFixed(1) + "%",
       test2errors:
-        ((totalRow.test2errors / totalRow.count) * 100).toFixed(1) + "%"
+        ((totalRow.test2errors / totalRow.count) * 100).toFixed(1) + "%",
     });
     ageData.push({
       age: "% retention",
@@ -1293,7 +1293,7 @@ function funnelAgeData(ageData): object {
       kitsreturned:
         ((totalRow.kitsreturned / totalRow.finished) * 100).toFixed(1) + "%",
       test1errors: "",
-      test2errors: ""
+      test2errors: "",
     });
   }
 
@@ -1367,7 +1367,7 @@ function filterLastScreenData(lastScreenData): object {
     TestQuestions: "Test Questions (Menu)",
     GiftcardQuestions: "Gift Card Questions (Menu)",
     ContactSupport: "ContactSupport (Menu)",
-    Version: "App Version (Menu)"
+    Version: "App Version (Menu)",
   };
   for (let row of lastScreenData) {
     if (screenDetails[row.lastscreen]) {
@@ -1386,21 +1386,21 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     surveyStatsData,
     lastScreenData,
     statesData,
-    studyIdData
+    studyIdData,
   } = await getFeverMetrics(startDate, endDate);
 
   const styles = {
     small: {
-      font: { sz: 11 }
+      font: { sz: 11 },
     },
     default: {},
     title: {
-      font: { sz: 14 }
+      font: { sz: 14 },
     },
     columnHeader: {
       fill: { fgColor: { rgb: "FF4b2e83" } },
-      font: { color: { rgb: "FFFFFFFF" }, underline: true }
-    }
+      font: { color: { rgb: "FFFFFFFF" }, underline: true },
+    },
   };
 
   const defaultCell = {
@@ -1408,124 +1408,124 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     width: 100,
     cellStyle: function(value, row) {
       return { alignment: { horizontal: "right" } };
-    }
+    },
   };
   const surveyStatsSpec = {
     age: {
       displayName: "Age",
-      ...defaultCell
+      ...defaultCell,
     },
     count: {
       displayName: "Started Part 1",
-      ...defaultCell
+      ...defaultCell,
     },
     eligible: {
       displayName: "Eligible",
-      ...defaultCell
+      ...defaultCell,
     },
     consents: {
       displayName: "Consented",
-      ...defaultCell
+      ...defaultCell,
     },
     kits: {
       displayName: "Ordered Kit",
-      ...defaultCell
+      ...defaultCell,
     },
     part2: {
       displayName: "Began Part 2",
-      ...defaultCell
+      ...defaultCell,
     },
     scanned: {
       displayName: "Barcode Scanned",
-      ...defaultCell
+      ...defaultCell,
     },
     surveyscompleted: {
       displayName: "Completed Survey",
-      ...defaultCell
+      ...defaultCell,
     },
     test1: {
       displayName: "Test 1 Complete",
-      ...defaultCell
+      ...defaultCell,
     },
     test2: {
       displayName: "Test 2 Complete",
-      ...defaultCell
+      ...defaultCell,
     },
     finished: {
       displayName: "Finished App",
-      ...defaultCell
+      ...defaultCell,
     },
     kitsreturned: {
       displayName: "Kits Returned",
-      ...defaultCell
+      ...defaultCell,
     },
     test1errors: {
       displayName: "Test 1 Errors",
-      ...defaultCell
+      ...defaultCell,
     },
     test2errors: {
       displayName: "Test 2 Errors",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const lastScreenSpec = {
     lastscreen: {
       displayName: "Screen Key",
       headerStyle: styles.columnHeader,
-      width: 120
+      width: 120,
     },
     count: {
       displayName: "Count",
-      ...defaultCell
+      ...defaultCell,
     },
     percent: {
       displayName: "%",
-      ...defaultCell
+      ...defaultCell,
     },
     detail: {
       displayName: "Detail",
       headerStyle: styles.columnHeader,
-      width: 400
-    }
+      width: 400,
+    },
   };
 
   const statesSpec = {
     state: {
       displayName: "State",
       headerStyle: styles.columnHeader,
-      width: 120
+      width: 120,
     },
     count: {
       displayName: "Count",
-      ...defaultCell
+      ...defaultCell,
     },
     percent: {
       displayName: "%",
-      ...defaultCell
-    }
+      ...defaultCell,
+    },
   };
 
   const studyIdSpec = {
     age: {
       displayName: "Age",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     city: {
       displayName: "City",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     state: {
       displayName: "State",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     gender: {
       displayName: "Gender",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     createdAt: {
       displayName: "App Start Time (" + getTimezoneAbbrev() + ")",
@@ -1533,36 +1533,36 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     barcode: {
       displayName: "Barcode",
       headerStyle: styles.columnHeader,
-      width: 100
+      width: 100,
     },
     studyid: {
       displayName: "Study ID",
       headerStyle: styles.columnHeader,
-      width: 170
+      width: 170,
     },
     dbid: {
       displayName: "DB ID",
       headerStyle: styles.columnHeader,
-      width: 50
+      width: 50,
     },
     appversion: {
       displayName: "Version",
       headerStyle: styles.columnHeader,
-      width: 50
+      width: 50,
     },
     devicemodel: {
       displayName: "Device Model",
-      ...defaultCell
+      ...defaultCell,
     },
     installation: {
       displayName: "Installation ID",
       headerStyle: styles.columnHeader,
-      width: 300
+      width: 300,
     },
     kitordertime: {
       displayName: "Kit Ordered (" + getTimezoneAbbrev() + ")",
@@ -1570,12 +1570,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     starttoorder: {
       displayName: "App Start to Kit Order",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     scantime: {
       displayName: "Scanned Barcode (" + getTimezoneAbbrev() + ")",
@@ -1583,12 +1583,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     ordertoscan: {
       displayName: "Kit Order to Barcode Scan",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     questionscompletedtime: {
       displayName: "Finished Survey Questions (" + getTimezoneAbbrev() + ")",
@@ -1596,12 +1596,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     scantosurveyfinish: {
       displayName: "Barcode Scan to Survey FInish",
       headerStyle: styles.columnHeader,
-      width: 150
+      width: 150,
     },
     finishtime: {
       displayName: "Finished App (" + getTimezoneAbbrev() + ")",
@@ -1609,152 +1609,152 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       cellFormat: function(value, row) {
         return !!value ? toStudyDateString(value) : value;
       },
-      width: 150
+      width: 150,
     },
     kitreceiveddate: {
       displayName: "Kit Received",
       headerStyle: styles.columnHeader,
-      width: 70
+      width: 70,
     },
     firsttestfeedback: {
       displayName: "First Test Feedback",
       headerStyle: styles.columnHeader,
-      width: 125
+      width: 125,
     },
     secondtestfeedback: {
       displayName: "Second Test Feedback",
       headerStyle: styles.columnHeader,
-      width: 125
+      width: 125,
     },
     redwhenblue: {
       displayName: "Red Line Answer",
       headerStyle: styles.columnHeader,
-      width: 125
+      width: 125,
     },
     workflow: {
       displayName: "Status",
       headerStyle: styles.columnHeader,
-      width: 125
+      width: 125,
     },
     fever: {
       displayName: "Fever",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     chillsorsweats: {
       displayName: "Chills or Sweats",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     sorethroat: {
       displayName: "Sore Throat",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     cough: {
       displayName: "Cough",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     headache: {
       displayName: "Headache",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     fatigue: {
       displayName: "Fatigue",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     aches: {
       displayName: "Muscle or Body Aches",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     runnynose: {
       displayName: "Runny Nose",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     shortnessofbreath: {
       displayName: "Shortness of Breath",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     feveronset: {
       displayName: "Fever Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     chillsorsweatsonset: {
       displayName: "Chills or Sweats Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     sorethroatonset: {
       displayName: "Sore Throat Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     coughonset: {
       displayName: "Cough Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     headacheonset: {
       displayName: "Headache Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     fatigueonset: {
       displayName: "Fatigue Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     achesonset: {
       displayName: "Muscle or Body Aches Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     runnynoseonset: {
       displayName: "Runny Nose Onset",
       headerStyle: styles.columnHeader,
-      width: 75
+      width: 75,
     },
     shortnessofbreathonset: {
       displayName: "Shortness of Breath Onset",
       headerStyle: styles.columnHeader,
-      width: 75
-    }
+      width: 75,
+    },
   };
 
   const dateRangeHeading = {
     value: "Data from " + startDate + " to " + endDate,
-    style: styles.title
+    style: styles.title,
   };
   const generatedHeading = {
     value: "Report generated " + toStudyDateString(new Date()),
-    style: styles.default
+    style: styles.default,
   };
   const surveyStatsHeading = [
     [{ value: "flu@home Stats by Age", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const lastScreenHeading = [
     [
       {
         value: "Last Screen Viewed for Users Who Did Not Finish the App",
-        style: styles.title
-      }
+        style: styles.title,
+      },
     ],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const statesHeading = [
     [{ value: "flu@home Stats by U.S. State", style: styles.title }],
     [dateRangeHeading],
-    [generatedHeading]
+    [generatedHeading],
   ];
   const studyIdHeading = [
     [{ value: "Study IDs, Barcodes, Timestamps, etc.", style: styles.title }],
@@ -1763,9 +1763,9 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       {
         value: "Sorted by App Start Time.",
-        style: styles.default
-      }
-    ]
+        style: styles.default,
+      },
+    ],
   ];
   const helpHeading = [
     [{ value: "Explanation of Metrics Columns", style: styles.title }],
@@ -1773,45 +1773,45 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "Started Part 1",
       null,
-      "How many started, i.e. clicked beyond Welcome page"
+      "How many started, i.e. clicked beyond Welcome page",
     ],
     [
       "Eligible",
       null,
-      "How many eligible to participate (reported cough and at least 1 other symptom)"
+      "How many eligible to participate (reported cough and at least 1 other symptom)",
     ],
     ["Consented", null, "How many signed the consent form"],
     ["Ordered Kit", null, "How many input their address to order a kit"],
     [
       "Started Part 2",
       null,
-      "How many reopened the app to find Welcome Back screen"
+      "How many reopened the app to find Welcome Back screen",
     ],
     ["Barcode Scanned", null, "How many scanned or manually entered a barcode"],
     [
       "Completed Questionnaire",
       null,
-      "How many completed the questionnaire, i.e. got to the MedicalInsurance question"
+      "How many completed the questionnaire, i.e. got to the MedicalInsurance question",
     ],
     [
       "Test 1 Complete",
       null,
-      "How many made it to the survey question at the end of the first test"
+      "How many made it to the survey question at the end of the first test",
     ],
     [
       "Test 1 Errors",
       null,
-      "How many said they messed up test 1, thought it was very confusing, or were missing materials"
+      "How many said they messed up test 1, thought it was very confusing, or were missing materials",
     ],
     [
       "Test 2 Complete",
       null,
-      "How many made it to the survey question at the end of the second test"
+      "How many made it to the survey question at the end of the second test",
     ],
     [
       "Test 2 Errors",
       null,
-      "How many said they messed up test 2, thought it was very confusing, or were missing materials"
+      "How many said they messed up test 2, thought it was very confusing, or were missing materials",
     ],
     ["Finished", null, "How many made it to the last screen"],
     [],
@@ -1821,7 +1821,7 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "% retention",
       null,
-      "What percent of the users who completed the previous step completed the current step"
+      "What percent of the users who completed the previous step completed the current step",
     ],
     [],
     ["Last Screen sheet columns"],
@@ -1831,7 +1831,7 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "Detail",
       null,
-      "Sample of the text displayed on that screen and location in the app"
+      "Sample of the text displayed on that screen and location in the app",
     ],
     [],
     ["U.S. States sheet columns"],
@@ -1844,12 +1844,12 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "Barcode",
       null,
-      "Barcode that was scanned or manually entered from label on kit (* denotes manual entry)"
+      "Barcode that was scanned or manually entered from label on kit (* denotes manual entry)",
     ],
     [
       "Study ID",
       null,
-      "Unique ID for associating this survey with other specimens (longitudinal usage)"
+      "Unique ID for associating this survey with other specimens (longitudinal usage)",
     ],
     ["DB ID", null, "Internal ID for Audere use"],
     ["Version", null, "Which version of the app the user used"],
@@ -1859,65 +1859,65 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
     [
       "App Start to Kit Order",
       null,
-      "How much time elapsed between when the user started the app and ordered the kit"
+      "How much time elapsed between when the user started the app and ordered the kit",
     ],
     [
       "Barcode Scanned",
       null,
-      "Time when user scanned or manually entered barcode"
+      "Time when user scanned or manually entered barcode",
     ],
     [
       "Kit Order to Barcode Scan",
       null,
-      "How much time elapsed between when the user ordered the kit and scanned the barcode"
+      "How much time elapsed between when the user ordered the kit and scanned the barcode",
     ],
     [
       "Finished Survey Questions",
       null,
-      "Time when user finished the questions about their illness"
+      "Time when user finished the questions about their illness",
     ],
     [
       "Barcode Scan to Survey Finish",
       null,
-      "How much time elapsed between when the user scanned the barcode and finished the survey"
+      "How much time elapsed between when the user scanned the barcode and finished the survey",
     ],
     ["Finished App", null, "Time user reached last screen of app"],
     ["Kit Received", null, "Date when kit was received by lab"],
     [
       "First Test Feedback",
       null,
-      "User's choice on first test feedback question"
+      "User's choice on first test feedback question",
     ],
     [
       "Second Test Feedback",
       null,
-      "User's choice on second test feedback question"
+      "User's choice on second test feedback question",
     ],
     [
       "Red When Blue",
       null,
-      "User's answer to whether they can see a red line when they already said they saw a blue line"
+      "User's answer to whether they can see a red line when they already said they saw a blue line",
     ],
     ["Status", null, "Current workflow state of app"],
     [
       "Symptom Columns",
       null,
-      "For each symptom, the cell is TRUE if the user checked that symptom in part 2, FALSE if they did not check the symptom, and blank if they did not get that far"
+      "For each symptom, the cell is TRUE if the user checked that symptom in part 2, FALSE if they did not check the symptom, and blank if they did not get that far",
     ],
     [
       "Symptom Onset Columns",
       null,
-      "For each symptom, how long ago the symptom began as reported by the user"
-    ]
+      "For each symptom, how long ago the symptom began as reported by the user",
+    ],
   ];
 
   const merges = [
     { start: { row: 1, column: 1 }, end: { row: 1, column: 14 } },
     { start: { row: 2, column: 1 }, end: { row: 2, column: 14 } },
-    { start: { row: 3, column: 1 }, end: { row: 3, column: 14 } }
+    { start: { row: 3, column: 1 }, end: { row: 3, column: 14 } },
   ];
   const helpMerges = [
-    { start: { row: 1, column: 1 }, end: { row: 1, column: 13 } }
+    { start: { row: 1, column: 1 }, end: { row: 1, column: 13 } },
   ];
 
   const report = excel.buildExport([
@@ -1926,36 +1926,36 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       merges: merges,
       heading: surveyStatsHeading,
       specification: surveyStatsSpec,
-      data: surveyStatsData
+      data: surveyStatsData,
     },
     {
       name: "Last Screen",
       merges: merges,
       heading: lastScreenHeading,
       specification: lastScreenSpec,
-      data: lastScreenData
+      data: lastScreenData,
     },
     {
       name: "By U.S. States",
       merges: merges,
       heading: statesHeading,
       specification: statesSpec,
-      data: statesData
+      data: statesData,
     },
     {
       name: "Details",
       merges: merges,
       heading: studyIdHeading,
       specification: studyIdSpec,
-      data: studyIdData
+      data: studyIdData,
     },
     {
       name: "Help",
       merges: helpMerges,
       heading: helpHeading,
       specification: {},
-      data: []
-    }
+      data: [],
+    },
   ]);
 
   return report;

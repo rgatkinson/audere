@@ -10,14 +10,14 @@ import {
   StyleProp,
   StyleSheet,
   TextInput as SystemTextInput,
-  TextStyle
+  TextStyle,
 } from "react-native";
 import {
   BORDER_COLOR,
   FONT_NORMAL,
   GUTTER,
   REGULAR_TEXT,
-  TEXT_COLOR
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -94,6 +94,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
-    padding: GUTTER / 2
-  }
+    padding: GUTTER / 2,
+  },
 });

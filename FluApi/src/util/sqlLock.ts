@@ -18,9 +18,7 @@ export class SqlLock {
     const key = getKey(scope);
     return async (...args) => {
       await this.sql.transaction(async transaction => {
-        const query = `select pg_try_advisory_xact_lock(${key.n0}, ${
-          key.n1
-        }) as acquired;`;
+        const query = `select pg_try_advisory_xact_lock(${key.n0}, ${key.n1}) as acquired;`;
         const options = { transaction, type: sequelize.QueryTypes.SELECT };
         const result: TryLockResult[] = await this.sql.query(query, options);
         if (result[0].acquired) {
@@ -64,7 +62,7 @@ function getKey(scope: string): Key {
   return {
     hex64,
     n0: hex32ToSignedInt(hex64.substring(0, 8)),
-    n1: hex32ToSignedInt(hex64.substring(8, 16))
+    n1: hex32ToSignedInt(hex64.substring(8, 16)),
   };
 }
 

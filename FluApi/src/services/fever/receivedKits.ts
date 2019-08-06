@@ -212,7 +212,7 @@ export class ReceivedKits {
       "UTM barcode": record.utmBarcode,
       "RDT barcode": record.rdtBarcode,
       "Strip barcode": record.stripBarcode,
-      "Error comment": cause
+      "Error comment": cause,
     };
   }
 }

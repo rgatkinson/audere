@@ -11,7 +11,7 @@ import {
   SplitSql,
   primaryKey,
   dateColumn,
-  foreignIdKey
+  foreignIdKey,
 } from "../../util/sql";
 
 export const SESSION_TABLE_NAME = "site_sessions";
@@ -21,7 +21,7 @@ export function defineSiteUserModels(sql: SplitSql): SiteUserModels {
   return {
     user: userModel,
     session: defineSession(sql),
-    permissions: definePermissions(sql, userModel)
+    permissions: definePermissions(sql, userModel),
   };
 }
 
@@ -36,7 +36,7 @@ export function defineUser(sql: SplitSql): Model<UserAttributes> {
     uuid: unique(stringColumn()),
     userid: unique(stringColumn()),
     salt: stringColumn(),
-    token: stringColumn()
+    token: stringColumn(),
   });
 }
 export interface UserAttributes {
@@ -51,7 +51,7 @@ export function defineSession(sql: SplitSql): Model<SessionAttributes> {
   return defineModel<SessionAttributes>(sql.pii, SESSION_TABLE_NAME, {
     sid: primaryKey(stringColumn()),
     expires: dateColumn(),
-    data: stringColumn()
+    data: stringColumn(),
   });
 }
 export interface SessionAttributes {
@@ -69,7 +69,7 @@ export function definePermissions(
     "site_user_permissions",
     {
       userId: foreignIdKey(stringColumn(), userModel),
-      permission: stringColumn()
+      permission: stringColumn(),
     }
   );
 }

@@ -9,7 +9,7 @@ import { KitOrders } from "../../src/services/fever/kitOrders";
 import { KitRecipientsDataAccess } from "../../src/services/fever/kitOrdersData";
 import {
   Batch,
-  BatchItemWithCsruid
+  BatchItemWithCsruid,
 } from "../../src/services/fever/surveyBatchData";
 
 describe("kit order recipients", () => {

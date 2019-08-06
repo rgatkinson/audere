@@ -21,7 +21,7 @@ describe("task queue", () => {
       async () => {
         throw new Error("Uh oh");
       },
-      async () => 3
+      async () => 3,
     ];
 
     const queue = new ThrottledTaskQueue(tasks, 10);

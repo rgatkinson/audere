@@ -26,7 +26,7 @@ export type PhotoUploadAction =
 export enum PhotoUploadState {
   UPLOADING,
   FAILED,
-  UPLOADED
+  UPLOADED,
 }
 
 export type PhotoUpload = {
@@ -45,21 +45,21 @@ export function startPhotoUpload(
   return {
     type: "START_UPLOAD",
     photoId,
-    photoUri
+    photoUri,
   };
 }
 
 export function retryPhotoUpload(photoId: string): PhotoUploadAction {
   return {
     type: "RETRY_UPLOAD",
-    photoId
+    photoId,
   };
 }
 
 export function photoUploadFinished(photoId: string): PhotoUploadAction {
   return {
     type: "FINISH_UPLOAD",
-    photoId
+    photoId,
   };
 }
 
@@ -70,7 +70,7 @@ export function photoUploadFailed(
   return {
     type: "UPLOAD_FAILED",
     photoId,
-    error
+    error,
   };
 }
 
@@ -94,8 +94,8 @@ export default function reducer(
           photoId: action.photoId,
           localUri: action.photoUri,
           uploadState: PhotoUploadState.UPLOADING,
-          errors: []
-        }
+          errors: [],
+        },
       };
     case "FINISH_UPLOAD":
       photoUpload = state[action.photoId];
@@ -103,8 +103,8 @@ export default function reducer(
         ...state,
         [action.photoId]: {
           ...photoUpload,
-          uploadState: PhotoUploadState.UPLOADED
-        }
+          uploadState: PhotoUploadState.UPLOADED,
+        },
       };
     case "UPLOAD_FAILED":
       photoUpload = state[action.photoId];
@@ -113,8 +113,8 @@ export default function reducer(
         [action.photoId]: {
           ...photoUpload,
           uploadState: PhotoUploadState.FAILED,
-          errors: [...photoUpload.errors, action.error]
-        }
+          errors: [...photoUpload.errors, action.error],
+        },
       };
     case "RETRY_UPLOAD":
       photoUpload = state[action.photoId];
@@ -122,8 +122,8 @@ export default function reducer(
         ...state,
         [action.photoId]: {
           ...photoUpload,
-          uploadState: PhotoUploadState.UPLOADING
-        }
+          uploadState: PhotoUploadState.UPLOADING,
+        },
       };
   }
   return state;

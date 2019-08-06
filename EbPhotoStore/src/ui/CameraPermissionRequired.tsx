@@ -47,13 +47,13 @@ class CameraPermissionRequired extends React.Component<Props & WithNamespaces> {
 }
 
 export default connect((state: StoreState, props: Props) => ({
-  currentPatient: state.meta.currentPatient
+  currentPatient: state.meta.currentPatient,
 }))(withNamespaces("cameraPermissions")(CameraPermissionRequired));
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     flex: 1,
-    margin: GUTTER
-  }
+    margin: GUTTER,
+  },
 });

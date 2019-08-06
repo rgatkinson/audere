@@ -11,7 +11,7 @@ import {
   FONT_ROBO_LIGHT,
   GUTTER,
   LINE_HEIGHT_DIFFERENCE,
-  TITLE_TEXT
+  TITLE_TEXT,
 } from "../styles";
 
 interface Props {
@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
     fontSize: TITLE_TEXT,
     lineHeight: TITLE_TEXT + LINE_HEIGHT_DIFFERENCE,
     marginBottom: GUTTER,
-    marginTop: GUTTER / 2
-  }
+    marginTop: GUTTER / 2,
+  },
 });

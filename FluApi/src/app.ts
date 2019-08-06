@@ -97,7 +97,7 @@ export async function createPublicApp(config: AppConfig) {
       res.json({
         bytes: base64url(
           await generateRandomBytes(parseInt(req.params.numBytes))
-        )
+        ),
       });
     })
   );
@@ -256,7 +256,7 @@ export function createInternalApp(config: AppConfig) {
   );
 
   const snifflesVisitJobs = new SnifflesVisitJobs(sql, [
-    new HipaaUploader(sql)
+    new HipaaUploader(sql),
   ]);
   internalApp.get(
     "/api/runSnifflesJobs",
@@ -312,7 +312,7 @@ const MORGAN_FORMAT =
   ":request-id :req[X-Forwarded-For](:remote-addr) :userid :method :status :url :req[content-length] :res[content-length] :response-time @morgan";
 
 const MORGAN_STREAM = {
-  write: message => logger.info(message)
+  write: message => logger.info(message),
 };
 
 morgan.token("request-id", (req: any, res) => requestId(req));
@@ -320,6 +320,6 @@ morgan.token("userid", (req: any, res) => (req.user ? req.user.userid : "-"));
 
 function morganMiddleware() {
   return morgan(MORGAN_FORMAT, {
-    stream: MORGAN_STREAM
+    stream: MORGAN_STREAM,
   });
 }

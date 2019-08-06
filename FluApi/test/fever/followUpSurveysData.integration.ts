@@ -18,27 +18,27 @@ import {
   defineFollowUpItem,
   defineFollowUpDiscard,
   FollowUpSurveyAttributes,
-  defineFollowUpSurveys
+  defineFollowUpSurveys,
 } from "../../src/models/db/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
 import {
   PIIInfo,
   SurveyNonPIIInfo,
-  TelecomInfoSystem
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb, surveyPIIInDb } from "../endpoints/feverSampleData";
 import {
   FollowUpDataAccess,
   FOLLOWUP_BATCH_NAMESPACE,
-  FOLLOWUP_ITEMS_NAMESPACE
+  FOLLOWUP_ITEMS_NAMESPACE,
 } from "../../src/services/fever/followUpData";
 import {
   defineGaplessSeq,
-  GaplessSeqAttributes
+  GaplessSeqAttributes,
 } from "../../src/models/db/gaplessSeq";
 import {
   HutchUploadAttributes,
-  defineHutchUpload
+  defineHutchUpload,
 } from "../../src/models/db/hutchUpload";
 
 describe("survey batch data access", () => {
@@ -78,11 +78,11 @@ describe("survey batch data access", () => {
     );
 
     batchSeq = await seq.find({
-      where: { name: FOLLOWUP_BATCH_NAMESPACE }
+      where: { name: FOLLOWUP_BATCH_NAMESPACE },
     });
 
     itemSeq = await seq.find({
-      where: { name: FOLLOWUP_ITEMS_NAMESPACE }
+      where: { name: FOLLOWUP_ITEMS_NAMESPACE },
     });
 
     hutchUpload = defineHutchUpload(sql);
@@ -109,13 +109,13 @@ describe("survey batch data access", () => {
       pii.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
       itemSeq.update({ index: 0 }).then(() => {}),
-      followUpSurveys.destroy({ where: {} }).then(() => {})
+      followUpSurveys.destroy({ where: {} }).then(() => {}),
     ]);
 
     await Promise.all([
       followUpBatch.destroy({ where: {} }).then(() => {}),
       receivedKitFiles.destroy({ where: {} }).then(() => {}),
-      hutchUpload.destroy({ where: {} }).then(() => {})
+      hutchUpload.destroy({ where: {} }).then(() => {}),
     ]);
   }
 
@@ -129,7 +129,7 @@ describe("survey batch data access", () => {
       _.cloneDeep(surveyNonPIIInDb("0")),
       _.cloneDeep(surveyNonPIIInDb("1")),
       _.cloneDeep(surveyNonPIIInDb("2")),
-      _.cloneDeep(surveyNonPIIInDb("3"))
+      _.cloneDeep(surveyNonPIIInDb("3")),
     ];
     const now = new Date().toISOString();
     if (surveyComplete) {
@@ -144,14 +144,14 @@ describe("survey batch data access", () => {
 
     await followUpBatch.create({
       id: 1,
-      uploaded: batchUploaded
+      uploaded: batchUploaded,
     });
 
     const batchKeys = Array.from(s.keys()).slice(0, 2);
     const batchItems = batchKeys.map(i => ({
       id: i,
       batchId: 1,
-      surveyId: +s[i].id
+      surveyId: +s[i].id,
     }));
     await followUpItems.bulkCreate(batchItems);
 
@@ -168,7 +168,7 @@ describe("survey batch data access", () => {
           boxBarcode: x.csruid.repeat(8),
           dateReceived: "1985-06-12",
           linked: true,
-          recordId: +x.id
+          recordId: +x.id,
         };
       });
       await receivedKits.bulkCreate(received);
@@ -186,7 +186,7 @@ describe("survey batch data access", () => {
       [0, 1].forEach(key =>
         expect(out.items).toContainEqual(
           expect.objectContaining({
-            workflowId: key
+            workflowId: key,
           })
         )
       );
@@ -211,7 +211,7 @@ describe("survey batch data access", () => {
       [2, 3].forEach(key =>
         expect(out).toContainEqual(
           expect.objectContaining({
-            csruid: key.toString()
+            csruid: key.toString(),
           })
         )
       );
@@ -234,7 +234,7 @@ describe("survey batch data access", () => {
       [2, 3].forEach(key =>
         expect(out).toContainEqual(
           expect.objectContaining({
-            csruid: key.toString()
+            csruid: key.toString(),
           })
         )
       );
@@ -248,7 +248,7 @@ describe("survey batch data access", () => {
       expect(out).toHaveLength(1);
       expect(out).toContainEqual(
         expect.objectContaining({
-          csruid: "2"
+          csruid: "2",
         })
       );
     });
@@ -269,12 +269,12 @@ describe("survey batch data access", () => {
       expect(batch.items).toHaveLength(2);
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 46
+          workflowId: 46,
         })
       );
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 47
+          workflowId: 47,
         })
       );
     });
@@ -287,7 +287,7 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(1, []);
 
       const batch = await followUpBatch.find({
-        where: { id: 1 }
+        where: { id: 1 },
       });
 
       expect(batch).not.toBeNull();
@@ -305,21 +305,21 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(batch.id, itemIds);
 
       const db = await followUpBatch.find({
-        where: { id: batch.id }
+        where: { id: batch.id },
       });
 
       expect(db).not.toBeNull();
       expect(db.uploaded).toBe(true);
 
       const discarded = await followUpDiscard.findAll({
-        where: { batchId: batch.id }
+        where: { batchId: batch.id },
       });
 
       expect(discarded).toHaveLength(2);
       itemIds.forEach(id => {
         expect(discarded).toContainEqual(
           expect.objectContaining({
-            workflowId: id
+            workflowId: id,
           })
         );
       });
@@ -341,7 +341,7 @@ describe("survey batch data access", () => {
       care___7: 0,
       care___8: 0,
       care_other: undefined,
-      found_study: 3
+      found_study: 3,
     };
 
     it("should store survey details", async () => {
@@ -349,8 +349,8 @@ describe("survey batch data access", () => {
 
       const followUp = await followUpSurveys.findOne({
         where: {
-          email: followUpData.email
-        }
+          email: followUpData.email,
+        },
       });
 
       expect(followUp.survey).toEqual(followUpData);
@@ -359,30 +359,30 @@ describe("survey batch data access", () => {
     it("should reset the Hutch upload log for new follow-up records based on email", async () => {
       const piiSurveys = [
         _.cloneDeep(surveyPIIInDb("0")),
-        _.cloneDeep(surveyPIIInDb("1"))
+        _.cloneDeep(surveyPIIInDb("1")),
       ];
       piiSurveys.map(
         s =>
           (s.survey.patient.telecom = [
             {
               system: TelecomInfoSystem.Email,
-              value: followUpData.email
-            }
+              value: followUpData.email,
+            },
           ])
       );
       await pii.bulkCreate(piiSurveys);
 
       const nonPiiSurveys = [
         _.cloneDeep(surveyNonPIIInDb("0")),
-        _.cloneDeep(surveyNonPIIInDb("1"))
+        _.cloneDeep(surveyNonPIIInDb("1")),
       ];
       const surveys = await nonPii.bulkCreate(nonPiiSurveys, {
-        returning: true
+        returning: true,
       });
 
       const uploads = surveys.map(n => ({
         surveyId: +n.id,
-        visitId: undefined
+        visitId: undefined,
       }));
       await hutchUpload.bulkCreate(uploads);
 
@@ -390,8 +390,8 @@ describe("survey batch data access", () => {
 
       const result = await hutchUpload.findAll({
         where: {
-          surveyId: uploads.map(u => u.surveyId)
-        }
+          surveyId: uploads.map(u => u.surveyId),
+        },
       });
 
       expect(result).toHaveLength(0);
@@ -402,30 +402,30 @@ describe("survey batch data access", () => {
 
       const piiSurveys = [
         _.cloneDeep(surveyPIIInDb("0")),
-        _.cloneDeep(surveyPIIInDb("1"))
+        _.cloneDeep(surveyPIIInDb("1")),
       ];
       piiSurveys.map(
         s =>
           (s.survey.patient.telecom = [
             {
               system: TelecomInfoSystem.Email,
-              value: followUpData.email
-            }
+              value: followUpData.email,
+            },
           ])
       );
       await pii.bulkCreate(piiSurveys);
 
       const nonPiiSurveys = [
         _.cloneDeep(surveyNonPIIInDb("0")),
-        _.cloneDeep(surveyNonPIIInDb("1"))
+        _.cloneDeep(surveyNonPIIInDb("1")),
       ];
       const surveys = await nonPii.bulkCreate(nonPiiSurveys, {
-        returning: true
+        returning: true,
       });
 
       const uploads = surveys.map(n => ({
         surveyId: +n.id,
-        visitId: undefined
+        visitId: undefined,
       }));
       await hutchUpload.bulkCreate(uploads);
 
@@ -433,8 +433,8 @@ describe("survey batch data access", () => {
 
       const result = await hutchUpload.findAll({
         where: {
-          surveyId: uploads.map(u => u.surveyId)
-        }
+          surveyId: uploads.map(u => u.surveyId),
+        },
       });
 
       expect(result).toHaveLength(2);

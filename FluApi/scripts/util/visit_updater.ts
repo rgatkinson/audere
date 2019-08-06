@@ -9,14 +9,14 @@ import {
   VisitAttributes,
   VisitInstance,
   VisitModel,
-  VisitTableType
+  VisitTableType,
 } from "../../src/models/db/sniffles";
 import _ from "lodash";
 
 import {
   DeviceInfo,
   VisitNonPIIDbInfo,
-  VisitPIIInfo
+  VisitPIIInfo,
 } from "audere-lib/snifflesProtocol";
 
 import { idtxt, ScriptLogger } from "./script_logger";
@@ -24,7 +24,7 @@ import { Updater } from "./updater";
 import { SplitSql } from "../../src/util/sql";
 import {
   defineHutchUpload,
-  HutchUploadModel
+  HutchUploadModel,
 } from "../../src/models/db/hutchUpload";
 
 const Op = Sequelize.Op;
@@ -59,8 +59,8 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
   async cleanupForTesting(...csruids: string[]): Promise<void> {
     const where = {
       where: {
-        csruid: csruids
-      }
+        csruid: csruids,
+      },
     };
     const actions = [];
 
@@ -86,7 +86,7 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
     const rows = looksLikeRowId(key)
       ? await this.data.findAll({ where: { id: key } })
       : await this.data.findAll({
-          where: { csruid: { [Op.like]: `${key}%` } }
+          where: { csruid: { [Op.like]: `${key}%` } },
         });
     return this.expectOneMatch(key, rows);
   }
@@ -106,7 +106,7 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
     );
     expectCSRUID(csruid);
     return await this.backup.findAll({
-      where: { csruid: { [Op.like]: `${csruid}%` } }
+      where: { csruid: { [Op.like]: `${csruid}%` } },
     });
   }
 
@@ -144,7 +144,7 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
     await this.backup.create({
       csruid: current.csruid,
       device: current.device,
-      visit: current.visit
+      visit: current.visit,
     });
 
     await this.deleteUploadMarker(current.csruid);
@@ -161,12 +161,12 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
     const nonPii = this.expectOneMatch(
       "csruid",
       await this.nonPii.findAll({
-        where: { csruid: { [Op.like]: `${csruid}%` } }
+        where: { csruid: { [Op.like]: `${csruid}%` } },
       })
     );
 
     const uploads = await this.upload.destroy({
-      where: { visit_id: nonPii.id }
+      where: { visit_id: nonPii.id },
     });
     switch (uploads) {
       case 0:
@@ -183,9 +183,7 @@ export abstract class VisitUpdater<T extends object & { isDemo?: boolean }>
   expectOneMatch<T>(key: string, items: T[]): T {
     if (items.length != 1) {
       throw new Error(
-        `Expected exactly 1 ${this.label} row to match key '${key}', but got ${
-          items.length
-        }`
+        `Expected exactly 1 ${this.label} row to match key '${key}', but got ${items.length}`
       );
     }
     return items[0];

@@ -1123,7 +1123,10 @@ export const questionnaire: SurveyQuestion[] = [
     data: {
       id: "DaysSick",
       conditionalNext: {
-        location: new Map([["port", "AssignedSexAirport"], ["publicSpace", "AssignedSexAirport"]]),
+        location: new Map([
+          ["port", "AssignedSexAirport"],
+          ["publicSpace", "AssignedSexAirport"],
+        ]),
       },
       nextQuestion: "DailyInterference",
       title: "daysSick",
@@ -1589,11 +1592,7 @@ export const questionnaire: SurveyQuestion[] = [
         ]),
       },
       optionList: {
-        options: [
-          "cruise",
-          "plane",
-          "other",
-        ],
+        options: ["cruise", "plane", "other"],
         multiSelect: true,
         withOther: false,
       },
@@ -1721,9 +1720,7 @@ export const questionnaire: SurveyQuestion[] = [
       addressInput: {
         showLocationField: false,
       },
-      buttons: [
-        { key: "done", primary: true, enabled: "withAddress" },
-      ],
+      buttons: [{ key: "done", primary: true, enabled: "withAddress" }],
     },
   },
   {

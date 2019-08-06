@@ -9,7 +9,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -24,7 +24,7 @@ import {
   REGULAR_TEXT,
   STATUS_BAR_HEIGHT,
   TITLE_IMAGE,
-  TITLEBAR_TEXT_COLOR
+  TITLEBAR_TEXT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -66,7 +66,11 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
             <Text
               style={[
                 styles.actionContent,
-                { textAlign: "right", fontSize: LARGE_TEXT, fontWeight: "bold" }
+                {
+                  textAlign: "right",
+                  fontSize: LARGE_TEXT,
+                  fontWeight: "bold",
+                },
               ]}
               content="&#9776;"
             />
@@ -78,12 +82,12 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
 }
 
 export default connect((state: StoreState) => ({
-  demoMode: state.meta.demoMode
+  demoMode: state.meta.demoMode,
 }))(withNamespaces("titleBar")(TitleBar));
 
 const styles = StyleSheet.create({
   barContainer: {
-    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
   demoView: {
     backgroundColor: DEMO_MODE_COLOR,
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT
+    height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
   titleContainer: {
     marginTop: STATUS_BAR_HEIGHT,
@@ -99,18 +103,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   actionContainer: {
-    width: 80
+    width: 80,
   },
   actionContent: {
     color: TITLEBAR_TEXT_COLOR,
     fontSize: REGULAR_TEXT,
-    marginHorizontal: GUTTER / 2
+    marginHorizontal: GUTTER / 2,
   },
   titleImage: {
     aspectRatio: 112 / 23,
-    width: 140
-  }
+    width: 140,
+  },
 });

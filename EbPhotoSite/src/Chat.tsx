@@ -9,7 +9,7 @@ import {
   DocumentType,
   Message,
   Notification,
-  NotificationType
+  NotificationType,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import * as Firebase from "firebase";
@@ -42,7 +42,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       input: "",
       currentUser: null,
       messages: [],
-      busy: true
+      busy: true,
     };
 
     this.unsubscribeAuth = () => {};
@@ -54,7 +54,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
       this.setState({
         busy: false,
-        currentUser: user
+        currentUser: user,
       });
     });
 
@@ -102,7 +102,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
           schemaId: 1,
           localIndex: localIndex,
           docId: parentDocId,
-          notificationType: NotificationType.Chat
+          notificationType: NotificationType.Chat,
         };
 
         await api.pushNotification(

@@ -13,7 +13,7 @@ import {
   CHAT_LOCAL_MESSAGE_COLOR,
   CHAT_REMOTE_MESSAGE_COLOR,
   GUTTER,
-  SMALL_TEXT
+  SMALL_TEXT,
 } from "../styles";
 
 interface Props {
@@ -55,7 +55,7 @@ class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
           style={[
             styles.message,
             local && styles.local,
-            local ? styles.localMessage : styles.foreignMessage
+            local ? styles.localMessage : styles.foreignMessage,
           ]}
         />
         <Text
@@ -80,22 +80,22 @@ const styles = StyleSheet.create({
   message: {
     borderRadius: 10,
     marginTop: GUTTER,
-    padding: GUTTER / 2
+    padding: GUTTER / 2,
   },
   foreignMessage: {
     alignSelf: "flex-start",
-    backgroundColor: CHAT_REMOTE_MESSAGE_COLOR
+    backgroundColor: CHAT_REMOTE_MESSAGE_COLOR,
   },
   local: {
-    textAlign: "right"
+    textAlign: "right",
   },
   localMessage: {
     alignSelf: "flex-end",
-    backgroundColor: CHAT_LOCAL_MESSAGE_COLOR
+    backgroundColor: CHAT_LOCAL_MESSAGE_COLOR,
   },
   sender: {
     fontSize: SMALL_TEXT,
     marginTop: 0,
-    paddingHorizontal: GUTTER / 2
-  }
+    paddingHorizontal: GUTTER / 2,
+  },
 });

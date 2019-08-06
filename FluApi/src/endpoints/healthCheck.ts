@@ -7,7 +7,7 @@ import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import {
   connectorFromSqlSecrets,
-  FirebaseReceiver
+  FirebaseReceiver,
 } from "../external/firebase";
 import { getPhotoCollection } from "./coughApi";
 import logger from "../util/logger";
@@ -40,7 +40,7 @@ export class ServerHealth {
     "SHAREPOINT_CLIENT_SECRET",
     "SHAREPOINT_INCENTIVES_FOLDER",
     "SHAREPOINT_KITS_FOLDER",
-    "FIREBASE_TRANSPORT_CREDENTIALS"
+    "FIREBASE_TRANSPORT_CREDENTIALS",
   ];
 
   constructor(sql: SplitSql) {

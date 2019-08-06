@@ -8,7 +8,7 @@ import {
   KeyboardType,
   ReturnKeyTypeOptions,
   StyleProp,
-  TextStyle
+  TextStyle,
 } from "react-native";
 import TextInput from "./TextInput";
 
@@ -38,7 +38,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      text: props.value
+      text: props.value,
     };
   }
 

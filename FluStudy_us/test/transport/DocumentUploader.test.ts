@@ -17,7 +17,11 @@ import {
   verify,
   when,
 } from "ts-mockito";
-import { DocumentType, SurveyInfo, ProtocolDocument } from "audere-lib/feverProtocol";
+import {
+  DocumentType,
+  SurveyInfo,
+  ProtocolDocument,
+} from "audere-lib/feverProtocol";
 import { DocumentUploader } from "../../src/transport/DocumentUploader";
 import { PouchDoc } from "../../src/transport/Types";
 import { ArrayLogger, axiosResponse, nextCall } from "../util";
@@ -57,7 +61,7 @@ const FAKE_POST_DOC: ProtocolDocument = {
   device: DEVICE_INFO,
   csruid: FAKE_CSRUID,
   survey: FAKE_SURVEY_CONTENTS,
-}
+};
 
 const LOGGER = new ArrayLogger();
 

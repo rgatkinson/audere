@@ -37,7 +37,7 @@ describe("sending incentives", () => {
       makeRandomIncentiveRecipient(2),
       makeRandomIncentiveRecipient(3),
       makeRandomIncentiveRecipient(4),
-      makeRandomIncentiveRecipient(5)
+      makeRandomIncentiveRecipient(5),
     ];
     const batch = { id: 8, items: items };
 
@@ -84,7 +84,7 @@ describe("sending incentives", () => {
       surveyId: 1,
       csruid: "1",
       boxBarcode: "11111111",
-      dateReceived: "2019-03-22"
+      dateReceived: "2019-03-22",
     };
 
     // no app build

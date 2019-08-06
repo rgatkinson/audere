@@ -14,14 +14,14 @@ import {
   jsonColumn,
   jsonbColumn,
   integerColumn,
-  unique
+  unique,
 } from "../../util/sql";
 import {
   DeviceInfo,
   LogLevel,
   LogBatchInfo,
   VisitPIIInfo,
-  VisitNonPIIDbInfo
+  VisitNonPIIDbInfo,
 } from "audere-lib/snifflesProtocol";
 import { defineHutchUpload } from "./hutchUpload";
 import { defineConsentEmail } from "./consentEmail";
@@ -33,15 +33,15 @@ export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
   const visitNonPii = defineVisit<VisitNonPIIDbInfo>(sql.nonPii);
   visitNonPii.hasOne(hutchUpload, {
     foreignKey: "visitId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
   visitNonPii.hasOne(consentEmail, {
     foreignKey: "visitId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
   visitNonPii.hasMany(visitJobRecord, {
     foreignKey: "visitId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
   return {
     accessKey: defineAccessKey(sql),
@@ -50,7 +50,7 @@ export function defineSnifflesModels(sql: SplitSql): SnifflesModels {
     feedback: defineFeedback(sql),
     visitNonPii,
     visitPii: defineVisit(sql.pii),
-    visitJobRecord
+    visitJobRecord,
   };
 }
 export interface SnifflesModels {
@@ -71,7 +71,7 @@ interface AccessKeyAttributes {
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
   return defineModel<AccessKeyAttributes>(sql.nonPii, "access_keys", {
     key: stringColumn(),
-    valid: booleanColumn()
+    valid: booleanColumn(),
   });
 }
 
@@ -87,7 +87,7 @@ export function defineClientLog(sql: SplitSql): Model<ClientLogAttributes> {
   return defineModel<ClientLogAttributes>(sql.nonPii, "client_logs", {
     device: jsonColumn(),
     log: stringColumn(),
-    level: integerColumn()
+    level: integerColumn(),
   });
 }
 
@@ -107,7 +107,7 @@ export function defineLogBatch(sql: SplitSql): Model<LogBatchAttributes> {
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
-      batch: jsonColumn()
+      batch: jsonColumn(),
     }
   );
 }
@@ -124,7 +124,7 @@ export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
   return defineModel<FeedbackAttributes>(sql.nonPii, "feedback", {
     device: jsonColumn(),
     subject: stringColumn(),
-    body: stringColumn()
+    body: stringColumn(),
   });
 }
 
@@ -132,7 +132,7 @@ export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
 
 export enum VisitTableType {
   CURRENT = "visits",
-  BACKUP = "visit_backups"
+  BACKUP = "visit_backups",
 }
 
 export interface VisitAttributes<Info> {
@@ -148,7 +148,7 @@ export function defineVisit<Info>(
   return defineModel<VisitAttributes<Info>>(sql, table, {
     device: jsonColumn(),
     csruid: unique(stringColumn()),
-    visit: jsonColumn()
+    visit: jsonColumn(),
   });
 }
 export type VisitInstance<Info> = Inst<VisitAttributes<Info>>;
@@ -179,7 +179,7 @@ export function defineVisitJobRecord(
     {
       visitId: unique(integerColumn(), "visitIdJobName"),
       jobName: unique(stringColumn(), "visitIdJobName"),
-      result: jsonbColumn()
+      result: jsonbColumn(),
     }
   );
 }

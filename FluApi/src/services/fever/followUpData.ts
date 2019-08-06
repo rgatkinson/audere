@@ -7,14 +7,14 @@ import { SurveyCompleteDataAccess } from "./surveyCompleteData";
 import {
   BatchAttributes,
   BatchDiscardAttributes,
-  BatchItemAttributes
+  BatchItemAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
 import { FollowUpSurveyData } from "../../external/redCapClient";
 import {
   HutchUploadModel,
-  defineHutchUpload
+  defineHutchUpload,
 } from "../../models/db/hutchUpload";
 import sequelize = require("sequelize");
 import logger from "../../util/logger";
@@ -59,8 +59,8 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
 
     const existing = await this.fever.followUpSurveys.findAll({
       where: {
-        email: Array.from(unique.keys())
-      }
+        email: Array.from(unique.keys()),
+      },
     });
 
     const uniqueSurveys = Array.from(unique.values());
@@ -78,27 +78,27 @@ export class FollowUpDataAccess extends SurveyCompleteDataAccess {
         where
           st->>'value' in ('${added.map(a => a.email).join(",")}')`,
         {
-          type: sequelize.QueryTypes.SELECT
+          type: sequelize.QueryTypes.SELECT,
         }
       );
 
       if (pii.length > 0) {
         const nonPii = await this.fever.surveyNonPii.findAll({
           where: {
-            csruid: pii.map(s => s.csruid)
-          }
+            csruid: pii.map(s => s.csruid),
+          },
         });
 
         await this.hutchUpload.destroy({
           where: {
-            survey_id: nonPii.map(s => s.id)
-          }
+            survey_id: nonPii.map(s => s.id),
+          },
         });
       }
 
       const rows = added.map(s => ({
         email: s.email,
-        survey: s
+        survey: s,
       }));
       await this.fever.followUpSurveys.bulkCreate(rows);
     }

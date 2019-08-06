@@ -10,7 +10,7 @@ import {
   AuthUser,
   Message,
   PatientInfo,
-  PhotoInfo
+  PhotoInfo,
 } from "audere-lib/ebPhotoStoreProtocol";
 
 export type LocalPhotoInfo = {
@@ -88,8 +88,8 @@ export default function reducer(
           patientInfo: action.patientInfo,
           notes: action.notes,
           photoInfo: [],
-          messages: []
-        }
+          messages: [],
+        },
       ];
     case "UPDATE_PATIENT":
       return state.map((patient, index) => {
@@ -99,7 +99,7 @@ export default function reducer(
         return {
           ...patient,
           patientInfo: action.patientInfo,
-          notes: action.notes
+          notes: action.notes,
         };
       });
     case "RECEIVE_MESSAGE":
@@ -114,7 +114,7 @@ export default function reducer(
         }
         return {
           ...patient,
-          messages: [...(patient.messages || []), action.message]
+          messages: [...(patient.messages || []), action.message],
         };
       });
       break;
@@ -125,7 +125,7 @@ export default function reducer(
         }
         return {
           ...patient,
-          messages: [...(patient.messages || []), action.message]
+          messages: [...(patient.messages || []), action.message],
         };
       });
     case "SET_EVD_STATUS":
@@ -138,8 +138,8 @@ export default function reducer(
           evdPositive: action.evdStatus,
           diagnosisInfo: {
             diagnoser: action.diagnoser,
-            timestamp: action.timestamp
-          }
+            timestamp: action.timestamp,
+          },
         };
       });
     case "SET_TRIAGE_NOTES":
@@ -149,7 +149,7 @@ export default function reducer(
         }
         return {
           ...patient,
-          triageNotes: action.notes
+          triageNotes: action.notes,
         };
       });
 
@@ -164,9 +164,9 @@ export default function reducer(
             ...patient.photoInfo,
             {
               photoInfo: action.photoInfo,
-              localPath: action.photoUri
-            }
-          ]
+              localPath: action.photoUri,
+            },
+          ],
         };
       });
     default:
@@ -181,7 +181,7 @@ export function addPatient(
   return {
     type: "ADD_PATIENT",
     patientInfo,
-    notes
+    notes,
   };
 }
 
@@ -194,7 +194,7 @@ export function updatePatient(
     type: "UPDATE_PATIENT",
     id,
     patientInfo,
-    notes
+    notes,
   };
 }
 
@@ -205,7 +205,7 @@ export function sendChatMessage(
   return {
     type: "SEND_MESSAGE",
     patientId,
-    message
+    message,
   };
 }
 
@@ -216,7 +216,7 @@ export function receiveChatMessage(
   return {
     type: "RECEIVE_MESSAGE",
     patientUuid,
-    message
+    message,
   };
 }
 
@@ -231,7 +231,7 @@ export function setEvdStatus(
     id,
     evdStatus,
     diagnoser,
-    timestamp
+    timestamp,
   };
 }
 
@@ -239,7 +239,7 @@ export function setTriageNotes(id: number, notes: string): PatientAction {
   return {
     type: "SET_TRIAGE_NOTES",
     id,
-    notes
+    notes,
   };
 }
 
@@ -252,6 +252,6 @@ export function savePhoto(
     type: "SAVE_PHOTO",
     patientId,
     photoUri,
-    photoInfo
+    photoInfo,
   };
 }

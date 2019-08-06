@@ -10,13 +10,13 @@ import {
   makeCSRUID,
   surveyPost,
   surveyNonPIIInDb,
-  surveyPIIInDb
+  surveyPIIInDb,
 } from "../endpoints/feverSampleData";
 
 import {
   SurveyUpdater,
   SurveyNonPIIUpdater,
-  SurveyPIIUpdater
+  SurveyPIIUpdater,
 } from "../../scripts/util/feverSurveyUpdater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { SurveyDocument } from "audere-lib/feverProtocol";
@@ -35,19 +35,19 @@ describe("SurveyUpdater", () => {
   // const log = new ScriptLogger(console.log);
 
   const sequelizeNonPII = new Sequelize(process.env.NONPII_DATABASE_URL, {
-    logging: false
+    logging: false,
   });
   const updaterNonPII = new SurveyNonPIIUpdater(sequelizeNonPII, log);
 
   const sequelizePII = new Sequelize(process.env.PII_DATABASE_URL, {
-    logging: false
+    logging: false,
   });
   const updaterPII = new SurveyPIIUpdater(sequelizePII, log);
 
   async function cleanup(...csruids: string[]): Promise<void> {
     await Promise.all([
       updaterNonPII.cleanupForTesting(...csruids),
-      updaterPII.cleanupForTesting(...csruids)
+      updaterPII.cleanupForTesting(...csruids),
     ]);
   }
 
@@ -59,7 +59,7 @@ describe("SurveyUpdater", () => {
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     done();
   });

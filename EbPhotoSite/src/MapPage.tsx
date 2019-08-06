@@ -7,7 +7,7 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import {
   EncounterDocument,
-  EncounterTriageDocument
+  EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { SimpleMap } from "./SimpleMap";
 import { loadAllEncounters, loadAllTriages } from "./util";
@@ -22,13 +22,13 @@ interface State {
 export class MapPage extends React.Component<Props, State> {
   state = {
     encounters: [],
-    tDocs: []
+    tDocs: [],
   };
 
   async componentDidMount() {
     const [encounters, tDocs] = await Promise.all([
       loadAllEncounters(),
-      loadAllTriages()
+      loadAllTriages(),
     ]);
 
     this.setState({ encounters, tDocs });

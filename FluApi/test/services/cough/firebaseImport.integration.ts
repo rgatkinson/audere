@@ -18,7 +18,7 @@ describe("Firebase import", () => {
   async function cleanDb() {
     await Promise.all([
       cough.firebaseAnalytics.destroy({ where: {} }),
-      cough.firebaseAnalyticsTable.destroy({ where: {} })
+      cough.firebaseAnalyticsTable.destroy({ where: {} }),
     ]);
   }
 
@@ -48,7 +48,7 @@ describe("Firebase import", () => {
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.listTables()).thenResolve([valid, invalid1, invalid2]);
       when(bigQuery.getTableMetadata(anyString())).thenResolve({
-        lastModifiedTime: "5"
+        lastModifiedTime: "5",
       });
 
       const svc = new FirebaseImport(sql, cough, instance(bigQuery), null);
@@ -66,18 +66,18 @@ describe("Firebase import", () => {
       await cough.firebaseAnalyticsTable.bulkCreate([
         {
           name: date1,
-          modified: 4
+          modified: 4,
         },
         {
           name: date2,
-          modified: 6
-        }
+          modified: 6,
+        },
       ]);
 
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.listTables()).thenResolve([date1, date2]);
       when(bigQuery.getTableMetadata(anyString())).thenResolve({
-        lastModifiedTime: "5"
+        lastModifiedTime: "5",
       });
 
       const svc = new FirebaseImport(sql, cough, instance(bigQuery), null);
@@ -93,7 +93,7 @@ describe("Firebase import", () => {
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.getTableRows(anyString(), undefined)).thenResolve({
         results: [{ data: "data" }],
-        token: null
+        token: null,
       });
 
       const pipeline = mock(DataPipelineService);
@@ -123,13 +123,13 @@ describe("Firebase import", () => {
     it("should overwrite existing event data for a given date", async () => {
       await cough.firebaseAnalytics.create({
         event_date: "20190716",
-        event: { data: "old_data" }
+        event: { data: "old_data" },
       });
 
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.getTableRows(anyString(), undefined)).thenResolve({
         results: [{ data: "new_data" }],
-        token: null
+        token: null,
       });
 
       const pipeline = mock(DataPipelineService);
@@ -153,15 +153,15 @@ describe("Firebase import", () => {
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.getTableRows(anyString(), undefined)).thenResolve({
         results: [{ data: "data1" }],
-        token: "a"
+        token: "a",
       });
       when(bigQuery.getTableRows(anyString(), "a")).thenResolve({
         results: [{ data: "data2" }],
-        token: "b"
+        token: "b",
       });
       when(bigQuery.getTableRows(anyString(), "b")).thenResolve({
         results: [{ data: "data3" }],
-        token: null
+        token: null,
       });
 
       const pipeline = mock(DataPipelineService);
@@ -180,22 +180,22 @@ describe("Firebase import", () => {
       expect(rows).toContainEqual(
         expect.objectContaining({
           event: {
-            data: "data1"
-          }
+            data: "data1",
+          },
         })
       );
       expect(rows).toContainEqual(
         expect.objectContaining({
           event: {
-            data: "data2"
-          }
+            data: "data2",
+          },
         })
       );
       expect(rows).toContainEqual(
         expect.objectContaining({
           event: {
-            data: "data3"
-          }
+            data: "data3",
+          },
         })
       );
     });

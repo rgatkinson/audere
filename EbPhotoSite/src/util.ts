@@ -4,7 +4,7 @@ import {
   DocumentType,
   EncounterDocument,
   EncounterTriageDocument,
-  EncounterTriageInfo
+  EncounterTriageInfo,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import { format } from "date-fns";
@@ -56,7 +56,7 @@ export function triageDocFromTriage(
     documentType: DocumentType.Triage,
     schemaId: 1,
     docId,
-    triage
+    triage,
   };
 }
 
@@ -77,9 +77,9 @@ export function triageDoc(
           tag: ConditionTag.Ebola,
           value: testIndicatesEVD,
           diagnoser,
-          timestamp: new Date().toISOString()
-        }
-      ]
-    }
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    },
   };
 }
