@@ -188,6 +188,8 @@ export interface RDTInfo {
   interpreter?: string;
   totalTestStripTime?: number;
   captureTime?: number;
+  flashEnabled?: boolean;
+  flashDisabledAutomatically?: boolean;
   rdtTotalTime?: number;
   resultShown?: string;
   resultShownExplanation?: string;

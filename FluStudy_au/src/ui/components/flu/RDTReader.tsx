@@ -20,6 +20,7 @@ import {
   Action,
   setTestStripImg,
   setRDTStartTime,
+  setRDTCaptureInfo,
   setRDTCaptureTime,
   setRDTReaderResult,
   setRDTPhoto,
@@ -101,6 +102,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     sizeResult: RDTReaderSizeResult.INVALID,
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
     flashEnabled: true,
+    flashDisabledAutomatically: false,
     fps: 0,
     instructionMsg: "centerStrip",
     instructionIsOK: false,
@@ -121,7 +123,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       predicate: (readerResult: RDTCapturedArgs) =>
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: 5000,
-      action: () => this.setState({ flashEnabled: false }),
+      action: () =>
+        this.setState({
+          flashEnabled: false,
+          flashDisabledAutomatically: true,
+        }),
       cooldown: Infinity,
     },
     notCentered: {
@@ -542,6 +548,12 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           testALineFound: args.testALineFound,
           testBLineFound: args.testBLineFound,
         })
+      );
+      dispatch(
+        setRDTCaptureInfo(
+          this.state.flashEnabled,
+          this.state.flashDisabledAutomatically
+        )
       );
       navigation.push(next);
     } catch (e) {

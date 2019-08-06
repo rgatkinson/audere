@@ -311,6 +311,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo' as rdtinfo,
           survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
           survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
+          survey->'rdtInfo'->>'flashEnabled' as rdtinfo_flashenabled,
+          survey->'rdtInfo'->>'flashDisabledAutomatically' as rdtinfo_flashdisabledautomatically,
           coalesce(survey->'rdtInfo'->>'resultShown', (${backfillResultsShown})) as rdtinfo_resultshown,
           coalesce(survey->'rdtInfo'->>'resultShownExplanation', ${backfillResultsExplanation}) as rdtinfo_resultshownexplanation,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripFound' as rdtreaderresult_teststripfound,
