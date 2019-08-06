@@ -1,4 +1,4 @@
-package com.example.ebphotostorenative;
+package EbPhotoStoreNative;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

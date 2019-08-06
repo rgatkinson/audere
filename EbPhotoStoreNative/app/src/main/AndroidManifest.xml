@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,11 +14,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CapturePictureActivity"
-            android:label="@string/title_activity_capture_picture"
+            android:name="EbPhotoStoreNative.activities.PatientDetailActivity"
+            android:label="@string/title_activity_patient_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name="EbPhotoStoreNative.activities.ListPatientActivity"
+            android:label="@string/title_activity_list_patient"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.ebphotostorenative.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_list" />
+        </provider>
+
+        <activity
+            android:name="EbPhotoStoreNative.activities.AddPatientActivity"
+            android:label="@string/title_activity_add_patient"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="EbPhotoStoreNative.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,7 +46,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".NetworkChangeReceiver" >
+
+        <receiver android:name="EbPhotoStoreNative.NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
