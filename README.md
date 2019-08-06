@@ -6,17 +6,7 @@
 
 Welcome to the Audere repo!
 
-This repo hosts our code as we work to make it open-source.
-
 To contribute, please see [CONTRIBUTING](CONTRIBUTING.md).
-
-## Under Construction
-
-Please pardon the mess.
-
-We are in the process of transitioning our code from a private repo called "learn" to a public repo called "audere".
-This is happening gradually to minimize disruption for our developers.
-During the transition there will be (apparently broken) links that refer back to the private repo.
 
 ## Code of Conduct
 
