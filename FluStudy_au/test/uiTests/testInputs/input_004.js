@@ -47,6 +47,6 @@ export const inputs = {
     strings.surveyOption.middleEastNorthAfrican,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue + " ?",
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.incorrect,
 };

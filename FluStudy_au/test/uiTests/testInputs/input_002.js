@@ -45,6 +45,6 @@ export const inputs = {
     strings.surveyOption.whiteAustralian,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue + " ?",
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.confusingCorrect,
 };
