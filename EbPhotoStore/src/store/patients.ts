@@ -30,6 +30,7 @@ export type PatientEncounter = {
     diagnoser: AuthUser;
     timestamp: string;
   };
+  messageLastViewedAt: number;
   messages: Message[];
   updatedAt: string;
 };
@@ -69,7 +70,8 @@ export type PatientAction =
       diagnoser: AuthUser;
       timestamp: string;
     }
-  | { type: "SET_TRIAGE_NOTES"; id: number; notes: string };
+  | { type: "SET_TRIAGE_NOTES"; id: number; notes: string }
+  | { type: "RESET_MESSAGE_LAST_VIEWED_AT"; id: number };
 
 export type PatientState = PatientEncounter[];
 
@@ -89,6 +91,7 @@ export default function reducer(
           patientInfo: action.patientInfo,
           notes: action.notes,
           photoInfo: [],
+          messageLastViewedAt: 0,
           messages: [],
           updatedAt: new Date().toISOString(),
         },
@@ -155,7 +158,6 @@ export default function reducer(
           triageNotes: action.notes,
         };
       });
-
     case "SAVE_PHOTO":
       return state.map((patient, index) => {
         if (index != action.patientId) {
@@ -170,6 +172,16 @@ export default function reducer(
               localPath: action.photoUri,
             },
           ],
+        };
+      });
+    case "RESET_MESSAGE_LAST_VIEWED_AT":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          messageLastViewedAt: new Date().getTime(),
         };
       });
     default:
@@ -256,5 +268,12 @@ export function savePhoto(
     patientId,
     photoUri,
     photoInfo,
+  };
+}
+
+export function resetMessageLastViewedAt(id: number): PatientAction {
+  return {
+    type: "RESET_MESSAGE_LAST_VIEWED_AT",
+    id,
   };
 }

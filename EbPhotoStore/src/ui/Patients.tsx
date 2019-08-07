@@ -328,9 +328,11 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
   render() {
     const { patient, t } = this.props;
     const uid = firebase.auth().currentUser!.uid;
-    const hasChat =
-      patient.messages.length > 0 &&
-      patient.messages.filter(message => message.sender.uid !== uid).length > 0;
+    const hasChat = patient.messages.some(
+      message =>
+        message.sender.uid !== uid &&
+        new Date(message.timestamp).getTime() > patient.messageLastViewedAt
+    );
     const hasPhoto = patient.photoInfo.length > 0;
     return (
       <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>

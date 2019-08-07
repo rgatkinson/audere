@@ -22,6 +22,7 @@ import {
   addPatient,
   openCamera,
   updatePatient,
+  resetMessageLastViewedAt,
   sendChatMessage,
   viewCameraPermission,
   viewLocationPermission,
@@ -110,6 +111,10 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._phoneInput = React.createRef<NumberInput>();
     this._detailsInput = React.createRef<TextInput>();
     this._notesInput = React.createRef<TextInput>();
+
+    if (!this.props.isNew) {
+      this.props.dispatch(resetMessageLastViewedAt(this.props.id));
+    }
   }
 
   _updateFirstName = (firstName: string) => {
