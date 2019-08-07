@@ -8,6 +8,7 @@ import React, { MouseEvent } from "react";
 import {
   EncounterDocument,
   EncounterTriageDocument,
+  Message,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import "./PatientList.css";
 import mapIcon from "./img/mapview.png";
@@ -19,6 +20,7 @@ interface Props {
   headerLabel: string;
   eDocs: EncounterDocument[];
   tDocs: EncounterTriageDocument[];
+  latestMessages: { [eDocId: string]: Message };
   onSelectRow: (e: MouseEvent, eDoc: EncounterDocument) => void;
 }
 
@@ -74,6 +76,7 @@ export class PatientBlock extends React.Component<Props, State> {
       <PatientTable
         eDocs={this.props.eDocs}
         tDocs={this.props.tDocs}
+        latestMessages={this.props.latestMessages}
         onSelect={this.props.onSelectRow}
       />
     );

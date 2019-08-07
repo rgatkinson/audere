@@ -11,6 +11,7 @@ import "react-table/react-table.css";
 import {
   EncounterDocument,
   EncounterTriageDocument,
+  Message,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { localeDate, last } from "./util";
 import "./PatientTable.css";
@@ -18,11 +19,13 @@ import "./PatientTable.css";
 interface PatientTableRow {
   eDoc: EncounterDocument;
   tDoc: EncounterTriageDocument | undefined;
+  latestMessage: Message | undefined;
 }
 
 interface PatientTableProps {
   eDocs: EncounterDocument[];
   tDocs: EncounterTriageDocument[];
+  latestMessages: { [eDocId: string]: Message };
   onSelect: (e: MouseEvent, record: EncounterDocument) => void;
 }
 
@@ -45,6 +48,7 @@ export class PatientTable extends React.Component<
     return this.props.eDocs.map(eDoc => ({
       eDoc,
       tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId),
+      latestMessage: this.props.latestMessages[eDoc.docId],
     }));
   }
 
@@ -61,9 +65,22 @@ export class PatientTable extends React.Component<
   }
 
   private getTrProps = (state: any, row: any, column: any, instance: any) => {
+    const newMessage =
+      row &&
+      row.original.latestMessage &&
+      (!row.original.tDoc ||
+        row.original.latestMessage.timestamp >
+          row.original.tDoc.triage.lastViewed);
+    const newData =
+      row &&
+      (!row.original.tDoc ||
+        row.original.eDoc.updatedAt > row.original.tDoc.triage.lastViewed);
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
         this.props.onSelect(e, row.original.eDoc);
+      },
+      style: {
+        fontWeight: newMessage || newData ? "bold" : "normal",
       },
     };
   };

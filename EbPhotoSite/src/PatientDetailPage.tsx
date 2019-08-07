@@ -127,7 +127,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
   };
 
   private updateLastViewed(message: Message) {
-    if (this._triagePane.current) {
+    if (this._triagePane && this._triagePane.current) {
       this._triagePane.current.updateLastViewed(message.timestamp);
     }
   }

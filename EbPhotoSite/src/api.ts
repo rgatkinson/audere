@@ -7,6 +7,7 @@ import {
   AuthUser,
   EncounterDocument,
   EncounterTriageDocument,
+  Message,
   MessagingTokenDocument,
   Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
@@ -242,6 +243,21 @@ export class Api {
       .storage()
       .ref(`photos/${photoId}.jpg`)
       .getDownloadURL();
+  }
+
+  // TODO(ram): See if this can be made into a collection group query
+  listenForLatestMessage(
+    encounterDocID: string,
+    callback: (message: Message) => void
+  ): () => void {
+    return this.getMessagesReference(encounterDocID)
+      .orderBy("timestamp", "desc")
+      .limit(1)
+      .onSnapshot(snapshot => {
+        if (snapshot.docs.length > 0) {
+          callback(snapshot.docs[0].data() as Message);
+        }
+      });
   }
 }
 
