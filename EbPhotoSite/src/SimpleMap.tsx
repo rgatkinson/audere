@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file
 
-import React from "react";
+import React, { useState } from "react";
 import {
   EncounterDocument,
   EncounterInfo,
@@ -89,19 +89,6 @@ export class SimpleMap extends React.Component<Props> {
     }
   }
 
-  private getIconUrl(diagnosis: number): string {
-    switch (diagnosis) {
-      case EVD_POS:
-        return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-      case EVD_NEG:
-        // Would prefer gray but Google doesn't offer a gray dot
-        return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-      case EVD_UNTRIAGED:
-      default:
-        return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-    }
-  }
-
   private static getDiagnosis(
     eDoc: EncounterDocument,
     tDocs: EncounterTriageDocument[]
@@ -149,19 +136,7 @@ export class SimpleMap extends React.Component<Props> {
         defaultZoom={this.props.zoom}
       >
         {props.locations.map((location: Location) => (
-          <Marker
-            position={{ lat: location.latitude, lng: location.longitude }}
-            icon={{ url: this.getIconUrl(location.diagnosis) }}
-            key={location.docId}
-          >
-            <InfoWindow>
-              <span>
-                {location.name} <br />
-                {location.date} <br />
-                <a href={`/patient-detail/${location.docId}`}>Details</a>
-              </span>
-            </InfoWindow>
-          </Marker>
+          <SimpleMarker location={location} />
         ))}
       </GoogleMap>
     ))
@@ -194,5 +169,46 @@ export class SimpleMap extends React.Component<Props> {
         )}
       </div>
     );
+  }
+}
+
+interface SimpleMarkerProps {
+  location: Location;
+}
+
+const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
+  const { location } = props;
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Marker
+      position={{ lat: location.latitude, lng: location.longitude }}
+      icon={{ url: getIconUrl(location.diagnosis) }}
+      key={location.docId}
+      onClick={() => setOpen(!open)}
+    >
+      {open && (
+        <InfoWindow>
+          <span>
+            {location.name} <br />
+            {location.date} <br />
+            <a href={`/patient-detail/${location.docId}`}>Details</a>
+          </span>
+        </InfoWindow>
+      )}
+    </Marker>
+  );
+};
+
+function getIconUrl(diagnosis: number): string {
+  switch (diagnosis) {
+    case EVD_POS:
+      return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+    case EVD_NEG:
+      // Would prefer gray but Google doesn't offer a gray dot
+      return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+    case EVD_UNTRIAGED:
+    default:
+      return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
   }
 }
