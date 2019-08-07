@@ -31,6 +31,7 @@ export type PatientEncounter = {
     timestamp: string;
   };
   messages: Message[];
+  updatedAt: string;
 };
 
 export type PatientAction =
@@ -89,6 +90,7 @@ export default function reducer(
           notes: action.notes,
           photoInfo: [],
           messages: [],
+          updatedAt: new Date().toISOString(),
         },
       ];
     case "UPDATE_PATIENT":
@@ -100,6 +102,7 @@ export default function reducer(
           ...patient,
           patientInfo: action.patientInfo,
           notes: action.notes,
+          updatedAt: new Date().toISOString(),
         };
       });
     case "RECEIVE_MESSAGE":

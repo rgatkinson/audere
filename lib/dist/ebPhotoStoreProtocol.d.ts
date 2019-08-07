@@ -41,6 +41,7 @@ export interface EncounterInfo {
     patient: PatientInfo;
     rdtPhotos: PhotoInfo[];
     notes: string;
+    updatedAt: string;
 }
 export interface HealthWorkerInfo {
     firstName: string;
@@ -94,6 +95,7 @@ export interface EncounterTriageInfo {
     notes: string;
     testIndicatesEVD?: boolean;
     diagnoses?: Diagnosis[];
+    lastViewed: string;
 }
 export interface MessagingTokenDocument extends ProtocolDocumentBase {
     documentType: DocumentType.MessagingToken;

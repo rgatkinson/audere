@@ -77,6 +77,7 @@ export interface EncounterInfo {
   patient: PatientInfo;
   rdtPhotos: PhotoInfo[];
   notes: string;
+  updatedAt: string;
 }
 
 export interface HealthWorkerInfo {
@@ -171,6 +172,7 @@ export interface EncounterTriageInfo {
   notes: string;
   testIndicatesEVD?: boolean;
   diagnoses?: Diagnosis[];
+  lastViewed: string;
 }
 
 // ========================================

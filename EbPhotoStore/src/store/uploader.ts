@@ -88,6 +88,7 @@ export function reduxToFirebase(
       localPhotoInfo => localPhotoInfo.photoInfo
     ),
     notes: reduxPatient.notes || "",
+    updatedAt: reduxPatient.updatedAt,
   };
 }
 
