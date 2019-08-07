@@ -111,10 +111,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._phoneInput = React.createRef<NumberInput>();
     this._detailsInput = React.createRef<TextInput>();
     this._notesInput = React.createRef<TextInput>();
-
-    if (!this.props.isNew) {
-      this.props.dispatch(resetMessageLastViewedAt(this.props.id));
-    }
   }
 
   _updateFirstName = (firstName: string) => {
@@ -246,6 +242,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   _back = () => {
+    if (!this.props.isNew) {
+      this.props.dispatch(resetMessageLastViewedAt(this.props.id));
+    }
     this._save();
     this.props.dispatch(viewPatients());
   };
