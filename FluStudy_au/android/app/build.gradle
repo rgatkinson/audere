@@ -37,7 +37,7 @@ android {
     // Now that we're not doing the 100xx, 400xx version code munging for split APKs
     // we need to add 40000 to the version code, because Play Store won't let us upload
     // with a lower version code than what's released
-    code = code + 40000
+    //code = code + 40000
 
     applicationId 'org.auderenow.fluathome_au'
     targetSdkVersion rootProject.ext.targetSdkVersion
@@ -84,9 +84,34 @@ android {
   configurations.all {
     resolutionStrategy.force 'com.android.support:design:28.0.0'
   }
+  splits {
+    // https://developer.android.com/studio/build/configure-apk-splits
+    abi {
+      enable true
+      reset()
+      include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+      universalApk false
+    }
+  }
   compileOptions {
     sourceCompatibility 1.8
     targetCompatibility 1.8
+  }
+}
+
+// https://developer.android.com/studio/build/configure-apk-splits.html
+// If versionCode (build number) from version.properties is 88,
+// then ARM versionCode will be 10088 and x86 versionCode will be 20088.
+ext.abiCodes = ['armeabi-v7a':1, 'x86':2, 'arm64-v8a':3, 'x86_64':4]
+import com.android.build.OutputFile
+android.applicationVariants.all { variant ->
+  variant.outputs.each { output ->
+    def baseAbiVersionCode =
+            project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+    if (baseAbiVersionCode != null) {
+      output.versionCodeOverride =
+              baseAbiVersionCode * 10000 + variant.versionCode
+    }
   }
 }
 
