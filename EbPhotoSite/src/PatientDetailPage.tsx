@@ -14,6 +14,7 @@ import {
   EncounterTriageDocument,
   EncounterTriageInfo,
   ConditionTag,
+  Message,
   NotificationType,
   Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
@@ -47,7 +48,10 @@ class PatientDetailPageAssumeRouter extends React.Component<
   constructor(props: PatientDetailPageProps) {
     super(props);
     this.state = { eDoc: null, tDoc: null };
+    this._triagePane = React.createRef<TriagePane>();
   }
+
+  private _triagePane: React.RefObject<TriagePane>;
 
   componentDidMount() {
     const sharedDocId = this.props.match.params.docId;
@@ -122,6 +126,12 @@ class PatientDetailPageAssumeRouter extends React.Component<
     });
   };
 
+  private updateLastViewed(message: Message) {
+    if (this._triagePane.current) {
+      this._triagePane.current.updateLastViewed(message.timestamp);
+    }
+  }
+
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage } = this.state;
     return (
@@ -138,6 +148,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
               key={JSON.stringify(triage)}
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
+              ref={this._triagePane}
             />
             <PhotoPane eDoc={encounter} tDoc={triage} />
             <Chat
@@ -145,6 +156,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
               parentDocId={encounter.docId}
               phone={encounter.encounter.healthWorker.phone}
               chwUid={encounter.encounter.healthWorker.uid}
+              onNewMessage={this.updateLastViewed}
             />
           </div>
         )}
@@ -277,6 +289,10 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     };
   }
 
+  componentDidMount() {
+    this.save();
+  }
+
   async changeEVD(testIndicatesEVD: boolean) {
     const authUser = await getAuthUser();
     this.setState(
@@ -310,8 +326,28 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       noteChanged: true,
     });
 
+  public updateLastViewed(minTimestamp: string) {
+    if (Date.parse(minTimestamp) > Date.parse(this.state.edited.lastViewed)) {
+      this.save();
+    }
+  }
+
   save = async () => {
-    this.setState({ busy: true });
+    await new Promise(res =>
+      this.setState(
+        state => ({
+          busy: true,
+          edited: {
+            ...state.edited,
+            lastViewed: maxTimestamp(
+              state.edited.lastViewed,
+              new Date().toISOString()
+            ),
+          },
+        }),
+        res
+      )
+    );
     const { docId } = this.props.eDoc;
     const api = getApi();
     try {
@@ -479,4 +515,10 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
       </div>
     );
   }
+}
+
+function maxTimestamp(timestamp1: string, timestamp2: string) {
+  return Date.parse(timestamp1) > Date.parse(timestamp2)
+    ? timestamp1
+    : timestamp2;
 }

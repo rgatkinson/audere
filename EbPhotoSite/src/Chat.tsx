@@ -22,6 +22,7 @@ export interface ChatProps {
   parentDocId: string;
   phone: string;
   chwUid: string;
+  onNewMessage: (message: Message) => void;
 }
 
 export interface ChatState {
@@ -73,6 +74,11 @@ export class Chat extends React.Component<ChatProps, ChatState> {
           messageList.scrollTop = messageList.scrollHeight;
         }
       });
+      collection
+        .docChanges()
+        .map(docChange =>
+          this.props.onNewMessage(docChange.doc.data() as Message)
+        );
     });
   }
 
