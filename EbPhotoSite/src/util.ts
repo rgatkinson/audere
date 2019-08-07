@@ -59,27 +59,3 @@ export function triageDocFromTriage(
     triage,
   };
 }
-
-export function triageDoc(
-  docId: string,
-  notes: string,
-  testIndicatesEVD: boolean,
-  diagnoser: AuthUser
-): EncounterTriageDocument {
-  return {
-    documentType: DocumentType.Triage,
-    schemaId: 1,
-    docId,
-    triage: {
-      notes,
-      diagnoses: [
-        {
-          tag: ConditionTag.Ebola,
-          value: testIndicatesEVD,
-          diagnoser,
-          timestamp: new Date().toISOString(),
-        },
-      ],
-    },
-  };
-}

@@ -250,7 +250,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     super(props);
     const triage = props.tDoc
       ? props.tDoc.triage
-      : { notes: "", diagnoses: [] };
+      : { notes: "", diagnoses: [], lastViewed: new Date().toISOString() };
     this.state = {
       busy: false,
       error: null,
