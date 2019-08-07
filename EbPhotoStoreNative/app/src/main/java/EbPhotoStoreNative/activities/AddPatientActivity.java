@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.UUID;
 import android.widget.EditText;
 
-import com.example.ebphotostorenative.R;
+import org.auderenow.ebphotostorenative.R;
 
 public class AddPatientActivity extends AppCompatActivity {
 

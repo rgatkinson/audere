@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.MenuItem;
 
-import com.example.ebphotostorenative.R;
+import org.auderenow.ebphotostorenative.R;
 
 public class ListPatientActivity extends AppCompatActivity {
 

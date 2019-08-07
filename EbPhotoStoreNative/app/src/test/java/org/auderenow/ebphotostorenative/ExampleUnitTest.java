@@ -1,4 +1,4 @@
-package com.example.ebphotostorenative;
+package org.auderenow.ebphotostorenative;
 
 import org.junit.Test;
 

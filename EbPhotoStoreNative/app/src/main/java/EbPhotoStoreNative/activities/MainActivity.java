@@ -14,7 +14,7 @@ import android.net.ConnectivityManager;
 
 
 import EbPhotoStoreNative.NetworkChangeReceiver;
-import com.example.ebphotostorenative.R;
+import org.auderenow.ebphotostorenative.R;
 
 public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.INetworkStatusListener{
 

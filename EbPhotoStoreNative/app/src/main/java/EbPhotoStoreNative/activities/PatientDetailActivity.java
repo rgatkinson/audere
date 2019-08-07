@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.example.ebphotostorenative.R;
+import org.auderenow.ebphotostorenative.R;
 
 public class PatientDetailActivity extends AppCompatActivity {
 
