@@ -1,6 +1,6 @@
 import * as common from "./common";
 import { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+export { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo, };
 export interface ProtocolDocumentBase {
     documentType: string;
     schemaId: number;

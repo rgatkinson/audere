@@ -29,6 +29,7 @@ import {
   FEATHER_SIZE,
 } from "../styles";
 import Text from "./Text";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   highlighted?: boolean;
@@ -38,25 +39,47 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-class RadioGrid extends React.PureComponent<Props> {
+interface State {
+  expandedHelpImage: string | null,
+}
+
+class RadioGrid extends React.PureComponent<Props, State> {
+  state: State = {
+    expandedHelpImage: null,
+  };
+
   _onPress = (key: string) => {
+    this.setState({ expandedHelpImage: null });
     this.props.dispatch(
       updateAnswer({ selectedButtonKey: key }, this.props.question)
     );
   };
 
+  _toggleHelp = (key: string) => {
+    const isSelected = key === this.state.expandedHelpImage ? null : key;
+    this.setState({ expandedHelpImage : isSelected });
+    logFirebaseEvent(AppEvents.HELP_TOGGLED, {
+      selected: !!isSelected,
+      key,
+      question: this.props.question.id,
+    });
+  };
+
   render() {
     const { highlighted, selected, question } = this.props;
+    const { expandedHelpImage } = this.state;
     return (
       <View style={styles.container}>
         {question.buttons.map((buttonConfig, i) => (
           <RadioGridItem
             config={buttonConfig}
+            expandHelpImage={expandedHelpImage === buttonConfig.key}
             highlighted={!!highlighted}
             key={buttonConfig.key}
             last={question.buttons.length - 1 === i}
             selected={buttonConfig.key === selected}
             onPress={this._onPress}
+            toggleHelp={this._toggleHelp}
           />
         ))}
       </View>
@@ -69,16 +92,19 @@ export default connect((state: StoreState, props: Props) => ({
 
 interface ItemProps {
   config: ButtonConfig;
+  expandHelpImage: boolean;
   highlighted: boolean;
   last: boolean;
   selected: boolean;
   onPress: (key: string) => void;
+  toggleHelp: (key: string) => void;
 }
 
 class Item extends React.Component<ItemProps & WithNamespaces> {
   shouldComponentUpdate(props: ItemProps & WithNamespaces) {
     return (
       props.selected != this.props.selected ||
+      props.expandHelpImage != this.props.expandHelpImage ||
       props.highlighted != this.props.highlighted
     );
   }
@@ -87,9 +113,13 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
     this.props.onPress(this.props.config.key);
   };
 
+  _toggleHelp = () => {
+    this.props.toggleHelp(this.props.config.key);
+  };
+
   render() {
-    const { config, highlighted, last, selected, t } = this.props;
-    const { key, helpImageUri } = config;
+    const { config, expandHelpImage, highlighted, last, selected, t } = this.props;
+    const { key, expandableHelpImage, helpImageUri } = config;
     return (
       <Fragment>
         <TouchableOpacity
@@ -110,16 +140,27 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
               style={[styles.radioText, selected && styles.selectedRadioColor]}
               content={t(`surveyButton:${key}`)}
             />
+            {!!expandableHelpImage && !!helpImageUri && (
+              <TouchableOpacity
+                key={`${key}-touchable`}
+                onPress={this._toggleHelp}
+                style={styles.helpIconButton}
+              >
+                <View style={styles.helpIcon}>
+                  <Text bold={true} style={{ color: "white" }} content={"?"} />
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
-          {!!helpImageUri && (
-            <View style={styles.imageContainer}>
+          {!!helpImageUri && (expandHelpImage || !expandableHelpImage) && (
+            <TouchableOpacity style={styles.imageContainer} onPress={expandableHelpImage ? this._toggleHelp : this._onPress}>
               <Image
                 key={`${key}-image`}
                 resizeMode={"contain"}
                 style={styles.helpImage}
                 source={{ uri: helpImageUri }}
               />
-            </View>
+            </TouchableOpacity>
           )}
         </TouchableOpacity>
       </Fragment>
@@ -132,6 +173,21 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginBottom: GUTTER,
+  },
+  helpIcon: {
+    alignItems: "center",
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR,
+    borderWidth: 1,
+    borderRadius: 20,
+    height: RADIO_BUTTON_HEIGHT / 2,
+    justifyContent: "center",
+    width: RADIO_BUTTON_HEIGHT / 2,
+  },
+  helpIconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: GUTTER / 4,
   },
   helpImage: {
     flex: 1,

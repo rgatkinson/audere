@@ -200,7 +200,8 @@
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
     "vomiting": "Vomiting",
-    "symptomsSeverity": "Select the level of discomfort you felt at the worst point"
+    "symptomsSeverity": "Select the level of discomfort you felt at the worst point",	
+    "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
     "title": "Welcome",

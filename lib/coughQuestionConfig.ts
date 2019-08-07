@@ -5,6 +5,7 @@
 
 export interface ButtonConfig {
   enabled: boolean;
+  expandableHelpImage?: boolean;
   helpImageUri?: string;
   key: string;
   primary: boolean;
@@ -1126,18 +1127,21 @@ export const NumLinesSeenConfig: SurveyQuestion = {
       key: "oneLine",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "oneline",
     },
     {
       key: "twoLines",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "twolines",
     },
     {
       key: "threeLines",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "threelines",
     },
     {
