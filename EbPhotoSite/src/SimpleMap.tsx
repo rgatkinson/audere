@@ -77,15 +77,11 @@ export class SimpleMap extends React.Component<Props> {
 
   private getMapCenter(locations: Location[]): LatLng {
     if (locations.length === 1) {
-      console.log(
-        `Returning single location for ${JSON.stringify(locations[0])}`
-      );
       return {
         lat: locations[0].latitude,
         lng: locations[0].longitude,
       };
     } else {
-      console.log("Returning close to DRC center");
       return {
         lat: -3.4,
         lng: 22.7,
