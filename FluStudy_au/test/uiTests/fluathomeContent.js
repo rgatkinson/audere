@@ -451,15 +451,23 @@ export const content = [
         dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
+    ],
+  },
+  {
+    type: "input",
+    title: strings.TestStripSurvey.title,
+    button: strings.common.button.continue.toUpperCase(),
+    dbScreenName: "TestStripSurvey2",
+    input: [
       {
         name: strings.surveyTitle.pinkLine,
         type: "radio",
         dbLocation: "responses",
         options: [
           strings.surveyButton.noPink,
-          strings.surveyButton.yesAboveBlue + " ?",
-          strings.surveyButton.yesBelowBlue + " ?",
-          strings.surveyButton.yesAboveBelowBlue + " ?",
+          strings.surveyButton.yesAboveBlue,
+          strings.surveyButton.yesBelowBlue,
+          strings.surveyButton.yesAboveBelowBlue,
         ],
       },
     ],

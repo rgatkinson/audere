@@ -152,17 +152,9 @@ async function input_screen(driver, screen_info) {
           driver,
           question.name
         );
-        let buttons;
-        if (PLATFORM == "iOS") {
-          buttons = await driver.elementsByAccessibilityId(
-            inputs[question.name]
-          );
-        } else {
-          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
-          buttons = await driver.elementsByAccessibilityId(
-            inputs[question.name].replace(/ \?$/, "")
-          );
-        }
+        let buttons = await driver.elementsByAccessibilityId(
+          inputs[question.name]
+        );
 
         for (const button of buttons) {
           let buttonLocation = await button.getLocation();
@@ -496,8 +488,7 @@ async function verify_db_contents(driver, models, installationId) {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
           expect(questionDb.answer).toHaveLength(1);
-          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
-          expect(inputs[question.name].replace(/ \?$/, "")).toEqual(answerDb);
+          expect(inputs[question.name]).toEqual(answerDb);
         }
       } else if (question.dbLocation === "samples") {
         expect(dbRow.survey.samples[0].code).toEqual(inputs[question.name]);
