@@ -571,13 +571,7 @@ jobs:
             cd android
             bundle exec fastlane internal
       - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86_64-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86-release.apk
+          path: /tmp/repo/FluStudy_au/android/app/build/outputs/bundle/release
 
   build_deploy_fever:
     working_directory: ~/repo/FluStudy_us
@@ -655,7 +649,7 @@ jobs:
             cd android
             bundle exec fastlane internal
       - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/bundle/release
+          path: /tmp/repo/EbPhotoStore/android/app/build/outputs/bundle/release
 
 workflows:
   version: 2

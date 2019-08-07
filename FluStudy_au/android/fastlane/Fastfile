@@ -17,12 +17,11 @@ opt_out_usage
 default_platform(:android)
 
 platform :android do
-  desc "Build signed release apk and deploy to Internal track"
+  desc "Build signed release aab and deploy to Internal track"
   lane :internal do
     track = "internal"
     gradle(
-      task: "clean assemble",
-      build_type: "Release",
+      task: "clean bundleRelease",
       print_command: false,
       properties: {
         "android.injected.signing.store.file" => ENV["FEVER_SIGNING_STORE_FILE"],
