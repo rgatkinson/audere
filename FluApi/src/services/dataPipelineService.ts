@@ -20,9 +20,11 @@ const DEBUG_DATA_PIPELINE_SERVICE = false;
 
 export class DataPipelineService {
   private readonly sql: SplitSql;
+  private readonly progress: () => void;
 
-  constructor(sql: SplitSql) {
+  constructor(sql: SplitSql, progress?: () => void) {
     this.sql = sql;
+    this.progress = progress || (() => {});
   }
 
   async refresh(): Promise<void> {
@@ -44,12 +46,15 @@ export class DataPipelineService {
     const statesByName = new Map(states.map(x => tuple2(x.name, x)));
     const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));
     const hashes = buildHashes(nodesByName);
+    this.progress();
 
     for (let state of states) {
       const name = state.name;
       if (!nodesByName.has(name)) {
         await runQuery(sql, state.cleanup);
+        this.progress();
         await nodeState.destroy({ where: { name } });
+        this.progress();
       }
     }
 
@@ -65,17 +70,21 @@ export class DataPipelineService {
               await runQuery(sql, refresh[i], t);
             }
           });
+          this.progress();
         }
       } else {
         const drop = node.getDelete();
         await runQuery(sql, drop);
+        this.progress();
         const create = node.getCreate();
         await sql.transaction(async t => {
           for (let i = 0; i < create.length; i++) {
             await runQuery(sql, create[i], t);
+            this.progress();
           }
         });
         await nodeState.upsert({ name, hash, cleanup: drop });
+        this.progress();
       }
     }
   }

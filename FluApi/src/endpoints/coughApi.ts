@@ -65,7 +65,6 @@ export class CoughEndpoint {
       return new S3Uploader(s3, s3Config);
     });
   }
-
   public importCoughDocuments = async (req, res, next) => {
     const reqId = requestId(req);
     const markAsRead = booleanQueryParameter(req, "markAsRead", true);
@@ -77,16 +76,7 @@ export class CoughEndpoint {
       requestId: reqId,
     };
 
-    // Set Content-Type now since headers have to go before body and we start
-    // streaming whitespace to keep alive.
-    res.type("json");
-    // Prevent nginx from buffering the stream so the keep-alive whitespace
-    // makes it to the ELB as well.
-    res.set("X-Accel-Buffering", "no");
-
-    // Send whitespace regularly during import so ExpressJS, nginx, and ELB
-    // don't time out.
-    const progress = () => res.write(" ");
+    const { progress, replyJson } = jsonKeepAlive(res);
 
     await this.importItems(
       progress,
@@ -107,11 +97,9 @@ export class CoughEndpoint {
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
-    await this.updateDerived(reqId);
+    await this.updateDerived(progress, reqId);
 
-    res.write("\n");
-    res.write(JSON.stringify(result));
-    res.end();
+    replyJson(result);
   };
 
   public uploadCoughPhotos = async (req, res, next) => {
@@ -321,12 +309,13 @@ export class CoughEndpoint {
 
   public updateDerivedTables = async (req, res, next) => {
     const reqId = requestId(req);
-    await this.updateDerived(reqId);
-    res.json({});
+    const { progress, replyJson } = jsonKeepAlive(res);
+    await this.updateDerived(progress, reqId);
+    replyJson({});
   };
 
-  private async updateDerived(reqId: string) {
-    const service = new DataPipelineService(this.sql);
+  private async updateDerived(progress: () => void, reqId: string) {
+    const service = new DataPipelineService(this.sql, progress);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
       await service.refresh();
@@ -355,6 +344,32 @@ function booleanQueryParameter(req, name: string, dflt: boolean): boolean {
     default:
       return dflt;
   }
+}
+
+function jsonKeepAlive(res): KeepAliveJson {
+  // Set Content-Type now since headers have to go before body and we start
+  // streaming whitespace to keep alive.
+  res.type("json");
+  // Prevent nginx from buffering the stream so the keep-alive whitespace
+  // makes it to the ELB as well.
+  res.set("X-Accel-Buffering", "no");
+
+  // Send whitespace regularly during import so ExpressJS, nginx, and ELB
+  // don't time out.
+  const progress = () => res.write(" ");
+
+  const replyJson = (result: object) => {
+    res.write("\n");
+    res.write(JSON.stringify(result));
+    res.end();
+  };
+
+  return { progress, replyJson };
+}
+
+interface KeepAliveJson {
+  progress: () => void;
+  replyJson: (result: object) => void;
 }
 
 export interface ImportResult {
