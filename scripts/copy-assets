@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Script to copy images from an external  directory to a project's asset/images/ directory
+# and the appropriate android res folders given the @2x, @3x file name suffixes
+
+# Run: `add-assets {project} {image directory}` ie:
+# add-assets FluStudy_au ~/Downloads/drive-download-20190807T184452Z-001
+
+project=$1
+image_dir=$2
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd $REPO_ROOT_DIR
+
+for filename in "$2"/*.png; do
+  echo "$filename"
+  cp $filename $REPO_ROOT_DIR/$project/assets/images/
+  f=${filename#"$2"}
+  if [ ${filename: -7} == "@2x.png" ]; then
+    cp $filename $REPO_ROOT_DIR/$project/android/app/src/main/res/drawable-xhdpi/${f%@2x.png}.png
+  else
+    if [ ${filename: -7} == "@3x.png" ]; then
+      cp $filename $REPO_ROOT_DIR/$project/android/app/src/main/res/drawable-xxhdpi/${f%@3x.png}.png
+    else
+      cp $filename $REPO_ROOT_DIR/$project/android/app/src/main/res/drawable-mdpi/
+    fi
+  fi
+done
+
+echo "If these are new images, make sure to import into iOS project manually"
