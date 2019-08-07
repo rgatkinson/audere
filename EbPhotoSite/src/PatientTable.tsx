@@ -75,7 +75,8 @@ export class PatientTable extends React.Component<
     const newData =
       row &&
       (!row.original.tDoc ||
-        row.original.eDoc.updatedAt > row.original.tDoc.triage.lastViewed);
+        row.original.eDoc.encounter.updatedAt >
+          row.original.tDoc.triage.lastViewed);
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
         this.props.onSelect(e, row.original.eDoc);
