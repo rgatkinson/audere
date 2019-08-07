@@ -17,6 +17,7 @@ import { FunnelEvents } from "../util/tracker";
 import {
   getTestStripConfirmationNextScreen,
   getTestStripSurveyNextScreen,
+  getPinkWhenBlueNextScreen,
   getPostRDTTestStripSurveyNextScreen,
   logFluResult,
   logNumLines,
@@ -735,7 +736,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Questions,
         props: {
-          questions: [BlueLineConfig, PinkWhenBlueConfig, PinkLineConfig],
+          questions: [BlueLineConfig],
           logOnSave: logFluResult,
         },
         validate: true,
@@ -749,6 +750,28 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "TestStripSurvey",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "lookatteststrip" } },
+      { tag: Title },
+      {
+        tag: Questions,
+        props: {
+          questions: [PinkWhenBlueConfig],
+          logOnSave: logFluResult,
+        },
+        validate: true,
+      },
+    ],
+    automationNext: "TestResult",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: getPinkWhenBlueNextScreen },
+      },
+    ],
+    key: "TestStripSurvey2",
   },
   {
     body: [

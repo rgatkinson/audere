@@ -175,7 +175,7 @@
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
-    "pinkLine": "Is there a pink line on your test strip?",
+    "pinkLine": "Which image below most closely matches your test strip?",
     "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "fluShot": "Did you receive an influenza vaccination this year (2019)?",
@@ -200,8 +200,7 @@
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
     "vomiting": "Vomiting",
-    "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
-    "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
+    "symptomsSeverity": "Select the level of discomfort you felt at the worst point",	
     "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
@@ -332,6 +331,10 @@
     "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
   },
   "TestStripSurvey": {
+    "title": "What do you see?",
+    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
+  },
+  "TestStripSurvey2": {
     "title": "What do you see?",
     "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
   },
@@ -529,10 +532,10 @@
     "3": "3",
     "4": "4",
     "5+": "5+",
-    "noPink": "No, there are no pink lines",
-    "yesAboveBlue": "Yes, above the blue line",
-    "yesBelowBlue": "Yes, below the blue line",
-    "yesAboveBelowBlue": "Yes, above and below the blue line",
+    "noPink": "Blue line only",
+    "yesAboveBlue": "Pink line above the blue line",
+    "yesBelowBlue": "Pink line below the blue line",
+    "yesAboveBelowBlue": "Pink line above and below the blue line",
     "yesOnePink": "Yes, there is one pink line",
     "yesTwoPink": "Yes, there are two pink lines",
     "oneLine": "One line only",

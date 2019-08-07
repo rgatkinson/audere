@@ -1,5 +1,6 @@
 export interface ButtonConfig {
     enabled: boolean;
+    expandableHelpImage?: boolean;
     helpImageUri?: string;
     key: string;
     primary: boolean;

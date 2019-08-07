@@ -5,6 +5,7 @@
 
 export interface ButtonConfig {
   enabled: boolean;
+  expandableHelpImage?: boolean;
   helpImageUri?: string;
   key: string;
   primary: boolean;
@@ -1050,7 +1051,6 @@ export const RaceConfig: OptionQuestion = {
 export const BlueLineConfig: SurveyQuestion = {
   id: "BlueLine",
   title: "blueLine",
-  description: "blueLine",
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
@@ -1069,12 +1069,12 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
     },
   ],
   title: "pinkLine",
-  description: "seeExample",
   buttons: [
     {
       key: "noPink",
       primary: false,
       enabled: true,
+      helpImageUri: "blueonly",
     },
     {
       key: "yesAboveBlue",
@@ -1127,18 +1127,21 @@ export const NumLinesSeenConfig: SurveyQuestion = {
       key: "oneLine",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "oneline",
     },
     {
       key: "twoLines",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "twolines",
     },
     {
       key: "threeLines",
       primary: false,
       enabled: true,
+      expandableHelpImage: true,
       helpImageUri: "threelines",
     },
     {
