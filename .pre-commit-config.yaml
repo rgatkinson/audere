@@ -6,6 +6,3 @@ repos:
       - id: prettier
         entry: prettier --write
         files: "\\.(ts|tsx)$"
-        args:
-          - --trailing-comma
-          - es5
