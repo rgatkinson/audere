@@ -112,9 +112,10 @@ class PatientListPageAssumeRouter extends React.Component<
         <PatientBlock
           headerLabel={`Untriaged Patients (${untriagedDocs.length})`}
           eDocs={untriagedDocs}
-          tDocs={[]}
+          tDocs={this.state.tDocs}
           latestMessages={latestMessages}
           onSelectRow={this._select}
+          showEvdResultColumns={false}
         />
         <PatientBlock
           headerLabel={`Triaged Patients (${triagedDocs.length})`}
@@ -122,6 +123,7 @@ class PatientListPageAssumeRouter extends React.Component<
           tDocs={this.state.tDocs}
           latestMessages={latestMessages}
           onSelectRow={this._select}
+          showEvdResultColumns={true}
         />
       </div>
     );

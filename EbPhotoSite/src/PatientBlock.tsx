@@ -22,6 +22,7 @@ interface Props {
   tDocs: EncounterTriageDocument[];
   latestMessages: { [eDocId: string]: Message };
   onSelectRow: (e: MouseEvent, eDoc: EncounterDocument) => void;
+  showEvdResultColumns: boolean;
 }
 
 interface State {
@@ -78,6 +79,7 @@ export class PatientBlock extends React.Component<Props, State> {
         tDocs={this.props.tDocs}
         latestMessages={this.props.latestMessages}
         onSelect={this.props.onSelectRow}
+        showEvdResultColumns={this.props.showEvdResultColumns}
       />
     );
     return (

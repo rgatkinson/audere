@@ -27,6 +27,7 @@ interface PatientTableProps {
   tDocs: EncounterTriageDocument[];
   latestMessages: { [eDocId: string]: Message };
   onSelect: (e: MouseEvent, record: EncounterDocument) => void;
+  showEvdResultColumns: boolean;
 }
 
 interface PatientTableState {
@@ -164,7 +165,7 @@ export class PatientTable extends React.Component<
       },
     ];
 
-    if (this.props.tDocs.length > 0) {
+    if (this.props.showEvdResultColumns) {
       mainColumns.splice(2, 0, ...evdResultColumns);
     }
     return mainColumns;
