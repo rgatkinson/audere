@@ -39,6 +39,11 @@ interface Location {
   diagnosis: number;
 }
 
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
 export class SimpleMap extends React.Component<Props> {
   private rad2degr(rad: number) {
     return (rad * 180) / Math.PI;
@@ -47,7 +52,7 @@ export class SimpleMap extends React.Component<Props> {
     return (degr * Math.PI) / 180;
   }
   //https://stackoverflow.com/questions/6671183/calculate-the-center-point-of-multiple-latitude-longitude-coordinate-pairs/14231286
-  private computeCenter(locations: Location[]): { lat: number; lng: number } {
+  private computeCenter(locations: Location[]): LatLng {
     let sumX = 0;
     let sumY = 0;
     let sumZ = 0;
@@ -68,6 +73,24 @@ export class SimpleMap extends React.Component<Props> {
 
     const center = { lat: this.rad2degr(lat), lng: this.rad2degr(lng) };
     return center;
+  }
+
+  private getMapCenter(locations: Location[]): LatLng {
+    if (locations.length === 1) {
+      console.log(
+        `Returning single location for ${JSON.stringify(locations[0])}`
+      );
+      return {
+        lat: locations[0].latitude,
+        lng: locations[0].longitude,
+      };
+    } else {
+      console.log("Returning close to DRC center");
+      return {
+        lat: -3.4,
+        lng: 22.7,
+      };
+    }
   }
 
   private getIconUrl(diagnosis: number): string {
@@ -126,7 +149,7 @@ export class SimpleMap extends React.Component<Props> {
   MyGoogleMap = withScriptjs(
     withGoogleMap((props: { locations: Location[] }) => (
       <GoogleMap
-        defaultCenter={this.computeCenter(props.locations!)}
+        defaultCenter={this.getMapCenter(props.locations!)}
         defaultZoom={this.props.zoom}
       >
         {props.locations.map((location: Location) => (
