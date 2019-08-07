@@ -174,7 +174,7 @@ class SequelizeSourceTable extends ManagedTable {
           ${meta.name} as tbl
           join ${ref.tableName} as source on source.id = tbl."${ref.id}"
         where
-          tbl."${ref.timestamp}" < source."${ref.timestamp}"
+          tbl."${ref.timestamp}" < source."updatedAt"
       )
       `,
       `
