@@ -73,9 +73,13 @@ export const IMAGE_WIDTH = isIPhoneSE || isTablet ? "75%" : "100%";
 export const SPLASH_IMAGE = {
   uri: isTablet ? "largesplash" : isIPhoneSE ? "mediumsplash" : "splash",
 };
+export const SPLASH_RATIO = isTablet ? 1.3 : isIPhoneSE ? 1.26 : 1.05;
+export const BG_RATIO = isTablet ? 0.65 : isIPhoneSE ? 0.695 : 0.63;
+export const BG_IMAGE = {
+  uri: isTablet ? "largebg" : isIPhoneSE ? "mediumbg" : "bg",
+};
 export const ASPECT_RATIO = 1.75;
 export const VIDEO_ASPECT_RATIO = 1920 / 1080;
-export const SPLASH_RATIO = isTablet ? 1.29 : isIPhoneSE ? 1.26 : 1.05;
 export const KEYBOARD_BEHAVIOR =
   Platform.OS === "android" ? undefined : "padding";
 export const HIGHLIGHT_STYLE = { borderWidth: 1, borderColor: "red" };

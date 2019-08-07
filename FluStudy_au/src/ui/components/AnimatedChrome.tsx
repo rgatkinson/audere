@@ -7,7 +7,6 @@ import React from "react";
 import {
   Animated,
   Image,
-  ImageBackground,
   StatusBar,
   StyleSheet,
   View,
@@ -17,10 +16,14 @@ import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
   ASPECT_RATIO,
+  isTablet,
   IMAGE_WIDTH,
   SYSTEM_PADDING_BOTTOM,
   NAV_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
+  BG_IMAGE,
+  SPLASH_RATIO,
+  BG_RATIO,
 } from "../styles";
 import { Action } from "../../store";
 import { connect } from "react-redux";
@@ -35,8 +38,6 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   splashImage?: string;
 }
-
-const screenHeight = Dimensions.get("window").height;
 
 class AnimatedChrome extends React.PureComponent<Props> {
   state = {
@@ -95,31 +96,10 @@ class AnimatedChrome extends React.PureComponent<Props> {
             useNativeDriver: true,
           }),
         ]),
-      ]).start(
-        () =>
-          !!dispatchOnFirstLoad && this.props.dispatch(dispatchOnFirstLoad())
-      );
+      ]).start(() => {
+        !!dispatchOnFirstLoad && this.props.dispatch(dispatchOnFirstLoad());
+      });
     }
-  }
-
-  getSplashImageSize() {
-    const sizes = [
-      { width: 330, height: 743 },
-      { width: 385, height: 866 },
-      { width: 424, height: 954 },
-      { width: 840, height: 1890 },
-      { width: 1024, height: 2304 },
-      { width: 1400, height: 3150 },
-    ];
-
-    let prev = sizes[0];
-    let idx = 1;
-    while (idx < sizes.length && sizes[idx].height < screenHeight) {
-      prev = sizes[idx];
-      idx++;
-    }
-
-    return prev;
   }
 
   render() {
@@ -131,53 +111,47 @@ class AnimatedChrome extends React.PureComponent<Props> {
       splashImage,
     } = this.props;
 
-    const splashImageDimensions = this.getSplashImageSize();
+    const screenHeight = Dimensions.get("window").height;
+    const screenWidth = Dimensions.get("window").width;
+    const bgHeight = screenWidth / BG_RATIO;
+    const chromeBgHeight = screenWidth / SPLASH_RATIO;
 
     return (
       <View style={styles.container}>
         <Animated.View
           style={[
+            styles.animatedContainer,
             {
-              position: "absolute",
-              height: splashImageDimensions.height + screenHeight,
-              width: "100%",
+              width: screenWidth,
+              aspectRatio: BG_RATIO,
               transform: [
                 {
                   translateY: this.state.splashMoveAnim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [
-                      0,
-                      -splashImageDimensions.height -
-                        screenHeight / 3 -
-                        NAV_BAR_HEIGHT,
-                    ],
+                    outputRange: [0, -bgHeight + chromeBgHeight],
                   }),
                 },
               ],
             },
           ]}
         >
-          <ImageBackground
-            source={{
-              uri: `bg_${splashImageDimensions.width}x${splashImageDimensions.height}`,
-            }}
+          <Image
+            source={BG_IMAGE}
+            style={[styles.bgImage, { width: screenWidth }]}
+          />
+          <Animated.Image
+            resizeMode={"stretch"}
+            source={{ uri: "gradient" }}
             style={[
               {
-                height: "100%",
+                position: "absolute",
+                top: bgHeight - chromeBgHeight,
+                height: chromeBgHeight * 0.7,
+                width: screenWidth,
+                opacity: this.state.textFadeAnim,
               },
             ]}
-          >
-            <Image
-              resizeMode={"stretch"}
-              source={{ uri: "gradient" }}
-              style={[
-                {
-                  alignSelf: "stretch",
-                  height: "100%",
-                },
-              ]}
-            />
-          </ImageBackground>
+          />
         </Animated.View>
         <Animated.View
           style={{
@@ -209,7 +183,6 @@ class AnimatedChrome extends React.PureComponent<Props> {
               styles.image,
               {
                 opacity: this.state.imageFadeAnim,
-                position: "absolute",
                 top: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
               },
             ]}
@@ -217,22 +190,22 @@ class AnimatedChrome extends React.PureComponent<Props> {
           />
         )}
         <Animated.Image
-          style={{
-            top: screenHeight / 8,
-            opacity: this.state.logoFadeAnim,
-            alignSelf: "center",
-            aspectRatio: ASPECT_RATIO,
-            height: undefined,
-            resizeMode: "contain",
-            width: "75%",
-          }}
+          style={[
+            styles.whiteLogo,
+            {
+              top: screenHeight / 8,
+              opacity: this.state.logoFadeAnim,
+            },
+          ]}
           source={{ uri: "fluathome_whitelogo" }}
         />
+
         <Animated.View
           style={[
             styles.children,
             {
-              height: screenHeight / 2 - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
+              height:
+                screenHeight - chromeBgHeight - (isTablet ? NAV_BAR_HEIGHT : 0),
               opacity: this.state.textFadeAnim,
             },
           ]}
@@ -247,6 +220,15 @@ class AnimatedChrome extends React.PureComponent<Props> {
 export default connect()(AnimatedChrome);
 
 const styles = StyleSheet.create({
+  animatedContainer: {
+    position: "absolute",
+    top: 0,
+    height: undefined,
+  },
+  bgImage: {
+    height: undefined,
+    aspectRatio: BG_RATIO,
+  },
   container: {
     backgroundColor: "white",
     flex: 1,
@@ -258,13 +240,17 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   image: {
+    position: "absolute",
     alignSelf: "center",
     aspectRatio: ASPECT_RATIO,
     height: undefined,
     width: IMAGE_WIDTH,
   },
-  shortImage: {
-    aspectRatio: 4.23,
+  whiteLogo: {
+    alignSelf: "center",
+    aspectRatio: ASPECT_RATIO,
+    height: undefined,
+    resizeMode: "contain",
     width: "75%",
   },
 });

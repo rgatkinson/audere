@@ -4,24 +4,18 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  Image,
-  ImageBackground,
-  StatusBar,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
   ASPECT_RATIO,
-  GUTTER,
   IMAGE_WIDTH,
   SPLASH_IMAGE,
   SPLASH_RATIO,
   SYSTEM_PADDING_BOTTOM,
   NAV_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
+  isTablet,
 } from "../styles";
 
 interface Props {
@@ -42,52 +36,85 @@ export default class Chrome extends React.PureComponent<Props> {
       navigation,
       splashImage,
     } = this.props;
+
+    const screenHeight = Dimensions.get("window").height;
+    const screenWidth = Dimensions.get("window").width;
+    const chromeBgHeight = screenWidth / SPLASH_RATIO;
+
     return (
       <View style={styles.container}>
-        <ImageBackground
-          source={SPLASH_IMAGE}
-          style={[
-            { alignSelf: "stretch" },
-            !!this.props.splashImage && {
-              aspectRatio: SPLASH_RATIO,
-              width: "100%",
-            },
-          ]}
-        >
+        <View style={styles.topContainer}>
+          <Image
+            source={SPLASH_IMAGE}
+            style={[
+              styles.alignTop,
+              {
+                width: screenWidth,
+                height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
+              },
+              !!this.props.splashImage && {
+                height: undefined,
+                aspectRatio: SPLASH_RATIO,
+              },
+            ]}
+          />
           <Image
             resizeMode={"stretch"}
             source={{ uri: "gradient" }}
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              top: 0,
-              height: splashImage ? 300 : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
-            }}
+            style={[
+              styles.alignTop,
+              {
+                width: screenWidth,
+                height: splashImage
+                  ? chromeBgHeight * 0.8
+                  : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
+              },
+            ]}
           />
-          <StatusBar
-            backgroundColor="transparent"
-            barStyle="light-content"
-            translucent={true}
-          />
-          <NavigationBar
-            hideBackButton={hideBackButton}
-            menuItem={menuItem}
-            navigation={navigation}
-          />
-          {!!splashImage && (
-            <Image style={styles.image} source={{ uri: splashImage }} />
-          )}
-        </ImageBackground>
-        {children}
+        </View>
+        <StatusBar
+          backgroundColor="transparent"
+          barStyle="light-content"
+          translucent={true}
+        />
+        <NavigationBar
+          hideBackButton={hideBackButton}
+          menuItem={menuItem}
+          navigation={navigation}
+        />
+        {!!splashImage && (
+          <Image style={styles.image} source={{ uri: splashImage }} />
+        )}
+
+        <View
+          style={[
+            styles.alignBottom,
+            {
+              height: !!splashImage
+                ? screenHeight -
+                  chromeBgHeight -
+                  (isTablet ? NAV_BAR_HEIGHT : 0)
+                : screenHeight - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
+            },
+          ]}
+        >
+          {children}
+        </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  alignTop: {
+    position: "absolute",
+    top: 0,
+  },
+  alignBottom: {
+    position: "absolute",
+    bottom: 0,
+  },
   container: {
-    alignSelf: "stretch",
     backgroundColor: "white",
     flex: 1,
     paddingBottom: SYSTEM_PADDING_BOTTOM,
@@ -96,11 +123,17 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     aspectRatio: ASPECT_RATIO,
     height: undefined,
-    marginVertical: GUTTER / 2,
+
     width: IMAGE_WIDTH,
   },
   shortImage: {
     aspectRatio: 4.23,
     width: "75%",
+  },
+  topContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
   },
 });
