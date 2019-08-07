@@ -11,7 +11,7 @@ import {
   EncounterDocument,
   EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { loadAllEncounters, loadAllTriages } from "./util";
+import { getApi } from "./api";
 import "./PatientList.css";
 import { PatientBlock } from "./PatientBlock";
 
@@ -38,20 +38,23 @@ class PatientListPageAssumeRouter extends React.Component<
     };
   }
 
+  private _unsubscribers: (() => void)[] = [];
+
   componentDidMount() {
     this.load();
   }
 
-  private async load(): Promise<void> {
-    const [encounters, triages] = await Promise.all([
-      loadAllEncounters(),
-      loadAllTriages(),
-    ]);
+  componentWillUnmount() {
+    this._unsubscribers.forEach(unsubscribe => unsubscribe());
+  }
 
-    this.setState({
-      eDocs: encounters,
-      tDocs: triages,
-    });
+  private async load(): Promise<void> {
+    this._unsubscribers.push(
+      getApi().listenForEncounters(eDocs => this.setState({ eDocs }))
+    );
+    this._unsubscribers.push(
+      getApi().listenForTriages(tDocs => this.setState({ tDocs }))
+    );
   }
 
   private _select = (e: MouseEvent, eDoc: EncounterDocument) => {
@@ -61,15 +64,18 @@ class PatientListPageAssumeRouter extends React.Component<
   };
 
   private _splitTriagedFromUntriaged() {
+    if (!this.state.eDocs) {
+      return { triagedDocs: [], untriagedDocs: [] };
+    }
     const triageWithDiagnoses = this.state.tDocs.filter(
       t => t.triage.diagnoses && t.triage.diagnoses.length > 0
     );
     const triagedDocIds = triageWithDiagnoses.map(t => t.docId);
     return {
-      triagedDocs: this.state.eDocs!.filter(d =>
+      triagedDocs: this.state.eDocs.filter(d =>
         triagedDocIds.includes(d.docId)
       ),
-      untriagedDocs: this.state.eDocs!.filter(
+      untriagedDocs: this.state.eDocs.filter(
         d => !triagedDocIds.includes(d.docId)
       ),
     };

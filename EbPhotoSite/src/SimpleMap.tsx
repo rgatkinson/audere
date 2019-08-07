@@ -39,28 +39,7 @@ interface Location {
   diagnosis: number;
 }
 
-interface State {
-  locations: Location[] | null;
-}
-
-export class SimpleMap extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { locations: null };
-  }
-
-  static getDerivedStateFromProps(props: Props, state: State): State | null {
-    if (
-      !state.locations ||
-      props.encounters.length !== state.locations.length
-    ) {
-      return {
-        locations: SimpleMap.getLocations(props.encounters, props.tDocs),
-      };
-    }
-    return null;
-  }
-
+export class SimpleMap extends React.Component<Props> {
   private rad2degr(rad: number) {
     return (rad * 180) / Math.PI;
   }
@@ -145,15 +124,16 @@ export class SimpleMap extends React.Component<Props, State> {
   }
 
   MyGoogleMap = withScriptjs(
-    withGoogleMap(() => (
+    withGoogleMap((props: { locations: Location[] }) => (
       <GoogleMap
-        defaultCenter={this.computeCenter(this.state.locations!)}
+        defaultCenter={this.computeCenter(props.locations!)}
         defaultZoom={this.props.zoom}
       >
-        {this.state.locations!.map(location => (
+        {props.locations.map((location: Location) => (
           <Marker
             position={{ lat: location.latitude, lng: location.longitude }}
             icon={{ url: this.getIconUrl(location.diagnosis) }}
+            key={location.docId}
           >
             <InfoWindow>
               <span>
@@ -170,17 +150,12 @@ export class SimpleMap extends React.Component<Props, State> {
   loadingElement = <div />;
   containerElement = <div style={this.props.style} />;
   mapElement = <div style={this.props.style} />;
-  map = (
-    <this.MyGoogleMap
-      loadingElement={this.loadingElement}
-      containerElement={this.containerElement}
-      googleMapURL={googleMapURL}
-      mapElement={this.mapElement}
-    />
-  );
 
   public render(): React.ReactNode {
-    const { locations } = this.state;
+    const locations = SimpleMap.getLocations(
+      this.props.encounters,
+      this.props.tDocs
+    );
     return (
       <div>
         {apiKey == null ? (
@@ -188,7 +163,15 @@ export class SimpleMap extends React.Component<Props, State> {
         ) : locations == null || locations.length === 0 ? (
           "Loading..."
         ) : (
-          <div style={this.props.style}>{this.map}</div>
+          <div style={this.props.style}>
+            <this.MyGoogleMap
+              loadingElement={this.loadingElement}
+              containerElement={this.containerElement}
+              googleMapURL={googleMapURL}
+              mapElement={this.mapElement}
+              locations={locations}
+            />
+          </div>
         )}
       </div>
     );

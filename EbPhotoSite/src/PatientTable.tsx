@@ -27,7 +27,6 @@ interface PatientTableProps {
 }
 
 interface PatientTableState {
-  rows: PatientTableRow[];
   selected: EncounterDocument | null;
 }
 
@@ -39,22 +38,14 @@ export class PatientTable extends React.Component<
     super(props);
     this.state = {
       selected: null,
-      rows: this.props.eDocs.map(eDoc => ({ eDoc, tDoc: undefined })),
     };
   }
 
-  componentDidMount() {
-    this.load();
-  }
-
-  private load() {
-    const rows = this.props.eDocs.map(eDoc => {
-      return {
-        eDoc,
-        tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId),
-      };
-    });
-    this.setState({ rows });
+  private getRows() {
+    return this.props.eDocs.map(eDoc => ({
+      eDoc,
+      tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId),
+    }));
   }
 
   private triageIsPositive(tDoc: EncounterTriageDocument | undefined): boolean {
@@ -172,7 +163,7 @@ export class PatientTable extends React.Component<
       <Redirect to={`/patient-detail/${selected.docId}`} />
     ) : (
       <ReactTable
-        data={this.state.rows}
+        data={this.getRows()}
         columns={this.columns()}
         show-pagination={false}
         default-page-size={100}

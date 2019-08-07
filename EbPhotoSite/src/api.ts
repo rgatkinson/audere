@@ -5,6 +5,7 @@
 
 import {
   AuthUser,
+  EncounterDocument,
   EncounterTriageDocument,
   MessagingTokenDocument,
   Notification,
@@ -120,14 +121,17 @@ export class Api {
     }
   }
 
-  async loadEncounters(): Promise<QuerySnapshot> {
+  private encounterQuery() {
     const db = firebase.firestore();
     const collection = db.collection(getEncounterCollection());
-
-    const query = collection
+    return collection
       .where(FIELD_PATH.protocolVersion, "==", PROTOCOL_V1)
       .orderBy(FIELD_PATH.sentAt)
       .limit(256);
+  }
+
+  async loadEncounters(): Promise<QuerySnapshot> {
+    const query = this.encounterQuery();
     return await logIfError("loadEncounters", "get", () => query.get());
   }
 
@@ -138,6 +142,14 @@ export class Api {
     return await logIfError("loadEncounter", "get", () => doc.get());
   }
 
+  listenForEncounters(
+    callback: (snapshot: EncounterDocument[]) => void
+  ): () => void {
+    return this.encounterQuery().onSnapshot(snapshot =>
+      callback(snapshot.docs.map(doc => doc.data()) as EncounterDocument[])
+    );
+  }
+
   async loadTriage(docId: string): Promise<DocumentSnapshot> {
     const db = firebase.firestore();
     const collection = db.collection(getTriageCollection());
@@ -145,11 +157,25 @@ export class Api {
     return await logIfError("loadTriage", "get", () => doc.get());
   }
 
-  async loadTriages(): Promise<QuerySnapshot> {
+  private triageQuery() {
     const db = firebase.firestore();
     const collection = db.collection(getTriageCollection());
-    const query = collection.limit(256);
+    return collection.limit(256);
+  }
+
+  async loadTriages(): Promise<QuerySnapshot> {
+    const query = this.triageQuery();
     return await logIfError("loadTriages", "get", () => query.get());
+  }
+
+  listenForTriages(
+    callback: (snapshot: EncounterTriageDocument[]) => void
+  ): () => void {
+    return this.triageQuery().onSnapshot(snapshot =>
+      callback(snapshot.docs.map(doc =>
+        doc.data()
+      ) as EncounterTriageDocument[])
+    );
   }
 
   async saveTriage(triage: EncounterTriageDocument): Promise<void> {
