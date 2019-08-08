@@ -4,7 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StatusBar,
+  StyleSheet,
+  View,
+  ImageBackground,
+} from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
@@ -43,21 +50,20 @@ export default class Chrome extends React.PureComponent<Props> {
 
     return (
       <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <Image
-            source={SPLASH_IMAGE}
-            style={[
-              styles.alignTop,
-              {
-                width: screenWidth,
-                height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
-              },
-              !!this.props.splashImage && {
-                height: undefined,
-                aspectRatio: SPLASH_RATIO,
-              },
-            ]}
-          />
+        <ImageBackground
+          source={SPLASH_IMAGE}
+          style={[
+            styles.alignTop,
+            {
+              width: screenWidth,
+              height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
+            },
+            !!this.props.splashImage && {
+              height: undefined,
+              aspectRatio: SPLASH_RATIO,
+            },
+          ]}
+        >
           <Image
             resizeMode={"stretch"}
             source={{ uri: "gradient" }}
@@ -71,7 +77,7 @@ export default class Chrome extends React.PureComponent<Props> {
               },
             ]}
           />
-        </View>
+        </ImageBackground>
         <StatusBar
           backgroundColor="transparent"
           barStyle="light-content"
@@ -88,7 +94,7 @@ export default class Chrome extends React.PureComponent<Props> {
 
         <View
           style={[
-            styles.alignBottom,
+            !!splashImage && styles.alignBottom,
             {
               height: !!splashImage
                 ? screenHeight -
