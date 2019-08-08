@@ -121,6 +121,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
       predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: 5000,
       action: () =>
