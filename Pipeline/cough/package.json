@@ -1,0 +1,54 @@
+{
+  "name": "cough-data-pipeline",
+  "version": "0.0.1",
+  "description": "ETL for Cough project",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "build-docker": "tsc && npm pack ../../lib && docker build -f docker/Dockerfile -t cough-data:latest ."
+  },
+  "main": "build/src/server.js",
+  "dependencies": {
+    "@google-cloud/bigquery": "^4.1.3",
+    "audere-lib": "link:../../lib",
+    "aws-sdk": "^2.373.0",
+    "base64url": "^3.0.0",
+    "firebase-admin": "^7.3.0",
+    "json2csv": "^4.3.4",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.23",
+    "pg": "^7.4.3",
+    "sequelize": "^4.44.2",
+    "uuid": "^3.3.2",
+    "winston": "^3.2.1",
+    "xlsx": "^0.14.4",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^10.11.0",
+    "@types/sequelize": "^4.27.28",
+    "@types/yargs": "^12.0.7"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/test/**/*.(integration|test).(ts|js)"
+    ],
+    "testEnvironment": "node"
+  }
+}

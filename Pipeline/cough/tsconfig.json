@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    },
+    "types": ["node"],
+    "lib": [
+      // Default libs
+      "dom", "ES6", "DOM.Iterable", "ScriptHost",
+      // Extra goodies
+      "es2016.array.include"
+    ],
+
+    // Allow directly importing .JSON files
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "test/**/*", "scripts/**/*"]
+}
