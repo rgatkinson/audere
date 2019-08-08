@@ -16,6 +16,7 @@ const firebase = (global as any).firebase as typeof Firebase;
 
 type QuerySnapshot = Firebase.firestore.QuerySnapshot;
 type DocumentSnapshot = Firebase.firestore.DocumentSnapshot;
+export type FirebaseUnsubscriber = () => void;
 
 const DEFAULT_ENCOUNTER_COLLECTION = "encounters";
 const DEFAULT_MESSAGES_COLLECTION = "messages";
@@ -144,10 +145,22 @@ export class Api {
 
   listenForEncounters(
     callback: (snapshot: EncounterDocument[]) => void
-  ): () => void {
+  ): FirebaseUnsubscriber {
     return this.encounterQuery().onSnapshot(snapshot =>
       callback(snapshot.docs.map(doc => doc.data()) as EncounterDocument[])
     );
+  }
+
+  listenForEncounter(
+    eDocId: string,
+    callback: (snapshot: EncounterDocument) => void
+  ): FirebaseUnsubscriber {
+    const db = firebase.firestore();
+    const collection = db.collection(getEncounterCollection());
+
+    return collection.doc(eDocId).onSnapshot(snap => {
+      callback(snap.data() as EncounterDocument);
+    });
   }
 
   async loadTriage(docId: string): Promise<DocumentSnapshot> {
@@ -170,12 +183,24 @@ export class Api {
 
   listenForTriages(
     callback: (snapshot: EncounterTriageDocument[]) => void
-  ): () => void {
+  ): FirebaseUnsubscriber {
     return this.triageQuery().onSnapshot(snapshot =>
       callback(snapshot.docs.map(doc =>
         doc.data()
       ) as EncounterTriageDocument[])
     );
+  }
+
+  listenForTriage(
+    tDocId: string,
+    callback: (snapshot: EncounterTriageDocument) => void
+  ): FirebaseUnsubscriber {
+    const db = firebase.firestore();
+    const collection = db.collection(getTriageCollection());
+
+    return collection.doc(tDocId).onSnapshot(snap => {
+      callback(snap.data() as EncounterTriageDocument);
+    });
   }
 
   async saveTriage(triage: EncounterTriageDocument): Promise<void> {

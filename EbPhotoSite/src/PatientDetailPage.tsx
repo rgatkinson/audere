@@ -17,7 +17,7 @@ import {
   NotificationType,
   Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { getApi, getAuthUser } from "./api";
+import { getApi, getAuthUser, FirebaseUnsubscriber } from "./api";
 import { last, localeDate, triageDocFromTriage } from "./util";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
@@ -41,13 +41,29 @@ class PatientDetailPageAssumeRouter extends React.Component<
   PatientDetailPageProps,
   PatientDetailPageState
 > {
+  _unsubEncounter: FirebaseUnsubscriber | null = null;
+  _unsubTriage: FirebaseUnsubscriber | null = null;
+
   constructor(props: PatientDetailPageProps) {
     super(props);
     this.state = { eDoc: null, tDoc: null };
   }
 
   componentDidMount() {
+    const sharedDocId = this.props.match.params.docId;
+
     this.load();
+    this._unsubEncounter = getApi().listenForEncounter(sharedDocId, eDoc =>
+      this.setState({ eDoc })
+    );
+    this._unsubTriage = getApi().listenForTriage(sharedDocId, tDoc =>
+      this.setState({ tDoc })
+    );
+  }
+
+  componentWillUnmount() {
+    this._unsubEncounter!();
+    this._unsubTriage!();
   }
 
   private load = async (): Promise<void> => {
@@ -119,6 +135,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
             <TriagePane
               eDoc={encounter}
               tDoc={triage}
+              key={JSON.stringify(triage)}
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
             />
