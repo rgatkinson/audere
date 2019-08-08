@@ -291,14 +291,26 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/import/asprenReport",
     stats("importAsprenReport"),
-    wrap(coughAspren.importAsprenReports)
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/asprenReport",
+        coughAspren.importAsprenReports,
+        jsonNoOp
+      )
+    )
   );
 
   const coughFirebase = new CoughFirebaseEndpoint(sql);
   internalApp.get(
     "/api/import/coughAnalytics",
     stats("importCoughAnalytics"),
-    wrap(coughFirebase.importAnalytics)
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/coughAnalytics",
+        coughFirebase.importAnalytics,
+        jsonNoOp
+      )
+    )
   );
 
   return useOuch(internalApp);
