@@ -38,6 +38,7 @@ import {
   RDTInterpretingArgs,
 } from "../../../native/rdtReader";
 import {
+  RDTReaderResult,
   RDTReaderSizeResult,
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
@@ -117,6 +118,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _fpsCounterInterval?: NodeJS.Timeout | null | undefined;
   _instructionTimer: NodeJS.Timeout | null | undefined;
   _instructionLastUpdate: number = 0;
+  _lastRDTReaderResult?: RDTReaderResult;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
@@ -325,7 +327,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         });
         dispatch(setRDTPhoto(""));
         dispatch(setRDTPhotoHC(""));
-        dispatch(setRDTReaderResult({ testStripFound: false }));
+        dispatch(
+          setRDTReaderResult(
+            this._lastRDTReaderResult || { testStripFound: false }
+          )
+        );
       }
     }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
   }
@@ -510,6 +516,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
 
     if (!args.testStripFound || !args.fiducialFound) {
+      if (args.testStripDetected) {
+        this._lastRDTReaderResult = rdtCapturedArgsToResult(args);
+      }
       return;
     }
 
@@ -536,20 +545,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       dispatch(
         setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
       );
-      dispatch(
-        setRDTReaderResult({
-          testStripFound: args.testStripFound,
-          isCentered: args.isCentered,
-          sizeResult: args.sizeResult,
-          isFocused: args.isFocused,
-          angle: args.angle,
-          isRightOrientation: args.isRightOrientation,
-          exposureResult: args.exposureResult,
-          controlLineFound: args.controlLineFound,
-          testALineFound: args.testALineFound,
-          testBLineFound: args.testBLineFound,
-        })
-      );
+      dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(
           this.state.flashEnabled,
@@ -872,6 +868,21 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 export default connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
 }))(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
+
+function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
+  return {
+    testStripFound: args.testStripFound,
+    isCentered: args.isCentered,
+    sizeResult: args.sizeResult,
+    isFocused: args.isFocused,
+    angle: args.angle,
+    isRightOrientation: args.isRightOrientation,
+    exposureResult: args.exposureResult,
+    controlLineFound: args.controlLineFound,
+    testALineFound: args.testALineFound,
+    testBLineFound: args.testBLineFound,
+  };
+}
 
 const styles = StyleSheet.create({
   camera: {
