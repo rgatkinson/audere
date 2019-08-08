@@ -36,6 +36,8 @@ export interface PatientDetailPageProps
 export interface PatientDetailPageState {
   eDoc: EncounterDocument | null;
   tDoc: EncounterTriageDocument | null;
+  messages: Message[];
+  error?: string;
 }
 
 class PatientDetailPageAssumeRouter extends React.Component<
@@ -44,25 +46,18 @@ class PatientDetailPageAssumeRouter extends React.Component<
 > {
   _unsubEncounter: FirebaseUnsubscriber | null = null;
   _unsubTriage: FirebaseUnsubscriber | null = null;
+  _unsubMessage: FirebaseUnsubscriber | null = null;
 
   constructor(props: PatientDetailPageProps) {
     super(props);
-    this.state = { eDoc: null, tDoc: null };
+    this.state = { eDoc: null, tDoc: null, messages: [] };
     this._triagePane = React.createRef<TriagePane>();
   }
 
   private _triagePane: React.RefObject<TriagePane>;
 
   componentDidMount() {
-    const sharedDocId = this.props.match.params.docId;
-
     this.load();
-    this._unsubEncounter = getApi().listenForEncounter(sharedDocId, eDoc =>
-      this.setState({ eDoc })
-    );
-    this._unsubTriage = getApi().listenForTriage(sharedDocId, tDoc =>
-      this.setState({ tDoc })
-    );
   }
 
   componentWillUnmount() {
@@ -79,10 +74,75 @@ class PatientDetailPageAssumeRouter extends React.Component<
       api.loadEncounter(docId),
       api.loadTriage(docId),
     ]);
-    this.setState({
-      eDoc: (encounter.data() as EncounterDocument) || null,
-      tDoc: (triage.data() as EncounterTriageDocument) || null,
+    this.setState(
+      {
+        eDoc: (encounter.data() as EncounterDocument) || null,
+        tDoc: (triage.data() as EncounterTriageDocument) || null,
+      },
+      () => {
+        this.updateLastViewed();
+        this._unsubEncounter = getApi().listenForEncounter(docId, eDoc =>
+          this.setState({ eDoc })
+        );
+        this._unsubTriage = getApi().listenForTriage(docId, tDoc =>
+          this.setState({ tDoc })
+        );
+        this._unsubMessage = getApi().listenForMessages(docId, messages =>
+          this.setState({ messages })
+        );
+      }
+    );
+  };
+
+  currentTriage(): EncounterTriageInfo {
+    return this.state.tDoc
+      ? this.state.tDoc.triage
+      : { notes: "", diagnoses: [], lastViewed: new Date().toISOString() };
+  }
+
+  save = async (triage: EncounterTriageInfo) => {
+    if (!this.state.eDoc) {
+      return;
+    }
+    const { docId } = this.state.eDoc;
+    const api = getApi();
+    try {
+      const updated = triageDocFromTriage(docId, {
+        ...triage,
+        lastViewed: new Date().toISOString(),
+      });
+      await api.saveTriage(updated);
+      await this.triageChangeHandler(updated);
+    } catch (err) {}
+  };
+
+  changeEVD = async (testIndicatesEVD: boolean) => {
+    const authUser = await getAuthUser();
+    const triage = this.currentTriage();
+    this.save({
+      ...triage,
+      diagnoses: [
+        ...(triage.diagnoses || []),
+        {
+          tag: ConditionTag.Ebola,
+          value: testIndicatesEVD,
+          diagnoser: authUser,
+          timestamp: new Date().toISOString(),
+        },
+      ],
     });
+  };
+
+  changeNotes = (notes: string) => {
+    const triage = this.currentTriage();
+    this.save({
+      ...triage,
+      notes,
+    });
+  };
+
+  updateLastViewed = () => {
+    this.save(this.currentTriage());
   };
 
   triageChangeHandler = async (
@@ -126,14 +186,8 @@ class PatientDetailPageAssumeRouter extends React.Component<
     });
   };
 
-  private updateLastViewed(message: Message) {
-    if (this._triagePane && this._triagePane.current) {
-      this._triagePane.current.updateLastViewed(message.timestamp);
-    }
-  }
-
   public render(): React.ReactNode {
-    const { eDoc: encounter, tDoc: triage } = this.state;
+    const { eDoc: encounter, tDoc: triage, messages } = this.state;
     return (
       <div className="PatientDetailPage">
         {encounter == null ? (
@@ -149,6 +203,9 @@ class PatientDetailPageAssumeRouter extends React.Component<
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
               ref={this._triagePane}
+              changeEVD={this.changeEVD}
+              changeNotes={this.changeNotes}
+              error={this.state.error}
             />
             <PhotoPane eDoc={encounter} tDoc={triage} />
             <Chat
@@ -156,7 +213,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
               parentDocId={encounter.docId}
               phone={encounter.encounter.healthWorker.phone}
               chwUid={encounter.encounter.healthWorker.uid}
-              onNewMessage={this.updateLastViewed}
+              messages={messages}
             />
           </div>
         )}
@@ -266,107 +323,50 @@ class TestDetailPane extends React.Component<PatientInfoPaneProps> {
 interface TriageProps extends PatientInfoPaneProps {
   reload: () => Promise<void>;
   triageChangedAction: (tDoc: EncounterTriageDocument) => Promise<void>;
+  error?: string;
+  changeEVD: (evdStatus: boolean) => void;
+  changeNotes: (notes: string) => void;
 }
 
 interface TriageState {
   busy: boolean;
   noteChanged: boolean;
-  edited: EncounterTriageInfo;
-  error: string | null;
+  notes?: string;
 }
 
 class TriagePane extends React.Component<TriageProps, TriageState> {
   constructor(props: TriageProps) {
     super(props);
-    const triage = props.tDoc
-      ? props.tDoc.triage
-      : { notes: "", diagnoses: [], lastViewed: new Date().toISOString() };
     this.state = {
       busy: false,
       noteChanged: false,
-      error: null,
-      edited: triage,
     };
   }
 
-  componentDidMount() {
-    this.save();
-  }
-
-  async changeEVD(testIndicatesEVD: boolean) {
-    const authUser = await getAuthUser();
-    this.setState(
-      state => ({
-        edited: {
-          ...state.edited,
-          diagnoses: [
-            ...(state.edited.diagnoses || []),
-            {
-              tag: ConditionTag.Ebola,
-              value: testIndicatesEVD,
-              diagnoser: authUser,
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        },
-      }),
-      () => this.save()
-    );
-  }
-
-  onEVDYes = () => this.changeEVD(true);
-  onEVDNo = () => this.changeEVD(false);
+  onEVDYes = () => this.props.changeEVD(true);
+  onEVDNo = () => this.props.changeEVD(false);
 
   onNotesChange = (e: TextAreaChangeEvent) =>
     this.setState({
-      edited: {
-        ...this.state.edited,
-        notes: e.target.value,
-      },
+      notes: e.target.value,
       noteChanged: true,
     });
 
-  public updateLastViewed(minTimestamp: string) {
-    if (Date.parse(minTimestamp) > Date.parse(this.state.edited.lastViewed)) {
-      this.save();
-    }
-  }
-
-  save = async () => {
-    await new Promise(res =>
-      this.setState(
-        state => ({
-          busy: true,
-          edited: {
-            ...state.edited,
-            lastViewed: maxTimestamp(
-              state.edited.lastViewed,
-              new Date().toISOString()
-            ),
-          },
-        }),
-        res
-      )
-    );
-    const { docId } = this.props.eDoc;
-    const api = getApi();
-    try {
-      const updated = triageDocFromTriage(docId, this.state.edited);
-      await api.saveTriage(updated);
-      await this.props.triageChangedAction(updated);
-      this.setState({ busy: false, noteChanged: false });
-    } catch (err) {
-      this.setState({ busy: false, error: err.message });
-    }
+  onNotesSave = () => {
+    this.props.changeNotes(this.state.notes || "");
+    this.setState({ noteChanged: false });
   };
 
   public render(): React.ReactNode {
-    const { busy, edited, error, noteChanged } = this.state;
+    const { busy, noteChanged } = this.state;
+    const { error } = this.props;
+    const triage = this.props.tDoc && this.props.tDoc.triage;
     const diagnosis =
-      edited.diagnoses &&
-      edited.diagnoses.length >= 1 &&
-      edited.diagnoses[edited.diagnoses.length - 1];
-    const { notes } = this.state.edited;
+      triage &&
+      triage.diagnoses &&
+      triage.diagnoses.length >= 1 &&
+      triage.diagnoses[triage.diagnoses.length - 1];
+    const notes = triage && triage.notes;
     return (
       <div className="TriagePane">
         <h3>Does the below image indicate EVD positivity?</h3>
@@ -396,7 +396,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           <textarea
             id="notes"
             disabled={busy}
-            value={notes}
+            value={notes || ""}
             onChange={this.onNotesChange}
             placeholder={"Add additional triage notes here"}
           />
@@ -405,7 +405,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
             value="SAVE"
             className={noteChanged && !busy ? "evdPressed" : "evdUnpressed"}
             disabled={busy || !noteChanged}
-            onClick={this.save}
+            onClick={this.onNotesSave}
           />
         </div>
         {error != null && <div className="Error">{error}</div>}

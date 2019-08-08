@@ -245,6 +245,15 @@ export class Api {
       .getDownloadURL();
   }
 
+  listenForMessages(
+    encounterDocID: string,
+    callback: (messages: Message[]) => void
+  ): () => void {
+    return this.getMessagesReference(encounterDocID).onSnapshot(snapshot => {
+      callback(snapshot.docs.map(doc => doc.data()) as Message[]);
+    });
+  }
+
   // TODO(ram): See if this can be made into a collection group query
   listenForLatestMessage(
     encounterDocID: string,

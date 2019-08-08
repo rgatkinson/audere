@@ -22,14 +22,17 @@ export interface ChatProps {
   parentDocId: string;
   phone: string;
   chwUid: string;
-  onNewMessage: (message: Message) => void;
+  messages: Message[];
 }
 
 export interface ChatState {
   input: string;
   currentUser: Firebase.User | null;
-  messages: Message[];
   busy: boolean;
+}
+
+interface ChatSnapshot {
+  scrolledDown: boolean;
 }
 
 export class Chat extends React.Component<ChatProps, ChatState> {
@@ -43,7 +46,6 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     this.state = {
       input: "",
       currentUser: null,
-      messages: [],
       busy: true,
     };
 
@@ -59,32 +61,30 @@ export class Chat extends React.Component<ChatProps, ChatState> {
         currentUser: user,
       });
     });
-
-    const api = getApi();
-    const collection = api.getMessagesReference(this.props.parentDocId);
-    this.unsubscribeMessages = collection.onSnapshot(collection => {
-      const messages = collection.docs.map(d => d.data() as Message);
-      const messageList = this._messageList.current;
-      const scrolledDown =
-        messageList.scrollTop >=
-        messageList.scrollHeight - messageList.offsetHeight;
-      this.setState({ messages: messages }, () => {
-        const messageList = this._messageList.current;
-        if (scrolledDown) {
-          messageList.scrollTop = messageList.scrollHeight;
-        }
-      });
-      collection
-        .docChanges()
-        .map(docChange =>
-          this.props.onNewMessage(docChange.doc.data() as Message)
-        );
-    });
   }
 
   componentWillUnmount() {
     this.unsubscribeAuth();
     this.unsubscribeMessages();
+  }
+
+  getSnapshotBeforeUpdate(): ChatSnapshot {
+    const messageList = this._messageList.current;
+    const scrolledDown =
+      messageList.scrollTop >=
+      messageList.scrollHeight - messageList.offsetHeight;
+    return { scrolledDown };
+  }
+
+  componentDidUpdate(
+    prevProps: ChatProps,
+    prevState: ChatState,
+    { scrolledDown }: ChatSnapshot
+  ) {
+    if (scrolledDown) {
+      const messageList = this._messageList.current;
+      messageList.scrollTop = messageList.scrollHeight;
+    }
   }
 
   onChange(e: any) {
@@ -165,7 +165,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
   }
 
   render() {
-    const { messages } = this.state;
+    const { messages } = this.props;
     return (
       <div>
         <p className="chat-title">Chat with community health worker:</p>
