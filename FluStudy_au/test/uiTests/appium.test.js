@@ -159,8 +159,9 @@ async function input_screen(driver, screen_info) {
         for (const button of buttons) {
           let buttonLocation = await button.getLocation();
           if (buttonLocation.y > questionLocation.y) {
-            if (buttonLocation.y > screen_y) {
+            while (buttonLocation.y > screen_y) {
               half_scroll(driver);
+              buttonLocation = await button.getLocation();
             }
             await button.click();
             break;
