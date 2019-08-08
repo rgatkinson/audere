@@ -271,7 +271,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         self.isProcessing = true;
     }
-    [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, UIImage *testStripImage, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, vector<Point2f> boundary) {
+    [[ImageProcessor sharedProcessor] captureRDT:sampleBuffer withCompletion:^(bool passed, bool testStripDetected, UIImage *testStripImage, UIImage *croppedTestStripImage, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, vector<Point2f> boundary) {
         NSLog(@"Found = %d, update Pos = %d, update Angle = %.2f, update Sharpness = %d, update Brightness = %d, update Shadow = %d", passed, (int)sizeResult, angle, sharpness, (int)exposureResult, shadow);
         
         NSString *instructions = [[ImageProcessor sharedProcessor] getInstruction:sizeResult andFor:center andFor:orientation];
@@ -301,11 +301,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 startTime = 0;
                 
                 if (self.onRDTDetected) {
-                    self.onRDTDetected(passed, testStripImage, resultWindowImage, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB, captureTime);
+                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, resultWindowImage, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB, captureTime);
                 }
             } else {
                 if (self.onRDTDetected) {
-                    self.onRDTDetected(passed, testStripImage, NULL, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false, captureTime);
+                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, NULL, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false, captureTime);
                 }
                 @synchronized (self) {
                     self.isProcessing = false;

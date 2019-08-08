@@ -35,7 +35,7 @@ typedef NS_ENUM( NSInteger, AVCamSetupResult ) {
 @property (nonatomic, getter=isSessionRunning) BOOL sessionRunning;
 @property (nonatomic) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic) BOOL isProcessing;
-@property (nonatomic) void (^onRDTDetected)(bool passed, UIImage *testStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime);
+@property (nonatomic) void (^onRDTDetected)(bool passed, bool testStripDetected, UIImage *testStrip, UIImage *croppedTestStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime);
 @property (nonatomic) void (^onRDTCameraReady)(bool supportsTorchMode);
 @property (nonatomic) BOOL disableViewFinder;
 @property (weak, nonatomic) CALayer *viewFinder;

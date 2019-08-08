@@ -11,6 +11,7 @@ type InternalRDTCapturedArgs = {
   img: string;
   resultWindowImg: string;
   passed: boolean;
+  testStripFound: boolean;
   center: boolean;
   fiducial: boolean;
   sizeResult: RDTReaderSizeResult;
@@ -29,6 +30,7 @@ export type RDTCapturedArgs = {
   imgBase64: string;
   resultWindowImgBase64: string;
   testStripFound: boolean;
+  testStripDetected: boolean;
   fiducialFound: boolean;
   isCentered: boolean;
   sizeResult: RDTReaderSizeResult;
@@ -67,6 +69,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       imgBase64: capturedArgs.img,
       resultWindowImgBase64: capturedArgs.resultWindowImg,
       testStripFound: capturedArgs.passed,
+      testStripDetected: capturedArgs.testStripFound,
       isCentered: capturedArgs.center,
       fiducialFound: capturedArgs.fiducial,
       sizeResult: capturedArgs.sizeResult,

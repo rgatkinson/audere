@@ -37,7 +37,7 @@
             }
         );
     };
-    viewController.onRDTDetected = ^(bool passed, UIImage *testStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime){
+    viewController.onRDTDetected = ^(bool passed, bool testStripDetected, UIImage *testStrip, UIImage *croppedTestStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime){
         RDTView *strongSelf = weakSelf;
         NSLog(@"Callback called with %@", passed ? @"true" : @"false");
         if (!strongSelf || !strongSelf.onRDTCaptured) {
@@ -54,6 +54,7 @@
             strongSelf.onRDTCaptured(
                 @{
                     @"passed": @(passed),
+                    @"testStripDetected": @(testStripDetected),
                     @"img": base64img,
                     @"resultWindowImg": base64ResultWindowImg,
                     @"fiducial": @(fiducial),

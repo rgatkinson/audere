@@ -62,6 +62,7 @@ const int RESULT_WINDOW_X = 550;
 const int RESULT_WINDOW_Y = 10;
 const int RESULT_WINDOW_WIDTH = 200;
 const int RESULT_WINDOW_HEIGHT = 30;
+const double ENHANCING_THRESHOLD = 4.5;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -210,51 +211,52 @@ Mat siftRefDescriptor;
     //isSharp = false;
     
     //preform detectRDT only if those two quality checks are passed
-    if (exposureResult == NORMAL && isSharp) {
-        //CJ: detectRDT starts
-        //CJ: detectRDT ends inside of "performBRISKSearchOnMat". Check "performBRISKSearchOnMat" for the end of detectRDT.
-        vector<Point2f> boundary;
-        //boundary = [self detectRDT:greyMat andRansac: 5];
-        boundary = [self detectRDTWithSIFT:greyMat andRansac: 5];
-        bool isCentered = false;
-        SizeResult sizeResult = INVALID;
-        bool isRightOrientation = false;
-        float angle = 0.0;
-        
-        //[self checkPositionAndSize:boundary isCropped:false inside:greyMat.size()];
-        
-        if (boundary.size() > 0) {
-            isCentered = [self checkIfCentered:boundary inside:greyMat.size()];
-            sizeResult = [self checkSize:boundary inside:greyMat.size()];
-            isRightOrientation = [self checkOrientation:boundary];
-            angle = [self measureOrientation: boundary];
-        }
-        
-        Mat rgbMat = [self cropRDT:inputMat];
-        
-        passed = sizeResult == RIGHT_SIZE && isCentered && isRightOrientation;
-        
-        bool fiducial = false;
-        if (passed) {
-            Mat resultWindow = [self cropResultWindow:inputMat with:boundary with:&fiducial];
-            resultWindow.release();
-            passed = passed & fiducial;
-        }
-        
-        NSLog(@"PASSED: %d", passed);
-        
-        UIImage *img = MatToUIImage(rgbMat);
-        rgbMat.release();
-        inputMat.release();
-        greyMat.release();
-        completion(passed, img, fiducial, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false, boundary);
-    } else {
-        NSLog(@"Found = ENTERED");
-        vector<Point2f> empty;
-        inputMat.release();
-        greyMat.release();
-        completion(passed, nil, false, exposureResult, INVALID, false, false, 0.0, isSharp, false, empty);//, Mat());
+    //CJ: detectRDT starts
+    //CJ: detectRDT ends inside of "performBRISKSearchOnMat". Check "performBRISKSearchOnMat" for the end of detectRDT.
+    vector<Point2f> boundary;
+    //boundary = [self detectRDT:greyMat andRansac: 5];
+    boundary = [self detectRDTWithSIFT:greyMat andRansac: 5];
+    bool isCentered = false;
+    SizeResult sizeResult = INVALID;
+    bool isRightOrientation = false;
+    float angle = 0.0;
+    bool testStripDetected = false;
+    
+    //[self checkPositionAndSize:boundary isCropped:false inside:greyMat.size()];
+    
+    if (boundary.size() > 0) {
+        testStripDetected = true;
+        isCentered = [self checkIfCentered:boundary inside:greyMat.size()];
+        sizeResult = [self checkSize:boundary inside:greyMat.size()];
+        isRightOrientation = [self checkOrientation:boundary];
+        angle = [self measureOrientation: boundary];
     }
+    
+    Mat rgbMat = [self crop:inputMat];
+    
+    passed = exposureResult == NORMAL && isSharp && sizeResult == RIGHT_SIZE && isCentered && isRightOrientation;
+    
+    bool fiducial = false;
+    Mat correctedMat = Mat();
+    UIImage *img;
+    UIImage *croppedRDTImg;
+    if (passed) {
+        correctedMat = [self cropRDT:inputMat with:boundary];
+        Mat resultWindow = [self cropResultWindow:correctedMat with:&fiducial];
+        resultWindow.release();
+        passed = passed & fiducial;
+        if (passed) {
+            img = MatToUIImage(rgbMat);
+            croppedRDTImg = MatToUIImage(correctedMat);
+        }
+    }
+    
+    NSLog(@"PASSED: %d", passed);
+    
+    rgbMat.release();
+    inputMat.release();
+    greyMat.release();
+    completion(passed, testStripDetected, img, croppedRDTImg, fiducial, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false, boundary);
 }
 // end of caputureRDT
 
@@ -526,7 +528,7 @@ Mat siftRefDescriptor;
     return result;
 }
 
--(Mat) cropRDT:(Mat) inputMat {
+-(Mat) crop:(Mat) inputMat {
     int width = (int)(inputMat.cols * CROP_RATIO);
     int height = (int)(inputMat.rows * CROP_RATIO);
     int x = (int)(inputMat.cols*(1.0-CROP_RATIO)/2);
@@ -727,7 +729,8 @@ Mat siftRefDescriptor;
 
 -(Mat) interpretResultWithBoundary: (Mat) inputMat withBoundary:(vector<Point2f>) boundary andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
     bool fiducial = false;
-    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:&fiducial];
+    Mat correctedMat = [self cropRDT:inputMat with:boundary];
+    Mat resultMat = [self cropResultWindow:correctedMat with:&fiducial];
 
     if (!fiducial) {
         *control = false;
@@ -735,8 +738,23 @@ Mat siftRefDescriptor;
         *testB = false;
         return Mat();
     }
+    
+    Mat grayMat = Mat();
+    cvtColor(resultMat, grayMat, COLOR_RGB2GRAY);
+    cv::Scalar mu,sigma;
+    meanStdDev(grayMat, mu, sigma);
+    double minVal, maxVal;
+    cv::Point minLoc, maxLoc;
+    minMaxLoc(grayMat, &minVal, &maxVal, &minLoc, &maxLoc, noArray());
+    
+    NSLog(@"%@", [NSString stringWithFormat:@"stdev %.2f, minval %.2f, maxval %.2f",
+                             sigma[0],
+                             minVal,
+                             maxVal]);
+    
+    if (sigma[0] > ENHANCING_THRESHOLD)
+        resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
 
-    resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
     //resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(10, 10)];
     //resultMat = [self correctGamma:resultMat withGamma:0.75];
 
@@ -768,7 +786,8 @@ Mat siftRefDescriptor;
         return inputMat;
 
     bool fiducial = false;
-    Mat resultMat = [self cropResultWindow:inputMat with:boundary with:&fiducial];
+    Mat correctedMat = [self cropRDT:inputMat with:boundary];
+    Mat resultMat = [self cropResultWindow:correctedMat with:&fiducial];
     
     if (!fiducial) {
         *control = false;
@@ -882,6 +901,8 @@ Mat siftRefDescriptor;
         
         cv::Point tl = cv::Point(midpoint+offset-RESULT_WINDOW_RECT_HEIGHT*scale/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
         cv::Point br = cv::Point(midpoint+offset+RESULT_WINDOW_RECT_HEIGHT*scale/2.0, inputMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
+        
+        NSLog(@"Scale %.2f, Offset %.2f", scale, offset);
         
         fiducialRect = cv::Rect(tl, br);
         
@@ -1064,39 +1085,43 @@ Mat siftRefDescriptor;
     return result;
 }
 
--(Mat) cropResultWindow:(Mat) inputMat with:(vector<Point2f>) boundary with:(bool*) fiducial{
+-(Mat) cropRDT:(Mat) inputMat with:(vector<Point2f>) boundary {
     Mat ref_boundary = Mat(4, 1, CV_32FC2);
-
+    
     ref_boundary.at<Vec2f>(0, 0)[0] = 0;
     ref_boundary.at<Vec2f>(0, 0)[1] = 0;
-
+    
     ref_boundary.at<Vec2f>(1, 0)[0] = refImg.cols - 1;
     ref_boundary.at<Vec2f>(1, 0)[1] = 0;
-
+    
     ref_boundary.at<Vec2f>(2, 0)[0] = refImg.cols - 1;
     ref_boundary.at<Vec2f>(2, 0)[1] = refImg.rows - 1;
-
+    
     ref_boundary.at<Vec2f>(3, 0)[0] = 0;
     ref_boundary.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
-
+    
     NSLog(@"ref_boundary:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
           ref_boundary.at<Vec2f>(0, 0)[0], ref_boundary.at<Vec2f>(0, 0)[1],
           ref_boundary.at<Vec2f>(1, 0)[0], ref_boundary.at<Vec2f>(1, 0)[1],
           ref_boundary.at<Vec2f>(2, 0)[0], ref_boundary.at<Vec2f>(2, 0)[1],
           ref_boundary.at<Vec2f>(3, 0)[0], ref_boundary.at<Vec2f>(3, 0)[1]);
-
+    
     Mat boundaryMat = Mat(boundary);
-
+    
     NSLog(@"boundaryMat:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
           boundaryMat.at<Vec2f>(0, 0)[0], boundaryMat.at<Vec2f>(0, 0)[1],
           boundaryMat.at<Vec2f>(1, 0)[0], boundaryMat.at<Vec2f>(1, 0)[1],
           boundaryMat.at<Vec2f>(2, 0)[0], boundaryMat.at<Vec2f>(2, 0)[1],
           boundaryMat.at<Vec2f>(3, 0)[0], boundaryMat.at<Vec2f>(3, 0)[1]);
-
+    
     Mat M = getPerspectiveTransform(boundaryMat, ref_boundary);
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
     cv::warpPerspective(inputMat, correctedMat, M, cv::Size(refImg.cols, refImg.rows));
+    
+    return correctedMat;
+}
 
+-(Mat) cropResultWindow:(Mat) correctedMat with:(bool*) fiducial {
     //cv::Rect resultWindowRect = [self checkFiducialAndReturnResultWindowRect:correctedMat andResult:fiducial];
     cv::Rect resultWindowRect = [self checkFiducialKMenas:correctedMat andResult:fiducial];
     //cv::Rect resultWindowRect = [self returnResultWindowRect: correctedMat andResult:fiducial];

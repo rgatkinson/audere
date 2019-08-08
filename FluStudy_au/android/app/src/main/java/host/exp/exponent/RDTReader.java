@@ -93,6 +93,7 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
             event.putString("resultWindowImg", ImageUtil.matToBase64(interpretationResult.resultMat));
         }
         event.putBoolean("passed", captureResult.allChecksPassed);
+        event.putBoolean("testStripDetected", captureResult.testStripDetected);
         event.putBoolean("fiducial", captureResult.fiducial);
         event.putBoolean("center", captureResult.isCentered);
         event.putInt("sizeResult", captureResult.sizeResult.ordinal());
