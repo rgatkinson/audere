@@ -61,13 +61,9 @@ export class PatientTable extends React.Component<
   }
 
   private getTrProps = (state: any, row: any, column: any, instance: any) => {
-    const evd = row && this.triageIsPositive(row.original.tDoc);
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
         this.props.onSelect(e, row.original.eDoc);
-      },
-      style: {
-        border: evd ? "1px solid #c00" : "white",
       },
     };
   };
