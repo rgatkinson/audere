@@ -74,30 +74,32 @@ export class LoggedInAs extends React.Component<
     return (
       <div>
         <table>
-          <tr>
-            <td>
-              {this.state.user !== null && (
-                <div
-                  className="ProfileImage"
-                  style={{
-                    clear: "none",
-                  }}
-                >
-                  <img src={profileImage} alt={"Sweet profile silhouette"} />
-                </div>
-              )}
-            </td>
-            <td>
-              <div className="WhoAmI">
-                {this.whoAmI()}
+          <tbody>
+            <tr>
+              <td>
                 {this.state.user !== null && (
-                  <div className="Logout" onClick={this.logout}>
-                    Logout
+                  <div
+                    className="ProfileImage"
+                    style={{
+                      clear: "none",
+                    }}
+                  >
+                    <img src={profileImage} alt={"Sweet profile silhouette"} />
                   </div>
                 )}
-              </div>
-            </td>
-          </tr>
+              </td>
+              <td>
+                <div className="WhoAmI">
+                  {this.whoAmI()}
+                  {this.state.user !== null && (
+                    <div className="Logout" onClick={this.logout}>
+                      Logout
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     );
