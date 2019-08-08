@@ -71,7 +71,6 @@ export class LoggedInAs extends React.Component<
   }
 
   render() {
-    const { busy } = this.state;
     return (
       <div>
         <table>
@@ -84,7 +83,7 @@ export class LoggedInAs extends React.Component<
                     clear: "none",
                   }}
                 >
-                  <img src={profileImage} />
+                  <img src={profileImage} alt={"Sweet profile silhouette"} />
                 </div>
               )}
             </td>

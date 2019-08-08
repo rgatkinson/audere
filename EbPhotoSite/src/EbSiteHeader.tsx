@@ -21,7 +21,7 @@ export class EbSiteHeader extends React.Component<EbSiteHeaderProps> {
             clear: "none",
           }}
         >
-          <img src={logo} />
+          <img src={logo} alt={"Amazing logo"} />
         </div>
         <div
           style={{

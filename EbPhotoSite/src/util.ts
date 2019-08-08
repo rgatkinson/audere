@@ -1,6 +1,4 @@
 import {
-  AuthUser,
-  ConditionTag,
   DocumentType,
   EncounterDocument,
   EncounterTriageDocument,
