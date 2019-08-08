@@ -180,24 +180,35 @@ export class AsprenClient {
     }
 
     const vaccinationDate = this.getByKey("DATE_OF_VACC", row);
-    const comorbitiesDescription = this.getByKey("COMORBIDITIES_DESCRIPTION", row);
+    const comorbitiesDescription = this.getByKey(
+      "COMORBIDITIES_DESCRIPTION",
+      row
+    );
 
     return {
       barcode: this.getByKey("SA Pathology Barcode", row),
       encounterDate: this.getByKey("Referred", row),
       encounterState: this.getByKey("Dr State", row),
       adenoResult: this.parseZeroOne(this.getByKey("ADENO_RESULT", row)),
-      pertussisResult: this.parseZeroOne(this.getByKey("B_PERTUSSIS_RESULT", row)),
+      pertussisResult: this.parseZeroOne(
+        this.getByKey("B_PERTUSSIS_RESULT", row)
+      ),
       fluAResult: this.parseZeroOne(this.getByKey("FLU_A_RESULT", row)),
       fluBResult: this.parseZeroOne(this.getByKey("FLU_B_RESULT", row)),
       h1n1Result: this.parseZeroOne(this.getByKey("H1N1(2009)", row)),
       h3n2Result: this.parseZeroOne(this.getByKey("H3N2", row)),
-      metapneumovirusResult: this.parseZeroOne(this.getByKey("METAPNEUMOVIRUS_RES", row)),
-      mycopneumoniaResult: this.parseZeroOne(this.getByKey("MYCO_PNEUMONIAE_RES", row)),
+      metapneumovirusResult: this.parseZeroOne(
+        this.getByKey("METAPNEUMOVIRUS_RES", row)
+      ),
+      mycopneumoniaResult: this.parseZeroOne(
+        this.getByKey("MYCO_PNEUMONIAE_RES", row)
+      ),
       para1Result: this.parseZeroOne(this.getByKey("PARA_1_RESULT", row)),
       para2Result: this.parseZeroOne(this.getByKey("PARA_2_RESULT", row)),
       para3Result: this.parseZeroOne(this.getByKey("PARA_3_RESULT", row)),
-      rhinovirusResult: this.parseZeroOne(this.getByKey("RHINOVIRUS_RESULT", row)),
+      rhinovirusResult: this.parseZeroOne(
+        this.getByKey("RHINOVIRUS_RESULT", row)
+      ),
       rsvResult: this.parseZeroOne(this.getByKey("RSV_RESULT", row)),
       victoriaResult: this.parseZeroOne(this.getByKey("VICTORIA", row)),
       yamagataResult: this.parseZeroOne(this.getByKey("YAMAGATA", row)),

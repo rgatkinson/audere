@@ -15,6 +15,7 @@ import logger from "../util/logger";
 
 export class CoughFirebaseEndpoint {
   private firebaseImport: LazyAsync<FirebaseImport>;
+  private pipeline: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -22,9 +23,9 @@ export class CoughFirebaseEndpoint {
       const config = await getBigqueryConfig(secrets);
       const client = new BigQueryTableImporter(config);
       const models = defineCoughModels(sql);
-      const pipeline = new DataPipelineService(sql);
-      return new FirebaseImport(sql, models, client, pipeline);
+      return new FirebaseImport(sql, models, client);
     });
+    this.pipeline = new DataPipelineService(sql);
   }
 
   public importAnalytics = async (req, res, next) => {
@@ -38,6 +39,10 @@ export class CoughFirebaseEndpoint {
     } else {
       logger.warn("No tables found to update");
     }
+
+    logger.info("Refreshing derived schema");
+    await this.pipeline.refresh();
+    logger.info("Refreshing complete");
 
     res.json({});
   };

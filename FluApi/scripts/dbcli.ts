@@ -259,7 +259,7 @@ yargs.command({
 yargs.command({
   command: "show-access-key <release> <part>",
   builder: yargs => yargs.string("release").string("part"),
-  handler: command(cmdShowAccessKey)
+  handler: command(cmdShowAccessKey),
 });
 yargs.command({
   command: "show <release> <kind> <row>",
@@ -1473,7 +1473,9 @@ function accessKey(release: Release) {
   return forApp(release, {
     sniffles: () => snifflesModels.accessKey,
     fever: () => feverModels.accessKey,
-    cough: () => { throw failRelease(release); },
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 
@@ -1514,7 +1516,9 @@ function piiUpdater(release: Release) {
   return forApp<SnifflesPiiUpdater | FeverPiiUpdater>(release, {
     sniffles: () => sniffles.pii,
     fever: () => fever.pii,
-    cough: () => { throw failRelease(release); },
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 
@@ -1522,7 +1526,9 @@ function nonPiiUpdater(release: Release) {
   return forApp<SnifflesNonPiiUpdater | FeverNonPiiUpdater>(release, {
     sniffles: () => sniffles.nonPii,
     fever: () => fever.nonPii,
-    cough: () => { throw failRelease(release); },
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 

@@ -5,7 +5,6 @@
 
 import { BigQueryTableImporter } from "../../external/bigQuery";
 import { CoughModels } from "../../models/db/cough";
-import { DataPipelineService } from "../dataPipelineService";
 import { SplitSql } from "../../util/sql";
 import moment = require("moment");
 import logger from "../../util/logger";
@@ -17,18 +16,15 @@ export class FirebaseImport {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
   private readonly bigQuery: BigQueryTableImporter;
-  private readonly pipeline: DataPipelineService;
 
   constructor(
     sql: SplitSql,
     models: CoughModels,
-    bigQuery: BigQueryTableImporter,
-    pipeline: DataPipelineService
+    bigQuery: BigQueryTableImporter
   ) {
     this.sql = sql;
     this.models = models;
     this.bigQuery = bigQuery;
-    this.pipeline = pipeline;
   }
 
   /**
@@ -145,10 +141,5 @@ export class FirebaseImport {
         );
       });
     }
-
-    // Update derived views
-    logger.info("Refreshing derived views");
-    await this.pipeline.refresh();
-    logger.info("Refresh complete");
   }
 }

@@ -40,7 +40,7 @@ interface Props {
 }
 
 interface State {
-  expandedHelpImage: string | null,
+  expandedHelpImage: string | null;
 }
 
 class RadioGrid extends React.PureComponent<Props, State> {
@@ -57,7 +57,7 @@ class RadioGrid extends React.PureComponent<Props, State> {
 
   _toggleHelp = (key: string) => {
     const isSelected = key === this.state.expandedHelpImage ? null : key;
-    this.setState({ expandedHelpImage : isSelected });
+    this.setState({ expandedHelpImage: isSelected });
     logFirebaseEvent(AppEvents.HELP_TOGGLED, {
       selected: !!isSelected,
       key,
@@ -118,7 +118,14 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
   };
 
   render() {
-    const { config, expandHelpImage, highlighted, last, selected, t } = this.props;
+    const {
+      config,
+      expandHelpImage,
+      highlighted,
+      last,
+      selected,
+      t,
+    } = this.props;
     const { key, expandableHelpImage, helpImageUri } = config;
     return (
       <Fragment>
@@ -153,7 +160,10 @@ class Item extends React.Component<ItemProps & WithNamespaces> {
             )}
           </View>
           {!!helpImageUri && (expandHelpImage || !expandableHelpImage) && (
-            <TouchableOpacity style={styles.imageContainer} onPress={expandableHelpImage ? this._toggleHelp : this._onPress}>
+            <TouchableOpacity
+              style={styles.imageContainer}
+              onPress={expandableHelpImage ? this._toggleHelp : this._onPress}
+            >
               <Image
                 key={`${key}-image`}
                 resizeMode={"contain"}

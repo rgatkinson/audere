@@ -63,7 +63,7 @@ class AppController extends React.Component<Props, State> {
 
     const channelConfig = {
       channelId: "eb_photo_store",
-      channelName: "Channel Name"
+      channelName: "Channel Name",
     };
 
     this._channel = new firebase.notifications.Android.Channel(

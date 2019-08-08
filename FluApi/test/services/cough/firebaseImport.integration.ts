@@ -3,10 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { instance, mock, when, anyString, verify } from "ts-mockito";
+import { instance, mock, when, anyString } from "ts-mockito";
 import { CoughModels, defineCoughModels } from "../../../src/models/db/cough";
 import { BigQueryTableImporter } from "../../../src/external/bigQuery";
-import { DataPipelineService } from "../../../src/services/dataPipelineService";
 import { FirebaseImport } from "../../../src/services/cough/firebaseImport";
 import { SplitSql, createSplitSql } from "../../../src/util/sql";
 import moment = require("moment");
@@ -51,7 +50,7 @@ describe("Firebase import", () => {
         lastModifiedTime: "5",
       });
 
-      const svc = new FirebaseImport(sql, cough, instance(bigQuery), null);
+      const svc = new FirebaseImport(sql, cough, instance(bigQuery));
 
       const tableList = await svc.findTablesToUpdate();
       expect(tableList.size).toBe(1);
@@ -80,7 +79,7 @@ describe("Firebase import", () => {
         lastModifiedTime: "5",
       });
 
-      const svc = new FirebaseImport(sql, cough, instance(bigQuery), null);
+      const svc = new FirebaseImport(sql, cough, instance(bigQuery));
 
       const tableList = await svc.findTablesToUpdate();
       expect(tableList.size).toBe(1);
@@ -89,22 +88,14 @@ describe("Firebase import", () => {
   });
 
   describe("import Firebase analytics", () => {
-    it("should insert event data, track table modified time, and refresh cough_derived", async () => {
+    it("should insert event data, track table modified time,", async () => {
       const bigQuery = mock(BigQueryTableImporter);
       when(bigQuery.getTableRows(anyString(), undefined)).thenResolve({
         results: [{ data: "data" }],
         token: null,
       });
 
-      const pipeline = mock(DataPipelineService);
-      when(pipeline.refresh()).thenResolve();
-
-      const svc = new FirebaseImport(
-        sql,
-        cough,
-        instance(bigQuery),
-        instance(pipeline)
-      );
+      const svc = new FirebaseImport(sql, cough, instance(bigQuery));
       await svc.importAnalytics(new Map([["events_20190716", 1]]));
 
       const rows = await cough.firebaseAnalytics.findAll({});
@@ -116,8 +107,6 @@ describe("Firebase import", () => {
       expect(tables).toHaveLength(1);
       expect(tables[0].name).toBe("events_20190716");
       expect(tables[0].modified).toBe("1");
-
-      verify(pipeline.refresh()).called();
     });
 
     it("should overwrite existing event data for a given date", async () => {
@@ -132,15 +121,7 @@ describe("Firebase import", () => {
         token: null,
       });
 
-      const pipeline = mock(DataPipelineService);
-      when(pipeline.refresh()).thenResolve();
-
-      const svc = new FirebaseImport(
-        sql,
-        cough,
-        instance(bigQuery),
-        instance(pipeline)
-      );
+      const svc = new FirebaseImport(sql, cough, instance(bigQuery));
       await svc.importAnalytics(new Map([["events_20190716", 1]]));
 
       const rows = await cough.firebaseAnalytics.findAll({});
@@ -164,15 +145,7 @@ describe("Firebase import", () => {
         token: null,
       });
 
-      const pipeline = mock(DataPipelineService);
-      when(pipeline.refresh()).thenResolve();
-
-      const svc = new FirebaseImport(
-        sql,
-        cough,
-        instance(bigQuery),
-        instance(pipeline)
-      );
+      const svc = new FirebaseImport(sql, cough, instance(bigQuery));
       await svc.importAnalytics(new Map([["events_20190716", 1]]));
 
       const rows = await cough.firebaseAnalytics.findAll({});

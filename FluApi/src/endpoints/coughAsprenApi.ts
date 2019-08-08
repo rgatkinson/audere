@@ -9,13 +9,16 @@ import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { getS3Config } from "../util/s3Config";
+import { DataPipelineService } from "../services/dataPipelineService";
 import AWS from "aws-sdk";
+import logger from "../util/logger";
 
 /**
  * Imports ASPREN data into the Cough ecosystem.
  */
 export class CoughAsprenEndpoint {
   private readonly service: LazyAsync<AsprenImport>;
+  private pipeline: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -25,11 +28,17 @@ export class CoughAsprenEndpoint {
       const client = new AsprenClient(s3, s3Config);
       return new AsprenImport(sql, client);
     });
+    this.pipeline = new DataPipelineService(sql);
   }
 
   public importAsprenReports = async (req, res, next) => {
     const svc = await this.service.get();
     await svc.importAsprenReports();
+
+    logger.info("Refreshing derived schema");
+    await this.pipeline.refresh();
+    logger.info("Refresh complete");
+
     res.json({});
   };
 }
