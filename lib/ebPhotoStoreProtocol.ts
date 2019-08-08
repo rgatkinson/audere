@@ -85,6 +85,7 @@ export interface HealthWorkerInfo {
   lastName: string;
   phone: string;
   notes: string;
+  uid: string;
 }
 
 export interface PatientInfo {

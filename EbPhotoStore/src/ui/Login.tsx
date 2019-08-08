@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import firebase from "react-native-firebase";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import { login, Action, StoreState } from "../store";
 import Button from "./components/Button";
@@ -14,6 +15,7 @@ import { GUTTER, FONT_COLOR, FONT_ROBO_MEDIUM, REGULAR_TEXT } from "./styles";
 import PhoneLoginVerification, {
   PhoneVerificationDismissal,
 } from "./PhoneLoginVerification";
+import { initializeFirebaseListener } from "../store/uploader";
 
 interface Props {
   healthWorkerInfo?: HealthWorkerInfo;
@@ -97,6 +99,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           firstName: this.state.firstName!,
           phone: this.state.phone!,
           notes: this.state.notes ? this.state.notes : "",
+          uid: firebase.auth().currentUser!.uid,
         })
       );
 
