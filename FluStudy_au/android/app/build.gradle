@@ -34,10 +34,6 @@ android {
       versionProps.load(new FileInputStream(versionPropsFile))
     }
     def code = versionProps['VERSION_CODE'].toInteger()
-    // Now that we're not doing the 100xx, 400xx version code munging for split APKs
-    // we need to add 40000 to the version code, because Play Store won't let us upload
-    // with a lower version code than what's released
-    //code = code + 40000
 
     applicationId 'org.auderenow.fluathome_au'
     targetSdkVersion rootProject.ext.targetSdkVersion
