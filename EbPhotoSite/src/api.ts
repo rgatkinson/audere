@@ -93,6 +93,12 @@ export class Api {
   // CLEANUP
   // --------------------------------------
 
+  now(): string {
+    return firebase.firestore.Timestamp.now()
+      .toDate()
+      .toISOString();
+  }
+
   getMessagesReference(docId: string): Firebase.firestore.CollectionReference {
     const db = firebase.firestore();
     const collection = db
@@ -215,7 +221,7 @@ export class Api {
     sender: Firebase.User,
     message: string
   ): Promise<void> {
-    const timestamp = new Date().toISOString();
+    const timestamp = this.now();
     const contents = {
       timestamp: timestamp,
       sender: {

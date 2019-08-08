@@ -158,7 +158,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       return;
     }
     const message: Message = {
-      timestamp: new Date().toISOString(),
+      timestamp: firebase.firestore.Timestamp.now()
+        .toDate()
+        .toISOString(),
       sender: {
         uid: firebase.auth().currentUser!.uid,
         name:
