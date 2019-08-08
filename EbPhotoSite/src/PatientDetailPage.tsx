@@ -257,7 +257,7 @@ interface TriageProps extends PatientInfoPaneProps {
 
 interface TriageState {
   busy: boolean;
-
+  noteChanged: boolean;
   edited: EncounterTriageInfo;
   error: string | null;
 }
@@ -270,6 +270,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       : { notes: "", diagnoses: [], lastViewed: new Date().toISOString() };
     this.state = {
       busy: false,
+      noteChanged: false,
       error: null,
       edited: triage,
     };
@@ -305,6 +306,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
         ...this.state.edited,
         notes: e.target.value,
       },
+      noteChanged: true,
     });
 
   save = async () => {
@@ -315,14 +317,14 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       const updated = triageDocFromTriage(docId, this.state.edited);
       await api.saveTriage(updated);
       await this.props.triageChangedAction(updated);
-      this.setState({ busy: false });
+      this.setState({ busy: false, noteChanged: false });
     } catch (err) {
       this.setState({ busy: false, error: err.message });
     }
   };
 
   public render(): React.ReactNode {
-    const { busy, edited, error } = this.state;
+    const { busy, edited, error, noteChanged } = this.state;
     const diagnosis =
       edited.diagnoses &&
       edited.diagnoses.length >= 1 &&
@@ -364,8 +366,8 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           <input
             type="button"
             value="SAVE"
-            className={"evdUnpressed"}
-            disabled={busy}
+            className={noteChanged && !busy ? "evdPressed" : "evdUnpressed"}
+            disabled={busy || !noteChanged}
             onClick={this.save}
           />
         </div>
