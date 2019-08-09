@@ -21,6 +21,7 @@ export interface ChatProps {
   localIndex: string;
   parentDocId: string;
   phone: string;
+  chwUid: string;
 }
 
 export interface ChatState {
@@ -140,9 +141,12 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       }
     }
     const fromMe = currentUser != null && sender.uid === currentUser.uid;
+    const fromChw = sender.uid === this.props.chwUid;
     let className = "message";
     if (fromMe) {
       className += " current-user";
+    } else if (!fromChw) {
+      className += " other-admin";
     }
     return (
       <li className={className}>

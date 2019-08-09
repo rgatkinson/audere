@@ -144,6 +144,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
               localIndex={encounter.encounter.localIndex}
               parentDocId={encounter.docId}
               phone={encounter.encounter.healthWorker.phone}
+              chwUid={encounter.encounter.healthWorker.uid}
             />
           </div>
         )}
