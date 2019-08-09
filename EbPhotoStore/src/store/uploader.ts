@@ -101,6 +101,9 @@ function getTriageListener(
   dispatch: (action: AnyAction) => void
 ) {
   return (doc: EncounterTriageDocument) => {
+    if (!doc || !doc.docId) {
+      return;
+    }
     const patient = state.patients.find(patient => patient.uuid == doc.docId);
     if (!patient) {
       return;

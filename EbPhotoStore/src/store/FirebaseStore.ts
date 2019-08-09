@@ -63,7 +63,7 @@ function getTriageCollection() {
 }
 
 function getTriageDocument(patientId: string) {
-  return getTriageCollection().doc(patientId);
+  return getTriageCollection().where("docId", "==", patientId);
 }
 
 function getTokenCollection() {
@@ -122,9 +122,11 @@ export function initializeListener(
   patientId: string,
   callback: (doc: EncounterTriageDocument) => void
 ) {
-  getTriageDocument(patientId).onSnapshot(docChange => {
-    const doc = docChange.data() as EncounterTriageDocument;
-    callback(doc);
+  getTriageDocument(patientId).onSnapshot(snapshot => {
+    snapshot.docChanges.forEach(change => {
+      const doc = change.doc.data() as EncounterTriageDocument;
+      callback(doc);
+    });
   });
 }
 

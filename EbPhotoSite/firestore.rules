@@ -1,5 +1,19 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    function emptyDocument(rsc) {
+      return
+      	rsc.data == null
+        || !('id' in rsc)
+        || !('data' in rsc)
+        || !('docId' in rsc.data);
+    }
+
+    function encounterAssigned(doc) {
+      return
+        exists(/databases/$(database)/documents/encounters/$(doc))
+        && get(/databases/$(database)/documents/encounters/$(doc)).data.encounter.healthWorker.uid == request.auth.uid;
+    }
+
     function hasRole(role) {
       return
         exists(/databases/$(database)/documents/roles/$(role))
@@ -35,20 +49,15 @@ service cloud.firestore {
       allow read: if isLoggedIn()
         && matchesDocumentId(resource, document)
         && isSelfAssigned(resource);
-    }
 
-    match /encounters/{document}/messages {
-      function encounterExists() {
-        return exists(/databases/$(database)/documents/encounters/$(document));
+      match /messages/{message} {
+        allow create: if isLoggedIn() && encounterAssigned(document);
+
+        allow list: if isLoggedIn()
+          && (emptyDocument(resource) || encounterAssigned(document));
+
+        allow read: if isLoggedIn() && encounterAssigned(document);
       }
-
-      function isSelfAssigned() {
-        return get(/databases/$(database)/documents/encounters/$(document)).data.encounter.healthWorker.uid == request.auth.uid;
-      }
-
-      allow create, read: if isLoggedIn()
-        && encounterExists()
-        && isSelfAssigned();
     }
 
     match /messaging_tokens/{document} {
@@ -71,24 +80,14 @@ service cloud.firestore {
     }
 
     match /triages/{document} {
-      function encounterExists() {
-        return exists(/databases/$(database)/documents/encounters/$(document));
-      }
-
-      function isSelfAssigned() {
-        return
-          get(/databases/$(database)/documents/encounters/$(document)).data.encounter.healthWorker.uid == request.auth.uid;
-      }
-
-      allow create, update: if isLoggedIn()
-        && encounterExists()
+      allow create: if isLoggedIn()
         && matchesDocumentId(request.resource, document)
-        && isSelfAssigned();
+        && encounterAssigned(document);
 
-      allow read: if isLoggedIn()
-        && encounterExists()
-        && matchesDocumentId(resource, document)
-        && isSelfAssigned();
+      allow list: if isLoggedIn()
+        && (emptyDocument(resource) || encounterAssigned(document));
+
+      allow read: if isLoggedIn() && encounterAssigned(document);
     }
   }
 }
