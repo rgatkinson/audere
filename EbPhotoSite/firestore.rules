@@ -37,6 +37,20 @@ service cloud.firestore {
         && isSelfAssigned(resource);
     }
 
+    match /encounters/{document}/messages {
+      function encounterExists() {
+        return exists(/databases/$(database)/documents/encounters/$(document));
+      }
+
+      function isSelfAssigned() {
+        return get(/databases/$(database)/documents/encounters/$(document)).data.encounter.healthWorker.uid == request.auth.uid;
+      }
+
+      allow create, read: if isLoggedIn()
+        && encounterExists()
+        && isSelfAssigned();
+    }
+
     match /messaging_tokens/{document} {
       function isSelfAssigned(rsc) {
         return rsc.data.uid == request.auth.uid;

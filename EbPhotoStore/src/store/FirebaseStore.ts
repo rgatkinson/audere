@@ -62,6 +62,10 @@ function getTriageCollection() {
   return firebase.firestore().collection(collectionName);
 }
 
+function getTriageDocument(patientId: string) {
+  return getTriageCollection().doc(patientId);
+}
+
 function getTokenCollection() {
   const collectionName =
     process.env.FIRESTORE_TOKEN_COLLECTION || DEFAULT_TOKEN_COLLECTION;
@@ -115,13 +119,12 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
 }
 
 export function initializeListener(
+  patientId: string,
   callback: (doc: EncounterTriageDocument) => void
 ) {
-  getTriageCollection().onSnapshot(collection => {
-    collection.docChanges.forEach(docChange => {
-      const doc = docChange.doc.data() as EncounterTriageDocument;
-      callback(doc);
-    });
+  getTriageDocument(patientId).onSnapshot(docChange => {
+    const doc = docChange.data() as EncounterTriageDocument;
+    callback(doc);
   });
 }
 

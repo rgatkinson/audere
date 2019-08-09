@@ -3,14 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { MiddlewareAPI, Dispatch, AnyAction, Store } from "redux";
-import { PatientState, StoreState } from "./index";
+import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
+import { StoreState } from "./index";
 import {
-  DocumentType,
   HealthWorkerInfo,
   Message,
-  PatientInfo,
   EncounterInfo,
+  EncounterTriageDocument,
 } from "audere-lib/ebPhotoStoreProtocol";
 import {
   syncEncounter,
@@ -36,6 +35,10 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         patientId = state.meta.currentPatient;
         if (patientId !== undefined) {
           if (action.type == "ADD_PATIENT") {
+            initializeListener(
+              state.patients[patientId].uuid,
+              getTriageListener(state, dispatch)
+            );
             initializeMessageListener(
               state.patients[patientId].uuid,
               getMessageListener(dispatch)
@@ -53,6 +56,7 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         break;
       case "persist/REHYDRATE":
         state.patients.forEach((patient, index) => {
+          initializeListener(patient.uuid, getTriageListener(state, dispatch));
           initializeMessageListener(patient.uuid, getMessageListener(dispatch));
         });
         break;
@@ -92,18 +96,19 @@ export function reduxToFirebase(
   };
 }
 
-export function initializeFirebaseListener(store: Store<StoreState>) {
-  initializeListener(doc => {
-    const patient = store
-      .getState()
-      .patients.find(patient => patient.uuid == doc.docId);
+function getTriageListener(
+  state: StoreState,
+  dispatch: (action: AnyAction) => void
+) {
+  return (doc: EncounterTriageDocument) => {
+    const patient = state.patients.find(patient => patient.uuid == doc.docId);
     if (!patient) {
       return;
     }
     const diagnoses = doc.triage.diagnoses;
     if (diagnoses && diagnoses.length > 0) {
       const diagnosis = diagnoses[diagnoses.length - 1];
-      store.dispatch(
+      dispatch(
         setEvdStatus(
           patient.id,
           diagnosis.value,
@@ -112,8 +117,8 @@ export function initializeFirebaseListener(store: Store<StoreState>) {
         )
       );
     }
-    store.dispatch(setTriageNotes(patient.id, doc.triage.notes));
-  });
+    dispatch(setTriageNotes(patient.id, doc.triage.notes));
+  };
 }
 
 function getMessageListener(dispatch: (action: AnyAction) => void) {
