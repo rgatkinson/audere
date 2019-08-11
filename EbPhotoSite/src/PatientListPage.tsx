@@ -10,7 +10,6 @@ import "react-table/react-table.css";
 import {
   EncounterDocument,
   EncounterTriageDocument,
-  Message,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import "./PatientList.css";
@@ -21,7 +20,7 @@ export interface PatientsListPageProps extends RouteComponentProps<{}> {}
 export interface PatientsListPageState {
   eDocs: EncounterDocument[] | null;
   tDocs: EncounterTriageDocument[];
-  latestMessages: { [eDocId: string]: Message };
+  chatsUpdatedAt: { [eDocId: string]: string };
   showTriagedMap: boolean;
   showUntriagedMap: boolean;
 }
@@ -35,7 +34,7 @@ class PatientListPageAssumeRouter extends React.Component<
     this.state = {
       eDocs: null,
       tDocs: [],
-      latestMessages: {},
+      chatsUpdatedAt: {},
       showTriagedMap: false,
       showUntriagedMap: false,
     };
@@ -45,6 +44,7 @@ class PatientListPageAssumeRouter extends React.Component<
   private _eDocHasMessageListener: { [edocId: string]: boolean } = {};
 
   componentDidMount() {
+    this.setState({ chatsUpdatedAt: {} });
     this.load();
   }
 
@@ -64,9 +64,9 @@ class PatientListPageAssumeRouter extends React.Component<
           this._unsubscribers.push(
             getApi().listenForLatestMessage(eDoc.docId, message => {
               this.setState(state => ({
-                latestMessages: {
-                  ...state.latestMessages,
-                  [eDoc.docId]: message,
+                chatsUpdatedAt: {
+                  ...state.chatsUpdatedAt,
+                  [eDoc.docId]: message.timestamp,
                 },
               }));
             })
@@ -105,7 +105,11 @@ class PatientListPageAssumeRouter extends React.Component<
 
   private _renderPatients() {
     const { triagedDocs, untriagedDocs } = this._splitTriagedFromUntriaged();
-    const { latestMessages } = this.state;
+    const { chatsUpdatedAt } = this.state;
+
+    debug(
+      `PatientList chat timestamps: ${JSON.stringify(chatsUpdatedAt, null, 2)}`
+    );
 
     return (
       <div>
@@ -113,7 +117,7 @@ class PatientListPageAssumeRouter extends React.Component<
           headerLabel={`Untriaged Patients (${untriagedDocs.length})`}
           eDocs={untriagedDocs}
           tDocs={this.state.tDocs}
-          latestMessages={latestMessages}
+          chatsUpdatedAt={chatsUpdatedAt}
           onSelectRow={this._select}
           showEvdResultColumns={false}
         />
@@ -121,7 +125,7 @@ class PatientListPageAssumeRouter extends React.Component<
           headerLabel={`Triaged Patients (${triagedDocs.length})`}
           eDocs={triagedDocs}
           tDocs={this.state.tDocs}
-          latestMessages={latestMessages}
+          chatsUpdatedAt={chatsUpdatedAt}
           onSelectRow={this._select}
           showEvdResultColumns={true}
         />
@@ -147,3 +151,9 @@ class PatientListPageAssumeRouter extends React.Component<
 }
 
 export const PatientListPage = withRouter(PatientListPageAssumeRouter);
+
+function debug(message: string) {
+  if (false) {
+    console.log(message);
+  }
+}

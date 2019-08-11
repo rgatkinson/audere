@@ -6,6 +6,7 @@
 import React, { ChangeEvent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import ExifOrientationImg from "react-exif-orientation-img";
+import deepEqual from "deep-equal";
 
 import {
   Diagnosis,
@@ -38,6 +39,7 @@ export interface PatientDetailPageState {
   tDoc: EncounterTriageDocument | null;
   messages: Message[];
   error?: string;
+  savedTriage: EncounterTriageInfo | null;
 }
 
 class PatientDetailPageAssumeRouter extends React.Component<
@@ -50,10 +52,17 @@ class PatientDetailPageAssumeRouter extends React.Component<
 
   constructor(props: PatientDetailPageProps) {
     super(props);
-    this.state = { eDoc: null, tDoc: null, messages: [] };
+    this.state = {
+      eDoc: null,
+      tDoc: null,
+      messages: [],
+      savedTriage: null,
+    };
+    this._page = React.createRef<HTMLDivElement>();
     this._triagePane = React.createRef<TriagePane>();
   }
 
+  private _page: React.RefObject<HTMLDivElement>;
   private _triagePane: React.RefObject<TriagePane>;
 
   componentDidMount() {
@@ -61,8 +70,9 @@ class PatientDetailPageAssumeRouter extends React.Component<
   }
 
   componentWillUnmount() {
-    this._unsubEncounter!();
-    this._unsubTriage!();
+    this._unsubEncounter && this._unsubEncounter();
+    this._unsubTriage && this._unsubTriage();
+    this._unsubMessage && this._unsubMessage();
   }
 
   private load = async (): Promise<void> => {
@@ -70,79 +80,91 @@ class PatientDetailPageAssumeRouter extends React.Component<
     const api = getApi();
 
     // TODO: show errors
-    const [encounter, triage] = await Promise.all([
-      api.loadEncounter(docId),
-      api.loadTriage(docId),
-    ]);
-    this.setState(
-      {
-        eDoc: (encounter.data() as EncounterDocument) || null,
-        tDoc: (triage.data() as EncounterTriageDocument) || null,
-      },
-      () => {
-        this.updateLastViewed();
-        this._unsubEncounter = getApi().listenForEncounter(docId, eDoc =>
-          this.setState({ eDoc })
-        );
-        this._unsubTriage = getApi().listenForTriage(docId, tDoc =>
-          this.setState({ tDoc })
-        );
-        this._unsubMessage = getApi().listenForMessages(docId, messages =>
-          this.setState({ messages })
-        );
-      }
+    {
+      const [eSnap, tSnap] = await Promise.all([
+        api.loadEncounter(docId),
+        api.loadTriage(docId),
+      ]);
+      const eDoc = eSnap ? (eSnap.data() as EncounterDocument) : null;
+      const tDoc = tSnap ? (tSnap.data() as EncounterTriageDocument) : null;
+      const savedTriage = tDoc ? tDoc.triage : null;
+      this.setState({ eDoc, tDoc, savedTriage });
+    }
+
+    this.updateSeenEncounterTimestamp();
+    this._unsubEncounter = api.listenForEncounter(docId, eDoc => {
+      this.setState({ eDoc });
+      this.updateSeenEncounterTimestamp();
+    });
+    this._unsubTriage = api.listenForTriage(docId, tDoc =>
+      this.setState({ tDoc })
+    );
+    this._unsubMessage = api.listenForMessages(docId, messages =>
+      this.setState({ messages })
     );
   };
 
   currentTriage(): EncounterTriageInfo {
-    return this.state.tDoc
-      ? this.state.tDoc.triage
-      : { notes: "", diagnoses: [], lastViewed: new Date().toISOString() };
+    const { eDoc, tDoc } = this.state;
+    return tDoc
+      ? tDoc.triage
+      : {
+          notes: "",
+          diagnoses: [],
+          seenEncounterTimestamp: eDoc ? eDoc.encounter.updatedAt : "",
+          seenMessageTimestamp: "",
+        };
   }
-
-  save = async (triage: EncounterTriageInfo) => {
-    if (!this.state.eDoc) {
-      return;
-    }
-    const { docId } = this.state.eDoc;
-    const api = getApi();
-    try {
-      const updated = triageDocFromTriage(docId, {
-        ...triage,
-        lastViewed: new Date().toISOString(),
-      });
-      await api.saveTriage(updated);
-      await this.triageChangeHandler(updated);
-    } catch (err) {}
-  };
 
   changeEVD = async (testIndicatesEVD: boolean) => {
     const authUser = await getAuthUser();
-    const triage = this.currentTriage();
-    this.save({
-      ...triage,
-      diagnoses: [
-        ...(triage.diagnoses || []),
-        {
-          tag: ConditionTag.Ebola,
-          value: testIndicatesEVD,
-          diagnoser: authUser,
-          timestamp: new Date().toISOString(),
-        },
-      ],
-    });
+    const diagnoses = [
+      ...(this.currentTriage().diagnoses || []),
+      {
+        tag: ConditionTag.Ebola,
+        value: testIndicatesEVD,
+        diagnoser: authUser,
+        timestamp: new Date().toISOString(),
+      },
+    ];
+    this.changeTriage({ diagnoses });
   };
 
   changeNotes = (notes: string) => {
-    const triage = this.currentTriage();
-    this.save({
-      ...triage,
-      notes,
-    });
+    this.changeTriage({ notes });
   };
 
-  updateLastViewed = () => {
-    this.save(this.currentTriage());
+  updateSeenMessageTimestamp = () => {
+    const { messages } = this.state;
+    if (messages.length > 0) {
+      const last = messages[messages.length - 1];
+      const seenMessageTimestamp = last.timestamp;
+      this.changeTriage({ seenMessageTimestamp });
+    }
+  };
+
+  updateSeenEncounterTimestamp = () => {
+    const { eDoc } = this.state;
+    if (eDoc) {
+      const seenEncounterTimestamp = eDoc.encounter.updatedAt;
+      this.changeTriage({ seenEncounterTimestamp });
+    }
+  };
+
+  changeTriage(update: object) {
+    this.save({ ...this.currentTriage(), ...update });
+  }
+
+  save = async (triage: EncounterTriageInfo) => {
+    const { savedTriage } = this.state;
+    if (this.state.eDoc && !deepEqual(triage, savedTriage)) {
+      const { docId } = this.state.eDoc;
+      try {
+        const updated = triageDocFromTriage(docId, triage);
+        await getApi().saveTriage(updated);
+        await this.triageChangeHandler(updated);
+      } catch (err) {}
+    }
   };
 
   triageChangeHandler = async (
@@ -181,15 +203,13 @@ class PatientDetailPageAssumeRouter extends React.Component<
       }
     }
 
-    this.setState({
-      tDoc: tDoc,
-    });
+    this.setState({ tDoc });
   };
 
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage, messages } = this.state;
     return (
-      <div className="PatientDetailPage">
+      <div className="PatientDetailPage" ref={this._page}>
         {encounter == null ? (
           <div>Loading...</div>
         ) : (
@@ -214,6 +234,10 @@ class PatientDetailPageAssumeRouter extends React.Component<
               phone={encounter.encounter.healthWorker.phone}
               chwUid={encounter.encounter.healthWorker.uid}
               messages={messages}
+              lastSeenTimestamp={
+                (triage && triage.triage.seenMessageTimestamp) || ""
+              }
+              onSawLatest={this.updateSeenMessageTimestamp}
             />
           </div>
         )}
@@ -515,10 +539,4 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
       </div>
     );
   }
-}
-
-function maxTimestamp(timestamp1: string, timestamp2: string) {
-  return Date.parse(timestamp1) > Date.parse(timestamp2)
-    ? timestamp1
-    : timestamp2;
 }

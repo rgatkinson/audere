@@ -11,7 +11,6 @@ import "react-table/react-table.css";
 import {
   EncounterDocument,
   EncounterTriageDocument,
-  Message,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { localeDate, last } from "./util";
 import "./PatientTable.css";
@@ -19,13 +18,13 @@ import "./PatientTable.css";
 interface PatientTableRow {
   eDoc: EncounterDocument;
   tDoc: EncounterTriageDocument | undefined;
-  latestMessage: Message | undefined;
+  chatUpdatedAt: string;
 }
 
 interface PatientTableProps {
   eDocs: EncounterDocument[];
   tDocs: EncounterTriageDocument[];
-  latestMessages: { [eDocId: string]: Message };
+  chatsUpdatedAt: { [eDocId: string]: string };
   onSelect: (e: MouseEvent, record: EncounterDocument) => void;
   showEvdResultColumns: boolean;
 }
@@ -45,11 +44,11 @@ export class PatientTable extends React.Component<
     };
   }
 
-  private getRows() {
+  private getRows(): PatientTableRow[] {
     return this.props.eDocs.map(eDoc => ({
       eDoc,
       tDoc: this.props.tDocs.find(t => t.docId === eDoc.docId),
-      latestMessage: this.props.latestMessages[eDoc.docId],
+      chatUpdatedAt: this.props.chatsUpdatedAt[eDoc.docId] || "",
     }));
   }
 
@@ -66,23 +65,38 @@ export class PatientTable extends React.Component<
   }
 
   private getTrProps = (state: any, row: any, column: any, instance: any) => {
-    const newMessage =
-      row &&
-      row.original.latestMessage &&
-      (!row.original.tDoc ||
-        row.original.latestMessage.timestamp >
-          row.original.tDoc.triage.lastViewed);
-    const newData =
-      row &&
-      (!row.original.tDoc ||
-        row.original.eDoc.encounter.updatedAt >
-          row.original.tDoc.triage.lastViewed);
+    if (row == null) {
+      return {};
+    }
+
+    const { eDoc, tDoc, chatUpdatedAt } = row.original as PatientTableRow;
+    const triage = tDoc && tDoc.triage;
+
+    const chatSeenAt = (triage && triage.seenMessageTimestamp) || "";
+    const dataSeenAt = (triage && triage.seenEncounterTimestamp) || "";
+    const dataUpdatedAt = eDoc.encounter.updatedAt;
+    const hasNewMessage = chatUpdatedAt > chatSeenAt;
+    const hasNewData = dataUpdatedAt > dataSeenAt;
+
+    if (row) {
+      debug(`row: ${row.original.eDoc.docId}`);
+      if (hasNewMessage) {
+        debug(`  hasNewMessage=${hasNewMessage}`);
+        debug(`    ${chatUpdatedAt} chatUpdatedAt`);
+        debug(`    ${chatSeenAt} chatSeenAt`);
+      }
+      if (hasNewData) {
+        debug(`  hasNewData=${hasNewData}`);
+        debug(`    ${dataUpdatedAt} dataUpdatedAt`);
+        debug(`    ${dataSeenAt} dataSeenAt`);
+      }
+    }
     return {
       onClick: (e: MouseEvent, handleOriginal: () => void) => {
-        this.props.onSelect(e, row.original.eDoc);
+        this.props.onSelect(e, eDoc);
       },
       style: {
-        fontWeight: newMessage || newData ? "bold" : "normal",
+        fontWeight: hasNewMessage || hasNewData ? "bold" : "normal",
       },
     };
   };
@@ -201,4 +215,10 @@ function firstLine(s: string | null): string {
   }
   const index = s.indexOf("\n");
   return index < 0 ? s : s.substring(0, index);
+}
+
+function debug(message: string) {
+  if (false) {
+    debug(message);
+  }
 }

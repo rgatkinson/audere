@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import { format } from "date-fns";
 import {
   DocumentType,
@@ -23,6 +23,8 @@ export interface ChatProps {
   phone: string;
   chwUid: string;
   messages: Message[];
+  lastSeenTimestamp: string;
+  onSawLatest: (timestamp: string) => any;
 }
 
 export interface ChatState {
@@ -31,14 +33,9 @@ export interface ChatState {
   busy: boolean;
 }
 
-interface ChatSnapshot {
-  scrolledDown: boolean;
-}
-
 export class Chat extends React.Component<ChatProps, ChatState> {
   private unsubscribeAuth: () => void;
-  private unsubscribeMessages: () => void;
-  private _messageList: any;
+  private afterLastMessage: RefObject<HTMLDivElement>;
 
   constructor(props: ChatProps) {
     super(props);
@@ -50,8 +47,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     };
 
     this.unsubscribeAuth = () => {};
-    this.unsubscribeMessages = () => {};
-    this._messageList = React.createRef();
+    this.afterLastMessage = React.createRef();
   }
 
   componentDidMount() {
@@ -63,33 +59,26 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     });
   }
 
-  componentWillUnmount() {
-    this.unsubscribeAuth();
-    this.unsubscribeMessages();
-  }
-
-  getSnapshotBeforeUpdate(): ChatSnapshot {
-    const messageList = this._messageList.current;
-    const scrolledDown =
-      messageList.scrollTop >=
-      messageList.scrollHeight - messageList.offsetHeight;
-    return { scrolledDown };
-  }
-
-  componentDidUpdate(
-    prevProps: ChatProps,
-    prevState: ChatState,
-    { scrolledDown }: ChatSnapshot
-  ) {
-    if (scrolledDown) {
-      const messageList = this._messageList.current;
-      messageList.scrollTop = messageList.scrollHeight;
+  componentDidUpdate() {
+    const { lastSeenTimestamp, messages } = this.props;
+    const latestTimestamp =
+      messages.length > 0 ? messages[messages.length - 1].timestamp : "";
+    debug(
+      `CHAT: componentDidUpdate count=${messages.length} lastSeen=${lastSeenTimestamp} latest=${latestTimestamp}`
+    );
+    if (messages.length > 0 && lastSeenTimestamp !== latestTimestamp) {
+      this.scrollToLatest();
     }
   }
 
-  onChange(e: any) {
-    this.setState({ input: e.target.value });
+  componentWillUnmount() {
+    this.unsubscribeAuth();
   }
+
+  onChange = (e: any) => {
+    this.setState({ input: e.target.value });
+    this.scrollToLatest();
+  };
 
   async onSubmit(e: any) {
     e.preventDefault();
@@ -126,6 +115,28 @@ export class Chat extends React.Component<ChatProps, ChatState> {
         );
       }
     }
+
+    this.scrollToLatest();
+  }
+
+  scrollToLatest = () => {
+    debug("CHAT: scrollToLatest");
+    const last = this.afterLastMessage.current;
+    if (last != null) {
+      debug("  ...scrolling");
+      last.scrollIntoView({ behavior: "smooth" });
+    }
+    this.sawLatest();
+  };
+
+  sawLatest() {
+    debug("CHAT: sawLatest");
+    const { messages } = this.props;
+    if (messages.length > 0) {
+      debug("  ...firing event");
+      const latest = messages[messages.length - 1];
+      this.props.onSawLatest(latest.timestamp);
+    }
   }
 
   renderMessage(message: Message) {
@@ -155,7 +166,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       className += " other-admin";
     }
     return (
-      <li className={className}>
+      <li className={className} key={`${timestamp}-${sender}`}>
         <div className="message-content">
           <div className="text">{content}</div>
           <div className="user-name">{userTag}</div>
@@ -170,16 +181,21 @@ export class Chat extends React.Component<ChatProps, ChatState> {
       <div>
         <p className="chat-title">Chat with community health worker:</p>
         <div className="chat-box">
-          <ul className="message-list" ref={this._messageList}>
+          <ul className="message-list">
             {messages
               .sort((a, b) => (a.timestamp < b.timestamp ? -1 : 1))
               .map(m => this.renderMessage(m))}
+            <div
+              style={{ float: "left", clear: "both" }}
+              ref={this.afterLastMessage}
+            />
           </ul>
           <form className="chat-form" onSubmit={e => this.onSubmit(e)}>
             <input
               className="chat-input"
               placeholder="Enter a note to send to the clinic CHW"
-              onChange={e => this.onChange(e)}
+              onChange={this.onChange}
+              onClick={this.scrollToLatest}
               value={this.state.input}
               type="text"
             />
@@ -187,5 +203,11 @@ export class Chat extends React.Component<ChatProps, ChatState> {
         </div>
       </div>
     );
+  }
+}
+
+function debug(message: string) {
+  if (false) {
+    debug(message);
   }
 }
