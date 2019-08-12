@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
+  NativeModules,
   ScrollView,
   StyleSheet,
 } from "react-native";
@@ -202,6 +203,13 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               onChangeText={this._updateNotes}
             />
           </ScrollView>
+          <Button
+            enabled={true}
+            label={t("launchClassifier")}
+            primary={false}
+            style={styles.button}
+            onPress={() => NativeModules.ImageClassifier.launchClassifier()}
+          />
           <Button
             enabled={!!lastName && !!firstName && !!phone}
             label={t("login")}
