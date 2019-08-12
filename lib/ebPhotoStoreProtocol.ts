@@ -173,7 +173,8 @@ export interface EncounterTriageInfo {
   notes: string;
   testIndicatesEVD?: boolean;
   diagnoses?: Diagnosis[];
-  lastViewed: string;
+  seenEncounterTimestamp: string;
+  seenMessageTimestamp: string;
 }
 
 // ========================================

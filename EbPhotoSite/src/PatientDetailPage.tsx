@@ -58,12 +58,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
       messages: [],
       savedTriage: null,
     };
-    this._page = React.createRef<HTMLDivElement>();
-    this._triagePane = React.createRef<TriagePane>();
   }
-
-  private _page: React.RefObject<HTMLDivElement>;
-  private _triagePane: React.RefObject<TriagePane>;
 
   componentDidMount() {
     this.load();
@@ -209,7 +204,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage, messages } = this.state;
     return (
-      <div className="PatientDetailPage" ref={this._page}>
+      <div className="PatientDetailPage">
         {encounter == null ? (
           <div>Loading...</div>
         ) : (
@@ -222,7 +217,6 @@ class PatientDetailPageAssumeRouter extends React.Component<
               key={JSON.stringify(triage)}
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
-              ref={this._triagePane}
               changeEVD={this.changeEVD}
               changeNotes={this.changeNotes}
               error={this.state.error}
