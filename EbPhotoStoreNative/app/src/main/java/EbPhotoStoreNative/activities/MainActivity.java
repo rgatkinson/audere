@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
-
 import EbPhotoStoreNative.NetworkChangeReceiver;
 import org.auderenow.ebphotostorenative.R;
 
@@ -27,8 +26,6 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         MainActivity.mContext = getApplicationContext();
 
