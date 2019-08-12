@@ -16,6 +16,7 @@ import TextInput from "./TextInput";
 import { HIGHLIGHT_COLOR } from "../styles";
 
 interface Props {
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoFocus?: boolean;
   blurOnSubmit?: boolean;
   focusedIndex?: number;
@@ -55,6 +56,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
 
   render() {
     const {
+      autoCapitalize,
       autoFocus,
       blurOnSubmit,
       focusedIndex,
@@ -80,6 +82,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
           style={[textStyle, this.state.isFocused && styles.highlightText]}
         />
         <TextInput
+          autoCapitalize={autoCapitalize}
           autoFocus={autoFocus}
           blurOnSubmit={blurOnSubmit}
           multiline={multiline}

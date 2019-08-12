@@ -153,6 +153,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           <ScrollView style={styles.content}>
             <Title label={t("signIn")} />
             <LabelTextInput
+              autoCapitalize="words"
               autoFocus={true}
               inputStyle={styles.inputSingle}
               inputValue={firstName}
@@ -164,6 +165,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               textStyle={[styles.titleRow, { paddingTop: 0 }]}
             />
             <LabelTextInput
+              autoCapitalize="words"
               ref={this._lastNameInput}
               inputStyle={styles.inputSingle}
               inputValue={lastName}

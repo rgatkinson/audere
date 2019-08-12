@@ -312,6 +312,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             <Text content={t("patientId", { id })} style={styles.idRight} />
           </View>
           <LabelTextInput
+            autoCapitalize="words"
             autoFocus={this.state.firstName == ""}
             inputStyle={styles.inputSingle}
             inputValue={firstName}
@@ -323,6 +324,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             textStyle={styles.titleRow}
           />
           <LabelTextInput
+            autoCapitalize="words"
             ref={this._lastNameInput}
             inputStyle={styles.inputSingle}
             inputValue={lastName}
@@ -419,20 +421,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                   <Text content={t("followUp")} />
                 ) : null}
               </View>
-              <LabelTextInput
-                blurOnSubmit={true}
-                inputStyle={styles.inputMulti}
-                inputValue={chatMessage}
-                multiline={true}
-                numberOfLines={2}
-                onChangeText={this._updateChatMessage}
-                onSubmitEditing={this._sendChatMessage}
-                placeholder={t("chatPlaceholder")}
-                returnKeyType="done"
-                textContent={t("startChat", { firstName, lastName })}
-                textStyle={styles.titleRow}
-              />
-              {!!messages && <Chat messages={messages} />}
             </Fragment>
           ) : !(isNew || this._wasNew) ? (
             <Fragment>
@@ -500,6 +488,24 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 </TouchableOpacity>
                 <Text content={t("note", { phone: healthWorkerInfo!.phone })} />
               </View>
+            </Fragment>
+          )}
+          {!(isNew || this._wasNew) && (
+            <Fragment>
+              <LabelTextInput
+                blurOnSubmit={true}
+                inputStyle={styles.inputMulti}
+                inputValue={chatMessage}
+                multiline={true}
+                numberOfLines={2}
+                onChangeText={this._updateChatMessage}
+                onSubmitEditing={this._sendChatMessage}
+                placeholder={t("chatPlaceholder")}
+                returnKeyType="done"
+                textContent={t("startChat", { firstName, lastName })}
+                textStyle={styles.titleRow}
+              />
+              {!!messages && <Chat messages={messages} />}
             </Fragment>
           )}
         </ScrollView>
