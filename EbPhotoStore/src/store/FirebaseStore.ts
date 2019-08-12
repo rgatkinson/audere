@@ -5,7 +5,6 @@
 
 import RNDeviceInfo from "react-native-device-info";
 import firebase from "react-native-firebase";
-import RNFS from "react-native-fs";
 import uuidv4 from "uuid/v4";
 import {
   AuthUser,
@@ -118,11 +117,11 @@ function frame(document: EncounterDocument): FirestoreProtocolDocument {
   };
 }
 
-export function initializeListener(
+export function initializeTriageListener(
   patientId: string,
   callback: (doc: EncounterTriageDocument) => void
-) {
-  getTriageDocument(patientId).onSnapshot(snapshot => {
+): () => void {
+  return getTriageDocument(patientId).onSnapshot(snapshot => {
     snapshot.docChanges.forEach(change => {
       const doc = change.doc.data() as EncounterTriageDocument;
       callback(doc);
@@ -136,8 +135,8 @@ export function initializeListener(
 export function initializeMessageListener(
   patientId: string,
   callback: (patientId: string, message: Message) => void
-) {
-  getMessagesCollection(patientId).onSnapshot(collection => {
+): () => void {
+  return getMessagesCollection(patientId).onSnapshot(collection => {
     collection.docChanges.forEach(docChange => {
       const doc = docChange.doc.data() as Message;
       callback(patientId, doc);
@@ -150,4 +149,9 @@ export async function sendChatMessage(patientId: string, message: Message) {
   const messageDoc = getMessagesCollection(patientId).doc(messageDocId);
   console.log(`Uploading message ${messageDocId}`);
   await messageDoc.set(message);
+}
+
+export function getCurrentUserId(): string | null {
+  const currentUser = firebase.auth().currentUser;
+  return currentUser == null ? null : currentUser.uid;
 }

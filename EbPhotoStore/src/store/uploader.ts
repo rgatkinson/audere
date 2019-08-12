@@ -15,11 +15,14 @@ import {
   syncEncounter,
   sendChatMessage,
   uploadToken,
-  initializeListener,
   initializeMessageListener,
+  initializeTriageListener,
+  getCurrentUserId,
 } from "./FirebaseStore";
 import { setEvdStatus, setTriageNotes, receiveChatMessage } from "./patients";
 import { retryUploads } from "../transport/photoUploader";
+
+let unsubscribe: (() => void)[] = [];
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -35,14 +38,8 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         patientId = state.meta.currentPatient;
         if (patientId !== undefined) {
           if (action.type == "ADD_PATIENT") {
-            initializeListener(
-              state.patients[patientId].uuid,
-              getTriageListener(state, dispatch)
-            );
-            initializeMessageListener(
-              state.patients[patientId].uuid,
-              getMessageListener(dispatch)
-            );
+            const uuid = state.patients[patientId].uuid;
+            initializeListeners(state, dispatch, uuid);
           }
           const encounterDocument = reduxToFirebase(state, patientId);
           syncEncounter(state.patients[patientId].uuid, encounterDocument);
@@ -56,8 +53,7 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         break;
       case "persist/REHYDRATE":
         state.patients.forEach((patient, index) => {
-          initializeListener(patient.uuid, getTriageListener(state, dispatch));
-          initializeMessageListener(patient.uuid, getMessageListener(dispatch));
+          initializeListeners(state, dispatch, patient.uuid);
         });
         break;
       case "SET_FCM_TOKEN":
@@ -65,6 +61,12 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
         if (state.meta.healthWorkerInfo && state.meta.fcmToken) {
           uploadToken(state.meta.healthWorkerInfo.phone, state.meta.fcmToken);
         }
+        state.patients.forEach((patient, index) => {
+          initializeListeners(state, dispatch, patient.uuid);
+        });
+        break;
+      case "LOGOUT":
+        destroyListeners();
         break;
     }
     return result;
@@ -94,6 +96,32 @@ export function reduxToFirebase(
     notes: reduxPatient.notes || "",
     updatedAt: reduxPatient.updatedAt,
   };
+}
+
+export function destroyListeners() {
+  unsubscribe.forEach(fn => fn());
+  unsubscribe = [];
+}
+
+export function initializeListeners(
+  state: StoreState,
+  dispatch: Dispatch,
+  patientId: string
+) {
+  const uid = getCurrentUserId();
+  if (uid != null) {
+    const triage = initializeTriageListener(
+      patientId,
+      getTriageListener(state, dispatch)
+    );
+    unsubscribe.push(triage);
+
+    const messages = initializeMessageListener(
+      patientId,
+      getMessageListener(dispatch)
+    );
+    unsubscribe.push(messages);
+  }
 }
 
 function getTriageListener(
