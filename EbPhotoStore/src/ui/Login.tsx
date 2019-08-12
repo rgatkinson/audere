@@ -1,5 +1,10 @@
 import React, { Fragment } from "react";
-import { KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import firebase from "react-native-firebase";
@@ -15,7 +20,6 @@ import { GUTTER, FONT_COLOR, FONT_ROBO_MEDIUM, REGULAR_TEXT } from "./styles";
 import PhoneLoginVerification, {
   PhoneVerificationDismissal,
 } from "./PhoneLoginVerification";
-import { initializeFirebaseListener } from "../store/uploader";
 
 interface Props {
   healthWorkerInfo?: HealthWorkerInfo;
@@ -23,6 +27,7 @@ interface Props {
 }
 
 interface State {
+  keyboardOpen: boolean;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -34,6 +39,8 @@ class Login extends React.Component<Props & WithNamespaces, State> {
   _lastNameInput: any;
   _phoneInput: any;
   _notesInput: any;
+  _keyboardDidShowListener: any;
+  _keyboardDidHideListener: any;
 
   constructor(props: Props & WithNamespaces) {
     super(props);
@@ -41,6 +48,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     if (props.healthWorkerInfo != null) {
       const { firstName, lastName, phone, notes } = props.healthWorkerInfo;
       this.state = {
+        keyboardOpen: false,
         firstName,
         lastName,
         phone,
@@ -49,6 +57,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
       };
     } else {
       this.state = {
+        keyboardOpen: false,
         notes: "",
         showConfirmation: false,
       };
@@ -58,6 +67,30 @@ class Login extends React.Component<Props & WithNamespaces, State> {
     this._phoneInput = React.createRef<NumberInput>();
     this._notesInput = React.createRef<TextInput>();
   }
+
+  componentDidMount() {
+    this._keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      this._keyboardDidShow
+    );
+    this._keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      this._keyboardDidHide
+    );
+  }
+
+  componentWillUnmount() {
+    this._keyboardDidShowListener.remove();
+    this._keyboardDidHideListener.remove();
+  }
+
+  _keyboardDidShow = () => {
+    this.setState({ keyboardOpen: true });
+  };
+
+  _keyboardDidHide = () => {
+    this.setState({ keyboardOpen: false });
+  };
 
   _updateFirstName = (firstName: string) => {
     this.setState({ firstName });
@@ -171,7 +204,9 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             enabled={!!lastName && !!firstName && !!phone}
             label={t("login")}
             primary={true}
-            style={styles.button}
+            style={
+              this.state.keyboardOpen ? styles.keyboardButton : styles.button
+            }
             onPress={this._login}
           />
         </KeyboardAvoidingView>
@@ -193,6 +228,12 @@ const styles = StyleSheet.create({
   button: {
     alignSelf: "center",
     marginVertical: GUTTER / 2,
+  },
+  keyboardButton: {
+    borderRadius: 0,
+    borderWidth: 0,
+    marginBottom: 0,
+    width: "100%",
   },
   container: {
     flex: 1,
