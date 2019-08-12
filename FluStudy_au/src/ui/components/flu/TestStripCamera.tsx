@@ -100,7 +100,11 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
   };
 
   _handleAppStateChange = async (nextAppState: string) => {
-    if (nextAppState === "active" && this.state.flashEnabled) {
+    if (
+      nextAppState === "active" &&
+      this.state.supportsTorchMode &&
+      this.state.flashEnabled
+    ) {
       // Toggle flash state since the hardware state doesn't seem to get preserved
       // on iOS if the app is backgrounded and then foregrounded.
       this.setState({ flashEnabled: false });
@@ -166,7 +170,12 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           })
         );
         dispatch(setPhoto(photo.uri));
-        dispatch(setRDTCaptureInfo(this.state.flashEnabled, false));
+        dispatch(
+          setRDTCaptureInfo(
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            false
+          )
+        );
 
         this.setState({ spinner: false });
         navigation.push(next);
