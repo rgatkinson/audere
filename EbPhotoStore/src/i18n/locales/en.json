@@ -38,7 +38,7 @@
     "loginMobileNumber": "**Mobile number**",
     "notes": "**Notes to share with administrators**",
     "notesPlaceholder": "E.g. your location, credentials, etc.",
-    "launchClassifier": "Launch Classifier",
+    "launchDetector": "Launch Detector",
     "login": "Login"
   },
   "patients": {

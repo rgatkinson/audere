@@ -205,10 +205,10 @@ class Login extends React.Component<Props & WithNamespaces, State> {
           </ScrollView>
           <Button
             enabled={true}
-            label={t("launchClassifier")}
+            label={t("launchDetector")}
             primary={false}
             style={styles.button}
-            onPress={() => NativeModules.ImageClassifier.launchClassifier()}
+            onPress={() => NativeModules.ObjectDetection.launchDetector()}
           />
           <Button
             enabled={!!lastName && !!firstName && !!phone}
