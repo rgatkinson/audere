@@ -58,10 +58,11 @@
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
   "details": {
-    "save": "Save",
     "cancel": "Cancel",
+    "discard": "Discard",
+    "save": "Save",
     "unsavedTitle": "There are unsaved changes",
-    "unsavedBody": "Continue to discard changes",
+    "unsavedBody": "",
     "details": "Patient Details",
     "evdPositive": "Triaged as Ebola POSITIVE",
     "evdNegative": "Triaged as Ebola NEGATIVE",

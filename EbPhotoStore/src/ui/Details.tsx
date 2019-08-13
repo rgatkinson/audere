@@ -264,15 +264,29 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     if (this._hasChanges()) {
       const { t } = this.props;
       Alert.alert(t("unsavedTitle"), t("unsavedBody"), [
-        { text: t("cancel"), onPress: () => {} },
         {
-          text: t("continue"),
-          onPress: () => this.props.dispatch(viewPatients()),
+          text: t("cancel"),
+          onPress: () => {},
+        },
+        {
+          text: t("discard"),
+          onPress: () => this._navToList(),
+        },
+        {
+          text: t("save"),
+          onPress: () => {
+            this._save();
+            this._navToList();
+          },
         },
       ]);
     } else {
-      this.props.dispatch(viewPatients());
+      this._navToList();
     }
+  };
+
+  _navToList = () => {
+    this.props.dispatch(viewPatients());
   };
 
   render() {
