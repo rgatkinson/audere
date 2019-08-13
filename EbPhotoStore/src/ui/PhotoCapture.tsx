@@ -114,7 +114,7 @@ class PhotoCapture extends React.Component<Props & WithNamespaces> {
         await RNFS.copyFile(photoData.uri, localPath);
 
         this.setState({ spinner: false });
-        startUpload(photoId, localPath);
+        startUpload(photoId, localPath, this.props.id);
         this.props.dispatch(
           savePhoto(this.props.id, localPath, {
             photoId,
