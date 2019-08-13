@@ -20,7 +20,12 @@ import {
   Notification,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, getAuthUser, FirebaseUnsubscriber } from "./api";
-import { last, localeDate, triageDocFromTriage } from "./util";
+import {
+  last,
+  localeDate,
+  triageDocFromTriage,
+  retryWithBackoff,
+} from "./util";
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
@@ -433,7 +438,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
 }
 
 interface PhotoPaneState {
-  urls: PhotoFetchResult[];
+  urls: { [photoId: string]: PhotoFetchResult };
 }
 
 interface PhotoFetchResult {
@@ -442,29 +447,39 @@ interface PhotoFetchResult {
 }
 
 class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
-  constructor(props: PatientInfoPaneProps) {
-    super(props);
-    this.state = {
-      urls: props.eDoc.encounter.rdtPhotos.map(x => ({} as PhotoFetchResult)),
-    };
+  state: PhotoPaneState = { urls: {} };
 
-    const { rdtPhotos } = this.props.eDoc.encounter;
-    rdtPhotos.forEach(async (photo, i) => {
-      const url = await this.getUrl(photo.photoId);
-      this.setState(state => {
-        const urls = [...state.urls];
-        urls.splice(i, 1, url);
-        return { urls };
-      });
-    });
+  componentWillReceiveProps(nextProps: PatientInfoPaneProps) {
+    nextProps.eDoc.encounter.rdtPhotos.map(photo =>
+      this.loadUrl(photo.photoId)
+    );
   }
 
-  private async getUrl(photoId: string): Promise<PhotoFetchResult> {
-    try {
-      return { url: await getApi().photoUrl(photoId) };
-    } catch (error) {
-      return { error };
+  private async loadUrl(photoId: string): Promise<void> {
+    if (this.state.urls[photoId]) {
+      return;
     }
+    this.setState(state => ({
+      urls: {
+        ...state.urls,
+        [photoId]: {},
+      },
+    }));
+    retryWithBackoff(async () => {
+      try {
+        const url = await getApi().photoUrl(photoId);
+        this.setState(state => ({
+          urls: {
+            ...state.urls,
+            [photoId]: { url },
+          },
+        }));
+        return true;
+      } catch (error) {
+        console.warn(error);
+        return false;
+      }
+    });
   }
 
   public render(): React.ReactNode {
@@ -474,7 +489,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
       <div>
         {rdtPhotos.map((photo, i) => {
           const { url, error } =
-            urls[i] ||
+            urls[photo.photoId] ||
             ({ error: new Error(JSON.stringify(urls)) } as PhotoFetchResult);
           return (
             <div className="PhotoPane">
