@@ -65,5 +65,20 @@ async function uploadPhoto(photoId: string, uri: string) {
     store.dispatch(photoUploadFailed(photoId, e.message));
     return;
   }
+
   store.dispatch(photoUploadFinished(photoId));
+}
+
+export function hasPendingPhotos(state: any) {
+  const photoUploads: PhotoUploadState = state.photoUploads;
+  const keys = Object.keys(photoUploads);
+
+  for (let i = 0; i < keys.length; i++) {
+    if (
+      (photoUploads as any)[keys[i]].uploadState !== PhotoUploadState.UPLOADED
+    ) {
+      return true;
+    }
+  }
+  return false;
 }

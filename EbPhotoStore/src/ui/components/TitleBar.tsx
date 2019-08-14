@@ -26,11 +26,13 @@ import {
   TITLE_IMAGE,
   TITLEBAR_TEXT_COLOR,
 } from "../styles";
+import { hasPendingPhotos } from "../../transport/photoUploader";
 
 interface Props {
   demoMode: boolean;
   dispatch(action: Action): void;
   onBack?(event: GestureResponderEvent): void;
+  hasPendingPhoto: boolean;
   backText?: string;
   onMenu?(event: GestureResponderEvent): void;
 }
@@ -41,7 +43,15 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { backText, demoMode, onBack, onMenu, t } = this.props;
+    const {
+      backText,
+      demoMode,
+      onBack,
+      onMenu,
+      hasPendingPhoto,
+      t,
+    } = this.props;
+
     return (
       <MultiTapContainer
         active={true}
@@ -62,19 +72,20 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
             <View style={styles.actionContainer} />
           )}
           <Image source={TITLE_IMAGE} style={styles.titleImage} />
-          <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
-            <Text
-              style={[
-                styles.actionContent,
-                {
-                  textAlign: "right",
-                  fontSize: LARGE_TEXT,
-                  fontWeight: "bold",
-                },
-              ]}
-              content="&#9776;"
+          <View style={styles.iconContainer}>
+            <Image
+              style={styles.pendingIcon}
+              source={{
+                uri: !!hasPendingPhoto ? "datauploading" : "datauploaded",
+              }}
             />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
+              <Text
+                style={[styles.actionContent, styles.hamburgerIcon]}
+                content="&#9776;"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </MultiTapContainer>
     );
@@ -83,9 +94,19 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
 
 export default connect((state: StoreState) => ({
   demoMode: state.meta.demoMode,
+  hasPendingPhoto: hasPendingPhotos(state),
 }))(withNamespaces("titleBar")(TitleBar));
 
 const styles = StyleSheet.create({
+  actionContainer: {
+    width: 40,
+  },
+  actionContent: {
+    height: 21,
+    color: TITLEBAR_TEXT_COLOR,
+    fontSize: REGULAR_TEXT,
+    marginHorizontal: GUTTER / 2,
+  },
   barContainer: {
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
@@ -97,6 +118,16 @@ const styles = StyleSheet.create({
     right: 0,
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
   },
+  hamburgerIcon: {
+    textAlign: "right",
+    fontSize: LARGE_TEXT,
+    fontWeight: "bold",
+  },
+  iconContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  pendingIcon: { height: 18, width: 29 },
   titleContainer: {
     marginTop: STATUS_BAR_HEIGHT,
     marginBottom: GUTTER / 2,
@@ -104,14 +135,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
-  },
-  actionContainer: {
-    width: 80,
-  },
-  actionContent: {
-    color: TITLEBAR_TEXT_COLOR,
-    fontSize: REGULAR_TEXT,
-    marginHorizontal: GUTTER / 2,
   },
   titleImage: {
     aspectRatio: 112 / 23,
