@@ -13,10 +13,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/list_name"
+        android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textID"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textID"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -24,10 +25,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/list_id"
+        android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textStatus"
         app:layout_constraintHorizontal_weight="0.8"
         app:layout_constraintStart_toEndOf="@+id/textName"
-        app:layout_constraintEnd_toStartOf="@+id/textStatus"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -35,10 +37,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/list_status"
+        android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textInfo"
         app:layout_constraintHorizontal_weight="1.2"
         app:layout_constraintStart_toEndOf="@+id/textID"
-        app:layout_constraintEnd_toStartOf="@+id/textInfo"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -46,9 +49,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/list_info"
+        android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.8"
         app:layout_constraintStart_toEndOf="@+id/textStatus"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

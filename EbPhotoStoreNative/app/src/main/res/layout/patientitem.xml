@@ -11,36 +11,39 @@
         android:id="@+id/textName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/textID"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textID"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textID"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/textStatus"
         app:layout_constraintHorizontal_weight="0.8"
         app:layout_constraintStart_toEndOf="@+id/textName"
-        app:layout_constraintEnd_toStartOf="@+id/textStatus"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textStatus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/textInfo"
         app:layout_constraintHorizontal_weight="1.2"
         app:layout_constraintStart_toEndOf="@+id/textID"
-        app:layout_constraintEnd_toStartOf="@+id/textInfo"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.8"
         app:layout_constraintStart_toEndOf="@+id/textStatus"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
