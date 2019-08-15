@@ -85,17 +85,22 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     if (this._shouldShowAlert()) {
       const { dispatch, t } = this.props;
       dispatch(setShownRDTFailWarning(true));
-      Alert.alert(t("alertTitle"), t("alertDesc"), [
-        {
-          text: t("common:button:ok"),
-          onPress: () => {
-            this.setState({
-              spinner: !DeviceInfo.isEmulator(),
-              showCamera: true,
-            });
+      Alert.alert(
+        t("alertTitle"),
+        t("alertDesc"),
+        [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {
+              this.setState({
+                spinner: !DeviceInfo.isEmulator(),
+                showCamera: true,
+              });
+            },
           },
-        },
-      ]);
+        ],
+        { cancelable: false }
+      );
     }
   };
 
@@ -128,17 +133,22 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           })
         );
       } else {
-        Alert.alert(t("cameraErrorTitle"), t("cameraErrorDesc"), [
-          {
-            text: t("common:button:ok"),
-            onPress: () => {
-              logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
-              navigation.dispatch(
-                StackActions.replace({ routeName: "TestResult" })
-              );
+        Alert.alert(
+          t("cameraErrorTitle"),
+          t("cameraErrorDesc"),
+          [
+            {
+              text: t("common:button:ok"),
+              onPress: () => {
+                logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
+                navigation.dispatch(
+                  StackActions.replace({ routeName: "TestResult" })
+                );
+              },
             },
-          },
-        ]);
+          ],
+          { cancelable: false }
+        );
       }
     }
   };
