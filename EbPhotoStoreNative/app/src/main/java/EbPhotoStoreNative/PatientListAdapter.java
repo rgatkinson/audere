@@ -1,6 +1,6 @@
 package EbPhotoStoreNative;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,15 +35,15 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public PatientViewHolder(View v) {
             super(v);
-            textName = (TextView)v.findViewById(R.id.textName);
-            textID = (TextView)v.findViewById(R.id.textID);
-            textStatus = (TextView)v.findViewById(R.id.textStatus);
-            textInfo = (TextView)v.findViewById(R.id.textInfo);
+            textName = (TextView) v.findViewById(R.id.textName);
+            textID = (TextView) v.findViewById(R.id.textID);
+            textStatus = (TextView) v.findViewById(R.id.textStatus);
+            textInfo = (TextView) v.findViewById(R.id.textInfo);
 
             v.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
+                    switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_POINTER_DOWN:
                         v.setAlpha(0.5f);
@@ -53,15 +53,15 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     case MotionEvent.ACTION_CANCEL:
                         v.setAlpha(1.0f);
                         break;
-                }
-                return true;
+                    }
+                    return true;
                 }
             });
 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //startActivity(new Intent(this, PatientDetailActivity.class));
+                    // startActivity(new Intent(this, PatientDetailActivity.class));
                 }
             });
         }
@@ -73,20 +73,16 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     // Create new views (invoked by the layout manager)
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                       int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_HEADER) {
             // create a new view
-            View v = (View) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.patientheader, parent, false);
+            View v = (View) LayoutInflater.from(parent.getContext()).inflate(R.layout.patientheader, parent, false);
 
             vh = new HeaderViewHolder(v);
-        }
-        else {
+        } else {
             // create a new view
-            View v = (View) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.patientitem, parent, false);
+            View v = (View) LayoutInflater.from(parent.getContext()).inflate(R.layout.patientitem, parent, false);
 
             vh = new PatientViewHolder(v);
         }
@@ -98,8 +94,8 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         try {
             if (holder instanceof PatientViewHolder) {
                 PatientViewHolder vh = (PatientViewHolder) holder;
-                vh.textName.setText(mDataset[position-1]);
-                vh.textID.setText(String.format("%03d", position-1));
+                vh.textName.setText(mDataset[position - 1]);
+                vh.textID.setText(String.format("%03d", position - 1));
                 vh.textStatus.setText("");
                 vh.textInfo.setText("");
             } else if (holder instanceof HeaderViewHolder) {

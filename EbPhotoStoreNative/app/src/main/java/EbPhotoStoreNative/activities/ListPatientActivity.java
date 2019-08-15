@@ -2,10 +2,10 @@ package EbPhotoStoreNative.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.MenuItem;
 import java.lang.String;
@@ -23,7 +23,7 @@ public class ListPatientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_patient);
 
-        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
@@ -33,8 +33,12 @@ public class ListPatientActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setFocusable(false);
 
-        //TODO: real data model
-        String[] myDataset = { "Smith", "Jones", "Clark", "Thompson", "Davis", "Peterson", "Ellestree", "Brightman", "Altman", "Crenshaw", "Fredricks", "Gregory", "Harrison", "Islander", "Herman", "Stevenson", "Trask", "Munins", "Kristoff", "Smith", "Jones", "Clark", "Thompson", "Davis", "Peterson", "Ellestree", "Brightman", "Altman", "Crenshaw", "Fredricks", "Gregory", "Harrison", "Islander", "Herman", "Stevenson", "Trask", "Munins", "Kristoff" };
+        // TODO: real data model
+        String[] myDataset = { "Smith", "Jones", "Clark", "Thompson", "Davis", "Peterson", "Ellestree", "Brightman",
+                "Altman", "Crenshaw", "Fredricks", "Gregory", "Harrison", "Islander", "Herman", "Stevenson", "Trask",
+                "Munins", "Kristoff", "Smith", "Jones", "Clark", "Thompson", "Davis", "Peterson", "Ellestree",
+                "Brightman", "Altman", "Crenshaw", "Fredricks", "Gregory", "Harrison", "Islander", "Herman",
+                "Stevenson", "Trask", "Munins", "Kristoff" };
         mAdapter = new PatientListAdapter(myDataset);
         recyclerView.setAdapter(mAdapter);
 
@@ -51,7 +55,7 @@ public class ListPatientActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()== android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             finish();
         }
         return super.onOptionsItemSelected(item);

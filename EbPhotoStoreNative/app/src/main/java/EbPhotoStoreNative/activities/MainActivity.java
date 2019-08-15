@@ -1,8 +1,8 @@
 package EbPhotoStoreNative.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -12,12 +12,16 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
+import EbPhotoStoreNative.PhotoUploader;
 import EbPhotoStoreNative.NetworkChangeReceiver;
 import org.auderenow.ebphotostorenative.R;
 
-public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.INetworkStatusListener{
+import java.util.UUID;
+
+public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.INetworkStatusListener {
 
     private NetworkChangeReceiver mNetworkReceiver;
+    private PhotoUploader photoUploader;
     private static Context mContext;
 
     @Override
@@ -29,11 +33,14 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
 
         MainActivity.mContext = getApplicationContext();
 
+        photoUploader = new PhotoUploader(this);
+
         mNetworkReceiver = new NetworkChangeReceiver(this);
-        MainActivity.mContext.registerReceiver(
-            mNetworkReceiver,
-            new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        );
+
+        photoUploader.savePhoto(UUID.randomUUID().toString(), "test blah");
+
+        MainActivity.mContext.registerReceiver(mNetworkReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
@@ -57,16 +64,15 @@ public class MainActivity extends AppCompatActivity implements NetworkChangeRece
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            case R.id.action_network:
-                Log.d("Menu Selection", "Cloud offline icon clicked");
-                return true;
+        case R.id.action_settings:
+            return true;
+        case R.id.action_network:
+            Log.d("Menu Selection", "Cloud offline icon clicked");
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onNetworkStatusChanged(boolean isConnected) {
