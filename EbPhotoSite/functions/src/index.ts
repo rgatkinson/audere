@@ -54,3 +54,7 @@ export const notify = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+export const googleCloudApiKey = functions.https.onCall(() => {
+  return functions.config().eb.google_cloud_api_key;
+});
