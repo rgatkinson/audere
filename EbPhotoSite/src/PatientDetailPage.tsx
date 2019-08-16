@@ -18,6 +18,7 @@ import {
   Message,
   NotificationType,
   Notification,
+  PhotoInfo,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi, getAuthUser, FirebaseUnsubscriber } from "./api";
 import {
@@ -482,69 +483,83 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
     });
   }
 
-  public render(): React.ReactNode {
-    const { rdtPhotos } = this.props.eDoc.encounter;
+  public renderPhoto = (photo: PhotoInfo, index = -1) => {
     const { urls } = this.state;
+    const { url, error } =
+      urls[photo.photoId] ||
+      ({ error: new Error(JSON.stringify(urls)) } as PhotoFetchResult);
     return (
-      <div>
-        {rdtPhotos.map((photo, i) => {
-          const { url, error } =
-            urls[photo.photoId] ||
-            ({ error: new Error(JSON.stringify(urls)) } as PhotoFetchResult);
-          return (
-            <div className="PhotoPane">
+      <div className="PhotoPane">
+        <table>
+          <tr>
+            <td>
+              {url != null && (
+                <div
+                  style={{
+                    backgroundColor: "gray",
+                    marginRight: "1rem",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <ExifOrientationImg
+                    src={url}
+                    alt="RDT Result"
+                    style={{
+                      width: "400px",
+                      height: "400px",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+              )}
+            </td>
+            <td>
+              <SimpleMap
+                encounters={[this.props.eDoc]}
+                tDocs={this.props.tDoc ? [this.props.tDoc] : []}
+                style={{
+                  height: "400px",
+                  width: "400px",
+                  marginBottom: "0.5rem",
+                }}
+                zoom={11}
+              />
               <table>
                 <tr>
+                  <th>Test Location:</th>
+                </tr>
+                <tr>
                   <td>
-                    {url != null && (
-                      <div
-                        style={{
-                          backgroundColor: "gray",
-                          marginRight: "1rem",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        <ExifOrientationImg
-                          src={url}
-                          alt="RDT Result"
-                          style={{
-                            width: "400px",
-                            height: "400px",
-                            objectFit: "contain",
-                          }}
-                        />
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <SimpleMap
-                      encounters={[this.props.eDoc]}
-                      tDocs={this.props.tDoc ? [this.props.tDoc] : []}
-                      style={{
-                        height: "400px",
-                        width: "400px",
-                        marginBottom: "0.5rem",
-                      }}
-                      zoom={11}
-                    />
-                    <table>
-                      <tr>
-                        <th>Test Location:</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          {parseFloat(photo.gps.latitude).toFixed(6)},{" "}
-                          {parseFloat(photo.gps.longitude).toFixed(6)}
-                        </td>
-                      </tr>
-                    </table>
+                    {parseFloat(photo.gps.latitude).toFixed(6)},{" "}
+                    {parseFloat(photo.gps.longitude).toFixed(6)}
                   </td>
                 </tr>
               </table>
-              {error != null && <div>ERROR: {error.message}</div>}
-            </div>
-          );
-        })}
+            </td>
+          </tr>
+        </table>
+        {error != null && <div>ERROR: {error.message}</div>}
+      </div>
+    );
+  };
+
+  public render(): React.ReactNode {
+    const { rdtPhotos } = this.props.eDoc.encounter;
+    const photo = last(rdtPhotos);
+    if (!photo) {
+      return null;
+    }
+    return (
+      <div>
+        {this.renderPhoto(photo)}
+        {rdtPhotos.length > 1 && (
+          <details>
+            <summary>
+              Show previous {rdtPhotos.length > 2 ? "photos" : "photo"}
+            </summary>
+            {rdtPhotos.slice(0, -1).map(this.renderPhoto)}
+          </details>
+        )}
       </div>
     );
   }
