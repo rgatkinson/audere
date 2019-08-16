@@ -62,14 +62,14 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
         {demoMode && <View style={styles.demoView} />}
         <View style={styles.titleContainer}>
           {!!onBack ? (
-            <TouchableOpacity style={styles.actionContainer} onPress={onBack}>
+            <TouchableOpacity style={styles.backContainer} onPress={onBack}>
               <Text
                 style={styles.actionContent}
                 content={t("backFull", { back: t(backText || "back") })}
               />
             </TouchableOpacity>
           ) : (
-            <View style={styles.actionContainer} />
+            <View style={styles.backContainer} />
           )}
           <Image source={TITLE_IMAGE} style={styles.titleImage} />
           <View style={styles.iconContainer}>
@@ -79,7 +79,10 @@ class TitleBar extends React.Component<Props & WithNamespaces> {
                 uri: !!hasPendingPhoto ? "datauploading" : "datauploaded",
               }}
             />
-            <TouchableOpacity style={styles.actionContainer} onPress={onMenu}>
+            <TouchableOpacity
+              style={styles.hamburgerContainer}
+              onPress={onMenu}
+            >
               <Text
                 style={[styles.actionContent, styles.hamburgerIcon]}
                 content="&#9776;"
@@ -98,7 +101,10 @@ export default connect((state: StoreState) => ({
 }))(withNamespaces("titleBar")(TitleBar));
 
 const styles = StyleSheet.create({
-  actionContainer: {
+  backContainer: {
+    width: 69, // must equal pending + hamburger
+  },
+  hamburgerContainer: {
     width: 40,
   },
   actionContent: {

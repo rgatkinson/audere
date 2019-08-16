@@ -21,6 +21,8 @@ interface Props {
 }
 
 export default class Chat extends React.Component<Props> {
+  _chatMessages: any = [];
+
   render() {
     const { messages } = this.props;
     const uid = firebase.auth().currentUser!.uid;
@@ -28,8 +30,9 @@ export default class Chat extends React.Component<Props> {
       <Fragment>
         {[...messages]
           .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-          .map(message => (
+          .map((message, index) => (
             <TranslatedChatMessage
+              ref={(tcm: ChatMessage) => (this._chatMessages[index] = tcm)}
               key={message.sender.uid + message.timestamp}
               local={message.sender.uid === uid}
               message={message}
@@ -38,20 +41,30 @@ export default class Chat extends React.Component<Props> {
       </Fragment>
     );
   }
+
+  getChatMessage(msg: Message): any {
+    return this._chatMessages.find((tcm: ChatMessage) => {
+      if (tcm.props.message === msg) {
+        return tcm;
+      }
+    });
+  }
 }
 
 interface MessageProps {
   local: boolean;
   message: Message;
+  ref: any;
 }
 
 class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
   render() {
-    const { local, message, t } = this.props;
+    const { local, message, ref, t } = this.props;
     return (
       <Fragment>
         <Text
           content={message.content}
+          ref={ref}
           style={[
             styles.message,
             local && styles.local,
