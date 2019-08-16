@@ -165,9 +165,7 @@ export class SimpleMap extends React.Component<Props, State> {
     const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${this.state.apiKey}`;
     return (
       <div>
-        {this.state.apiKey == null ||
-        locations == null ||
-        locations.length === 0 ? (
+        {this.state.apiKey == null || locations == null ? (
           "Loading..."
         ) : (
           <div style={this.props.style}>
