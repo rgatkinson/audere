@@ -390,7 +390,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
       triage.diagnoses &&
       triage.diagnoses.length >= 1 &&
       triage.diagnoses[triage.diagnoses.length - 1];
-    const notes = triage && triage.notes;
+    const notes = this.state.notes || (triage && triage.notes);
     return (
       <div className="TriagePane">
         <h3>Does the below image indicate EVD positivity?</h3>
