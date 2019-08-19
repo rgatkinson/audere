@@ -10,7 +10,7 @@ import {
   integerColumn,
   unique,
   stringColumn,
-} from "../../util/sql";
+} from "backend-lib";
 
 export interface GaplessSeqAttributes {
   name: string;

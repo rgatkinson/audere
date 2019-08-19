@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { SplitSql } from "../../util/sql";
+import { SplitSql } from "backend-lib";
 import { AuthManager } from "./auth";
 
 export class ManageAccount {

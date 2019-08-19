@@ -4,6 +4,8 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { EventInfo } from "audere-lib/snifflesProtocol";
+import { getSql } from "../../util/sql";
+import "../../util/config";
 const excel = require("node-excel-export");
 
 const Client = require("pg-native");
@@ -16,10 +18,8 @@ clientPII.connectSync(conStringPII);
 
 import { promisify } from "util";
 import { Op } from "sequelize";
-import { createSplitSql } from "../../util/sql";
 import { defineFeverModels } from "../../models/db/fever";
-import { SecretConfig } from "../../util/secretsConfig";
-const sql = createSplitSql();
+const sql = getSql();
 
 const STUDY_TIMEZONE = "America/Los_Angeles";
 const moment = require("moment-timezone");

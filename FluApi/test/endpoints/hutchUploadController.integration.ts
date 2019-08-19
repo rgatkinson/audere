@@ -15,8 +15,8 @@ import { VisitInfoBuilder } from "../visitInfoBuilder";
 import rawResponse from "../resources/geocodingRawResponse.json";
 
 import nock = require("nock");
-import { createSplitSql } from "../../src/util/sql";
-import { SecretConfig } from "../../src/util/secretsConfig";
+import { SecretConfig } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { getGeocodingConfig } from "../../src/util/geocodingConfig";
 import { getHutchConfig } from "../../src/util/hutchUploadConfig";
 import {
@@ -52,7 +52,7 @@ describe("export controller", () => {
   let hutchConfig;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     const config = { sql, sessionStore };
     publicApp = await createPublicApp(config);

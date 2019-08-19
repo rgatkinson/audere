@@ -1,11 +1,10 @@
 import * as AWS from "aws-sdk";
 import { formatConsent } from "../../util/visit";
-import { SplitSql } from "../../util/sql";
 import logger from "../../util/logger";
 import { CombinedVisit } from "../../endpoints/snifflesVisitJobs";
 import { S3Uploader } from "../../external/s3Uploader";
 import { getS3Config } from "../../util/s3Config";
-import { SecretConfig } from "../../util/secretsConfig";
+import { SecretConfig, SplitSql } from "backend-lib";
 import { VisitJobResult } from "../../models/db/sniffles";
 
 const SEATTLE_CHILDRENS = "seattle-childrens";

@@ -4,8 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { AsprenClient } from "../../external/asprenClient";
-import { CoughModels, defineCoughModels } from "../../models/db/cough";
-import { SplitSql } from "../../util/sql";
+import { defineCoughModels, CoughModels, SplitSql } from "backend-lib";
 import logger from "../../util/logger";
 import sequelize = require("sequelize");
 

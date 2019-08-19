@@ -1,4 +1,4 @@
-import { createSplitSql } from "../../../src/util/sql";
+import { getSql } from "../../../src/util/sql";
 import { AuthManager } from "../../../src/endpoints/webPortal/auth";
 import { defineSiteUserModels } from "../../../src/endpoints/webPortal/models";
 
@@ -6,7 +6,7 @@ describe("authManager", () => {
   describe("authorize", () => {
     let authManager: AuthManager, userModels;
     beforeAll(async done => {
-      const sql = createSplitSql();
+      const sql = getSql();
       authManager = new AuthManager(sql);
       userModels = defineSiteUserModels(sql);
       authManager.createUser("auth_test_user1", "password");

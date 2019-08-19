@@ -6,11 +6,9 @@
 import { CensusTractService } from "../services/censusTractService";
 import { GeocodingService } from "../services/geocodingService";
 import { getGeocodingConfig } from "./geocodingConfig";
-import { isAWS } from "./environment";
-import { SecretConfig } from "./secretsConfig";
+import { isAWS, SecretConfig, SplitSql } from "backend-lib";
 import { SmartyStreetsGeocoder } from "../external/smartyStreetsGeocoder";
 import { defineSmartyStreetsResponse } from "../models/db/smartyStreetsResponses";
-import { SplitSql } from "./sql";
 import Sequelize from "sequelize";
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
 

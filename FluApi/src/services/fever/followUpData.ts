@@ -10,14 +10,13 @@ import {
   BatchItemAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
-import { Model, SplitSql } from "../../util/sql";
+import { Model, SplitSql } from "backend-lib";
 import { FollowUpSurveyData } from "../../external/redCapClient";
 import {
   HutchUploadModel,
   defineHutchUpload,
 } from "../../models/db/hutchUpload";
 import sequelize = require("sequelize");
-import logger from "../../util/logger";
 
 export const FOLLOWUP_BATCH_NAMESPACE = "FollowUp_Batch";
 export const FOLLOWUP_ITEMS_NAMESPACE = "FollowUp_Items";

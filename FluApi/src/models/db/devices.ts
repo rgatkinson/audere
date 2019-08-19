@@ -9,7 +9,7 @@ import {
   SplitSql,
   stringColumn,
   unique,
-} from "../../util/sql";
+} from "backend-lib";
 
 export interface DeviceSettingAttributes {
   id?: string;

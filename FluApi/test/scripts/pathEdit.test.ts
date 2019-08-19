@@ -9,7 +9,6 @@ import {
   partPath,
   get1,
   set1,
-  validateField,
 } from "../../scripts/util/pathEdit";
 
 describe("partPath", () => {

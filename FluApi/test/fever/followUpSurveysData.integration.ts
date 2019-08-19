@@ -20,7 +20,8 @@ import {
   FollowUpSurveyAttributes,
   defineFollowUpSurveys,
 } from "../../src/models/db/fever";
-import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
+import { Inst, Model, SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import {
   PIIInfo,
   SurveyNonPIIInfo,
@@ -60,7 +61,7 @@ describe("survey batch data access", () => {
   let followUpSurveys: Model<FollowUpSurveyAttributes>;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     followUpBatch = defineFollowUpBatch(sql.nonPii);
     followUpItems = defineFollowUpItem(sql.nonPii);
     followUpDiscard = defineFollowUpDiscard(sql.nonPii);
@@ -175,7 +176,7 @@ describe("survey batch data access", () => {
     }
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 
@@ -326,7 +327,7 @@ describe("survey batch data access", () => {
     });
   });
 
-  describe("importing follow-up surveys", async () => {
+  describe("importing follow-up surveys", () => {
     const followUpData = {
       record_id: 1,
       email: "zaza@mail.com",

@@ -7,7 +7,7 @@ import crypto from "crypto";
 import uuidv4 from "uuid/v4";
 import passport, { Passport } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Inst, SplitSql } from "../../util/sql";
+import { Inst, SplitSql } from "backend-lib";
 import { defineSiteUserModels, SiteUserModels, UserAttributes } from "./models";
 import logger from "../../util/logger";
 

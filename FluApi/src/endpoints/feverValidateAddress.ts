@@ -6,12 +6,11 @@
 import { Op, cast } from "sequelize";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
-import { SplitSql } from "../util/sql";
 import { GeocodingService } from "../../src/services/geocodingService";
 import * as Model from "audere-lib/snifflesProtocol";
 import { GeocodingResponse } from "../../src/models/geocoding";
 import { defineFeverModels, FeverModels } from "../models/db/fever";
-import { SecretConfig } from "../util/secretsConfig";
+import { SecretConfig, SplitSql } from "backend-lib";
 import logger from "../util/logger";
 import { AddressInfoUse } from "audere-lib/feverProtocol";
 

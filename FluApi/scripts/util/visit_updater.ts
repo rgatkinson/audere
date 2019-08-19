@@ -21,7 +21,7 @@ import {
 
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
-import { SplitSql } from "../../src/util/sql";
+import { SplitSql } from "backend-lib";
 import {
   defineHutchUpload,
   HutchUploadModel,

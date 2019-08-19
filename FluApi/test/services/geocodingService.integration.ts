@@ -11,13 +11,13 @@ import {
   defineSmartyStreetsResponse,
   SmartyStreetsResponseModel,
 } from "../../src/models/db/smartyStreetsResponses";
-import { createSplitSql, SplitSql } from "../../src/util/sql";
+import { SplitSql, SecretConfig } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { createGeocoder } from "../../src/util/geocoder";
 import {
   GeocodingService,
   canonicalizeAddressInfo,
 } from "../../src/services/geocodingService";
-import { SecretConfig } from "../../src/util/secretsConfig";
 import exampleResponse from "../resources/geocodingObjectResponse.json";
 import { AddressDetails } from "../../src/models/encounterDetails";
 
@@ -63,7 +63,7 @@ describe("geocoder cache", () => {
   let secrets: SecretConfig;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     smartyStreetsResponses = defineSmartyStreetsResponse(sql);
     secrets = new SecretConfig(sql);
     done();

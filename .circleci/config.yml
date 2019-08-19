@@ -160,8 +160,7 @@ jobs:
       - run:
           name: Server Yarn Install
           command: |
-            cd FluApi
-            yarn install --frozen-lockfile
+            npx lerna bootstrap
             ls node_modules
             if [[ -e package-lock.json ]]; then
               echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
@@ -307,8 +306,7 @@ jobs:
       - run:
           name: Server Yarn Install
           command: |
-            cd FluApi
-            yarn install --frozen-lockfile
+            npx lerna bootstrap
             ls node_modules
             if [[ -e package-lock.json ]]; then
               echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."

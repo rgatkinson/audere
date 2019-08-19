@@ -4,17 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Sequelize, Transaction } from "sequelize";
-import { SplitSql } from "../util/sql";
-import { Hash } from "../util/crypto";
+import { defineDataNode, Hash, SplitSql, tuple2 } from "backend-lib";
 import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
   SURVEY_QUESTIONS,
 } from "audere-lib/coughQuestionConfig";
-import { defineDataNode } from "../models/db/dataPipeline";
-import { tuple2 } from "../util/tuple";
-import logger from "../util/logger";
 
 const DEBUG_DATA_PIPELINE_SERVICE = false;
 

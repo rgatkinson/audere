@@ -11,7 +11,7 @@ import {
   ConsentEmailAttributes,
   querySurveyJoinConsentEmail,
 } from "../models/db/fever";
-import { SplitSql, Inst } from "../util/sql";
+import { SplitSql, Inst } from "backend-lib";
 import {
   PIIInfo,
   SurveyNonPIIInfo,

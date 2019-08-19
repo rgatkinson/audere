@@ -6,8 +6,7 @@
 import { AsprenClient } from "../external/asprenClient";
 import { AsprenImport } from "../services/cough/asprenImport";
 import { LazyAsync } from "../util/lazyAsync";
-import { SecretConfig } from "../util/secretsConfig";
-import { SplitSql } from "../util/sql";
+import { SecretConfig, SplitSql } from "backend-lib";
 import { getS3Config } from "../util/s3Config";
 import { DataPipelineService } from "../services/dataPipelineService";
 import AWS from "aws-sdk";

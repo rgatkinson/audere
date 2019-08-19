@@ -5,7 +5,6 @@
 
 import { AxiosInstance } from "axios";
 import { Encounter } from "audere-lib/hutchProtocol";
-import { EncounterKey } from "../services/encounterDetailsService";
 import { ThrottledTaskQueue } from "../util/throttledTaskQueue";
 import logger from "../util/logger";
 

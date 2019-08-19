@@ -10,7 +10,7 @@ import {
   booleanColumn,
   integerColumn,
   unique,
-} from "../../util/sql";
+} from "backend-lib";
 
 export interface ConsentEmailAttributes {
   id?: number;

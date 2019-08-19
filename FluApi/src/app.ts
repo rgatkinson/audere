@@ -11,15 +11,18 @@ import { ConsentEmailerEndpoint } from "./endpoints/snifflesConsentMailer";
 import { SnifflesVisitJobs } from "./endpoints/snifflesVisitJobs";
 import { HutchUploaderEndpoint } from "./endpoints/hutchUpload";
 import { FeverEndpoint } from "./endpoints/feverApi";
-import { generateRandomKey, generateRandomBytes } from "./util/crypto";
-import { SplitSql } from "./util/sql";
+import {
+  generateRandomBytes,
+  generateRandomKey,
+  isAWS,
+  SplitSql,
+} from "backend-lib";
 import { FeverCronReportEndpoint } from "./endpoints/feverCronReport";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
 import { BarcodeValidator } from "./endpoints/barcodeValidator";
 import { useOuch, createApp, wrap, requestId } from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
-import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
 import logger from "./util/logger";
 import { DeviceSettingsEndpoint } from "./endpoints/deviceSettings";

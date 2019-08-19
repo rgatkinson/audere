@@ -19,10 +19,9 @@ import {
   ReceivedKitAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
-import { Model, SplitSql } from "../../util/sql";
+import { Model, SplitSql } from "backend-lib";
 import Sequelize from "sequelize";
 import logger from "../../util/logger";
-import sequelize = require("sequelize");
 
 export interface SurveyCompleteItem extends BatchItemWithCsruid {
   boxBarcode: string;

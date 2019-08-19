@@ -16,7 +16,7 @@ import {
   VisitNonPIIInstance,
 } from "../models/db/sniffles";
 import logger from "../util/logger";
-import { SplitSql } from "../util/sql";
+import { SplitSql } from "backend-lib";
 import { emailConsent } from "../util/visit";
 
 const MAX_EMAILS_PER_REQUEST = 100;

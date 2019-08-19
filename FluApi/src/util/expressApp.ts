@@ -9,7 +9,7 @@ import { ErrorRequestHandler } from "express-serve-static-core";
 import Ouch from "ouch";
 import helmet from "helmet";
 
-import { isAWS } from "./environment";
+import { isAWS } from "backend-lib";
 import logger from "./logger";
 import { RequestContext } from "./requestContext";
 

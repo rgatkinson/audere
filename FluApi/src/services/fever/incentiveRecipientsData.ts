@@ -10,7 +10,7 @@ import {
   BatchItemAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
-import { Model, SplitSql } from "../../util/sql";
+import { Model, SplitSql } from "backend-lib";
 
 export const INCENTIVE_BATCH_NAMESPACE = "Incentives_Batch";
 export const INCENTIVE_ITEMS_NAMESPACE = "Incentives_Items";

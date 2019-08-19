@@ -14,8 +14,6 @@ import {
   VisitCommonInfo,
   EventInfoKind,
 } from "audere-lib/snifflesProtocol";
-import { SurveyAttributes } from "../../src/models/db/fever";
-import { PIIInfo } from "audere-lib/feverProtocol";
 
 export const DEVICE: DeviceInfo = {
   installation: "uuid",

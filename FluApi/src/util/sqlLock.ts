@@ -5,7 +5,7 @@
 
 import sequelize, { Sequelize } from "sequelize";
 import logger from "./logger";
-import { sha256 } from "./crypto";
+import { sha256 } from "backend-lib";
 
 export class SqlLock {
   private readonly sql: Sequelize;

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { createPublicApp } from "../../src/app";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import { defineBarcodes } from "../../src/models/db/fever";
@@ -17,7 +17,7 @@ describe("validateBarcodes", () => {
   let publicApp;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     barcodes = defineBarcodes(sql.nonPii);
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });

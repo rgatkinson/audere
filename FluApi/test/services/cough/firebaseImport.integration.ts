@@ -4,10 +4,10 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { instance, mock, when, anyString } from "ts-mockito";
-import { CoughModels, defineCoughModels } from "../../../src/models/db/cough";
+import { CoughModels, defineCoughModels, SplitSql } from "backend-lib";
+import { getSql } from "../../../src/util/sql";
 import { BigQueryTableImporter } from "../../../src/external/bigQuery";
 import { FirebaseImport } from "../../../src/services/cough/firebaseImport";
-import { SplitSql, createSplitSql } from "../../../src/util/sql";
 import moment = require("moment");
 
 describe("Firebase import", () => {
@@ -27,7 +27,7 @@ describe("Firebase import", () => {
   });
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     cough = defineCoughModels(sql);
     done();
   });

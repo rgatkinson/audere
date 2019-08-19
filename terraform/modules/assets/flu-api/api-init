@@ -33,12 +33,10 @@ nvm install v10
 set -x
 npm install --global yarn
 
-cd ~/audere/FluApi
-ln -s /creds/db/env .env
-
 git checkout "$commit"
-yarn install --frozen-lockfile
-yarn build
+npx lerna bootstrap
+npx lerna run build
+cd ~/audere/FluApi
 
 case "$mode" in
   migrate)

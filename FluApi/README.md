@@ -4,13 +4,22 @@ Express web service for persisting flu study documents into underlying storage. 
 
 ## Developer setup
 
+### Dependencies
+
+The development environment can be setup by installing dependencies from the root of this repository by running:
+
+```
+yarn
+```
+
+### Running FluApi
+
 This service requires valid build information and an active Postgres database to run. A local Postgres database is used by default as configured in your .env file. To run the application locally:
 
 1. Copy .env.example to .env.
 2. Setup a local Postgres database matching your .env file (user, port, db name).
-3. Run `yarn install`.
-4. Run `yarn setup`.
-5. Run `yarn start`. 
+3. Run `yarn setup`.
+4. Run `yarn start`. 
 
 ## Database
 

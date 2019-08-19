@@ -20,7 +20,7 @@ import {
   makeCSRUID,
   DEVICE,
 } from "./feverSampleData";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { defineFeverModels } from "../../src/models/db/fever";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import logger from "../../src/util/logger";
@@ -34,7 +34,7 @@ describe("putFeverDocument", () => {
   let logBuffer;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);
@@ -227,7 +227,7 @@ describe("putDocumentWithKey", () => {
   let models;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);

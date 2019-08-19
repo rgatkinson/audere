@@ -14,7 +14,7 @@ import {
   EncounterKey,
   KeyedEncounter,
 } from "./encounterDetailsService";
-import { sha256 } from "../util/crypto";
+import { sha256 } from "backend-lib";
 import { GeocodingResponse, GeocodedAddress } from "../models/geocoding";
 import {
   NonPIIEncounterDetails,

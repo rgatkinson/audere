@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { createPublicApp } from "../../src/app";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import { defineDeviceSetting } from "../../src/models/db/devices";
@@ -15,7 +15,7 @@ describe("getDeviceSetting", () => {
   let publicApp;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     deviceSetting = defineDeviceSetting(sql);
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });

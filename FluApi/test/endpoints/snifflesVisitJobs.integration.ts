@@ -1,10 +1,8 @@
-import Sequelize from "sequelize";
 import { SnifflesVisitJobs } from "../../src/endpoints/snifflesVisitJobs";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import {
   defineSnifflesModels,
   SnifflesModels,
-  VisitJobResult,
 } from "../../src/models/db/sniffles";
 import {
   documentContentsPII,
@@ -16,7 +14,7 @@ const tuple = <T extends any[]>(...args: T): T => args;
 describe("SnifflesVisitJobs", () => {
   let sql, snifflesModels: SnifflesModels;
   beforeAll(() => {
-    sql = createSplitSql();
+    sql = getSql();
     snifflesModels = defineSnifflesModels(sql);
   });
 

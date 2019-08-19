@@ -15,7 +15,7 @@ import {
   jsonbColumn,
   integerColumn,
   unique,
-} from "../../util/sql";
+} from "backend-lib";
 import {
   DeviceInfo,
   LogLevel,

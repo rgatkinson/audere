@@ -1,12 +1,12 @@
-// Copyright (c) 2018 by Audere
+// Copyright (c) 2019 by Audere
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
 import axios, { AxiosInstance } from "axios";
-import logger from "../util/logger";
+import { Logger } from "winston";
 
-export function createAxios(baseURL): AxiosInstance {
+export function createAxios(baseURL: string, logger: Logger): AxiosInstance {
   const api = axios.create({ baseURL });
 
   if (process.env.NODE_ENV === "development") {

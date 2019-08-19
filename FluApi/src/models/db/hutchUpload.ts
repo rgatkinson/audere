@@ -10,7 +10,7 @@ import {
   integerColumn,
   unique,
   nullable,
-} from "../../util/sql";
+} from "backend-lib";
 import { Sequelize } from "sequelize";
 
 export interface HutchUploadAttributes {

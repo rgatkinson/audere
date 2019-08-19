@@ -9,7 +9,7 @@ import {
   ReceivedKitAttributes,
 } from "../../models/db/fever";
 import { KitRecord } from "../../models/kitRecord";
-import { SplitSql } from "../../util/sql";
+import { SplitSql } from "backend-lib";
 import Sequelize from "sequelize";
 import { AddressInfoUse, EventInfo } from "audere-lib/feverProtocol";
 import { RecordSurveyMapping } from "../../external/redCapClient";

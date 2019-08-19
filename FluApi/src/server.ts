@@ -3,14 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { createSplitSql } from "./util/sql";
-import { createPublicApp, createInternalApp } from "./app";
 import dotenv from "dotenv";
+import { createPublicApp, createInternalApp } from "./app";
+import { getSql } from "./util/sql";
 
 async function startServer(): Promise<void> {
   dotenv.config();
 
-  const sql = createSplitSql();
+  const sql = getSql();
   sql.nonPii.authenticate();
   sql.pii.authenticate();
 

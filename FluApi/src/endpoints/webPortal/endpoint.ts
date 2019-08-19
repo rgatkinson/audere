@@ -18,9 +18,7 @@ import {
   wrap,
   requestId,
 } from "../../util/expressApp";
-import { SplitSql } from "../../util/sql";
-import { SecretConfig } from "../../util/secretsConfig";
-import { isAWS } from "../../util/environment";
+import { isAWS, SecretConfig, SplitSql } from "backend-lib";
 import { defineSiteUserModels, SESSION_TABLE_NAME } from "./models";
 import {
   getMetrics,

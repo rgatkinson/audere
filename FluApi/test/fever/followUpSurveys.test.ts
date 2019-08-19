@@ -11,7 +11,6 @@ import {
   capture,
   deepEqual,
   verify,
-  anything,
 } from "ts-mockito";
 import { FollowUpDataAccess } from "../../src/services/fever/followUpData";
 import { FollowUpSurveys } from "../../src/services/fever/followUpSurveys";

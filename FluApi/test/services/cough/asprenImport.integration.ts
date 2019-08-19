@@ -9,8 +9,8 @@ import { instance, mock, when } from "ts-mockito";
 import asprenReports from "../../resources/asprenExamples.json";
 import { AsprenClient } from "../../../src/external/asprenClient";
 import { AsprenImport } from "../../../src/services/cough/asprenImport";
-import { createSplitSql, SplitSql } from "../../../src/util/sql";
-import { CoughModels, defineCoughModels } from "../../../src/models/db/cough";
+import { CoughModels, defineCoughModels, SplitSql } from "backend-lib";
+import { getSql } from "../../../src/util/sql";
 import AWS from "aws-sdk";
 import { ObjectList } from "aws-sdk/clients/s3";
 
@@ -61,7 +61,7 @@ describe("import ASPREN reports", () => {
   });
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     cough = defineCoughModels(sql);
     done();
   });

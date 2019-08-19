@@ -5,8 +5,7 @@
 
 import { Op, cast, json, where, col, fn } from "sequelize";
 import querystring from "querystring";
-import { SplitSql } from "../../util/sql";
-import { CoughModels, defineCoughModels } from "../../models/db/cough";
+import { CoughModels, defineCoughModels, SplitSql } from "backend-lib";
 
 const LABELS = {
   RDTReaderPhotoGUID: "Automatic Capture",

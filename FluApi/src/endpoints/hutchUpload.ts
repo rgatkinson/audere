@@ -11,10 +11,9 @@ import { defineHutchUpload } from "../models/db/hutchUpload";
 import { getHutchConfig } from "../util/hutchUploadConfig";
 import { defineFeverModels } from "../models/db/fever";
 import { defineSnifflesModels } from "../models/db/sniffles";
-import { createAxios } from "../util/axios";
-import { SplitSql } from "../util/sql";
-import { SecretConfig } from "../util/secretsConfig";
+import { createAxios, SecretConfig, SplitSql } from "backend-lib";
 import { createGeocoder } from "../util/geocoder";
+import logger from "../util/logger";
 
 export class HutchUploaderEndpoint {
   private readonly sql: SplitSql;
@@ -71,7 +70,7 @@ async function createEncountersService(
   const geocoder = await createGeocoder(secrets, sql);
   const hutchUploadModel = defineHutchUpload(sql);
   const hutchConfig = await getHutchConfig(secrets);
-  const axiosClient = await createAxios(hutchConfig.baseUrl);
+  const axiosClient = await createAxios(hutchConfig.baseUrl, logger);
   const uploader: HutchUploader = new HutchUploader(
     axiosClient,
     hutchConcurrentUploads,

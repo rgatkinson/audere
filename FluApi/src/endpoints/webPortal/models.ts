@@ -12,7 +12,7 @@ import {
   primaryKey,
   dateColumn,
   foreignIdKey,
-} from "../../util/sql";
+} from "backend-lib";
 
 export const SESSION_TABLE_NAME = "site_sessions";
 

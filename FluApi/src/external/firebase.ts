@@ -7,8 +7,7 @@ import os from "os";
 import { promises as fsPromise } from "fs";
 import firebase from "firebase-admin";
 import { LazyAsync } from "../util/lazyAsync";
-import { SecretConfig } from "../util/secretsConfig";
-import { SplitSql } from "../util/sql";
+import { SecretConfig, SplitSql } from "backend-lib";
 import logger from "../util/logger";
 
 type App = firebase.app.App;

@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Op } from "sequelize";
 import {
   EncounterDetailsService,
   Release,
@@ -12,7 +11,8 @@ import {
   defineSnifflesModels,
   SnifflesModels,
 } from "../../src/models/db/sniffles";
-import { createSplitSql, SplitSql } from "../../src/util/sql";
+import { SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { defineHutchUpload } from "../../src/models/db/hutchUpload";
 import {
   documentContentsNonPII,
@@ -34,7 +34,7 @@ describe("encounterDetailsService", () => {
   let splitSql: SplitSql;
 
   beforeAll(async done => {
-    splitSql = createSplitSql();
+    splitSql = getSql();
     feverModels = defineFeverModels(splitSql);
     snifflesModels = defineSnifflesModels(splitSql);
     encounterDetails = new EncounterDetailsService(
@@ -215,7 +215,7 @@ describe("encounterDetailsService", () => {
     });
   });
 
-  describe("retrieve surveys", async () => {
+  describe("retrieve surveys", () => {
     beforeEach(async () => {
       await cleanupFever();
     });

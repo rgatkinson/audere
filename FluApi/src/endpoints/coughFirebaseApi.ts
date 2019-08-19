@@ -6,9 +6,7 @@
 import { BigQueryTableImporter } from "../external/bigQuery";
 import { FirebaseImport } from "../services/cough/firebaseImport";
 import { LazyAsync } from "../util/lazyAsync";
-import { SecretConfig } from "../util/secretsConfig";
-import { SplitSql } from "../util/sql";
-import { defineCoughModels } from "../models/db/cough";
+import { defineCoughModels, SecretConfig, SplitSql } from "backend-lib";
 import { getBigqueryConfig } from "../util/bigqueryConfig";
 import { DataPipelineService } from "../services/dataPipelineService";
 import logger from "../util/logger";

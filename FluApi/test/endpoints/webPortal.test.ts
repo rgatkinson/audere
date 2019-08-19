@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { createPublicApp } from "../../src/app";
 import { AuthManager } from "../../src/endpoints/webPortal/auth";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
@@ -18,7 +18,7 @@ describe("webPortal", () => {
   let password = "hunter2";
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     auth = new AuthManager(sql);

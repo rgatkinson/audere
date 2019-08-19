@@ -21,7 +21,7 @@ import {
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
 import { SnifflesModels, defineSnifflesModels } from "../models/db/sniffles";
-import { SplitSql } from "../util/sql";
+import { SplitSql } from "backend-lib";
 import { filterResponsePII } from "../services/sniffles/piiFilter";
 import { requestId } from "../util/expressApp";
 

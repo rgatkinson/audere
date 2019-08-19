@@ -21,7 +21,7 @@ import {
   documentContentsPII,
   makeCSRUID,
 } from "../util/sample_data";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { defineSnifflesModels } from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import { WinstonBuffer } from "../util/winstonBuffer";
@@ -35,7 +35,7 @@ describe("putDocument", () => {
   let logBuffer;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     models = defineSnifflesModels(sql);
@@ -222,7 +222,7 @@ describe("putDocumentWithKey", () => {
   let publicApp;
   let models;
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     models = defineSnifflesModels(sql);

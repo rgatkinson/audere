@@ -5,7 +5,7 @@
 
 import { AddressInfo } from "audere-lib/common";
 import { GeocodedAddress } from "../geocoding";
-import { defineModel, Model, SplitSql, jsonbColumn } from "../../util/sql";
+import { defineModel, Model, SplitSql, jsonbColumn } from "backend-lib";
 
 export interface SmartyStreetsResponseAttributes {
   id?: number;

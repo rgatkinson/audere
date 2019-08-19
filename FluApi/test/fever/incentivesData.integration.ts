@@ -18,7 +18,8 @@ import {
   ReceivedKitsFileAttributes,
   defineReceivedKitsFiles,
 } from "../../src/models/db/fever";
-import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
+import { Inst, Model, SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import {
@@ -46,7 +47,7 @@ describe("survey batch data access", () => {
   let itemSeq: Inst<GaplessSeqAttributes>;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     incentiveBatch = defineIncentiveBatch(sql.nonPii);
     incentiveItems = defineIncentiveItem(sql.nonPii);
     incentiveDiscard = defineIncentiveDiscard(sql.nonPii);
@@ -154,7 +155,7 @@ describe("survey batch data access", () => {
     }
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 
@@ -240,7 +241,7 @@ describe("survey batch data access", () => {
     });
   });
 
-  describe("get existing items", async () => {
+  describe("get existing items", () => {
     it("should fetch items based on a list of ids", async () => {
       await createTestData(false);
 

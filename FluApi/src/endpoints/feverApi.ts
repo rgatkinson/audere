@@ -21,7 +21,7 @@ import {
 import { defineFeverModels, FeverModels } from "../models/db/fever";
 import { sendEmail } from "../util/email";
 import logger from "../util/logger";
-import { SplitSql } from "../util/sql";
+import { SplitSql } from "backend-lib";
 import { requestId } from "../util/expressApp";
 import { ProtocolDocument } from "audere-lib/dist/feverProtocol";
 

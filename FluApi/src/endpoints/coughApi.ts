@@ -5,12 +5,13 @@
 
 import * as AWS from "aws-sdk";
 import { Op } from "sequelize";
-import { SplitSql } from "../util/sql";
 import {
-  CoughModels,
   defineCoughModels,
+  CoughModels,
   ImportProblemAttributes,
-} from "../models/db/cough";
+  SecretConfig,
+  SplitSql,
+} from "backend-lib";
 import {
   connectorFromSqlSecrets,
   FirebaseReceiver,
@@ -24,7 +25,6 @@ import {
   PhotoDocument,
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
-import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
 import { S3Uploader } from "../external/s3Uploader";
 import { LazyAsync } from "../util/lazyAsync";

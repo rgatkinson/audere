@@ -20,7 +20,7 @@ import {
 } from "../../scripts/util/feverSurveyUpdater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { SurveyDocument } from "audere-lib/feverProtocol";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import { defineFeverModels, SurveyAttributes } from "../../src/models/db/fever";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 
@@ -53,7 +53,7 @@ describe("SurveyUpdater", () => {
 
   beforeAll(async done => {
     log.setVerbose(true);
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     models = defineFeverModels(sql);

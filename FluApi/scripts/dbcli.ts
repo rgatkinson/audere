@@ -23,11 +23,11 @@ import { ScriptLogger } from "./util/script_logger";
 import { VisitNonPIIUpdater, VisitPIIUpdater } from "./util/visit_updater";
 import { partPath, getPart, setPart } from "./util/pathEdit";
 import {
-  createSplitSql,
   nonPiiDatabaseUrl,
   piiDatabaseUrl,
-} from "../src/util/sql";
-import { generateRandomKey, sha256 } from "../src/util/crypto";
+  generateRandomKey,
+} from "backend-lib";
+import { getSql } from "../src/util/sql";
 import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
   defineSnifflesModels,
@@ -77,7 +77,7 @@ type App = firebase.app.App;
 type Firestore = firebase.firestore.Firestore;
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 
-const sql = createSplitSql();
+const sql = getSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
 const auth = new AuthManager(sql);

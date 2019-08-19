@@ -14,7 +14,8 @@ import {
   BatchDiscardAttributes,
   defineKitDiscard,
 } from "../../src/models/db/fever";
-import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
+import { Inst, Model, SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import {
@@ -40,7 +41,7 @@ describe("survey batch data access", () => {
   let itemSeq: Inst<GaplessSeqAttributes>;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     kitBatch = defineKitBatch(sql.nonPii);
     kitItems = defineKitItem(sql.nonPii);
     kitDiscard = defineKitDiscard(sql.nonPii);
@@ -118,7 +119,7 @@ describe("survey batch data access", () => {
     await kitItems.bulkCreate(batchItems);
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 

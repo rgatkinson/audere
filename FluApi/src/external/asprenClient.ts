@@ -10,7 +10,7 @@ import {
   CurrentSeasonVaccinationStatus,
   IndigenousStatus,
   PreviousSeasonVaccinationStatus,
-} from "../models/db/cough";
+} from "backend-lib";
 import { S3Config } from "../util/s3Config";
 import logger from "../util/logger";
 

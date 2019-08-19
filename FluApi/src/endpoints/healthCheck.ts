@@ -3,15 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { SecretConfig } from "../util/secretsConfig";
-import { SplitSql } from "../util/sql";
+import { SecretConfig, SplitSql } from "backend-lib";
 import {
   connectorFromSqlSecrets,
   FirebaseReceiver,
 } from "../external/firebase";
 import { getPhotoCollection } from "./coughApi";
 import logger from "../util/logger";
-import { SecretsManager } from "../../node_modules/aws-sdk";
 
 export class ServerHealth {
   private sql: SplitSql;

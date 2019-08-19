@@ -6,10 +6,11 @@
 import { anything, mock, instance, when } from "ts-mockito";
 import { AddressInfo, AddressInfoUse } from "audere-lib/feverProtocol";
 import { FeverValidateAddress } from "../../src/endpoints/feverValidateAddress";
-import { createSplitSql, SplitSql } from "../../src/util/sql";
+import { SplitSql } from "backend-lib";
 import { defineFeverModels, FeverModels } from "../../src/models/db/fever";
 import { GeocodingService } from "../../src/services/geocodingService";
 import { LazyAsync } from "../../src/util/lazyAsync";
+import { getSql } from "../../src/util/sql";
 import { makeCSRUID, surveyPIIInDb } from "./feverSampleData";
 
 const address: AddressInfo = {
@@ -39,7 +40,7 @@ describe("feverValidateAddress", () => {
   let mockGeocoder;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     fever = defineFeverModels(sql);
     mockGeocoder = mock(GeocodingService);
     endpoint = new FeverValidateAddress(

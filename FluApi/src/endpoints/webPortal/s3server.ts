@@ -1,9 +1,8 @@
 import archiver from "archiver";
 import * as AWS from "aws-sdk";
 import querystring from "querystring";
-import { SplitSql } from "../../util/sql";
 import { getS3Config, S3Config } from "../../util/s3Config";
-import { SecretConfig } from "../../util/secretsConfig";
+import { SecretConfig, SplitSql } from "backend-lib";
 import { LazyAsync } from "../../util/lazyAsync";
 
 type RenderOpts = {

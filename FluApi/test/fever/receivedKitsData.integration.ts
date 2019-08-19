@@ -3,7 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { createSplitSql, SplitSql } from "../../src/util/sql";
+import { SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 import { FeverModels, defineFeverModels } from "../../src/models/db/fever";
 import { ReceivedKitsData } from "../../src/services/fever/receivedKitsData";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
@@ -16,7 +17,7 @@ describe("received kits data access", () => {
   let fever: FeverModels;
 
   beforeAll(async done => {
-    sql = createSplitSql();
+    sql = getSql();
     fever = defineFeverModels(sql);
     await cleanupDb();
     done();

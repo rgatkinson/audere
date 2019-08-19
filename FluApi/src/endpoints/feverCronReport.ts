@@ -12,17 +12,16 @@ import { KitRecipientsDataAccess } from "../services/fever/kitOrdersData";
 import { ReceivedKits } from "../services/fever/receivedKits";
 import { ReceivedKitsData } from "../services/fever/receivedKitsData";
 import { REDCapClient } from "../external/redCapClient";
-import { createAxios } from "../util/axios";
 import { createGeocoder } from "../util/geocoder";
 import { LazyAsync } from "../util/lazyAsync";
 import { getREDCapConfig } from "../util/redCapConfig";
-import { SecretConfig } from "../util/secretsConfig";
+import { createAxios, SecretConfig, SplitSql } from "backend-lib";
 import { getS3Config, S3Config } from "../util/s3Config";
-import { SplitSql } from "../util/sql";
 import { defineFeverModels } from "../models/db/fever";
 import { defineGaplessSeq } from "../models/db/gaplessSeq";
 import { S3Uploader } from "../external/s3Uploader";
 import * as AWS from "aws-sdk";
+import logger from "../util/logger";
 
 export class FeverCronReportEndpoint {
   private incentives: LazyAsync<Incentives>;
@@ -157,7 +156,7 @@ async function createFollowUps(
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, await s3Config.get());
   const redCapConfig = await getREDCapConfig(secrets);
-  const axios = createAxios(redCapConfig.apiUrl);
+  const axios = createAxios(redCapConfig.apiUrl, logger);
   const retriever = new REDCapClient(axios, redCapConfig);
   return new FollowUpSurveys(dao, uploader, retriever);
 }
@@ -169,7 +168,7 @@ async function createReceivedKits(
 ): Promise<ReceivedKits> {
   const dao = new ReceivedKitsData(sql);
   const redCapConfig = await getREDCapConfig(secrets);
-  const axios = createAxios(redCapConfig.apiUrl);
+  const axios = createAxios(redCapConfig.apiUrl, logger);
   const retriever = new REDCapClient(axios, redCapConfig);
   const s3 = new AWS.S3({ region: "us-west-2" });
   const uploader = new S3Uploader(s3, await s3Config.get());

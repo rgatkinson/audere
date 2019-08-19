@@ -4,8 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { BigQueryTableImporter } from "../../external/bigQuery";
-import { CoughModels } from "../../models/db/cough";
-import { SplitSql } from "../../util/sql";
+import { CoughModels, SplitSql } from "backend-lib";
 import moment = require("moment");
 import logger from "../../util/logger";
 

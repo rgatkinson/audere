@@ -19,7 +19,7 @@ import {
 } from "../../scripts/util/visit_updater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { VisitDocument } from "audere-lib/snifflesProtocol";
-import { createSplitSql } from "../../src/util/sql";
+import { getSql } from "../../src/util/sql";
 import {
   defineSnifflesModels,
   VisitAttributes,
@@ -55,7 +55,7 @@ describe("VisitUpdater", () => {
 
   beforeAll(async done => {
     log.setVerbose(true);
-    sql = createSplitSql();
+    sql = getSql();
     const sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
     updaterNonPII = new VisitNonPIIUpdater(sql, log);

@@ -1,6 +1,5 @@
 import { Op, IncludeOptions } from "sequelize";
-import { VisitNonPIIInfo, VisitPIIInfo } from "audere-lib/snifflesProtocol";
-import { SplitSql } from "../util/sql";
+import { SplitSql } from "backend-lib";
 import {
   defineSnifflesModels,
   SnifflesModels,

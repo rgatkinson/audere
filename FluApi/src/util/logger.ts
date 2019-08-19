@@ -5,7 +5,7 @@
 
 import winston, { createLogger, format } from "winston";
 import WinstonCloudWatch from "winston-cloudwatch";
-import { isAWS } from "./environment";
+import { isAWS } from "backend-lib";
 
 const FORMAT_WITH_TIMESTAMP = format.printf(
   ({ level, message, timestamp }) =>

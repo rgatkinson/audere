@@ -18,7 +18,7 @@ import {
   nullable,
   foreignIdKey,
   jsonbColumn,
-} from "../../util/sql";
+} from "backend-lib";
 import {
   DeviceInfo,
   PIIInfo,

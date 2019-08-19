@@ -6,7 +6,7 @@
 import nodemailer, { SendMailOptions } from "nodemailer";
 import { AWS } from "./aws";
 import logger from "./logger";
-import { isAWS } from "./environment";
+import { isAWS } from "backend-lib";
 import { LazyAsync } from "./lazyAsync";
 
 const SHOULD_SEND_EMAIL = isAWS() || process.env.SEND_EMAIL;

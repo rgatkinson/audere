@@ -1,26 +1,8 @@
 {
+  "extends": "../config/tsconfig.backend.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": false,
-    "moduleResolution": "node",
-    "sourceMap": true,
     "outDir": "build",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    },
-    "types": ["jest", "node"],
-    "lib": [
-      // Default libs
-      "dom", "ES6", "DOM.Iterable", "ScriptHost",
-      // Extra goodies
-      "es2016.array.include"
-    ],
-
-    // Allow directly importing .JSON files
-    "resolveJsonModule": true
+    "types": ["jest", "node"]
   },
   "include": ["src/**/*", "test/**/*", "scripts/**/*"]
 }

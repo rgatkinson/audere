@@ -10,7 +10,8 @@ import {
   connectorFromSqlSecrets,
   FirebaseReceiver,
 } from "../../src/external/firebase";
-import { createSplitSql, SplitSql } from "../../src/util/sql";
+import { SplitSql } from "backend-lib";
+import { getSql } from "../../src/util/sql";
 
 type App = firebase.app.App;
 type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
@@ -27,13 +28,13 @@ const DOC1 = {
   key: "value1",
 };
 
-describe("FirebaseReceiver", async () => {
+describe("FirebaseReceiver", () => {
   let sql;
   let app;
   let firestore;
 
   beforeAll(async () => {
-    sql = await createSplitSql();
+    sql = await getSql();
     app = await appOrNull(sql);
     if (app != null) {
       firestore = app.firestore();

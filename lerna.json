@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "backend-lib",
+    "lib",
+    "FluApi"
+  ],
+  "version": "independent",
+  "npmClient": "yarn",
+  "useWorkspaces": true
+}
