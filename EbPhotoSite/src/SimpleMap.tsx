@@ -54,7 +54,6 @@ export class SimpleMap extends React.Component<Props, State> {
   }
   private async loadApiKey() {
     const apiKey = await getApi().getGoogleCloudApiKey();
-    console.log(apiKey);
     this.setState({ apiKey });
   }
   private rad2degr(rad: number) {
