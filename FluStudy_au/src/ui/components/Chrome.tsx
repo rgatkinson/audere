@@ -53,22 +53,20 @@ export default class Chrome extends React.PureComponent<Props> {
         <ImageBackground
           source={SPLASH_IMAGE}
           style={[
-            styles.alignTop,
             {
               width: screenWidth,
               height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
             },
             !!this.props.splashImage && {
-              height: undefined,
+              height: chromeBgHeight,
               aspectRatio: SPLASH_RATIO,
             },
           ]}
         >
-          <Image
+          <ImageBackground
             resizeMode={"stretch"}
             source={{ uri: "gradient" }}
             style={[
-              styles.alignTop,
               {
                 width: screenWidth,
                 height: splashImage
@@ -76,21 +74,23 @@ export default class Chrome extends React.PureComponent<Props> {
                   : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
               },
             ]}
-          />
+          >
+            <StatusBar
+              backgroundColor="transparent"
+              barStyle="light-content"
+              translucent={true}
+            />
+            <NavigationBar
+              hideBackButton={hideBackButton}
+              menuItem={menuItem}
+              navigation={navigation}
+            />
+
+            {!!splashImage && (
+              <Image style={styles.image} source={{ uri: splashImage }} />
+            )}
+          </ImageBackground>
         </ImageBackground>
-        <StatusBar
-          backgroundColor="transparent"
-          barStyle="light-content"
-          translucent={true}
-        />
-        <NavigationBar
-          hideBackButton={hideBackButton}
-          menuItem={menuItem}
-          navigation={navigation}
-        />
-        {!!splashImage && (
-          <Image style={styles.image} source={{ uri: splashImage }} />
-        )}
 
         <View
           style={[
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     aspectRatio: ASPECT_RATIO,
     height: undefined,
-
     width: IMAGE_WIDTH,
   },
   shortImage: {
