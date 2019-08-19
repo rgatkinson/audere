@@ -14,7 +14,11 @@
     "node": "8"
   },
   "dependencies": {
+    "@types/dialogflow": "^0.9.4",
+    "actions-on-google": "^2.11.0",
     "audere-lib": "file:../../lib",
+    "dialogflow": "^0.10.3",
+    "dialogflow-fulfillment": "^0.6.1",
     "firebase-admin": "^8.0.0",
     "firebase-functions": "^3.1.0"
   },
