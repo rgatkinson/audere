@@ -86,7 +86,6 @@ interface FeedbackInstructionRequest {
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
 const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
-const ADVANCE_ON_MEMORY_WARNING = false; // Navigate to fallback page if memory warning occurs
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -364,7 +363,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _handleMemoryWarning = () => {
     logFirebaseEvent(AppHealthEvents.LOW_MEMORY_WARNING);
-    if (!ADVANCE_ON_MEMORY_WARNING) {
+    if (!getRemoteConfig("advanceRDTCaptureOnMemoryWarning")) {
       return;
     }
 

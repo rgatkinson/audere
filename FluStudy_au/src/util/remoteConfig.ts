@@ -8,6 +8,7 @@ import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
+  advanceRDTCaptureOnMemoryWarning: boolean;
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
   skipSurveyNotification: boolean;
@@ -22,6 +23,7 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
+  advanceRDTCaptureOnMemoryWarning: false,
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
   skipSurveyNotification: false,
