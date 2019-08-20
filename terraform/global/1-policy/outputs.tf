@@ -7,6 +7,10 @@ output "audere_share_arn" {
   value = "${aws_s3_bucket.audere_share.arn}"
 }
 
+output "cloudtrail_log_bucket" {
+  value = "${aws_s3_bucket.audere-cloudtrail-s3-logs.id}"
+}
+
 output "database_log_archive_bucket_name" {
   value = "${aws_s3_bucket.database_log_archive.id}"
 }
