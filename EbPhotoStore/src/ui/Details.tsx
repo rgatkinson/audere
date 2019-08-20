@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import {
+  Alert,
   findNodeHandle,
   Dimensions,
   Image,
@@ -34,6 +35,7 @@ import {
   Screen,
   StoreState,
 } from "../store";
+import Button from "./components/Button";
 import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
@@ -221,6 +223,18 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     }
   };
 
+  _hasChanges = () => {
+    const { firstName, lastName, phone, details, notes } = this.state;
+    const { patientInfo } = this.props;
+    return (
+      firstName != patientInfo.firstName ||
+      lastName != patientInfo.lastName ||
+      phone != patientInfo.phone ||
+      details != patientInfo.details ||
+      notes != this.props.notes
+    );
+  };
+
   _save = () => {
     const { firstName, lastName, phone, details, notes } = this.state;
     if (this.props.isNew) {
@@ -257,7 +271,31 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     if (!this.props.isNew) {
       this.props.dispatch(resetMessageLastViewedAt(this.props.id));
     }
-    this._save();
+    if (this._hasChanges()) {
+      const { t } = this.props;
+      Alert.alert(t("unsavedTitle"), t("unsavedBody"), [
+        {
+          text: t("cancel"),
+          onPress: () => {},
+        },
+        {
+          text: t("discard"),
+          onPress: () => this._navToList(),
+        },
+        {
+          text: t("save"),
+          onPress: () => {
+            this._save();
+            this._navToList();
+          },
+        },
+      ]);
+    } else {
+      this._navToList();
+    }
+  };
+
+  _navToList = () => {
     this.props.dispatch(viewPatients());
   };
 
@@ -418,6 +456,13 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             returnKeyType="done"
             textContent={t("patientNotes")}
           />
+          <Button
+            enabled={this._hasChanges()}
+            label={t("save")}
+            primary={true}
+            style={styles.saveButton}
+            onPress={this._save}
+          />
           {photoInfo ? (
             <Fragment>
               <View style={styles.photoContainer}>
@@ -564,11 +609,6 @@ const width = Dimensions.get("window").width / 3;
 const height = Dimensions.get("window").height / 3;
 
 const styles = StyleSheet.create({
-  button: {
-    marginRight: GUTTER,
-    marginBottom: 0,
-    width: "50%",
-  },
   container: {
     flex: 1,
   },
@@ -598,6 +638,10 @@ const styles = StyleSheet.create({
   idContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
+  },
+  saveButton: {
+    marginBottom: 0,
+    width: "100%",
   },
   titleLeft: {
     flex: 2,
