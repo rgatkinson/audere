@@ -1,7 +1,7 @@
 PODS:
   - Amplitude-iOS (3.14.1)
-  - Analytics (3.6.10)
-  - AppAuth (0.95.0)
+  - Analytics (3.7.0)
+  - AppAuth (0.95.1)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
@@ -163,7 +163,7 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
-  - FirebaseAnalyticsInterop (1.2.0)
+  - FirebaseAnalyticsInterop (1.3.0)
   - FirebaseCore (5.1.10):
     - GoogleUtilities/Logger (~> 5.2)
   - FirebaseDynamicLinks (3.3.0):
@@ -229,38 +229,38 @@ PODS:
     - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
     - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - GoogleToolboxForMac/Logger (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.0)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.0)
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
-  - GoogleUtilities/AppDelegateSwizzler (5.5.0):
+  - GoogleToolboxForMac/DebugUtils (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - GoogleToolboxForMac/Logger (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
+    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
+  - GoogleUtilities/AppDelegateSwizzler (5.8.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (5.5.0)
-  - GoogleUtilities/ISASwizzler (5.5.0)
-  - GoogleUtilities/Logger (5.5.0):
+  - GoogleUtilities/Environment (5.8.0)
+  - GoogleUtilities/ISASwizzler (5.8.0)
+  - GoogleUtilities/Logger (5.8.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (5.5.0):
+  - GoogleUtilities/MethodSwizzler (5.8.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (5.5.0):
+  - GoogleUtilities/Network (5.8.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (5.5.0)"
-  - GoogleUtilities/Reachability (5.5.0):
+  - "GoogleUtilities/NSData+zlib (5.8.0)"
+  - GoogleUtilities/Reachability (5.8.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (5.5.0):
+  - GoogleUtilities/UserDefaults (5.8.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (1.2.1)
+  - GTMSessionFetcher/Core (1.2.2)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
   - nanopb (0.3.901):
@@ -268,7 +268,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.7.0)
+  - Protobuf (3.9.0)
   - React (0.57.1):
     - React/Core (= 0.57.1)
   - react-native-fbsdk (0.8.0):
@@ -538,8 +538,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Amplitude-iOS: 4a3c8807b2ea5369dc11e87e23825bff01e5a922
-  Analytics: 63744ad4afa65c3bcdcdb7a94b62515bde5b3900
-  AppAuth: 137f6bb6fc9dfbaf2cf9f6fcff1d336ff0163bc6
+  Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
+  AppAuth: cd34aac431e5c77c46ec7f03935377faa8c5808b
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
@@ -586,7 +586,7 @@ SPEC CHECKSUMS:
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
-  FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
+  FirebaseAnalyticsInterop: 0f250d71e8741352407a8db351e6de78c5c56d35
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
   FirebaseDynamicLinks: c713da5f75c324f38fb2d57164bbc1c461aa6739
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
@@ -599,13 +599,13 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
-  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  GoogleUtilities: 04fce34bcd5620c1ee76fb79172105c74a4df335
+  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   react-native-fbsdk: d5f98cc5abecbcc463e3c35c04743d716d002d37
   react-native-get-random-values: cb074e4e1781451ad00546d78570a3ab3c4285f0

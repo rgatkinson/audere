@@ -70,7 +70,7 @@ allprojects {
 }
 
 ext {
-    googlePlayServicesVersion = "+"
+    googlePlayServicesVersion = "16.1.0"
     firebaseVersion = "17.6.0"
 
     compileSdkVersion = 27
