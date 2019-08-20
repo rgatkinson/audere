@@ -74,6 +74,7 @@ echo "  ..got '$MIGRATE_ID'"
 aws-wait-for-instance-state "$MIGRATE_ID" stopped
 
 (set -x
+cd "$APP_DIR"
 terraform apply -target=module.flu_api -var "commit=$commit"
 )
 
