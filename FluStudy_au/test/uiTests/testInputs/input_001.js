@@ -38,6 +38,7 @@ export const inputs = {
     month: "long",
   }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.yes,
+  [strings.surveyTitle.fluShotNationalImmunizationCondition]: "Asthma",
   [strings.surveyTitle.previousSeason]: strings.surveyButton.yes,
   [strings.surveyTitle.medicalCondition]: [strings.surveyOption.asthma],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.yes,
