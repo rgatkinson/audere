@@ -80,7 +80,7 @@ terraform apply -target=module.flu_api -var "commit=$commit"
 case "$environment" in
   staging) CHECK=https://api.staging.auderenow.io/health-check;;
   prod)    CHECK=https://api.auderenow.io/health-check;;
-  *) usage "internal error"
+  *) usage "internal error";;
 esac
 (set -x
 curl "$CHECK"
