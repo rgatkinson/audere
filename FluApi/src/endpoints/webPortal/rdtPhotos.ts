@@ -100,6 +100,8 @@ export class RDTPhotos {
     res.render("barcodes.html", {
       barcodes,
       static: this.getStatic(),
+      hasPrevPage,
+      hasNextPage,
       nextPageLink,
       prevPageLink,
       dateSortLink,
