@@ -345,7 +345,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _handleAppStateChange = async (nextAppState: string) => {
     this.setState({ appState: nextAppState });
-    if (nextAppState === "active" && this.state.flashEnabled) {
+    if (
+      nextAppState === "active" &&
+      this.state.supportsTorchMode &&
+      this.state.flashEnabled
+    ) {
       // Toggle flash state since the hardware state doesn't seem to get preserved
       // on iOS if the app is backgrounded and then foregrounded.
       this.setState({ flashEnabled: false });
@@ -548,8 +552,8 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(
-          this.state.flashEnabled,
-          this.state.flashDisabledAutomatically
+          this.state.supportsTorchMode && this.state.flashEnabled,
+          this.state.supportsTorchMode && this.state.flashDisabledAutomatically
         )
       );
       navigation.push(next);

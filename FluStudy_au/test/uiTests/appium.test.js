@@ -137,9 +137,23 @@ async function input_screen(driver, screen_info) {
       }
 
       if (question.type == "text") {
-        await driver
-          .elementByAccessibilityId(question.name)
-          .type(inputs[question.name]);
+        if (question.placeholder) {
+          await driver
+            .elementByAccessibilityId(question.placeholder)
+            .type(inputs[question.placeholder]);
+        } else {
+          if (PLATFORM == "iOS") {
+            await driver
+              .elementByClassName("XCUIElementTypeTextField")
+              .type(inputs[question.name]);
+          } else {
+            await driver.elementByClassName("android.widget.EditText").click();
+            await driver
+              .elementByClassName("android.widget.EditText")
+              .type(inputs[question.name]);
+          }
+          await driver.hideDeviceKeyboard();
+        }
       } else if (question.type == "checkbox" && question.name in inputs) {
         for (const item of question.options) {
           if (inputs[question.name].includes(item)) {
@@ -309,7 +323,7 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
 }
 
 async function android_select(driver, question) {
-  await driver.elementByClassName("android.widget.TextView").click();
+  await driver.elementByClassName("android.widget.Spinner").click();
   let foundChoice = false;
   while (!foundChoice) {
     let dropdown_items = await driver.elementsByClassName(
@@ -327,13 +341,13 @@ async function android_select(driver, question) {
       //scroll up to see more choices
       let scroll = new wd.TouchAction(driver)
         .press({
-          x: Math.trunc(screen_x * 0.5),
-          y: Math.trunc(screen_y * 0.3),
+          x: Math.trunc(screen_x * 0.25),
+          y: Math.trunc(screen_y * 0.5),
         })
         .wait(2000)
         .moveTo({
-          x: Math.trunc(screen_x * 0.5),
-          y: Math.trunc(screen_y * 0.7),
+          x: Math.trunc(screen_x * 0.25),
+          y: Math.trunc(screen_y * 0.9),
         })
         .release();
       await scroll.perform();
@@ -485,6 +499,10 @@ async function verify_db_contents(driver, models, installationId) {
             const answerDb = questionDb.answerOptions[answer.valueIndex].text;
             expect(inputs[question.name]).toContain(answerDb);
           }
+        } else if (question.type === "text") {
+          expect(inputs[question.name]).toEqual(
+            questionDb.answer[0].valueString
+          );
         } else {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;

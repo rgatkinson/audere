@@ -163,6 +163,7 @@ function makeToken({ salt, userid, password }: TokenParts): string {
 
 export const Permissions = {
   SEATTLE_CHILDRENS_HIPAA_ACCESS: "seattleChildrensHipaaAccess",
+  COUGH_RDT_PHOTOS_ACCESS: "coughRdtPhotosAccess",
 };
 
 export function authorizationMiddleware(

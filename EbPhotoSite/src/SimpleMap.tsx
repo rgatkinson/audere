@@ -16,12 +16,11 @@ import {
   withGoogleMap,
   withScriptjs,
 } from "react-google-maps";
+import { getApi } from "./api";
 
 const EVD_POS = 1;
 const EVD_NEG = 2;
 const EVD_UNTRIAGED = 3;
-const apiKey = "AIzaSyAgQB01v0gEm2L93fAfB_dnf_JJR8K-gAM";
-const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${apiKey}`;
 
 interface Props {
   encounters: EncounterDocument[];
@@ -44,7 +43,19 @@ interface LatLng {
   lng: number;
 }
 
-export class SimpleMap extends React.Component<Props> {
+interface State {
+  apiKey?: string;
+}
+
+export class SimpleMap extends React.Component<Props, State> {
+  state: State = {};
+  componentWillMount() {
+    this.loadApiKey();
+  }
+  private async loadApiKey() {
+    const apiKey = await getApi().getGoogleCloudApiKey();
+    this.setState({ apiKey });
+  }
   private rad2degr(rad: number) {
     return (rad * 180) / Math.PI;
   }
@@ -150,11 +161,10 @@ export class SimpleMap extends React.Component<Props> {
       this.props.encounters,
       this.props.tDocs
     );
+    const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${this.state.apiKey}`;
     return (
       <div>
-        {apiKey == null ? (
-          "Cannot load map. Google Cloud API key is not configured."
-        ) : locations == null || locations.length === 0 ? (
+        {this.state.apiKey == null || locations == null ? (
           "Loading..."
         ) : (
           <div style={this.props.style}>

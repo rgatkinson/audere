@@ -58,11 +58,13 @@ export const content = [
     input: [
       {
         name: strings.barcode.placeholder,
+        placeholder: strings.barcode.placeholder,
         type: "text",
         dbLocation: "samples",
       },
       {
         name: strings.barcode.secondPlaceholder,
+        placeholder: strings.barcode.secondPlaceholder,
         type: "text",
       },
     ],
@@ -301,7 +303,9 @@ export const content = [
       },
       {
         name: strings.surveyTitle.fluShotNationalImmunizationCondition,
+        placeholder: "",
         type: "text",
+        dbLocation: "responses",
       },
       {
         name: strings.surveyTitle.previousSeason,

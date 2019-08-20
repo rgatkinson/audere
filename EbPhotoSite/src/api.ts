@@ -72,6 +72,13 @@ export class Api {
     await new Promise(f => setTimeout(f, ms));
   }
 
+  async getGoogleCloudApiKey() {
+    const response = await firebase
+      .functions()
+      .httpsCallable("googleCloudApiKey")();
+    return response.data;
+  }
+
   async pushNotification(
     token: string,
     title: string,

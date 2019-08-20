@@ -85,22 +85,31 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     if (this._shouldShowAlert()) {
       const { dispatch, t } = this.props;
       dispatch(setShownRDTFailWarning(true));
-      Alert.alert(t("alertTitle"), t("alertDesc"), [
-        {
-          text: t("common:button:ok"),
-          onPress: () => {
-            this.setState({
-              spinner: !DeviceInfo.isEmulator(),
-              showCamera: true,
-            });
+      Alert.alert(
+        t("alertTitle"),
+        t("alertDesc"),
+        [
+          {
+            text: t("common:button:ok"),
+            onPress: () => {
+              this.setState({
+                spinner: !DeviceInfo.isEmulator(),
+                showCamera: true,
+              });
+            },
           },
-        },
-      ]);
+        ],
+        { cancelable: false }
+      );
     }
   };
 
   _handleAppStateChange = async (nextAppState: string) => {
-    if (nextAppState === "active" && this.state.flashEnabled) {
+    if (
+      nextAppState === "active" &&
+      this.state.supportsTorchMode &&
+      this.state.flashEnabled
+    ) {
       // Toggle flash state since the hardware state doesn't seem to get preserved
       // on iOS if the app is backgrounded and then foregrounded.
       this.setState({ flashEnabled: false });
@@ -124,17 +133,22 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           })
         );
       } else {
-        Alert.alert(t("cameraErrorTitle"), t("cameraErrorDesc"), [
-          {
-            text: t("common:button:ok"),
-            onPress: () => {
-              logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
-              navigation.dispatch(
-                StackActions.replace({ routeName: "TestResult" })
-              );
+        Alert.alert(
+          t("cameraErrorTitle"),
+          t("cameraErrorDesc"),
+          [
+            {
+              text: t("common:button:ok"),
+              onPress: () => {
+                logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
+                navigation.dispatch(
+                  StackActions.replace({ routeName: "TestResult" })
+                );
+              },
             },
-          },
-        ]);
+          ],
+          { cancelable: false }
+        );
       }
     }
   };
@@ -166,7 +180,12 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           })
         );
         dispatch(setPhoto(photo.uri));
-        dispatch(setRDTCaptureInfo(this.state.flashEnabled, false));
+        dispatch(
+          setRDTCaptureInfo(
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            false
+          )
+        );
 
         this.setState({ spinner: false });
         navigation.push(next);

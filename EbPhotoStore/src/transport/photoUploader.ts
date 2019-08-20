@@ -22,10 +22,14 @@ NetInfo.addEventListener(state => {
   }
 });
 
-export async function startUpload(photoId: string, uri: string) {
+export async function startUpload(
+  photoId: string,
+  uri: string,
+  patientId: number
+) {
   console.log(photoId + ": " + uri);
   const store = await getStore();
-  store.dispatch(startPhotoUpload(photoId, uri));
+  store.dispatch(startPhotoUpload(photoId, uri, patientId));
   uploadPhoto(photoId, uri);
 }
 
@@ -41,12 +45,10 @@ export async function retryUploads(force = false) {
     .map(photoUpload => retryUpload(photoUpload.photoId));
 }
 
-async function retryUpload(photoId: string) {
+async function retryUpload(photoUpload: PhotoUpload) {
   const store = await getStore();
-  const state = store.getState();
-  const uri = state.photoUploads;
-  store.dispatch(startPhotoUpload(photoId, uri));
-  uploadPhoto(photoId, uri);
+  store.dispatch(retryPhotoUpload(photoUpload.photoId));
+  uploadPhoto(photoUpload.photoId, photoUpload.localUri);
 }
 
 async function uploadPhoto(photoId: string, uri: string) {
@@ -63,5 +65,20 @@ async function uploadPhoto(photoId: string, uri: string) {
     store.dispatch(photoUploadFailed(photoId, e.message));
     return;
   }
+
   store.dispatch(photoUploadFinished(photoId));
+}
+
+export function hasPendingPhotos(state: any) {
+  const photoUploads: PhotoUploadState = state.photoUploads;
+  const keys = Object.keys(photoUploads);
+
+  for (let i = 0; i < keys.length; i++) {
+    if (
+      (photoUploads as any)[keys[i]].uploadState !== PhotoUploadState.UPLOADED
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
