@@ -44,7 +44,11 @@ import {
 } from "audere-lib/coughProtocol";
 import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
-import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
+import {
+  logFirebaseEvent,
+  AppEvents,
+  AppHealthEvents,
+} from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
 
 interface Props {
@@ -81,7 +85,8 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Experimental for now; we'll revisit whether we should add icons back in
+const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
+const ADVANCE_ON_MEMORY_WARNING = false; // Navigate to fallback page if memory warning occurs
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -358,6 +363,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _handleMemoryWarning = () => {
+    logFirebaseEvent(AppHealthEvents.LOW_MEMORY_WARNING);
+    if (!ADVANCE_ON_MEMORY_WARNING) {
+      return;
+    }
+
     const { dispatch, fallback, isFocused, navigation } = this.props;
     if (isFocused) {
       // Make sure timer cleanup happens since since this event can fire
