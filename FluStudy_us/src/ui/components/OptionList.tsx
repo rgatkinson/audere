@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -13,11 +13,16 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import Grid from "./Grid";
+import { connect } from "react-redux";
+import { getAnswer } from "../../util/survey";
+import { Action, updateAnswer, StoreState } from "../../store";
+import { OptionQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
+import { Option } from "../../store/types";
 import Text from "./Text";
 import {
   BORDER_COLOR,
   BORDER_WIDTH,
+  FEATHER_SIZE,
   FONT_SEMI_BOLD,
   GUTTER,
   HIGHLIGHT_STYLE,
@@ -27,60 +32,47 @@ import {
   SMALL_TEXT,
 } from "../styles";
 
-interface Option {
-  key: string;
-  selected: boolean;
-}
-
 interface Props {
-  data: Option[];
-  exclusiveOptions?: string[];
+  question: OptionQuestion;
   highlighted?: boolean;
-  inclusiveOption?: string;
-  multiSelect: boolean;
-  numColumns: number;
-  style?: StyleProp<ViewStyle>;
-  onChange(data: Option[]): void;
+  options?: Option[];
+  dispatch(action: Action): void;
 }
 
-export const emptyList = (data: string[]) => {
-  return data.map(option => {
+const emptyList = (data: string[]) =>
+  data.map(option => {
     return {
       key: option,
       selected: false,
     };
   });
-};
 
-const newSelectedOptionsList = (
-  options: string[],
-  selected?: Option[]
-): Option[] => {
-  return selected ? selected.slice(0) : emptyList(options);
-};
-
-export { newSelectedOptionsList };
-
-class OptionList extends React.Component<Props & WithNamespaces> {
+class OptionList extends React.PureComponent<Props> {
   _isExclusive(id: string): boolean {
-    return (this.props.exclusiveOptions || []).some(key => key === id);
+    return (this.props.question.exclusiveOptions || []).some(key => key === id);
   }
 
+  _getData = () => {
+    const { options, question } = this.props;
+    return !!options ? options : emptyList(question.options);
+  };
+
   _onPressItem = (id: string) => {
-    const dataItem = this.props.data.find(option => option.key === id);
+    const { dispatch, question } = this.props;
+    const inclusiveOption = question.inclusiveOption;
+
+    const dataItem = this._getData().find(
+      (option: Option) => option.key === id
+    );
     if (!!dataItem) {
       const toggled = !dataItem.selected;
 
-      let data =
-        !this.props.multiSelect || this._isExclusive(id)
-          ? emptyList(this.props.data.map(option => option.key))
-          : this.props.data.slice(0);
+      let data = this._isExclusive(id)
+        ? emptyList(question.options)
+        : this._getData().slice(0);
 
-      data = data.map(option => {
-        if (
-          this.props.inclusiveOption === id &&
-          !this._isExclusive(option.key)
-        ) {
+      data = data.map((option: Option) => {
+        if (inclusiveOption === id && !this._isExclusive(option.key)) {
           return {
             key: option.key,
             selected: true,
@@ -94,10 +86,7 @@ class OptionList extends React.Component<Props & WithNamespaces> {
           };
         }
 
-        if (
-          this.props.inclusiveOption === option.key &&
-          this.props.inclusiveOption !== id
-        ) {
+        if (inclusiveOption === option.key && inclusiveOption !== id) {
           return {
             key: option.key,
             selected: false,
@@ -110,61 +99,63 @@ class OptionList extends React.Component<Props & WithNamespaces> {
         };
       });
 
-      this.props.onChange(data);
+      dispatch(updateAnswer({ options: data }, question));
     }
   };
 
   render() {
-    const { t } = this.props;
-    const totalOptions = this.props.data.length;
-    const lastKey =
-      totalOptions > 0
-        ? this.props.data[this.props.data.length - 1].key
-        : undefined;
+    const { highlighted, question } = this.props;
+    const options = question.options;
     return (
-      <Grid
-        columns={this.props.numColumns}
-        items={this.props.data}
-        keyExtractor={item => item.key}
-        renderItem={(item, width) => (
-          <TranslatedListItem
-            highlighted={this.props.highlighted}
-            id={item.key}
-            selected={item.selected}
-            style={item.key === lastKey && styles.itemLast}
-            width={width}
+      <View style={styles.container}>
+        {this._getData().map((option: Option) => (
+          <OptionItem
+            highlighted={highlighted}
+            id={option.key}
+            key={option.key}
+            selected={option.selected}
+            style={
+              option.key === options[options.length - 1] && styles.itemLast
+            }
             onPressItem={this._onPressItem}
           />
-        )}
-        style={this.props.style}
-      />
+        ))}
+      </View>
     );
   }
 }
-export default withNamespaces("optionList")(OptionList);
+export default connect((state: StoreState, props: Props) => ({
+  options: getAnswer(state, props.question),
+}))(OptionList);
 
 interface ItemProps {
   highlighted?: boolean;
   id: string;
   selected: boolean;
   style?: StyleProp<ViewStyle>;
-  width: number;
   onPressItem(id: string): void;
 }
 
-const featherSize = 20;
+class Item extends React.Component<ItemProps & WithNamespaces> {
+  shouldComponentUpdate(props: ItemProps & WithNamespaces) {
+    return (
+      this.props.highlighted != props.highlighted ||
+      this.props.selected != props.selected ||
+      this.props.style != props.style ||
+      this.props.id != props.id
+    );
+  }
 
-class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
   _onPress = () => {
     this.props.onPressItem(this.props.id);
   };
 
   render() {
-    const { highlighted, id, selected, t, width } = this.props;
+    const { highlighted, id, selected, t } = this.props;
 
     return (
       <TouchableOpacity
-        style={[styles.item, { width }, this.props.style]}
+        style={[styles.item, this.props.style]}
         onPress={this._onPress}
       >
         <View
@@ -175,16 +166,12 @@ class ListItem extends React.PureComponent<ItemProps & WithNamespaces> {
           ]}
         >
           {selected && (
-            <Feather name="check" color={"white"} size={featherSize} />
+            <Feather name="check" color={"white"} size={FEATHER_SIZE} />
           )}
         </View>
         <Text
           content={t(`surveyOption:${id}`)}
-          style={[
-            styles.itemText,
-            selected && styles.selectedItemText,
-            { width: width - featherSize - GUTTER - GUTTER / 4 },
-          ]}
+          style={[styles.itemText, selected && styles.selectedItemText]}
         />
       </TouchableOpacity>
     );
@@ -196,12 +183,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: BORDER_COLOR,
     borderWidth: BORDER_WIDTH,
-    height: featherSize + GUTTER / 4,
-    width: featherSize + GUTTER / 4,
+    height: FEATHER_SIZE + GUTTER / 4,
+    width: FEATHER_SIZE + GUTTER / 4,
   },
   checkboxSelected: {
     backgroundColor: SECONDARY_COLOR,
     borderColor: SECONDARY_COLOR,
+  },
+  container: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    marginBottom: GUTTER,
   },
   item: {
     alignItems: "center",
@@ -227,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const TranslatedListItem = withNamespaces()(ListItem);
+const OptionItem = withNamespaces()(Item);

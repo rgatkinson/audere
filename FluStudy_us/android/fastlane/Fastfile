@@ -17,13 +17,11 @@ opt_out_usage
 default_platform(:android)
 
 platform :android do
-  desc "Build signed release apk and deploy to Internal track"
+  desc "Build signed release aab and deploy to Internal track"
   lane :internal do
     track = "internal"
     gradle(
-      task: "clean assemble",
-      flavor: "prodKernel",
-      build_type: "Release",
+      task: "clean bundleRelease",
       print_command: false,
       properties: {
         "android.injected.signing.store.file" => ENV["FEVER_SIGNING_STORE_FILE"],
@@ -32,29 +30,58 @@ platform :android do
         "android.injected.signing.key.password" => ENV["FEVER_SIGNING_KEY_PWD"],
       }
     )
+    build_number = Helper.backticks("cat ../app/version.properties | grep \"VERSION_CODE\" | cut -d'=' -f2").strip
     upload_to_play_store(
       track: track,
       json_key: "google_play_key.json",
-      skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
     )
     slack_announce(
-      destination: "Play Store #{track} track"
+      destination: "Play Store #{track} track",
+      build_number: build_number
+    )
+    prepare_release_notes(
+      track: track,
+      build_number: build_number
+    )
+    upload_to_play_store(
+      # only upload the metadata, e.g. release notes
+      track: track,
+      json_key: "google_play_key.json",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
     )
   end
 
+  lane :prepare_release_notes do |options|
+    build_number = options[:build_number]
+    versions = google_play_track_version_codes(
+      track: options[:track]
+    )
+    whats_new = "Build #{build_number}"
+    metadata_dir="metadata/android/en-US/changelogs"
+    sh("mkdir -p #{metadata_dir}")
+    versions.each do |version|
+      sh("echo \"#{whats_new}\" > #{metadata_dir}/#{version}.txt")
+    end 
+  end
+    
   lane :slack_announce do |options|
-    build = Helper.backticks("cat ../app/version.properties | grep \"VERSION_CODE\" | cut -d'=' -f2").strip
+    build_number = options[:build_number]
     destination = options[:destination]
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "flu@home build #{build} has been uploaded to #{destination} :rocket:",
+      message: "flu@home build #{build_number} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
-        "Release Type" => ENV["EXPO_RELEASE_CHANNEL"]
+        "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
+        "Build log" => ENV["CIRCLE_BUILD_URL"]
       }
     )
   end

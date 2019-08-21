@@ -9,6 +9,8 @@
 
 import firebase from "react-native-firebase";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
+import Constants from "expo-constants";
+import { memoize } from "./util/memoize";
 
 export type ErrorProps = {
   errorMessage: string;
@@ -38,10 +40,14 @@ export function recordErrorToFirebase(e: Error) {
 }
 
 export function crashReportingDetailsMiddleware(store: MiddlewareAPI) {
+  const setInstallationIdOnce = memoize(() => {
+    crashlytics.setStringValue("installation_id", Constants.installationId);
+  });
   return (next: Dispatch) => (action: AnyAction) => {
     if (action.type === "SET_EMAIL" && action.email) {
       crashlytics.setStringValue("user_email", action.email);
     }
+    setInstallationIdOnce();
     return next(action);
   };
 }

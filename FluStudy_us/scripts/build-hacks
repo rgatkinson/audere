@@ -6,25 +6,21 @@
 set -euo pipefail
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+function fixExpoGlCppAndroid() {
+  echo "Update expo gl cpp build file to not require ndk"
+  cp $REPO_ROOT_DIR/FluStudy_us/scripts/expoGlCppBuild.gradle $REPO_ROOT_DIR/FluStudy_us/node_modules/expo-gl-cpp/android/build.gradle
+}
 source "$REPO_ROOT_DIR/scripts/build-hacks"
 do_FluStudy_hacks FluStudy_us
+fixExpoGlCppAndroid
 
-echo "Updating Firebase build search paths"	
-FIREBASE_FILE="$REPO_ROOT_DIR/FluStudy_us/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
-match='HEADER_SEARCH_PATHS = .+?;'	
-replace='HEADER_SEARCH_PATHS = (\
-					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
-					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/**",\	
-				);'	
-FILEBAK="$FIREBASE_FILE.bak"
-perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
-# `pod install` surprisingly does not do this -- move this particular .h to the
-# right place.  Not sure when they will... but in the meantime, we move it
-# manually.  [philipsu]	
-if [[ "$OSTYPE" == darwin* ]]; then	
-  echo "Copying RNFirebaseLinks.h"
-  cp "$REPO_ROOT_DIR/FluStudy_us/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
-    "$REPO_ROOT_DIR/FluStudy_us/ios/Pods/Headers/Public/Firebase/"
-else 
-  echo "Skipping copy of RNFirebaseLinks.h because OS is $OSTYPE"
-fi 
+ANDROID_DIR="$REPO_ROOT_DIR/FluStudy_us/android"
+if [[ ! -d "$ANDROID_DIR/openCVLibrary341-contrib" ]]; then
+    echo "Downloading android opencv files..."
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib.zip > /tmp/openCVLibrary341-contrib.zip
+    curl https://s3-us-west-2.amazonaws.com/fileshare.auderenow.io/public/openCV/openCVLibrary341-contrib-jniLibs.zip > /tmp/openCVLibrary341-contrib-jniLibs.zip
+    unzip /tmp/openCVLibrary341-contrib.zip -d "$ANDROID_DIR"
+    unzip /tmp/openCVLibrary341-contrib-jniLibs.zip -d "$ANDROID_DIR"
+    rm /tmp/openCVLibrary341-contrib.zip
+    rm /tmp/openCVLibrary341-contrib-jniLibs.zip
+fi

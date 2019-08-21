@@ -1,0 +1,11 @@
+<resources>
+    <declare-styleable name="Viewport">
+        <attr name="area" format="float" />
+        <attr name="heightScale" format="float" />
+        <attr name="widthScale" format="float" />
+    </declare-styleable>
+    <declare-styleable name="ImageQualityView">
+        <attr name="showViewport" format="boolean" />
+        <attr name="showFeedback" format="boolean"/>
+    </declare-styleable>
+</resources>

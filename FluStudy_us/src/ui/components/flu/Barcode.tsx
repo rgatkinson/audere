@@ -10,6 +10,10 @@ interface Props {
 }
 
 class Barcode extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.barcode != this.props.barcode;
+  }
+
   render() {
     const { barcode, t } = this.props;
     return (

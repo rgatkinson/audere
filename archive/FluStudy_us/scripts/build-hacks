@@ -1,0 +1,30 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+set -euo pipefail
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+source "$REPO_ROOT_DIR/scripts/build-hacks"
+do_FluStudy_hacks FluStudy_us
+
+echo "Updating Firebase build search paths"	
+FIREBASE_FILE="$REPO_ROOT_DIR/FluStudy_us/node_modules/react-native-firebase/ios/RNFirebase.xcodeproj/project.pbxproj"
+match='HEADER_SEARCH_PATHS = .+?;'	
+replace='HEADER_SEARCH_PATHS = (\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
+					"\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/**",\	
+				);'	
+FILEBAK="$FIREBASE_FILE.bak"
+perl -0777 -i.bak -pe "s/$match/$replace/gs" $FIREBASE_FILE && rm $FILEBAK
+# `pod install` surprisingly does not do this -- move this particular .h to the
+# right place.  Not sure when they will... but in the meantime, we move it
+# manually.  [philipsu]	
+if [[ "$OSTYPE" == darwin* ]]; then	
+  echo "Copying RNFirebaseLinks.h"
+  cp "$REPO_ROOT_DIR/FluStudy_us/node_modules/react-native-firebase/ios/RNFirebase/links/RNFirebaseLinks.h" \
+    "$REPO_ROOT_DIR/FluStudy_us/ios/Pods/Headers/Public/Firebase/"
+else 
+  echo "Skipping copy of RNFirebaseLinks.h because OS is $OSTYPE"
+fi 

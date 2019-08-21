@@ -4,11 +4,5 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:fluathome.page.link</string>
-		<string>applinks:fluathome.app.link</string>
-		<string>applinks:fluathome-alternate.app.link</string>
-	</array>
 </dict>
 </plist>

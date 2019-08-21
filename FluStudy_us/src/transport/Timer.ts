@@ -16,7 +16,7 @@ export class Timer {
 
   public start(): void {
     if (this.id == null) {
-      this.id = setTimeout(this.fire, this.duration);
+      this.id = global.setTimeout(this.fire, this.duration);
     }
   }
 

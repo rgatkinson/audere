@@ -35,41 +35,37 @@ android {
     }
     def code = versionProps['VERSION_CODE'].toInteger()
 
-    applicationId 'org.auderenow.fluathome'
+    applicationId 'org.auderenow.fluathome_us'
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode code 
+    versionCode code
     versionName getNpmVersion()
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
-            'appAuthRedirectScheme': 'host.exp.exponent'
+      'appAuthRedirectScheme': 'host.exp.exponent'
     ]
     minSdkVersion 22
   }
+
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
   }
 
-  flavorDimensions 'remoteKernel'
-  productFlavors {
-    devKernel {
-      dimension 'remoteKernel'
-    }
-    prodKernel {
-      dimension 'remoteKernel'
-    }
-  }
   buildTypes {
     debug {
       debuggable true
+      manifestPlaceholders = [usesCleartextTraffic:"true"]
     }
     release {
+      manifestPlaceholders = [usesCleartextTraffic:"false"]
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       zipAlignEnabled true
     }
   }
+  aaptOptions.cruncherEnabled = false
+  aaptOptions.useNewCruncher = false
   signingConfigs {
     debug {
       storeFile file('../debug.keystore')
@@ -82,23 +78,27 @@ android {
     pickFirst "**"
   }
   configurations.all {
-    resolutionStrategy.force 'com.android.support:design:27.1.0'
+    resolutionStrategy.force 'com.android.support:design:28.0.0'
   }
   splits {
     // https://developer.android.com/studio/build/configure-apk-splits
     abi {
       enable true
       reset()
-      include "x86", "armeabi-v7a"
+      include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
       universalApk false
     }
+  }
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
   }
 }
 
 // https://developer.android.com/studio/build/configure-apk-splits.html
 // If versionCode (build number) from version.properties is 88,
 // then ARM versionCode will be 10088 and x86 versionCode will be 20088.
-ext.abiCodes = ['armeabi-v7a':1, 'x86':2]
+ext.abiCodes = ['armeabi-v7a':1, 'x86':2, 'arm64-v8a':3, 'x86_64':4]
 import com.android.build.OutputFile
 android.applicationVariants.all { variant ->
   variant.outputs.each { output ->
@@ -113,33 +113,40 @@ android.applicationVariants.all { variant ->
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:+'
+  }
+  resolutionStrategy {
+    force "com.google.android.gms:play-services-tasks:16.0.1"
+  }
+  resolutionStrategy {
+    force "com.google.android.gms:play-services-gcm:16.1.0"
   }
 }
 
 
 apply from: 'expo.gradle'
 
+apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+
 dependencies {
-  implementation project(':@react-native-community_netinfo')
   implementation project(':react-native-push-notification')
   implementation project(':react-native-fbsdk')
   implementation project(':react-native-firebase')
   implementation project(':react-native-get-random-values')
   implementation fileTree(include: ['*.jar'], dir: 'libs')
-  implementation 'com.google.firebase:firebase-core:16.0.8'
-  implementation 'com.google.firebase:firebase-perf:16.2.4'
-  implementation 'com.google.firebase:firebase-config:16.4.0'
-  implementation 'com.google.firebase:firebase-dynamic-links:16.1.7'
-  implementation 'com.google.firebase:firebase-messaging:17.6.0'
-  implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
+  implementation 'com.google.firebase:firebase-core:16.0.9'
+  implementation 'com.google.firebase:firebase-perf:17.0.2'
+  implementation 'com.google.firebase:firebase-config:17.0.0'
+  implementation 'com.google.firebase:firebase-messaging:18.0.0'
+  implementation 'com.google.firebase:firebase-firestore:19.0.1'
+  implementation 'com.google.firebase:firebase-storage:17.0.0'
+  implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
   implementation project(':react-native-device-info')
   implementation 'com.android.support:multidex:1.0.1'
   // Our dependencies
-  implementation 'com.android.support:appcompat-v7:27.1.1'
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'com.android.support:appcompat-v7:28.0.0'
   implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
   implementation('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
@@ -157,7 +164,7 @@ dependencies {
   implementation 'com.google.android.gms:play-services-maps:16.1.0'
   implementation 'com.google.android.gms:play-services-auth:16.0.1'
   implementation 'com.google.android.gms:play-services-location:16.0.0'
-  implementation 'com.google.android.gms:play-services-ads:17.2.0'
+  implementation 'com.google.android.gms:play-services-ads:17.2.1'
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   implementation 'com.raizlabs.android:DBFlow-Core:2.2.1'
   implementation 'com.raizlabs.android:DBFlow:2.2.1'
@@ -171,7 +178,7 @@ dependencies {
   implementation 'me.leolin:ShortcutBadger:1.1.8@aar'
   implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.7'
-  implementation 'com.yqritc:android-scalablevideoview:1.0.1'
+  implementation 'com.yqritc:android-scalablevideoview:1.0.4'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.2.1'
@@ -179,23 +186,22 @@ dependencies {
   implementation('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  implementation 'io.branch.sdk.android:library:2.17.1'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation 'com.android.support:exifinterface:28.0.0'
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.5.1'
   implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
-  implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
   // expo-file-system
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-  implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+  implementation 'com.google.android.exoplayer:extension-okhttp:2.6.1'
+  // RDT Reader
+  implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
   // Testing
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+  androidTestImplementation 'com.android.support:support-annotations:28.0.0'
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
@@ -204,33 +210,38 @@ dependencies {
   testImplementation 'org.robolectric:robolectric:3.8'
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
-  implementation('host.exp.exponent:expoview:32.0.0@aar') {
+  implementation('host.exp.exponent:expoview:33.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
-  api 'host.exp.exponent:expo-core:2.0.0'
-  api 'host.exp.exponent:expo-constants-interface:2.0.0'
-  api 'host.exp.exponent:expo-constants:2.0.0'
-  api 'host.exp.exponent:expo-errors:1.0.0'
-  api 'host.exp.exponent:expo-file-system-interface:2.0.0'
-  api 'host.exp.exponent:expo-file-system:2.0.0'
-  api 'host.exp.exponent:expo-image-loader-interface:2.0.0'
-  api 'host.exp.exponent:expo-localization:2.0.0'
-  api 'host.exp.exponent:expo-permissions:2.0.0'
-  api 'host.exp.exponent:expo-permissions-interface:2.0.0'
-  api 'host.exp.exponent:expo-sensors-interface:2.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
-  api 'host.exp.exponent:expo-task-manager:1.0.0'
-  api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
-  // Optional universal modules, could be removed
-  // along with references in MainActivity
-  api 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
-  api 'host.exp.exponent:expo-barcode-scanner:2.0.0'
-  api 'host.exp.exponent:expo-camera-interface:2.0.0'
-  api 'host.exp.exponent:expo-camera:2.0.0'
-  api 'host.exp.exponent:expo-font:2.0.0'
+  implementation project(':react-native-video')
+  addUnimodulesDependencies([
+    modulesPaths : [
+      '../../node_modules'
+    ],
+    configuration: 'api',
+    target       : 'react-native',
+    exclude      : [
+      'expo-ads-admob',
+      'expo-av',
+      'expo-calendar',
+      'expo-contacts',
+      'expo-crypto',
+      'expo-document-picker',
+      'expo-face-detector',
+      'expo-face-detector-interface',
+      'expo-google-signin',
+      'expo-local-authentication',
+      'expo-mail-composer',
+      'expo-media-library',
+      'expo-print',
+      'expo-sms',
+      'expo-speech',
+      'expo-sqlite',
+    ]
+  ])
+  implementation project(path: ':openCVLibrary341-contrib')
 }
 
 // This has to be down here for some reason

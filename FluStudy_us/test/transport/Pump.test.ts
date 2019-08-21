@@ -4,9 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Pump } from "../../src/transport/Pump";
-import { ArrayLogger, ticks } from "../util";
-
-const LOGGER = new ArrayLogger();
+import { ticks } from "../util";
 
 describe("Pump", () => {
   it("invokes the handler", async () => {
@@ -14,7 +12,7 @@ describe("Pump", () => {
     const pumpRan = new Promise(resolve => (markAsRan = resolve));
     const pump = new Pump(async () => {
       markAsRan();
-    }, LOGGER);
+    });
     pump.start();
     await pumpRan;
   });
@@ -25,7 +23,7 @@ describe("Pump", () => {
       runs += 1;
       // never resolve
       return new Promise(() => {});
-    }, LOGGER);
+    });
 
     pump.start();
     await ticks(2);
@@ -40,7 +38,7 @@ describe("Pump", () => {
     let runs = 0;
     const pump = new Pump(async () => {
       runs += 1;
-    }, LOGGER);
+    });
 
     pump.start();
     await ticks(2);

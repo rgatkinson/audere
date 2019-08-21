@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
+import React, { RefObject } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -12,8 +12,10 @@ import {
   ViewStyle,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { ScrollIntoView } from "react-native-scroll-into-view";
-import { SurveyQuestionData } from "../../resources/ScreenConfig";
+import { connect } from "react-redux";
+import { Action, updateAnswer, StoreState } from "../../store";
+import { SurveyQuestion } from "audere-lib/coughQuestionConfig";
+import { getSelectedButton } from "../../util/survey";
 import {
   BORDER_WIDTH,
   BUTTON_BORDER_RADIUS,
@@ -23,108 +25,99 @@ import {
   SECONDARY_COLOR,
   TEXT_COLOR,
 } from "../styles";
-import QuestionText from "./QuestionText";
 import Text from "./Text";
 
 interface Props {
-  desc?: boolean;
-  onRef?: any;
-  question: SurveyQuestionData;
-  scrollOnMount?: boolean;
   highlighted?: boolean;
-  title?: string;
-  getAnswer(key: string, id: string): any;
-  updateAnswer(answer: object, data: SurveyQuestionData): void;
+  question: SurveyQuestion;
+  selected?: string;
+  dispatch(action: Action): void;
 }
 
-interface State {
-  selected: string | undefined;
-}
-
-class ButtonGrid extends React.Component<Props & WithNamespaces, State> {
-  static defaultProps = {
-    scrollOnMount: false,
+class ButtonGrid extends React.PureComponent<Props> {
+  _onPress = (buttonKey: string) => {
+    const selected = this.props.selected === buttonKey ? undefined : buttonKey;
+    this.props.dispatch(
+      updateAnswer({ selectedButtonKey: selected }, this.props.question)
+    );
   };
 
-  constructor(props: Props & WithNamespaces) {
-    super(props);
-    this.state = {
-      selected: props.getAnswer("selectedButtonKey", props.question.id),
-    };
-  }
-
   render() {
-    const {
-      desc,
-      highlighted,
-      onRef,
-      question,
-      scrollOnMount,
-      t,
-      title,
-      updateAnswer,
-    } = this.props;
+    const { highlighted, selected, question } = this.props;
     return (
-      <ScrollIntoView
-        style={styles.container}
-        ref={onRef}
-        onMount={scrollOnMount}
+      <View
+        style={[
+          styles.container,
+          question.buttons.length < 3 && { width: "67%" },
+        ]}
       >
-        <QuestionText
-          text={!!title ? title : t("surveyTitle:" + question.title)}
-          subtext={
-            desc ? t("surveyDescription:" + question.description) : undefined
-          }
-          required={!title && question.required}
-        />
-        <View
-          style={[
-            styles.buttonContainer,
-            question.buttons.length < 3 && { width: "67%" },
-          ]}
-        >
-          {question.buttons.map((button, index) => {
-            return (
-              <TouchableOpacity
-                key={button.key}
-                onPress={() => {
-                  const selected =
-                    this.state.selected === button.key ? undefined : button.key;
-                  this.setState({ selected });
-                  updateAnswer({ selectedButtonKey: selected }, question);
-                }}
-                style={[
-                  styles.button,
-                  index === 0 && styles.buttonFirst,
-                  index === question.buttons.length - 1 && styles.buttonLast,
-                  this.state.selected === button.key && styles.selectedButton,
-                  !!highlighted && HIGHLIGHT_STYLE,
-                ]}
-              >
-                <Text
-                  bold={true}
-                  center={true}
-                  content={t("surveyButton:" + button.key)}
-                  style={[
-                    styles.buttonText,
-                    this.state.selected === button.key &&
-                      styles.selectedButtonText,
-                  ]}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </ScrollIntoView>
+        {question.buttons.map((button, index) => (
+          <ButtonGridItem
+            buttonKey={button.key}
+            first={index === 0}
+            key={button.key}
+            highlighted={!!highlighted}
+            last={index === question.buttons.length - 1}
+            selected={selected === button.key}
+            onPress={this._onPress}
+          />
+        ))}
+      </View>
     );
   }
 }
-export default withNamespaces()(ButtonGrid);
+export default connect((state: StoreState, props: Props) => ({
+  selected: getSelectedButton(state, props.question),
+}))(ButtonGrid);
+
+interface ItemProps {
+  buttonKey: string;
+  first: boolean;
+  highlighted: boolean;
+  last: boolean;
+  selected: boolean;
+  onPress: (key: string) => void;
+}
+
+class Item extends React.Component<ItemProps & WithNamespaces> {
+  shouldComponentUpdate(props: ItemProps & WithNamespaces) {
+    return (
+      props.selected != this.props.selected ||
+      props.highlighted != this.props.highlighted
+    );
+  }
+
+  _onPress = () => {
+    this.props.onPress(this.props.buttonKey);
+  };
+
+  render() {
+    const { buttonKey, first, highlighted, last, selected, t } = this.props;
+    return (
+      <TouchableOpacity
+        onPress={this._onPress}
+        style={[
+          styles.button,
+          first && styles.buttonFirst,
+          last && styles.buttonLast,
+          selected && styles.selectedButton,
+          !!highlighted && HIGHLIGHT_STYLE,
+        ]}
+      >
+        <Text
+          bold={true}
+          center={true}
+          content={t("surveyButton:" + buttonKey)}
+          style={[styles.buttonText, selected && styles.selectedButtonText]}
+        />
+      </TouchableOpacity>
+    );
+  }
+}
+
+const ButtonGridItem = withNamespaces()(Item);
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: "row",
-  },
   button: {
     borderColor: TEXT_COLOR,
     borderBottomWidth: BORDER_WIDTH,
@@ -149,6 +142,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignSelf: "stretch",
+    flexDirection: "row",
     marginBottom: GUTTER,
   },
   selectedButton: {
