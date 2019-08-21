@@ -80,6 +80,10 @@ export default class LabelNumberInput extends React.Component<Props, State> {
         />
         <NumberInput
           autoFocus={autoFocus}
+          containerStyle={[
+            inputStyle,
+            this.state.isFocused && styles.highlightInput,
+          ]}
           keyboardType={keyboardType}
           onBlur={this._onBlur}
           onChangeText={onChangeText}
@@ -89,7 +93,6 @@ export default class LabelNumberInput extends React.Component<Props, State> {
           placeholder={placeholder}
           ref={this.textInput}
           returnKeyType={returnKeyType}
-          style={[inputStyle, this.state.isFocused && styles.highlightInput]}
           value={inputValue}
         />
       </Fragment>

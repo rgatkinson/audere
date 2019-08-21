@@ -5,11 +5,13 @@
 
 import React, { Fragment } from "react";
 import {
+  ImageSourcePropType,
   StyleProp,
   StyleSheet,
   TextStyle,
   ReturnKeyType,
   View,
+  ViewStyle,
 } from "react-native";
 import Text from "./Text";
 import TextInput from "./TextInput";
@@ -20,7 +22,8 @@ interface Props {
   autoFocus?: boolean;
   blurOnSubmit?: boolean;
   focusedIndex?: number;
-  inputStyle?: StyleProp<TextStyle>;
+  icon?: ImageSourcePropType;
+  inputStyle?: StyleProp<ViewStyle>;
   inputValue?: string;
   index?: number;
   multiline?: boolean;
@@ -31,6 +34,7 @@ interface Props {
   textContent: string;
   onEndEditing?: (e: any) => void;
   onChangeText?(text: string): void;
+  onIconPress?(): void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
@@ -60,6 +64,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
       autoFocus,
       blurOnSubmit,
       focusedIndex,
+      icon,
       index,
       inputStyle,
       inputValue,
@@ -67,6 +72,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
       numberOfLines,
       onChangeText,
       onEndEditing,
+      onIconPress,
       onKeyPress,
       onSubmitEditing,
       placeholder,
@@ -85,22 +91,24 @@ export default class LabelTextInput extends React.Component<Props, State> {
           autoCapitalize={autoCapitalize}
           autoFocus={autoFocus}
           blurOnSubmit={blurOnSubmit}
+          containerStyle={[
+            inputStyle,
+            this.state.isFocused &&
+              (multiline ? styles.multilineHighlight : styles.highlightInput),
+          ]}
+          icon={icon}
           multiline={multiline}
           numberOfLines={numberOfLines}
           onBlur={this._onBlur}
           onChangeText={onChangeText}
           onEndEditing={onEndEditing}
           onFocus={this._onFocus}
+          onIconPress={onIconPress}
           onKeyPress={onKeyPress}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
           ref={this.textInput}
           returnKeyType={returnKeyType}
-          style={[
-            inputStyle,
-            this.state.isFocused &&
-              (multiline ? styles.multilineHighlight : styles.highlightInput),
-          ]}
           value={inputValue}
         />
       </Fragment>

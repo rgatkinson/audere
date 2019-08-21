@@ -155,7 +155,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             <LabelTextInput
               autoCapitalize="words"
               autoFocus={true}
-              inputStyle={styles.inputSingle}
               inputValue={firstName}
               onChangeText={this._updateFirstName}
               onSubmitEditing={this._focusLastName}
@@ -167,7 +166,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             <LabelTextInput
               autoCapitalize="words"
               ref={this._lastNameInput}
-              inputStyle={styles.inputSingle}
               inputValue={lastName}
               onChangeText={this._updateLastName}
               onSubmitEditing={this._focusPhone}
@@ -181,7 +179,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               placeholder=""
               ref={this._phoneInput}
               returnKeyType="next"
-              inputStyle={styles.inputSingle}
               textContent={t("loginMobileNumber")}
               textStyle={styles.titleRow}
               inputValue={phone}
@@ -195,7 +192,6 @@ class Login extends React.Component<Props & WithNamespaces, State> {
               numberOfLines={3}
               ref={this._notesInput}
               returnKeyType="done"
-              inputStyle={styles.inputMulti}
               textContent={t("notes")}
               textStyle={styles.titleRow}
               inputValue={notes}
@@ -249,12 +245,5 @@ const styles = StyleSheet.create({
     fontSize: REGULAR_TEXT,
     paddingTop: GUTTER,
     paddingBottom: GUTTER / 4,
-  },
-  inputSingle: {
-    padding: 0,
-    borderBottomColor: FONT_COLOR,
-  },
-  inputMulti: {
-    borderWidth: 1,
   },
 });

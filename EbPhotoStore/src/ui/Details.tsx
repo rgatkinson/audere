@@ -380,6 +380,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           </View>
         )}
         <ScrollView
+          keyboardShouldPersistTaps={"handled"}
           ref={this._scrollView}
           onContentSizeChange={(w, h) => {
             this._contentHeight = h;
@@ -398,7 +399,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           <LabelTextInput
             autoCapitalize="words"
             autoFocus={this.state.firstName == ""}
-            inputStyle={styles.inputSingle}
             inputValue={firstName}
             onChangeText={this._updateFirstName}
             onSubmitEditing={this._focusLastName}
@@ -410,7 +410,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           <LabelTextInput
             autoCapitalize="words"
             ref={this._lastNameInput}
-            inputStyle={styles.inputSingle}
             inputValue={lastName}
             onChangeText={this._updateLastName}
             onSubmitEditing={this._focusPhone}
@@ -420,7 +419,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             textStyle={styles.titleRow}
           />
           <LabelNumberInput
-            inputStyle={[styles.inputSingle, { marginBottom: GUTTER }]}
+            inputStyle={{ marginBottom: GUTTER }}
             inputValue={phone}
             ref={this._phoneInput}
             keyboardType={"phone-pad"}
@@ -433,7 +432,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <LabelTextInput
             blurOnSubmit={true}
-            inputStyle={styles.inputMulti}
             inputValue={details}
             ref={this._detailsInput}
             multiline={true}
@@ -446,7 +444,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           />
           <LabelTextInput
             blurOnSubmit={true}
-            inputStyle={styles.inputMulti}
             inputValue={notes}
             ref={this._notesInput}
             multiline={true}
@@ -584,13 +581,12 @@ class Details extends React.Component<Props & WithNamespaces, State> {
           {!(isNew || this._wasNew) && (
             <Fragment>
               <LabelTextInput
-                blurOnSubmit={true}
-                inputStyle={styles.inputMulti}
+                icon={{ uri: "right_arrow" }}
                 inputValue={chatMessage}
                 multiline={true}
                 numberOfLines={2}
                 onChangeText={this._updateChatMessage}
-                onSubmitEditing={this._sendChatMessage}
+                onIconPress={this._sendChatMessage}
                 placeholder={t("chatPlaceholder")}
                 returnKeyType="done"
                 textContent={t("startChat", { firstName, lastName })}
@@ -655,13 +651,6 @@ const styles = StyleSheet.create({
   titleRow: {
     paddingTop: GUTTER,
     paddingBottom: GUTTER / 4,
-  },
-  inputSingle: {
-    padding: 0,
-  },
-  inputMulti: {
-    borderWidth: 1,
-    marginBottom: GUTTER,
   },
   photoContainer: {
     backgroundColor: TITLEBAR_COLOR,
