@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FluAtHome",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "description": "App for flu@home project",
     "icon": "./assets/images/app-icon.png",
     "slug": "FluAtHome",
