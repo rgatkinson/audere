@@ -876,6 +876,7 @@ export default connect((state: StoreState) => ({
 function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
   return {
     testStripFound: args.testStripFound,
+    testStripBoundary: args.testStripBoundary,
     isCentered: args.isCentered,
     sizeResult: args.sizeResult,
     isFocused: args.isFocused,
