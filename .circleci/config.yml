@@ -35,34 +35,33 @@ setenv: &setenv
   command: |
     echo "$PRODUCT"
     echo "$EXPO_RELEASE_CHANNEL"
-    DEFAULT_ACCESS_KEY_A="TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB"
-    if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-      export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
-      case "$PRODUCT" in
-        sniffles)
-          export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
-          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
-          ;;
-        fever)
-          export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
-          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
-          ;;
-        cough)
-          export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
-          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
-          ;;
-        *) echo 1>&2 "Unrecognized product '$PRODUCT'"; false;;
-      esac
-    else 
-      export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
-      export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
-      export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
-    fi
-    echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
-    echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
-    echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
-    if [[ "$PRODUCT" == "sniffles" ]]; then
-      echo "FIREBASE_API_KEY=$SNIFFLES_FIREBASE_API_KEY" >> .env
+    if [[ "$PRODUCT" == "sniffles" || $"PRODUCT" == "fever" ]]; then
+      DEFAULT_ACCESS_KEY_A="TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB"
+      if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+        export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
+        case "$PRODUCT" in
+          sniffles)
+            export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
+            export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
+            ;;
+          fever)
+            export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
+            export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
+            ;;
+        esac
+      else 
+        export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
+        export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
+        export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
+      fi
+      echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+      echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
+      echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
+      if [[ "$PRODUCT" == "sniffles" ]]; then
+        echo "FIREBASE_API_KEY=$SNIFFLES_FIREBASE_API_KEY" >> .env
+      fi 
+    else
+      echo "No need to set .env for $PRODUCT"
     fi 
 
 set_firebase_config: &set_firebase_config
@@ -71,6 +70,7 @@ set_firebase_config: &set_firebase_config
     echo "$EXPO_RELEASE_CHANNEL"
     case "$PRODUCT" in 
       cough) 
+      chills) 
         if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
           echo "$COUGH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
           echo "$COUGH_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
@@ -587,6 +587,14 @@ jobs:
 
   build_deploy_cough_android:
     working_directory: /tmp/repo/FluStudy_au
+    <<: *build_deploy_fluathome_android
+
+  build_deploy_chills:
+    working_directory: ~/repo/FluStudy_us
+    <<: *build_deploy_fluathome
+
+  build_deploy_chills_android:
+    working_directory: /tmp/repo/FluStudy_us
     <<: *build_deploy_fluathome_android
 
   build_deploy_rash: &build_deploy_rash
