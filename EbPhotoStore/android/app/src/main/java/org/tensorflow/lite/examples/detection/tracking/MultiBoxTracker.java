@@ -16,6 +16,7 @@ limitations under the License.
 package org.tensorflow.lite.examples.detection.tracking;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -23,6 +24,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -111,9 +113,10 @@ public class MultiBoxTracker {
     }
   }
 
-  public synchronized void trackResults(final List<Recognition> results, final long timestamp) {
-    logger.i("Processing %d results from %d", results.size(), timestamp);
+  public synchronized void trackResults(final Bitmap sourceBitmap, final List<Recognition> results, final long timestamp) {
+    // logger.i("Processing %d results from %d", results.size(), timestamp);
     processResults(results);
+    this.rdtTrack(sourceBitmap, results);
   }
 
   private Matrix getFrameToCanvasMatrix() {
@@ -134,24 +137,26 @@ public class MultiBoxTracker {
             (int) (multiplier * (rotated ? frameWidth : frameHeight)),
             sensorOrientation,
             false);
-    for (final TrackedRecognition recognition : trackedObjects) {
-      final RectF trackedPos = new RectF(recognition.location);
+    // for (final TrackedRecognition recognition : trackedObjects) {
+    //   final RectF trackedPos = new RectF(recognition.location);
 
-      getFrameToCanvasMatrix().mapRect(trackedPos);
-      boxPaint.setColor(recognition.color);
+    //   getFrameToCanvasMatrix().mapRect(trackedPos);
+    //   boxPaint.setColor(recognition.color);
 
-      float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
-      canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
+    //   float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
+    //   canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
 
-      final String labelString =
-          !TextUtils.isEmpty(recognition.title)
-              ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-              : String.format("%.2f", (100 * recognition.detectionConfidence));
-      //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
-      // labelString);
-      borderedText.drawText(
-          canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
-    }
+    //   final String labelString =
+    //       !TextUtils.isEmpty(recognition.title)
+    //           ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+    //           : String.format("%.2f", (100 * recognition.detectionConfidence));
+    //   //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
+    //   // labelString);
+    //   borderedText.drawText(
+    //       canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
+    // }
+
+    this.rdtDraw(canvas);
   }
 
   private void processResults(final List<Recognition> results) {
@@ -207,5 +212,150 @@ public class MultiBoxTracker {
     float detectionConfidence;
     int color;
     String title;
+  }
+
+  // AUDERE CODE BELOW
+
+  final String[] RDT_NAMES = new String[]{ "arrows", "test", "ABC", "squares", "influenza" };
+  final float[] RDT_OFFSETS = new float[]{ 1.5f, 3.0f, 5.0f, 7.0f, 8.0f };
+  final float RDT_HEIGHT = 8.7f;
+  final float RDT_WIDTH = 0.5f;
+  final int RDT_INSET_MARGIN = 3;
+
+  Matrix rdtMatrix = null;
+  Bitmap rdtBitmap = null;
+  float[] rdtOutline = null;
+
+  private void rdtTrack(final Bitmap sourceBitmap, final List<Recognition> results) {
+    final Recognition[] findings = this.rdtLocations(results);
+
+    int index0 = findings.length + 1;
+    int index1 = -1;
+    for (int i = 0; i < findings.length; i++) {
+      if (findings[i] != null) {
+        if (i < index0) index0 = i;
+        if (index1 < i) index1 = i;
+      }
+    }
+    if (index0 >= index1) {
+      this.rdtMatrix = null;
+      this.rdtBitmap = null;
+      this.rdtOutline = null;
+      return;
+    }
+
+    PointF location0 = this.center(findings[index0].getLocation());
+    PointF location1 = this.center(findings[index1].getLocation());
+    float offset0 = RDT_OFFSETS[index0];
+    float offset1 = RDT_OFFSETS[index1];
+
+    int rdtHeight = this.frameHeight - (RDT_INSET_MARGIN * 2);
+    float scale = (float) rdtHeight / RDT_HEIGHT;
+    int rdtWidth = (int) (RDT_WIDTH * scale);
+    float hCenter = RDT_INSET_MARGIN + rdtWidth / 2;
+    float vCenter0 = RDT_INSET_MARGIN + ((RDT_HEIGHT - offset0) * scale);
+    float vCenter1 = RDT_INSET_MARGIN + ((RDT_HEIGHT - offset1) * scale);
+
+    float[] before = new float[]{
+      location0.x, location0.y,
+      location1.x, location1.y
+    };
+    float[] after = new float[]{
+      hCenter, vCenter0,
+      hCenter, vCenter1
+    };
+
+    int rdtTop = RDT_INSET_MARGIN;
+    int rdtBottom = RDT_INSET_MARGIN + rdtHeight;
+    int rdtLeft = RDT_INSET_MARGIN;
+    int rdtRight = RDT_INSET_MARGIN + rdtWidth;
+
+    float[] outline = new float[]{
+      rdtLeft, rdtTop, rdtRight, rdtTop,
+      rdtRight, rdtTop, rdtRight, rdtBottom,
+      rdtRight, rdtBottom, rdtLeft, rdtBottom,
+      rdtLeft, rdtBottom, rdtLeft, rdtTop,
+    };
+
+    this.debugLogOutline("initialize outline", outline);
+
+    Matrix inverseRdtMatrix = new Matrix();
+    if (!inverseRdtMatrix.setPolyToPoly(after, 0, before, 0, 2)) {
+      throw new RuntimeException("Could not create rdtMatrix");
+    }
+    inverseRdtMatrix.postConcat(getFrameToCanvasMatrix());
+    inverseRdtMatrix.mapPoints(outline);
+
+    Matrix rdtExtract = new Matrix();
+    if (!inverseRdtMatrix.invert(rdtExtract)) {
+      throw new RuntimeException("COuld not invert matrix");
+    }
+    this.rdtMatrix = rdtExtract;
+
+    this.debugLogOutline("transformed outline", outline);
+    this.rdtOutline = outline;
+
+    try {
+      this.rdtBitmap = Bitmap.createBitmap(
+        sourceBitmap,
+        RDT_INSET_MARGIN,
+        RDT_INSET_MARGIN,
+        rdtWidth,
+        rdtHeight,
+        this.rdtMatrix,
+        true
+      );
+    } catch (Exception e) {
+      // Extraction isn't great at handling clipping
+      logger.e("DETECTOR caught " + e.toString());
+    }
+  }
+
+  private void rdtDraw(final Canvas canvas) {
+    if (this.rdtOutline != null) {
+      float[] outline = this.rdtOutline;
+      this.debugLogOutline("rdtDraw outline", outline);
+      final Paint paint = new Paint();
+      paint.setColor(Color.BLUE);
+      paint.setStyle(Style.STROKE);
+      paint.setStrokeWidth(2.0f);
+      canvas.drawLines(this.rdtOutline, paint);
+    }
+
+    if (rdtBitmap != null) {
+      canvas.drawBitmap(this.rdtBitmap, RDT_INSET_MARGIN, RDT_INSET_MARGIN, new Paint());
+    }
+  }
+
+  private Recognition[] rdtLocations(final List<Recognition> results) {
+    final Recognition[] findings = new Recognition[RDT_NAMES.length];
+
+    for (final Recognition result : results) {
+      final RectF location = result.getLocation();
+      final String title = result.getTitle();
+      for (int i = 0; i < RDT_NAMES.length; i++) {
+        if (RDT_NAMES[i].equals(title)) {
+          findings[i] = result;
+        }
+      }
+    }
+
+    return findings;
+  }
+
+  private final PointF center(RectF rect) {
+    return new PointF((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
+  }
+
+  private void debugLogOutline(String tag, float[] outline) {
+    logger.i(tag);
+    // for (int i = 0; i * 4 < outline.length; i++) {
+    //   logger.i("  " + debugLineSegment(outline, i));
+    // }
+  }
+
+  private String debugLineSegment(float[] outline, int index) {
+    int o = 4 * index;
+    return "("+outline[o+0]+","+outline[o+1]+") - ("+outline[o+2]+","+outline[o+3]+")";
   }
 }

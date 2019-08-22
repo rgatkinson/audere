@@ -23,10 +23,12 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.widget.Toast;
@@ -159,7 +161,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       return;
     }
     computingDetection = true;
-    LOGGER.i("Preparing image " + currTimestamp + " for detection in bg thread.");
+    // LOGGER.i("Preparing image " + currTimestamp + " for detection in bg thread.");
 
     rgbFrameBitmap.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight);
 
@@ -176,7 +178,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         new Runnable() {
           @Override
           public void run() {
-            LOGGER.i("Running detection on image " + currTimestamp);
+            // LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
             final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
@@ -187,6 +189,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             paint.setColor(Color.RED);
             paint.setStyle(Style.STROKE);
             paint.setStrokeWidth(2.0f);
+
+            final Bitmap sourceBitmap = croppedBitmap; //Bitmap.createBitmap(croppedBitmap);
 
             float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
             switch (MODE) {
@@ -202,15 +206,17 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               final RectF location = result.getLocation();
               if (location != null && result.getConfidence() >= minimumConfidence) {
                 canvas.drawRect(location, paint);
+                // LOGGER.i("DETECTOR: draw at (L="+location.left+" T="+location.top+" R="+location.right+" B="+location.bottom+")");
 
                 cropToFrameTransform.mapRect(location);
+                // LOGGER.i("DETECTOR: xformed (L="+location.left+" T="+location.top+" R="+location.right+" B="+location.bottom+")");
 
                 result.setLocation(location);
                 mappedRecognitions.add(result);
               }
             }
 
-            tracker.trackResults(mappedRecognitions, currTimestamp);
+            tracker.trackResults(sourceBitmap, mappedRecognitions, currTimestamp);
             trackingOverlay.postInvalidate();
 
             computingDetection = false;
