@@ -38,3 +38,8 @@ cat >"$TARGET_DIR/$FILENAME" <<EOT
   "hash": "$GITHASH"
 }
 EOT
+
+if [ -e "$PRODUCT_DIR/scripts/extend-build-info" ]; then
+  cd $PRODUCT_DIR
+  scripts/extend-build-info
+fi

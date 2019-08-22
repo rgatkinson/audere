@@ -48,9 +48,14 @@ export interface ProtocolDocumentBase {
   device: DeviceInfo;
 }
 
+interface RDTVersionInfo {
+  rdtVersionAndroid: string;
+  rdtVersionIos: string;
+}
+
 export interface DeviceInfo {
   installation: string;
-  clientVersion: ClientVersionInfo;
+  clientVersion: ClientVersionInfo & RDTVersionInfo;
   clientBuild: number;
   yearClass: string;
   idiomText: string;

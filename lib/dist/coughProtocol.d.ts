@@ -7,9 +7,13 @@ export interface ProtocolDocumentBase {
     docId: string;
     device: DeviceInfo;
 }
+interface RDTVersionInfo {
+    rdtVersionAndroid: string;
+    rdtVersionIos: string;
+}
 export interface DeviceInfo {
     installation: string;
-    clientVersion: ClientVersionInfo;
+    clientVersion: ClientVersionInfo & RDTVersionInfo;
     clientBuild: number;
     yearClass: string;
     idiomText: string;
@@ -114,6 +118,10 @@ export interface RDTInfo {
 }
 export interface RDTReaderResult {
     testStripFound: boolean;
+    testStripBoundary?: {
+        x: number;
+        y: number;
+    }[];
     skippedDueToMemWarning?: boolean;
     isCentered?: boolean;
     sizeResult?: RDTReaderSizeResult;
