@@ -580,7 +580,7 @@ jobs:
             cd android
             bundle exec fastlane internal
       - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/bundle/release
+          path: android/app/build/outputs/bundle/release
 
   build_deploy_fever:
     working_directory: ~/repo/FluStudy_us
