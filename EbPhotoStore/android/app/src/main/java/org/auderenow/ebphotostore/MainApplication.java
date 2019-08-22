@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 package org.auderenow.ebphotostore;
 
 import androidx.multidex.MultiDexApplication;
@@ -30,6 +35,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
       // Packages that cannot be autolinked yet can be added manually here, for
       // example:
       // packages.add(new MyReactNativePackage());
+      packages.add(new RNBitmapTransformPackage());
       packages.add(new ObjectDetectionReactPackage());
       packages.add(new RNFirebaseFirestorePackage());
       packages.add(new RNFirebaseStoragePackage());
