@@ -55,7 +55,7 @@ import {
   THICK_BORDER_WIDTH,
   TITLEBAR_COLOR,
 } from "./styles";
-import { BackCallback } from "./AppController";
+import { TitlebarCallback } from "./AppController";
 import LabelTextInput from "./components/LabelTextInput";
 import LabelNumberInput from "./components/LabelNumberInput";
 import i18n from "../i18n";
@@ -76,7 +76,7 @@ interface Props {
   photoInfo?: LocalPhotoInfo;
   messages?: Message[];
   oldestUnreadChatMessage?: Message | null;
-  setupBackInfo(s: Screen, info: BackCallback): void;
+  setupTitlebarInfo(s: Screen, info: TitlebarCallback): void;
   dispatch(action: Action): void;
 }
 
@@ -109,9 +109,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.props.setupBackInfo(Screen.PatientDetails, {
+    this.props.setupTitlebarInfo(Screen.PatientDetails, {
       onBack: this._back,
-      backText: "list",
+      getTitlebarText: this._getTitlebarText,
     });
     this.state = {
       firstName: props.patientInfo.firstName,
@@ -306,6 +306,16 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       ]);
     } else {
       this._navToList();
+    }
+  };
+
+  _getTitlebarText = () => {
+    const { isNew, t } = this.props;
+    if (isNew) {
+      return t("details:titlebarText");
+    } else {
+      const { firstName, lastName } = this.props.patientInfo;
+      return firstName.length > 0 ? firstName + " " + lastName : lastName;
     }
   };
 

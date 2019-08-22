@@ -7,11 +7,11 @@ import React from "react";
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
 import Text from "./Text";
 import {
-  FONT_COLOR_LIGHT,
+  EXTRA_LARGE_TEXT,
+  FONT_COLOR,
   FONT_ROBO_LIGHT,
   GUTTER,
   LINE_HEIGHT_DIFFERENCE,
-  TITLE_TEXT,
 } from "../styles";
 
 interface Props {
@@ -32,11 +32,9 @@ export default class Title extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   title: {
-    color: FONT_COLOR_LIGHT,
+    color: FONT_COLOR,
     fontFamily: FONT_ROBO_LIGHT,
-    fontSize: TITLE_TEXT,
-    lineHeight: TITLE_TEXT + LINE_HEIGHT_DIFFERENCE,
-    marginBottom: GUTTER,
-    marginTop: GUTTER / 2,
+    fontSize: EXTRA_LARGE_TEXT,
+    lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
   },
 });

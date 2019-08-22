@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
+  Animated,
   Dimensions,
   FlatList,
   Image,
@@ -22,24 +23,29 @@ import {
   Sort,
   StoreState,
 } from "../store";
-import Button from "./components/Button";
 import Text from "./components/Text";
-import Title from "./components/Title";
 import {
   BORDER_COLOR,
   EBOLA_POSITIVE_COLOR,
   GUTTER,
   ICON_SIZE,
   INPUT_HEIGHT,
+  LOGO_HEIGHT,
+  MESSAGES_LABEL_IMAGE,
+  NEW_MESSAGE_IMAGE,
   REGULAR_TEXT,
+  TRIAGE_POSITIVE_IMAGE,
+  TRIAGE_NEGATIVE_IMAGE,
+  TRIAGE_NEED_PHOTO_IMAGE,
 } from "./styles";
 import firebase from "react-native-firebase";
-import { BackCallback } from "./AppController";
+import { TitlebarCallback } from "./AppController";
+import TitleBar from "./TitleBar";
 
 interface Props {
   demoMode: boolean;
   patients: PatientEncounter[];
-  setupBackInfo(s: Screen, info: BackCallback): void;
+  setupTitlebarInfo(s: Screen, info: TitlebarCallback): void;
   sortBy: Sort[];
   order: Order;
   dispatch(action: Action): void;
@@ -48,21 +54,29 @@ interface Props {
 interface State {
   sortBy: Sort[];
   order: Order;
+  searchText: string;
+  animScrollY: Animated.Value;
 }
 
+const TITLE_HEIGHT = LOGO_HEIGHT + GUTTER;
+
 class Patients extends React.Component<Props & WithNamespaces, State> {
+  _scrollView: any;
+
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
       sortBy: props.sortBy,
       order: props.order,
+      searchText: "",
+      animScrollY: new Animated.Value(0),
     };
   }
 
   async componentDidMount() {
-    this.props.setupBackInfo(Screen.Patients, {
+    this.props.setupTitlebarInfo(Screen.Patients, {
       onBack: this._logout,
-      shouldShowBack: () => {
+      shouldShowTitlebar: () => {
         return false;
       },
     });
@@ -76,45 +90,47 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
   };
 
   _statusSort = (a: PatientEncounter, b: PatientEncounter) => {
-    if (a.evdPositive === b.evdPositive) {
-      return 0;
-    }
-
-    if (a.evdPositive) {
+    if (a.evdPositive !== undefined && a.evdPositive === b.evdPositive) {
+      return this._nameSort(a, b);
+    } else if (a.evdPositive) {
       return -1;
     } else if (b.evdPositive) {
       return 1;
     } else if (a.evdPositive !== undefined) {
       return -1;
+    } else if (b.evdPositive !== undefined) {
+      return 1;
     }
 
-    return 1; // b.evdPositive !== undefined
+    const needPhotoA = a.photoInfo.length === 0;
+    const needPhotoB = b.photoInfo.length === 0;
+    if (needPhotoA === needPhotoB) {
+      return this._nameSort(a, b);
+    } else if (!needPhotoA) {
+      return 1;
+    }
+    return -1; //!needPhotoB
   };
 
   _infoSort = (a: PatientEncounter, b: PatientEncounter) => {
     const uid = firebase.auth().currentUser!.uid;
-    const aHasChat =
-      a.messages.length > 0 &&
-      a.messages.filter(message => message.sender.uid !== uid).length > 0;
-    const bHasChat =
-      b.messages.length > 0 &&
-      b.messages.filter(message => message.sender.uid !== uid).length > 0;
-    const aMissingPhoto = a.photoInfo.length === 0;
-    const bMissingPhoto = b.photoInfo.length === 0;
+    const aHasChat = a.messages.some(
+      message =>
+        message.sender.uid !== uid &&
+        new Date(message.timestamp).getTime() > a.messageLastViewedAt
+    );
+    const bHasChat = b.messages.some(
+      message =>
+        message.sender.uid !== uid &&
+        new Date(message.timestamp).getTime() > b.messageLastViewedAt
+    );
 
-    if (aHasChat === bHasChat && aMissingPhoto === bMissingPhoto) {
-      return 0;
-    }
-
-    if (aHasChat && !bHasChat) {
-      return -1;
-    } else if (bHasChat && !aHasChat) {
-      return 1;
-    } else if (aMissingPhoto) {
+    if (aHasChat === bHasChat) {
+      return this._nameSort(a, b);
+    } else if (aHasChat && !bHasChat) {
       return -1;
     }
-
-    return 1; // bMissinPhoto
+    return 1; //(bHasChat && !aHasChat)
   };
 
   _performSort = (a: PatientEncounter, b: PatientEncounter, sortBy: Sort[]) => {
@@ -143,6 +159,22 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
       }
     }
     return a.id - b.id;
+  };
+
+  _performFilter = (p: PatientEncounter, filterText: string) => {
+    if (filterText.length == 0) {
+      return true;
+    }
+    return (
+      p.patientInfo.firstName.toLowerCase().indexOf(filterText) >= 0 ||
+      p.patientInfo.lastName.toLowerCase().indexOf(filterText) >= 0 ||
+      (filterText === "+" && p.evdPositive) ||
+      (filterText === "-" && p.evdPositive === false) ||
+      p.id
+        .toString()
+        .padStart(3, "0")
+        .indexOf(filterText) >= 0
+    );
   };
 
   _sort = memoize(
@@ -188,6 +220,10 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     }
   };
 
+  _onSearchTextChanged = (searchText: string) => {
+    this.setState({ searchText });
+  };
+
   _sortBy = (sort: Sort) => {
     if (this.state.sortBy[0] === sort) {
       this.setState({
@@ -212,10 +248,6 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     this._sortBy(Sort.info);
   };
 
-  _sortById = () => {
-    this._sortBy(Sort.id);
-  };
-
   _arrow = () => {
     return (
       <Image
@@ -227,76 +259,111 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     );
   };
 
+  _onScrollEndSnapToEdge = event => {
+    if (this._scrollView) {
+      const y = event.nativeEvent.contentOffset.y;
+      if (0 < y && y < TITLE_HEIGHT / 2) {
+        this._scrollView.scrollTo({ y: 0 });
+      } else if (TITLE_HEIGHT / 2 <= y && y < TITLE_HEIGHT) {
+        this._scrollView.scrollTo({ y: TITLE_HEIGHT });
+      }
+    }
+  };
+
   render() {
     const { patients, t } = this.props;
-    const patientsToRender = this._sort(
+    let patientsToRender = this._sort(
       patients,
       this.state.sortBy,
       this.state.order
     );
+    const { animScrollY, searchText } = this.state;
+    if (searchText && searchText.length > 0) {
+      patientsToRender = patientsToRender.filter(p =>
+        this._performFilter(p, searchText.toLowerCase())
+      );
+    }
+    let offsetY = animScrollY.interpolate({
+      inputRange: [0, TITLE_HEIGHT, TITLE_HEIGHT + 1],
+      outputRange: [0, 0, 1],
+    });
     return (
-      <View style={styles.container}>
-        <View style={[styles.rowContainer, { marginBottom: GUTTER }]}>
-          <Title label={t("patients")} style={{ marginBottom: 0 }} />
-          <Button
-            enabled={true}
-            label={t("plus")}
-            primary={true}
-            onPress={this._addPatient}
-            fontSize={40}
-            style={styles.button}
-          />
-        </View>
-        <View style={styles.rowContainer}>
-          <TouchableOpacity
-            style={[styles.name, { flexDirection: "row" }]}
-            onPress={this._sortByName}
-          >
-            <Text bold={true} content={t("name")} style={styles.header} />
-            {this.state.sortBy[0] === Sort.name && this._arrow()}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.id, { flexDirection: "row" }]}
-            onPress={this._sortById}
-          >
-            <Text bold={true} content={t("id")} style={styles.header} />
-            {this.state.sortBy[0] === Sort.id && this._arrow()}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.status, { flexDirection: "row" }]}
-            onPress={this._sortByStatus}
-          >
-            <Text bold={true} content={t("status")} style={styles.header} />
-            {this.state.sortBy[0] === Sort.status && this._arrow()}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.iconContainer,
-              { flexDirection: "row", paddingTop: 1 },
-            ]}
-            onPress={this._sortByInfo}
-          >
-            <Text
-              bold={true}
-              content={t("info")}
-              style={[styles.header, styles.unicodeHeader]}
-            />
-            {this.state.sortBy[0] === Sort.info && this._arrow()}
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={patientsToRender}
-          extraData={patients}
-          keyExtractor={this._keyExtractor}
-          renderItem={({ item }) => (
-            <PatientRow
-              patient={item}
-              onPress={this._viewPatient}
-              onLongPress={this._onLongPress}
-            />
+      <Fragment>
+        <Animated.ScrollView
+          ref={scrollView => {
+            this._scrollView = scrollView ? scrollView._component : null;
+          }}
+          keyboardShouldPersistTaps="handled"
+          onScrollEndDrag={this._onScrollEndSnapToEdge}
+          onMomentumScrollEnd={this._onScrollEndSnapToEdge}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: animScrollY } } }],
+            { useNativeDriver: true }
           )}
-        />
-      </View>
+        >
+          <Animated.View
+            style={[
+              {
+                marginBottom: 0,
+                transform: [{ translateY: offsetY }],
+                flexDirection: "column",
+                zIndex: 1,
+              },
+            ]}
+          >
+            <TitleBar
+              animScrollY={animScrollY}
+              showLogo={true}
+              showAppMenuButton={true}
+              showBottomBorder={true}
+              titlebarText={t("titlebarText")}
+              onSearchTextChanged={this._onSearchTextChanged}
+              onNew={this._addPatient}
+            />
+          </Animated.View>
+          <View style={styles.headerContainer}>
+            <TouchableOpacity
+              style={[styles.name, { flexDirection: "row" }]}
+              onPress={this._sortByName}
+            >
+              <Text bold={true} content={t("name")} style={styles.header} />
+              {this.state.sortBy[0] === Sort.name && this._arrow()}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.statusContainer, { flexDirection: "row" }]}
+              onPress={this._sortByStatus}
+            >
+              <Text bold={true} content={t("status")} style={styles.header} />
+              {this.state.sortBy[0] === Sort.status && this._arrow()}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.iconContainer,
+                { flexDirection: "row", paddingTop: GUTTER / 2 },
+              ]}
+              onPress={this._sortByInfo}
+            >
+              <Image source={MESSAGES_LABEL_IMAGE} style={styles.icon} />
+              {this.state.sortBy[0] === Sort.info && this._arrow()}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={patientsToRender}
+              extraData={patients}
+              keyExtractor={this._keyExtractor}
+              keyboardShouldPersistTaps="handled"
+              renderItem={({ item }) => (
+                <PatientRow
+                  patient={item}
+                  onPress={this._viewPatient}
+                  onLongPress={this._onLongPress}
+                />
+              )}
+            />
+          </View>
+        </Animated.ScrollView>
+      </Fragment>
     );
   }
 }
@@ -335,99 +402,84 @@ class PatientRowImpl extends React.Component<PatientRowProps & WithNamespaces> {
     );
     const hasPhoto = patient.photoInfo.length > 0;
     return (
-      <TouchableOpacity onPress={this._onPress} onLongPress={this._onLongPress}>
-        <View style={styles.patient}>
-          <Text
-            content={this._getPatientName()}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={styles.name}
-          />
-          <Text
-            content={patient.id.toString().padStart(3, "0")}
-            style={styles.id}
-          />
-          {patient.evdPositive !== undefined ? (
+      <Fragment>
+        <View style={styles.border} />
+        <TouchableOpacity
+          onPress={this._onPress}
+          onLongPress={this._onLongPress}
+        >
+          <View style={styles.patientRow}>
             <Text
-              bold={true}
-              content={t(patient.evdPositive ? "evdPositive" : "evdNegative")}
-              style={[styles.status, patient.evdPositive && styles.evdPos]}
+              content={this._getPatientName()}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.name}
             />
-          ) : (
-            <View style={styles.status} />
-          )}
-          <View style={styles.iconContainer}>
-            {hasChat ? (
-              <Image source={{ uri: "messageicon" }} style={styles.icon} />
-            ) : !hasPhoto ? (
-              <Image source={{ uri: "photoneeded" }} style={styles.icon} />
-            ) : null}
+            <View style={styles.statusContainer}>
+              {patient.evdPositive !== undefined ? (
+                <Fragment>
+                  <Image
+                    source={
+                      patient.evdPositive
+                        ? TRIAGE_POSITIVE_IMAGE
+                        : TRIAGE_NEGATIVE_IMAGE
+                    }
+                    style={styles.icon}
+                  />
+                  <Text
+                    bold={patient.evdPositive}
+                    content={" " + t("evd")}
+                    style={patient.evdPositive && styles.evdPos}
+                  />
+                </Fragment>
+              ) : !hasPhoto ? (
+                <Fragment>
+                  <Image source={TRIAGE_NEED_PHOTO_IMAGE} style={styles.icon} />
+                  <Text content={" " + t("needphoto")} />
+                </Fragment>
+              ) : (
+                <View style={styles.icon} />
+              )}
+            </View>
+            <View style={styles.iconContainer}>
+              {hasChat && (
+                <Image source={NEW_MESSAGE_IMAGE} style={styles.icon} />
+              )}
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </Fragment>
     );
   }
 }
 const PatientRow = withNamespaces("patients")(PatientRowImpl);
 
-// Row width: screen gutter * 2 plus half gutter padding within row + icon gutter
-const rowWidth = Dimensions.get("window").width - 4 * GUTTER - ICON_SIZE;
+// Row width: screen gutter * 2 plus icon gutter
+const rowWidth = Dimensions.get("window").width - 2 * GUTTER - ICON_SIZE;
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 2,
-    marginBottom: 0,
-    width: INPUT_HEIGHT,
-  },
-  container: {
-    alignSelf: "stretch",
-    flex: 1,
-    justifyContent: "center",
-    margin: GUTTER,
-  },
-  rowContainer: {
+  headerContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: GUTTER / 2,
-  },
-  patient: {
-    borderBottomColor: BORDER_COLOR,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: "row",
-    height: INPUT_HEIGHT,
-    paddingHorizontal: GUTTER / 2,
+    backgroundColor: "white",
+    paddingHorizontal: GUTTER,
     paddingTop: GUTTER,
-  },
-  name: {
-    marginBottom: 0,
-    paddingRight: GUTTER / 2,
-    width: rowWidth * 0.55,
-  },
-  unicodeHeader: {
-    lineHeight: REGULAR_TEXT + 2,
+    paddingBottom: GUTTER / 2,
   },
   header: {
     color: "#014080",
     lineHeight: REGULAR_TEXT,
     marginBottom: 0,
   },
-  id: {
-    paddingRight: GUTTER / 2,
-    width: rowWidth * 0.15,
-  },
-  status: {
-    width: rowWidth * 0.3,
-    paddingRight: GUTTER / 2,
-  },
   iconContainer: {
-    width: ICON_SIZE + GUTTER,
+    width: ICON_SIZE,
   },
   icon: {
-    height: ICON_SIZE,
     marginBottom: (INPUT_HEIGHT - ICON_SIZE) / 2,
     resizeMode: "contain",
     width: ICON_SIZE,
+    height: ICON_SIZE,
   },
   arrow: {
     height: 12,
@@ -435,6 +487,33 @@ const styles = StyleSheet.create({
     marginTop: 2,
     resizeMode: "contain",
     width: 12,
+  },
+  listContainer: {
+    alignSelf: "stretch",
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: GUTTER,
+    backgroundColor: "white",
+    marginVertical: 0,
+  },
+  patientRow: {
+    flexDirection: "row",
+    height: INPUT_HEIGHT,
+    paddingTop: GUTTER,
+  },
+  border: {
+    borderTopColor: BORDER_COLOR,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  name: {
+    marginBottom: 0,
+    paddingRight: GUTTER / 2,
+    width: rowWidth * 0.6,
+  },
+  statusContainer: {
+    width: rowWidth * 0.4,
+    paddingRight: GUTTER / 2,
+    flexDirection: "row",
   },
   evdPos: {
     color: EBOLA_POSITIVE_COLOR,

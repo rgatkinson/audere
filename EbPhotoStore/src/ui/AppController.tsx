@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Alert, AppState, BackHandler, StatusBar, View } from "react-native";
+import { Alert, AppState, BackHandler } from "react-native";
 import { connect } from "react-redux";
 import firebase from "react-native-firebase";
 import i18n from "i18next";
@@ -18,9 +18,7 @@ import Details from "./Details";
 import CameraPermissionRequired from "./CameraPermissionRequired";
 import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
-import TitleBar from "./components/TitleBar";
-import AppMenu from "./AppMenu";
-import { TITLEBAR_COLOR } from "./styles";
+import TitleBar from "./TitleBar";
 import { NotificationOpen } from "react-native-firebase/notifications";
 
 interface Props {
@@ -30,25 +28,23 @@ interface Props {
   dispatch(action: Action): void;
 }
 
-export interface BackCallback {
+export interface TitlebarCallback {
   onBack(): void;
-  shouldShowBack?(): boolean;
-  backText?: string;
+  shouldShowTitlebar?(): boolean;
+  getTitlebarText?(): string;
 }
 
 interface State {
-  showAppMenu: boolean;
   appState: string;
 }
 
 class AppController extends React.Component<Props, State> {
   state: State = {
-    showAppMenu: false,
     appState: AppState.currentState,
   };
   _backHandler: any;
   _channel: any;
-  _onBackCallbacks: { [s: string]: BackCallback } = {};
+  _titlebarCallbacks: { [s: string]: TitlebarCallback } = {};
   _onTokenRefreshListener: any;
   _notificationListener: any;
   _notificationOpenedListener: any;
@@ -128,30 +124,40 @@ class AppController extends React.Component<Props, State> {
     );
   }
   shouldComponentUpdate(props: Props, state: State) {
-    return (
-      props.screen !== this.props.screen ||
-      state.showAppMenu !== this.state.showAppMenu
-    );
+    return props.screen !== this.props.screen;
   }
 
-  _setupBackInfo = (s: Screen, info: BackCallback) => {
-    this._onBackCallbacks[s] = info;
+  _setupTitlebarInfo = (s: Screen, info: TitlebarCallback) => {
+    this._titlebarCallbacks[s] = info;
     this.forceUpdate();
   };
 
-  _shouldShowBack = () => {
+  _shouldShowTitlebar = () => {
     return (
-      (!!this._onBackCallbacks[this.props.screen] &&
-        (!this._onBackCallbacks[this.props.screen].shouldShowBack ||
-          this._onBackCallbacks[this.props.screen].shouldShowBack!())) ||
-      [
-        Screen.Camera,
-        Screen.LocationPermission,
-        Screen.CameraPermission,
-      ].findIndex(e => {
-        return e === this.props.screen;
-      }) >= 0
+      this.props.screen !== Screen.Camera &&
+      (!this._titlebarCallbacks[this.props.screen] ||
+        !this._titlebarCallbacks[this.props.screen].shouldShowTitlebar ||
+        this._titlebarCallbacks[this.props.screen].shouldShowTitlebar!())
     );
+  };
+
+  _getTitlebarText = (): string => {
+    if (
+      !!this._titlebarCallbacks[this.props.screen] &&
+      !!this._titlebarCallbacks[this.props.screen].getTitlebarText
+    ) {
+      return this._titlebarCallbacks[this.props.screen].getTitlebarText!();
+    } else {
+      switch (this.props.screen) {
+        case Screen.Login:
+          return "";
+        case Screen.LocationPermission:
+          return i18n.t("locationPermissions:titlebarText");
+        case Screen.CameraPermission:
+          return i18n.t("cameraPermissions:titlebarText");
+      }
+      return "";
+    }
   };
 
   _createNotificationListeners = async () => {
@@ -207,8 +213,8 @@ class AppController extends React.Component<Props, State> {
   };
 
   _handleBackPress = () => {
-    if (!!this._onBackCallbacks[this.props.screen]) {
-      this._onBackCallbacks[this.props.screen].onBack();
+    if (!!this._titlebarCallbacks[this.props.screen]) {
+      this._titlebarCallbacks[this.props.screen].onBack();
       return true;
     } else {
       switch (this.props.screen) {
@@ -229,25 +235,17 @@ class AppController extends React.Component<Props, State> {
     }
   };
 
-  _handleMenuPress = () => {
-    this.setState({ showAppMenu: !this.state.showAppMenu });
-  };
-
-  _handleMenuDismiss = () => {
-    this.setState({ showAppMenu: false });
-  };
-
   _getScreen = () => {
     switch (this.props.screen) {
       case Screen.Login:
         return <Login />;
       case Screen.Patients:
-        return <Patients setupBackInfo={this._setupBackInfo} />;
+        return <Patients setupTitlebarInfo={this._setupTitlebarInfo} />;
       case Screen.PatientDetails:
         return (
           <Details
             id={this.props.currentPatient}
-            setupBackInfo={this._setupBackInfo}
+            setupTitlebarInfo={this._setupTitlebarInfo}
           />
         );
       case Screen.Camera:
@@ -262,33 +260,12 @@ class AppController extends React.Component<Props, State> {
   render() {
     return (
       <Fragment>
-        <View
-          style={[
-            {
-              alignSelf: "stretch",
-              backgroundColor: TITLEBAR_COLOR,
-              width: "100%",
-            },
-          ]}
-        >
-          <StatusBar
-            backgroundColor="transparent"
-            barStyle="dark-content"
-            translucent={true}
-          />
+        {this._shouldShowTitlebar() && (
           <TitleBar
-            onBack={this._shouldShowBack() && this._handleBackPress}
-            backText={
-              !!this._onBackCallbacks[this.props.screen] &&
-              this._onBackCallbacks[this.props.screen].backText
-            }
-            onMenu={this._handleMenuPress}
+            onBack={this._handleBackPress}
+            titlebarText={this._getTitlebarText()}
           />
-        </View>
-        <AppMenu
-          visible={this.state.showAppMenu}
-          onDismiss={this._handleMenuDismiss}
-        />
+        )}
         {this._getScreen()}
       </Fragment>
     );

@@ -12,10 +12,7 @@
   },
   "titleBar": {
     "title": "EVD Track",
-    "backFull": "\u276E {{back}}",
-    "back": "Back",
-    "list": "List",
-    "detail": "Detail"
+    "search": "Search by Name, Status, or ID"
   },
   "appMenu": {
     "logout": "Log Out",
@@ -32,6 +29,7 @@
     "apiServer": "\nAPI Server: "
   },
   "login": {
+    "titlebarText": "Login",
     "signIn": "Sign In",
     "loginLastName": "**Last name**",
     "loginFirstName": "**First name**",
@@ -41,14 +39,15 @@
     "login": "Login"
   },
   "patients": {
+    "titlebarText": "Patients",
     "patients": "Patients",
     "name": "NAME",
     "id": "ID",
     "status": "STATUS",
     "info": "\u24D8",
     "plus": "+",
-    "evdPositive": "Ebola +",
-    "evdNegative": "Ebola -"
+    "evd": "Ebola",
+    "needphoto": "Need photo"
   },
   "phoneLoginVerification": {
     "verificationCode": "Please enter the 6-digit code sent to **{{phone}}**:",
@@ -58,6 +57,7 @@
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
   "details": {
+    "titlebarText": "Patient Details",
     "cancel": "Cancel",
     "discard": "Discard",
     "save": "Save",
@@ -93,6 +93,7 @@
     "error": "There was an error capturing the photo, please try again"
   },
   "cameraPermissions": {
+    "titlebarText": "Camera Permission Required",
     "alertTitle": "EVD Track Camera Permission",
     "alertMsg": "EVD Track needs access to your camera to record patient test results.",
     "title": "Camera Permission Required",
@@ -102,6 +103,7 @@
     "howUpdate": "\nToggle the **Camera** switch to **on**."
   },
   "locationPermissions": {
+    "titlebarText": "Location Permission Required",
     "alertTitle": "EVD Track Location Permission",
     "alertMsg": "EVD Track needs access to your location so it can accurately report patient data.",
     "title": "Location Permission Required",

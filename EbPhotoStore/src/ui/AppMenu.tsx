@@ -18,12 +18,13 @@ import {
   GUTTER,
   MENU_ITEM_HEIGHT,
   MENU_ITEM_WIDTH,
-  NAV_BAR_HEIGHT,
   TEXT_COLOR,
 } from "./styles";
 
 interface Props {
   visible: boolean;
+  offsetX: number;
+  offsetY: number;
   onDismiss(): void;
   dispatch(action: Action): void;
 }
@@ -65,7 +66,7 @@ class AppMenu extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t, visible } = this.props;
+    const { offsetX, offsetY, t, visible } = this.props;
     const loggedIn = !!firebase.auth().currentUser;
     return (
       <Modal
@@ -74,7 +75,12 @@ class AppMenu extends React.Component<Props & WithNamespaces> {
         onRequestClose={this._onCancel}
       >
         {visible && (
-          <View style={styles.menuContainer}>
+          <View
+            style={[
+              styles.menuContainer,
+              { paddingLeft: offsetX, paddingTop: offsetY },
+            ]}
+          >
             <TouchableWithoutFeedback onPress={this._onCancel}>
               <View style={styles.dismissContainer}></View>
             </TouchableWithoutFeedback>
@@ -103,8 +109,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     flex: 1,
     flexDirection: "column",
-    alignItems: "flex-end",
-    paddingTop: NAV_BAR_HEIGHT,
+    alignItems: "flex-start",
   },
   dismissContainer: {
     position: "absolute",

@@ -5,7 +5,7 @@
 
 import { Platform, StatusBar } from "react-native";
 
-export const ICON_SIZE = 24;
+export const ICON_SIZE = 20;
 export const PRIMARY_COLOR = "#0F5DA7";
 export const SECONDARY_COLOR = "#7065AB";
 export const TEXT_COLOR = "#4D4D4D";
@@ -59,11 +59,22 @@ export const SYSTEM_PADDING_BOTTOM = 0;
 export const STATUS_BAR_COLOR = "#F8F8F8";
 export const STATUS_BAR_HEIGHT =
   Platform.OS === "android" ? StatusBar.currentHeight! : 20;
+export const LOGO_WIDTH = 112;
+export const LOGO_HEIGHT = 23;
 export const NAV_BAR_HEIGHT = 40;
-export const LOGO_HEIGHT = 120;
 export const IMAGE_WIDTH = "100%";
 export const SPLASH_IMAGE = { uri: "splash" };
 export const TITLE_IMAGE = { uri: "title" };
+export const APP_MENU_IMAGE = { uri: "hamburger" };
+export const BACK_ARROW_IMAGE = { uri: "backarrow" };
+export const DATA_UPLOADING_IMAGE = { uri: "datauploading" };
+export const SEARCH_IMAGE = { uri: "search" };
+export const ADD_NEW_IMAGE = { uri: "addnew" };
+export const MESSAGES_LABEL_IMAGE = { uri: "labelmessage" };
+export const TRIAGE_POSITIVE_IMAGE = { uri: "triagepositive" };
+export const TRIAGE_NEGATIVE_IMAGE = { uri: "triagenegative" };
+export const TRIAGE_NEED_PHOTO_IMAGE = { uri: "triageneedphoto" };
+export const NEW_MESSAGE_IMAGE = { uri: "newmessage" };
 export const ADD_PHOTO_IMAGE = { uri: "addphoto" };
 export const TAKE_PHOTO_LARGE_IMAGE = { uri: "takephotolarge" };
 export const TAKE_PHOTO_SMALL_IMAGE = { uri: "takephotosmall" };
