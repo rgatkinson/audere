@@ -80,6 +80,12 @@ export class Chat extends React.Component<ChatProps, ChatState> {
     this.scrollToLatest();
   };
 
+  onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.keyCode === 13 && !e.shiftKey) {
+      this.onSubmit(e);
+    }
+  };
+
   async onSubmit(e: any) {
     e.preventDefault();
     const { currentUser, input } = this.state;
@@ -177,6 +183,8 @@ export class Chat extends React.Component<ChatProps, ChatState> {
 
   render() {
     const { messages } = this.props;
+    const lines = this.state.input.split("\n").length;
+    const rows = Math.max(1, Math.min(5, lines));
     return (
       <div>
         <p className="chat-title">Chat with community health worker:</p>
@@ -191,13 +199,14 @@ export class Chat extends React.Component<ChatProps, ChatState> {
             />
           </ul>
           <form className="chat-form" onSubmit={e => this.onSubmit(e)}>
-            <input
+            <textarea
               className="chat-input"
               placeholder="Enter a note to send to the clinic CHW"
               onChange={this.onChange}
               onClick={this.scrollToLatest}
               value={this.state.input}
-              type="text"
+              onKeyDown={this.onKeyDown}
+              rows={rows}
             />
           </form>
         </div>
