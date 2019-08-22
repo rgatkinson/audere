@@ -70,13 +70,22 @@ set_firebase_config: &set_firebase_config
     echo "$EXPO_RELEASE_CHANNEL"
     case "$PRODUCT" in 
       cough) 
-      chills) 
         if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
           echo "$COUGH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
           echo "$COUGH_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
         else 
           echo "$COUGH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
           echo "$COUGH_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
+        fi
+        grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
+        ;;
+      chills) 
+        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+          echo "$CHILLS_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+          echo "$CHILLS_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
+        else 
+          echo "$CHILLS_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+          echo "$CHILLS_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
         fi
         grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
         ;;
