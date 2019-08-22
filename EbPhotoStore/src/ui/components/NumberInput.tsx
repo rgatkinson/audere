@@ -9,17 +9,19 @@ import {
   ReturnKeyTypeOptions,
   StyleProp,
   TextStyle,
+  ViewStyle,
 } from "react-native";
 import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
   keyboardType?: KeyboardType;
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
-  style?: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
   value?: string | null;
   onBlur?: () => void;
   onChangeText(text: string): void;
@@ -58,6 +60,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
       <TextInput
         autoCorrect={false}
         autoFocus={autoFocus}
+        containerStyle={this.props.containerStyle}
         keyboardType={
           this.props.keyboardType ? this.props.keyboardType : "number-pad"
         }
@@ -67,7 +70,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
-        style={this.props.style}
+        textStyle={this.props.textStyle}
         value={this.state.text}
         onChangeText={this.onChangeText}
         onKeyPress={this.props.onKeyPress}
