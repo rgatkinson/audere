@@ -1,5 +1,7 @@
 import React, { Fragment } from "react";
 import {
+  Alert,
+  findNodeHandle,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -7,6 +9,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  UIManager,
   View,
 } from "react-native";
 import { connect } from "react-redux";
@@ -32,6 +35,7 @@ import {
   Screen,
   StoreState,
 } from "../store";
+import Button from "./components/Button";
 import Chat from "./components/Chat";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
@@ -69,6 +73,7 @@ interface Props {
   notes?: string;
   photoInfo?: LocalPhotoInfo;
   messages?: Message[];
+  oldestUnreadChatMessage?: Message | null;
   setupBackInfo(s: Screen, info: BackCallback): void;
   dispatch(action: Action): void;
 }
@@ -87,11 +92,16 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   _phoneInput: any;
   _detailsInput: any;
   _notesInput: any;
+  _scrollView: any;
+  _chat: any;
   _wasNew: boolean = false; /* Used to temporarily cache isNew state during transition
                               to the "Take photo" page. Otherwise when the details are
                               saved, isNew goes false and the screen re-renders,
                               flipping the photo section to the "Needs photo capture!"
                               variant. */
+  _contentHeight: number = 0;
+  _scrollViewHeight: number = 0;
+  _didScrollToMostRecentMessage: boolean = false;
 
   constructor(props: Props & WithNamespaces) {
     super(props);
@@ -111,6 +121,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._phoneInput = React.createRef<NumberInput>();
     this._detailsInput = React.createRef<TextInput>();
     this._notesInput = React.createRef<TextInput>();
+    this._scrollView = React.createRef<ScrollView>();
+    this._chat = React.createRef<Chat>();
   }
 
   _updateFirstName = (firstName: string) => {
@@ -211,6 +223,18 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     }
   };
 
+  _hasChanges = () => {
+    const { firstName, lastName, phone, details, notes } = this.state;
+    const { patientInfo } = this.props;
+    return (
+      firstName != patientInfo.firstName ||
+      lastName != patientInfo.lastName ||
+      phone != patientInfo.phone ||
+      details != patientInfo.details ||
+      notes != this.props.notes
+    );
+  };
+
   _save = () => {
     const { firstName, lastName, phone, details, notes } = this.state;
     if (this.props.isNew) {
@@ -247,8 +271,57 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     if (!this.props.isNew) {
       this.props.dispatch(resetMessageLastViewedAt(this.props.id));
     }
-    this._save();
+    if (this._hasChanges()) {
+      const { t } = this.props;
+      Alert.alert(t("unsavedTitle"), t("unsavedBody"), [
+        {
+          text: t("cancel"),
+          onPress: () => {},
+        },
+        {
+          text: t("discard"),
+          onPress: () => this._navToList(),
+        },
+        {
+          text: t("save"),
+          onPress: () => {
+            this._save();
+            this._navToList();
+          },
+        },
+      ]);
+    } else {
+      this._navToList();
+    }
+  };
+
+  _navToList = () => {
     this.props.dispatch(viewPatients());
+  };
+
+  _scrollToMostRecentMessageIfNeeded = () => {
+    if (
+      !this.props.oldestUnreadChatMessage ||
+      this._contentHeight == 0 ||
+      this._scrollViewHeight == 0 ||
+      this._didScrollToMostRecentMessage
+    ) {
+      return;
+    }
+    const msg =
+      this._chat.current &&
+      this._chat.current.getChatMessage(this.props.oldestUnreadChatMessage);
+    const msgh = msg && findNodeHandle(msg);
+    msgh &&
+      UIManager.measureInWindow(msgh, (x, y, w, h) => {
+        // If there's room to scroll, then scroll to the top item
+        if (this._contentHeight - this._scrollViewHeight > 0)
+          this._scrollView.current!.scrollTo({
+            y: y + h + GUTTER / 2 - this._scrollViewHeight,
+            animated: true,
+          });
+      });
+    this._didScrollToMostRecentMessage = true;
   };
 
   render() {
@@ -306,7 +379,18 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             )}
           </View>
         )}
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView
+          ref={this._scrollView}
+          onContentSizeChange={(w, h) => {
+            this._contentHeight = h;
+            this._scrollToMostRecentMessageIfNeeded();
+          }}
+          onLayout={ev => {
+            this._scrollViewHeight = ev.nativeEvent.layout.height;
+            this._scrollToMostRecentMessageIfNeeded();
+          }}
+          contentContainerStyle={styles.content}
+        >
           <View style={styles.idContainer}>
             <Title label={t("details")} style={styles.titleLeft} />
             <Text content={t("patientId", { id })} style={styles.idRight} />
@@ -371,6 +455,13 @@ class Details extends React.Component<Props & WithNamespaces, State> {
             placeholder={t("patientNotesPlaceholder")}
             returnKeyType="done"
             textContent={t("patientNotes")}
+          />
+          <Button
+            enabled={this._hasChanges()}
+            label={t("save")}
+            primary={true}
+            style={styles.saveButton}
+            onPress={this._save}
           />
           {photoInfo ? (
             <Fragment>
@@ -505,7 +596,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 textContent={t("startChat", { firstName, lastName })}
                 textStyle={styles.titleRow}
               />
-              {!!messages && <Chat messages={messages} />}
+              {!!messages && <Chat ref={this._chat} messages={messages} />}
             </Fragment>
           )}
         </ScrollView>
@@ -518,11 +609,6 @@ const width = Dimensions.get("window").width / 3;
 const height = Dimensions.get("window").height / 3;
 
 const styles = StyleSheet.create({
-  button: {
-    marginRight: GUTTER,
-    marginBottom: 0,
-    width: "50%",
-  },
   container: {
     flex: 1,
   },
@@ -552,6 +638,10 @@ const styles = StyleSheet.create({
   idContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
+  },
+  saveButton: {
+    marginBottom: 0,
+    width: "100%",
   },
   titleLeft: {
     flex: 2,
@@ -619,6 +709,29 @@ const styles = StyleSheet.create({
   },
 });
 
+function getOldestUnreadChatMessage(
+  state: StoreState,
+  props: Props
+): Message | null {
+  let oldestUnread = null;
+  if (props.id < state.patients.length) {
+    let oldestTime = new Date().getTime();
+    state.patients[props.id].messages.map(message => {
+      if (message.sender.uid !== firebase.auth().currentUser!.uid) {
+        let msgTime = new Date(message.timestamp).getTime();
+        if (
+          msgTime > state.patients[props.id].messageLastViewedAt &&
+          msgTime < oldestTime
+        ) {
+          oldestTime = msgTime;
+          oldestUnread = message;
+        }
+      }
+    });
+  }
+  return oldestUnread;
+}
+
 export default connect((state: StoreState, props: Props) => ({
   healthWorkerInfo: state.meta.healthWorkerInfo,
   diagnosisInfo:
@@ -656,4 +769,8 @@ export default connect((state: StoreState, props: Props) => ({
           ]
         : undefined
       : undefined,
+  // Compute this value once, since we only need the initial value when it gets used
+  oldestUnreadChatMessage:
+    props.oldestUnreadChatMessage !== undefined ||
+    getOldestUnreadChatMessage(state, props),
 }))(withNamespaces("details")(Details));

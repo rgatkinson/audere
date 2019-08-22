@@ -1,0 +1,19 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.3
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-ISMOBILEJS-72624:
+    - expo-pixi > pixi.js > ismobilejs:
+        reason: No patch yet on expo-pixi
+        expires: '2019-04-24T19:24:50.866Z'
+  'npm:plist:20180219':
+    - react-native > xcode > simple-plist > plist:
+        reason: No patch yet.
+        expires: '2019-04-24T19:24:50.866Z'
+    - react-native-fbsdk > xcode > simple-plist > plist:
+        reason: No patch yet.
+        expires: '2019-04-24T19:24:50.866Z'
+      react-native-fbsdk > plist:
+        reason: No patch yet.
+        expires: '2019-04-24T19:24:50.866Z'
+patch: {}

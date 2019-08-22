@@ -65,6 +65,7 @@ export class CoughEndpoint {
       return new S3Uploader(s3, s3Config);
     });
   }
+
   public importCoughDocuments = async (req, res, next) => {
     const reqId = requestId(req);
     const markAsRead = booleanQueryParameter(req, "markAsRead", true);
@@ -206,7 +207,7 @@ export class CoughEndpoint {
   ) {
     const connector = connectorFromSqlSecrets(this.sql);
     const receiver = new FirebaseReceiver(connector, { collection });
-    const updates = await receiver.updates();
+    const updates = await this.updatesWithRetry(receiver);
 
     for (let id of updates) {
       const spec = { id, collection };
@@ -233,6 +234,24 @@ export class CoughEndpoint {
       }
       progress();
     }
+  }
+
+  // We have seen failure alerts where Firebase fails with an authentication
+  // error and then consistently succeeds one minute later.  Since we only ever
+  // see failures on the first run after a long idle, this retries in an
+  // attempt to debug and potentially work around the issue.
+  private async updatesWithRetry(
+    receiver: FirebaseReceiver
+  ): Promise<string[]> {
+    for (let i = 0; i < 5; i++) {
+      try {
+        return await receiver.updates();
+      } catch (err) {
+        logger.error(`CoughEndpoint.updatesWithRetry: '${err.message}'`);
+      }
+      await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+    }
+    return await receiver.updates();
   }
 
   private async readSnapshot(

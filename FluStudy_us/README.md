@@ -6,7 +6,7 @@
 
 ## Overview
 
-FluStudy_us is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic & location data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi).
+FluStudy_us is a React Native application to collect information about the spread of flu. Participants self-report symptoms and basic demographic data in conjunction with specimen collection. The application relies on a backend web service to persist collected data, [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi).
 
 ## Developer setup
 

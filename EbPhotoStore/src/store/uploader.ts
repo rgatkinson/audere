@@ -20,12 +20,10 @@ import {
   getCurrentUserId,
 } from "./FirebaseStore";
 import { setEvdStatus, setTriageNotes, receiveChatMessage } from "./patients";
+import { PhotoUploadState } from "./photoUploads";
 import { retryUploads } from "../transport/photoUploader";
 
 let unsubscribe: (() => void)[] = [];
-
-// This is similar to the logger example at
-// https://redux.js.org/api/applymiddleware
 
 export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
   return (next: Dispatch) => (action: AnyAction) => {
@@ -44,6 +42,11 @@ export function uploaderMiddleware({ getState, dispatch }: MiddlewareAPI) {
           const encounterDocument = reduxToFirebase(state, patientId);
           syncEncounter(state.patients[patientId].uuid, encounterDocument);
         }
+        break;
+      case "FINISH_UPLOAD":
+        patientId = state.photoUploads[action.photoId].patientId;
+        const encounterDocument = reduxToFirebase(state, patientId);
+        syncEncounter(state.patients[patientId].uuid, encounterDocument);
         break;
       case "VIEW_PATIENTS":
         retryUploads();
@@ -90,9 +93,14 @@ export function reduxToFirebase(
     healthWorker,
     localIndex: reduxPatient.id.toString(),
     patient: reduxPatient.patientInfo,
-    rdtPhotos: reduxPatient.photoInfo.map(
-      localPhotoInfo => localPhotoInfo.photoInfo
-    ),
+    rdtPhotos: reduxPatient.photoInfo
+      .filter(localPhotoInfo => {
+        const uploadInfo = state.photoUploads[localPhotoInfo.photoInfo.photoId];
+        return (
+          uploadInfo && uploadInfo.uploadState === PhotoUploadState.UPLOADED
+        );
+      })
+      .map(localPhotoInfo => localPhotoInfo.photoInfo),
     notes: reduxPatient.notes || "",
     updatedAt: reduxPatient.updatedAt,
   };

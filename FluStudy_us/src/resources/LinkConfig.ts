@@ -3,52 +3,57 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Linking, Platform } from "react-native";
-import { connect } from "react-redux";
+import { Linking } from "react-native";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import {
-  setWorkflow,
-  toggleSupportCodeModal,
-  Action,
-  StoreState,
-} from "../store";
-import { WorkflowInfo } from "audere-lib/feverProtocol";
-import { AddressConfig } from "./ScreenConfig";
-import { SurveyResponse } from "../store/types";
+import Constants from "expo-constants";
+import { logFirebaseEvent, AppEvents } from "../util/tracker";
+import i18n from "i18next";
 
-const learnMoreUrl = "http://fluathome.org/"; // Site currently only supports http, not https
+const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
+const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
+const myDrUrl =
+  "https://www.mydr.com.au/respiratory-health/influenza-treatment";
+export const followUpSurveyUrl =
+  "https://uwhealth.az1.qualtrics.com/jfe/form/SV_3UEQ8IVCZwLPTP7";
 
-function createMapQueryUrl(query: string) {
-  const scheme = Platform.select({ ios: "maps:0,0?q=", android: "geo:0,0?q=" });
-  const encodedQuery = encodeURIComponent(query);
-  const url = `${scheme}${encodedQuery}`;
+const testQuestionsURL = "fluathome@adelaide.edu.au";
+const appSupportURL = "flu-support-au@auderenow.org";
 
-  return url;
+export function ausGov() {
+  Linking.openURL(ausGovUrl);
 }
 
-function showNearbyShippingLocations(zipcode: string) {
-  let linkUrl = `https://tools.usps.com/go/POLocatorAction!input.action?address=${zipcode}&radius=10&locationTypeQ=po`;
-
-  Linking.openURL(linkUrl);
+export function CDC() {
+  Linking.openURL(CDCUrl);
 }
 
-export function emailSupport(params: string = "") {
-  Linking.openURL("mailto:fluhelp@uw.edu" + params);
+export function myDr() {
+  Linking.openURL(myDrUrl);
 }
 
-export function findMedHelp() {
-  Linking.openURL(createMapQueryUrl("urgent care clinic"));
+export function testSupport() {
+  logFirebaseEvent(AppEvents.LINK_PRESSED, { link: testQuestionsURL });
+  Linking.openURL(
+    `mailto:${testQuestionsURL}?body=${i18n.t("links:supportBody") +
+      Constants.installationId}`
+  );
 }
 
-function learnMore() {
-  Linking.openURL(learnMoreUrl);
+export function appSupport() {
+  logFirebaseEvent(AppEvents.LINK_PRESSED, { link: appSupportURL });
+  Linking.openURL(
+    `mailto:${appSupportURL}?body=${i18n.t("links:supportBody") +
+      Constants.installationId}`
+  );
+}
+
+export function callNumber(phoneNumber: string) {
+  const cleanedPhoneNumber = phoneNumber.replace(/[^0-9.]/, "");
+  Linking.openURL(`tel:${cleanedPhoneNumber}`);
 }
 
 export interface LinkConfigProps {
-  dispatch(action: Action): void;
   navigation: NavigationScreenProp<any, any>;
-  workflow: WorkflowInfo;
-  zipcode: string;
 }
 
 export interface LinkConfig {
@@ -57,51 +62,14 @@ export interface LinkConfig {
 }
 
 export const LinkPropProvider = (LinkComponent: any) =>
-  connect((state: StoreState) => {
-    const address = state.survey.responses.find(
-      (response: SurveyResponse) => response.questionId === AddressConfig.id
-    );
-    const zipcode =
-      address &&
-      address.answer &&
-      address.answer["addressInput"] &&
-      address.answer["addressInput"]!.zipcode
-        ? address.answer["addressInput"]!.zipcode
-        : "";
-    return {
-      workflow: state.survey.workflow,
-      zipcode,
-    };
-  })(withNavigation(LinkComponent));
+  withNavigation(LinkComponent);
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
-    "haveKitAlready",
+    "changeResultAnswer",
     {
-      action: ({ navigation, dispatch, workflow }) => {
-        dispatch(
-          setWorkflow({
-            ...workflow,
-            skippedScreeningAt: new Date().toISOString(),
-          })
-        );
-        navigation.push("WelcomeBack");
-      },
-      key: "haveKitAlready",
-    },
-  ],
-  [
-    "learnMore",
-    {
-      action: () => learnMore(),
-      key: "learnMore",
-    },
-  ],
-  [
-    "findMedHelp",
-    {
-      action: () => findMedHelp(),
-      key: "findMedHelp",
+      action: ({ navigation }) => navigation.pop(),
+      key: "changeResultAnswer",
     },
   ],
   [
@@ -112,20 +80,6 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     },
   ],
   [
-    "supportCode",
-    {
-      action: ({ dispatch }) => dispatch(toggleSupportCodeModal()),
-      key: "supportCode",
-    },
-  ],
-  [
-    "kitMissingItems",
-    {
-      action: () => emailSupport("?subject=Kit missing items"),
-      key: "kitMissingItems",
-    },
-  ],
-  [
     "skipTestStripPhoto",
     {
       action: ({ navigation }) => navigation.push("CleanFirstTest"),
@@ -133,10 +87,24 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     },
   ],
   [
-    "showNearbyUsps",
+    "ausGov",
     {
-      action: ({ zipcode }) => showNearbyShippingLocations(zipcode),
-      key: "showNearbyUsps",
+      action: () => ausGov(),
+      key: "ausGov",
+    },
+  ],
+  [
+    "CDC",
+    {
+      action: () => CDC(),
+      key: "CDC",
+    },
+  ],
+  [
+    "myDr",
+    {
+      action: () => myDr(),
+      key: "myDr",
     },
   ],
 ]);

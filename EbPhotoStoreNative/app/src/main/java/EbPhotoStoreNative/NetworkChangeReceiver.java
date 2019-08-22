@@ -36,13 +36,13 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
       ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo netInfo = cm.getActiveNetworkInfo();
 
-      //should check null because in airplane mode it will be null
+      // should check null because in airplane mode it will be null
       boolean connected = (netInfo != null && netInfo.isConnected());
       Log.d("Connected State", "Connected: " + connected);
       return connected;
     } catch (NullPointerException e) {
-        e.printStackTrace();
-        return false;
+      e.printStackTrace();
+      return false;
     }
   }
 }

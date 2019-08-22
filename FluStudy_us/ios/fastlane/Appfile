@@ -3,9 +3,9 @@ itc_team_id("119446930") # App Store Connect Team ID
 team_id("G8UCCFY788") # Developer Portal Team ID
 
 for_lane :debug do
-    app_identifier "org.auderenow.fluathome.dev"
+    app_identifier "org.auderenow.fluathome-us.dev"
 end
 
 for_lane :production do
-    app_identifier "org.auderenow.fluathome"
+    app_identifier "org.auderenow.fluathome-us"
 end

@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import base64url from "base64url";
 import {
   createStore,
   combineReducers,
@@ -16,17 +17,24 @@ import {
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { Transform } from "redux-persist/es/createTransform";
-import createEncryptor from "redux-persist-transform-encrypt";
 import immutableTransform from "redux-persist-transform-immutable";
-import { logger, uploader, uploaderMiddleware } from "./uploader";
+import * as SecureStore from "expo-secure-store";
+import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-
-export { uploader, events, logger } from "./uploader";
+import {
+  logFirebaseEvent,
+  AppHealthEvents,
+  TransportEvents,
+} from "../util/tracker";
+import { PhotoUploader } from "../transport/PhotoUploader";
 
 export * from "./types";
 
 import { default as meta, MetaAction } from "./meta";
 export * from "./meta";
+
+import { default as questions, QuestionsAction } from "./questions";
+export * from "./questions";
 
 import { default as survey, SurveyAction } from "./survey";
 export * from "./survey";
@@ -36,14 +44,20 @@ export function clearState(): ClearStateAction {
   return { type: "CLEAR_STATE" };
 }
 
-export type Action = MetaAction | SurveyAction | ClearStateAction;
+export type Action =
+  | MetaAction
+  | QuestionsAction
+  | SurveyAction
+  | ClearStateAction;
 
 import { StoreState } from "./StoreState";
+import { photoCollectionName } from "./FirebaseStore";
 export { StoreState } from "./StoreState";
 
 const reducer = combineReducers({
   meta,
   navigation: (state: any = {}) => null,
+  questions,
   survey,
 });
 
@@ -67,20 +81,22 @@ export function getStore(): Promise<Store> {
   return (storePromise = getStoreImpl());
 }
 
-export const encryptionRemovalTransform = (encryptor: Transform<any, any>) =>
-  createTransform(
-    (inboundState, key) => {
-      return inboundState;
-    },
-    (outboundState, key) => {
-      const decrypted = encryptor.out(outboundState, key);
-      if (decrypted) {
-        logger.debug(`Persisted redux state "${key}" no longer encrypted.`);
-        return JSON.stringify(decrypted);
-      }
-      return outboundState;
-    }
-  );
+const photoUploader = new PhotoUploader({
+  collection: photoCollectionName(),
+});
+
+export function savePhoto(photoId: string, jpegBase64: string) {
+  logFirebaseEvent(TransportEvents.PHOTO_UPDATED, { photoId });
+  return photoUploader.savePhoto(photoId, jpegBase64);
+}
+
+export async function hasPendingPhotos() {
+  return await photoUploader.hasPendingPhotos();
+}
+
+export async function waitForIdlePhotoUploader(ms?: number) {
+  return await photoUploader.waitForIdle(ms);
+}
 
 function loggingMiddleware<Ext, S, D extends Dispatch>(
   label: string,
@@ -110,10 +126,8 @@ function loggingMiddleware<Ext, S, D extends Dispatch>(
 }
 
 async function getStoreImpl() {
-  const password = await uploader.getEncryptionPassword();
-  const encryptor = createEncryptor({ secretKey: password });
   const persistConfig = {
-    transforms: [immutableTransform(), encryptionRemovalTransform(encryptor)],
+    transforms: [immutableTransform()],
     key: "store",
     storage,
   };

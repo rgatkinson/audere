@@ -8,6 +8,7 @@ export type PhotoUploadAction =
       type: "START_UPLOAD";
       photoId: string;
       photoUri: string;
+      patientId: number;
     }
   | {
       type: "FINISH_UPLOAD";
@@ -33,6 +34,7 @@ export type PhotoUpload = {
   photoId: string;
   uploadState: PhotoUploadState;
   localUri: string;
+  patientId: number;
   errors: string[];
 };
 
@@ -40,12 +42,14 @@ export type PhotoUploadsState = { [photoId: string]: PhotoUpload };
 
 export function startPhotoUpload(
   photoId: string,
-  photoUri: string
+  photoUri: string,
+  patientId: number
 ): PhotoUploadAction {
   return {
     type: "START_UPLOAD",
     photoId,
     photoUri,
+    patientId,
   };
 }
 
@@ -94,6 +98,7 @@ export default function reducer(
           photoId: action.photoId,
           localUri: action.photoUri,
           uploadState: PhotoUploadState.UPLOADING,
+          patientId: action.patientId,
           errors: [],
         },
       };

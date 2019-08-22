@@ -3,65 +3,94 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import uuidv4 from "uuid/v4";
+import { format } from "date-fns";
 import {
-  ConsentInfo,
   EventInfo,
   EventInfoKind,
-  SampleInfo,
+  NonPIIConsentInfo,
   PushNotificationState,
-  PushRegistrationError,
+  RDTInfo,
+  RDTReaderResult,
+  SampleInfo,
   WorkflowInfo,
-} from "audere-lib/feverProtocol";
-import { SurveyResponse } from "./types";
+} from "audere-lib/coughProtocol";
 import { onCSRUIDEstablished } from "../util/tracker";
+import i18n from "i18next";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
-  | { type: "SET_CONSENT"; consent: ConsentInfo }
-  | { type: "SET_EMAIL"; email: string }
+  | { type: "SET_CONSENT"; consent: NonPIIConsentInfo }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
-  | { type: "SET_TEST_STRIP_IMG"; testStripImg: SampleInfo }
+  | {
+      type: "SET_TEST_STRIP_IMG";
+      testStripImg: SampleInfo;
+      testStripHCImg?: SampleInfo;
+    }
   | { type: "SET_ONE_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
+  | { type: "SET_TEN_MINUTE_TIMER_DONE" }
+  | { type: "SET_TOTAL_TEST_STRIP_TIME" }
+  | { type: "SET_RDT_START_TIME" }
+  | { type: "SET_RDT_CAPTURE_TIME"; successfulCapture: boolean }
   | { type: "SET_PUSH_STATE"; pushState: PushNotificationState }
-  | { type: "SET_RESPONSES"; responses: SurveyResponse[] }
   | { type: "SET_WORKFLOW"; workflow: WorkflowInfo }
   | { type: "SET_CSRUID_IF_UNSET"; csruid: string }
-  | { type: "SET_SUPPORT_CODE"; supportCode: string };
+  | { type: "SET_PHOTO"; photoUri: string }
+  | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
+  | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
+  | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
+  | {
+      type: "SET_RDT_CAPTURE_INFO";
+      flashEnabled: boolean;
+      flashDisabledAutomatically: boolean;
+    }
+  | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string }
+  | {
+      type: "SET_RESULT_SHOWN";
+      resultShown: string;
+      resultShownExplanation: string;
+    }
+  | { type: "RESET_TIMESTAMP" };
 
 export type SurveyState = {
-  consent?: ConsentInfo;
+  consent?: NonPIIConsentInfo;
+  csruid?: string;
   email?: string;
   events: EventInfo[];
-  csruid?: string;
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
-  testStripImg?: SampleInfo;
-  pushState: PushNotificationState;
-  responses: SurveyResponse[];
-  supportCode?: string;
   oneMinuteStartTime?: number;
+  photoUri?: string;
+  pushState: PushNotificationState;
+  rdtPhotoUri?: string;
+  rdtPhotoHCUri?: string;
+  rdtInfo?: RDTInfo;
   tenMinuteStartTime?: number;
+  tenMinuteTimerDone?: boolean;
+  testStripImg?: SampleInfo;
+  testStripHCImg?: SampleInfo;
   timestamp?: number;
   workflow: WorkflowInfo;
   [key: string]:
-    | ConsentInfo
+    | boolean
+    | NonPIIConsentInfo
     | string
     | EventInfo[]
     | SampleInfo[]
     | SampleInfo
     | PushNotificationState
-    | SurveyResponse[]
+    | RDTInfo
     | number
     | WorkflowInfo
     | undefined;
 };
 
+let rdtStartTime: number | undefined;
+let rdtTotalTime: number = 0;
+
 const initialState: SurveyState = {
   events: [],
-  responses: [],
   pushState: {
     showedSystemPrompt: false,
   },
@@ -69,100 +98,207 @@ const initialState: SurveyState = {
 };
 
 export default function reducer(state = initialState, action: SurveyAction) {
-  if (action.type === "APPEND_EVENT") {
-    return {
-      ...state,
-      events: pushEvent(state, action.kind, action.event),
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "APPEND_INVALID_BARCODE") {
-    return {
-      ...state,
-      invalidBarcodes: pushInvalidBarcode(state, action.barcode),
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_CONSENT") {
-    return {
-      ...state,
-      consent: action.consent,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_EMAIL") {
-    return { ...state, email: action.email, timestamp: new Date().getTime() };
-  }
-  if (action.type === "SET_KIT_BARCODE") {
-    return {
-      ...state,
-      kitBarcode: action.kitBarcode,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_TEST_STRIP_IMG") {
-    return {
-      ...state,
-      testStripImg: action.testStripImg,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_ONE_MINUTE_START_TIME") {
-    if (state.oneMinuteStartTime == null) {
+  switch (action.type) {
+    case "APPEND_EVENT":
       return {
         ...state,
-        oneMinuteStartTime: new Date().getTime(),
+        events: pushEvent(state, action.kind, action.event),
         timestamp: new Date().getTime(),
       };
-    }
-  }
 
-  if (action.type === "SET_TEN_MINUTE_START_TIME") {
-    if (state.tenMinuteStartTime == null) {
+    case "APPEND_INVALID_BARCODE":
       return {
         ...state,
-        tenMinuteStartTime: new Date().getTime(),
+        invalidBarcodes: pushInvalidBarcode(state, action.barcode),
         timestamp: new Date().getTime(),
       };
-    }
-  }
-  if (action.type === "SET_PUSH_STATE") {
-    return {
-      ...state,
-      pushState: action.pushState,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_RESPONSES") {
-    return {
-      ...state,
-      responses: action.responses,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_WORKFLOW") {
-    return {
-      ...state,
-      workflow: action.workflow,
-      timestamp: new Date().getTime(),
-    };
-  }
-  if (action.type === "SET_CSRUID_IF_UNSET") {
-    if (state.csruid == null) {
+
+    case "SET_CONSENT":
       return {
         ...state,
-        csruid: action.csruid,
+        consent: action.consent,
+        timestamp: new Date().getTime(),
       };
-    }
-  }
-  if (action.type === "SET_SUPPORT_CODE") {
-    return {
-      ...state,
-      supportCode: action.supportCode,
-    };
-  }
 
-  return state;
+    case "SET_KIT_BARCODE":
+      return {
+        ...state,
+        kitBarcode: action.kitBarcode,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_TEST_STRIP_IMG":
+      return {
+        ...state,
+        testStripImg: action.testStripImg,
+        testStripHCImg: action.testStripHCImg,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_ONE_MINUTE_START_TIME":
+      if (state.oneMinuteStartTime == null) {
+        return {
+          ...state,
+          oneMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_TEN_MINUTE_START_TIME":
+      if (state.tenMinuteStartTime == null) {
+        return {
+          ...state,
+          tenMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_TEN_MINUTE_TIMER_DONE":
+      if (!state.tenMinuteTimerDone) {
+        return {
+          ...state,
+          tenMinuteTimerDone: true,
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_TOTAL_TEST_STRIP_TIME":
+      // We only write the total test strip time the first time around.  If you
+      // back up and retraverse the screens, we don't update the total time.
+      if (
+        state.tenMinuteStartTime &&
+        !(state.rdtInfo && state.rdtInfo.totalTestStripTime)
+      ) {
+        const timeNow = new Date().getTime();
+        const deltaMS = timeNow - state.tenMinuteStartTime;
+
+        return {
+          ...state,
+          rdtInfo: { ...state.rdtInfo, totalTestStripTime: deltaMS },
+          timestamp: timeNow,
+        };
+      }
+      return state;
+
+    case "SET_RDT_START_TIME":
+      // We reset capture time each time the RDT reader is visited.
+      rdtStartTime = new Date().getTime();
+      return state;
+
+    case "SET_RDT_CAPTURE_TIME":
+      if (rdtStartTime) {
+        const timeNow = new Date().getTime();
+        const deltaMS = timeNow - rdtStartTime;
+        rdtTotalTime += deltaMS;
+        if (action.successfulCapture) {
+          return {
+            ...state,
+            rdtInfo: {
+              ...state.rdtInfo,
+              captureTime: deltaMS,
+              rdtTotalTime: rdtTotalTime,
+            },
+            timestamp: timeNow,
+          };
+        } else {
+          return {
+            ...state,
+            rdtInfo: { ...state.rdtInfo, rdtTotalTime: rdtTotalTime },
+            timestamp: timeNow,
+          };
+        }
+      }
+      return state;
+
+    case "SET_PHOTO":
+      return {
+        ...state,
+        photoUri: action.photoUri,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_PUSH_STATE":
+      return {
+        ...state,
+        pushState: action.pushState,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_RDT_PHOTO":
+      return {
+        ...state,
+        rdtPhotoUri: action.rdtPhotoUri,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_RDT_PHOTOHC":
+      return {
+        ...state,
+        rdtPhotoHCUri: action.rdtPhotoHCUri,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_RDT_READER_RESULT":
+      return {
+        ...state,
+        rdtInfo: { ...state.rdtInfo, rdtReaderResult: action.rdtReaderResult },
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_RDT_CAPTURE_INFO":
+      return {
+        ...state,
+        rdtInfo: {
+          ...state.rdtInfo,
+          flashEnabled: action.flashEnabled,
+          flashDisabledAutomatically: action.flashDisabledAutomatically,
+        },
+      };
+
+    case "SET_RDT_INTERPRETATION_SHOWN":
+      return {
+        ...state,
+        rdtInfo: { ...state.rdtInfo, interpreter: action.interpreter },
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_WORKFLOW":
+      return {
+        ...state,
+        workflow: action.workflow,
+        timestamp: new Date().getTime(),
+      };
+
+    case "SET_CSRUID_IF_UNSET":
+      if (state.csruid == null) {
+        return {
+          ...state,
+          csruid: action.csruid,
+        };
+      }
+      return state;
+    case "SET_RESULT_SHOWN":
+      return {
+        ...state,
+        rdtInfo: {
+          ...state.rdtInfo,
+          resultShown: action.resultShown,
+          resultShownExplanation: action.resultShownExplanation,
+        },
+      };
+
+    case "RESET_TIMESTAMP":
+      return {
+        ...state,
+        timestamp: new Date().getTime(),
+      };
+
+    default:
+      return state;
+  }
 }
 
 export function appendEvent(kind: EventInfoKind, event: string): SurveyAction {
@@ -180,17 +316,22 @@ export function appendInvalidBarcode(barcode: SampleInfo): SurveyAction {
   };
 }
 
-export function setConsent(consent: ConsentInfo): SurveyAction {
+export function setConsent(): SurveyAction {
   return {
     type: "SET_CONSENT",
-    consent,
-  };
-}
-
-export function setEmail(email: string): SurveyAction {
-  return {
-    type: "SET_EMAIL",
-    email,
+    consent: {
+      terms:
+        i18n.t("Consent:consentFormHeader1") +
+        "\n" +
+        i18n.t("Consent:consentFormText") +
+        "\n" +
+        i18n.t("surveyTitle:researchByTheseResearchers") +
+        "\n" +
+        i18n.t("surveyTitle:researchByAnyResearchers") +
+        "\n" +
+        i18n.t("Consent:consentFormText2"),
+      date: format(new Date(), "YYYY-MM-DD"),
+    },
   };
 }
 
@@ -201,10 +342,14 @@ export function setKitBarcode(kitBarcode: SampleInfo): SurveyAction {
   };
 }
 
-export function setTestStripImg(testStripImg: SampleInfo): SurveyAction {
+export function setTestStripImg(
+  testStripImg: SampleInfo,
+  testStripHCImg?: SampleInfo
+): SurveyAction {
   return {
     type: "SET_TEST_STRIP_IMG",
     testStripImg,
+    testStripHCImg,
   };
 }
 
@@ -220,19 +365,37 @@ export function setTenMinuteStartTime(): SurveyAction {
   };
 }
 
+export function setTenMinuteTimerDone(): SurveyAction {
+  return {
+    type: "SET_TEN_MINUTE_TIMER_DONE",
+  };
+}
+
+export function setTotalTestStripTime(): SurveyAction {
+  return {
+    type: "SET_TOTAL_TEST_STRIP_TIME",
+  };
+}
+
+export function setRDTStartTime(): SurveyAction {
+  return {
+    type: "SET_RDT_START_TIME",
+  };
+}
+
+export function setRDTCaptureTime(successfulCapture: boolean): SurveyAction {
+  return {
+    type: "SET_RDT_CAPTURE_TIME",
+    successfulCapture,
+  };
+}
+
 export function setPushNotificationState(
   pushState: PushNotificationState
 ): SurveyAction {
   return {
     type: "SET_PUSH_STATE",
     pushState,
-  };
-}
-
-export function setResponses(responses: SurveyResponse[]): SurveyAction {
-  return {
-    type: "SET_RESPONSES",
-    responses,
   };
 }
 
@@ -251,10 +414,68 @@ export function setCSRUIDIfUnset(csruid: string): SurveyAction {
   };
 }
 
-export function setSupportCode(supportCode: string): SurveyAction {
+export function setPhoto(photoUri: string): SurveyAction {
   return {
-    type: "SET_SUPPORT_CODE",
-    supportCode,
+    type: "SET_PHOTO",
+    photoUri,
+  };
+}
+
+export function setRDTPhoto(rdtPhotoUri: string): SurveyAction {
+  return {
+    type: "SET_RDT_PHOTO",
+    rdtPhotoUri,
+  };
+}
+
+export function setRDTPhotoHC(rdtPhotoHCUri: string): SurveyAction {
+  return {
+    type: "SET_RDT_PHOTOHC",
+    rdtPhotoHCUri,
+  };
+}
+
+export function setRDTReaderResult(
+  rdtReaderResult: RDTReaderResult
+): SurveyAction {
+  return {
+    type: "SET_RDT_READER_RESULT",
+    rdtReaderResult,
+  };
+}
+
+export function setRDTCaptureInfo(
+  flashEnabled: boolean,
+  flashDisabledAutomatically: boolean
+): SurveyAction {
+  return {
+    type: "SET_RDT_CAPTURE_INFO",
+    flashEnabled,
+    flashDisabledAutomatically,
+  };
+}
+
+export function setRDTInterpretationShown(interpreter: string): SurveyAction {
+  return {
+    type: "SET_RDT_INTERPRETATION_SHOWN",
+    interpreter,
+  };
+}
+
+export function setResultShown(
+  resultShown: string,
+  resultShownExplanation: string
+): SurveyAction {
+  return {
+    type: "SET_RESULT_SHOWN",
+    resultShown,
+    resultShownExplanation,
+  };
+}
+
+export function resetTimestamp(): SurveyAction {
+  return {
+    type: "RESET_TIMESTAMP",
   };
 }
 

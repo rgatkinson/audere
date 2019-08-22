@@ -57,3 +57,14 @@ export function triageDocFromTriage(
     triage,
   };
 }
+
+export async function retryWithBackoff(
+  func: () => Promise<boolean>,
+  delayMs = 250
+) {
+  const waitForDelay = (res: () => void) => setTimeout(res, delayMs);
+  while (!(await func())) {
+    await new Promise(waitForDelay);
+    delayMs *= 2;
+  }
+}

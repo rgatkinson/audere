@@ -32,6 +32,7 @@ import {
   getFeverExcelReport,
 } from "./metrics";
 import logger from "../../util/logger";
+import { RDTPhotos } from "./rdtPhotos";
 import { S3DirectoryServer } from "./s3server";
 
 const INDEX_PAGE_LINKS = [
@@ -49,6 +50,11 @@ const INDEX_PAGE_LINKS = [
     label: "Seattle Children's HIPAA and consent forms",
     url: "./seattleChildrensForms",
     permissionsRequired: [Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS],
+  },
+  {
+    label: "RDT Photos from flu@home Australia",
+    url: "./coughPhotos",
+    permissionsRequired: [Permissions.COUGH_RDT_PHOTOS_ACCESS],
   },
 ];
 
@@ -151,11 +157,13 @@ function addHandlers(
 
   addMetricsHandlers(app);
 
+  const getStatic = () =>
+    Array.isArray(app.mountpath) ? app.mountpath[0] : app.mountpath;
   const s3DirectoryServer = new S3DirectoryServer(
     config.sql,
     `${process.env.NODE_ENV.toLowerCase()}/shared/hipaa-forms/seattle-childrens/`,
     () => ({
-      static: Array.isArray(app.mountpath) ? app.mountpath[0] : app.mountpath,
+      static: getStatic(),
       title: "Seattle Children's Flu Study Consent and HIPAA Forms",
     })
   );
@@ -166,6 +174,18 @@ function addHandlers(
       Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS
     ),
     wrap(s3DirectoryServer.performRequest)
+  );
+
+  const rdtPhotosServer = new RDTPhotos(config.sql, getStatic);
+  app.get(
+    "/coughPhotos",
+    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
+    wrap(rdtPhotosServer.listBarcodes)
+  );
+  app.get(
+    "/coughPhoto",
+    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
+    wrap(rdtPhotosServer.showPhotos)
   );
 
   return app;

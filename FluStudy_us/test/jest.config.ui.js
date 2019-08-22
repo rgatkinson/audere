@@ -6,4 +6,9 @@
 var config = require("./jest.config");
 config.testPathIgnorePatterns = ["\\.snap$", "<rootDir>/node_modules/"]; //Overriding testRegex option
 config.testMatch = ["**/(appium.*).(ts|js)?(x)"];
+config.globals = {
+  "ts-jest": {
+    tsConfig: "<rootDir>/../../FluApi/tsconfig.json"
+  }
+};
 module.exports = config;

@@ -60,13 +60,12 @@ fi
 
 "$SELF_DIR/../terraform/modules/assets/push.sh"
 
-set -x
-
+(set -x
 cd "$APP_DIR"
 terraform init
 terraform taint -module=flu_api aws_launch_configuration.flu_api_instance
 terraform apply -target=module.flu_api -var "commit=$commit" -var "migrate=true"
-set +x
+)
 
 MIGRATE_NAME="flu-${environment}-api-migrate"
 echo "Looking up 'vmid $MIGRATE_NAME'.."
@@ -74,5 +73,17 @@ MIGRATE_ID="$(aws-instance-id $MIGRATE_NAME)"
 echo "  ..got '$MIGRATE_ID'"
 aws-wait-for-instance-state "$MIGRATE_ID" stopped
 
-set -x
+(set -x
+cd "$APP_DIR"
 terraform apply -target=module.flu_api -var "commit=$commit"
+)
+
+case "$environment" in
+  staging) CHECK=https://api.staging.auderenow.io/health-check;;
+  prod)    CHECK=https://api.auderenow.io/health-check;;
+  *) usage "internal error";;
+esac
+(set -x
+curl "$CHECK"
+)
+echo ""

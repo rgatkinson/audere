@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.UUID;
 import android.widget.EditText;
 
-import com.example.ebphotostorenative.R;
+import org.auderenow.ebphotostorenative.R;
 
 public class AddPatientActivity extends AppCompatActivity {
 

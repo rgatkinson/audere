@@ -9,23 +9,28 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from "react-native";
 import { NavigationEvents } from "react-navigation";
 import { Ionicons } from "@expo/vector-icons";
 import Video from "react-native-video";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Divider from "./Divider";
+import Text from "./Text";
 import { BORDER_COLOR, GUTTER, VIDEO_ASPECT_RATIO } from "../styles";
-import { getRemoteConfig } from "../../util/remoteConfig";
-import { tracker, VideoEvents } from "../../util/tracker";
+import { logFirebaseEvent, VideoEvents } from "../../util/tracker";
 import { videoConfig, VideoConfig } from "../../resources/VideoConfig";
+import { connect } from "react-redux";
+import { StoreState } from "../../store";
 
 interface Props extends React.Props<VideoPlayer> {
   id: string;
+  isConnected: boolean;
 }
 
 const THREE_SECONDS_MS = 3000;
 
-export default class VideoPlayer extends React.Component<Props> {
+class VideoPlayer extends React.Component<Props & WithNamespaces> {
   state = {
     loggedFirstPlay: false,
     paused: true,
@@ -34,7 +39,7 @@ export default class VideoPlayer extends React.Component<Props> {
 
   _config: VideoConfig | undefined;
 
-  constructor(props: Props) {
+  constructor(props: Props & WithNamespaces) {
     super(props);
     this._config = videoConfig.get(props.id);
   }
@@ -53,13 +58,13 @@ export default class VideoPlayer extends React.Component<Props> {
     if (!this.state.paused) {
       if (currentTime == 0) {
         if (!this.state.loggedFirstPlay) {
-          tracker.logEvent(VideoEvents.START_VIDEO, {
+          logFirebaseEvent(VideoEvents.START_VIDEO, {
             video: this.props.id,
           });
           this.setState({ loggedFirstPlay: true });
         }
       } else {
-        tracker.logEvent(VideoEvents.VIDEO_PROGRESS, {
+        logFirebaseEvent(VideoEvents.VIDEO_PROGRESS, {
           video: this.props.id,
           currentTime: Math.round(currentTime),
           totalTime: Math.round(seekableDuration),
@@ -69,7 +74,7 @@ export default class VideoPlayer extends React.Component<Props> {
   };
 
   _onEnd = () => {
-    tracker.logEvent(VideoEvents.COMPLETE_VIDEO, {
+    logFirebaseEvent(VideoEvents.COMPLETE_VIDEO, {
       video: this.props.id,
     });
     this._pauseVideo();
@@ -85,44 +90,55 @@ export default class VideoPlayer extends React.Component<Props> {
   };
 
   render() {
-    const showVideos = getRemoteConfig("showVideos");
-    if (!showVideos || this._config == null) {
+    if (!this._config) {
       return <View />;
     }
+
+    const { paused, showThumbnail } = this.state;
+    const { t, isConnected } = this.props;
 
     return (
       <View>
         <NavigationEvents onWillBlur={this._pauseVideo} />
         <Divider />
-        {this.state.showThumbnail && (
-          <TouchableWithoutFeedback
-            onPress={this._playVideo}
-            style={styles.thumbnail}
-          >
-            <View style={styles.thumbnail}>
-              <View style={styles.iconContainer}>
-                <Ionicons
-                  color="white"
-                  name="ios-play"
-                  size={45}
-                  style={styles.icon}
-                />
+        <TouchableWithoutFeedback
+          onPress={paused ? this._playVideo : this._pauseVideo}
+          style={styles.thumbnail}
+        >
+          <View style={styles.thumbnail}>
+            {!isConnected ? (
+              <View style={[styles.thumbnail, styles.thumbnailOverlay]}>
+                <Text bold={true} content={t("offline")} />
               </View>
+            ) : (
+              (paused || showThumbnail) && (
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    color="white"
+                    name="ios-play"
+                    size={45}
+                    style={styles.icon}
+                  />
+                </View>
+              )
+            )}
+            {showThumbnail && (
               <Image
                 source={{ uri: this._config.thumbnail }}
                 style={styles.thumbnail}
               />
-            </View>
-          </TouchableWithoutFeedback>
-        )}
+            )}
+          </View>
+        </TouchableWithoutFeedback>
         <Video
-          controls={true}
+          controls={false}
           paused={this.state.paused}
           ignoreSilentSwitch="obey"
           playInBackground={false}
           progressUpdateInterval={THREE_SECONDS_MS}
           ref={this._videoPlayer}
-          repeat={true}
+          repeat={Platform.OS === "ios" ? true : false}
+          resizeMode={"contain"}
           source={{ uri: this._config.uri }}
           style={styles.video}
           onEnd={this._onEnd}
@@ -133,6 +149,10 @@ export default class VideoPlayer extends React.Component<Props> {
     );
   }
 }
+
+export default connect((state: StoreState) => ({
+  isConnected: state.meta.isConnected,
+}))(withNamespaces("VideoPlayer")(VideoPlayer));
 
 const styles = StyleSheet.create({
   icon: {
@@ -158,6 +178,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     zIndex: 2,
+  },
+  thumbnailOverlay: {
+    backgroundColor: "rgba(255,255,255, 0.7)",
+    paddingRight: "15%",
+    paddingLeft: "15%",
+    zIndex: 3,
   },
   video: {
     aspectRatio: VIDEO_ASPECT_RATIO,

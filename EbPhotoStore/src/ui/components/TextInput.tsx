@@ -58,9 +58,7 @@ export default class TextInput extends React.Component<Props> {
         autoFocus={this.props.autoFocus}
         blurOnSubmit={this.props.blurOnSubmit}
         editable={this.props.editable}
-        keyboardType={
-          !!this.props.keyboardType ? this.props.keyboardType : "default"
-        }
+        keyboardType={this.props.keyboardType && this.props.keyboardType}
         onBlur={this.props.onBlur}
         onEndEditing={this.props.onEndEditing}
         onFocus={this.props.onFocus}

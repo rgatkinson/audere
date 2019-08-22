@@ -41,6 +41,46 @@ data "aws_iam_policy_document" "administrator_access" {
 }
 
 // --------------------------------------------------------------------------------
+// Policy Group: DataScientists
+
+resource "aws_iam_group" "datascientists" {
+  name = "AudereDataScientists"
+}
+
+resource "aws_iam_group_policy_attachment" "datascientist_job" {
+  group      = "${aws_iam_group.datascientists.name}"
+  policy_arn = "arn:aws:iam::aws:policy/job-function/DataScientist"
+}
+
+resource "aws_iam_group_policy_attachment" "datascientist_groundtruth" {
+  group      = "${aws_iam_group.datascientists.name}"
+  policy_arn = "${aws_iam_policy.datascientist_groundtruth.arn}"
+}
+
+resource "aws_iam_policy" "datascientist_groundtruth" {
+  name = "AudereDataScientistGroundTruth"
+  policy = "${data.aws_iam_policy_document.datascientist_groundtruth.json}"
+}
+
+// https://docs.aws.amazon.com/sagemaker/latest/dg/sms-getting-started-step1.html
+data "aws_iam_policy_document" "datascientist_groundtruth" {
+  statement {
+    actions = [
+      "cognito-idp:CreateGroup",
+      "cognito-idp:CreateUserPool",
+      "cognito-idp:CreateUserPoolDomain",
+      "cognito-idp:AdminCreateUser",
+      "cognito-idp:CreateUserPoolClient",
+      "cognito-idp:AdminAddUserToGroup",
+      "cognito-idp:DescribeUserPoolClient",
+      "cognito-idp:DescribeUserPool",
+      "cognito-idp:UpdateUserPool"
+    ],
+    resources = ["*"]
+  }
+}
+
+// --------------------------------------------------------------------------------
 // Policy Group: Infrastructurers
 
 resource "aws_iam_group" "infrastructurers" {
@@ -714,6 +754,11 @@ data "aws_iam_user" "billy" {
   user_name = "billy"
 }
 
+data "aws_iam_user" "jenny" {
+  user_name = "jenny"
+
+}
+
 data "aws_iam_user" "mmarucheck" {
   user_name = "mmarucheck"
 }
@@ -750,7 +795,19 @@ resource "aws_iam_group_membership" "administrators" {
     "mmarucheck",
     "philip",
     "ram",
+    "sam",
     "shawna"
+  ]
+}
+
+resource "aws_iam_group_membership" "datascientists" {
+  name  = "DataScientists"
+  group = "${aws_iam_group.datascientists.name}"
+
+  users = [
+    "jenny",
+    "mmarucheck",
+    "sam",
   ]
 }
 
