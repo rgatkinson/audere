@@ -213,12 +213,12 @@ const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
 function getIconUrl(diagnosis: number): string {
   switch (diagnosis) {
     case EVD_POS:
-      return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+      return "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
     case EVD_NEG:
       // Would prefer gray but Google doesn't offer a gray dot
-      return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+      return "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
     case EVD_UNTRIAGED:
     default:
-      return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+      return "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
   }
 }
