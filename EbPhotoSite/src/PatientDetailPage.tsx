@@ -295,18 +295,22 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
         </div>
         <h3>Patient Information</h3>
         <table className="DetailTable">
-          <tr className="Header">
-            <td>Phone</td>
-            <td>Contact Details</td>
-            <td>CHW Notes</td>
-            <td />
-          </tr>
-          <tr className="Content">
-            <td>{patient.phone}</td>
-            <td>{patient.details}</td>
-            <td>{notes}</td>
-            <td />
-          </tr>
+          <thead>
+            <tr className="Header">
+              <td>Phone</td>
+              <td>Contact Details</td>
+              <td>CHW Notes</td>
+              <td />
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="Content">
+              <td>{patient.phone}</td>
+              <td>{patient.details}</td>
+              <td>{notes}</td>
+              <td />
+            </tr>
+          </tbody>
         </table>
       </div>
     );
@@ -326,18 +330,22 @@ class TestDetailPane extends React.Component<PatientInfoPaneProps> {
       <div>
         <h3>Patient Test Detail</h3>
         <table className="DetailTable">
-          <tr className="Header">
-            <td>Tested on</td>
-            <td>Tested by</td>
-            <td>Contact info</td>
-            <td>About this CHW</td>
-          </tr>
-          <tr className="Content">
-            <td>{timestamp}</td>
-            <td>{chwName}</td>
-            <td>{phone}</td>
-            <td>{notes}</td>
-          </tr>
+          <thead>
+            <tr className="Header">
+              <td>Tested on</td>
+              <td>Tested by</td>
+              <td>Contact info</td>
+              <td>About this CHW</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="Content">
+              <td>{timestamp}</td>
+              <td>{chwName}</td>
+              <td>{phone}</td>
+              <td>{notes}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     );
@@ -492,54 +500,60 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
       urls[photo.photoId] ||
       ({ error: new Error(JSON.stringify(urls)) } as PhotoFetchResult);
     return (
-      <div className="PhotoPane">
+      <div className="PhotoPane" key={index}>
         <table>
-          <tr>
-            <td>
-              {url != null && (
-                <div
+          <tbody>
+            <tr>
+              <td>
+                {url != null && (
+                  <div
+                    style={{
+                      backgroundColor: "gray",
+                      marginRight: "1rem",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    <ExifOrientationImg
+                      src={url}
+                      alt="RDT Result"
+                      style={{
+                        width: "400px",
+                        height: "400px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                )}
+              </td>
+              <td>
+                <SimpleMap
+                  encounters={[this.props.eDoc]}
+                  tDocs={this.props.tDoc ? [this.props.tDoc] : []}
                   style={{
-                    backgroundColor: "gray",
-                    marginRight: "1rem",
+                    height: "400px",
+                    width: "400px",
                     marginBottom: "0.5rem",
                   }}
-                >
-                  <ExifOrientationImg
-                    src={url}
-                    alt="RDT Result"
-                    style={{
-                      width: "400px",
-                      height: "400px",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
-              )}
-            </td>
-            <td>
-              <SimpleMap
-                encounters={[this.props.eDoc]}
-                tDocs={this.props.tDoc ? [this.props.tDoc] : []}
-                style={{
-                  height: "400px",
-                  width: "400px",
-                  marginBottom: "0.5rem",
-                }}
-                zoom={11}
-              />
-              <table>
-                <tr>
-                  <th>Test Location:</th>
-                </tr>
-                <tr>
-                  <td>
-                    {parseFloat(photo.gps.latitude).toFixed(6)},{" "}
-                    {parseFloat(photo.gps.longitude).toFixed(6)}
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+                  zoom={11}
+                />
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Test Location:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {parseFloat(photo.gps.latitude).toFixed(6)},{" "}
+                        {parseFloat(photo.gps.longitude).toFixed(6)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
         </table>
         {error != null && <div>ERROR: {error.message}</div>}
       </div>

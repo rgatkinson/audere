@@ -44,22 +44,24 @@ export class PatientBlock extends React.Component<Props, State> {
   _renderListHeader() {
     return (
       <table className="PatientTableTitle">
-        <tr>
-          <td>{this.props.headerLabel}</td>
-          <td className="ListViewIcon">
-            <div className="viewButton" onClick={this._onShowList}>
-              <img src={listIcon} alt="listIcon" onClick={this._onShowList} />
-              <div className="ListViewText">List View</div>
-            </div>
-          </td>
+        <thead>
+          <tr>
+            <td>{this.props.headerLabel}</td>
+            <td className="ListViewIcon">
+              <div className="viewButton" onClick={this._onShowList}>
+                <img src={listIcon} alt="listIcon" onClick={this._onShowList} />
+                <div className="ListViewText">List View</div>
+              </div>
+            </td>
 
-          <td className="MapViewIcon">
-            <div className="viewButton" onClick={this._onShowMap}>
-              <img src={mapIcon} alt="mapIcon" onClick={this._onShowMap} />
-              <div className="MapViewText">Map View</div>
-            </div>
-          </td>
-        </tr>
+            <td className="MapViewIcon">
+              <div className="viewButton" onClick={this._onShowMap}>
+                <img src={mapIcon} alt="mapIcon" onClick={this._onShowMap} />
+                <div className="MapViewText">Map View</div>
+              </div>
+            </td>
+          </tr>
+        </thead>
       </table>
     );
   }

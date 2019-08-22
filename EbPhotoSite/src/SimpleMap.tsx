@@ -147,7 +147,7 @@ export class SimpleMap extends React.Component<Props, State> {
         defaultZoom={this.props.zoom}
       >
         {props.locations.map((location: Location) => (
-          <SimpleMarker location={location} />
+          <SimpleMarker location={location} key={location.docId} />
         ))}
       </GoogleMap>
     ))
@@ -194,7 +194,6 @@ const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
     <Marker
       position={{ lat: location.latitude, lng: location.longitude }}
       icon={{ url: getIconUrl(location.diagnosis) }}
-      key={location.docId}
       onClick={() => setOpen(!open)}
     >
       {open && (
