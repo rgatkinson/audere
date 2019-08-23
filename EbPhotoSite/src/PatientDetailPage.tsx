@@ -525,6 +525,20 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                     />
                   </div>
                 )}
+                {index !== -1 && (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Taken on:</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{localeDate(photo.timestamp)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
               </td>
               <td>
                 <SimpleMap
