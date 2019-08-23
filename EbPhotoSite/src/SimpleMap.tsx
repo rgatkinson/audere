@@ -5,11 +5,6 @@
 
 import React, { useState } from "react";
 import {
-  EncounterDocument,
-  EncounterInfo,
-  EncounterTriageDocument,
-} from "audere-lib/dist/ebPhotoStoreProtocol";
-import {
   GoogleMap,
   Marker,
   InfoWindow,
@@ -18,24 +13,19 @@ import {
 } from "react-google-maps";
 import { getApi } from "./api";
 
-const EVD_POS = 1;
-const EVD_NEG = 2;
-const EVD_UNTRIAGED = 3;
-
 interface Props {
-  encounters: EncounterDocument[];
-  tDocs: EncounterTriageDocument[];
+  locations: Location[];
   style: React.CSSProperties;
   zoom: number;
 }
 
-interface Location {
+export interface Location {
   name: string;
   date: string;
   latitude: number;
   longitude: number;
   docId: string;
-  diagnosis: number;
+  iconUrl: string;
 }
 
 interface LatLng {
@@ -100,46 +90,6 @@ export class SimpleMap extends React.Component<Props, State> {
     }
   }
 
-  private static getDiagnosis(
-    eDoc: EncounterDocument,
-    tDocs: EncounterTriageDocument[]
-  ) {
-    const tDoc = tDocs.find(t => t.docId === eDoc.docId);
-
-    if (tDoc === undefined || !tDoc.triage.diagnoses) {
-      return EVD_UNTRIAGED;
-    }
-    const { diagnoses } = tDoc.triage;
-    if (diagnoses.length > 0 && diagnoses[diagnoses.length - 1].value) {
-      return EVD_POS;
-    }
-    return EVD_NEG;
-  }
-
-  private static getLocations(
-    encounters: EncounterDocument[],
-    tDocs: EncounterTriageDocument[]
-  ) {
-    return encounters
-      .filter(
-        (eDoc: EncounterDocument) =>
-          !!eDoc.encounter.rdtPhotos && eDoc.encounter.rdtPhotos.length > 0
-      )
-      .map((eDoc: EncounterDocument) => {
-        const enc: EncounterInfo = eDoc.encounter;
-        const diagnosis = SimpleMap.getDiagnosis(eDoc, tDocs);
-        //const triage = await getApi().loadTriage(eDoc.docId);
-        return {
-          name: enc.patient.lastName + ", " + enc.patient.firstName,
-          date: enc.rdtPhotos[0].timestamp.substring(0, 10),
-          latitude: +enc.rdtPhotos[0].gps.latitude,
-          longitude: +enc.rdtPhotos[0].gps.longitude,
-          diagnosis,
-          docId: eDoc.docId,
-        };
-      });
-  }
-
   MyGoogleMap = withScriptjs(
     withGoogleMap((props: { locations: Location[] }) => (
       <GoogleMap
@@ -157,14 +107,12 @@ export class SimpleMap extends React.Component<Props, State> {
   mapElement = <div style={this.props.style} />;
 
   public render(): React.ReactNode {
-    const locations = SimpleMap.getLocations(
-      this.props.encounters,
-      this.props.tDocs
-    );
-    const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${this.state.apiKey}`;
+    const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${
+      this.state.apiKey
+    }`;
     return (
       <div>
-        {this.state.apiKey == null || locations == null ? (
+        {this.state.apiKey == null || this.props.locations == null ? (
           "Loading..."
         ) : (
           <div style={this.props.style}>
@@ -173,7 +121,7 @@ export class SimpleMap extends React.Component<Props, State> {
               containerElement={this.containerElement}
               googleMapURL={googleMapURL}
               mapElement={this.mapElement}
-              locations={locations}
+              locations={this.props.locations}
             />
           </div>
         )}
@@ -193,7 +141,7 @@ const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
   return (
     <Marker
       position={{ lat: location.latitude, lng: location.longitude }}
-      icon={{ url: getIconUrl(location.diagnosis) }}
+      icon={{ url: location.iconUrl }}
       onClick={() => setOpen(!open)}
     >
       {open && (
@@ -208,16 +156,3 @@ const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
     </Marker>
   );
 };
-
-function getIconUrl(diagnosis: number): string {
-  switch (diagnosis) {
-    case EVD_POS:
-      return "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
-    case EVD_NEG:
-      // Would prefer gray but Google doesn't offer a gray dot
-      return "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
-    case EVD_UNTRIAGED:
-    default:
-      return "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-  }
-}

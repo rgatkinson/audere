@@ -30,6 +30,7 @@ import {
 import { Chat } from "./Chat";
 import "./PatientDetailPage.css";
 import { SimpleMap } from "./SimpleMap";
+import { getLocation, MarkerStatus } from "./EncounterMap";
 
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
 
@@ -527,8 +528,13 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
               </td>
               <td>
                 <SimpleMap
-                  encounters={[this.props.eDoc]}
-                  tDocs={this.props.tDoc ? [this.props.tDoc] : []}
+                  locations={[
+                    getLocation(
+                      this.props.eDoc,
+                      MarkerStatus.EVD_UNTRIAGED,
+                      photo
+                    ),
+                  ]}
                   style={{
                     height: "400px",
                     width: "400px",

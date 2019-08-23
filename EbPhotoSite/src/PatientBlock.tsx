@@ -13,7 +13,7 @@ import "./PatientList.css";
 import mapIcon from "./img/mapview.png";
 import listIcon from "./img/listview.png";
 import { PatientTable } from "./PatientTable";
-import { SimpleMap } from "./SimpleMap";
+import { EncounterMap } from "./EncounterMap";
 
 interface Props {
   headerLabel: string;
@@ -68,7 +68,7 @@ export class PatientBlock extends React.Component<Props, State> {
 
   render() {
     const mainView = this.state.showMap ? (
-      <SimpleMap
+      <EncounterMap
         encounters={this.props.eDocs}
         tDocs={this.props.tDocs}
         style={{ height: "25rem" }}

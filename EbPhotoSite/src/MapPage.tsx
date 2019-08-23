@@ -9,7 +9,7 @@ import {
   EncounterDocument,
   EncounterTriageDocument,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { SimpleMap } from "./SimpleMap";
+import { EncounterMap } from "./EncounterMap";
 import { loadAllEncounters, loadAllTriages } from "./util";
 
 interface Props extends RouteComponentProps<{}> {}
@@ -36,7 +36,7 @@ export class MapPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <SimpleMap
+      <EncounterMap
         encounters={this.state.encounters}
         tDocs={this.state.tDocs}
         style={{ height: "100vh" }}
