@@ -130,15 +130,19 @@ public class PhotoUploader implements NetworkChangeReceiver.INetworkStatusListen
   private void looperUploadSuccess(File filePath) {
     this.isLooperUploading = false;
     String photoId = looperPendingIdFromPath(filePath.toString());
-    try {
-      Path inputPath = filePath.toPath();
-      Path outputPath = Paths.get(uploadedDirPrefix + photoId + ".jpeg");
-      Files.move(inputPath, outputPath);
-    } catch (IOException ex) {
+
+      File sourceFile = new File(filePath.getAbsolutePath());
+      File destinationFile = new File(uploadedDirPrefix + photoId + ".jpeg");
+
+    if(sourceFile.renameTo(destinationFile)) {
+      sourceFile.delete();
+    } else {
       logException("looperUploadSuccess", "PhotoUploader", new RuntimeException("Failed to save"));
       failedFiles.add(filePath.toString());
-      return;
     }
+
+
+
     Bundle info = new Bundle();
     info.putString("photo_id", photoId);
     info.putString("storage_path", filePath.toString());

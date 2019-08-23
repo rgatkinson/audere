@@ -32,8 +32,8 @@
     <string name="title_activity_patient_detail">PatientDetailActivity</string>
     <string name="photo_capture_details">Photo Capture Details</string>
     <string name="date_and_time">Date &amp; Time</string>
-    <string name="latitude">latitude</string>
-    <string name="longitude">longitude</string>
+    <string name="latitude">lat:</string>
+    <string name="longitude">long:</string>
     <string name="retake_photo">Retake Photo</string>
     <string name="follow_up">follow-up:</string>
 </resources>

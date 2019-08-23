@@ -1,18 +1,25 @@
 package EbPhotoStoreNative.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import java.io.File;
@@ -24,14 +31,21 @@ import android.widget.EditText;
 
 import org.auderenow.ebphotostorenative.R;
 
+import EbPhotoStoreNative.LocationFinder;
+
 public class AddPatientActivity extends AppCompatActivity {
 
     private static final String TAG = "CapturePicture";
     static final int REQUEST_PICTURE_CAPTURE = 1;
     private ImageView image;
     private String pictureFilePath;
+    private TextView latitude;
+    private TextView longitude;
     //private FirebaseStorage firebaseStorage;
     private String deviceIdentifier;
+    private LocationFinder finder;
+    private static final int PERMISSION_LOCATION_REQUEST_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +63,12 @@ public class AddPatientActivity extends AppCompatActivity {
         });
 
 
-
+        finder = new LocationFinder(this);
         image = findViewById(R.id.rdt_image);
+        latitude = (TextView)findViewById(R.id.latitude);
+        longitude = (TextView)findViewById(R.id.longitude);
 
         Button captureButton = findViewById(R.id.capture_photo_button);
-        captureButton.setOnClickListener(capture);
         if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             captureButton.setEnabled(false);
         }
@@ -61,9 +76,43 @@ public class AddPatientActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_LOCATION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setLatLng();
+                    sendTakePictureIntent();
+
+                } else {
+                    // Permission denied
+                }
+                return;
+            }
+
+        }
+    }
+
+    public void setLatLng() {
+        Location currentLocation = finder.getLocation();
+        // 5 Decimals is ~1.11m in variation in distance
+        latitude.setText(String.format("%.5f", currentLocation.getLatitude()));
+        longitude.setText(String.format("%.5f", currentLocation.getLongitude()));
+    }
+
+
     public void onAddPhotoClick(View v) {
+        boolean askedPermission = false;
         if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            sendTakePictureIntent();
+            if(!finder.canGetLocation()) {
+                finder.showPermissionsDialog(this);
+            } else {
+                setLatLng();
+                sendTakePictureIntent();
+            }
         }
     }
 
@@ -78,20 +127,23 @@ public class AddPatientActivity extends AppCompatActivity {
         String mobileNumber = ((EditText)findViewById(R.id.mobile_number)).getText().toString();
         String contactInfo = ((EditText)findViewById(R.id.contact_info)).getText().toString();
         String chw_notes = ((EditText)findViewById(R.id.chw_notes)).getText().toString();
+        String latitude = ((TextView)findViewById(R.id.latitude)).getText().toString();
+        String longitude = ((TextView)findViewById(R.id.longitude)).getText().toString();
         // picture file path for the path to the image
 
         // Store the record to firebase here
     }
 
-    private View.OnClickListener capture = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-                sendTakePictureIntent();
-            }
-        }
-    };
+//    private View.OnClickListener capture = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View view) {
+//            if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+//                sendTakePictureIntent();
+//            }
+//        }
+//    };
     private void sendTakePictureIntent() {
+
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra( MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
@@ -110,7 +162,7 @@ public class AddPatientActivity extends AppCompatActivity {
             if (pictureFile != null) {
 
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.ebphotostorenative.android.fileprovider",
+                        "org.auderenow.ebphotostorenative.fileprovider",
                         pictureFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(cameraIntent, REQUEST_PICTURE_CAPTURE);
