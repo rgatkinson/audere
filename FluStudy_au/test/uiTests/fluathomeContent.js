@@ -538,7 +538,7 @@ export const content = [
     key: "TestStripReady",
   },
   {
-    type: "input",
+    type: "blue_line_question",
     title: strings.TestStripSurvey.title,
     button: {
       name: strings.common.button.continue.toUpperCase(),
@@ -553,6 +553,15 @@ export const content = [
         options: [strings.surveyButton.no, strings.surveyButton.yes],
       },
     ],
+  },
+  {
+    type: "basic",
+    title: strings.InvalidResult.title,
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "CleanTest",
+    },
+    key: "InvalidResult",
   },
   {
     type: "input",

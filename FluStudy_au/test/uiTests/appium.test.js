@@ -106,6 +106,12 @@ async function runThroughApp(models, isDemo) {
       next_screen = await barcode_screen(driver, screen_info, screens_visited);
     } else if (screen_info.type == "consent") {
       next_screen = await consent_screen(driver, screen_info, screens_visited);
+    } else if (screen_info.type == "blue_line_question") {
+      next_screen = await blue_line_question_screen(
+        driver,
+        screen_info,
+        screens_visited
+      );
     } else if (screen_info.type == "rdt") {
       next_screen = await rdt_screen(driver, screen_info, screens_visited);
     }
@@ -476,6 +482,27 @@ async function consent_screen(driver, screen_info, screens_visited) {
     next_screen_key = screen_info.button.onClick;
   }
   return next_screen_key;
+}
+
+//Test strip survey screen logic: allows automation to not see blue line
+async function blue_line_question_screen(driver, screen_info, screens_visited) {
+  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+    true
+  );
+  screens_visited.push(screen_info.key);
+
+  if (PLATFORM == "iOS") {
+    await ios_buttonGrid(driver, screen_info.input[0], null, screen_info);
+  } else {
+    await android_buttonGrid(driver, screen_info.input[0], null, screen_info);
+  }
+
+  await driver.elementByAccessibilityId(screen_info.button.name).click();
+  if (inputs[strings.surveyTitle.blueLine] == strings.surveyButton.yes) {
+    return screen_info.button.onClick;
+  } else {
+    return "InvalidResult";
+  }
 }
 
 //RDT screen logic: Answer camera permissions and click button to take a picture

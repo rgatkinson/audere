@@ -48,7 +48,6 @@ export const inputs = {
     strings.surveyOption.african,
     strings.surveyOption.indianSubcontinent,
   ],
-  [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
+  [strings.surveyTitle.blueLine]: strings.surveyButton.no,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.easyCorrect,
 };
