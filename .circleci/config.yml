@@ -35,33 +35,30 @@ setenv: &setenv
   command: |
     echo "$PRODUCT"
     echo "$EXPO_RELEASE_CHANNEL"
-    if [[ "$PRODUCT" == "sniffles" || $"PRODUCT" == "fever" ]]; then
-      DEFAULT_ACCESS_KEY_A="TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB"
-      if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-        export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
-        case "$PRODUCT" in
-          sniffles)
-            export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
-            export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
-            ;;
-          fever)
-            export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
-            export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
-            ;;
-        esac
-      else 
-        export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
-        export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
-        export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
-      fi
-      echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
-      echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
-      echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
-      if [[ "$PRODUCT" == "sniffles" ]]; then
-        echo "FIREBASE_API_KEY=$SNIFFLES_FIREBASE_API_KEY" >> .env
-      fi 
-    else
-      echo "No need to set .env for $PRODUCT"
+    DEFAULT_ACCESS_KEY_A="TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB"
+    if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+      export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
+      case "$PRODUCT" in
+        "sniffles")
+          export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
+          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
+          ;;
+        "fever"|"cough"|"chills")
+          export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
+          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
+          ;;
+        *) echo 1>&2 "Unrecognized product '$PRODUCT'"; false;;
+      esac
+    else 
+      export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
+      export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
+      export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
+    fi
+    echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
+    echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
+    echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
+    if [[ "$PRODUCT" == "sniffles" ]]; then
+      echo "FIREBASE_API_KEY=$SNIFFLES_FIREBASE_API_KEY" >> .env
     fi 
 
 set_firebase_config: &set_firebase_config
