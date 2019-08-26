@@ -13,7 +13,7 @@ const config = {
   deviceName: "Android Emulator",
   app: path.join(
     os.homedir(),
-    "audere/FluStudy_au/android/app/build/outputs/apk/devKernel/debug/app-devKernel-x86-debug.apk"
+    "audere/FluStudy_au/android/app/build/outputs/apk/debug/app-x86-debug.apk"
   ),
   automationName: "UiAutomator2",
 };

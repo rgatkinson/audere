@@ -9,7 +9,6 @@ const today = new Date();
 export const inputs = {
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.yes,
   [strings.barcode.placeholder]: "00100100",
-  [strings.barcode.secondPlaceholder]: "00100100",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.feelingFeverish,
     strings.surveyOption.headache,

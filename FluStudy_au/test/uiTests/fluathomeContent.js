@@ -9,38 +9,60 @@ export const content = [
   {
     type: "basic",
     title: strings.Welcome.title,
-    button: strings.common.button.next.toUpperCase(),
-    dbScreenName: "Welcome",
+    button: {
+      name: strings.common.button.next.toUpperCase(),
+      onClick: "WhatsRequired",
+    },
+    key: "Welcome",
   },
   {
     type: "basic",
     title: strings.WhatsRequired.title,
-    button: strings.common.button.next.toUpperCase(),
-    dbScreenName: "WhatsRequired",
+    button: {
+      name: strings.common.button.next.toUpperCase(),
+      onClick: "ReadyToBegin",
+    },
+    key: "WhatsRequired",
   },
   {
     type: "basic",
     title: strings.ReadyToBegin.title,
-    button: strings.common.button.next.toUpperCase(),
-    dbScreenName: "ReadyToBegin",
+    button: {
+      name: strings.common.button.next.toUpperCase(),
+      onClick: "ResearchStudy",
+    },
+    key: "ReadyToBegin",
   },
   {
     type: "basic",
     title: strings.ResearchStudy.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ResearchStudy",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "ParticipantInformation",
+    },
+    key: "ResearchStudy",
   },
   {
     type: "basic",
     title: strings.ParticipantInformation.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ParticipantInformation",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "Consent",
+    },
+    key: "ParticipantInformation",
   },
   {
-    type: "input",
+    type: "consent",
     title: strings.Consent.title,
-    button: strings.Consent.accept.toUpperCase(),
-    dbScreenName: "Consent",
+    button: {
+      name: strings.Consent.accept.toUpperCase(),
+      onClick: "ManualEntry",
+    },
+    denyButton: {
+      name: strings.Consent.noThanks.toUpperCase(),
+      onClick: "ConsentDeclined",
+    },
+    key: "Consent",
     input: [
       {
         name: strings.surveyTitle.researchBySameResearchers,
@@ -51,10 +73,22 @@ export const content = [
     ],
   },
   {
-    type: "input",
+    type: "basic",
+    title: strings.ConsentDeclined.title,
+    button: {
+      name: strings.ConsentDeclined.backToConsent.toUpperCase(),
+      onClick: "Consent",
+    },
+    key: "ConsentDeclined",
+  },
+  {
+    type: "barcode",
     title: strings.ManualEntry.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ManualEntry",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "ManualConfirmation",
+    },
+    key: "ManualEntry",
     input: [
       {
         name: strings.barcode.placeholder,
@@ -71,69 +105,111 @@ export const content = [
   },
   {
     type: "basic",
+    title: strings.BarcodeContactSupport.title,
+    button: {
+      name: strings.links.inputManually,
+      onClick: "ManualEntry",
+    },
+    key: "BarcodeContactSupport",
+  },
+  {
+    type: "basic",
     title: strings.ManualConfirmation.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ManualConfirmation",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "Unpacking",
+    },
+    key: "ManualConfirmation",
   },
   {
     type: "basic",
     title: strings.Unpacking.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "Unpacking",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "Swab",
+    },
+    key: "Unpacking",
   },
   {
     type: "basic",
     title: strings.Swab.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "Swab",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "OpenSwab",
+    },
+    key: "Swab",
   },
   {
     type: "basic",
     title: strings.OpenSwab.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "OpenSwab",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "Mucus",
+    },
+    key: "OpenSwab",
   },
   {
     type: "basic",
     title: strings.Mucus.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "Mucus",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "SwabInTube",
+    },
+    key: "Mucus",
   },
   {
     type: "basic",
     title: strings.SwabInTube.title,
-    button: strings.SwabInTube.startTimer.toUpperCase(),
-    dbScreenName: "SwabInTube",
+    button: {
+      name: strings.SwabInTube.startTimer.toUpperCase(),
+      onClick: "FirstTimer",
+    },
+    key: "SwabInTube",
   },
   {
     type: "timer",
     title: strings.FirstTimer.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "FirstTimer",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "RemoveSwabFromTube",
+    },
+    key: "FirstTimer",
   },
   {
     type: "basic",
     title: strings.RemoveSwabFromTube.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "RemoveSwabFromTube",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "OpenTestStrip",
+    },
+    key: "RemoveSwabFromTube",
   },
   {
     type: "basic",
     title: strings.OpenTestStrip.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "OpenTestStrip",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "StripInTube",
+    },
+    key: "OpenTestStrip",
   },
   {
     type: "basic",
     title: strings.StripInTube.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "StripInTube",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "WhatSymptoms",
+    },
+    key: "StripInTube",
   },
   {
     type: "input",
     title: strings.WhatSymptoms.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "WhatSymptoms",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "WhenSymptoms",
+    },
+    key: "WhatSymptoms",
     input: [
       {
         name: strings.surveyTitle.whatSymptoms,
@@ -157,8 +233,11 @@ export const content = [
   {
     type: "input",
     title: strings.WhatSymptoms.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "WhenSymptoms",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "GeneralExposure",
+    },
+    key: "WhenSymptoms",
     input: [
       {
         name: strings.surveyTitle.symptomsStart,
@@ -192,8 +271,11 @@ export const content = [
   {
     type: "input",
     title: strings.GeneralExposure.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "GeneralExposure",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "InfluenzaVaccination",
+    },
+    key: "GeneralExposure",
     input: [
       {
         name: strings.surveyTitle.inContact,
@@ -271,8 +353,11 @@ export const content = [
   {
     type: "input",
     title: strings.InfluenzaVaccination.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "InfluenzaVaccination",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "GeneralHealth",
+    },
+    key: "InfluenzaVaccination",
     input: [
       {
         name: strings.surveyTitle.fluShot,
@@ -322,8 +407,11 @@ export const content = [
   {
     type: "input",
     title: strings.GeneralHealth.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "GeneralHealth",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "ThankYouSurvey",
+    },
+    key: "GeneralHealth",
     input: [
       {
         name: strings.surveyTitle.medicalCondition,
@@ -434,20 +522,29 @@ export const content = [
   {
     type: "timer",
     title: strings.ThankYouSurvey.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "ThankYouSurvey",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestStripReady",
+    },
+    key: "ThankYouSurvey",
   },
   {
     type: "basic",
     title: strings.TestStripReady.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestStripReady",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestStripSurvey",
+    },
+    key: "TestStripReady",
   },
   {
     type: "input",
     title: strings.TestStripSurvey.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestStripSurvey",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestStripSurvey2",
+    },
+    key: "TestStripSurvey",
     input: [
       {
         name: strings.surveyTitle.blueLine,
@@ -460,8 +557,11 @@ export const content = [
   {
     type: "input",
     title: strings.TestStripSurvey.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestStripSurvey2",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "RDTInstructions",
+    },
+    key: "TestStripSurvey2",
     input: [
       {
         name: strings.surveyTitle.pinkLine,
@@ -479,37 +579,52 @@ export const content = [
   {
     type: "basic",
     title: strings.RDTInstructions.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "RDTInstructions",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestStripCamera",
+    },
+    key: "RDTInstructions",
   },
   {
     type: "rdt",
     title: strings.TestStripCamera.title,
-    dbScreenName: "TestStripCamera",
+    key: "TestStripCamera",
   },
   {
     type: "basic",
     title: strings.TestStripConfirmation.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestStripConfirmation",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestResult",
+    },
+    key: "TestStripConfirmation",
   },
   {
     type: "basic",
     title: strings.TestResult.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestResult",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "CleanTest",
+    },
+    key: "TestResult",
   },
   {
     type: "basic",
     title: strings.CleanTest.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "CleanTest",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestFeedback",
+    },
+    key: "CleanTest",
   },
   {
     type: "input",
     title: strings.TestFeedback.title,
-    button: strings.common.button.continue.toUpperCase(),
-    dbScreenName: "TestFeedback",
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "FollowUpSurvey",
+    },
+    key: "TestFeedback",
     input: [
       {
         name: strings.surveyTitle.TestFeedback,
@@ -527,13 +642,16 @@ export const content = [
   {
     type: "basic",
     title: strings.FollowUpSurvey.title,
-    button: strings.common.button.continue.toUpperCase(),
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "Thanks",
+    },
     iosPopupOnContinue: "Allow",
-    dbScreenName: "FollowUpSurvey",
+    key: "FollowUpSurvey",
   },
   {
     type: "basic",
     title: strings.Thanks.title,
-    dbScreenName: "Thanks",
+    key: "Thanks",
   },
 ];
