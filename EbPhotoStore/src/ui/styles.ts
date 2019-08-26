@@ -3,9 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Dimensions, NativeModules, Platform, StatusBar } from "react-native";
-const { PlatformConstants } = NativeModules;
-const deviceType = PlatformConstants.interfaceIdiom;
+import { Platform, StatusBar } from "react-native";
 
 export const ICON_SIZE = 24;
 export const PRIMARY_COLOR = "#0F5DA7";

@@ -44,9 +44,7 @@ export default class App extends React.Component {
       <I18nextProvider i18n={i18n}>
         <Provider store={this.store}>
           <PersistGate loading={null} persistor={this.persistor!}>
-            <Fragment>
-              <AppController />
-            </Fragment>
+            <AppController />
           </PersistGate>
         </Provider>
       </I18nextProvider>

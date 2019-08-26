@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "../scripts/generate-build-info EbPhotoStore; ./scripts/build-hacks; react-native start",
-    "test": "jest",
+    "test": "jest -c test/jest.config.js",
     "lint": "eslint .",
     "lint-fix": "prettier --write *.ts{,x} 'src/**/*.ts{,x}'",
     "postinstall": "npx jetify"
@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
     "@babel/runtime": "^7.5.5",
     "@react-native-community/eslint-config": "^0.0.5",
     "@types/deep-equal": "^1.0.1",
@@ -50,9 +51,14 @@
     "prettier": "^1.18.2",
     "react-native-typescript-transformer": "^1.2.12",
     "react-test-renderer": "16.8.6",
+    "redux-mock-store": "^1.5.3",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "setUpFilesAfterEnv": [
+      "./__mocks__/react-i18next"
+    ]
   }
 }
