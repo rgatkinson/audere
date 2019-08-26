@@ -17,8 +17,8 @@ const LABELS = {
 const ORDER_OPTIONS = {
   barcode_asc: [[json("survey.samples[0].code") as string, "ASC"]],
   barcode_desc: [[json("survey.samples[0].code") as string, "DESC"]],
-  date_asc: [[json("survey.workflow.surveyCompletedAt"), "ASC"]],
-  date_desc: [[json("survey.workflow.surveyCompletedAt") as string, "DESC"]],
+  date_asc: [["createdAt", "ASC"]],
+  date_desc: [["createdAt", "DESC"]],
 };
 
 const PAGE_SIZE = 50;
@@ -46,11 +46,6 @@ export class RDTPhotos {
         {
           survey: {
             isDemo: false,
-            workflow: {
-              surveyCompletedAt: {
-                [Op.ne]: null,
-              },
-            },
             samples: {
               [Op.like]: "%manualEntry%",
               [Op.or]: {
@@ -70,12 +65,8 @@ export class RDTPhotos {
       barcode: survey.survey.samples.find(
         sample => sample.sample_type === "manualEntry"
       ).code,
-      date: new Date(
-        survey.survey.workflow.surveyCompletedAt
-      ).toLocaleDateString(),
-      time: new Date(
-        survey.survey.workflow.surveyCompletedAt
-      ).toLocaleTimeString(),
+      date: survey.createdAt.toLocaleDateString(),
+      time: survey.createdAt.toLocaleTimeString(),
       url: `coughPhoto?id=${survey.id}`,
     }));
 

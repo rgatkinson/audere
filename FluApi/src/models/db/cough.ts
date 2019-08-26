@@ -13,6 +13,7 @@ import {
   booleanColumn,
   integerColumn,
   jsonColumn,
+  dateColumn,
   nullable,
   unique,
   jsonbColumn,
@@ -160,6 +161,8 @@ export interface SurveyAttributes<Info> {
   docId: string;
   device: DeviceInfo;
   survey: Info;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 export function defineSurvey<Info>(
   sql: Sequelize,
@@ -172,6 +175,8 @@ export function defineSurvey<Info>(
       docId: unique(stringColumn("docid")),
       device: jsonColumn(),
       survey: jsonColumn(),
+      updatedAt: dateColumn(),
+      createdAt: dateColumn(),
     },
     { schema }
   );
