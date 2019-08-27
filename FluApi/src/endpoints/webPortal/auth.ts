@@ -22,28 +22,15 @@ export class AuthManager {
     const auth = new Passport();
     auth.use(
       new LocalStrategy(async (userid, password, done) => {
-        logger.info(`passport.local: looking up '${userid}'`);
         try {
-          const user = await this.models.user.findOne({ where: { userid } });
-          if (!user) {
-            logger.debug(`passport.local: could not find user for '${userid}'`);
-            const message = "Invalid userid/password combination";
-            return done(null, false, { message });
-          } else if (sha256(user.salt, userid, password) !== user.token) {
-            logger.debug(`passport.local: password invalid for '${userid}'`);
-            const message = "Invalid userid/password combination";
-            return done(null, false, { message });
+          const result = await this.verifyPassword(userid, password);
+          if (result.failed) {
+            done(null, false, { message: result.failed });
           } else {
-            logger.debug(
-              `passport.local: successfully authenticated '${userid}'`
-            );
-            return done(null, user);
+            done(null, result.user);
           }
-        } catch (err) {
-          logger.error(
-            `passport.local: error while authenticating '${userid}': ${err}`
-          );
-          return done(err);
+        } catch (e) {
+          done(e);
         }
       })
     );
@@ -68,6 +55,31 @@ export class AuthManager {
     });
 
     return auth;
+  }
+
+  public async verifyPassword(
+    userid: string,
+    password: string
+  ): Promise<{ user?: UserAttributes; failed?: string }> {
+    logger.info(`passport.local: looking up '${userid}'`);
+    try {
+      const user = await this.models.user.findOne({ where: { userid } });
+      if (!user) {
+        logger.debug(`passport.local: could not find user for '${userid}'`);
+        return { failed: "Invalid userid/password combination" };
+      } else if (sha256(user.salt, userid, password) !== user.token) {
+        logger.debug(`passport.local: password invalid for '${userid}'`);
+        return { failed: "Invalid userid/password combination" };
+      } else {
+        logger.debug(`passport.local: successfully authenticated '${userid}'`);
+        return { user };
+      }
+    } catch (err) {
+      logger.error(
+        `passport.local: error while authenticating '${userid}': ${err}`
+      );
+      throw err;
+    }
   }
 
   async createUser(userid: string, password: string): Promise<void> {

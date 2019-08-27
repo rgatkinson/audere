@@ -34,6 +34,7 @@ import {
 import logger from "../../util/logger";
 import { RDTPhotos } from "./rdtPhotos";
 import { S3DirectoryServer } from "./s3server";
+import { ManageAccount } from "./manageAccount";
 
 const INDEX_PAGE_LINKS = [
   {
@@ -187,6 +188,10 @@ function addHandlers(
     authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
     wrap(rdtPhotosServer.showPhotos)
   );
+
+  const manageAccount = new ManageAccount(config.sql, getStatic);
+  app.get("/manageAccount", wrap(manageAccount.getForm));
+  app.post("/manageAccount", wrap(manageAccount.updatePassword));
 
   return app;
 

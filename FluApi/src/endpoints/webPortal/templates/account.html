@@ -1,0 +1,49 @@
+<!--
+Copyright (c) 2019 by Audere
+
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file distributed with this file.
+-->
+
+<html>
+  <head>
+    <title>Audere Web Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{static}}/css/metrics.css"/>
+    <link rel="icon" type="image/x-icon" href="{{static}}/favicon-32x32.png" />
+    <style type="text/css">
+      img {
+        max-width: 80vw;
+        max-height: 80vh;
+      }
+      #passwordUpdate input {
+        padding: 3px;
+        margin: 5px;
+        width: 150px;
+      }
+      div.message {
+        color: darkgreen;
+      }
+      div.error {
+        color: darkred;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Audere Web Portal Account Settings</h1>
+    <form action="./manageAccount" method="post" id="passwordUpdate">
+      {{#if error}}
+        <div class="error">{{error}}</div>
+      {{/if}}
+      {{#if message}}
+        <div class="message">{{message}}</div>
+      {{/if}}
+      <input type="hidden" name="_csrf" value="{{csrf}}"/>
+      <div><input name="currentPassword" type="password" placeholder="Current Password"/></div>
+      <div><input name="newPassword" type="password" placeholder="New Password"/></div>
+      <div><input name="confirmNewPassword" type="password"/ placeholder="Confirm New Password"></div>
+      <div><input type="submit" value="Update Password"/></div>
+    </form>
+    <a href="./index">‹ Back</a>
+  </body>
+</html>
