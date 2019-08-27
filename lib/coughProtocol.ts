@@ -49,8 +49,8 @@ export interface ProtocolDocumentBase {
 }
 
 interface RDTVersionInfo {
-  rdtVersionAndroid: string;
-  rdtVersionIos: string;
+  rdtVersionAndroid?: string;
+  rdtVersionIos?: string;
 }
 
 export interface DeviceInfo {

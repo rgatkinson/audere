@@ -8,8 +8,8 @@ export interface ProtocolDocumentBase {
     device: DeviceInfo;
 }
 interface RDTVersionInfo {
-    rdtVersionAndroid: string;
-    rdtVersionIos: string;
+    rdtVersionAndroid?: string;
+    rdtVersionIos?: string;
 }
 export interface DeviceInfo {
     installation: string;
