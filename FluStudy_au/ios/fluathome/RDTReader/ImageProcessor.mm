@@ -63,6 +63,8 @@ const int RESULT_WINDOW_Y = 10;
 const int RESULT_WINDOW_WIDTH = 200;
 const int RESULT_WINDOW_HEIGHT = 30;
 const double ENHANCING_THRESHOLD = 4.5;
+const BOOL DEBUG_FLAG = NO;
+const double FRAME_IMAGE_SCALE = 1.0;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -99,17 +101,23 @@ Mat siftRefDescriptor;
         
         UIImage * image = [UIImage imageNamed:@"quickvue_ref_v5.jpg"];
         UIImageToMat(image, refImg);
-        NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
+        if (DEBUG_FLAG) {
+            NSLog(@"RefImg Size: (%d, %d)", refImg.size().width, refImg.size().height);
+        }
         
         GaussianBlur(refImg, refImg, cv::Size(5, 5), 0, 0);
         refImgSharpness = [sharedWrapper calculateSharpness:refImg];
-        NSLog(@"mRefImg sharpness: %.2f", refImgSharpness);
+        if (DEBUG_FLAG) {
+            NSLog(@"mRefImg sharpness: %.2f", refImgSharpness);
+        }
         
         cvtColor(refImg, refImg, CV_RGBA2GRAY); // Dereference the pointer
         detector->detectAndCompute(refImg, noArray(), refKeypoints, refDescriptor);
         siftDetector->detectAndCompute(refImg, noArray(), siftRefKeypoints, siftRefDescriptor);
-        NSLog(@"Successfully set up BRISK Detector and BFHamming matcher");
-        NSLog(@"Successfully detect and compute reference RDT, currently there are %lu %lu keypoints",refKeypoints.size(), siftRefKeypoints.size());
+        if (DEBUG_FLAG) {
+            NSLog(@"Successfully set up BRISK Detector and BFHamming matcher");
+            NSLog(@"Successfully detect and compute reference RDT, currently there are %lu %lu keypoints",refKeypoints.size(), siftRefKeypoints.size());
+        }
     });
     return sharedWrapper;
 }
@@ -135,7 +143,9 @@ Mat siftRefDescriptor;
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
 
     //mat.release();
-    NSLog(@"Mat size: (%d, %d)", mat.size().width, mat.size().height);
+    if (DEBUG_FLAG) {
+        NSLog(@"Mat size: (%d, %d)", mat.size().width, mat.size().height);
+    }
     return mat;
 }
 
@@ -183,7 +193,9 @@ Mat siftRefDescriptor;
 
     double sharpness = [self calculateSharpness:resized];
     
-    NSLog(@"inputMat sharpness: %.2f", sharpness);
+    if (DEBUG_FLAG) {
+        NSLog(@"inputMat sharpness: %.2f", sharpness);
+    }
     
     //CJ: checkSharpness starts
     bool isSharp = sharpness > (refImgSharpness * (1-SHARPNESS_THRESHOLD));
@@ -251,7 +263,9 @@ Mat siftRefDescriptor;
         }
     }
     
-    NSLog(@"PASSED: %d", passed);
+    if (DEBUG_FLAG) {
+        NSLog(@"PASSED: %d", passed);
+    }
     
     rgbMat.release();
     inputMat.release();
@@ -259,120 +273,6 @@ Mat siftRefDescriptor;
     completion(passed, testStripDetected, img, croppedRDTImg, fiducial, exposureResult, sizeResult, isCentered, isRightOrientation, angle, isSharp, false, boundary);
 }
 // end of caputureRDT
-
-- (vector<Point2f>)detectRDT:(Mat)inputMat andRansac: (int) ransac {
-    vector<Point2f> boundary;
-    double currentTime = CACurrentMediaTime();
-    Mat inDescriptor;
-    vector<KeyPoint> inKeypoints;
-    UIImage *resultImg;
-    //vector<cv::Point2f> boundary;
-    double avgDist = 0.0;
-    
-//    InputArray mask;
-    
-    Mat mask = Mat(inputMat.size().width, inputMat.size().height, CV_8U, Scalar(0));
-    
-    cv::Point p1 = cv::Point(0, inputMat.size().height*(1-VIEW_FINDER_SCALE_W)/2);
-    cv::Point p2 = cv::Point(inputMat.size().width-p1.x, inputMat.size().height-p1.y);
-    rectangle(mask, p1, p2, Scalar(255), -1);
-    
-    detector->detectAndCompute(inputMat, mask, inKeypoints, inDescriptor);
-    
-    if (inDescriptor.cols < 1 || inDescriptor.rows < 1) { // No features found!
-        NSLog(@"Found no features!");
-        NSLog(@"Time taken to detect: %f -- fail -- BRISK", CACurrentMediaTime() - currentTime);
-        return boundary;
-    }
-    NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
-    
-    // Matching
-    vector<DMatch> matches;
-    matcher->match(refDescriptor, inDescriptor, matches);
-    
-    double maxDist = FLT_MIN;
-    double minDist = FLT_MAX;
-    
-    for (int i = 0; i < matches.size(); i++) {
-        double dist = matches[i].distance;
-        maxDist = MAX(maxDist, dist);
-        minDist = MIN(minDist, dist);
-    }
-    
-    double sum = 0;
-    int count = 0;
-    vector<DMatch> goodMatches = matches;
-    sort(goodMatches.begin(), goodMatches.end(), [](DMatch a, DMatch b) {return a.distance < b.distance; });
-    
-    vector<Point2f> srcPoints; // Works without allocating space?
-    vector<Point2f> dstPoints;
-    
-    for (int i = 0; i < goodMatches.size(); i++) {
-        DMatch currentMatch = goodMatches[i];
-        srcPoints.push_back(refKeypoints[currentMatch.queryIdx].pt);
-        dstPoints.push_back(inKeypoints[currentMatch.trainIdx].pt);
-    }
-    
-    bool found = false;
-    NSMutableArray *posSizeArr  = nil;
-    // HOMOGRAPHY!
-    NSLog(@"GoodMatches size %lu", goodMatches.size());
-    if (goodMatches.size() > GOOD_MATCH_COUNT) {
-        Mat H = findHomography(srcPoints, dstPoints, CV_RANSAC, 5);
-        
-        if (H.cols >= 3 && H.rows >= 3) {
-            Mat objCorners = Mat(4, 1, CV_32FC2);
-            Mat sceneCorners = Mat(4, 1, CV_32FC2);
-            
-            objCorners.at<Vec2f>(0, 0)[0] = 0;
-            objCorners.at<Vec2f>(0, 0)[1] = 0;
-            
-            objCorners.at<Vec2f>(1, 0)[0] = refImg.cols - 1;
-            objCorners.at<Vec2f>(1, 0)[1] = 0;
-            
-            objCorners.at<Vec2f>(2, 0)[0] = refImg.cols - 1;
-            objCorners.at<Vec2f>(2, 0)[1] = refImg.rows - 1;
-            
-            objCorners.at<Vec2f>(3, 0)[0] = 0;
-            objCorners.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
-            
-            perspectiveTransform(objCorners, sceneCorners, H); // Not sure! if I'm suppose to dereference
-            
-            NSLog(@"Transformed-BRISK: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-                  sceneCorners.at<Vec2f>(1, 0)[0]-sceneCorners.at<Vec2f>(0, 0)[0],
-                  sceneCorners.at<Vec2f>(0, 0)[0], sceneCorners.at<Vec2f>(0, 0)[1],
-                  sceneCorners.at<Vec2f>(1, 0)[0], sceneCorners.at<Vec2f>(1, 0)[1],
-                  sceneCorners.at<Vec2f>(2, 0)[0], sceneCorners.at<Vec2f>(2, 0)[1],
-                  sceneCorners.at<Vec2f>(3, 0)[0], sceneCorners.at<Vec2f>(3, 0)[1]);
-            
-            
-            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]));
-            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(1,0)[0], sceneCorners.at<Vec2f>(1,0)[1]));
-            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(2,0)[0], sceneCorners.at<Vec2f>(2,0)[1]));
-            boundary.push_back(Point2f(sceneCorners.at<Vec2f>(3,0)[0], sceneCorners.at<Vec2f>(3,0)[1]));
-            
-            RotatedRect rotatedRect = cv::minAreaRect(boundary);
-            Point2f v[4];
-            rotatedRect.points(v);
-
-            for (int i = 0; i < 4; i++) {
-                if(rotatedRect.angle < -45)
-                    boundary[(i+2)%4] = v[i];
-                else
-                    boundary[(i+3)%4] = v[i];
-            }
-
-            objCorners.release();
-            sceneCorners.release();
-            
-            avgDist = sum/count;
-            NSLog(@"Average distance: %.2f", sum/count);
-
-        }
-    }
-    NSLog(@"Time taken to detect: %f - success - BRISK", CACurrentMediaTime() - currentTime);
-    return boundary;
-}
 
 - (double) measureOrientation:(vector<Point2f>) boundary {
     RotatedRect rotatedRect = minAreaRect(boundary);
@@ -436,7 +336,9 @@ Mat siftRefDescriptor;
     cv::Rect rect = boundingRect(boundary);
     float rotatedArea = rotatedRect.size.height*rotatedRect.size.width;
     float boundArea = rect.area();
-    NSLog(@"Rotated: %.2f, Bounding: %.2f, diff: %.2f -- BRISK", rotatedArea, boundArea, rotatedArea-boundArea);
+    if (DEBUG_FLAG) {
+        NSLog(@"Rotated: %.2f, Bounding: %.2f, diff: %.2f -- BRISK", rotatedArea, boundArea, rotatedArea-boundArea);
+    }
     
     SizeResult sizeResult = INVALID;
     
@@ -523,7 +425,9 @@ Mat siftRefDescriptor;
     result[3] = [NSNumber numberWithBool:(height > size.height*VIEW_FINDER_SCALE_H*(1+SIZE_THRESHOLD))]; // large
     result[4] = [NSNumber numberWithBool:(height < size.height*VIEW_FINDER_SCALE_H*(1-SIZE_THRESHOLD))];// small
 
-    NSLog(@"POS: %.2d, %.2d, Angle: %.2f, Height: %.2f", center.x, center.y, angle, height);
+    if (DEBUG_FLAG) {
+        NSLog(@"POS: %.2d, %.2d, Angle: %.2f, Height: %.2f", center.x, center.y, angle, height);
+    }
 
     return result;
 }
@@ -571,6 +475,7 @@ Mat siftRefDescriptor;
     calcHist(allMat, channel, Mat(), hist, mHistSize, histogramRanges);
     normalize(hist, hist, sizeBgra.height/2, 0, NORM_INF);
     mBuff.assign((float*)hist.datastart, (float*)hist.dataend);
+    hist.release();
     return mBuff;
 }
 
@@ -629,7 +534,9 @@ Mat siftRefDescriptor;
             }
             [device unlockForConfiguration];
         } else {
-            NSLog( @"Could not lock device for configuration: %@", error );
+            if (DEBUG_FLAG) {
+                NSLog( @"Could not lock device for configuration: %@", error );
+            }
         }
     });
 }
@@ -654,7 +561,9 @@ Mat siftRefDescriptor;
             //            }
             
             CGPoint focusPoint = CGPointMake(X, Y);
-            NSLog(@"%f, %f",focusPoint.x,focusPoint.y);
+            if (DEBUG_FLAG) {
+                NSLog(@"%f, %f",focusPoint.x,focusPoint.y);
+            }
             if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:FOCUS_MODE] ) {
                 device.focusPointOfInterest = focusPoint;
                 device.focusMode = FOCUS_MODE;
@@ -680,7 +589,9 @@ Mat siftRefDescriptor;
             [device unlockForConfiguration];
         }
         else {
-            NSLog( @"Could not lock device for configuration: %@", error );
+            if (DEBUG_FLAG) {
+                NSLog( @"Could not lock device for configuration: %@", error );
+            }
         }
     });
 }
@@ -696,10 +607,12 @@ Mat siftRefDescriptor;
     [insideBox appendPath:outerBox];
     insideBox.usesEvenOddFillRule = YES;
     
-    NSLog(@"View size: (%.2f,%.2f), Preview size: (%.2f, %.2f)", view.frame.size.width, view.frame.size.height,
-          previewView.frame.size.width, previewView.frame.size.height);
-    NSLog(@"View size: (%.2f,%.2f), Preview size: (%.2f, %.2f)", view.frame.origin.x, view.frame.origin.y,
-          previewView.frame.origin.x, previewView.frame.origin.y);
+    if (DEBUG_FLAG) {
+        NSLog(@"View size: (%.2f,%.2f), Preview size: (%.2f, %.2f)", view.frame.size.width, view.frame.size.height,
+              previewView.frame.size.width, previewView.frame.size.height);
+        NSLog(@"View size: (%.2f,%.2f), Preview size: (%.2f, %.2f)", view.frame.origin.x, view.frame.origin.y,
+              previewView.frame.origin.x, previewView.frame.origin.y);
+    }
     
     
     CAShapeLayer *fillLayer = [CAShapeLayer layer];
@@ -736,6 +649,10 @@ Mat siftRefDescriptor;
         *control = false;
         *testA = false;
         *testB = false;
+        
+        correctedMat.release();
+        resultMat.release();
+        
         return Mat();
     }
     
@@ -747,10 +664,12 @@ Mat siftRefDescriptor;
     cv::Point minLoc, maxLoc;
     minMaxLoc(grayMat, &minVal, &maxVal, &minLoc, &maxLoc, noArray());
     
-    NSLog(@"%@", [NSString stringWithFormat:@"stdev %.2f, minval %.2f, maxval %.2f",
-                             sigma[0],
-                             minVal,
-                             maxVal]);
+    if (DEBUG_FLAG) {
+        NSLog(@"%@", [NSString stringWithFormat:@"stdev %.2f, minval %.2f, maxval %.2f",
+                                 sigma[0],
+                                 minVal,
+                                 maxVal]);
+    }
     
     if (sigma[0] > ENHANCING_THRESHOLD)
         resultMat = [self enhanceResultWindow:resultMat withTile:cv::Size(5, resultMat.cols)];
@@ -759,6 +678,9 @@ Mat siftRefDescriptor;
     //resultMat = [self correctGamma:resultMat withGamma:0.75];
 
     [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
+    
+    grayMat.release();
+    correctedMat.release();
 
     return resultMat;
 }
@@ -779,7 +701,9 @@ Mat siftRefDescriptor;
         isSizeable = [self checkSize:boundary inside:cv::Size(inputMat.size().width/CROP_RATIO, inputMat.size().height/CROP_RATIO)];
         isCentered = [self checkIfCentered:boundary inside:inputMat.size()];
         isUpright = [self checkOrientation:boundary];
-        NSLog(@"SIFT-right size %d, center %d, orientation %d, (%d, %d), cnt %d", isSizeable, isCentered, isUpright, inputMat.size().width, inputMat.size().height, cnt);
+        if (DEBUG_FLAG) {
+            NSLog(@"SIFT-right size %d, center %d, orientation %d, (%d, %d), cnt %d", isSizeable, isCentered, isUpright, inputMat.size().width, inputMat.size().height, cnt);
+        }
     } while (!(isSizeable==RIGHT_SIZE && isCentered && isUpright) && cnt < 8);
     
     if (boundary.size() <= 0)
@@ -793,6 +717,10 @@ Mat siftRefDescriptor;
         *control = false;
         *testA = false;
         *testB = false;
+        
+        correctedMat.release();
+        resultMat.release();
+        
         return Mat();
     }
     
@@ -802,16 +730,22 @@ Mat siftRefDescriptor;
     
     [self interpretResultWithResultWindow:resultMat andControlLine:control andTestA:testA andTestB:testB];
     
+    correctedMat.release();
+    
     return resultMat;
 }
 
 -(Mat) interpretResultWithResultWindow:(Mat) inputMat andControlLine: (bool*) control andTestA: (bool*) testA andTestB: (bool*) testB {
-    NSLog(@"Result Mat size: (%d, %d) -- interpretation", inputMat.size().width, inputMat.size().height);
+    if (DEBUG_FLAG) {
+        NSLog(@"Result Mat size: (%d, %d) -- interpretation", inputMat.size().width, inputMat.size().height);
+    }
     *control = [self readControlLine:inputMat at:cv::Point(CONTROL_LINE_POSITION,0)];
     *testA = [self readTestLine:inputMat at:cv::Point(TEST_A_LINE_POSITION,0)];
     *testB = [self readTestLine:inputMat at:cv::Point(TEST_B_LINE_POSITION,0)];
     
-    NSLog(@"Control: %d, TestA: %d, TestB: %d", *control, *testA, *testB);
+    if (DEBUG_FLAG) {
+        NSLog(@"Control: %d, TestA: %d, TestB: %d", *control, *testA, *testB);
+    }
     
     return inputMat;
 }
@@ -877,11 +811,15 @@ Mat siftRefDescriptor;
     for (int i = 0; i < contours.size(); i++)
     {
         cv::Rect rect = boundingRect(contours[i]);
-        NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        if (DEBUG_FLAG) {
+            NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        }
         double rectPos = rect.x + rect.width;
         if (FIDUCIAL_POSITION_MIN < rectPos && rectPos < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
             fiducialRects.push_back(rect);
-            NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+            if (DEBUG_FLAG) {
+                NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+            }
         }
     }
     
@@ -902,7 +840,9 @@ Mat siftRefDescriptor;
         cv::Point tl = cv::Point(midpoint+offset-RESULT_WINDOW_RECT_HEIGHT*scale/2.0, RESULT_WINDOW_RECT_WIDTH_PADDING);
         cv::Point br = cv::Point(midpoint+offset+RESULT_WINDOW_RECT_HEIGHT*scale/2.0, inputMat.size().height-RESULT_WINDOW_RECT_WIDTH_PADDING);
         
-        NSLog(@"Scale %.2f, Offset %.2f", scale, offset);
+        if (DEBUG_FLAG) {
+            NSLog(@"Scale %.2f, Offset %.2f", scale, offset);
+        }
         
         fiducialRect = cv::Rect(tl, br);
         
@@ -951,11 +891,16 @@ Mat siftRefDescriptor;
     for (int i = 0; i < contours.size(); i++)
     {
         cv::Rect rect = boundingRect(contours[i]);
-        NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        if (DEBUG_FLAG) {
+            NSLog(@"contour rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+        }
         double rectCenter = rect.x + rect.width/2.0;
         if (FIDUCIAL_POSITION_MIN < rectCenter && rectCenter < FIDUCIAL_POSITION_MAX && FIDUCIAL_MIN_HEIGHT < rect.height && FIDUCIAL_MIN_WIDTH < rect.width && rect.width < FIDUCIAL_MAX_WIDTH) {
             fiducialRects.push_back(rect);
-            NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+            if (DEBUG_FLAG) {
+                NSLog(@"control line rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+            }
+                
         }
     }
     
@@ -1026,9 +971,11 @@ Mat siftRefDescriptor;
     vDSP_minvi(avgIntensities, 1, &min, &min_index, upper_bound-lower_bound);
     vDSP_maxvi(avgIntensities, 1, &max, &max_index, upper_bound-lower_bound);
     
-    NSLog(@"Intensity Minimum HLS (%.2f, %.2f, %.2f) at %lu/%d", avgHues[min_index]*2, min/255*100, avgSats[min_index]/255*100, min_index, upper_bound-lower_bound);
-    NSLog(@"Intensity Maximum HLS (%.2f, %.2f, %.2f) at %lu/%d", avgHues[max_index]*2, max/255*100, avgSats[max_index]/255*100, max_index, upper_bound-lower_bound);
-    NSLog(@"Intensity diff %.3f",abs(min-max));
+    if (DEBUG_FLAG) {
+        NSLog(@"Intensity Minimum HLS (%.2f, %.2f, %.2f) at %lu/%d", avgHues[min_index]*2, min/255*100, avgSats[min_index]/255*100, min_index, upper_bound-lower_bound);
+        NSLog(@"Intensity Maximum HLS (%.2f, %.2f, %.2f) at %lu/%d", avgHues[max_index]*2, max/255*100, avgSats[max_index]/255*100, max_index, upper_bound-lower_bound);
+        NSLog(@"Intensity diff %.3f",abs(min-max));
+    }
     
     if (isControlLine) {
         return min < INTENSITY_THRESHOLD && abs(min-max) > CONTROL_INTENSITY_PEAK_THRESHOLD;
@@ -1048,7 +995,9 @@ Mat siftRefDescriptor;
 
 -(Mat) enhanceResultWindow:(Mat) inputMat withTile: (cv::Size) tile{
     Mat result = Mat();
-    NSLog(@"Enhance Result Mat Type: %d", inputMat.type());
+    if (DEBUG_FLAG) {
+        NSLog(@"Enhance Result Mat Type: %d", inputMat.type());
+    }
     cvtColor(inputMat, result, COLOR_RGBA2RGB);
     cvtColor(result, result, COLOR_RGB2HLS);
     
@@ -1100,19 +1049,23 @@ Mat siftRefDescriptor;
     ref_boundary.at<Vec2f>(3, 0)[0] = 0;
     ref_boundary.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
     
-    NSLog(@"ref_boundary:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-          ref_boundary.at<Vec2f>(0, 0)[0], ref_boundary.at<Vec2f>(0, 0)[1],
-          ref_boundary.at<Vec2f>(1, 0)[0], ref_boundary.at<Vec2f>(1, 0)[1],
-          ref_boundary.at<Vec2f>(2, 0)[0], ref_boundary.at<Vec2f>(2, 0)[1],
-          ref_boundary.at<Vec2f>(3, 0)[0], ref_boundary.at<Vec2f>(3, 0)[1]);
+    if (DEBUG_FLAG) {
+        NSLog(@"ref_boundary:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+              ref_boundary.at<Vec2f>(0, 0)[0], ref_boundary.at<Vec2f>(0, 0)[1],
+              ref_boundary.at<Vec2f>(1, 0)[0], ref_boundary.at<Vec2f>(1, 0)[1],
+              ref_boundary.at<Vec2f>(2, 0)[0], ref_boundary.at<Vec2f>(2, 0)[1],
+              ref_boundary.at<Vec2f>(3, 0)[0], ref_boundary.at<Vec2f>(3, 0)[1]);
+    }
     
     Mat boundaryMat = Mat(boundary);
     
-    NSLog(@"boundaryMat:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-          boundaryMat.at<Vec2f>(0, 0)[0], boundaryMat.at<Vec2f>(0, 0)[1],
-          boundaryMat.at<Vec2f>(1, 0)[0], boundaryMat.at<Vec2f>(1, 0)[1],
-          boundaryMat.at<Vec2f>(2, 0)[0], boundaryMat.at<Vec2f>(2, 0)[1],
-          boundaryMat.at<Vec2f>(3, 0)[0], boundaryMat.at<Vec2f>(3, 0)[1]);
+    if (DEBUG_FLAG) {
+        NSLog(@"boundaryMat:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+              boundaryMat.at<Vec2f>(0, 0)[0], boundaryMat.at<Vec2f>(0, 0)[1],
+              boundaryMat.at<Vec2f>(1, 0)[0], boundaryMat.at<Vec2f>(1, 0)[1],
+              boundaryMat.at<Vec2f>(2, 0)[0], boundaryMat.at<Vec2f>(2, 0)[1],
+              boundaryMat.at<Vec2f>(3, 0)[0], boundaryMat.at<Vec2f>(3, 0)[1]);
+    }
     
     Mat M = getPerspectiveTransform(boundaryMat, ref_boundary);
     Mat correctedMat = Mat(refImg.rows, refImg.cols, refImg.type());
@@ -1129,7 +1082,7 @@ Mat siftRefDescriptor;
     if (!(*fiducial)) {
         return Mat();
     }
-    
+
     correctedMat = Mat(correctedMat, resultWindowRect);
     resize(correctedMat, correctedMat, cv::Size(RESULT_WINDOW_RECT_HEIGHT, refImg.rows-2*RESULT_WINDOW_RECT_WIDTH_PADDING));
 
@@ -1143,16 +1096,28 @@ Mat siftRefDescriptor;
     vector<cv::Point2f> boundary;
     double avgDist = 0.0;
     
-    Mat mask = Mat(inputMat.size().width, inputMat.size().height, CV_8U, Scalar(0));
+    Mat scaledMat = Mat();
+    cv::resize(inputMat, scaledMat, cv::Size(), FRAME_IMAGE_SCALE, FRAME_IMAGE_SCALE, INTER_LINEAR);
     
-    cv::Point p1 = cv::Point(0, inputMat.size().height*(1-VIEW_FINDER_SCALE_W/CROP_RATIO)/2);
-    cv::Point p2 = cv::Point(inputMat.size().width-p1.x, inputMat.size().height-p1.y);
+    Mat mask = Mat(scaledMat.size().width, scaledMat.size().height, CV_8U, Scalar(0));
+    
+    cv::Point p1 = cv::Point(0, scaledMat.size().height*(1-VIEW_FINDER_SCALE_W/CROP_RATIO)/2);
+    cv::Point p2 = cv::Point(scaledMat.size().width-p1.x, scaledMat.size().height-p1.y);
     rectangle(mask, p1, p2, Scalar(255), -1);
-    siftDetector->detectAndCompute(inputMat(cv::Rect(p1, p2)), noArray(), inKeypoints, inDescriptor);
-    NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
+    siftDetector->detectAndCompute(scaledMat(cv::Rect(p1, p2)), noArray(), inKeypoints, inDescriptor);
+    if (DEBUG_FLAG) {
+        NSLog(@"Found %lu keypoints from input image", inKeypoints.size());
+    }
     if (inDescriptor.cols < 1 || inDescriptor.rows < 1) { // No features found!
-        NSLog(@"Found no features!");
-        NSLog(@"Time taken to detect: %f -- fail -- SIFT", CACurrentMediaTime() - currentTime);
+        if (DEBUG_FLAG) {
+            NSLog(@"Found no features!");
+            NSLog(@"Time taken to detect: %f -- fail -- SIFT", CACurrentMediaTime() - currentTime);
+        }
+        
+        inDescriptor.release();
+        mask.release();
+        scaledMat.release();
+        
         return boundary;
     }
 
@@ -1186,7 +1151,9 @@ Mat siftRefDescriptor;
     }
     
     // HOMOGRAPHY!
-    NSLog(@"GoodMatches size %lu", goodMatches.size());
+    if (DEBUG_FLAG) {
+        NSLog(@"GoodMatches size %lu", goodMatches.size());
+    }
     if (goodMatches.size() > GOOD_MATCH_COUNT) {
         Mat H = findHomography(srcPoints, dstPoints, CV_RANSAC, ransac);
         
@@ -1207,17 +1174,19 @@ Mat siftRefDescriptor;
             objCorners.at<Vec2f>(3, 0)[1] = refImg.rows - 1;
             
             perspectiveTransform(objCorners, sceneCorners, H);
-            NSLog(@"DstPts-SIFT:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-                  dstPoints[0].x, dstPoints[0].y,
-                  dstPoints[1].x, dstPoints[1].y,
-                  dstPoints[2].x, dstPoints[2].y,
-                  dstPoints[3].x, dstPoints[3].y);
-            NSLog(@"Transformed-SIFT: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-                  sceneCorners.at<Vec2f>(1, 0)[0]-sceneCorners.at<Vec2f>(0, 0)[0],
-                  sceneCorners.at<Vec2f>(0, 0)[0], sceneCorners.at<Vec2f>(0, 0)[1],
-                  sceneCorners.at<Vec2f>(1, 0)[0], sceneCorners.at<Vec2f>(1, 0)[1],
-                  sceneCorners.at<Vec2f>(2, 0)[0], sceneCorners.at<Vec2f>(2, 0)[1],
-                  sceneCorners.at<Vec2f>(3, 0)[0], sceneCorners.at<Vec2f>(3, 0)[1]);
+            if (DEBUG_FLAG) {
+                NSLog(@"DstPts-SIFT:  (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+                      dstPoints[0].x, dstPoints[0].y,
+                      dstPoints[1].x, dstPoints[1].y,
+                      dstPoints[2].x, dstPoints[2].y,
+                      dstPoints[3].x, dstPoints[3].y);
+                NSLog(@"Transformed-SIFT: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+                      sceneCorners.at<Vec2f>(1, 0)[0]-sceneCorners.at<Vec2f>(0, 0)[0],
+                      sceneCorners.at<Vec2f>(0, 0)[0], sceneCorners.at<Vec2f>(0, 0)[1],
+                      sceneCorners.at<Vec2f>(1, 0)[0], sceneCorners.at<Vec2f>(1, 0)[1],
+                      sceneCorners.at<Vec2f>(2, 0)[0], sceneCorners.at<Vec2f>(2, 0)[1],
+                      sceneCorners.at<Vec2f>(3, 0)[0], sceneCorners.at<Vec2f>(3, 0)[1]);
+            }
             
             
             (boundary).push_back(Point2f(sceneCorners.at<Vec2f>(0,0)[0], sceneCorners.at<Vec2f>(0,0)[1]+p1.y));
@@ -1236,30 +1205,37 @@ Mat siftRefDescriptor;
             
             for (int i = 0; i < 4; i++) {
                 if(rotatedRect.angle < -45)
-                    boundary[(i+2)%4] = v[i];
+                    boundary[(i+2)%4] = cv::Point(v[i].x/FRAME_IMAGE_SCALE, v[i].y/FRAME_IMAGE_SCALE);
                 else
-                    boundary[(i+3)%4] = v[i];
+                    boundary[(i+3)%4] = cv::Point(v[i].x/FRAME_IMAGE_SCALE, v[i].y/FRAME_IMAGE_SCALE);
             }
             
             cv::Rect rect = boundingRect(boundary);
             
-            NSLog(@"Transformed-SIFT-updated: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
-                  v[0].x-v[1].x,
-                  v[0].x, v[0].y,
-                  v[1].x, v[1].y,
-                  v[2].x, v[2].y,
-                  v[3].x, v[3].y);
+            if (DEBUG_FLAG) {
+                NSLog(@"Transformed-SIFT-updated: %.2f (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f) (%.2f, %.2f)",
+                      v[0].x-v[1].x,
+                      v[0].x, v[0].y,
+                      v[1].x, v[1].y,
+                      v[2].x, v[2].y,
+                      v[3].x, v[3].y);
+            }
             
             float rotatedArea = rotatedRect.size.height*rotatedRect.size.width;
             float boundArea = rect.area();
-            NSLog(@"Rotated: %.2f, contour: %.2f, diff: %.2f -- SIFT -- angle: %.2f", rotatedArea, contourArea(boundary), rotatedArea-contourArea(boundary), rotatedRect.angle);
+            if (DEBUG_FLAG) {
+                NSLog(@"Rotated: %.2f, contour: %.2f, diff: %.2f -- SIFT -- angle: %.2f", rotatedArea, contourArea(boundary), rotatedArea-contourArea(boundary), rotatedRect.angle);
+            }
         }
 
         H.release();
     }
-    NSLog(@"Time taken to detect: %f -- success -- SIFT", CACurrentMediaTime() - currentTime);
+    if (DEBUG_FLAG) {
+        NSLog(@"Time taken to detect: %f -- success -- SIFT", CACurrentMediaTime() - currentTime);
+    }
     inDescriptor.release();
     mask.release();
+    scaledMat.release();
     return boundary;
 }
 
