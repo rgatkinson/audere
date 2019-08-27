@@ -301,6 +301,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           device->'clientVersion'->>'name' as clientversion_name,
           device->'clientVersion'->>'version' as clientversion_version,
           device->'clientVersion'->>'buildDate' as clientversion_builddate,
+          device->'clientVersion'->>'rdtVersionAndroid' as clientversion_rdt_android
+          device->'clientVersion'->>'rdtVersionIos' as clientversion_rdt_ios
 
           survey,
           survey->'marketingProperties' as marketingproperties,
@@ -335,6 +337,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'controlLineFound' as rdtreaderresult_controllinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
+          survey->'rdtInfo'->'rdtReaderResult'->>'testStripBoundary' as rdtreaderresult_teststripboundary,
         from cough_derived.survey_named_array_items
       `,
     }),
