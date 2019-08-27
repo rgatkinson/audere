@@ -125,11 +125,11 @@ resource "aws_kms_alias" "ssm_parameters" {
 // --------------------------------------------------------------------------------
 // ECR image push user
 
-resource "aws_iam_user" "ecr_push" {
-  name = "ecr-push"
+resource "aws_iam_user" "build_user" {
+  name = "build-user"
 }
 
-resource "aws_iam_user_policy_attachment" "ecr_push" {
+resource "aws_iam_user_policy_attachment" "build_user" {
   user       = "${aws_iam_user.ecr_push.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
@@ -145,11 +145,11 @@ data "aws_iam_policy_document" "create_ecr_repository_document" {
 }
 
 resource "aws_iam_policy" "create_ecr_repository_policy" {
-  name   = "ecr-push-create-repo"
+  name   = "ecr-create-repo"
   policy = "${data.aws_iam_policy_document.create_ecr_repository_document.json}"
 }
 
 resource "aws_iam_user_policy_attachment" "create_ecr_repository_attachment" {
-  user       = "${aws_iam_user.ecr_push.name}"
+  user       = "${aws_iam_user.build_user.name}"
   policy_arn = "${aws_iam_policy.create_ecr_repository_policy.arn}"
 }

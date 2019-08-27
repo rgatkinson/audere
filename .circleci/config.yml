@@ -1,7 +1,45 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.15
+  aws-ecr: circleci/aws-ecr@6.2.0
+  aws-ecs: circleci/aws-ecs@0.0.11
+  aws-s3: circleci/aws-s3@1.0.11
+
+parameters:
+  # Workflow triggers
+  build_and_deploy_service:
+    type: boolean
+    default: false
+  deploy_service:
+    type: boolean
+    default: false
+  promote_service:
+    type: boolean
+    default: false
+  sync_dags:
+    type: boolean
+    default: false
+
+  dockerfile:
+    type: string
+    default: ""
+  ecs_service_name:
+    type: string
+    default: ""
+  ecs_task_definition:
+    type: string
+    default: ""
+  environment:
+    type: string
+    default: ""
+  repo:
+    type: string
+    default: ""
+  service_name:
+    type: string
+    default: ""
+
 aliases:
   - &filter_sniffles_tag_staging
     tags:
@@ -13,10 +51,21 @@ aliases:
       only: /v0\.1\.[0-9]+_prod_[a-zA-Z0-9]+$/
     branches:
       ignore: /.*/
+  - &aws_creds
+      aws-access-key-id: AWS_ACCESS_KEY_ID
+      aws-secret-access-key: AWS_SECRET_ACCESS_KEY
 
 const: &const
   PROD_SERVER: "https://api.auderenow.io/api"
   STAGING_SERVER: "https://api.staging.auderenow.io/api"
+
+ecs_hosts: &ecs_hosts
+  staging: STAGING_ECS_CLUSTER
+  prod: PRODUCTION_ECS_CLUSTER
+
+dag_buckets: &dag_buckets
+  staging: STAGING_DAG_BUCKET
+  prod: PRODUCTION_DAG_BUCKET
 
 defaults: &defaults
   docker:
@@ -97,7 +146,6 @@ set_firebase_config: &set_firebase_config
     esac
     grep project_id android/app/google-services.json
 
-version: 2
 jobs:
   build:
     <<: *defaults
@@ -175,7 +223,7 @@ jobs:
             sudo apt-get install -y postgresql-client
             # Wait up to a minute for port 5432 to open
             for i in $(seq 60); do (! nc -z localhost 5432) && sleep 1 || break; done
-            psql "$TEST_DATABASE_URL" <<EOF
+            psql "$TEST_DATABASE_URL" \<<EOF
               CREATE DATABASE test_pii;
               CREATE DATABASE test_nonpii;
             EOF
@@ -665,8 +713,62 @@ jobs:
       - store_artifacts:
           path: /tmp/repo/EbPhotoStore/android/app/build/outputs/bundle/release
 
+  add_image_tag:
+    <<: *defaults
+    parameters:
+      repo:
+        type: string
+      current_tag:
+        type: string
+      additional_tag:
+        type: string
+    steps:
+      - run:
+          name: Copy image manifest to env
+          command: |
+            MANIFEST=$(aws ecr batch-get-image --repository-name << parameters.repo >> --image-ids imageTag=<< parameters.current_tag >> --query 'images[].imageManifest' --output text)
+      - run:
+          name: Put additional image tag
+          command: |
+            aws ecr put-image --repository-name << parameters.repo >> --image-tag << parameters.additional_tag >> --image-manifest "$MANIFEST"
+
+  aws-cli:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/install
+      - aws-cli/configure:
+          <<: *aws_creds
+
+  build_service:
+    <<: *defaults
+    parameters:
+      service_name:
+        type: string
+    working_directory: /tmp/repo
+    steps:
+      - checkout:
+          path: /tmp/repo
+      - run:
+          name: Build container service
+          command: |
+            ./scripts/build_service << parameters.service_name >>
+
+  sync_dags_bucket:
+    <<: *defaults
+    parameters:
+      bucket:
+        type: string
+    working_directory: /tmp/repo
+    steps:
+      - checkout:
+          path: /tmp/repo
+      - aws-s3/sync:
+          <<: *aws_creds
+          from: pipeline/workflows
+          to: dag_buckets['<< pipeline.parameters.environment >>']
+
 workflows:
-  version: 2
   build_and_publish:
     jobs:
       - build:
@@ -691,3 +793,46 @@ workflows:
                 - master
     jobs:
       - snyk_scan
+  build_and_deploy_service:
+    when: << pipeline.parameters.build_and_deploy_service >>
+    jobs:
+      - build_service:
+          service_name: << pipeline.parameters.service_name >>
+      - aws-ecr/build-and-push-image:
+          <<: *aws_creds
+          dockerfile: << pipeline.parameters.dockerfile >>
+          repo: << pipeline.parameters.repo >>
+          tag: staging
+      - add_image_tag:
+          repo: << pipeline.parameters.repo >>
+          current_tag: staging
+          additional_tag: ${CIRCLE_SHA1}
+      - aws-ecs/deploy-service-update:
+          family: << pipeline.parameters.ecs_task_definition >>
+          cluster-name: STAGING_ECS_CLUSTER
+          service-name: << pipeline.parameters.ecs_service_name >>
+  deploy_service:
+    when: << pipeline.parameters.deploy_service >>
+    jobs:
+      - aws-cli
+      - aws-ecs/deploy-service-update:
+          family: << pipeline.parameters.ecs_task_definition >>
+          cluster-name: ecs_hosts['<< pipeline.parameters.environment >>']
+          service-name: << pipeline.parameters.ecs_service_name >>
+  promote_service:
+    when: << pipeline.parameters.promote_service >>
+    jobs:
+      - aws-cli
+      - add_image_tag:
+          repo: << pipeline.parameters.repo >>
+          current_tag: staging
+          additional_tag: prod
+      - aws-ecs/deploy-service-update:
+          family: << pipeline.parameters.ecs_task_definition >>
+          cluster-name: PRODUCTION_ECS_CLUSTER
+          service-name: << pipeline.parameters.ecs_service_name >>
+  sync_dags:
+    when: << pipeline.parameters.sync_dags >>
+    jobs:
+      - sync_dags_bucket:
+          bucket: dag_buckets['<< pipeline.parameters.environment >>']

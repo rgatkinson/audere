@@ -7,6 +7,10 @@ output "app_subnet_id" {
   value = "${aws_subnet.app.id}"
 }
 
+output "app_b_subnet_id" {
+  value = "${aws_subnet.app_b.id}"
+}
+
 output "bastion_ingress_sg_id" {
   value = "${aws_security_group.bastion_ingress.id}"
 }
@@ -51,6 +55,14 @@ output "db_pii_subnet_id" {
   value = "${aws_subnet.db_pii.id}"
 }
 
+output "ecs_dynamic_client_sg_id" {
+  value = "${aws_security_group.ecs_dynamic_ports_sg.client_id}"
+}
+
+output "ecs_dynamic_server_sg_id" {
+  value = "${aws_security_group.ecs_dynamic_ports_sg.server_id}"
+}
+
 output "fluapi_client_sg_id" {
   value = "${module.fluapi_sg.client_id}"
 }
@@ -77,6 +89,14 @@ output "internet_egress_sg_id" {
 
 output "public_http_sg_id" {
   value = "${aws_security_group.public_http.id}"
+}
+
+output "redis_client_sg_id" {
+  value = "${module.redis_sg.client_id}"
+}
+
+output "redis_server_sg_id" {
+  value = "${module.redis_sg.server_id}"
 }
 
 output "reporting_client_sg_id" {

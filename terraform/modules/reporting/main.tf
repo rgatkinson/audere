@@ -14,7 +14,7 @@ locals {
 }
 
 // --------------------------------------------------------------------------------
-// ELB/domain setup
+// Reporting public ELB/domain setup
 
 resource "aws_route53_record" "reporting_record" {
   zone_id = "${var.auderenow_route53_zone_id}"
@@ -85,7 +85,7 @@ data "template_file" "metabase" {
 resource "aws_ecs_task_definition" "metabase" {
   family = "metabase-${var.environment}"
   container_definitions = "${data.template_file.metabase.rendered}"
-  execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
+  execution_role_arn = "${aws_iam_role.metabase_task_execution_role.arn}"
 }
 
 resource "aws_ecs_service" "metabase" {

@@ -29,6 +29,10 @@ function main() {
   yum -y update
   yum -y install tar bzip2 jq unzip wget
 
+  # Mount Airflow DAGs
+  add_s3fs
+  s3fs -o allow_other -o use_sse=1 airflow-dags-${environment} /sf3s/dags
+
   add_developer_accounts
   download_assets
 
@@ -47,6 +51,11 @@ function add_developer() {
   useradd -m -c "$u" "$u"
   write_sshkey "$u"
   echo "$u ALL=(ALL) NOPASSWD:ALL" >"/etc/sudoers.d/50-$u"
+}
+
+function add_s3fs() {
+  sudo amazon-linux-extras install epel
+  sudo yum install s3fs-fuse
 }
 
 function write_sshkey() {

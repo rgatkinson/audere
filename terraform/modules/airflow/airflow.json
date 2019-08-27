@@ -1,0 +1,81 @@
+{
+  "name": "${container_name}",
+  "image": "${image}",
+  "essential": true,
+  "portMappings": [
+    {
+      "containerPort": "${container_port}",
+      "hostPort": "${host_port}"
+    }
+  ],
+  "command": [
+    "${command}"
+  ],
+  "environment": [
+    {
+      "name": "AIRFLOW__CORE__DAGS_FOLDER",
+      "value": "/s3fs/dags"
+    },
+    {
+      "name": "REDIS_HOST",
+      "value": "${redis_host}"
+    },
+    {
+      "name": "REDIS_PORT",
+      "value": "${redis_port}"
+    },
+    {
+      "name": "POSTGRES_HOST",
+      "value": "${postgres_host}"
+    },
+    {
+      "name": "POSTGRES_PORT",
+      "value": "${postgres_port}"
+    },
+    {
+        "name": "POSTGRES_DB",
+        "value": "airflow"
+    },
+    {
+      "name": "ENABLE_REMOTE_LOGGING",
+      "value": "False"
+    }
+  ],
+  "secrets": [
+    {
+      "name": "FERNET_KEY",
+      "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/${fernet_key}"
+    },
+    {
+      "name": "POSTGRES_USER",
+      "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/${postgres_user_key}"
+    },
+    {
+      "name": "POSTGRES_PASSWORD",
+      "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/${postgres_pass_key}"
+    }
+  ],
+  "logConfiguration": {
+    "logDriver": "awslogs",
+    "options": {
+      "awslogs-group": "airflow-${var.environment}",
+      "awslogs-region": "${region}",
+      "awslogs-stream-prefix": "${command}",
+      "awslogs-create-group": "true"
+    }
+  },
+  "mountPoints": [
+    {
+      "sourceVolume": "s3fs-dags",
+      "containerPath": "/s3fs/dags"
+    }
+  ],
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": "/s3fs/dags"
+      },
+      "name": "s3fs-dags"
+    }
+  ]
+}

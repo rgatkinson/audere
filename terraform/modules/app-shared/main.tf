@@ -47,9 +47,11 @@ module "ecs_cluster" {
   subnet_ids = ["${var.app_subnet_id}"]
   security_groups = [
     "${var.internet_egress_sg_id}",
-    "${var.reporting_server_sg_id}",
     "${var.db_client_sg_id}",
     "${var.dev_ssh_server_sg_id}",
+    "${var.ecs_dynamic_server_sg_id}",
+    "${var.redis_client_sg_id}",
+    "${var.reporting_server_sg_id}",
   ]
 }
 
@@ -69,6 +71,24 @@ module "cough_sftp" {
   sftp_host = "${module.sftp.sftp_host}"
   transfer_server_id = "${module.sftp.transfer_server_id}"
   user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.${var.environment}.pub")}"
+}
+
+
+// --------------------------------------------------------------------------------
+// Airflow DAGs bucket
+
+resource "aws_s3_bucket" "airflow_dags_bucket" {
+  bucket = "airflow-dags-${var.environment}"
+  acl = "private"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
 }
 
 locals {

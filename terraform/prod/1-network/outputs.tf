@@ -51,6 +51,14 @@ output "dev_machine_subnet_id" {
   value = "${module.env_network.dev_machine_subnet_id}"
 }
 
+output "ecs_dynamic_client_sg_id" {
+  value = "${module.env_network.ecs_dynamic_client_sg_id}"
+}
+
+output "ecs_dynamic_server_sg_id" {
+  value = "${module.env_network.ecs_dynamic_server_sg_id}"
+}
+
 output "fluapi_internal_client_sg_id" {
   value = "${module.env_network.fluapi_internal_client_sg_id}"
 }
@@ -77,6 +85,14 @@ output "internet_egress_sg_id" {
 
 output "public_http_sg_id" {
   value = "${module.env_network.public_http_sg_id}"
+}
+
+output "redis_client_sg_id" {
+  value = "${module.env_network.redis_client_sg_id}"
+}
+
+output "redis_server_sg_id" {
+  value = "${module.env_network.redis_server_sg_id}"
 }
 
 output "reporting_client_sg_id" {

@@ -1,0 +1,38 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+
+function usage() {
+  echo 1>&2 "$*"
+  echo 1>&2 "Usage:"
+  echo 1>&2 "  build-service <service>"
+  echo 1>&2 ""
+  echo 1>&2 "<service> is the name of the service to be built"
+  echo 1>&2 ""
+  echo 1>&2 "Example:"
+  echo 1>&2 "  build-service fluapi"
+  echo 1>&2 ""
+  exit 1
+}
+
+case "$#" in
+  1) readonly service="$1";;
+  *) usage "Expected 1 argument, got $#.";;
+esac
+
+case "$service" in
+  fluapi)
+    (set -x
+    cd FluApi
+    yarn install
+    yarn build
+    )
+    ;;
+  *) usage "Expected a defined service, got $service.";;
+esac
+
+echo ""

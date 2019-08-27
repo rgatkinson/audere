@@ -15,8 +15,8 @@ output "database_log_archive_bucket_name" {
   value = "${aws_s3_bucket.database_log_archive.id}"
 }
 
-output "ecr_push_user" {
-  value = "${aws_iam_user.ecr_push.name}"
+output "build_user" {
+  value = "${aws_iam_user.build_user.name}"
 }
 
 output "ecs_service_linked_role_arn" {

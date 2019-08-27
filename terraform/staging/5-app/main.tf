@@ -27,9 +27,11 @@ module "shared" {
   db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
   dev_ssh_server_sg_id = "${data.terraform_remote_state.network.dev_ssh_server_sg_id}"
   devs = "${var.devs}"
+  ecs_dynamic_client_sg_id = "${data.terraform_remote_state.network.ecs_dynamic_client_sg_id}"
   environment = "staging"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
+  redis_client_sg_id = "${data.terraform_remote_state.network.redis_client_sg_id}"
   reporting_server_sg_id = "${data.terraform_remote_state.network.reporting_server_sg_id}"
 }
 
@@ -58,6 +60,26 @@ module "flu_api" {
   public_http_sg_id = "${data.terraform_remote_state.network.public_http_sg_id}"
   service = "${var.service}"
   transient_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
+}
+
+module "airflow" {
+  source = "../../modules/airflow"
+
+  account = "${var.account}"
+  airflow_database_address = "${data.terraform_remote_state.flu_db.airflow_database_address}"
+  app_subnet_id = "${data.terraform_remote_state.network.app_subnet_id}"
+  app_b_subnet_id = "${data.terraform_remote_state.network.app_b_subnet_id}"
+  auderenow_certificate_arn = "${module.shared.auderenow_certificate_arn}"
+  auderenow_route53_zone_id = "${module.shared.auderenow_route53_zone_id}"
+  auderenow_route53_zone_name = "${module.shared.auderenow_route53_zone_name}"
+  ecs_cluster_id = "${module.shared.ecs_cluster_id}"
+  ecs_dynamic_client_sg_id = "${data.terraform_remote_state.network.ecs_dynamic_client_sg_id}"
+  ecs_service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
+  elb_logs_bucket_id = "${module.shared.elb_logs_bucket_id}"
+  environment = "prod"
+  redis_server_sg_id = "${data.terraform_remote_state.network.redis_server_sg_id}"
+  region = "${var.region}"
+  vpc_id = "${data.terraform_remote_state.network.vpc_id}"
 }
 
 module "reporting" {

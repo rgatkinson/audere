@@ -62,3 +62,56 @@ resource "aws_iam_policy_attachment" "ecs_cloudwatch_attachment" {
   roles = ["${aws_iam_role.ecs_role.name}"]
   policy_arn = "${aws_iam_policy.ecs_cloudwatch.arn}"
 }
+
+data "aws_iam_policy_document" "dags_s3_policy" {
+  statement {
+    actions = [
+      "s3:*"
+    ]
+
+    resources = ["${aws_s3_bucket.airflow_dags_bucket.arn}"]
+  }
+}
+
+resource "aws_iam_policy" "dags_s3" {
+  name = "${local.base_name}-dags-s3"
+  policy = "${data.aws_iam_policy_document.dags_s3_policy.json}"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_dags_attachment" {
+  role = "${aws_iam_role.ecs_role.name}"
+  policy_arn = "${aws_iam_policy.dags_s3.arn}"
+}
+
+resource "aws_iam_user_policy_attachment" "build_dags_attachment" {
+  name = "${var.build_user}"
+  policy_arn = "${aws_iam_policy.dags_s3.arn}"
+}
+
+data "aws_iam_policy_document" "ecs_manage" {
+  statement {
+    actions = [
+      "ecs:DeregisterTaskDefinition",
+      "ecs:ListAccountSettings",
+      "ecs:UpdateService",
+      "ecs:CreateService",
+      "ecs:RegisterTaskDefinition",
+      "ecs:DescribeServices",
+      "ecs:UpdateService",
+      "ecs:UpdateTaskSet",
+      "ecs:CreateTaskSet"
+    ]
+
+    resources = ["${module.ecs_cluster.arn}/*"]
+  }
+}
+
+resource "aws_iam_policy" "ecs_management" {
+  role = "${loca.base_name}-ecs-manage"
+  policy = "${data.aws_iam_policy_document.ecs_manage}"
+}
+
+resource "aws_iam_user_policy_attachment" "build_ecs_manage" {
+  name = "${var.build_user}"
+  policy_arn = "${aws_iam_policy.ecs_management.arn}"
+}

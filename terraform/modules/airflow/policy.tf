@@ -16,17 +16,17 @@ data "aws_iam_policy_document" "ecs_assume_role_policy" {
   }
 }
 
-resource "aws_iam_role" "metabase_task_execution_role" {
-  name = "${var.environment}-metabase-task"
+resource "aws_iam_role" "airflow_task_execution_role" {
+  name = "${var.environment}-airflow-task"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_assume_role_policy.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "metabase_task_execution_role_policy" {
-  role = "${aws_iam_role.metabase_task_execution_role.name}"
+resource "aws_iam_role_policy_attachment" "airflow_task_execution_role_policy" {
+  role = "${aws_iam_role.airflow_task_execution_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-data "aws_iam_policy_document" "metabase_kms_policy" {
+data "aws_iam_policy_document" "airflow_kms_policy" {
   statement {
     actions = ["ssm:DescribeParameters"]
     resources = ["*"]
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "metabase_kms_policy" {
 
   statement {
     actions = ["ssm:GetParameters","ssm:GetParameter"]
-    resources = ["${format("arn:aws:ssm:%s:%s:parameter/metabase-%s.*", var.region, var.account, var.environment)}"]
+    resources = ["${format("arn:aws:ssm:%s:%s:parameter/airflow-%s.*", var.region, var.account, var.environment)}"]
     effect = "Allow"
   }
 
@@ -46,17 +46,17 @@ data "aws_iam_policy_document" "metabase_kms_policy" {
   }
 }
 
-resource "aws_iam_policy" "metabase_kms_policy" {
-  name = "${local.base_name}-metabase-kms"
-  policy = "${data.aws_iam_policy_document.metabase_kms_policy.json}"
+resource "aws_iam_policy" "airflow_kms_policy" {
+  name = "${local.base_name}-airflow-kms"
+  policy = "${data.aws_iam_policy_document.airflow_kms_policy.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "metabase_kms_policy" {
-  role = "${aws_iam_role.metabase_task_execution_role.name}"
-  policy_arn = "${aws_iam_policy.metabase_kms_policy.arn}"
+resource "aws_iam_role_policy_attachment" "airflow_kms_policy" {
+  role = "${aws_iam_role.airflow_task_execution_role.name}"
+  policy_arn = "${aws_iam_policy.airflow_kms_policy.arn}"
 }
 
-data "aws_iam_policy_document" "metabase_cloudwatch_policy" {
+data "aws_iam_policy_document" "airflow_cloudwatch_policy" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -80,13 +80,13 @@ data "aws_iam_policy_document" "metabase_cloudwatch_policy" {
   }
 }
 
-resource "aws_iam_policy" "metabase_task_cloudwatch" {
-  name = "${local.base_name}-metabase-task-cloudwatch"
-  policy = "${data.aws_iam_policy_document.metabase_cloudwatch_policy.json}"
+resource "aws_iam_policy" "airflow_task_cloudwatch" {
+  name = "${local.base_name}-airflow-task-cloudwatch"
+  policy = "${data.aws_iam_policy_document.airflow_cloudwatch_policy.json}"
 }
 
-resource "aws_iam_policy_attachment" "metabase_task_cloudwatch_attachment" {
-  name = "${local.base_name}-metabase-task-cloudwatch"
-  roles = ["${aws_iam_role.metabase_task_execution_role.name}"]
-  policy_arn = "${aws_iam_policy.metabase_task_cloudwatch.arn}"
+resource "aws_iam_policy_attachment" "airflow_task_cloudwatch_attachment" {
+  name = "${local.base_name}-airflow-task-cloudwatch"
+  roles = ["${aws_iam_role.airflow_task_execution_role.name}"]
+  policy_arn = "${aws_iam_policy.airflow_task_cloudwatch.arn}"
 }

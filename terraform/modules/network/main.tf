@@ -68,6 +68,17 @@ resource "aws_subnet" "app" {
   }
 }
 
+resource "aws_subnet" "app_b" {
+  availability_zone = "${var.secondary_availability_zone}"
+  cidr_block = "${local.subnet_app_b_cidr}"
+  map_public_ip_on_launch = true
+  vpc_id = "${aws_vpc.env_vpc.id}"
+
+  tags = {
+    Name = "${local.api_base_name}-instance-b"
+  }
+}
+
 resource "aws_route_table_association" "bastion_internet" {
   subnet_id      = "${aws_subnet.bastion.id}"
   route_table_id = "${aws_route_table.rt.id}"
@@ -168,6 +179,17 @@ module "dev_ssh_sg" {
   vpc_id = "${aws_vpc.env_vpc.id}"
 }
 
+# For use with a dynamic port in the ephemeral port range:
+# https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html
+module "ecs_dynamic_ports_sg" {
+  source = "../sg-pair"
+
+  name = "${local.api_base_name}-ecs-dynamic-ports"
+  from_port = 32768
+  to_port = 65535
+  vpc_id = "${aws_vpc.env_vpc.id}"
+}
+
 module "fluapi_internal_sg" {
   source = "../sg-pair"
 
@@ -183,6 +205,15 @@ module "fluapi_sg" {
   name = "${local.api_base_name}"
   from_port = 443
   to_port = 444
+  vpc_id = "${aws_vpc.env_vpc.id}"
+}
+
+module "redis_sg" {
+  source = "../sg-pair"
+
+  name = "${local.api_base_name}-redis"
+  from_port = 6379
+  to_port = 6379
   vpc_id = "${aws_vpc.env_vpc.id}"
 }
 
@@ -266,6 +297,7 @@ locals {
   dev_base_name = "flu-${var.environment}-dev"
 
   subnet_app_cidr = "${cidrsubnet(var.app_cidr, 1, 0)}"
+  subnet_app_b_cidr = "${cidrsubnet(var.app_cidr, 2, 0)}"
   subnet_transient_cidr = "${cidrsubnet(var.app_cidr, 1, 1)}"
   subnet_db_pii_cidr = "${cidrsubnet(var.db_cidr, 2, 0)}"
   subnet_db_nonpii_cidr = "${cidrsubnet(var.db_cidr, 2, 1)}"

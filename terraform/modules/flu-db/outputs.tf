@@ -7,6 +7,10 @@ output "api_creds_snapshot_id" {
   value = "${element(concat(aws_ebs_snapshot.api_creds.*.id, list("StillProvisioningNoSnapshotYet")), 0)}"
 }
 
+output "airflow_database_address" {
+  value = "${aws_db_instance.airflow.address}"
+}
+
 output "metabase_database_address" {
   value = "${aws_db_instance.metabase.address}"
 }

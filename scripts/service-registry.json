@@ -1,0 +1,54 @@
+{
+  "prod": {
+    "airflow-webserver": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-webserver-staging",
+      "ecs_task_definition": "airflow-webserver-staging",
+      "repo": "airflow"
+    },
+    "airflow-scheduler": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-scheduler-staging",
+      "ecs_task_definition": "airflow-scheduler-staging",
+      "repo": "airflow"
+    },
+    "airflow-worker": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-worker-staging",
+      "ecs_task_definition": "airflow-worker-staging",
+      "repo": "airflow"
+    },
+    "airflow-flower": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-flower-staging",
+      "ecs_task_definition": "airflow-flower-staging",
+      "repo": "airflow"
+    }
+  },
+  "staging": {
+    "airflow-webserver": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-webserver-prod",
+      "ecs_task_definition": "airflow-webserver-prod",
+      "repo": "airflow"
+    },
+    "airflow-scheduler": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-scheduler-prod",
+      "ecs_task_definition": "airflow-scheduler-prod",
+      "repo": "airflow"
+    },
+    "airflow-worker": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-worker-prod",
+      "ecs_task_definition": "airflow-worker-prod",
+      "repo": "airflow"
+    },
+    "airflow-flower": {
+      "dockerfile": "pipeline/airflow/Dockerfile",
+      "ecs_service_name": "airflow-flower-prod",
+      "ecs_task_definition": "airflow-flower-prod",
+      "repo": "airflow"
+    }
+  }
+}

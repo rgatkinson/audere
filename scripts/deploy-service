@@ -1,0 +1,65 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+function usage() {
+  echo 1>&2 "$*"
+  echo 1>&2 "Usage:"
+  echo 1>&2 "  deploy-service <service> [<environment>]"
+  echo 1>&2 ""
+  echo 1>&2 "<service> is the name of the service to be deployed"
+  echo 1>&2 "<environment> can be one of 'staging' or 'prod', defaults to 'staging'"
+  echo 1>&2 ""
+  echo 1>&2 "Example:"
+  echo 1>&2 "  deploy-service airflow-webserver"
+  echo 1>&2 ""
+  exit 1
+}
+
+case "$#" in
+  1)
+    readonly service="$1"
+    readonly environment="staging"
+    ;;
+  2)
+    readonly service="$1"
+    readonly environment="$2"
+    ;;
+  *) usage "Expected 1 or 2 arguments, got $#.";;
+esac
+
+if [[ "$environment" =~ ^(staging|prod)$ ]]; then
+  usage "Environment must be one of 'staging' or 'prod'"
+fi
+
+if [[ -z "$CIRCLECI_TOKEN" ]]; then
+  usage "CircleCI token is unset"
+fi
+
+if [[ -z $(jq .staging.$service $SELF_DIR/service-registry.json) ]]; then
+  usage "Expected a defined service, got $service."
+fi
+
+ecs_service_name=$(jq .staging.$service.ecs_service_name $SELF_DIR/service-registry.json)
+ecs_task_definition=$(jq .staging.$service.ecs_task_definition $SELF_DIR/service-registry.json)
+
+body=$(cat <<EOF
+{
+  "parameters": {
+    "deploy_service": "true",
+    "environment": $environment
+    "ecs_service_name": "$ecs_service_name",
+    "ecs_task_definition": "$ecs_task_definition"
+  }
+}
+EOF
+)
+
+curl -u ${CIRCLECI_TOKEN} -X POST --header "Content-Type: application/json" -d '$body' https://circleci.com/api/v2/project/gh/AudereNow/audere/pipeline
+
+echo ""

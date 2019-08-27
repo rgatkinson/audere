@@ -7,6 +7,10 @@ variable "app_subnet_id" {
   description = "Subnet in which applications should be deployed"
 }
 
+variable "build_user" {
+  description = "User that executes infrastructure tasks from the build"
+}
+
 variable "db_client_sg_id" {
   description = "Security group to open database client traffic"
 }
@@ -20,6 +24,10 @@ variable "devs" {
   type = "list"
 }
 
+variable "ecs_dynamic_server_sg_id" {
+  description = "Security group to receive traffic to dynamic ECS ports"
+}
+
 variable "environment" {
   description = "One of 'staging' or 'prod'"
 }
@@ -31,6 +39,10 @@ variable "infra_alerts_sns_topic_arn" {
 
 variable "internet_egress_sg_id" {
   description = "Security group to open internet egress"
+}
+
+variable "redis_client_sg_id" {
+  description = "Security group to send traffic to Redis server"
 }
 
 variable "reporting_server_sg_id" {
