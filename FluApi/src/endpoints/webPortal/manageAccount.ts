@@ -42,7 +42,7 @@ export class ManageAccount {
       });
       return;
     }
-    this.authManager.setPassword(
+    await this.authManager.setPassword(
       verifyResult.user.userid,
       req.body.newPassword
     );
