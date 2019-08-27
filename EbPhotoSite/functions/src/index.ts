@@ -154,6 +154,9 @@ exports.onDialogFlowWebhook = functions.https.onRequest(
     let intentMap = new Map();
     intentMap.set("Patient Demographics", onNewPatient);
     intentMap.set("CHW Welcome Followup - yes", onNewCHW);
+    /*    intentMap.set("Edit Patient", onEditPatient);
+    intentMap.set("Edit Patient - Age", onEditPatientAge); */
+    intentMap.set("List Patients", onListPatients);
     agent.handleRequest(intentMap);
   }
 );
@@ -237,6 +240,20 @@ async function onNewPatient(agent: WebhookAgent) {
   } else {
     console.log(`No patient context in ${JSON.stringify(agent.context)}`);
   }
+}
+
+async function onListPatients(agent: WebhookAgent) {
+  const patientDocs = await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .where("chwMobile", "==", getCHWMobile(agent))
+    .get();
+  const patientDemos = patientDocs.docs.map(
+    doc => doc.data() as PatientDemographics
+  );
+  let message = "Here are your patients:\n\n";
+
+  agent.add(message);
 }
 
 async function onNewCHW(agent: WebhookAgent) {
