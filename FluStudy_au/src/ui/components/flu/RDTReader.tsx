@@ -336,6 +336,13 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
             this._lastRDTReaderResult || { testStripFound: false }
           )
         );
+        dispatch(
+          setRDTCaptureInfo(
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            this.state.supportsTorchMode &&
+              this.state.flashDisabledAutomatically
+          )
+        );
       }
     }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
   }
