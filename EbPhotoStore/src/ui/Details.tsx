@@ -57,6 +57,7 @@ import {
 import { BackCallback } from "./AppController";
 import LabelTextInput from "./components/LabelTextInput";
 import LabelNumberInput from "./components/LabelNumberInput";
+import i18n from "../i18n";
 
 interface Props {
   diagnosisInfo?:
@@ -85,6 +86,8 @@ interface State {
   details?: string;
   notes?: string;
   chatMessage?: string;
+  apiKey?: string;
+  location?: string;
 }
 
 class Details extends React.Component<Props & WithNamespaces, State> {
@@ -123,6 +126,15 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._notesInput = React.createRef<TextInput>();
     this._scrollView = React.createRef<ScrollView>();
     this._chat = React.createRef<Chat>();
+
+    this.getGoogleCloudApiKey();
+  }
+
+  async getGoogleCloudApiKey() {
+    const response = await firebase
+      .functions()
+      .httpsCallable("googleCloudApiKey")(undefined);
+    this.setState({ apiKey: response.data });
   }
 
   _updateFirstName = (firstName: string) => {
@@ -324,6 +336,42 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this._didScrollToMostRecentMessage = true;
   };
 
+  _doGeocode = () => {
+    const { photoInfo, t } = this.props;
+    if (photoInfo && this.state.apiKey) {
+      fetch(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+          photoInfo.photoInfo.gps.latitude +
+          "," +
+          photoInfo.photoInfo.gps.longitude +
+          "&key=" +
+          this.state.apiKey +
+          "&language=" +
+          i18n.languages[0]
+      )
+        .then(response => response.json())
+        .then(responseJson => {
+          if (
+            responseJson["status"] === "OK" &&
+            responseJson["results"] &&
+            responseJson["results"].length > 0
+          ) {
+            const result = responseJson["results"][0];
+            this.setState({
+              location: result["formatted_address"],
+            });
+          } else {
+            this.setState({
+              location: t("latLongLocation", {
+                lat: photoInfo.photoInfo.gps.latitude,
+                long: photoInfo.photoInfo.gps.longitude,
+              }),
+            });
+          }
+        });
+    }
+  };
+
   render() {
     const {
       evdPositive,
@@ -344,6 +392,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       chatMessage,
     } = this.state;
     const isValidForPhoto = !!firstName || !!lastName;
+    if (photoInfo && !this.state.location) {
+      this._doGeocode();
+    }
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -484,8 +535,9 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                     />
                     <Text
                       content={t("location", {
-                        lat: photoInfo.photoInfo.gps.latitude,
-                        long: photoInfo.photoInfo.gps.longitude,
+                        location: this.state.location
+                          ? this.state.location
+                          : t("computingLocation"),
                       })}
                     />
                     <View style={{ flex: 1, justifyContent: "flex-end" }}>
@@ -677,7 +729,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   photoDetails: {
-    paddingHorizontal: GUTTER,
+    marginLeft: GUTTER,
+    marginRight: -GUTTER,
+    flex: 1,
   },
   takePhotoContainer: {
     flexDirection: "row",
