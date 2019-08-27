@@ -10,8 +10,11 @@ import {
   SurveyAnswer,
   SurveyResponse,
 } from "./types";
-import { OptionQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
-import { SURVEY_QUESTIONS } from "audere-lib/coughQuestionConfig";
+import {
+  OptionQuestion,
+  SurveyQuestion,
+} from "audere-lib/chillsQuestionConfig";
+import { SURVEY_QUESTIONS } from "audere-lib/chillsQuestionConfig";
 
 export type QuestionsAction = {
   type: "UPDATE_RESPONSE";

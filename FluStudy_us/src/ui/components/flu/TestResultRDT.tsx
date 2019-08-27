@@ -12,7 +12,7 @@ import { getSelectedButton } from "../../../util/survey";
 import {
   NumLinesSeenConfig,
   PinkWhenBlueConfig,
-} from "audere-lib/coughQuestionConfig";
+} from "audere-lib/chillsQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Divider from "../Divider";
@@ -29,7 +29,7 @@ import {
   AppEvents,
   RDTInterpretationEventTypes,
 } from "../../../util/tracker";
-import { RDTReaderResult } from "audere-lib/coughProtocol";
+import { RDTReaderResult } from "audere-lib/chillsProtocol";
 import CollapsibleText from "../CollapsibleText";
 
 interface Props {

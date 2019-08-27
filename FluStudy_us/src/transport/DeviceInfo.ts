@@ -5,7 +5,7 @@
 
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { DeviceInfo } from "audere-lib/coughProtocol";
+import { DeviceInfo } from "audere-lib/chillsProtocol";
 
 export const ios = Constants!.platform!.ios;
 

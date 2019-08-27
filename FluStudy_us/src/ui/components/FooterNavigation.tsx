@@ -53,7 +53,7 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
           style={styles.button}
           onPress={this._pop}
         />
-        <StepDots step={stepDots.step} total={stepDots.total} />
+        {/* <StepDots step={stepDots.step} total={stepDots.total} /> */}
         <Button
           enabled={true}
           label={t("common:button:next")}

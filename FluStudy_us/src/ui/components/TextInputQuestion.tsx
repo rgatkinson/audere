@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
 import { getAnswer } from "../../util/survey";
-import { SurveyQuestion } from "audere-lib/coughQuestionConfig";
+import { SurveyQuestion } from "audere-lib/chillsQuestionConfig";
 import { BORDER_COLOR, HIGHLIGHT_STYLE } from "../styles";
 import TextInput from "./TextInput";
 

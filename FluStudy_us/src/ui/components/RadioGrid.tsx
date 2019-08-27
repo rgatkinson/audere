@@ -16,7 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
 import { getSelectedButton } from "../../util/survey";
-import { ButtonConfig, SurveyQuestion } from "audere-lib/coughQuestionConfig";
+import { ButtonConfig, SurveyQuestion } from "audere-lib/chillsQuestionConfig";
 import {
   BORDER_WIDTH,
   GUTTER,

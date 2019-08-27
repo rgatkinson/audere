@@ -41,8 +41,8 @@ export const inputs = {
   [strings.surveyTitle.age]: strings.surveyButton["20to24"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.female,
   [strings.surveyTitle.race]: [
-    strings.surveyOption.torresStraitIslander,
-    strings.surveyOption.whiteAustralian,
+    strings.surveyOption.white,
+    strings.surveyOption.asian,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue,

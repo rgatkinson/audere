@@ -17,7 +17,7 @@ import {
   SurveyNonPIIInfo,
   DocumentType,
   ProtocolDocument,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";

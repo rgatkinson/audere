@@ -44,7 +44,7 @@ export const inputs = {
   [strings.surveyTitle.assignedSex]: strings.surveyButton.preferNotToSay,
   [strings.surveyTitle.race]: [
     strings.surveyOption.asian,
-    strings.surveyOption.middleEastNorthAfrican,
+    strings.surveyOption.blackOrAfricanAmerican,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue,

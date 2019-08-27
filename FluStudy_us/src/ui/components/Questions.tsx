@@ -22,7 +22,7 @@ import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
-} from "audere-lib/coughQuestionConfig";
+} from "audere-lib/chillsQuestionConfig";
 
 interface Props {
   answers: Map<string, any>;

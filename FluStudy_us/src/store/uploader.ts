@@ -13,7 +13,7 @@ import {
   ResponseItemInfo,
   SurveyInfo,
   PatientInfoGender,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 import {
   FluShotConfig,
   FluShotDateConfig,
@@ -25,10 +25,8 @@ import {
   ChildrenWithChildrenConfig,
   HouseholdChildrenConfig,
   AssignedSexConfig,
-  FluShotNationalImmunization,
-  FluShotNationalImmunizationCondition,
   PreviousSeason,
-} from "audere-lib/coughQuestionConfig";
+} from "audere-lib/chillsQuestionConfig";
 import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";
@@ -49,34 +47,6 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     conditions: [
       {
         dependsOnId: FluShotConfig.id,
-        includeWhen: isSelected("yes"),
-      },
-    ],
-  },
-  {
-    conditionalId: FluShotNationalImmunization.id,
-    conditions: [
-      {
-        dependsOnId: FluShotConfig.id,
-        includeWhen: isSelected("yes"),
-      },
-    ],
-  },
-  {
-    conditionalId: FluShotNationalImmunizationCondition.id,
-    conditions: [
-      { dependsOnId: FluShotConfig.id, includeWhen: isSelected("yes") },
-      {
-        dependsOnId: FluShotNationalImmunization.id,
-        includeWhen: isSelected("yes"),
-      },
-    ],
-  },
-  {
-    conditionalId: FluShotNationalImmunizationCondition.id,
-    conditions: [
-      {
-        dependsOnId: FluShotNationalImmunization.id,
         includeWhen: isSelected("yes"),
       },
     ],

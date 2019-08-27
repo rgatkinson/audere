@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import {
   PushNotificationState,
   PushRegistrationError,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 import {
   setScheduledSurveyNotif,
   setPushNotificationState,

@@ -37,8 +37,6 @@ export const inputs = {
   [strings.surveyTitle.fluShotDate]: `${new Intl.DateTimeFormat("en-US", {
     month: "long",
   }).format(today)} ${today.getFullYear()}`,
-  [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.yes,
-  [strings.surveyTitle.fluShotNationalImmunizationCondition]: "Asthma",
   [strings.surveyTitle.previousSeason]: strings.surveyButton.yes,
   [strings.surveyTitle.medicalCondition]: [strings.surveyOption.asthma],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.yes,
@@ -49,9 +47,8 @@ export const inputs = {
   [strings.surveyTitle.age]: strings.surveyButton["18to19"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [
-    strings.surveyOption.aboriginal,
-    strings.surveyOption.european,
-    strings.surveyOption.other,
+    strings.surveyOption.americanIndianOrAlaskaNative,
+    strings.surveyOption.asian,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,

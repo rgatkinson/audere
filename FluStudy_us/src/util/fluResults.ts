@@ -14,7 +14,7 @@ import {
   BlueLineConfig,
   PinkWhenBlueConfig,
   NumLinesSeenConfig,
-} from "audere-lib/coughQuestionConfig";
+} from "audere-lib/chillsQuestionConfig";
 import { getRemoteConfig } from "../util/remoteConfig";
 
 let _previousBlueAnswer: string | undefined;

@@ -41,7 +41,7 @@ import {
   RDTReaderResult,
   RDTReaderSizeResult,
   RDTReaderExposureResult,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
 import { logFirebaseEvent, AppEvents } from "../../../util/tracker";

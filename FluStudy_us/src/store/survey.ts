@@ -13,7 +13,7 @@ import {
   RDTReaderResult,
   SampleInfo,
   WorkflowInfo,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 import { onCSRUIDEstablished } from "../util/tracker";
 import i18n from "i18next";
 

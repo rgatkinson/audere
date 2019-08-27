@@ -3,7 +3,7 @@ import * as React from "react";
 import {
   RDTReaderExposureResult,
   RDTReaderSizeResult,
-} from "audere-lib/coughProtocol";
+} from "audere-lib/chillsProtocol";
 
 const NativeRDTReader = requireNativeComponent("RDTReader");
 

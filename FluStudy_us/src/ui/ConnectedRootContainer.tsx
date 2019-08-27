@@ -47,7 +47,7 @@ import {
   StackActions,
   createAppContainer,
 } from "react-navigation";
-import { EventInfoKind, WorkflowInfo } from "audere-lib/coughProtocol";
+import { EventInfoKind, WorkflowInfo } from "audere-lib/chillsProtocol";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newUID } from "../util/csruid";

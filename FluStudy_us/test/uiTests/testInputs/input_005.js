@@ -35,7 +35,6 @@ export const inputs = {
   [strings.surveyTitle.bedrooms]: strings.surveyButton["5+"],
   [strings.surveyTitle.fluShot]: strings.surveyButton.yes,
   [strings.surveyTitle.fluShotDate]: `January ${today.getFullYear()}`,
-  [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.no,
   [strings.surveyTitle.previousSeason]: strings.surveyButton.yes,
   [strings.surveyTitle.medicalCondition]: [strings.surveyOption.noneOfThese],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.no,
@@ -46,8 +45,8 @@ export const inputs = {
   [strings.surveyTitle.age]: strings.surveyButton["35to39"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [
-    strings.surveyOption.african,
-    strings.surveyOption.indianSubcontinent,
+    strings.surveyOption.blackOrAfricanAmerican,
+    strings.surveyOption.white,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,

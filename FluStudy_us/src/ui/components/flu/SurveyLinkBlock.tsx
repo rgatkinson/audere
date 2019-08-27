@@ -6,7 +6,7 @@
 import React from "react";
 import { AppState, Linking, StyleSheet, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { WorkflowInfo } from "audere-lib/coughProtocol";
+import { WorkflowInfo } from "audere-lib/chillsProtocol";
 import {
   GUTTER,
   BORDER_RADIUS,

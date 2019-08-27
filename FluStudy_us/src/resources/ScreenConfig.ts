@@ -67,8 +67,6 @@ import {
   BedroomsConfig,
   FluShotConfig,
   FluShotDateConfig,
-  FluShotNationalImmunization,
-  FluShotNationalImmunizationCondition,
   PreviousSeason,
   MedicalConditionConfig,
   HealthCareWorkerConfig,
@@ -84,7 +82,7 @@ import {
   PinkWhenBlueConfig,
   PinkLineConfig,
   NumLinesSeenConfig,
-} from "audere-lib/coughQuestionConfig";
+} from "audere-lib/chillsQuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
@@ -121,6 +119,8 @@ import DidYouKnow from "../ui/components/DidYouKnow";
 import { SMALL_TEXT } from "../ui/styles";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import { openSettingsApp } from "../util/openSettingsApp";
+import AddressInput from "../ui/components/AddressInput";
+import Subtitle from "../ui/components/Subtitle";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -129,6 +129,7 @@ const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
+    automationNext: "EnterInformation",
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: {
       dispatchOnFirstLoad: setHasBeenOpened,
@@ -142,48 +143,141 @@ export const Screens: ScreenConfig[] = [
         tag: FooterNavigation,
         props: {
           hideBackButton: true,
-          next: "WhatsRequired",
-          stepDots: { step: 1, total: 3 },
+          next: "EnterInformation", // TODO: Make name better
         },
       },
     ],
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    automationNext: "ScanInstructions",
+    body: [{ tag: Title }, { tag: AddressInput }],
     chromeProps: { hideBackButton: true, splashImage: "whatsrequired" },
-    key: "WhatsRequired",
+    key: "EnterInformation",
     footer: [
       {
         tag: FooterNavigation,
-        props: { next: "ReadyToBegin", stepDots: { step: 2, total: 3 } },
+        props: { next: "ScanInstructions" },
       },
     ],
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: { hideBackButton: true, splashImage: "readytobegin" },
-    key: "ReadyToBegin",
+    body: [
+      { tag: MainImage, props: { uri: "scanbarcode" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    automationNext: "ManualEntry",
     footer: [
       {
-        tag: FooterNavigation,
+        tag: CameraPermissionContinueButton,
+        props: { grantedNext: "Scan", deniedNext: "CameraSettings" },
+      },
+    ],
+    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
+    key: "ScanInstructions",
+  },
+  {
+    body: [
+      {
+        tag: BarcodeScanner,
         props: {
-          next: "ResearchStudy",
-          stepDots: { step: 3, total: 3 },
+          next: "ScanConfirmation",
+          timeoutScreen: "ManualEntry",
+          errorScreen: "BarcodeContactSupport",
         },
       },
     ],
+    key: "Scan",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BarcodeEntry,
+        validate: true,
+        props: { errorScreen: "BarcodeContactSupport" },
+      },
+      { tag: MainImage, props: { uri: "scanbarcode" } },
+      { tag: ScreenText, props: { label: "tips" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
+    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
+    key: "ManualEntry",
+  },
+  {
+    body: [],
+    key: "HowTestWorks",
+    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "barcodesuccess" } },
+      { tag: Title },
+      { tag: Barcode },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "SeattleFluMap" } }],
+    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
+    key: "ScanConfirmation", // TODO: Add Kit validation checks
+    workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "barcodesuccess" } },
+      { tag: Title },
+      { tag: Barcode },
+      { tag: ScreenText, props: { label: "desc" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "SeattleFluMap" } }],
+    funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
+    key: "ManualConfirmation", // TODO: Add Kit validation checks
+    workflowEvent: "surveyStartedAt",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "contactsupport" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: Links, props: { links: ["inputManually"] } },
+    ],
+    key: "BarcodeContactSupport",
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "ResearchStudy",
+    key: "SeattleFluMap",
     footer: [
       {
         tag: ContinueButton,
         props: {
-          next: "ParticipantInformation",
+          next: "HowTestWorks",
         },
       },
     ],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "HowTestWorks",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next: "Unpacking",
+        },
+      },
+    ],
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "setupkitbox" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "Swab" } }],
+    key: "Unpacking",
   },
   {
     body: [
@@ -267,96 +361,6 @@ export const Screens: ScreenConfig[] = [
     footer: [{ tag: BackButton, props: { label: "backToConsent" } }],
     funnelEvent: FunnelEvents.CONSENT_DECLINED,
     key: "ConsentDeclined",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "scanbarcode" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
-    automationNext: "ManualEntry",
-    footer: [
-      {
-        tag: CameraPermissionContinueButton,
-        props: { grantedNext: "Scan", deniedNext: "CameraSettings" },
-      },
-    ],
-    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
-    key: "ScanInstructions",
-  },
-  {
-    body: [
-      {
-        tag: BarcodeScanner,
-        props: {
-          next: "ScanConfirmation",
-          timeoutScreen: "ManualEntry",
-          errorScreen: "BarcodeContactSupport",
-        },
-      },
-    ],
-    key: "Scan",
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: BarcodeEntry,
-        validate: true,
-        props: { errorScreen: "BarcodeContactSupport" },
-      },
-      { tag: MainImage, props: { uri: "scanbarcode" } },
-      { tag: ScreenText, props: { label: "tips" } },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
-    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
-    key: "ManualEntry",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "barcodesuccess" } },
-      { tag: Title },
-      { tag: Barcode },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
-    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
-    key: "ScanConfirmation",
-    workflowEvent: "surveyStartedAt",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "barcodesuccess" } },
-      { tag: Title },
-      { tag: Barcode },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
-    funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
-    key: "ManualConfirmation",
-    workflowEvent: "surveyStartedAt",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "contactsupport" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: Links, props: { links: ["inputManually"] } },
-    ],
-    key: "BarcodeContactSupport",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "setupkitbox" } },
-      { tag: Title },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
-      },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "Swab" } }],
-    key: "Unpacking",
   },
   {
     body: [
@@ -482,6 +486,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           dispatchOnNext: () => setTenMinuteStartTime(),
           next: "WhatSymptoms",
+          label: "startTimer",
         },
       },
     ],
@@ -586,13 +591,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Questions,
         props: {
-          questions: [
-            FluShotConfig,
-            FluShotDateConfig,
-            FluShotNationalImmunization,
-            FluShotNationalImmunizationCondition,
-            PreviousSeason,
-          ],
+          questions: [FluShotConfig, FluShotDateConfig, PreviousSeason],
         },
         validate: true,
       },
@@ -641,7 +640,7 @@ export const Screens: ScreenConfig[] = [
             ],
             [
               { tag: Title, props: { label: "titleTimerUp" } },
-              { tag: ScreenText, props: { label: "descTimerUp" } },
+              { tag: ScreenText, props: { label: "descThanksForAnswering" } },
               undefined,
             ],
           ],
@@ -654,7 +653,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Timer,
         props: {
-          next: "TestStripReady",
+          next: "PrepareUTM",
           startTimeConfig: "tenMinuteStartTime",
           totalTimeMs: TEST_STRIP_MS,
           dispatchOnDone: setTenMinuteTimerDone,
@@ -663,6 +662,123 @@ export const Screens: ScreenConfig[] = [
     ],
     funnelEvent: FunnelEvents.COMPLETED_SURVEY,
     key: "ThankYouSurvey",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "opennasalswab" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "MucusUTM" } }],
+    key: "PrepareUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "collectmucus" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+      { tag: VideoPlayer, props: { id: "collectSample" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "SwabInTubeUTM" } }],
+    key: "MucusUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "putswabintube" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          dispatchOnNext: () => setOneMinuteStartTime(),
+          label: "startTimer",
+          next: "PackUpUTM",
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.SURVIVED_SWAB,
+    key: "SwabInTubeUTM",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next: "TimerDoneUTM",
+        },
+      },
+    ],
+    key: "PackUpUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "questionsthankyou" } },
+      {
+        tag: SelectableComponent,
+        props: {
+          components: [
+            [
+              { tag: Title },
+              { tag: ScreenText, props: { label: "desc" } },
+              { tag: ScreenText, props: { label: "waiting" } },
+            ],
+            [
+              { tag: Title, props: { label: "titleTimerUp" } },
+              { tag: ScreenText, props: { label: "descThanksForAnswering" } },
+              undefined,
+            ],
+          ],
+          componentSelectorProp: "tenMinuteTimerDone",
+          keyBase: "TimerChangeover",
+        },
+      },
+    ],
+    footer: [
+      {
+        tag: Timer,
+        props: {
+          next: "TestStripReadyUTM",
+          startTimeConfig: "tenMinuteStartTime",
+          totalTimeMs: TEST_STRIP_MS,
+          dispatchOnDone: setTenMinuteTimerDone,
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.COMPLETED_SURVEY,
+    key: "TimerDoneUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "removeteststrip" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          dispatchOnNext: setTotalTestStripTime,
+          next: "TestStripSurvey", // MARK
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.PASSED_SECOND_TIMER,
+    key: "TestStripReadyUTM",
   },
   {
     body: [
@@ -799,67 +915,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResult },
-    ],
-    footer: [
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:urgeToContinue",
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:disclaimer",
-          style: {
-            fontSize: SMALL_TEXT,
-          },
-        },
-      },
-      {
-        tag: ContinueButton,
-        props: {
-          next: "CleanTest",
-        },
-      },
-    ],
-    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
-    key: "TestResult",
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResultRDT },
-    ],
-    footer: [
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:urgeToContinue",
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:disclaimer",
-          style: {
-            fontSize: SMALL_TEXT,
-          },
-        },
-      },
-      { tag: ContinueButton, props: { next: "CleanTest" } },
-    ],
-    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
-    key: "TestResultRDT",
-  },
-  {
-    body: [
       { tag: MainImage, props: { uri: "defectiveteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -899,8 +954,109 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
+    footer: [{ tag: ContinueButton, props: { next: "Packing" } }],
     key: "CleanTest",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "Packing",
+    footer: [{ tag: ContinueButton, props: { next: "Shipping" } }],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "Shipping",
+    footer: [{ tag: ContinueButton, props: { next: "PickUpAddress" } }],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "PickUpAddress", // TODO: Add path split based on choice
+    footer: [{ tag: ContinueButton, props: { next: "SelectPickUpWindow" } }],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "SelectPickUpWindow",
+    footer: [{ tag: ContinueButton, props: { next: "PickUpWindowConfirm" } }],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "PickUpWindowConfirm",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: getPostRDTTestStripSurveyNextScreen }, // TODO: Add selective based on if they used RDT function
+      },
+    ],
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "common:testResult:desc" } },
+      { tag: TestResult },
+    ],
+    footer: [
+      { tag: Divider },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:urgeToContinue",
+        },
+      },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:disclaimer",
+          style: {
+            fontSize: SMALL_TEXT,
+          },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "OptInNotifications",
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
+    key: "TestResult",
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "common:testResult:desc" } },
+      { tag: TestResultRDT },
+    ],
+    footer: [
+      { tag: Divider },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:urgeToContinue",
+        },
+      },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:disclaimer",
+          style: {
+            fontSize: SMALL_TEXT,
+          },
+        },
+      },
+      { tag: ContinueButton, props: { next: "OptInNotifications" } },
+    ],
+    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
+    key: "TestResultRDT",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "OptInNotifications",
+    footer: [{ tag: ContinueButton, props: { next: "SelfCare" } }],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "SelfCare",
+    footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
   },
   {
     body: [
@@ -912,11 +1068,47 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    footer: [
-      { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
-    ],
+    footer: [{ tag: ContinueButton, props: { next: "Thanks" } }],
     key: "TestFeedback",
-    automationNext: "FollowUpSurvey",
+    automationNext: "Thanks",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "finalthanks" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: SurveyLinkBlock },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "treatmentTitle",
+          icons: ["drinkfluids", "getrest", "staywarm"],
+          linkLabel: "treatmentLinkLabel",
+          uri: "https://www.healthdirect.gov.au/colds-and-flu-treatments",
+        },
+      },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "preventingTitle",
+          icons: ["fluvaccine", "keepclean", "washhands"],
+          linkLabel: "preventingLinkLabel",
+          uri:
+            "https://www.healthdirect.gov.au/10-tips-to-fight-the-flu-infographic",
+        },
+      },
+      {
+        tag: LinkInfoBlock,
+        props: {
+          titleLabel: "symptomsTitle",
+          icons: ["headache", "runnynose", "fever"],
+          linkLabel: "symptomsLinkLabel",
+          uri: "https://www.healthdirect.gov.au/colds-and-flu-symptoms",
+        },
+      },
+    ],
+    key: "Thanks",
+    workflowEvent: "surveyCompletedAt",
   },
   {
     body: [
@@ -961,45 +1153,6 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "PendingData",
-  },
-
-  {
-    body: [
-      { tag: MainImage, props: { uri: "finalthanks" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: SurveyLinkBlock },
-      {
-        tag: LinkInfoBlock,
-        props: {
-          titleLabel: "treatmentTitle",
-          icons: ["drinkfluids", "getrest", "staywarm"],
-          linkLabel: "treatmentLinkLabel",
-          uri: "https://www.healthdirect.gov.au/colds-and-flu-treatments",
-        },
-      },
-      {
-        tag: LinkInfoBlock,
-        props: {
-          titleLabel: "preventingTitle",
-          icons: ["fluvaccine", "keepclean", "washhands"],
-          linkLabel: "preventingLinkLabel",
-          uri:
-            "https://www.healthdirect.gov.au/10-tips-to-fight-the-flu-infographic",
-        },
-      },
-      {
-        tag: LinkInfoBlock,
-        props: {
-          titleLabel: "symptomsTitle",
-          icons: ["headache", "runnynose", "fever"],
-          linkLabel: "symptomsLinkLabel",
-          uri: "https://www.healthdirect.gov.au/colds-and-flu-symptoms",
-        },
-      },
-    ],
-    key: "Thanks",
-    workflowEvent: "surveyCompletedAt",
   },
   {
     body: [
