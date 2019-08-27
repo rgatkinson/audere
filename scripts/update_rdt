@@ -4,8 +4,12 @@
 # Use of this source code is governed by an MIT-style license that
 # can be found in the LICENSE file distributed with this file.
 
+# Usage:
+# ./update_rdt project_directory [copy_upstream]
+#
 # This script copies everything from the rdt reader repositories
-# into our repo. Invoke with an argument to copy changes from
+# into a project in our repo, specified by the first argument.
+# Invoke with an additional argument to copy changes from
 # our repo upstream to the rdt reader repositories
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
@@ -18,12 +22,12 @@ git stash
 git checkout flu-refactor
 git pull
 VERSION="$(git remote get-url origin) $(git log -1 --pretty=format:%h)"
-cd $REPO_ROOT/FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader
+cd $REPO_ROOT/$1/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader
 for f in *
 do 
   FROM=$RDT_ANDROID_ROOT/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/$f
   TO=$f
-  if [ $# -eq 0 ]
+  if [ $# -eq 1 ]
   then
     cp $FROM $TO
   else 
@@ -31,11 +35,11 @@ do
   fi
 done
 FROM=$RDT_ANDROID_ROOT/app/src/main/res/drawable-nodpi/
-TO=$REPO_ROOT/FluStudy_au/android/app/src/main/res/drawable-nodpi/
-if [ $# -eq 0 ]
+TO=$REPO_ROOT/$1/android/app/src/main/res/drawable-nodpi/
+if [ $# -eq 1 ]
 then
   cp $FROM/* $TO
-  echo $VERSION > $REPO_ROOT/FluStudy_au/rdt_version_android
+  echo $VERSION > $REPO_ROOT/$1/rdt_version_android
 else 
   cp $TO/* $FROM
 fi
@@ -45,20 +49,20 @@ git stash
 git checkout master
 git pull
 VERSION="$(git remote get-url origin) $(git log -1 --pretty=format:%h)"
-cd $REPO_ROOT/FluStudy_au/ios/fluathome/RDTReader
+cd $REPO_ROOT/$1/ios/fluathome/RDTReader
 for f in *.{h,mm}
 do 
   FROM=$RDT_IOS_ROOT/Rdt-iOS/Rdt-iOS/$f
   TO=$f
-  if [ $# -eq 0 ]
+  if [ $# -eq 1 ]
   then
     cp $FROM $TO
   else
     cp $TO $FROM
   fi
 done
-if [ $# -eq 0 ]
+if [ $# -eq 1 ]
 then
-  cp $RDT_IOS_ROOT/Rdt-iOS/Rdt-iOS/quickvue*.jpg $REPO_ROOT/FluStudy_au/assets/images/
-  echo $VERSION > $REPO_ROOT/FluStudy_au/rdt_version_ios
+  cp $RDT_IOS_ROOT/Rdt-iOS/Rdt-iOS/quickvue*.jpg $REPO_ROOT/$1/assets/images/
+  echo $VERSION > $REPO_ROOT/$1/rdt_version_ios
 fi

@@ -39,7 +39,5 @@ cat >"$TARGET_DIR/$FILENAME" <<EOT
 }
 EOT
 
-if [ -e "$PRODUCT_DIR/scripts/extend-build-info" ]; then
-  cd $PRODUCT_DIR
-  scripts/extend-build-info
-fi
+cd $PRODUCT_DIR
+$REPO_ROOT_DIR/scripts/extend-build-info
