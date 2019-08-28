@@ -469,7 +469,10 @@ async function consent_screen(driver, screen_info, screens_visited) {
     await driver.elementByAccessibilityId(screen_info.denyButton.name).click();
     next_screen_key = screen_info.denyButton.onClick;
   } else {
-    await scroll_to_element(driver, screen_info.input[0].name);
+    let questionY = await scroll_to_element(driver, screen_info.input[0].name);
+    if (questionY > screen_y * 0.6) {
+      await half_scroll(driver);
+    }
     PLATFORM == "iOS"
       ? await ios_buttonGrid(driver, screen_info.input[0], null, screen_info)
       : await android_buttonGrid(
