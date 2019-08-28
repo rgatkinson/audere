@@ -125,7 +125,7 @@ platform :ios do
     lasttag = Helper.backticks("git describe --match \"v0\\.3\\.*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
+      message: "flu@home Chills #{version} build #{build} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],

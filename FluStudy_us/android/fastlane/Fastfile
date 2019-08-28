@@ -75,7 +75,7 @@ platform :android do
     destination = options[:destination]
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "flu@home build #{build_number} has been uploaded to #{destination} :rocket:",
+      message: "flu@home Chills build #{build_number} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
