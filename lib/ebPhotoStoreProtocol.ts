@@ -89,7 +89,9 @@ export interface HealthWorkerInfo {
 }
 
 export interface PatientInfo {
+  age?: string;
   firstName: string;
+  gender?: string;
   lastName: string;
   phone: string;
   details?: string;

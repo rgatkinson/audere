@@ -24,6 +24,7 @@ export enum Screen {
   Camera = "CAMERA",
   CameraPermission = "CAMERA_PERMISSION",
   LocationPermission = "LOCATION_PERMISSION",
+  AddPatient = "ADD_PATIENT",
 }
 
 export type MetaAction =
@@ -36,7 +37,9 @@ export type MetaAction =
   | { type: "VIEW_DETAILS"; id: number }
   | { type: "OPEN_CAMERA" }
   | { type: "SAVE_SORT"; sortBy: Sort[]; order: Order }
-  | { type: "SET_FCM_TOKEN"; fcmToken: string };
+  | { type: "SET_FCM_TOKEN"; fcmToken: string }
+  | { type: "SAVE_SELECTED_TAB"; selectedTab: number }
+  | { type: "VIEW_PATIENT"; id: number };
 
 export type MetaState = {
   currentPatient?: number;
@@ -46,6 +49,7 @@ export type MetaState = {
   order: Order;
   screen: Screen;
   sortBy: Sort[];
+  selectedTab: number;
 };
 
 const initialState: MetaState = {
@@ -53,6 +57,7 @@ const initialState: MetaState = {
   order: Order.down,
   screen: Screen.Login,
   sortBy: [Sort.name, Sort.id],
+  selectedTab: 0,
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -78,6 +83,12 @@ export default function reducer(state = initialState, action: MetaAction) {
         ...state,
         currentPatient: undefined,
         screen: Screen.Patients,
+      };
+    case "VIEW_PATIENT":
+      return {
+        ...state,
+        currentPatient: action.id,
+        screen: Screen.AddPatient,
       };
     case "VIEW_DETAILS":
       return {
@@ -111,6 +122,11 @@ export default function reducer(state = initialState, action: MetaAction) {
         order: action.order,
         sortBy: action.sortBy,
       };
+    case "SAVE_SELECTED_TAB":
+      return {
+        ...state,
+        selectedTab: action.selectedTab,
+      };
     default:
       return state;
   }
@@ -138,6 +154,13 @@ export function logout(): MetaAction {
 export function viewPatients(): MetaAction {
   return {
     type: "VIEW_PATIENTS",
+  };
+}
+
+export function viewPatient(id: number): MetaAction {
+  return {
+    type: "VIEW_PATIENT",
+    id,
   };
 }
 
@@ -177,5 +200,12 @@ export function saveSort(sortBy: Sort[], order: Order): MetaAction {
     type: "SAVE_SORT",
     sortBy,
     order,
+  };
+}
+
+export function saveSelectedTab(selectedTab: number): MetaAction {
+  return {
+    type: "SAVE_SELECTED_TAB",
+    selectedTab,
   };
 }

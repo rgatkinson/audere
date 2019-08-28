@@ -14,12 +14,13 @@ import {
 } from "../store";
 import Login from "./Login";
 import Patients from "./Patients";
-import Details from "./Details";
 import CameraPermissionRequired from "./CameraPermissionRequired";
 import LocationPermissionRequired from "./LocationPermissionRequired";
 import PhotoCapture from "./PhotoCapture";
 import TitleBar from "./TitleBar";
 import { NotificationOpen } from "react-native-firebase/notifications";
+import PatientDetails from "./PatientDetails";
+import Details from "./Details";
 
 interface Props {
   currentPatient?: number;
@@ -243,7 +244,7 @@ class AppController extends React.Component<Props, State> {
         return <Patients setupTitlebarInfo={this._setupTitlebarInfo} />;
       case Screen.PatientDetails:
         return (
-          <Details
+          <PatientDetails
             id={this.props.currentPatient}
             setupTitlebarInfo={this._setupTitlebarInfo}
           />
@@ -254,6 +255,15 @@ class AppController extends React.Component<Props, State> {
         return <LocationPermissionRequired />;
       case Screen.CameraPermission:
         return <CameraPermissionRequired />;
+      case Screen.AddPatient:
+        return (
+          <Details
+            id={this.props.currentPatient}
+            setupBackInfo={this._setupBackInfo}
+            editable={true}
+            editModeEnabled={true}
+          />
+        );
     }
   };
 

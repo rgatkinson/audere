@@ -22,6 +22,7 @@ import {
   Screen,
   Sort,
   StoreState,
+  viewPatient,
 } from "../store";
 import Text from "./components/Text";
 import {
@@ -188,7 +189,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
 
   _addPatient = () => {
     this.props.dispatch(saveSort(this.state.sortBy, this.state.order));
-    this.props.dispatch(viewDetails(this.props.patients.length));
+    this.props.dispatch(viewPatient(this.props.patients.length));
   };
 
   _viewPatient = (id: number) => {

@@ -14,7 +14,6 @@ import {
 import Text from "./Text";
 import NumberInput from "./NumberInput";
 import { HIGHLIGHT_COLOR } from "../styles";
-import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
@@ -58,8 +57,6 @@ export default class LabelNumberInput extends React.Component<Props, State> {
   render() {
     const {
       autoFocus,
-      focusedIndex,
-      index,
       inputStyle,
       inputValue,
       keyboardType,
@@ -78,6 +75,7 @@ export default class LabelNumberInput extends React.Component<Props, State> {
           content={textContent}
           style={[textStyle, this.state.isFocused && styles.highlightText]}
         />
+
         <NumberInput
           autoFocus={autoFocus}
           containerStyle={[

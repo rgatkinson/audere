@@ -33,7 +33,13 @@ export type PatientEncounter = {
   messageLastViewedAt: number;
   messages: Message[];
   updatedAt: string;
+  analysisStatus?: AnalysisStatus;
 };
+
+export enum AnalysisStatus {
+  pending = "PENDING",
+  complete = "COMPLETE",
+}
 
 export type PatientAction =
   | {
@@ -71,9 +77,11 @@ export type PatientAction =
       timestamp: string;
     }
   | { type: "SET_TRIAGE_NOTES"; id: number; notes: string }
-  | { type: "RESET_MESSAGE_LAST_VIEWED_AT"; id: number };
+  | { type: "RESET_MESSAGE_LAST_VIEWED_AT"; id: number }
+  | { type: "SET_TEST_STRIP_ANALYSIS_IN_PROGRESS"; id: number }
+  | { type: "SET_TEST_STRIP_ANALYSIS_COMPLETE"; id: number };
 
-export type PatientState = PatientEncounter[];
+export type PatientState = PatientEncounter[]; // TODO: UPDATE PATIENT ENCOUNTER
 
 const initialState: PatientState = [];
 
@@ -184,6 +192,26 @@ export default function reducer(
           messageLastViewedAt: new Date().getTime(),
         };
       });
+    case "SET_TEST_STRIP_ANALYSIS_IN_PROGRESS":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          analysisStatus: AnalysisStatus.pending,
+        };
+      });
+    case "SET_TEST_STRIP_ANALYSIS_COMPLETE":
+      return state.map((patient, index) => {
+        if (index != action.id) {
+          return patient;
+        }
+        return {
+          ...patient,
+          analysisStatus: AnalysisStatus.complete,
+        };
+      });
     default:
       return state;
   }
@@ -274,6 +302,20 @@ export function savePhoto(
 export function resetMessageLastViewedAt(id: number): PatientAction {
   return {
     type: "RESET_MESSAGE_LAST_VIEWED_AT",
+    id,
+  };
+}
+
+export function setTestStripAnalysisInProgress(id: number): PatientAction {
+  return {
+    type: "SET_TEST_STRIP_ANALYSIS_IN_PROGRESS",
+    id,
+  };
+}
+
+export function setTestStripAnalysisComplete(id: number): PatientAction {
+  return {
+    type: "SET_TEST_STRIP_ANALYSIS_COMPLETE",
     id,
   };
 }

@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import firebase from "react-native-firebase";
 import { Message } from "audere-lib/ebPhotoStoreProtocol";
 import Text from "./Text";
@@ -14,6 +14,7 @@ import {
   CHAT_REMOTE_MESSAGE_COLOR,
   GUTTER,
   SMALL_TEXT,
+  LIGHT_COLOR,
 } from "../styles";
 
 interface Props {
@@ -29,7 +30,7 @@ export default class Chat extends React.Component<Props> {
     return (
       <Fragment>
         {[...messages]
-          .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+          .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
           .map((message, index) => (
             <TranslatedChatMessage
               ref={(tcm: ChatMessage) => (this._chatMessages[index] = tcm)}
@@ -58,10 +59,42 @@ interface MessageProps {
 }
 
 class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
+  _convertDate = (date: Date) => {
+    let hours = date.getHours();
+    let minutes = date.getMinutes().toString();
+    let ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = parseInt(minutes) < 10 ? "0" + minutes : minutes;
+    var strTime = hours + ":" + minutes + " " + ampm;
+    return strTime;
+  };
+
   render() {
     const { local, message, ref, t } = this.props;
     return (
       <Fragment>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: local ? "flex-end" : "flex-start",
+          }}
+        >
+          {!local && (
+            <Text
+              content={message.sender.name}
+              italic={true}
+              style={styles.sender}
+            />
+          )}
+          <Text
+            content={t("dateTime", {
+              date: this._convertDate(new Date(message.timestamp)),
+            })}
+            italic={true}
+            style={[styles.sender, styles.date, local && styles.local]}
+          />
+        </View>
         <Text
           content={message.content}
           ref={ref}
@@ -71,18 +104,6 @@ class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
             local ? styles.localMessage : styles.foreignMessage,
           ]}
         />
-        <Text
-          content={t("dateTime", { date: new Date(message.timestamp) })}
-          italic={true}
-          style={[styles.sender, local && styles.local]}
-        />
-        {!local && (
-          <Text
-            content={message.sender.name}
-            italic={true}
-            style={styles.sender}
-          />
-        )}
       </Fragment>
     );
   }
@@ -90,9 +111,11 @@ class ChatMessage extends React.Component<MessageProps & WithNamespaces> {
 const TranslatedChatMessage = withNamespaces("common")(ChatMessage);
 
 const styles = StyleSheet.create({
+  date: {
+    color: LIGHT_COLOR,
+  },
   message: {
     borderRadius: 10,
-    marginTop: GUTTER,
     padding: GUTTER / 2,
   },
   foreignMessage: {
@@ -107,8 +130,8 @@ const styles = StyleSheet.create({
     backgroundColor: CHAT_LOCAL_MESSAGE_COLOR,
   },
   sender: {
-    fontSize: SMALL_TEXT,
-    marginTop: 0,
-    paddingHorizontal: GUTTER / 2,
+    marginTop: GUTTER,
+    paddingHorizontal: GUTTER / 4,
+    marginVertical: GUTTER / 4,
   },
 });

@@ -8,7 +8,10 @@
       "cancel": "Cancel"
     },
     "dateTime": "{{date, DD MMMM YYYY, HH:mm}}",
-    "date": "{{date, DD MMMM YYYY}}"
+    "date": "{{date, DD MMMM YYYY}}",
+    "navigation": {
+      "list": "List"
+    }
   },
   "titleBar": {
     "title": "EVD Track",
@@ -57,38 +60,73 @@
     "incorrectCodeTitle": "Incorrect Code",
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
+<<<<<<< HEAD
   "details": {
     "titlebarText": "Patient Details",
+=======
+  "addPatient": {
+    "details": "Patient Details",
+    "patientId": "ID: ",
+    "patientFirstName": "First & middle name",
+    "patientLastName": "Last name",
+    "patientAge": "Age",
+    "patientGender": "Gender",
+    "patientMobileNumber": "Mobile number",
+    "patientDetails": "Contact Details",
+    "patientDetailsPlaceholder": "E.g. address, location, etc.",
+    "patientNotes": "Notes about patient",
+    "patientNotesPlaceholder": "Will be shared with administration workers"
+  },
+  "patientDetails": {
+>>>>>>> TabMenu and basic screens working
     "cancel": "Cancel",
     "discard": "Discard",
     "save": "Save",
-    "unsavedTitle": "There are unsaved changes",
-    "unsavedBody": "",
+    "contactDetails": "CONTACT DETAILS",
+    "notes": "NOTES ON PATIENT",
+    "id": "ID: {{id}}",
     "details": "Patient Details",
-    "evdPositive": "Triaged as Ebola POSITIVE",
-    "evdNegative": "Triaged as Ebola NEGATIVE",
-    "reviewedBy": "Image reviewed by: **{{name}}** on **{{date}}**",
-    "patientId": "**ID:** {{id}}",
-    "patientFirstName": "**First & middle name**",
-    "patientLastName": "**Last name**",
-    "patientMobileNumber": "**Mobile number**",
-    "patientDetails": "**Contact details**",
+    "patientId": "ID: ",
+    "patientFirstName": "First & middle name",
+    "patientLastName": "Last name",
+    "patientAge": "Age",
+    "patientGender": "Gender",
+    "patientMobileNumber": "Mobile number",
+    "patientDetails": "Contact Details",
     "patientDetailsPlaceholder": "E.g. address, location, etc.",
-    "patientNotes": "**Notes about patient**",
-    "patientNotesPlaceholder": "Will be shared with administrators",
-    "patientTestStripImage": "**Test strip image**",
+    "patientNotes": "Notes about patient",
+    "patientNotesPlaceholder": "Will be shared with administration workers",
+    "evdPositive": "Triaged as Likely Ebola POSITIVE",
+    "evdNegative": "Triaged as Likely Ebola NEGATIVE",
+    "reviewedBy": "Reviewed by: **{{name}}** on {{date}}",
+    "startChat": "\n**Chat with an administrator regarding {{firstName}} {{lastName}}:**",
+
+    "male": "Male",
+    "female": "Female",
+    "indeterminate": "Indeterminate",
+    "years": "years old"
+  },
+  "messages": {
+    "startChat": "\n**Chat with an administrator regarding {{firstName}} {{lastName}}:**",
+    "chatPlaceholder": "Enter a note to send to an administrator",
+    "noPatient": "Please save your patient details in order to start messaging with an administrator"
+  },
+  "photos": {
     "addPhoto": "**Add Photo**",
-    "photoNote": "Please add a photo of the RDT strip to this record",
-    "retakePhoto": "**Retake photo**",
-    "noPhotoCaptured": "No photo captured!",
     "capturedOn": "**Photo captured on:**\n",
     "location": "**Location:**\n{{location}}",
     "computingLocation": "Computing...",
     "latLongLocation": "{{lat}}, {{long}}",
     "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or an administrator has questions, you will be contacted on this phone via voice, text, or a message below.",
-    "startChat": "\n**Chat with an administrator regarding {{firstName}} {{lastName}}:**",
-    "chatPlaceholder": "Enter a note to send to an administrator",
-    "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by an administrator at {{phone}} (via voice or text)"
+    "patientTestStripImage": "**Patient's test image**",
+    "retakePhoto": "**Re-take photo**",
+    "accept": "**ACCEPT**",
+    "nextSteps": "**Next steps:**\n\n**Avoid contact with infected people.** In particular, caregivers should avoid contact with an infected person's body fluids and tissues, including blood, semen, vaginal secretions and saliva. People with Ebola or Marburg are most contagious in the later stages of the disease.\n\n**Follow infection-control procedures.** If you're a health care worker, wear protective clothing, such as gloves, masks, gowns and eye shields. Keep infected people isolated from others. Dispose of needles and sterilize other instruments.",
+    "noPhotoCaptured": "No image on file - please upload a photo of patient's RDT strip",
+    "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by an administrator healthcare worker.",
+    "instructions": "**Scanning instructions**\n\n1. Place the test strip on a flat surface.\n\n2. Hold the device steady and the app will take the photo for you.\n\n3. If you're having trouble, try adjusting your lighting or moving the device.",
+    "photoCaptured": "**Your image was scanned**\n\nIf the photo is good, please tap the \"accept\" button below and the app will analyze the test strip result.",
+    "saveOrRetake": "Save this photo or re-take?"
   },
   "photoCapture": {
     "error": "There was an error capturing the photo, please try again"

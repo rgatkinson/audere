@@ -10,7 +10,6 @@ import {
   StyleSheet,
   TextStyle,
   ReturnKeyType,
-  View,
   ViewStyle,
 } from "react-native";
 import Text from "./Text";
@@ -21,7 +20,6 @@ interface Props {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoFocus?: boolean;
   blurOnSubmit?: boolean;
-  focusedIndex?: number;
   icon?: ImageSourcePropType;
   inputStyle?: StyleProp<ViewStyle>;
   inputValue?: string;
@@ -63,9 +61,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
       autoCapitalize,
       autoFocus,
       blurOnSubmit,
-      focusedIndex,
       icon,
-      index,
       inputStyle,
       inputValue,
       multiline,
@@ -77,6 +73,7 @@ export default class LabelTextInput extends React.Component<Props, State> {
       onSubmitEditing,
       placeholder,
       returnKeyType,
+
       textContent,
       textStyle,
     } = this.props;
