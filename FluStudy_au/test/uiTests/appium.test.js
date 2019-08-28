@@ -478,6 +478,7 @@ async function consent_screen(driver, screen_info, screens_visited) {
           null,
           screen_info
         );
+    await scroll_to_element(driver, screen_info.button.name);
     await driver.elementByAccessibilityId(screen_info.button.name).click();
     next_screen_key = screen_info.button.onClick;
   }
