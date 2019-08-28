@@ -481,21 +481,21 @@ jobs:
           paths:
             - vendor/bundle
       - run: *setenv
-      - run:
-          name: "Install React Native dependencies"
-          command: |
-            brew update
-            brew install watchman
+#      - run:
+#          name: "Install React Native dependencies"
+#          command: |
+#            brew update
+#            brew install watchman
       - run:
           name: Setup Expo and expo publish
           command: |
-            watchman watch-del-all
-            rm -rf $TMPDIR/metro-*
-            rm -rf $TMPDIR/haste-map-*
+#            watchman watch-del-all
+#            rm -rf $TMPDIR/metro-*
+#            rm -rf $TMPDIR/haste-map-*
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish
+            expo publish --non-interactive
       - run:
           name: Fastlane
           command: |
