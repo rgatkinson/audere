@@ -9,6 +9,8 @@ const path = require("path");
 device_list = {
   "Android Emulator": { X: 1435, Y: 2375, version: "9", realDevice: false },
   "Sam's Galaxy": { X: 1080, Y: 1920, version: "7.0", realDevice: true },
+  "Nexus 6": { X: 1440, Y: 2392, version: "7", realDevice: true },
+  "Galaxy S8": { X: 1080, Y: 2076, version: "9", realDevice: true },
 };
 
 const device = process.env.TEST_UI_DEVICE
