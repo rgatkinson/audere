@@ -152,11 +152,91 @@ exports.onDialogFlowWebhook = functions.https.onRequest(
     // Map from Dialogflow intent names to functions to be run when the
     // intent is matched
     let intentMap = new Map();
+    //console.log(agent.intent, agent.parameters);
+
     intentMap.set("Patient Demographics", onNewPatient);
     intentMap.set("CHW Welcome Followup - yes", onNewCHW);
+    //intentMap.set("Edit Patient", onEditPatient);
+    intentMap.set("Edit Patient - First Name", onEditPatientFirstName);
+    intentMap.set("Edit Patient - Last Name", onEditPatientLastName);
+    intentMap.set("Edit Patient - Gender", onEditPatientGender);
+    intentMap.set("Edit Patient - Number", onEditPatientNumber);
+    intentMap.set("Edit Patient - Age", onEditPatientAge); 
+    intentMap.set("List Patients", onListPatients);
+
     agent.handleRequest(intentMap);
   }
 );
+
+async function onEditPatientAge(agent: WebhookAgent){
+  const newAge = agent.parameters.age;
+  //console.log(agent.parameters);
+  //console.log(agent.context)
+  await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .doc("3334444222")
+    .update({age: newAge});
+  let message = "Updated age to " + newAge;
+  agent.add(message);
+}
+
+async function onEditPatientFirstName(agent: WebhookAgent){
+  const newName = agent.parameters.name;
+  await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .doc("3334444222")
+    .update({givenName: newName});
+  let message = "Updated first name to " + newName;
+  agent.add(message);
+}
+
+async function onEditPatientLastName(agent: WebhookAgent){
+  const newName = agent.parameters.name;
+  await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .doc("3334444222")
+    .update({lastName: newName});
+  let message = "Updated last name to " + newName;
+  agent.add(message);
+}
+async function onEditPatientGender(agent: WebhookAgent){
+  const newGender = agent.parameters.gender;
+  await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .doc("3334444222")
+    .update({gender: newGender});
+  let message = "Updated gender to " + newGender;
+  agent.add(message);
+}
+
+async function onEditPatientNumber(agent: WebhookAgent){
+  const newNumber = agent.parameters.number;
+  await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .doc("3334444222")
+    .update({mobile: newNumber});
+  let message = "Updated phone number to " + newNumber;
+  agent.add(message);
+}
+
+async function onListPatients(agent: WebhookAgent) {
+  const patientDocs = await admin
+    .firestore()
+    .collection("whatsAppPatients")
+    .where("chwMobile", "==", getCHWMobile(agent))
+    .get();
+  const patientDemos = patientDocs.docs.map(
+    doc => doc.data() as PatientDemographics
+  );
+  let message = patientDemos.reduce((accumulator, currentValue, currentIndex) => accumulator + 
+  `${currentIndex + 1}: ${currentValue.givenName} ${currentValue.lastName}, ${currentValue.age}, ${currentValue.gender}, ${currentValue.mobile} \n\n`, "Here are your patients:\n\n");
+  agent.add(message);
+}
 
 function getFinalContextParams(
   agent: WebhookAgent,
