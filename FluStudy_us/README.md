@@ -10,7 +10,7 @@ FluStudy_us is a React Native application to collect information about the sprea
 
 ## Developer setup
 
-If you are part of the Audere organization, see https://github.com/AudereNow/learn/wiki/Running-From-Source-on-iOS for instructions on running from source.
+If you are part of the Audere organization, see https://auderenow.atlassian.net/wiki/spaces/AKB/pages/33283/Running+from+Source+on+iOS for instructions on running from source.
 
 Otherwise, you will need to set up your own Apple Developer and Firebase accounts and configure the app accordingly.
 We use cocoapods for dependencies and fastlane for iOS cert management.
