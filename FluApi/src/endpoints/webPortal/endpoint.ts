@@ -192,7 +192,7 @@ function addHandlers(
     "/setExpertRead",
     authorizationMiddleware(
       authManager,
-      Permissions.COUGH_RDT_PHOTOS_INTERPRETATION_WRITE
+      Permissions.COUGH_INTERPRETATION_WRITE
     ),
     wrap(rdtPhotosServer.setExpertRead)
   );

@@ -156,7 +156,7 @@ export class RDTPhotos {
 
     const canInterpret = this.authManager.authorize(
       req.user.userid,
-      Permissions.COUGH_RDT_PHOTOS_INTERPRETATION_WRITE
+      Permissions.COUGH_INTERPRETATION_WRITE
     );
     const expertRead = await this.models.expertRead.findOne({
       where: { surveyId: id },
