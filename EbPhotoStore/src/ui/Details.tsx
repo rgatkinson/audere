@@ -4,6 +4,7 @@ import {
   findNodeHandle,
   Dimensions,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   PermissionsAndroid,
   ScrollView,
@@ -248,6 +249,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   _save = () => {
+    Keyboard.dismiss();
     const { firstName, lastName, phone, details, notes } = this.state;
     if (this.props.isNew) {
       if (!!firstName || !!lastName || !!phone || !!details || !!notes) {
