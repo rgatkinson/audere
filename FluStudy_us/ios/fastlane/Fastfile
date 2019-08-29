@@ -85,7 +85,7 @@ platform :ios do
       # http://git-scm.com/docs/pretty-formats
       # - <short hash> <commit title>
       pretty: "- %h %s",
-      tag_match_pattern: "v0\.3\.*"
+      tag_match_pattern: "chills_v1\.0\.*"
     )
     build_app(
       scheme: "fluathome Production",
@@ -107,7 +107,7 @@ platform :ios do
     build = get_build_number
     release_type = ENV["EXPO_RELEASE_CHANNEL"]
     add_git_tag(
-      tag: "v#{version}_#{release_type}_#{build}",
+      tag: "chills_v#{version}_#{release_type}_#{build}",
       message: ENV["BUILD_DESCRIPTION"]
     )
     begin 
@@ -122,7 +122,7 @@ platform :ios do
     build = get_build_number
     destination = options[:destination]
     changelog = options[:changelog]
-    lasttag = Helper.backticks("git describe --match \"v0\\.3\\.*\" --abbrev=0 --tags")
+    lasttag = Helper.backticks("git describe --match \"chills_v1\\.0\\.*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
       message: "flu@home Chills #{version} build #{build} has been uploaded to #{destination} :rocket:",
