@@ -188,6 +188,14 @@ function addHandlers(
     authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
     wrap(rdtPhotosServer.showPhotos)
   );
+  app.post(
+    "/setExpertRead",
+    authorizationMiddleware(
+      authManager,
+      Permissions.COUGH_RDT_PHOTOS_INTERPRETATION_WRITE
+    ),
+    wrap(rdtPhotosServer.setExpertRead)
+  );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
   app.get("/manageAccount", wrap(manageAccount.getForm));

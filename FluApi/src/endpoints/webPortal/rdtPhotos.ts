@@ -172,8 +172,21 @@ export class RDTPhotos {
     res.render("rdtPhotos.html", {
       photos,
       static: this.getStatic(),
+      surveyId: id,
+      csrf: req.csrfToken(),
       canInterpret,
       interpretations,
     });
+  };
+
+  public setExpertRead = async (req, res) => {
+    const { surveyId, interpretation } = req.body;
+    const interpreterId = req.user.id;
+    await this.models.expertRead.upsert({
+      surveyId,
+      interpretation,
+      interpreterId,
+    });
+    res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
 }
