@@ -121,7 +121,7 @@ export class PatientTable extends React.Component<
   columns(): Column<PatientTableRow>[] {
     const evdResultColumns: Column<PatientTableRow>[] = [
       {
-        Header: "EVD Test Result",
+        Header: "Ebola Test Result",
         accessor: r =>
           r.tDoc == null
             ? ".."
@@ -133,7 +133,7 @@ export class PatientTable extends React.Component<
         getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
-        Header: "EVD Result Notes",
+        Header: "Ebola Result Notes",
         accessor: row =>
           row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
         id: "triage",

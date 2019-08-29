@@ -13,9 +13,9 @@ import {
 import { SimpleMap, Location } from "./SimpleMap";
 
 export enum MarkerStatus {
-  EVD_POS,
-  EVD_NEG,
-  EVD_UNTRIAGED,
+  EBOLA_POS,
+  EBOLA_NEG,
+  EBOLA_UNTRIAGED,
 }
 
 interface Props {
@@ -40,13 +40,13 @@ export class EncounterMap extends React.Component<Props> {
 
 function getDiagnosis(tDoc?: EncounterTriageDocument): MarkerStatus {
   if (tDoc === undefined || !tDoc.triage.diagnoses) {
-    return MarkerStatus.EVD_UNTRIAGED;
+    return MarkerStatus.EBOLA_UNTRIAGED;
   }
   const { diagnoses } = tDoc.triage;
   if (diagnoses.length > 0 && diagnoses[diagnoses.length - 1].value) {
-    return MarkerStatus.EVD_POS;
+    return MarkerStatus.EBOLA_POS;
   }
-  return MarkerStatus.EVD_NEG;
+  return MarkerStatus.EBOLA_NEG;
 }
 
 function getLocations(
@@ -83,12 +83,12 @@ export function getLocation(
 
 function getIconUrl(diagnosis: MarkerStatus): string {
   switch (diagnosis) {
-    case MarkerStatus.EVD_POS:
+    case MarkerStatus.EBOLA_POS:
       return "https://maps.google.com/mapfiles/ms/icons/red-dot.png";
-    case MarkerStatus.EVD_NEG:
+    case MarkerStatus.EBOLA_NEG:
       // Would prefer gray but Google doesn't offer a gray dot
       return "https://maps.google.com/mapfiles/ms/icons/green-dot.png";
-    case MarkerStatus.EVD_UNTRIAGED:
+    case MarkerStatus.EBOLA_UNTRIAGED:
     default:
       return "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
   }

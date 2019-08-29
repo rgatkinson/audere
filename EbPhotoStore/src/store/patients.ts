@@ -64,7 +64,7 @@ export type PatientAction =
       message: Message;
     }
   | {
-      type: "SET_EVD_STATUS";
+      type: "SET_EBOLA_STATUS";
       id: number;
       evdStatus: boolean;
       diagnoser: AuthUser;
@@ -134,7 +134,7 @@ export default function reducer(
           messages: [...(patient.messages || []), action.message],
         };
       });
-    case "SET_EVD_STATUS":
+    case "SET_EBOLA_STATUS":
       return state.map((patient, index) => {
         if (index != action.id) {
           return patient;
@@ -242,7 +242,7 @@ export function setEvdStatus(
   timestamp: string
 ): PatientAction {
   return {
-    type: "SET_EVD_STATUS",
+    type: "SET_EBOLA_STATUS",
     id,
     evdStatus,
     diagnoser,

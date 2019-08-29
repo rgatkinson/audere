@@ -118,13 +118,13 @@ class PatientDetailPageAssumeRouter extends React.Component<
         };
   }
 
-  changeEVD = async (testIndicatesEVD: boolean) => {
+  changeEbola = async (testIndicatesEbola: boolean) => {
     const authUser = await getAuthUser();
     const diagnoses = [
       ...(this.currentTriage().diagnoses || []),
       {
         tag: ConditionTag.Ebola,
-        value: testIndicatesEVD,
+        value: testIndicatesEbola,
         diagnoser: authUser,
         timestamp: new Date().toISOString(),
       },
@@ -192,7 +192,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
 
         await api.pushNotification(
           doc.token,
-          "Updated EVD diagnosis",
+          "Updated Ebola diagnosis",
           "A patient's test result interpretation is available",
           details,
           "triage_evd"
@@ -224,7 +224,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
               key={JSON.stringify(triage)}
               reload={this.load}
               triageChangedAction={this.triageChangeHandler}
-              changeEVD={this.changeEVD}
+              changeEbola={this.changeEbola}
               changeNotes={this.changeNotes}
               error={this.state.error}
             />
@@ -357,7 +357,7 @@ interface TriageProps extends PatientInfoPaneProps {
   reload: () => Promise<void>;
   triageChangedAction: (tDoc: EncounterTriageDocument) => Promise<void>;
   error?: string;
-  changeEVD: (evdStatus: boolean) => void;
+  changeEbola: (evdStatus: boolean) => void;
   changeNotes: (notes: string) => void;
 }
 
@@ -376,8 +376,8 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
     };
   }
 
-  onEVDYes = () => this.props.changeEVD(true);
-  onEVDNo = () => this.props.changeEVD(false);
+  onEbolaYes = () => this.props.changeEbola(true);
+  onEbolaNo = () => this.props.changeEbola(false);
 
   onNotesChange = (e: TextAreaChangeEvent) =>
     this.setState({
@@ -405,7 +405,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
         : triage && triage.notes;
     return (
       <div className="TriagePane">
-        <h3>Does the below image indicate EVD positivity?</h3>
+        <h3>Does the below image indicate Ebola positivity?</h3>
         <div className="EditDetail">
           <input
             type="button"
@@ -415,7 +415,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
               diagnosis && diagnosis.value ? "evdPressed" : "evdUnpressed"
             }
             disabled={busy}
-            onClick={this.onEVDYes}
+            onClick={this.onEbolaYes}
           />
           <input
             type="button"
@@ -425,7 +425,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
               diagnosis && !diagnosis.value ? "evdPressed" : "evdUnpressed"
             }
             disabled={busy}
-            onClick={this.onEVDNo}
+            onClick={this.onEbolaNo}
           />
         </div>
         <div className="triageNotes">
@@ -545,7 +545,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                   locations={[
                     getLocation(
                       this.props.eDoc,
-                      MarkerStatus.EVD_UNTRIAGED,
+                      MarkerStatus.EBOLA_UNTRIAGED,
                       photo
                     ),
                   ]}

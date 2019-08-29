@@ -43,8 +43,8 @@ import TextInput from "./components/TextInput";
 import Title from "./components/Title";
 import {
   EXTRA_SMALL_TEXT,
-  EVD_NEGATIVE_COLOR,
-  EVD_POSITIVE_COLOR,
+  EBOLA_NEGATIVE_COLOR,
+  EBOLA_POSITIVE_COLOR,
   GUTTER,
   HIGHLIGHT_COLOR,
   LARGE_TEXT,
@@ -411,8 +411,8 @@ class Details extends React.Component<Props & WithNamespaces, State> {
                 styles.evdCommon,
                 {
                   color: !!evdPositive
-                    ? EVD_POSITIVE_COLOR
-                    : EVD_NEGATIVE_COLOR,
+                    ? EBOLA_POSITIVE_COLOR
+                    : EBOLA_NEGATIVE_COLOR,
                 },
               ]}
             />
@@ -671,11 +671,11 @@ const styles = StyleSheet.create({
     marginTop: GUTTER,
   },
   evdPos: {
-    borderColor: EVD_POSITIVE_COLOR,
+    borderColor: EBOLA_POSITIVE_COLOR,
     borderWidth: THICK_BORDER_WIDTH,
   },
   evdNeg: {
-    borderColor: EVD_NEGATIVE_COLOR,
+    borderColor: EBOLA_NEGATIVE_COLOR,
     borderWidth: THICK_BORDER_WIDTH,
   },
   diagnosisInfo: {

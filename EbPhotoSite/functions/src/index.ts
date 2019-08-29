@@ -232,7 +232,7 @@ async function onNewPatient(agent: WebhookAgent) {
       `Thank you for registering ${patientContext.givenName}, ` +
         `${chwGivenName}! Please send a photo of ` +
         `${patientContext.givenName}'s ` +
-        `EVD diagnostic test to complete ${possessive} record.`
+        `Ebola diagnostic test to complete ${possessive} record.`
     );
   } else {
     console.log(`No patient context in ${JSON.stringify(agent.context)}`);

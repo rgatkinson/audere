@@ -27,7 +27,7 @@ import Text from "./components/Text";
 import Title from "./components/Title";
 import {
   BORDER_COLOR,
-  EVD_POSITIVE_COLOR,
+  EBOLA_POSITIVE_COLOR,
   GUTTER,
   ICON_SIZE,
   INPUT_HEIGHT,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     width: 12,
   },
   evdPos: {
-    color: EVD_POSITIVE_COLOR,
+    color: EBOLA_POSITIVE_COLOR,
   },
 });
 
