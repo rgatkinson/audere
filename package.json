@@ -4,9 +4,27 @@
   "devDependencies": {
     "lerna": "^3.16.4"
   },
-  "workspaces": [
-    "backend-lib",
-    "lib",
-    "FluApi"
-  ]
+  "workspaces": {
+    "packages": [
+      "backend-lib",
+      "lib",
+      "FluApi"
+    ],
+    "nohoist": [
+      "**/babel-eslint/**",
+      "**/babel-eslint/",
+      "**/babel-jest/**",
+      "**/babel-jest",
+      "**/babel-loader/**",
+      "**/babel-loader",
+      "**/eslint/**",
+      "**/eslint",
+      "**/jest/**",
+      "**/jest",
+      "**/webpack/**",
+      "**/webpack",
+      "**/webpack-dev-server/**",
+      "**/webpack-dev-server"
+    ]
+  }
 }
