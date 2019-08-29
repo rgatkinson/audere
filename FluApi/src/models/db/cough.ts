@@ -32,6 +32,7 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     accessKey: defineAccessKey(sql),
     asprenData: defineAsprenData(sql),
     asprenFile: defineAsprenFile(sql),
+    expertRead: defineExpertRead(sql),
     firebaseAnalytics: defineFirebaseAnalytics(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
@@ -52,6 +53,7 @@ export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
   asprenData: Model<AsprenDataAttributes>;
   asprenFile: Model<AsprenFileAttributes>;
+  expertRead: Model<ExpertReadAttributes>;
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
@@ -339,6 +341,27 @@ export function defineFirebaseAnalayticsTable(
     {
       name: unique(stringColumn()),
       modified: bigIntColumn(),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface ExpertReadAttributes {
+  surveyId: number;
+  interpretation: string;
+  interpreterId: number;
+}
+
+export function defineExpertRead(sql: SplitSql): Model<ExpertReadAttributes> {
+  return defineModel<ExpertReadAttributes>(
+    sql.nonPii,
+    "expert_read",
+    {
+      surveyId: unique(integerColumn("surveyId")),
+      interpretation: stringColumn("interpretation"),
+      interpreterId: integerColumn("interpreterId"),
     },
     { schema }
   );
