@@ -41,20 +41,18 @@ export class RDTPhotos {
       : "date_asc";
     const order = ORDER_OPTIONS[orderBy];
     const surveys = await this.models.survey.findAll({
-      where: [
-        {
-          survey: {
-            isDemo: false,
-            samples: {
-              [Op.like]: "%manualEntry%",
-              [Op.or]: {
-                [Op.like]: "%RDTReaderPhotoGUID%",
-                [Op.like]: "%PhotoGUID%",
-              },
+      where: {
+        survey: {
+          isDemo: false,
+          samples: {
+            [Op.like]: "%manualEntry%",
+            [Op.or]: {
+              [Op.like]: "%RDTReaderPhotoGUID%",
+              [Op.like]: "%PhotoGUID%",
             },
           },
         },
-      ],
+      },
       order,
       limit: PAGE_SIZE + 1,
       offset: page * PAGE_SIZE,

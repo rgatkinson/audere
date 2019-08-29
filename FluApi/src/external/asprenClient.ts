@@ -259,7 +259,10 @@ export class AsprenClient {
   }
 
   private validateAtsi(input: string): void {
-    if (input !== "B" && !Object.values(IndigenousStatus).includes(input)) {
+    if (
+      input !== "B" &&
+      !Object.keys(IndigenousStatus).some(k => IndigenousStatus[k] === input)
+    ) {
       throw Error(`Invalid ATSI value, ${input}.`);
     }
   }
@@ -267,7 +270,9 @@ export class AsprenClient {
   private validateCurrentVacc(input: string): void {
     if (
       input !== "B" &&
-      !Object.values(CurrentSeasonVaccinationStatus).includes(input)
+      !Object.keys(CurrentSeasonVaccinationStatus).some(
+        k => CurrentSeasonVaccinationStatus[k] == input
+      )
     ) {
       throw Error(`Invalid current vaccination status, ${input}.`);
     }
@@ -276,7 +281,9 @@ export class AsprenClient {
   private validatePreviousVacc(input: string): void {
     if (
       input !== "B" &&
-      !Object.values(PreviousSeasonVaccinationStatus).includes(input)
+      !Object.keys(PreviousSeasonVaccinationStatus).some(
+        k => PreviousSeasonVaccinationStatus[k] == input
+      )
     ) {
       throw Error(`Invalid previous vaccination status, ${input}.`);
     }
