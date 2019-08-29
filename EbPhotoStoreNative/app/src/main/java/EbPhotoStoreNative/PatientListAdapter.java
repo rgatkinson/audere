@@ -7,13 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.lang.String;
+import java.util.Map;
 
 import org.auderenow.ebphotostorenative.R;
 
 public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_HEADER = 1;
 
-    private String[] mDataset;
+    private Map<String, PatientEncounter> encounters;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -67,8 +68,8 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public PatientListAdapter(String[] myDataset) {
-        mDataset = myDataset;
+    public PatientListAdapter(Map<String, PatientEncounter> encounters) {
+        this.encounters = encounters;
     }
 
     // Create new views (invoked by the layout manager)
@@ -91,13 +92,14 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Object[] keys = encounters.keySet().toArray();
         try {
             if (holder instanceof PatientViewHolder) {
                 PatientViewHolder vh = (PatientViewHolder) holder;
-                vh.textName.setText(mDataset[position - 1]);
+                vh.textName.setText(this.encounters.get(keys[position - 1]).getPatientFirstName());
                 vh.textID.setText(String.format("%03d", position - 1));
                 vh.textStatus.setText("");
-                vh.textInfo.setText("");
+                vh.textInfo.setText(this.encounters.get(keys[position - 1]).getPatientInfo());
             } else if (holder instanceof HeaderViewHolder) {
                 HeaderViewHolder vh = (HeaderViewHolder) holder;
             }
@@ -109,7 +111,7 @@ public class PatientListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return mDataset.length + 1;
+        return encounters.size() + 1;
     }
 
     @Override

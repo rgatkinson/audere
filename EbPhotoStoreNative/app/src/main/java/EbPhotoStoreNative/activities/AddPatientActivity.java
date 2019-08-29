@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,8 +28,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 import android.widget.EditText;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.auderenow.ebphotostorenative.R;
 
@@ -41,16 +48,17 @@ public class AddPatientActivity extends AppCompatActivity {
     private String pictureFilePath;
     private TextView latitude;
     private TextView longitude;
-    //private FirebaseStorage firebaseStorage;
+    // private FirebaseStorage firebaseStorage;
+    private FirebaseFirestore db;
     private String deviceIdentifier;
     private LocationFinder finder;
     private static final int PERMISSION_LOCATION_REQUEST_CODE = 1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_patient);
+        this.db = FirebaseFirestore.getInstance();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.back_patient_list);
@@ -62,14 +70,13 @@ public class AddPatientActivity extends AppCompatActivity {
             }
         });
 
-
         finder = new LocationFinder(this);
         image = findViewById(R.id.rdt_image);
-        latitude = (TextView)findViewById(R.id.latitude);
-        longitude = (TextView)findViewById(R.id.longitude);
+        latitude = (TextView) findViewById(R.id.latitude);
+        longitude = (TextView) findViewById(R.id.longitude);
 
         Button captureButton = findViewById(R.id.capture_photo_button);
-        if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             captureButton.setEnabled(false);
         }
         getInstallationIdentifier();
@@ -77,21 +84,19 @@ public class AddPatientActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_LOCATION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setLatLng();
-                    sendTakePictureIntent();
+        case PERMISSION_LOCATION_REQUEST_CODE: {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setLatLng();
+                sendTakePictureIntent();
 
-                } else {
-                    // Permission denied
-                }
-                return;
+            } else {
+                // Permission denied
             }
+            return;
+        }
 
         }
     }
@@ -103,11 +108,10 @@ public class AddPatientActivity extends AppCompatActivity {
         longitude.setText(String.format("%.5f", currentLocation.getLongitude()));
     }
 
-
     public void onAddPhotoClick(View v) {
         boolean askedPermission = false;
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            if(!finder.canGetLocation()) {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            if (!finder.canGetLocation()) {
                 finder.showPermissionsDialog(this);
             } else {
                 setLatLng();
@@ -122,31 +126,52 @@ public class AddPatientActivity extends AppCompatActivity {
 
     public void onAddPatientClick(View v) {
         // Add to cloud storage here
-        String firstName = ((EditText)findViewById(R.id.first_name)).getText().toString();
-        String lastName = ((EditText)findViewById(R.id.last_name)).getText().toString();
-        String mobileNumber = ((EditText)findViewById(R.id.mobile_number)).getText().toString();
-        String contactInfo = ((EditText)findViewById(R.id.contact_info)).getText().toString();
-        String chw_notes = ((EditText)findViewById(R.id.chw_notes)).getText().toString();
-        String latitude = ((TextView)findViewById(R.id.latitude)).getText().toString();
-        String longitude = ((TextView)findViewById(R.id.longitude)).getText().toString();
+        String firstName = ((EditText) findViewById(R.id.first_name)).getText().toString();
+        String lastName = ((EditText) findViewById(R.id.last_name)).getText().toString();
+        String mobileNumber = ((EditText) findViewById(R.id.mobile_number)).getText().toString();
+        String contactInfo = ((EditText) findViewById(R.id.contact_info)).getText().toString();
+        String chw_notes = ((EditText) findViewById(R.id.chw_notes)).getText().toString();
+        String latitude = ((TextView) findViewById(R.id.latitude)).getText().toString();
+        String longitude = ((TextView) findViewById(R.id.longitude)).getText().toString();
         // picture file path for the path to the image
 
         // Store the record to firebase here
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("patientFirstName", firstName);
+        data.put("patientLastName", lastName);
+        data.put("patientPhone", mobileNumber);
+        data.put("patientInfo", contactInfo);
+        data.put("workerNotes", chw_notes);
+        data.put("latitude", latitude);
+        data.put("longitude", longitude);
+
+        // Change to something to actually identify the encounter
+        int id = (int) Math.floor(Math.random() * 10000);
+        db.collection("encounters").document(id + "").set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Encounter successfully written!");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Log.w(TAG, "Error writing encounter", e);
+            }
+        });
     }
 
-//    private View.OnClickListener capture = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View view) {
-//            if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-//                sendTakePictureIntent();
-//            }
-//        }
-//    };
+    // private View.OnClickListener capture = new View.OnClickListener() {
+    // @Override
+    // public void onClick(View view) {
+    // if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+    // sendTakePictureIntent();
+    // }
+    // }
+    // };
     private void sendTakePictureIntent() {
 
-
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra( MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
+        cameraIntent.putExtra(MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(cameraIntent, REQUEST_PICTURE_CAPTURE);
 
@@ -154,71 +179,71 @@ public class AddPatientActivity extends AppCompatActivity {
             try {
                 pictureFile = getPictureFile();
             } catch (IOException ex) {
-                Toast.makeText(this,
-                        "Photo file can't be created, please try again",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Photo file can't be created, please try again", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (pictureFile != null) {
 
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "org.auderenow.ebphotostorenative.fileprovider",
+                Uri photoURI = FileProvider.getUriForFile(this, "org.auderenow.ebphotostorenative.fileprovider",
                         pictureFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(cameraIntent, REQUEST_PICTURE_CAPTURE);
             }
         }
     }
+
     private File getPictureFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         String pictureFile = "ebphotostorenative_" + timeStamp;
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(pictureFile,  ".jpg", storageDir);
+        File image = File.createTempFile(pictureFile, ".jpg", storageDir);
         pictureFilePath = image.getAbsolutePath();
         return image;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_PICTURE_CAPTURE && resultCode == RESULT_OK) {
-            File imgFile = new  File(pictureFilePath);
-            if(imgFile.exists())            {
+            File imgFile = new File(pictureFilePath);
+            if (imgFile.exists()) {
                 image.setImageURI(Uri.fromFile(imgFile));
             }
         }
     }
-    //save captured picture on cloud storage
+
+    // save captured picture on cloud storage
     private View.OnClickListener saveCloud = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            //addToCloudStorage();
+            // addToCloudStorage();
         }
     };
-    //    private void addToCloudStorage() {
-//        File f = new File(pictureFilePath);
-//        Uri picUri = Uri.fromFile(f);
-//        final String cloudFilePath = deviceIdentifier + picUri.getLastPathSegment();
-//
-//        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-//        StorageReference storageRef = firebaseStorage.getReference();
-//        StorageReference uploadeRef = storageRef.child(cloudFilePath);
-//
-//        uploadeRef.putFile(picUri).addOnFailureListener(new OnFailureListener(){
-//            public void onFailure(@NonNull Exception exception){
-//                Log.e(TAG,"Failed to upload picture to cloud storage");
-//            }
-//        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot){
-//                Toast.makeText(CapturePictureActivity.this,
-//                        "Image has been uploaded to cloud storage",
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
+
+    // private void addToCloudStorage() {
+    // File f = new File(pictureFilePath);
+    // Uri picUri = Uri.fromFile(f);
+    // final String cloudFilePath = deviceIdentifier + picUri.getLastPathSegment();
+    //
+    // FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    // StorageReference storageRef = firebaseStorage.getReference();
+    // StorageReference uploadeRef = storageRef.child(cloudFilePath);
+    //
+    // uploadeRef.putFile(picUri).addOnFailureListener(new OnFailureListener(){
+    // public void onFailure(@NonNull Exception exception){
+    // Log.e(TAG,"Failed to upload picture to cloud storage");
+    // }
+    // }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>(){
+    // @Override
+    // public void onSuccess(UploadTask.TaskSnapshot taskSnapshot){
+    // Toast.makeText(CapturePictureActivity.this,
+    // "Image has been uploaded to cloud storage",
+    // Toast.LENGTH_SHORT).show();
+    // }
+    // });
+    // }
     protected synchronized String getInstallationIdentifier() {
         if (deviceIdentifier == null) {
-            SharedPreferences sharedPrefs = this.getSharedPreferences(
-                    "DEVICE_ID", Context.MODE_PRIVATE);
+            SharedPreferences sharedPrefs = this.getSharedPreferences("DEVICE_ID", Context.MODE_PRIVATE);
             deviceIdentifier = sharedPrefs.getString("DEVICE_ID", null);
             if (deviceIdentifier == null) {
                 deviceIdentifier = UUID.randomUUID().toString();
