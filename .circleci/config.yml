@@ -110,11 +110,15 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+      - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - restore_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
+          key: chills-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
+      - restore_cache:
+          key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
       - run:
           name: FluTrack Yarn Install
           command: |
@@ -126,8 +130,33 @@ jobs:
               echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
               false
             fi
+            ../scripts/generate-build-info FluTrack
       - run:
-          name: flu@home Yarn Install
+          name: Chills Yarn Install
+          command: |
+            cd FluStudy_us
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Chills Tests
+          command: |
+            ./scripts/generate-build-info FluStudy_us
+            cd FluStudy_us
+            ./scripts/build-hacks 
+            yarn typecheck
+            yarn test
+      - save_cache:
+          key: chills-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
+          paths:
+            - FluStudy_us/android/openCVLibrary341-contrib
+            - FluStudy_us/android/app/src/main/jniLibs
+      - run:
+          name: Cough Yarn Install
           command: |
             cd FluStudy_au
             yarn install
@@ -138,14 +167,7 @@ jobs:
               false
             fi
       - run:
-          name: FluTrack Tests
-          command: |
-            ./scripts/generate-build-info FluTrack
-            cd FluTrack
-            yarn typecheck
-            yarn test
-      - run:
-          name: flu@home Tests
+          name: Cough Tests
           command: |
             ./scripts/generate-build-info FluStudy_au
             cd FluStudy_au
@@ -153,7 +175,7 @@ jobs:
             yarn typecheck
             yarn test
       - save_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
+          key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
           paths:
             - FluStudy_au/android/openCVLibrary341-contrib
             - FluStudy_au/android/app/src/main/jniLibs
@@ -251,6 +273,8 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+      - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
@@ -280,7 +304,32 @@ jobs:
               snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
-          name: flu@home Yarn Install
+          name: Chills Yarn Install
+          command: |
+            cd FluStudy_us
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Snyk Chills Scan
+          command: |
+            cd FluStudy_us
+            yarn list --json > ~/current_packages
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - run:
+          name: Cough Yarn Install
           command: |
             cd FluStudy_au
             yarn install
@@ -291,7 +340,7 @@ jobs:
               false
             fi
       - run:
-          name: Snyk flu@home Scan
+          name: Snyk Cough Scan
           command: |
             cd FluStudy_au
             yarn list --json > ~/current_packages
@@ -333,6 +382,10 @@ jobs:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
           paths:
             - FluTrack/node_modules
+      - save_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+          paths:
+            - FluStudy_us/node_modules
       - save_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
