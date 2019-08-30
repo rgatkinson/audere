@@ -71,6 +71,7 @@ export const TransportEvents = {
 export const AppHealthEvents = {
   CAMERA_ERROR: "camera_loading_error",
   LOW_MEMORY_WARNING: "low_memory_warning",
+  REDUCED_FRAME_SCALE: "reduced_frame_scale",
   PHOTO_UPLOADER_ERROR: "photo_uploader_error",
   REMOTE_CONFIG_ERROR: "remote_config_error",
   REMOTE_CONFIG_LOADED: "remote_config_loaded",

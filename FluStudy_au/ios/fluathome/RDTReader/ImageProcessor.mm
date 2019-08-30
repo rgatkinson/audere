@@ -64,7 +64,7 @@ const int RESULT_WINDOW_WIDTH = 200;
 const int RESULT_WINDOW_HEIGHT = 30;
 const double ENHANCING_THRESHOLD = 4.5;
 const BOOL DEBUG_FLAG = NO;
-const double FRAME_IMAGE_SCALE = 1.0;
+const double DEFAULT_FRAME_IMAGE_SCALE = 1.0;
 
 NSString *instruction_detected = @"RDT detected at the center!";
 NSString *instruction_pos = @"Place RDT at the center.\nFit RDT to the rectangle.";
@@ -93,6 +93,7 @@ Mat siftRefDescriptor;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedWrapper = [[self alloc] init];
+        sharedWrapper.frameImageScale = DEFAULT_FRAME_IMAGE_SCALE;
         detector = BRISK::create(45, 4, 1.0f);
         matcher = BFMatcher::create(cv::NORM_HAMMING); // 4 indicates BF Hamming
         
@@ -1097,7 +1098,7 @@ Mat siftRefDescriptor;
     double avgDist = 0.0;
     
     Mat scaledMat = Mat();
-    cv::resize(inputMat, scaledMat, cv::Size(), FRAME_IMAGE_SCALE, FRAME_IMAGE_SCALE, INTER_LINEAR);
+    cv::resize(inputMat, scaledMat, cv::Size(), self.frameImageScale, self.frameImageScale, INTER_LINEAR);
     
     Mat mask = Mat(scaledMat.size().width, scaledMat.size().height, CV_8U, Scalar(0));
     
@@ -1205,9 +1206,9 @@ Mat siftRefDescriptor;
             
             for (int i = 0; i < 4; i++) {
                 if(rotatedRect.angle < -45)
-                    boundary[(i+2)%4] = cv::Point(v[i].x/FRAME_IMAGE_SCALE, v[i].y/FRAME_IMAGE_SCALE);
+                    boundary[(i+2)%4] = cv::Point(v[i].x/self.frameImageScale, v[i].y/self.frameImageScale);
                 else
-                    boundary[(i+3)%4] = cv::Point(v[i].x/FRAME_IMAGE_SCALE, v[i].y/FRAME_IMAGE_SCALE);
+                    boundary[(i+3)%4] = cv::Point(v[i].x/self.frameImageScale, v[i].y/self.frameImageScale);
             }
             
             cv::Rect rect = boundingRect(boundary);

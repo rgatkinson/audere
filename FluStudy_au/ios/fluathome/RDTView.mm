@@ -118,4 +118,9 @@
     }
 }
 
+- (void) setFrameImageScale:(double) frameImageScale
+{
+    [[ImageProcessor sharedProcessor] setFrameImageScale: frameImageScale];
+}
+
 @end

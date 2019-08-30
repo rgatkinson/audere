@@ -113,6 +113,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     instructionIsOK: false,
     appState: "",
     supportsTorchMode: false,
+    frameImageScale: 1,
   };
 
   _didFocus: any;
@@ -370,6 +371,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _handleMemoryWarning = () => {
     logFirebaseEvent(AppHealthEvents.LOW_MEMORY_WARNING);
+    if (this.state.frameImageScale === 1) {
+      this.setState({ frameImageScale: 0.5 });
+      logFirebaseEvent(AppHealthEvents.REDUCED_FRAME_SCALE);
+      return;
+    }
     if (!getRemoteConfig("advanceRDTCaptureOnMemoryWarning")) {
       return;
     }
@@ -725,6 +731,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           enabled={isFocused}
           showDefaultViewfinder={false}
           flashEnabled={this.state.flashEnabled}
+          frameImageScale={this.state.frameImageScale}
           appState={this.state.appState}
         />
         <View style={styles.overlayContainer}>
