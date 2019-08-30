@@ -502,12 +502,25 @@ jobs:
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - restore_cache:
+          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            ls -l vendor/bundle
+            cd ios
+            bundle install --path ../vendor/bundle
+      - save_cache:
+          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - restore_cache:
           key: athome-prod-pod-cache-{{ checksum "ios/Podfile.lock" }}
       - run:
           name: flu@home pod install
           command: |
             cd ios
-            pod install
+            bundle exec pod --version
+            bundle exec pod install
       - save_cache:
           key: athome-prod-pod-cache-{{ checksum "ios/Podfile.lock" }}
           paths:
@@ -522,17 +535,6 @@ jobs:
           name: flu@home Tests
           command: |
             yarn test
-      - restore_cache:
-          key: 1-gems-{{ checksum "ios/Gemfile.lock" }}
-      - run:
-          name: Bundle install
-          command: |
-            cd ios
-            bundle install --path vendor/bundle
-      - save_cache:
-          key: 1-gems-{{ checksum "ios/Gemfile.lock" }}
-          paths:
-            - vendor/bundle
       - run: *setenv
       - run:
           name: Setup Expo and expo publish
