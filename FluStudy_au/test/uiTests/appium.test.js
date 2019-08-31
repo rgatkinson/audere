@@ -22,6 +22,7 @@ const deviceInfo = require(process.env.TEST_UI_CONFIG);
 const PLATFORM = deviceInfo.PLATFORM;
 const screen_x = deviceInfo.SCREEN_X;
 const screen_y = deviceInfo.SCREEN_Y;
+const isSimulator = deviceInfo.SIMULATOR;
 const fs = require("fs");
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000000;
@@ -94,7 +95,15 @@ async function runThroughApp(models, isDemo) {
     if (screen_info.type == "basic") {
       next_screen = await basic_screen(driver, screen_info, screens_visited);
     } else if (screen_info.type == "input") {
-      next_screen = await input_screen(driver, screen_info, screens_visited);
+      //skip question about number of lines if RDT capture was not successful
+      if (
+        screen_info.title != strings.PostRDTTestStripSurvey.title ||
+        !screens_visited.includes("TestStripCamera")
+      ) {
+        next_screen = await input_screen(driver, screen_info, screens_visited);
+      } else {
+        next_screen = screen_info.button.onClick;
+      }
     } else if (screen_info.type == "timer") {
       next_screen = await timer_screen(
         driver,
@@ -518,15 +527,9 @@ async function rdt_screen(driver, screen_info, screens_visited) {
       "com.android.packageinstaller:id/permission_allow_button"
     ))
   ) {
-    allowButton = await driver.element(
-      "id",
-      "com.android.packageinstaller:id/permission_allow_button"
-    );
-    await allowButton.click();
-
-    await driver.sleep(3000); //wait to make sure button can load
-    okButton = await driver.element("id", "android:id/button1");
-    await okButton.click();
+    await driver
+      .element("id", "com.android.packageinstaller:id/permission_allow_button")
+      .click();
   } else {
     if (
       await driver.hasElementByAccessibilityId(
@@ -537,15 +540,42 @@ async function rdt_screen(driver, screen_info, screens_visited) {
         .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
         .click();
     }
-    await driver.elementByAccessibilityId(strings.common.button.ok).click();
   }
 
-  //prevents the tap from happening before the button appears
-  await driver.sleep(500);
-  screens_visited.push(screen_info.key);
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
-    .perform();
+  let manual_capture_required = true;
+  if (!isSimulator) {
+    screens_visited.push(screen_info.key);
+    startTime = new Date();
+    secondsElapsed = 0;
+    while (manual_capture_required && secondsElapsed <= 35) {
+      if (
+        await driver.hasElementByAccessibilityId(
+          strings.TestStripConfirmation.title
+        )
+      ) {
+        manual_capture_required = false;
+      }
+      currentTime = new Date();
+      secondsElapsed = (currentTime - startTime) / 1000;
+    }
+  }
+
+  if (manual_capture_required) {
+    if (PLATFORM == "Android") {
+      await driver.sleep(3000); //wait to make sure button can load
+      await driver.element("id", "android:id/button1").click();
+    } else {
+      await driver.elementByAccessibilityId(strings.common.button.ok).click();
+    }
+
+    //prevents the tap from happening before the button appears
+    await driver.sleep(2000);
+    screens_visited.push("TestStripCamera");
+    await new wd.TouchAction(driver)
+      .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
+      .perform();
+    await driver.sleep(5000);
+  }
   return "TestStripConfirmation";
 }
 
@@ -582,7 +612,7 @@ async function verify_db_contents(
   installationId,
   screens_visited
 ) {
-  await driver.sleep(3000); // Let firestore sync
+  await driver.sleep(5000); // Let firestore sync
   const response = await axios.get(
     "http://localhost:3200/api/import/coughDocuments"
   );
@@ -638,7 +668,9 @@ async function verify_db_contents(
         }
       } else if (
         question.dbLocation === "responses" &&
-        inputs[question.name] != strings.surveyButton.preferNotToSay
+        inputs[question.name] != strings.surveyButton.preferNotToSay &&
+        (question.name != strings.surveyTitle.numLinesSeen ||
+          !screens_visited.includes("TestStripCamera"))
       ) {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
           item.text.startsWith(question.name)

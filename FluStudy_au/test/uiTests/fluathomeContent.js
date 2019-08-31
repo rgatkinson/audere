@@ -590,23 +590,45 @@ export const content = [
     title: strings.RDTInstructions.title,
     button: {
       name: strings.common.button.continue.toUpperCase(),
-      onClick: "TestStripCamera",
+      onClick: "RDTReader",
     },
     key: "RDTInstructions",
   },
   {
     type: "rdt",
     title: strings.TestStripCamera.title,
-    key: "TestStripCamera",
+    key: "RDTReader",
   },
   {
     type: "basic",
     title: strings.TestStripConfirmation.title,
     button: {
       name: strings.common.button.continue.toUpperCase(),
-      onClick: "TestResult",
+      onClick: "PostRDTTestStripSurvey",
     },
     key: "TestStripConfirmation",
+  },
+  {
+    type: "input",
+    title: strings.PostRDTTestStripSurvey.title,
+    button: {
+      name: strings.common.button.continue.toUpperCase(),
+      onClick: "TestResult",
+    },
+    key: "PostRDTTestStripSurvey",
+    input: [
+      {
+        name: strings.surveyTitle.numLinesSeen,
+        type: "radio",
+        dbLocation: "responses",
+        options: [
+          strings.surveyButton.oneLine,
+          strings.surveyButton.twoLines,
+          strings.surveyButton.threeLines,
+          strings.surveyButton.noneOfTheAbove,
+        ],
+      },
+    ],
   },
   {
     type: "basic",

@@ -15,4 +15,5 @@ export const inputs = {
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.oneLine,
 };

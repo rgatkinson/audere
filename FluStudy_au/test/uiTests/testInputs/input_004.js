@@ -47,5 +47,6 @@ export const inputs = {
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.noneOfTheAbove,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.incorrect,
 };

@@ -35,5 +35,6 @@ const config = {
 
 const SCREEN_X = device_list[device].X;
 const SCREEN_Y = device_list[device].Y;
+const SIMULATOR = true;
 
-module.exports = { PLATFORM, config, SCREEN_X, SCREEN_Y };
+module.exports = { PLATFORM, config, SCREEN_X, SCREEN_Y, SIMULATOR };
