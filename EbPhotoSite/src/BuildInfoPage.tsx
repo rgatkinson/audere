@@ -7,15 +7,15 @@ import React from "react";
 import * as buildInfo from "./static/buildInfo.json";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 
-export class BuildInfoPage extends React.Component<WithNamespaces> {
+class BuildInfoPage extends React.Component<WithNamespaces> {
   render() {
     const { t } = this.props;
     return (
       <div>
-        <p>{t("buildInfo.name") + buildInfo.name}</p>
-        <p>{t("buildInfo.version") + buildInfo.version}</p>
-        <p>{t("buildInfo.buildDate") + buildInfo.buildDate}</p>
-        <p>{t("buildInfo.hash") + buildInfo.hash}</p>
+        <p>{t("name") + buildInfo.name}</p>
+        <p>{t("version") + buildInfo.version}</p>
+        <p>{t("buildDate") + buildInfo.buildDate}</p>
+        <p>{t("hash") + buildInfo.hash}</p>
       </div>
     );
   }

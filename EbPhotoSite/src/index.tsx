@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import * as serviceWorker from "./serviceWorker";
 import { getRoot } from "./util";
-import { BuildInfoPage } from "./BuildInfoPage";
+import BuildInfoPage from "./BuildInfoPage";
 import { LoginPage } from "./LoginPage";
 import { PatientListPage } from "./PatientListPage";
 import { PatientDetailPage } from "./PatientDetailPage";
