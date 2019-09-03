@@ -3,6 +3,8 @@
     "ok": "Ok",
     "cancel": "Cancel",
     "loading": "Loading...",
+    "previous": "Previous",
+    "next": "Next",
     "POSITIVE": "POSITIVE",
     "NEGATIVE": "NEGATIVE",
     "button": {
@@ -81,7 +83,11 @@
     "notTested": "Not Tested",
     "patientName": "Patient Name",
     "CHWName": "CHW Name",
-    "CHWPhone": "CHW Phone #"
+    "CHWPhone": "CHW Phone #",
+    "noRows": "No rows found",
+    "page": "Page",
+    "outOf": "of",
+    "rows": "rows"
   },
   "simpleMap": {
     "cannotLoadMap": "Cannot load map. Google Cloud API key is not configured.",

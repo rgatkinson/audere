@@ -192,6 +192,7 @@ export class PatientTable extends React.Component<
 
   public render(): React.ReactNode {
     const { selected } = this.state;
+    const { t } = this.props;
     return selected != null ? (
       <Redirect to={`/patient-detail/${selected.docId}`} />
     ) : (
@@ -208,6 +209,13 @@ export class PatientTable extends React.Component<
             desc: true,
           },
         ]}
+        previousText={t("common:previous")}
+        nextText={t("common:next")}
+        loadingText={t("common:loading")}
+        noDataText={t("noRows")}
+        pageText={t("page")}
+        ofText={t("outOf")}
+        rowsText={t("rows")}
       />
     );
   }
