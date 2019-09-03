@@ -4179,13 +4179,6 @@ expect@^24.8.0:
     jest-message-util "^24.8.0"
     jest-regex-util "^24.3.0"
 
-expo-localization@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/expo-localization/-/expo-localization-6.0.0.tgz#bbd6ee912ac6ba3a37e8ec334fbbeacb227e037f"
-  integrity sha512-ZU0621WDqmoMoko0p+lzGsLIsUTifHhsFqpf0w7S0fC+6djCBD47HFGzbm01sTVrRMS+tOsoVxa8D31ZaBqy5Q==
-  dependencies:
-    rtl-detect "^1.0.2"
-
 express@^4.16.2:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
@@ -9128,11 +9121,6 @@ rsvp@^4.8.4:
   version "4.8.4"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.4.tgz#b50e6b34583f3dd89329a2f23a8a2be072845911"
   integrity sha512-6FomvYPfs+Jy9TfXmBpBuMWNH94SgCsZmJKcanySzgNNP6LjWxBvyLTa9KaMfDDM5oxRfrKDB0r/qeRsLwnBfA==
-
-rtl-detect@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/rtl-detect/-/rtl-detect-1.0.2.tgz#8eca316f5c6563d54df4e406171dd7819adda67f"
-  integrity sha512-5X1422hvphzg2a/bo4tIDbjFjbJUOaPZwqE6dnyyxqwFqfR+tBcvfqapJr0o0VygATVCGKiODEewhZtKF+90AA==
 
 run-async@^2.2.0:
   version "2.3.0"
