@@ -7,6 +7,7 @@ import { Op, cast, json, where, col, fn } from "sequelize";
 import querystring from "querystring";
 import { SplitSql } from "../../util/sql";
 import { CoughModels, defineCoughModels } from "../../models/db/cough";
+import { AuthManager, Permissions } from "./auth";
 
 const LABELS = {
   RDTReaderPhotoGUID: "Automatic Capture",
@@ -23,14 +24,29 @@ const ORDER_OPTIONS = {
 
 const PAGE_SIZE = 50;
 
+const INTERPRETATIONS = {
+  badPicture: "Unusable Photo",
+  noBlue: "Invalid Result (no blue line)",
+  noPink: "No pink line",
+  yesAboveBlue: "Pink line above the blue line",
+  yesBelowBlue: "Pink line below the blue line",
+  yesAboveBelowBlue: "Pink lines above and below the blue line",
+};
+
 export class RDTPhotos {
-  constructor(sql: SplitSql, getStatic: () => string) {
+  constructor(
+    sql: SplitSql,
+    getStatic: () => string,
+    authManager: AuthManager
+  ) {
     this.models = defineCoughModels(sql);
     this.getStatic = getStatic;
+    this.authManager = authManager;
   }
 
   private models: CoughModels;
   private getStatic: () => string;
+  private authManager: AuthManager;
 
   public listBarcodes = async (req, res) => {
     const page =
@@ -138,6 +154,39 @@ export class RDTPhotos {
         })
     );
 
-    res.render("rdtPhotos.html", { photos, static: this.getStatic() });
+    const canInterpret = this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    );
+    const expertRead = await this.models.expertRead.findOne({
+      where: { surveyId: id },
+    });
+    const oldInterpretation = expertRead && expertRead.interpretation;
+    const interpretations = Object.keys(INTERPRETATIONS).map(
+      interpretation => ({
+        value: interpretation,
+        label: INTERPRETATIONS[interpretation],
+        checked: oldInterpretation === interpretation ? "checked" : "",
+      })
+    );
+    res.render("rdtPhotos.html", {
+      photos,
+      static: this.getStatic(),
+      surveyId: id,
+      csrf: req.csrfToken(),
+      canInterpret,
+      interpretations,
+    });
+  };
+
+  public setExpertRead = async (req, res) => {
+    const { surveyId, interpretation } = req.body;
+    const interpreterId = req.user.id;
+    await this.models.expertRead.upsert({
+      surveyId,
+      interpretation,
+      interpreterId,
+    });
+    res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
 }

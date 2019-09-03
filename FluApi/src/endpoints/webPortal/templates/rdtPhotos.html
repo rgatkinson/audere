@@ -24,6 +24,20 @@ can be found in the LICENSE file distributed with this file.
         <h3>{{label}}</h3>
         <img src={{src}}>
       {{/each}}
-    </ul>
+      {{#if canInterpret}}
+        <form action="./setExpertRead" method="post">
+          <input type="hidden" name="_csrf" value="{{csrf}}"/>
+          <input type="hidden" name="surveyId" value="{{surveyId}}"/>
+          {{#each interpretations}}
+            <div>
+              <input type="radio" id="{{value}}" name="interpretation" value="{{value}}" {{checked}} />
+              <label for="{{value}}">{{label}}</label>
+            </div>
+          {{/each}}
+          <div>
+            <input type="submit" value="Save"/>
+          </div>
+        </form>
+      {{/if}}
   </body>
 </html>

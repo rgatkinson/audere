@@ -177,7 +177,7 @@ function addHandlers(
     wrap(s3DirectoryServer.performRequest)
   );
 
-  const rdtPhotosServer = new RDTPhotos(config.sql, getStatic);
+  const rdtPhotosServer = new RDTPhotos(config.sql, getStatic, authManager);
   app.get(
     "/coughPhotos",
     authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
@@ -187,6 +187,14 @@ function addHandlers(
     "/coughPhoto",
     authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
     wrap(rdtPhotosServer.showPhotos)
+  );
+  app.post(
+    "/setExpertRead",
+    authorizationMiddleware(
+      authManager,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    ),
+    wrap(rdtPhotosServer.setExpertRead)
   );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
