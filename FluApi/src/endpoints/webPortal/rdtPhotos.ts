@@ -154,7 +154,7 @@ export class RDTPhotos {
         })
     );
 
-    const canInterpret = this.authManager.authorize(
+    const canInterpret = await this.authManager.authorize(
       req.user.userid,
       Permissions.COUGH_INTERPRETATION_WRITE
     );
