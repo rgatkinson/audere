@@ -8,10 +8,15 @@ import {
   setResultShown,
   StoreState,
 } from "../../../store";
-import { getSelectedButton } from "../../../util/survey";
+import {
+  getSelectedButton,
+  getAnswer,
+  getAnswerForID,
+} from "../../../util/survey";
 import {
   NumLinesSeenConfig,
   PinkWhenBlueConfig,
+  WhatSymptomsConfig,
 } from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
@@ -33,6 +38,7 @@ import { RDTReaderResult } from "audere-lib/coughProtocol";
 import CollapsibleText from "../CollapsibleText";
 
 interface Props {
+  hasNoSymptoms4Days: boolean;
   numLinesAnswer?: string;
   redAnswer?: string;
   readerResult?: RDTReaderResult;
@@ -82,7 +88,7 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { hasNoSymptoms4Days, t } = this.props;
     const testResultString = !isShowRDTInterpretationOfType(
       RDTInterpretationEventTypes.UserHighContrast
     )
@@ -90,11 +96,26 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
       : t("TestResult:why");
     const result = this._getResult();
     const explanation = this._getExplanation();
+    const showNegativeExplanation = result === "negative";
     return (
       <Fragment>
-        <BorderView style={styles.border}>
-          <Text center={true} content={t(`common:testResult:${result}`)} />
-        </BorderView>
+        {!showNegativeExplanation && (
+          <Fragment>
+            <Text content={t("common:testResult:desc")} />
+            <BorderView style={styles.border}>
+              <Text center={true} content={t(`common:testResult:${result}`)} />
+            </BorderView>
+          </Fragment>
+        )}
+        {showNegativeExplanation && (
+          <Text
+            style={styles.resultText}
+            content={
+              t("common:testResult:descNegative") +
+              t(`common:testResult:${result}`)
+            }
+          />
+        )}
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={testResultString} style={styles.text} />
         <View style={{ marginHorizontal: GUTTER }}>
@@ -104,6 +125,34 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
           />
           <BulletPoint content={t(explanation)} customBulletUri="listarrow" />
         </View>
+        {showNegativeExplanation && (
+          <Fragment>
+            <Text content={t("common:testResult:negativeExplanation")} />
+            <View style={{ marginHorizontal: GUTTER }}>
+              <BulletPoint
+                content={t("common:testResult:negativeExplanationBullet")}
+                customBulletUri="listarrow"
+              />
+
+              {hasNoSymptoms4Days && (
+                <BulletPoint
+                  content={t(
+                    "common:testResult:negativeExplanationBulletAllUnder4Days"
+                  )}
+                  customBulletUri="listarrow"
+                />
+              )}
+              {!hasNoSymptoms4Days && (
+                <BulletPoint
+                  content={t(
+                    "common:testResult:negativeExplanationBulletOne4Days"
+                  )}
+                  customBulletUri="listarrow"
+                />
+              )}
+            </View>
+          </Fragment>
+        )}
         <Divider />
         <CollapsibleText
           content={
@@ -142,6 +191,21 @@ function _getRDTInterpretationLines(
 }
 
 export default connect((state: StoreState) => ({
+  hasNoSymptoms4Days:
+    getAnswer(state, WhatSymptomsConfig)
+      .filter((item: any) => {
+        if (item.selected) return item;
+      })
+      .map((question: any) => {
+        return getAnswerForID(
+          state,
+          `SymptomsStart_${question.key}`,
+          "selectedButtonKey"
+        );
+      })
+      .filter((frequency: string) => {
+        if (frequency == "4days") return frequency;
+      }).length === 0,
   redAnswer: getSelectedButton(state, PinkWhenBlueConfig),
   // Fall back to whatever the user said they saw.  We could change our minds
   // later and decide to return undefined here if we don't trust the user.
@@ -156,7 +220,10 @@ const styles = StyleSheet.create({
   border: {
     borderRadius: 10,
     paddingVertical: GUTTER,
-    marginHorizontal: GUTTER,
+    margin: GUTTER,
+  },
+  resultText: {
+    marginBottom: GUTTER,
   },
   text: {
     alignSelf: "stretch",

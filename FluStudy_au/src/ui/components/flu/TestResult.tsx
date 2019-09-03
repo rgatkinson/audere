@@ -3,8 +3,15 @@ import { StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action, StoreState, setResultShown } from "../../../store";
-import { getSelectedButton } from "../../../util/survey";
-import { PinkWhenBlueConfig } from "audere-lib/coughQuestionConfig";
+import {
+  getSelectedButton,
+  getAnswer,
+  getAnswerForID,
+} from "../../../util/survey";
+import {
+  PinkWhenBlueConfig,
+  WhatSymptomsConfig,
+} from "audere-lib/coughQuestionConfig";
 import BorderView from "../BorderView";
 import { BulletPoint } from "../BulletPoint";
 import Divider from "../Divider";
@@ -18,6 +25,7 @@ import CollapsibleText from "../CollapsibleText";
 import { AppEvents } from "../../../util/tracker";
 
 interface Props {
+  hasNoSymptoms4Days: boolean;
   redAnswer?: string;
   dispatch(action: Action): void;
 }
@@ -36,13 +44,28 @@ class TestResult extends React.Component<Props & WithNamespaces> {
   }
 
   render() {
-    const { redAnswer, t } = this.props;
+    const { hasNoSymptoms4Days, redAnswer, t } = this.props;
     const result = getResultRedAnswer(redAnswer);
+    const showNegativeExplanation = result === "negative";
     return (
       <Fragment>
-        <BorderView style={styles.border}>
-          <Text center={true} content={t(`common:testResult:${result}`)} />
-        </BorderView>
+        {!showNegativeExplanation && (
+          <Fragment>
+            <Text content={t("common:testResult:desc")} />
+            <BorderView style={styles.border}>
+              <Text center={true} content={t(`common:testResult:${result}`)} />
+            </BorderView>
+          </Fragment>
+        )}
+        {showNegativeExplanation && (
+          <Text
+            style={styles.resultText}
+            content={
+              t("common:testResult:descNegative") +
+              t(`common:testResult:${result}`)
+            }
+          />
+        )}
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={t("why")} style={styles.text} />
         <View style={{ marginHorizontal: GUTTER }}>
@@ -55,6 +78,35 @@ class TestResult extends React.Component<Props & WithNamespaces> {
             customBulletUri="listarrow"
           />
         </View>
+        {showNegativeExplanation && (
+          <Fragment>
+            <Text content={t("common:testResult:negativeExplanation")} />
+            <View style={{ marginHorizontal: GUTTER }}>
+              <BulletPoint
+                content={t("common:testResult:negativeExplanationBullet")}
+                customBulletUri="listarrow"
+              />
+
+              {hasNoSymptoms4Days && (
+                <BulletPoint
+                  content={t(
+                    "common:testResult:negativeExplanationBulletAllUnder4Days"
+                  )}
+                  customBulletUri="listarrow"
+                />
+              )}
+              {!hasNoSymptoms4Days && (
+                <BulletPoint
+                  content={t(
+                    "common:testResult:negativeExplanationBulletOne4Days"
+                  )}
+                  customBulletUri="listarrow"
+                />
+              )}
+            </View>
+          </Fragment>
+        )}
+
         <Divider />
         <CollapsibleText
           content={
@@ -70,13 +122,31 @@ class TestResult extends React.Component<Props & WithNamespaces> {
 
 export default connect((state: StoreState) => ({
   redAnswer: getSelectedButton(state, PinkWhenBlueConfig),
+  hasNoSymptoms4Days:
+    getAnswer(state, WhatSymptomsConfig)
+      .filter((item: any) => {
+        if (item.selected) return item;
+      })
+      .map((question: any) => {
+        return getAnswerForID(
+          state,
+          `SymptomsStart_${question.key}`,
+          "selectedButtonKey"
+        );
+      })
+      .filter((frequency: string) => {
+        if (frequency == "4days") return frequency;
+      }).length === 0,
 }))(withNamespaces("TestResult")(TestResult));
 
 const styles = StyleSheet.create({
   border: {
     borderRadius: 10,
     paddingVertical: GUTTER,
-    marginHorizontal: GUTTER,
+    margin: GUTTER,
+  },
+  resultText: {
+    marginBottom: GUTTER,
   },
   text: {
     alignSelf: "stretch",

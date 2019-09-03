@@ -798,11 +798,7 @@ export const Screens: ScreenConfig[] = [
     key: "PostRDTTestStripSurvey",
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResult },
-    ],
+    body: [{ tag: Title }, { tag: TestResult }],
     footer: [
       { tag: Divider },
       {
@@ -831,11 +827,7 @@ export const Screens: ScreenConfig[] = [
     key: "TestResult",
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResultRDT },
-    ],
+    body: [{ tag: Title }, { tag: TestResultRDT }],
     footer: [
       { tag: Divider },
       {
