@@ -16,6 +16,8 @@ import { PatientDetailPage } from "./PatientDetailPage";
 import { MapPage } from "./MapPage";
 import { EbSiteHeader } from "./EbSiteHeader";
 import { EbSiteFooter } from "./EbSiteFooter";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./i18n";
 
 class FourOhFour extends React.Component {
   public render(): React.ReactNode {
@@ -25,17 +27,20 @@ class FourOhFour extends React.Component {
 
 ReactDOM.render(
   <Router>
-    <EbSiteHeader />
-    <Switch>
-      <Route exact path="/" component={LoginPage} />
-      <Route path="/patients" component={PatientListPage} />
-      <Route path="/patient-detail/:docId" component={PatientDetailPage} />
-      <Route path="/map" component={MapPage} />
-      <Route path="/about" component={BuildInfoPage} />
-      <Route component={FourOhFour} />
-    </Switch>
-    <EbSiteFooter />
+    <I18nextProvider i18n={i18n}>
+      <EbSiteHeader />
+      <Switch>
+        <Route exact path="/" component={LoginPage} />
+        <Route path="/patients" component={PatientListPage} />
+        <Route path="/patient-detail/:docId" component={PatientDetailPage} />
+        <Route path="/map" component={MapPage} />
+        <Route path="/about" component={BuildInfoPage} />
+        <Route component={FourOhFour} />
+      </Switch>
+      <EbSiteFooter />
+    </I18nextProvider>
   </Router>,
+
   getRoot()
 );
 

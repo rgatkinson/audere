@@ -27,10 +27,11 @@ import {
   triageDocFromTriage,
   retryWithBackoff,
 } from "./util";
-import { Chat } from "./Chat";
+import Chat from "./Chat";
 import "./PatientDetailPage.css";
-import { SimpleMap } from "./SimpleMap";
 import { getLocation, MarkerStatus } from "./EncounterMap";
+import SimpleMap from "./SimpleMap";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>;
 
@@ -50,14 +51,14 @@ export interface PatientDetailPageState {
 }
 
 class PatientDetailPageAssumeRouter extends React.Component<
-  PatientDetailPageProps,
+  PatientDetailPageProps & WithNamespaces,
   PatientDetailPageState
 > {
   _unsubEncounter: FirebaseUnsubscriber | null = null;
   _unsubTriage: FirebaseUnsubscriber | null = null;
   _unsubMessage: FirebaseUnsubscriber | null = null;
 
-  constructor(props: PatientDetailPageProps) {
+  constructor(props: PatientDetailPageProps & WithNamespaces) {
     super(props);
     this.state = {
       eDoc: null,
@@ -172,6 +173,7 @@ class PatientDetailPageAssumeRouter extends React.Component<
   triageChangeHandler = async (
     tDoc: EncounterTriageDocument
   ): Promise<void> => {
+    const { t } = this.props;
     if (this.state.eDoc != null) {
       const api = getApi();
       const { eDoc } = this.state;
@@ -192,15 +194,16 @@ class PatientDetailPageAssumeRouter extends React.Component<
 
         await api.pushNotification(
           doc.token,
-          "Updated Ebola diagnosis",
-          "A patient's test result interpretation is available",
+          t("updatedDiagnosis"),
+          t("resultAvailable"),
           details,
           "triage_evd"
         );
       } else {
         console.warn(
-          `No registration token found for phone number ${phone}, ` +
-            `no notification of triage will be sent`
+          "No registration token found for phone number " +
+            phone +
+            ", no notification of triage will be sent"
         );
       }
     }
@@ -210,14 +213,27 @@ class PatientDetailPageAssumeRouter extends React.Component<
 
   public render(): React.ReactNode {
     const { eDoc: encounter, tDoc: triage, messages } = this.state;
+    const { tReady, i18n, t } = this.props;
     return (
       <div className="PatientDetailPage">
         {encounter == null ? (
-          <div>Loading...</div>
+          <div>{t("common:loading")}</div>
         ) : (
           <div>
-            <PatientInfoPane eDoc={encounter} tDoc={triage} />
-            <TestDetailPane eDoc={encounter} tDoc={triage} />
+            <PatientInfoPane
+              eDoc={encounter}
+              tDoc={triage}
+              tReady={tReady}
+              i18n={i18n}
+              t={t}
+            />
+            <TestDetailPane
+              eDoc={encounter}
+              tDoc={triage}
+              tReady={tReady}
+              i18n={i18n}
+              t={t}
+            />
             <TriagePane
               eDoc={encounter}
               tDoc={triage}
@@ -227,8 +243,10 @@ class PatientDetailPageAssumeRouter extends React.Component<
               changeEbola={this.changeEbola}
               changeNotes={this.changeNotes}
               error={this.state.error}
+              tReady={tReady}
+              i18n={i18n}
+              t={t}
             />
-            <PhotoPane eDoc={encounter} tDoc={triage} />
             <Chat
               localIndex={encounter.encounter.localIndex}
               parentDocId={encounter.docId}
@@ -246,35 +264,41 @@ class PatientDetailPageAssumeRouter extends React.Component<
     );
   }
 }
-export const PatientDetailPage = withRouter(PatientDetailPageAssumeRouter);
 
 interface PatientInfoPaneProps {
   eDoc: EncounterDocument;
   tDoc: EncounterTriageDocument | null;
 }
 
-class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
+class PatientInfoPane extends React.Component<
+  PatientInfoPaneProps & WithNamespaces
+> {
   private renderDiagnosisBubble(diagnosis: Diagnosis) {
+    const { t } = this.props;
     const { value: evdPositive, diagnoser, timestamp } = diagnosis;
     const className = evdPositive ? "Positive" : "Negative";
     const message = evdPositive
-      ? "*Likely POSITIVE for Ebola"
-      : "*Likely NEGATIVE for Ebola";
+      ? t("patientInfoPane:likelyPositive")
+      : t("patientInfoPane:likelyNegative");
     return (
+      // TODOZ: figure out how to implement <strong> tag with tFunction
       <div className={`DiagnosisBubble ${className}`}>
         <div className={`Message ${className}`}>{message}</div>
         <div className="Details">
           <div className="Detail">
-            Reviewed by: <strong>{diagnoser.name}</strong>
+            {t("patientInfoPane:reviewedBy")}
+            <strong>{diagnoser.name}</strong>
           </div>
           <div className="Detail">
-            Date: <strong>{localeDate(timestamp)}</strong>
+            {t("patientInfoPane:date")}
+            <strong>{localeDate(timestamp)}</strong>
           </div>
         </div>
       </div>
     );
   }
   public render(): React.ReactNode {
+    const { t } = this.props;
     const { localIndex, patient, notes } = this.props.eDoc.encounter;
     const triaged =
       this.props.tDoc &&
@@ -291,16 +315,16 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
         </div>
         <div>
           <a className="PatientListLink" href={`/patients/`}>
-            ← Back to Patient List
+            {t("patientInfoPane:toPatientList")}
           </a>
         </div>
-        <h3>Patient Information</h3>
+        <h3>{t("patientInfoPane:patientInfo")}</h3>
         <table className="DetailTable">
           <thead>
             <tr className="Header">
-              <td>Phone</td>
-              <td>Contact Details</td>
-              <td>CHW Notes</td>
+              <td>{t("patientInfoPane:phoneNumber")}</td>
+              <td>{t("patientInfoPane:contact")}</td>
+              <td>{t("patientInfoPane:CHWNotes")}</td>
               <td />
             </tr>
           </thead>
@@ -318,25 +342,28 @@ class PatientInfoPane extends React.Component<PatientInfoPaneProps> {
   }
 }
 
-class TestDetailPane extends React.Component<PatientInfoPaneProps> {
+class TestDetailPane extends React.Component<
+  PatientInfoPaneProps & WithNamespaces
+> {
   public render() {
+    const { t } = this.props;
     const { encounter } = this.props.eDoc;
     const photo = last(encounter.rdtPhotos);
-    const timestamp = photo ? localeDate(photo.timestamp) : "Not Tested";
+    const timestamp = photo ? localeDate(photo.timestamp) : t("notTested");
     const chwName =
       encounter.healthWorker.firstName + " " + encounter.healthWorker.lastName;
     const { phone, notes } = encounter.healthWorker;
 
     return (
       <div>
-        <h3>Patient Test Detail</h3>
+        <h3>{t("testDetailPane:patientTest")}</h3>
         <table className="DetailTable">
           <thead>
             <tr className="Header">
-              <td>Tested on</td>
-              <td>Tested by</td>
-              <td>Contact info</td>
-              <td>About this CHW</td>
+              <td>{t("testDetailPane:testedOn")}</td>
+              <td>{t("testDetailPane:testedBy")}</td>
+              <td>{t("testDetailPane:contact")}</td>
+              <td>{t("testDetailPane:aboutCHW")}</td>
             </tr>
           </thead>
           <tbody>
@@ -367,8 +394,11 @@ interface TriageState {
   notes?: string;
 }
 
-class TriagePane extends React.Component<TriageProps, TriageState> {
-  constructor(props: TriageProps) {
+class TriagePane extends React.Component<
+  TriageProps & WithNamespaces,
+  TriageState
+> {
+  constructor(props: TriageProps & WithNamespaces) {
     super(props);
     this.state = {
       busy: false,
@@ -392,7 +422,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
 
   public render(): React.ReactNode {
     const { busy, noteChanged } = this.state;
-    const { error } = this.props;
+    const { error, t } = this.props;
     const triage = this.props.tDoc && this.props.tDoc.triage;
     const diagnosis =
       triage &&
@@ -405,11 +435,11 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
         : triage && triage.notes;
     return (
       <div className="TriagePane">
-        <h3>Does the below image indicate Ebola positivity?</h3>
+        <h3>{t("triagePane:EbolaPositivity")}</h3>
         <div className="EditDetail">
           <input
             type="button"
-            value="YES"
+            value={t("common:button:YES")}
             name="NAME-test-indicates-evd-yes"
             className={
               diagnosis && diagnosis.value ? "evdPressed" : "evdUnpressed"
@@ -419,7 +449,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           />
           <input
             type="button"
-            value="NO"
+            value={t("common:button:NO")}
             name="NAME-test-indicates-evd-no"
             className={
               diagnosis && !diagnosis.value ? "evdPressed" : "evdUnpressed"
@@ -438,7 +468,7 @@ class TriagePane extends React.Component<TriageProps, TriageState> {
           />
           <input
             type="button"
-            value="SAVE"
+            value={t("common:button:SAVE")}
             className={noteChanged && !busy ? "evdPressed" : "evdUnpressed"}
             disabled={busy || !noteChanged}
             onClick={this.onNotesSave}
@@ -459,7 +489,10 @@ interface PhotoFetchResult {
   error?: Error;
 }
 
-class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
+class PhotoPane extends React.Component<
+  PatientInfoPaneProps & WithNamespaces,
+  PhotoPaneState
+> {
   state: PhotoPaneState = { urls: {} };
 
   componentWillReceiveProps(nextProps: PatientInfoPaneProps) {
@@ -496,6 +529,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
   }
 
   public renderPhoto = (photo: PhotoInfo, index = -1) => {
+    const { t } = this.props;
     const { urls } = this.state;
     const { url, error } =
       urls[photo.photoId] ||
@@ -529,7 +563,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                   <table>
                     <thead>
                       <tr>
-                        <th>Taken on:</th>
+                        <th>{t("photoPane:takenOn")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -559,7 +593,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
                 <table>
                   <thead>
                     <tr>
-                      <th>Test Location:</th>
+                      <th>{t("photoPane:testLocation")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -581,6 +615,7 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
   };
 
   public render(): React.ReactNode {
+    const { t } = this.props;
     const { rdtPhotos } = this.props.eDoc.encounter;
     const photo = last(rdtPhotos);
     if (!photo) {
@@ -592,7 +627,8 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
         {rdtPhotos.length > 1 && (
           <details>
             <summary>
-              Show previous {rdtPhotos.length > 2 ? "photos" : "photo"}
+              {t("photoPane:showPrevious")}
+              {t("photoPane:photo", { count: rdtPhotos.length })}
             </summary>
             {rdtPhotos.slice(0, -1).map(this.renderPhoto)}
           </details>
@@ -601,3 +637,12 @@ class PhotoPane extends React.Component<PatientInfoPaneProps, PhotoPaneState> {
     );
   }
 }
+
+const PatientDetailPage = withRouter(
+  withNamespaces("patientDetailAssumeRouter")(PatientDetailPageAssumeRouter)
+);
+const patientInfo = withNamespaces("patientInfoPane")(PatientInfoPane);
+const photoPane = withNamespaces("PhotoPane")(PhotoPane);
+const testDetail = withNamespaces("testDetailPane")(TestDetailPane);
+
+export { PatientDetailPage, patientInfo, photoPane, testDetail };

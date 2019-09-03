@@ -12,8 +12,9 @@ import {
 import "./PatientList.css";
 import mapIcon from "./img/mapview.png";
 import listIcon from "./img/listview.png";
-import { PatientTable } from "./PatientTable";
+import PatientTable from "./PatientTable";
 import { EncounterMap } from "./EncounterMap";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   headerLabel: string;
@@ -28,7 +29,7 @@ interface State {
   showMap: boolean;
 }
 
-export class PatientBlock extends React.Component<Props, State> {
+class PatientBlock extends React.Component<Props & WithNamespaces, State> {
   state: State = {
     showMap: false,
   };
@@ -42,6 +43,7 @@ export class PatientBlock extends React.Component<Props, State> {
   };
 
   _renderListHeader() {
+    const { t } = this.props;
     return (
       <table className="PatientTableTitle">
         <thead>
@@ -50,14 +52,14 @@ export class PatientBlock extends React.Component<Props, State> {
             <td className="ListViewIcon">
               <div className="viewButton" onClick={this._onShowList}>
                 <img src={listIcon} alt="listIcon" onClick={this._onShowList} />
-                <div className="ListViewText">List View</div>
+                <div className="ListViewText">{t("listView")}</div>
               </div>
             </td>
 
             <td className="MapViewIcon">
               <div className="viewButton" onClick={this._onShowMap}>
                 <img src={mapIcon} alt="mapIcon" onClick={this._onShowMap} />
-                <div className="MapViewText">Map View</div>
+                <div className="MapViewText">{t("mapView")}</div>
               </div>
             </td>
           </tr>
@@ -91,3 +93,5 @@ export class PatientBlock extends React.Component<Props, State> {
     );
   }
 }
+
+export default withNamespaces("patientBlock")(PatientBlock);

@@ -12,6 +12,7 @@ import {
   withScriptjs,
 } from "react-google-maps";
 import { getApi } from "./api";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface Props {
   locations: Location[];
@@ -37,7 +38,7 @@ interface State {
   apiKey?: string;
 }
 
-export class SimpleMap extends React.Component<Props, State> {
+class SimpleMap extends React.Component<Props & WithNamespaces, State> {
   state: State = {};
   componentWillMount() {
     this.loadApiKey();
@@ -97,7 +98,13 @@ export class SimpleMap extends React.Component<Props, State> {
         defaultZoom={this.props.zoom}
       >
         {props.locations.map((location: Location) => (
-          <SimpleMarker location={location} key={location.docId} />
+          <SimpleMarker
+            location={location}
+            key={location.docId}
+            tReady={this.props.tReady}
+            i18n={this.props.i18n}
+            t={this.props.t}
+          />
         ))}
       </GoogleMap>
     ))
@@ -107,13 +114,12 @@ export class SimpleMap extends React.Component<Props, State> {
   mapElement = <div style={this.props.style} />;
 
   public render(): React.ReactNode {
-    const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${
-      this.state.apiKey
-    }`;
+    const { t } = this.props;
+    const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${this.state.apiKey}`;
     return (
       <div>
         {this.state.apiKey == null || this.props.locations == null ? (
-          "Loading..."
+          t("common:loading")
         ) : (
           <div style={this.props.style}>
             <this.MyGoogleMap
@@ -130,12 +136,14 @@ export class SimpleMap extends React.Component<Props, State> {
   }
 }
 
+export default withNamespaces("simpleMap")(SimpleMap);
+
 interface SimpleMarkerProps {
   location: Location;
 }
 
-const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
-  const { location } = props;
+const SimpleMarker: React.FC<SimpleMarkerProps & WithNamespaces> = props => {
+  const { location, t } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -149,7 +157,9 @@ const SimpleMarker: React.FC<SimpleMarkerProps> = props => {
           <span>
             {location.name} <br />
             {location.date} <br />
-            <a href={`/patient-detail/${location.docId}`}>Details</a>
+            <a href={`/patient-detail/${location.docId}`}>
+              {t("simpleMap:details")}
+            </a>
           </span>
         </InfoWindow>
       )}

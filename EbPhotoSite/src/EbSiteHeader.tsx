@@ -5,7 +5,7 @@
 
 import React from "react";
 
-import { LoggedInAs } from "./LoggedInAs";
+import LoggedInAs from "./LoggedInAs";
 import logo from "./img/evdtracklogo.png";
 import "./EbSiteHeader.css";
 
@@ -21,7 +21,7 @@ export class EbSiteHeader extends React.Component<EbSiteHeaderProps> {
             clear: "none",
           }}
         >
-          <img src={logo} alt={"Amazing logo"} />
+          <img src={logo} alt={""} />
         </div>
         <div
           style={{

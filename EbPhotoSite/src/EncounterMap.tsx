@@ -10,7 +10,8 @@ import {
   EncounterTriageDocument,
   PhotoInfo,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
-import { SimpleMap, Location } from "./SimpleMap";
+import SimpleMap from "./SimpleMap";
+import { Location } from "./SimpleMap";
 
 export enum MarkerStatus {
   EBOLA_POS,

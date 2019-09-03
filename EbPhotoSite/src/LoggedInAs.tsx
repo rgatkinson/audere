@@ -10,20 +10,18 @@ import * as Firebase from "firebase";
 import { getApi } from "./api";
 import profileImage from "./img/userprofile.png";
 import "./LoggedInAs.css";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 const firebase = (global as any).firebase as typeof Firebase;
 
-export interface LoggedInAsProps {}
+export interface LoggedInAsProps extends WithNamespaces {}
 
 export interface LoggedInAsState {
   busy: boolean;
   user: Firebase.User | null;
 }
 
-export class LoggedInAs extends React.Component<
-  LoggedInAsProps,
-  LoggedInAsState
-> {
+class LoggedInAs extends React.Component<LoggedInAsProps, LoggedInAsState> {
   private unsubscribeAuth: () => void;
 
   constructor(props: LoggedInAsProps) {
@@ -56,12 +54,13 @@ export class LoggedInAs extends React.Component<
   };
 
   whoAmI() {
+    const { t } = this.props;
     if (this.state.busy) {
-      return "Loading...";
+      return t("common:loading");
     } else if (this.state.user != null) {
       return (
         <div>
-          <div className="UserWelcome">Welcome,</div>
+          <div className="UserWelcome">{t("welcome")}</div>
           <div className="UserName">{this.state.user.email}</div>
         </div>
       );
@@ -71,6 +70,7 @@ export class LoggedInAs extends React.Component<
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div>
         <table>
@@ -84,7 +84,7 @@ export class LoggedInAs extends React.Component<
                       clear: "none",
                     }}
                   >
-                    <img src={profileImage} alt={"Sweet profile silhouette"} />
+                    <img src={profileImage} alt={""} />
                   </div>
                 )}
               </td>
@@ -93,7 +93,7 @@ export class LoggedInAs extends React.Component<
                   {this.whoAmI()}
                   {this.state.user !== null && (
                     <div className="Logout" onClick={this.logout}>
-                      Logout
+                      {t("logout")}
                     </div>
                   )}
                 </div>
@@ -105,3 +105,5 @@ export class LoggedInAs extends React.Component<
     );
   }
 }
+
+export default withNamespaces("loggedInAs")(LoggedInAs);

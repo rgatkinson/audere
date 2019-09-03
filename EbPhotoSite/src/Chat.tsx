@@ -12,7 +12,10 @@ import {
   NotificationType,
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
+import { WithNamespaces, withNamespaces } from "react-i18next";
+
 import * as Firebase from "firebase";
+
 import "./Chat.css";
 
 const firebase = (global as any).firebase as typeof Firebase;
@@ -33,11 +36,11 @@ export interface ChatState {
   busy: boolean;
 }
 
-export class Chat extends React.Component<ChatProps, ChatState> {
+class Chat extends React.Component<ChatProps & WithNamespaces, ChatState> {
   private unsubscribeAuth: () => void;
   private afterLastMessage: RefObject<HTMLDivElement>;
 
-  constructor(props: ChatProps) {
+  constructor(props: ChatProps & WithNamespaces) {
     super(props);
 
     this.state = {
@@ -87,6 +90,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
   };
 
   async onSubmit(e: any) {
+    const { t } = this.props;
     e.preventDefault();
     const { currentUser, input } = this.state;
     this.setState({ input: "" });
@@ -109,15 +113,17 @@ export class Chat extends React.Component<ChatProps, ChatState> {
 
         await api.pushNotification(
           doc.token,
-          `Message from ${currentUser.displayName}`,
+          t("messageFrom", { name: currentUser.displayName }),
+
           input,
           details,
           "chw_chat"
         );
       } else {
         console.warn(
-          `No registration token found for phone number ${phone}, ` +
-            `no notification of triage will be sent`
+          "No registration token found for phone number " +
+            phone +
+            ", no notification of triage will be sent"
         );
       }
     }
@@ -148,6 +154,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
   renderMessage(message: Message) {
     const { content, sender, timestamp } = message;
     const { currentUser } = this.state;
+    const { t } = this.props;
     let userTag = sender.name;
 
     if (timestamp != null) {
@@ -157,10 +164,10 @@ export class Chat extends React.Component<ChatProps, ChatState> {
         const dateString = format(date, "DD MMMM YYYY, HH:mm");
 
         if (userTag != null) {
-          userTag = ` by ${userTag}`;
+          userTag = t("userTag", { data: dateString, user: userTag });
+        } else {
+          userTag = dateString;
         }
-
-        userTag = dateString + userTag;
       }
     }
     const fromMe = currentUser != null && sender.uid === currentUser.uid;
@@ -182,12 +189,12 @@ export class Chat extends React.Component<ChatProps, ChatState> {
   }
 
   render() {
-    const { messages } = this.props;
+    const { messages, t } = this.props;
     const lines = this.state.input.split("\n").length;
     const rows = Math.max(1, Math.min(5, lines));
     return (
       <div>
-        <p className="chat-title">Chat with community health worker:</p>
+        <p className="chat-title">{t("workerChat")}</p>
         <div className="chat-box">
           <ul className="message-list">
             {messages
@@ -201,7 +208,7 @@ export class Chat extends React.Component<ChatProps, ChatState> {
           <form className="chat-form" onSubmit={e => this.onSubmit(e)}>
             <textarea
               className="chat-input"
-              placeholder="Enter a note to send to the clinic CHW"
+              placeholder={t("toClinicPlaceholder")}
               onChange={this.onChange}
               onClick={this.scrollToLatest}
               value={this.state.input}
@@ -220,3 +227,5 @@ function debug(message: string) {
     debug(message);
   }
 }
+
+export default withNamespaces("chat")(Chat);

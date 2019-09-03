@@ -14,6 +14,7 @@ import {
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { localeDate, last } from "./util";
 import "./PatientTable.css";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 interface PatientTableRow {
   eDoc: EncounterDocument;
@@ -34,10 +35,10 @@ interface PatientTableState {
 }
 
 export class PatientTable extends React.Component<
-  PatientTableProps,
+  PatientTableProps & WithNamespaces,
   PatientTableState
 > {
-  constructor(props: PatientTableProps) {
+  constructor(props: PatientTableProps & WithNamespaces) {
     super(props);
     this.state = {
       selected: null,
@@ -119,43 +120,46 @@ export class PatientTable extends React.Component<
       : {};
 
   columns(): Column<PatientTableRow>[] {
+    const { t } = this.props;
     const evdResultColumns: Column<PatientTableRow>[] = [
       {
-        Header: "Ebola Test Result",
+        Header: t("EbolaTestResult"),
         accessor: r =>
           r.tDoc == null
             ? ".."
             : this.triageIsPositive(r.tDoc)
-            ? "POSITIVE"
-            : "NEGATIVE",
+            ? t("common:POSITIVE")
+            : t("common:NEGATIVE"),
         id: "evd",
         minWidth: 90,
         getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
-        Header: "Ebola Result Notes",
+        Header: t("EbolaResultNotes"),
         accessor: row =>
-          row.tDoc == null ? "Loading.." : firstLine(row.tDoc.triage.notes),
+          row.tDoc == null
+            ? t("common:loading")
+            : firstLine(row.tDoc.triage.notes),
         id: "triage",
         minWidth: 200,
       },
     ];
     let mainColumns: Column<PatientTableRow>[] = [
       {
-        Header: "Date Tested",
+        Header: t("dateTested"),
         accessor: row => {
           return this.getTimestamp(row);
         },
         Cell: cellInfo => {
           const timestamp = cellInfo && this.getTimestamp(cellInfo.original);
-          return timestamp ? localeDate(timestamp) : "Not Tested";
+          return timestamp ? localeDate(timestamp) : t("notTested");
         },
         id: "timestamp",
         minWidth: 110,
         getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
-        Header: "Patient Name",
+        Header: t("patientName"),
         accessor: row => {
           const p = row.eDoc.encounter.patient;
           return `${p.firstName} ${p.lastName}`;
@@ -165,7 +169,7 @@ export class PatientTable extends React.Component<
         getProps: (this.redIfPositive as unknown) as ReactTableFunction,
       },
       {
-        Header: "CHW Name",
+        Header: t("CHWName"),
         accessor: row => {
           const w = row.eDoc.encounter.healthWorker;
           return `${w.firstName} ${w.lastName}`;
@@ -174,7 +178,7 @@ export class PatientTable extends React.Component<
         minWidth: 110,
       },
       {
-        Header: "CHW Phone #",
+        Header: t("CHWPhone"),
         accessor: "eDoc.encounter.healthWorker.phone",
         minWidth: 80,
       },
@@ -222,3 +226,5 @@ function debug(message: string) {
     debug(message);
   }
 }
+
+export default withNamespaces("patientTable")(PatientTable);

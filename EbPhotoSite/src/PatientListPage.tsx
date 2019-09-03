@@ -13,7 +13,8 @@ import {
 } from "audere-lib/dist/ebPhotoStoreProtocol";
 import { getApi } from "./api";
 import "./PatientList.css";
-import { PatientBlock } from "./PatientBlock";
+import PatientBlock from "./PatientBlock";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 
 export interface PatientsListPageProps extends RouteComponentProps<{}> {}
 
@@ -26,10 +27,10 @@ export interface PatientsListPageState {
 }
 
 class PatientListPageAssumeRouter extends React.Component<
-  PatientsListPageProps,
+  PatientsListPageProps & WithNamespaces,
   PatientsListPageState
 > {
-  constructor(props: PatientsListPageProps) {
+  constructor(props: PatientsListPageProps & WithNamespaces) {
     super(props);
     this.state = {
       eDocs: null,
@@ -134,23 +135,23 @@ class PatientListPageAssumeRouter extends React.Component<
   }
 
   public render(): React.ReactNode {
+    const { t } = this.props;
     const { eDocs: records } = this.state;
     return (
       <div className="PatientListBody">
         <div className="PatientListTitle">
-          <h2>Patient Lists</h2>
+          <h2>{t("listTitle")}</h2>
         </div>
-        <div className="PatientListLegend">
-          Click on a row to see details for a specific patient and to contact
-          the CHW who tested the patient.
-        </div>
-        {records == null ? "Loading..." : this._renderPatients()}
+        <div className="PatientListLegend">{t("listLegend")}</div>
+        {records == null ? t("common:loading") : this._renderPatients()}
       </div>
     );
   }
 }
 
-export const PatientListPage = withRouter(PatientListPageAssumeRouter);
+export const PatientListPage = withRouter(
+  withNamespaces("patientListPage")(PatientListPageAssumeRouter)
+);
 
 function debug(message: string) {
   if (false) {
