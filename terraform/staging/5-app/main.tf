@@ -24,10 +24,11 @@ module "shared" {
   source = "../../modules/app-shared"
 
   app_subnet_id = "${data.terraform_remote_state.network.app_subnet_id}"
+  build_user = "${data.terraform_remote_state.global.build_user}"
   db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
   dev_ssh_server_sg_id = "${data.terraform_remote_state.network.dev_ssh_server_sg_id}"
   devs = "${var.devs}"
-  ecs_dynamic_client_sg_id = "${data.terraform_remote_state.network.ecs_dynamic_client_sg_id}"
+  ecs_dynamic_server_sg_id = "${data.terraform_remote_state.network.ecs_dynamic_server_sg_id}"
   environment = "staging"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
@@ -77,8 +78,10 @@ module "airflow" {
   ecs_service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
   elb_logs_bucket_id = "${module.shared.elb_logs_bucket_id}"
   environment = "prod"
+  public_http_sg_id = "${data.terraform_remote_state.network.public_http_sg_id}"
   redis_server_sg_id = "${data.terraform_remote_state.network.redis_server_sg_id}"
   region = "${var.region}"
+  ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
   vpc_id = "${data.terraform_remote_state.network.vpc_id}"
 }
 

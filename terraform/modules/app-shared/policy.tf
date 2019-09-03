@@ -84,7 +84,7 @@ resource "aws_iam_role_policy_attachment" "ecs_dags_attachment" {
 }
 
 resource "aws_iam_user_policy_attachment" "build_dags_attachment" {
-  name = "${var.build_user}"
+  user = "${var.build_user}"
   policy_arn = "${aws_iam_policy.dags_s3.arn}"
 }
 
@@ -107,11 +107,11 @@ data "aws_iam_policy_document" "ecs_manage" {
 }
 
 resource "aws_iam_policy" "ecs_management" {
-  role = "${loca.base_name}-ecs-manage"
-  policy = "${data.aws_iam_policy_document.ecs_manage}"
+  name = "${local.base_name}-ecs-manage"
+  policy = "${data.aws_iam_policy_document.ecs_manage.json}"
 }
 
 resource "aws_iam_user_policy_attachment" "build_ecs_manage" {
-  name = "${var.build_user}"
+  user = "${var.build_user}"
   policy_arn = "${aws_iam_policy.ecs_management.arn}"
 }

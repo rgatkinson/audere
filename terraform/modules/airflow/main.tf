@@ -4,11 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 locals {
+  base_name = "airflow-${var.environment}"
   airflow_subdomains = {
     prod = "airflow"
     staging = "airflow.staging"
   }
-  airflow_subdomain = "${local.reporting_subdomains["${var.environment}"]}"
+  airflow_subdomain = "${local.airflow_subdomains["${var.environment}"]}"
   ecr_registry = "${var.account}.dkr.ecr.${var.region}.amazonaws.com"
 }
 
@@ -28,7 +29,7 @@ resource "aws_lb" "airflow_lb" {
 
   access_logs {
     bucket = "${var.elb_logs_bucket_id}"
-    bucket_prefix = "reporting"
+    prefix = "reporting"
     enabled = true
   }
 }
@@ -44,7 +45,7 @@ resource "aws_lb_target_group" "flower" {
   name = "airflow-flower-${var.environment}"
   port = 443
   protocol = "HTTPS"
-  vpc_id = "${varr.vpc_id}"
+  vpc_id = "${var.vpc_id}"
 }
 
 resource "aws_lb_listener" "airflow_listener" {

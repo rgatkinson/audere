@@ -39,7 +39,7 @@ variable "elb_logs_bucket_id" {
   description = "Identifier for bucket to capture ELB access logs"
 }
 
-variables "ecs_cluster_id" {
+variable "ecs_cluster_id" {
   description = "Identifier for ECS cluster to run reporting applications"
 }
 
@@ -51,12 +51,20 @@ variable "environment" {
   description = "One of 'staging' or 'prod'"
 }
 
+variable "public_http_sg_id" {
+  description = "Security group to open public HTTP/S ingress"
+}
+
 variable "redis_server_sg_id" {
   description = "Security group to receive traffic on Redis server"
 }
 
 variable "region" {
   description = "Targeted AWS region"
+}
+
+variable "ssm_parameters_key_arn" {
+  description = "ARN of key needed to decrypt SSM parameters"
 }
 
 variable "vpc_id" {

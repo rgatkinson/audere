@@ -56,11 +56,11 @@ output "db_pii_subnet_id" {
 }
 
 output "ecs_dynamic_client_sg_id" {
-  value = "${aws_security_group.ecs_dynamic_ports_sg.client_id}"
+  value = "${module.ecs_dynamic_ports_sg.client_id}"
 }
 
 output "ecs_dynamic_server_sg_id" {
-  value = "${aws_security_group.ecs_dynamic_ports_sg.server_id}"
+  value = "${module.ecs_dynamic_ports_sg.server_id}"
 }
 
 output "fluapi_client_sg_id" {

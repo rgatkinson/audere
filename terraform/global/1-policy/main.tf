@@ -130,7 +130,7 @@ resource "aws_iam_user" "build_user" {
 }
 
 resource "aws_iam_user_policy_attachment" "build_user" {
-  user       = "${aws_iam_user.ecr_push.name}"
+  user       = "${aws_iam_user.build_user.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
 
