@@ -247,6 +247,13 @@ class PatientDetailPageAssumeRouter extends React.Component<
               i18n={i18n}
               t={t}
             />
+            <PhotoPane
+              eDoc={encounter}
+              tDoc={triage}
+              i18n={i18n}
+              t={t}
+              tReady={tReady}
+            />
             <Chat
               localIndex={encounter.encounter.localIndex}
               parentDocId={encounter.docId}
