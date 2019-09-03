@@ -35,6 +35,8 @@
     "mapView": "Map view"
   },
   "patientListPage": {
+    "untriaged": "Untriaged Patients ({{num}})",
+    "triaged": "Triaged Patients ({{num}})",
     "listTitle": "Patient Lists",
     "listLegend": "Click on a row to see details for a specific patient and to contact the CHW who tested the patient"
   },
@@ -62,7 +64,8 @@
     "aboutCHW": "About this CHW"
   },
   "triagePane": {
-    "EbolaPositivity": "Does the below image indicate Ebola positivity?"
+    "ebolaPositivity": "Does the below image indicate Ebola positivity?",
+    "addNotes": "Add additional triage notes here"
   },
   "photoPane": {
     "takenOn": "Taken on:",

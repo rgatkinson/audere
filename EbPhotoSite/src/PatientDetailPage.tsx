@@ -442,7 +442,7 @@ class TriagePane extends React.Component<
         : triage && triage.notes;
     return (
       <div className="TriagePane">
-        <h3>{t("triagePane:EbolaPositivity")}</h3>
+        <h3>{t("triagePane:ebolaPositivity")}</h3>
         <div className="EditDetail">
           <input
             type="button"
@@ -471,7 +471,7 @@ class TriagePane extends React.Component<
             disabled={busy}
             value={notes || ""}
             onChange={this.onNotesChange}
-            placeholder={"Add additional triage notes here"}
+            placeholder={t("triagePane:addNotes")}
           />
           <input
             type="button"
@@ -635,7 +635,7 @@ class PhotoPane extends React.Component<
           <details>
             <summary>
               {t("photoPane:showPrevious")}
-              {t("photoPane:photo", { count: rdtPhotos.length })}
+              {t("photoPane:photo", { count: rdtPhotos.length - 1 })}
             </summary>
             {rdtPhotos.slice(0, -1).map(this.renderPhoto)}
           </details>

@@ -107,6 +107,7 @@ class PatientListPageAssumeRouter extends React.Component<
   private _renderPatients() {
     const { triagedDocs, untriagedDocs } = this._splitTriagedFromUntriaged();
     const { chatsUpdatedAt } = this.state;
+    const { t } = this.props;
 
     debug(
       `PatientList chat timestamps: ${JSON.stringify(chatsUpdatedAt, null, 2)}`
@@ -115,7 +116,7 @@ class PatientListPageAssumeRouter extends React.Component<
     return (
       <div>
         <PatientBlock
-          headerLabel={`Untriaged Patients (${untriagedDocs.length})`}
+          headerLabel={t("untriaged", { num: untriagedDocs.length })}
           eDocs={untriagedDocs}
           tDocs={this.state.tDocs}
           chatsUpdatedAt={chatsUpdatedAt}
@@ -123,7 +124,7 @@ class PatientListPageAssumeRouter extends React.Component<
           showEvdResultColumns={false}
         />
         <PatientBlock
-          headerLabel={`Triaged Patients (${triagedDocs.length})`}
+          headerLabel={t("triaged", { num: triagedDocs.length })}
           eDocs={triagedDocs}
           tDocs={this.state.tDocs}
           chatsUpdatedAt={chatsUpdatedAt}
