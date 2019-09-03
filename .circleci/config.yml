@@ -454,7 +454,7 @@ jobs:
           name: App Yarn Install
           command: |
             yarn install
-            ../../../scripts/generate-build-info FluTrack
+            ../scripts/generate-build-info FluTrack
       - run:
           name: App Tests
           command: |
